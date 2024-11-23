@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,11 @@
 package org.openhab.binding.knx.internal.client;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,27 +44,27 @@ import tuwien.auto.calimero.link.medium.KNXMediumSettings;
  *
  * @author Holger Friedrich - Initial contribution
  */
-@NonNullByDefault({})
+@NonNullByDefault
 public class DummyKNXNetworkLink implements KNXNetworkLink {
     public static final Logger LOGGER = LoggerFactory.getLogger(DummyKNXNetworkLink.class);
     public static final int GROUP_WRITE = 0x80;
 
     private byte[] lastFrame = new byte[0];
-    private Set<NetworkLinkListener> listeners = new HashSet<>();
+    private Set<@Nullable NetworkLinkListener> listeners = new HashSet<>();
 
-    public void setKNXMedium(KNXMediumSettings settings) {
-        LOGGER.warn(settings.toString());
+    public void setKNXMedium(@Nullable KNXMediumSettings settings) {
+        LOGGER.warn(Objects.toString(settings));
     }
 
     public KNXMediumSettings getKNXMedium() {
         return KNXMediumSettings.create(KNXMediumSettings.MEDIUM_TP1, new IndividualAddress(1, 2, 3));
     }
 
-    public void addLinkListener(NetworkLinkListener l) {
+    public void addLinkListener(@Nullable NetworkLinkListener l) {
         listeners.add(l);
     }
 
-    public void removeLinkListener(NetworkLinkListener l) {
+    public void removeLinkListener(@Nullable NetworkLinkListener l) {
         listeners.remove(l);
     }
 
@@ -73,13 +75,16 @@ public class DummyKNXNetworkLink implements KNXNetworkLink {
         return 0;
     }
 
-    public void sendRequest(KNXAddress dst, Priority p, byte[] nsdu)
+    public void sendRequest(@Nullable KNXAddress dst, @Nullable Priority p, byte @Nullable [] nsdu)
             throws KNXTimeoutException, KNXLinkClosedException {
         sendRequestWait(dst, p, nsdu);
     }
 
-    public void sendRequestWait(KNXAddress dst, Priority p, byte[] nsdu)
+    public void sendRequestWait(@Nullable KNXAddress dst, @Nullable Priority p, byte @Nullable [] nsdu)
             throws KNXTimeoutException, KNXLinkClosedException {
+        if (nsdu == null) {
+            return;
+        }
         LOGGER.info("sendRequestWait() {} {} {}", dst, p, HexUtils.bytesToHex(nsdu, " "));
 
         lastFrame = nsdu.clone();
@@ -109,11 +114,13 @@ public class DummyKNXNetworkLink implements KNXNetworkLink {
         FrameEvent f = new FrameEvent(this, new CEMILData(CEMILData.MC_LDATA_IND, src, dst, nsdu, p, repeat, hopCount));
 
         listeners.forEach(listener -> {
-            listener.indication(f);
+            if (listener != null) {
+                listener.indication(f);
+            }
         });
     }
 
-    public void send(CEMILData msg, boolean waitForCon) throws KNXTimeoutException, KNXLinkClosedException {
+    public void send(@Nullable CEMILData msg, boolean waitForCon) throws KNXTimeoutException, KNXLinkClosedException {
         LOGGER.warn("send() not implemented");
     }
 

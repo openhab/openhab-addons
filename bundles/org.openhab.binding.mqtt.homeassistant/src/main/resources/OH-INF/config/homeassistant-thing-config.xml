@@ -7,7 +7,7 @@
 	<config-description uri="thing-type:mqtt:homeassistant">
 		<parameter name="topics" type="text" required="true" multiple="true">
 			<label>MQTT Config Topic</label>
-			<description>List of HomeAssistant configuration topics (e.g. /homeassistant/switch/4711/config)</description>
+			<description>List of Home Assistant configuration topics (e.g. button/my-device/restart)</description>
 		</parameter>
 
 		<parameter name="basetopic" type="text" required="true">
@@ -24,7 +24,7 @@
 
 		<parameter name="topics" type="text" required="true" multiple="true">
 			<label>MQTT Config Topic</label>
-			<description>List of HomeAssistant configuration topics (e.g. /homeassistant/switch/4711/config)</description>
+			<description>List of Home Assistant configuration topics (e.g. button/my-device/restart)</description>
 		</parameter>
 
 		<parameter name="basetopic" type="text" required="true">

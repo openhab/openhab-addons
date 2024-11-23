@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,8 +18,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-
-import javax.measure.quantity.Mass;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
@@ -154,18 +152,18 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                         if (bowlId == BOWL_ID_ONE_BOWL_USED) {
                             updateState(DEVICE_CHANNEL_BOWLS_FOOD,
                                     new StringType(bowlSettings.get(0).foodId.toString()));
-                            updateState(DEVICE_CHANNEL_BOWLS_TARGET, new QuantityType<Mass>(
+                            updateState(DEVICE_CHANNEL_BOWLS_TARGET, new QuantityType<>(
                                     device.control.bowls.bowlSettings.get(0).targetId, SIUnits.GRAM));
                         } else if (bowlId == BOWL_ID_TWO_BOWLS_USED) {
                             updateState(DEVICE_CHANNEL_BOWLS_FOOD_LEFT,
                                     new StringType(bowlSettings.get(0).foodId.toString()));
                             updateState(DEVICE_CHANNEL_BOWLS_TARGET_LEFT,
-                                    new QuantityType<Mass>(bowlSettings.get(0).targetId, SIUnits.GRAM));
+                                    new QuantityType<>(bowlSettings.get(0).targetId, SIUnits.GRAM));
                             if (numBowls > 1) {
                                 updateState(DEVICE_CHANNEL_BOWLS_FOOD_RIGHT,
                                         new StringType(bowlSettings.get(1).foodId.toString()));
                                 updateState(DEVICE_CHANNEL_BOWLS_TARGET_RIGHT,
-                                        new QuantityType<Mass>(bowlSettings.get(1).targetId, SIUnits.GRAM));
+                                        new QuantityType<>(bowlSettings.get(1).targetId, SIUnits.GRAM));
                             }
                         }
                     }

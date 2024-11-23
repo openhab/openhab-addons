@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -211,6 +211,26 @@ public class UniFiController {
         req.setAPIPath(String.format("/api/s/%s/rest/wlanconf/%s", wlan.getSite().getName(), wlan.getId()));
         req.setBodyParameter("_id", wlan.getId());
         req.setBodyParameter("enabled", enable ? "true" : "false");
+        executeRequest(req);
+        refresh();
+    }
+
+    public void disableAccessPoint(final UniFiDevice device, final boolean disable) throws UniFiException {
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, gson);
+        req.setAPIPath(String.format("/api/s/%s/rest/device/%s", device.getSite().getName(), device.getId()));
+        req.setBodyParameter("_id", device.getId());
+        req.setBodyParameter("disabled", disable ? "true" : "false");
+        executeRequest(req);
+        refresh();
+    }
+
+    public void setLedOverride(final UniFiDevice device, final String override) throws UniFiException {
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, gson);
+        req.setAPIPath(String.format("/api/s/%s/rest/device/%s", device.getSite().getName(), device.getId()));
+        req.setBodyParameter("_id", device.getId());
+        if (!override.isEmpty()) {
+            req.setBodyParameter("led_override", override);
+        }
         executeRequest(req);
         refresh();
     }

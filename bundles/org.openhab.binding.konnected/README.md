@@ -61,7 +61,7 @@ This is commonly used with a piezo buzzer to make a "beep beep" sound when a doo
 It can also be used to blink lights.
 
 A note about the Alarm Panel Pro.
-Zones 1-8 can be configured for any Channel-Types.  
+Zones 1-8 can be configured for any Channel-Types.
 Zones 9-12, out1, alarm1 and out2/alarm2 can only be configured as an actuator.
 For more information, see: <https://help.konnected.io/support/solutions/articles/32000028978-alarm-panel-pro-inputs-and-outputs>
 

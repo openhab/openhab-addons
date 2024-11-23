@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -80,7 +81,6 @@ import org.openhab.binding.ecovacs.internal.util.StateOptionMapping;
 import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -321,7 +321,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             }
             return new StringType(def);
         });
-        updateState(CHANNEL_ID_CLEANING_SPOT_DEFINITION, areaDefState.orElse(UnDefType.UNDEF));
+        updateState(CHANNEL_ID_CLEANING_SPOT_DEFINITION, Objects.requireNonNull(areaDefState.orElse(UnDefType.UNDEF)));
         if (newMode == CleanMode.RETURNING) {
             scheduleNextPoll(30);
         } else if (newMode.isIdle()) {
@@ -594,19 +594,11 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
                     if (device.hasCapability(DeviceCapability.MAPPING)
                             && !lastDownloadedCleanMapUrl.equals(record.mapImageUrl)) {
-                        updateState(CHANNEL_ID_LAST_CLEAN_MAP, record.mapImageUrl.flatMap(url -> {
-                            // HttpUtil expects the server to return the correct MIME type, but Ecovacs' server sends
-                            // 'application/octet-stream', so we have to set the correct MIME type by ourselves
-                            @Nullable
-                            RawType mapData = HttpUtil.downloadData(url, null, false, -1);
-                            if (mapData != null) {
-                                mapData = new RawType(mapData.getBytes(), "image/png");
-                                lastDownloadedCleanMapUrl = record.mapImageUrl;
-                            } else {
-                                logger.debug("{}: Downloading cleaning map {} failed", serialNumber, url);
-                            }
-                            return Optional.ofNullable((State) mapData);
-                        }).orElse(UnDefType.NULL));
+                        Optional<State> content = device.downloadCleanMapImage(record).map(bytes -> {
+                            lastDownloadedCleanMapUrl = record.mapImageUrl;
+                            return new RawType(bytes, "image/png");
+                        });
+                        updateState(CHANNEL_ID_LAST_CLEAN_MAP, Objects.requireNonNull(content.orElse(UnDefType.NULL)));
                     }
                 }
             }
@@ -722,7 +714,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
     private State stringToState(@Nullable String value) {
         Optional<State> stateOpt = Optional.ofNullable(value).map(v -> StringType.valueOf(v));
-        return stateOpt.orElse(UnDefType.UNDEF);
+        return Objects.requireNonNull(stateOpt.orElse(UnDefType.UNDEF));
     }
 
     private @Nullable AbstractNoResponseCommand determineDeviceCommand(EcovacsDevice device, String command) {
@@ -761,7 +753,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     }
                 }
                 if (!roomIds.isEmpty()) {
-                    return new SpotAreaCleaningCommand(roomIds, passes);
+                    return new SpotAreaCleaningCommand(roomIds, passes,
+                            device.hasCapability(DeviceCapability.FREE_CLEAN_FOR_SPOT_AREA));
                 }
             } else {
                 logger.info("{}: spotArea command needs to have the form spotArea:<room1>[;<room2>][;<...roomX>][:x2]",

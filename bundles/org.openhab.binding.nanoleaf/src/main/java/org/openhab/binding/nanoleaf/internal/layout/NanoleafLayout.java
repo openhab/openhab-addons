@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.nanoleaf.internal.layout;
 
 import java.awt.Color;
@@ -42,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NanoleafLayout {
 
-    private static final Logger logger = LoggerFactory.getLogger(NanoleafLayout.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NanoleafLayout.class);
     private static final Color COLOR_BACKGROUND = Color.WHITE;
 
     public static byte[] render(PanelLayout panelLayout, PanelState state, LayoutSettings settings) throws IOException {
@@ -54,13 +53,13 @@ public class NanoleafLayout {
 
         Layout layout = panelLayout.getLayout();
         if (layout == null) {
-            logger.warn("Returning no image as we don't have any layout to render");
+            LOGGER.warn("Returning no image as we don't have any layout to render");
             return new byte[] {};
         }
 
         List<PositionDatum> positionDatums = layout.getPositionData();
         if (positionDatums == null) {
-            logger.warn("Returning no image as we don't have any position datums to render");
+            LOGGER.warn("Returning no image as we don't have any position datums to render");
             return new byte[] {};
         }
 

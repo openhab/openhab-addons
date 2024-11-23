@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,9 @@ import java.lang.reflect.Type;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Message;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 import com.google.gson.JsonDeserializationContext;
@@ -30,6 +32,7 @@ import com.google.gson.JsonParseException;
  * Utility class for JSON deserialization of device data and triggered scenarios using Google Gson.
  *
  * @author Patrick Gell - Initial contribution
+ * @author David Pace - Fixed NPEs and simplified code, added sanity check
  *
  */
 @NonNullByDefault
@@ -39,28 +42,19 @@ public class BoschServiceDataDeserializer implements JsonDeserializer<BoschSHCSe
     @Override
     public BoschSHCServiceState deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-
         JsonObject jsonObject = jsonElement.getAsJsonObject();
-        JsonElement dataType = jsonObject.get("@type");
-        switch (dataType.getAsString()) {
-            case "DeviceServiceData" -> {
-                var deviceServiceData = new DeviceServiceData();
-                deviceServiceData.deviceId = jsonObject.get("deviceId").getAsString();
-                deviceServiceData.state = jsonObject.get("state");
-                deviceServiceData.id = jsonObject.get("id").getAsString();
-                deviceServiceData.path = jsonObject.get("path").getAsString();
-                return deviceServiceData;
-            }
-            case "scenarioTriggered" -> {
-                var scenario = new Scenario();
-                scenario.id = jsonObject.get("id").getAsString();
-                scenario.name = jsonObject.get("name").getAsString();
-                scenario.lastTimeTriggered = jsonObject.get("lastTimeTriggered").getAsString();
-                return scenario;
-            }
-            default -> {
-                return new BoschSHCServiceState(dataType.getAsString());
-            }
+        JsonElement dataTypeElement = jsonObject.get("@type");
+        if (dataTypeElement == null) {
+            throw new IllegalArgumentException("Received a service state without a @type property: " + jsonObject);
         }
+
+        String dataType = dataTypeElement.getAsString();
+        return switch (dataType) {
+            case "DeviceServiceData" -> GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonObject, DeviceServiceData.class);
+            case "scenarioTriggered" -> GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonObject, Scenario.class);
+            case "userDefinedState" -> GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonObject, UserDefinedState.class);
+            case "message" -> GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonElement, Message.class);
+            default -> new BoschSHCServiceState(dataType);
+        };
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public class IpObserverHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private final IpObserverUpdateReceiver ipObserverUpdateReceiver;
     private final Logger logger = LoggerFactory.getLogger(IpObserverHandler.class);
-    private Map<String, ChannelHandler> channelHandlers = new HashMap<String, ChannelHandler>();
+    private Map<String, ChannelHandler> channelHandlers = new HashMap<>();
     private @Nullable ScheduledFuture<?> pollingFuture = null;
     private IpObserverConfiguration config = new IpObserverConfiguration();
     private String idPass = "";
@@ -92,7 +92,7 @@ public class IpObserverHandler extends BaseThingHandler {
         private Channel channel;
         private String previousValue = "";
         private Unit<?> unit;
-        private final ArrayList<Class<? extends State>> acceptedDataTypes = new ArrayList<Class<? extends State>>();
+        private final ArrayList<Class<? extends State>> acceptedDataTypes = new ArrayList<>();
 
         ChannelHandler(IpObserverHandler handler, Channel channel, Class<? extends State> acceptable, Unit<?> unit) {
             super();
@@ -298,10 +298,12 @@ public class IpObserverHandler extends BaseThingHandler {
         createChannelHandler(WEEKLY_RAIN, QuantityType.class, ImperialUnits.INCH, "weeklyrainin");
         createChannelHandler(MONTHLY_RAIN, QuantityType.class, ImperialUnits.INCH, "monthlyrainin");
         createChannelHandler(YEARLY_RAIN, QuantityType.class, ImperialUnits.INCH, "yearlyrainin");
+        createChannelHandler(TOTAL_RAIN, QuantityType.class, ImperialUnits.INCH, "totalrainin");
         createChannelHandler(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "UV");
         createChannelHandler(WIND_AVERAGE_SPEED, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "windspeedmph");
         createChannelHandler(WIND_GUST, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "windgustmph");
         createChannelHandler(SOLAR_RADIATION, QuantityType.class, Units.IRRADIANCE, "solarradiation");
+        createChannelHandler(ABS_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "absbaromin");
         createChannelHandler(REL_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "baromin");
         createChannelHandler(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "lowbatt");
     }

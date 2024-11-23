@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,7 +84,7 @@ public interface ShellyApiInterface {
 
     void setValveMode(int id, boolean auto) throws ShellyApiException;
 
-    void setValveTemperature(int valveId, int value) throws ShellyApiException;
+    void setValveTemperature(int valveId, double value) throws ShellyApiException;
 
     void setValveProfile(int valveId, int value) throws ShellyApiException;
 
@@ -112,7 +112,7 @@ public interface ShellyApiInterface {
 
     boolean setBluetooth(boolean enable) throws ShellyApiException;
 
-    String deviceReboot() throws ShellyApiException;
+    void deviceReboot() throws ShellyApiException;
 
     String setDebug(boolean enabled) throws ShellyApiException;
 

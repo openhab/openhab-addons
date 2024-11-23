@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -118,7 +118,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
 
             if ("yes".equalsIgnoreCase(update)) {
                 // do the update
-                th.setThingOffline(ThingStatusDetail.FIRMWARE_UPDATING, "offline.status-error-fwupgrade");
+                th.setThingOfflineAndDisconnect(ThingStatusDetail.FIRMWARE_UPDATING, "offline.status-error-fwupgrade");
                 html += loadHTML(FWUPDATE2_HTML, properties);
 
                 new Thread(() -> { // schedule asynchronous reboot

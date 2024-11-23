@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,7 +107,7 @@ public class InputStreamAudioStream extends AudioStream implements SizeableAudio
     }
 
     @Override
-    public long transferTo(@Nullable OutputStream out) throws IOException {
+    public long transferTo(OutputStream out) throws IOException {
         return innerInputStream.transferTo(out);
     }
 

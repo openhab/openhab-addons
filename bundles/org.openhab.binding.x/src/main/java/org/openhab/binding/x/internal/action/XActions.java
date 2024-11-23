@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Scott Hanson - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = XActions.class)
 @ThingActionsScope(name = "x")
 @NonNullByDefault
 public class XActions implements ThingActions {
@@ -38,7 +41,7 @@ public class XActions implements ThingActions {
     private @Nullable XHandler handler;
 
     @RuleAction(label = "@text/sendPostActionLabel", description = "@text/sendPostActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPost(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPost(
             @ActionInput(name = "text") @Nullable String text) {
         if (text == null) {
             logger.warn("Cannot send Post as text is missing.");
@@ -55,7 +58,7 @@ public class XActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendAttachmentPostActionLabel", description = "@text/sendAttachmentPostActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPostWithAttachment(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPostWithAttachment(
             @ActionInput(name = "text") @Nullable String text, @ActionInput(name = "url") @Nullable String urlString) {
         if (text == null) {
             logger.warn("Cannot send Post as text is missing.");
@@ -76,7 +79,7 @@ public class XActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendDirectMessageActionLabel", description = "@text/sendDirectMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendDirectMessage(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendDirectMessage(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "text") @Nullable String text) {
         if (recipient == null) {

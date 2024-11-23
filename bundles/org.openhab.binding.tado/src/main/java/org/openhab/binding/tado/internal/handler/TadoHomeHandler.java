@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,16 +21,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
-import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.HomeApiFactory;
-import org.openhab.binding.tado.internal.api.client.HomeApi;
-import org.openhab.binding.tado.internal.api.model.HomeInfo;
-import org.openhab.binding.tado.internal.api.model.HomePresence;
-import org.openhab.binding.tado.internal.api.model.HomeState;
-import org.openhab.binding.tado.internal.api.model.PresenceState;
-import org.openhab.binding.tado.internal.api.model.User;
-import org.openhab.binding.tado.internal.api.model.UserHomes;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
+import org.openhab.binding.tado.swagger.codegen.api.ApiException;
+import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
+import org.openhab.binding.tado.swagger.codegen.api.model.HomeInfo;
+import org.openhab.binding.tado.swagger.codegen.api.model.HomePresence;
+import org.openhab.binding.tado.swagger.codegen.api.model.HomeState;
+import org.openhab.binding.tado.swagger.codegen.api.model.PresenceState;
+import org.openhab.binding.tado.swagger.codegen.api.model.User;
+import org.openhab.binding.tado.swagger.codegen.api.model.UserHomes;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -124,7 +124,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
 
             // but always make one server call as a 'ping' to confirm we are really still online
             HomeInfo homeInfo = api.showHome(homeId);
-            TemperatureUnit temperatureUnit = org.openhab.binding.tado.internal.api.model.TemperatureUnit.FAHRENHEIT == homeInfo
+            TemperatureUnit temperatureUnit = org.openhab.binding.tado.swagger.codegen.api.model.TemperatureUnit.FAHRENHEIT == homeInfo
                     .getTemperatureUnit() ? TemperatureUnit.FAHRENHEIT : TemperatureUnit.CELSIUS;
             updateProperty(TadoBindingConstants.PROPERTY_HOME_TEMPERATURE_UNIT, temperatureUnit.name());
         } catch (IOException | ApiException e) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,6 +103,30 @@ public class FoscamHandler extends ChannelDuplexHandler {
             }
             if (content.contains("<infraLedState>1</infraLedState>")) {
                 ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, OnOffType.ON);
+            }
+
+            if (content.contains("<humanDetectAlarmState>2</humanDetectAlarmState>")) {
+                ipCameraHandler.motionDetected(CHANNEL_HUMAN_ALARM);
+            } else if (content.contains("<humanDetectAlarmState>1</humanDetectAlarmState>")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_HUMAN_ALARM);
+            }
+
+            if (content.contains("<crossLineDetectAlarmState>2</crossLineDetectAlarmState>")) {
+                ipCameraHandler.motionDetected(CHANNEL_LINE_CROSSING_ALARM);
+            } else if (content.contains("<crossLineDetectAlarmState>1</crossLineDetectAlarmState>")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_LINE_CROSSING_ALARM);
+            }
+
+            if (content.contains("<carDetectAlarmState>2</carDetectAlarmState>")) {
+                ipCameraHandler.motionDetected(CHANNEL_CAR_ALARM);
+            } else if (content.contains("<carDetectAlarmState>1</carDetectAlarmState>")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_CAR_ALARM);
+            }
+
+            if (content.contains("<petDetectAlarmState>2</petDetectAlarmState>")) {
+                ipCameraHandler.motionDetected(CHANNEL_ANIMAL_ALARM);
+            } else if (content.contains("<petDetectAlarmState>1</petDetectAlarmState>")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_ANIMAL_ALARM);
             }
 
             if (content.contains("</CGI_Result>")) {

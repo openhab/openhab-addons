@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import tuwien.auto.calimero.serial.spi.SerialCom;
  * {@literal @}ServiceProvider annotation (biz.aQute.bnd.annotation) automatically creates the file
  * /META-INF/services/tuwien.auto.calimero.serial.spi.SerialCom
  * to register SerialTransportAdapter to the service loader.
- * Additional attributes for SerialTansportAdapter can be specified as well, e.g.
+ * Additional attributes for SerialTransportAdapter can be specified as well, e.g.
  * attribute = { "position=1" }
  * and will be part of MANIFEST.MF
  * 

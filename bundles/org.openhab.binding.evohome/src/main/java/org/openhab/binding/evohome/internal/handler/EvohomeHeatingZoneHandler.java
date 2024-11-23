@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.evohome.internal.handler;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -69,11 +67,11 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
             updateEvohomeThingStatus(ThingStatus.ONLINE);
 
             updateState(EvohomeBindingConstants.ZONE_TEMPERATURE_CHANNEL,
-                    new QuantityType<Temperature>(zoneStatus.getTemperature().getTemperature(), SIUnits.CELSIUS));
+                    new QuantityType<>(zoneStatus.getTemperature().getTemperature(), SIUnits.CELSIUS));
             updateState(EvohomeBindingConstants.ZONE_SET_POINT_STATUS_CHANNEL,
                     new StringType(zoneStatus.getHeatSetpoint().getSetpointMode()));
-            updateState(EvohomeBindingConstants.ZONE_SET_POINT_CHANNEL, new QuantityType<Temperature>(
-                    zoneStatus.getHeatSetpoint().getTargetTemperature(), SIUnits.CELSIUS));
+            updateState(EvohomeBindingConstants.ZONE_SET_POINT_CHANNEL,
+                    new QuantityType<>(zoneStatus.getHeatSetpoint().getTargetTemperature(), SIUnits.CELSIUS));
         }
     }
 

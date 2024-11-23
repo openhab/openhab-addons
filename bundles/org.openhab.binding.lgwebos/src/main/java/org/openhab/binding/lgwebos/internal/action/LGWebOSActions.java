@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +56,7 @@ import com.google.gson.JsonParser;
  * @author Sebastian Prehn - Initial contribution
  * @author Laurent Garnier - new method invokeMethodOf + interface ILGWebOSActions
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = LGWebOSActions.class)
 @ThingActionsScope(name = "lgwebos")
 @NonNullByDefault
 public class LGWebOSActions implements ThingActions {
@@ -223,7 +226,7 @@ public class LGWebOSActions implements ThingActions {
     }
 
     private ResponseListener<TextInputStatusInfo> createTextInputStatusListener() {
-        return new ResponseListener<TextInputStatusInfo>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(@Nullable String error) {
@@ -238,7 +241,7 @@ public class LGWebOSActions implements ThingActions {
     }
 
     private <O> ResponseListener<O> createResponseListener() {
-        return new ResponseListener<O>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(@Nullable String error) {

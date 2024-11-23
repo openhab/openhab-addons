@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.heos.internal.handler;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public class HeosDynamicStateDescriptionProvider extends BaseDynamicStateDescrip
                 .filter(o -> input.equals(o.getLabel())).map(StateOption::getValue).findFirst();
 
         // if no match was found we assume that it already was a value and not a label
-        return optionalValueByLabel.orElse(input);
+        return Objects.requireNonNull(optionalValueByLabel.orElse(input));
     }
 
     public void setFavorites(ChannelUID channelUID, List<BrowseResult> favorites) {

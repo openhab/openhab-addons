@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,7 @@ package org.openhab.binding.lgwebos.internal.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceCommand;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
@@ -48,6 +49,8 @@ import com.google.gson.JsonObject;
  * @author Hyun Kook Khang - Connect SDK initial contribution
  * @author Sebastian Prehn - Adoption for openHAB
  */
+
+@NonNullByDefault
 public class LGWebOSTVKeyboardInput {
 
     private LGWebOSTVSocket service;
@@ -121,7 +124,7 @@ public class LGWebOSTVKeyboardInput {
             payload.addProperty("replace", 0);
         }
 
-        ResponseListener<JsonObject> responseListener = new ResponseListener<JsonObject>() {
+        ResponseListener<JsonObject> responseListener = new ResponseListener<>() {
 
             @Override
             public void onSuccess(JsonObject response) {

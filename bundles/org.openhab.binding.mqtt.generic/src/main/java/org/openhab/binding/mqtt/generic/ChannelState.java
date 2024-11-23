@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,14 +13,12 @@
 package org.openhab.binding.mqtt.generic;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.IllegalFormatException;
-import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,8 +26,12 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -49,16 +51,16 @@ public class ChannelState implements MqttMessageSubscriber {
 
     // Immutable channel configuration
     protected final boolean readOnly;
-    protected final ChannelUID channelUID;
     protected final ChannelConfig config;
 
     /** Channel value **/
     protected final Value cachedValue;
 
     // Runtime variables
+    protected ChannelUID channelUID;
     private @Nullable MqttBrokerConnection connection;
-    protected final List<ChannelStateTransformation> transformationsIn = new ArrayList<>();
-    protected final List<ChannelStateTransformation> transformationsOut = new ArrayList<>();
+    protected final ChannelTransformation incomingTransformation;
+    protected final ChannelTransformation outgoingTransformation;
     private @Nullable ChannelStateUpdateListener channelStateUpdateListener;
     protected boolean hasSubscribed = false;
     private @Nullable ScheduledFuture<?> scheduledFuture;
@@ -76,59 +78,39 @@ public class ChannelState implements MqttMessageSubscriber {
      */
     public ChannelState(ChannelConfig config, ChannelUID channelUID, Value cachedValue,
             @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
+        this(config, channelUID, cachedValue, channelStateUpdateListener,
+                new ChannelTransformation(config.transformationPattern),
+                new ChannelTransformation(config.transformationPatternOut));
+    }
+
+    /**
+     * Creates a new channel state.
+     *
+     * @param config The channel configuration
+     * @param channelUID The channelUID is used for the {@link ChannelStateUpdateListener} to notify about value changes
+     * @param cachedValue MQTT only notifies us once about a value, during the subscribe. The channel state therefore
+     *            needs a cache for the current value.
+     * @param channelStateUpdateListener A channel state update listener
+     * @param incomingTransformation A transformation to apply to incoming values
+     * @param outgoingTransformation A transformation to apply to outgoing values
+     */
+    public ChannelState(ChannelConfig config, ChannelUID channelUID, Value cachedValue,
+            @Nullable ChannelStateUpdateListener channelStateUpdateListener,
+            @Nullable ChannelTransformation incomingTransformation,
+            @Nullable ChannelTransformation outgoingTransformation) {
         this.config = config;
         this.channelStateUpdateListener = channelStateUpdateListener;
         this.channelUID = channelUID;
         this.cachedValue = cachedValue;
         this.readOnly = config.commandTopic.isBlank();
+        this.incomingTransformation = incomingTransformation == null ? new ChannelTransformation((String) null)
+                : incomingTransformation;
+        this.outgoingTransformation = outgoingTransformation == null ? new ChannelTransformation((String) null)
+                : outgoingTransformation;
     }
 
     public boolean isReadOnly() {
         return this.readOnly;
-    }
-
-    /**
-     * Add a transformation that is applied for each received MQTT topic value.
-     * The transformations are executed in order.
-     *
-     * @param transformation A transformation
-     */
-    public void addTransformation(ChannelStateTransformation transformation) {
-        transformationsIn.add(transformation);
-    }
-
-    public void addTransformation(String transformation, TransformationServiceProvider transformationServiceProvider) {
-        parseTransformation(transformation, transformationServiceProvider).forEach(t -> addTransformation(t));
-    }
-
-    /**
-     * Add a transformation that is applied for each value to be published.
-     * The transformations are executed in order.
-     *
-     * @param transformation A transformation
-     */
-    public void addTransformationOut(ChannelStateTransformation transformation) {
-        transformationsOut.add(transformation);
-    }
-
-    public void addTransformationOut(String transformation,
-            TransformationServiceProvider transformationServiceProvider) {
-        parseTransformation(transformation, transformationServiceProvider).forEach(t -> addTransformationOut(t));
-    }
-
-    public static Stream<ChannelStateTransformation> parseTransformation(String transformation,
-            TransformationServiceProvider transformationServiceProvider) {
-        String[] transformations = transformation.split("∩");
-        return Stream.of(transformations).filter(t -> !t.isBlank())
-                .map(t -> new ChannelStateTransformation(t, transformationServiceProvider));
-    }
-
-    /**
-     * Clear transformations
-     */
-    public void clearTransformations() {
-        transformationsIn.clear();
-        transformationsOut.clear();
     }
 
     /**
@@ -148,6 +130,11 @@ public class ChannelState implements MqttMessageSubscriber {
      */
     public ChannelUID channelUID() {
         return channelUID;
+    }
+
+    // If the UID of the channel changed after it was initially created
+    public void setChannelUID(ChannelUID channelUID) {
+        this.channelUID = channelUID;
     }
 
     /**
@@ -173,19 +160,26 @@ public class ChannelState implements MqttMessageSubscriber {
 
         // String value: Apply transformations
         String strValue = new String(payload, StandardCharsets.UTF_8);
-        for (ChannelStateTransformation t : transformationsIn) {
-            String transformedValue = t.processValue(strValue);
-            if (transformedValue != null) {
-                strValue = transformedValue;
-            } else {
-                logger.debug("Transformation '{}' returned null on '{}', discarding message", strValue, t.serviceName);
+        if (incomingTransformation.isPresent()) {
+            Optional<String> transformedValue = incomingTransformation.apply(strValue);
+            if (transformedValue.isEmpty()) {
+                logger.debug("Transformation '{}' returned null on '{}', discarding message", strValue,
+                        incomingTransformation);
                 receivedOrTimeout();
                 return;
             }
+            strValue = transformedValue.get();
         }
 
         // Is trigger?: Special handling
         if (config.trigger) {
+            try {
+                cachedValue.parseMessage(new StringType(strValue));
+            } catch (IllegalArgumentException e) {
+                // invalid value for this trigger; ignore
+                receivedOrTimeout();
+                return;
+            }
             channelStateUpdateListener.triggerChannel(channelUID, strValue);
             receivedOrTimeout();
             return;
@@ -377,17 +371,22 @@ public class ChannelState implements MqttMessageSubscriber {
         }
 
         // Outgoing transformations
-        for (ChannelStateTransformation t : transformationsOut) {
-            String commandString = mqttFormatter.getMQTTpublishValue(mqttCommandValue, null);
-            String transformedValue = t.processValue(commandString);
-            if (transformedValue != null) {
-                mqttFormatter = new TextValue();
-                mqttCommandValue = new StringType(transformedValue);
-            } else {
-                logger.debug("Transformation '{}' returned null on '{}', discarding message", mqttCommandValue,
-                        t.serviceName);
+        if (outgoingTransformation.isPresent()) {
+            Command cValue = mqttCommandValue;
+            // Only pass numeric value for QuantityType.
+            if (mqttCommandValue instanceof QuantityType<?> qtCommandValue) {
+                cValue = new DecimalType(qtCommandValue.toBigDecimal());
+            }
+            String commandString = mqttFormatter.getMQTTpublishValue(cValue, "%s");
+            Optional<String> transformedValue = outgoingTransformation.apply(commandString);
+            if (transformedValue.isEmpty()) {
+                logger.debug("Transformation '{}' returned null on '{}', discarding message", outgoingTransformation,
+                        commandString);
                 return CompletableFuture.completedFuture(false);
             }
+
+            mqttFormatter = new TextValue();
+            mqttCommandValue = new StringType(transformedValue.get());
         }
 
         String commandString;
@@ -395,7 +394,13 @@ public class ChannelState implements MqttMessageSubscriber {
         // Formatter: Applied before the channel state value is published to the MQTT broker.
         if (config.formatBeforePublish.length() > 0) {
             try {
-                commandString = mqttFormatter.getMQTTpublishValue(mqttCommandValue, config.formatBeforePublish);
+                Command cValue = mqttCommandValue;
+                // Only pass numeric value for QuantityType of format pattern is %s.
+                if ((mqttCommandValue instanceof QuantityType<?> qtCommandValue)
+                        && ("%s".equals(config.formatBeforePublish) || "%S".equals(config.formatBeforePublish))) {
+                    cValue = new DecimalType(qtCommandValue.toBigDecimal());
+                }
+                commandString = mqttFormatter.getMQTTpublishValue(cValue, config.formatBeforePublish);
             } catch (IllegalFormatException e) {
                 logger.debug("Format pattern incorrect for {}", channelUID, e);
                 commandString = mqttFormatter.getMQTTpublishValue(mqttCommandValue, null);
@@ -406,7 +411,13 @@ public class ChannelState implements MqttMessageSubscriber {
 
         int qos = (config.qos != null) ? config.qos : connection.getQos();
 
-        return connection.publish(config.commandTopic, commandString.getBytes(), qos, config.retained);
+        String commandTopic;
+        if (command.equals(StopMoveType.STOP) && !config.stopCommandTopic.isEmpty()) {
+            commandTopic = config.stopCommandTopic;
+        } else {
+            commandTopic = config.commandTopic;
+        }
+        return connection.publish(commandTopic, commandString.getBytes(), qos, config.retained);
     }
 
     /**

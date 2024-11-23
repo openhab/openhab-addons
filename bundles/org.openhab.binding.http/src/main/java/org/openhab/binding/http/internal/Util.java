@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -34,8 +36,10 @@ import org.eclipse.jetty.http.HttpField;
 @NonNullByDefault
 public class Util {
 
+    public static final Pattern FORMAT_REPLACE_PATTERN = Pattern.compile("%\\d\\$[^%]+");
+
     /**
-     * create a log string from a {@link org.eclipse.jetty.client.api.Request}
+     * Create a log string from a {@link org.eclipse.jetty.client.api.Request}
      *
      * @param request the request to log
      * @return the string representing the request
@@ -51,16 +55,33 @@ public class Util {
     }
 
     /**
-     * create an URI from a string, escaping all necessary characters
+     * Create a URI from a string, escaping all necessary characters
      *
      * @param s the URI as unescaped string
-     * @return URI correspondign to the input string
-     * @throws MalformedURLException
-     * @throws URISyntaxException
+     * @return URI corresponding to the input string
+     * @throws MalformedURLException if parameter is not a URL
+     * @throws URISyntaxException if parameter could not be converted to a URI
      */
     public static URI uriFromString(String s) throws MalformedURLException, URISyntaxException {
         URL url = new URL(s);
-        return new URI(url.getProtocol(), url.getUserInfo(), IDN.toASCII(url.getHost()), url.getPort(), url.getPath(),
-                url.getQuery(), url.getRef());
+        URI uri = new URI(url.getProtocol(), url.getUserInfo(), IDN.toASCII(url.getHost()), url.getPort(),
+                url.getPath(), url.getQuery(), url.getRef());
+        return URI.create(uri.toASCIIString().replace("+", "%2B").replace("%25%25", "%"));
+    }
+
+    /**
+     * Format a string using {@link String#format(String, Object...)} but allow non-format percent characters
+     *
+     * The {@param inputString} is checked for format patterns ({@code %<index>$<format>}) and passes only those to the
+     * {@link String#format(String, Object...)} method. This avoids format errors due to other percent characters in the
+     * string.
+     *
+     * @param inputString the input string, potentially containing format instructions
+     * @param params an array of parameters to be passed to the splitted input string
+     * @return the formatted string
+     */
+    public static String wrappedStringFormat(String inputString, Object... params) {
+        Matcher replaceMatcher = FORMAT_REPLACE_PATTERN.matcher(inputString);
+        return replaceMatcher.replaceAll(matchResult -> String.format(matchResult.group(), params));
     }
 }

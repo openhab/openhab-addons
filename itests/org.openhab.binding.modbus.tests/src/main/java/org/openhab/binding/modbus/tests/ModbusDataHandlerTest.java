@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -499,8 +499,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
             assertNull(bits);
             assertNull(registers);
             assertNotNull(error);
-            AsyncModbusFailure<ModbusReadRequestBlueprint> result = new AsyncModbusFailure<ModbusReadRequestBlueprint>(
-                    request, error);
+            AsyncModbusFailure<ModbusReadRequestBlueprint> result = new AsyncModbusFailure<>(request, error);
             dataHandler.handleReadError(result);
         }
         return dataHandler;
@@ -551,7 +550,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataHandler.handleCommand(new ChannelUID(dataHandler.getThing().getUID(), channel), command);
 
         if (error != null) {
-            dataHandler.handleReadError(new AsyncModbusFailure<ModbusReadRequestBlueprint>(request, error));
+            dataHandler.handleReadError(new AsyncModbusFailure<>(request, error));
         } else {
             ModbusResponse resp = new ModbusResponse() {
 

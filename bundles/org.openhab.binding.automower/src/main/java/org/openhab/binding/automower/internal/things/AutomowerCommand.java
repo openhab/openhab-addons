@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,12 +25,12 @@ import org.openhab.core.thing.ChannelUID;
  */
 @NonNullByDefault
 public enum AutomowerCommand {
-    START("Start", "mower#start"),
-    RESUME_SCHEDULE("ResumeSchedule", "mower#resume_schedule"),
-    PAUSE("Pause", "mower#pause"),
-    PARK("Park", "mower#park"),
-    PARK_UNTIL_NEXT_SCHEDULE("ParkUntilNextSchedule", "mower#park_until_next_schedule"),
-    PARK_UNTIL_FURTHER_NOTICE("ParkUntilFurtherNotice", "mower#park_until_further_notice");
+    START("Start", "start"),
+    RESUME_SCHEDULE("ResumeSchedule", "resume_schedule"),
+    PAUSE("Pause", "pause"),
+    PARK("Park", "park"),
+    PARK_UNTIL_NEXT_SCHEDULE("ParkUntilNextSchedule", "park_until_next_schedule"),
+    PARK_UNTIL_FURTHER_NOTICE("ParkUntilFurtherNotice", "park_until_further_notice");
 
     private static final Map<String, AutomowerCommand> CHANNEL_TO_CMD_MAP = new HashMap<>();
 

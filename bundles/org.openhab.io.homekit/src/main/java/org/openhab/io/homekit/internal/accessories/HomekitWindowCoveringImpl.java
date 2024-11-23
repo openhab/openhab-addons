@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,10 +17,12 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.WindowCoveringAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.windowcovering.PositionStateEnum;
 import io.github.hapjava.services.impl.WindowCoveringService;
@@ -33,9 +35,15 @@ import io.github.hapjava.services.impl.WindowCoveringService;
 public class HomekitWindowCoveringImpl extends AbstractHomekitPositionAccessoryImpl implements WindowCoveringAccessory {
 
     public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
-        getServices().add(new WindowCoveringService(this));
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new WindowCoveringService(this));
     }
 
     @Override

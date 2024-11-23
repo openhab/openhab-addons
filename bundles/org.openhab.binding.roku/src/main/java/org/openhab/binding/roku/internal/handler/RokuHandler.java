@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -114,6 +114,7 @@ public class RokuHandler extends BaseThingHandler {
             thing.setProperty(PROPERTY_SERIAL_NUMBER, deviceInfo.getSerialNumber());
             thing.setProperty(PROPERTY_DEVICE_ID, deviceInfo.getDeviceId());
             thing.setProperty(PROPERTY_SOFTWARE_VERSION, deviceInfo.getSoftwareVersion());
+            thing.setProperty(PROPERTY_UUID, deviceInfo.getSerialNumber().toLowerCase());
             updateStatus(ThingStatus.ONLINE);
         } catch (RokuHttpException e) {
             logger.debug("Unable to retrieve Roku device-info. Exception: {}", e.getMessage(), e);

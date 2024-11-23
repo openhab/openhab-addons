@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,7 +126,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_COLOR_STR)
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR)
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR) || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR)
-                || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)) {
+                || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
+                || thingType.equals(THING_TYPE_SHELLYPLUSRGBWPM_STR)) {
             logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyLightHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);

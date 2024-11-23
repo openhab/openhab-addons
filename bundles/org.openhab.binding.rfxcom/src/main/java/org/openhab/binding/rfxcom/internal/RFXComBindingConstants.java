@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -207,7 +207,7 @@ public class RFXComBindingConstants {
      * Map RFXCOM packet types to RFXCOM Thing types and vice versa.
      */
     public static final Map<PacketType, ThingTypeUID> PACKET_TYPE_THING_TYPE_UID_MAP = Collections
-            .unmodifiableMap(new HashMap<PacketType, ThingTypeUID>() {
+            .unmodifiableMap(new HashMap<>() {
                 {
                     put(PacketType.BAROMETRIC, RFXComBindingConstants.THING_TYPE_BAROMETRIC);
                     put(PacketType.BBQ, RFXComBindingConstants.THING_TYPE_BBQ_TEMPERATURE);

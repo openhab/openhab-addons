@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -759,6 +759,18 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     public void commandSwitchAlarm(final String deviceId, final boolean alarmState) {
         executeCommand(deviceId, CapabilityDTO.TYPE_ALARMACTUATOR,
                 (capabilityId) -> client.setAlarmActuatorState(capabilityId, alarmState));
+    }
+
+    /**
+     * Sends the command to turn the siren of the {@link DeviceDTO} with the given id on or off. Is called by the
+     * {@link LivisiDeviceHandler} for siren {@link DeviceDTO}s like SIR.
+     *
+     * @param deviceId device id
+     * @param sirenState siren state (boolean)
+     */
+    public void commandSwitchSiren(final String deviceId, final String sirenState) {
+        executeCommand(deviceId, CapabilityDTO.TYPE_SIRENACTUATOR,
+                (capabilityId) -> client.setSirenActuatorState(capabilityId, sirenState));
     }
 
     /**

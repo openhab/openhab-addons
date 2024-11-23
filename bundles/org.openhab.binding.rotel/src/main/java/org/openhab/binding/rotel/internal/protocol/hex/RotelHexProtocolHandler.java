@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.rotel.internal.RotelBindingConstants.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +25,7 @@ import org.openhab.binding.rotel.internal.RotelException;
 import org.openhab.binding.rotel.internal.RotelModel;
 import org.openhab.binding.rotel.internal.communication.RotelCommand;
 import org.openhab.binding.rotel.internal.communication.RotelDsp;
+import org.openhab.binding.rotel.internal.communication.RotelFlagInfoType;
 import org.openhab.binding.rotel.internal.communication.RotelFlagsMapping;
 import org.openhab.binding.rotel.internal.communication.RotelSource;
 import org.openhab.binding.rotel.internal.protocol.RotelAbstractProtocolHandler;
@@ -93,10 +95,16 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
     private static final String KEY_HEX_BYPASS = "bypass";
     private static final String KEY1_HEX_ZONE2 = "zone ";
     private static final String KEY2_HEX_ZONE2 = "zone2 ";
+    private static final String KEY3_HEX_ZONE2 = "z2 ";
     private static final String KEY_HEX_ZONE3 = "zone3 ";
+    private static final String KEY2_HEX_ZONE3 = "z3 ";
     private static final String KEY_HEX_ZONE4 = "zone4 ";
+    private static final String KEY2_HEX_ZONE4 = "z4 ";
     private static final String KEY_HEX_RECORD = "rec ";
     private static final String SOURCE = "source";
+
+    private static final Pattern PATTERN_TUNER_FREQ_FM = Pattern.compile("\\d{2,3}[\\.,]\\d{1,2}M.*");
+    private static final Pattern PATTERN_TUNER_FREQ_AM = Pattern.compile("\\d{3,4}K.*");
 
     private final Logger logger = LoggerFactory.getLogger(RotelHexProtocolHandler.class);
 
@@ -325,25 +333,59 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
                 }
             }
         }
-        try {
-            dispatchKeyValue(KEY_POWER_ZONE2, model.isZone2On(flags) ? POWER_ON : STANDBY);
-        } catch (RotelException e1) {
-            // Can't get zone power information from flags data, so we just do not notify of this information that way
+        if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE2)) {
+            try {
+                dispatchKeyValue(KEY_POWER_ZONE2,
+                        model.isInfoOnInFlags(RotelFlagInfoType.ZONE2, flags) ? POWER_ON : STANDBY);
+            } catch (RotelException e1) {
+                // Ignore it
+            }
         }
-        try {
-            dispatchKeyValue(KEY_POWER_ZONE3, model.isZone3On(flags) ? POWER_ON : STANDBY);
-        } catch (RotelException e1) {
-            // Can't get zone power information from flags data, so we just do not notify of this information that way
+        if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE3)) {
+            try {
+                dispatchKeyValue(KEY_POWER_ZONE3,
+                        model.isInfoOnInFlags(RotelFlagInfoType.ZONE3, flags) ? POWER_ON : STANDBY);
+            } catch (RotelException e1) {
+                // Ignore it
+            }
         }
-        try {
-            dispatchKeyValue(KEY_POWER_ZONE4, model.isZone4On(flags) ? POWER_ON : STANDBY);
-        } catch (RotelException e1) {
-            // Can't get zone power information from flags data, so we just do not notify of this information that way
+        if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE4)) {
+            try {
+                dispatchKeyValue(KEY_POWER_ZONE4,
+                        model.isInfoOnInFlags(RotelFlagInfoType.ZONE4, flags) ? POWER_ON : STANDBY);
+            } catch (RotelException e1) {
+                // Ignore it
+            }
+        }
+        if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE)) {
+            try {
+                dispatchKeyValue(KEY_POWER_ZONES,
+                        model.isInfoOnInFlags(RotelFlagInfoType.ZONE, flags) ? POWER_ON : STANDBY);
+            } catch (RotelException e1) {
+                // Ignore it
+            }
+        }
+        if (model.isInfoPresentInFlags(RotelFlagInfoType.SPEAKER_A)
+                && model.isInfoPresentInFlags(RotelFlagInfoType.SPEAKER_B)) {
+            try {
+                String speakerValue = MSG_VALUE_OFF;
+                if (model.isInfoOnInFlags(RotelFlagInfoType.SPEAKER_A, flags)
+                        && model.isInfoOnInFlags(RotelFlagInfoType.SPEAKER_B, flags)) {
+                    speakerValue = MSG_VALUE_SPEAKER_AB;
+                } else if (model.isInfoOnInFlags(RotelFlagInfoType.SPEAKER_A, flags)) {
+                    speakerValue = MSG_VALUE_SPEAKER_A;
+                } else if (model.isInfoOnInFlags(RotelFlagInfoType.SPEAKER_B, flags)) {
+                    speakerValue = MSG_VALUE_SPEAKER_B;
+                }
+                dispatchKeyValue(KEY_SPEAKER, speakerValue);
+            } catch (RotelException e1) {
+                // Ignore it
+            }
         }
         boolean checkMultiIn = false;
         boolean checkSource = true;
         try {
-            if (model.isMultiInputOn(flags)) {
+            if (model.isInfoOnInFlags(RotelFlagInfoType.MULTI_INPUT, flags)) {
                 checkSource = false;
                 try {
                     RotelSource source = model.getSourceFromName(RotelSource.CAT1_MULTI.getName());
@@ -373,8 +415,9 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
 
         String valueLowerCase = value.trim().toLowerCase();
         if (!valueLowerCase.isEmpty() && !valueLowerCase.startsWith(KEY1_HEX_ZONE2)
-                && !valueLowerCase.startsWith(KEY2_HEX_ZONE2) && !valueLowerCase.startsWith(KEY_HEX_ZONE3)
-                && !valueLowerCase.startsWith(KEY_HEX_ZONE4)) {
+                && !valueLowerCase.startsWith(KEY2_HEX_ZONE2) && !valueLowerCase.startsWith(KEY3_HEX_ZONE2)
+                && !valueLowerCase.startsWith(KEY_HEX_ZONE3) && !valueLowerCase.startsWith(KEY2_HEX_ZONE3)
+                && !valueLowerCase.startsWith(KEY_HEX_ZONE4) && !valueLowerCase.startsWith(KEY2_HEX_ZONE4)) {
             dispatchKeyValue(KEY_POWER, POWER_ON);
         }
 
@@ -384,12 +427,12 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
             // Line 1 left
             value = new String(incomingMessage, idxChars, 14, StandardCharsets.US_ASCII);
             logger.debug("handleValidHexMessage: line 1 left *{}*", value);
-            parseText(value, checkSource, checkMultiIn, false, false, false, false, false, true);
+            parseText(value, checkSource, checkMultiIn, false, false, false, false, false, false, true, false);
 
             // Line 1 right
             value = new String(incomingMessage, idxChars + 14, 7, StandardCharsets.US_ASCII);
             logger.debug("handleValidHexMessage: line 1 right *{}*", value);
-            parseText(value, false, false, false, false, false, false, false, true);
+            parseText(value, false, false, false, false, false, false, false, false, true, false);
 
             // Full line 1
             value = new String(incomingMessage, idxChars, 21, StandardCharsets.US_ASCII);
@@ -398,16 +441,18 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
             // Line 2 right
             value = new String(incomingMessage, idxChars + 35, 7, StandardCharsets.US_ASCII);
             logger.debug("handleValidHexMessage: line 2 right *{}*", value);
-            parseText(value, false, false, false, false, false, false, false, true);
+            parseText(value, false, false, false, false, false, false, false, false, true, false);
 
             // Full line 2
             value = new String(incomingMessage, idxChars + 21, 21, StandardCharsets.US_ASCII);
             logger.debug("handleValidHexMessage: line 2 *{}*", value);
-            parseText(value, false, false, true, true, false, true, true, true);
+            parseText(value, false, false, true, true, false, false, true, true, true, false);
             dispatchKeyValue(KEY_LINE2, value);
         } else {
             value = new String(incomingMessage, idxChars, model.getRespNbChars(), StandardCharsets.US_ASCII);
-            parseText(value, checkSource, checkMultiIn, true, false, true, true, checkStereo, false);
+            parseText(value, checkSource, checkMultiIn, true, model.getRespNbChars() == 11,
+                    model.getRespNbChars() != 11, model.getRespNbChars() == 11, model.hasDspControl(), checkStereo,
+                    false, model.getRespNbChars() == 11);
             dispatchKeyValue(KEY_LINE1, value);
         }
 
@@ -424,25 +469,28 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
      * @param searchMultiIn true if MULTI IN indication has to be searched in the text
      * @param searchZone true if a zone information has to be searched in the text
      * @param searchRecord true if a record source has to be searched in the text
-     * @param searchRecordAfterSource true if a record source has to be searched in the text after the a found source
+     * @param searchRecordAfterSource true if a record source has to be searched in the text after the found source
+     * @param searchVolumeAfterSource true if a volume value has to be searched in the text after the found source
      * @param searchDsp true if a DSP mode has to be searched in the text
      * @param searchStereo true if a STEREO has to be considered in the search
      * @param multipleInfo true if source and volume/mute are provided separately
+     * @param searchTunerFreq true if a tuner frequency has to be searched in the text
      */
     private void parseText(String text, boolean searchSource, boolean searchMultiIn, boolean searchZone,
-            boolean searchRecord, boolean searchRecordAfterSource, boolean searchDsp, boolean searchStereo,
-            boolean multipleInfo) {
+            boolean searchRecord, boolean searchRecordAfterSource, boolean searchVolumeAfterSource, boolean searchDsp,
+            boolean searchStereo, boolean multipleInfo, boolean searchTunerFreq) {
         String value = text.trim();
         String valueLowerCase = value.toLowerCase();
         if (searchRecord) {
             dispatchKeyValue(KEY_RECORD_SEL, valueLowerCase.startsWith(KEY_HEX_RECORD) ? MSG_VALUE_ON : MSG_VALUE_OFF);
         }
         if (searchZone) {
-            if (valueLowerCase.startsWith(KEY1_HEX_ZONE2) || valueLowerCase.startsWith(KEY2_HEX_ZONE2)) {
+            if (valueLowerCase.startsWith(KEY1_HEX_ZONE2) || valueLowerCase.startsWith(KEY2_HEX_ZONE2)
+                    || valueLowerCase.startsWith(KEY3_HEX_ZONE2)) {
                 dispatchKeyValue(KEY_ZONE, "2");
-            } else if (valueLowerCase.startsWith(KEY_HEX_ZONE3)) {
+            } else if (valueLowerCase.startsWith(KEY_HEX_ZONE3) || valueLowerCase.startsWith(KEY2_HEX_ZONE3)) {
                 dispatchKeyValue(KEY_ZONE, "3");
-            } else if (valueLowerCase.startsWith(KEY_HEX_ZONE4)) {
+            } else if (valueLowerCase.startsWith(KEY_HEX_ZONE4) || valueLowerCase.startsWith(KEY2_HEX_ZONE4)) {
                 dispatchKeyValue(KEY_ZONE, "4");
             } else {
                 dispatchKeyValue(KEY_ZONE, "1");
@@ -555,19 +603,41 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
         } else if (searchDsp && valueLowerCase.startsWith(KEY_HEX_MPEG)) {
             logger.debug("MPEG");
             dispatchKeyValue(KEY_DSP_MODE, RotelDsp.CAT4_NONE.getFeedback());
-        } else if (searchZone
-                && (valueLowerCase.startsWith(KEY1_HEX_ZONE2) || valueLowerCase.startsWith(KEY2_HEX_ZONE2))) {
-            value = value.substring(
-                    valueLowerCase.startsWith(KEY1_HEX_ZONE2) ? KEY1_HEX_ZONE2.length() : KEY2_HEX_ZONE2.length());
-            parseZone2(value, multipleInfo);
+        } else if (searchZone && valueLowerCase.startsWith(KEY1_HEX_ZONE2)) {
+            parseZone2(value.substring(KEY1_HEX_ZONE2.length()), multipleInfo);
+        } else if (searchZone && valueLowerCase.startsWith(KEY2_HEX_ZONE2)) {
+            parseZone2(value.substring(KEY2_HEX_ZONE2.length()), multipleInfo);
+        } else if (searchZone && valueLowerCase.startsWith(KEY3_HEX_ZONE2)) {
+            parseZone2(value.substring(KEY3_HEX_ZONE2.length()), multipleInfo);
         } else if (searchZone && valueLowerCase.startsWith(KEY_HEX_ZONE3)) {
             parseZone3(value.substring(KEY_HEX_ZONE3.length()), multipleInfo);
+        } else if (searchZone && valueLowerCase.startsWith(KEY2_HEX_ZONE3)) {
+            parseZone3(value.substring(KEY2_HEX_ZONE3.length()), multipleInfo);
         } else if (searchZone && valueLowerCase.startsWith(KEY_HEX_ZONE4)) {
             parseZone4(value.substring(KEY_HEX_ZONE4.length()), multipleInfo);
+        } else if (searchZone && valueLowerCase.startsWith(KEY2_HEX_ZONE4)) {
+            parseZone4(value.substring(KEY2_HEX_ZONE4.length()), multipleInfo);
         } else if (searchRecord && valueLowerCase.startsWith(KEY_HEX_RECORD)) {
             parseRecord(value.substring(KEY_HEX_RECORD.length()));
-        } else if (searchSource || searchRecordAfterSource) {
-            parseSourceAndRecord(value, searchSource, searchRecordAfterSource, multipleInfo);
+        } else if (searchSource && searchTunerFreq
+                && (PATTERN_TUNER_FREQ_FM.matcher(value).matches() || PATTERN_TUNER_FREQ_AM.matcher(value).matches())) {
+            try {
+                RotelSource source = model.getSourceFromName("TUNER");
+                RotelCommand cmd = source.getCommand();
+                if (cmd != null) {
+                    String value2 = cmd.getAsciiCommandV2();
+                    if (value2 != null) {
+                        dispatchKeyValue(KEY_SOURCE, value2);
+                        if (!multipleInfo) {
+                            dispatchKeyValue(KEY_MUTE, MSG_VALUE_OFF);
+                        }
+                    }
+                }
+            } catch (RotelException e) {
+                // Ignore it, no tuner source found for this model
+            }
+        } else if (searchSource || searchRecordAfterSource || searchVolumeAfterSource) {
+            parseSourceAndOther(value, searchSource, searchRecordAfterSource, searchVolumeAfterSource, multipleInfo);
         }
     }
 
@@ -603,8 +673,8 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
         return source;
     }
 
-    private void parseSourceAndRecord(String text, boolean searchSource, boolean searchRecordAfterSource,
-            boolean multipleInfo) {
+    private void parseSourceAndOther(String text, boolean searchSource, boolean searchRecordAfterSource,
+            boolean searchVolumeAfterSource, boolean multipleInfo) {
         RotelSource source = parseSource(text, false);
         if (source != null) {
             if (searchSource) {
@@ -616,6 +686,16 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
                         if (!multipleInfo) {
                             dispatchKeyValue(KEY_MUTE, MSG_VALUE_OFF);
                         }
+                    }
+                }
+            }
+
+            if (searchVolumeAfterSource) {
+                String value = extractNumber(text, getSourceLabel(source).length());
+                if (!value.isEmpty()) {
+                    dispatchKeyValue(KEY_VOLUME, value);
+                    if (!searchSource && !multipleInfo) {
+                        dispatchKeyValue(KEY_MUTE, MSG_VALUE_OFF);
                     }
                 }
             }
@@ -659,6 +739,9 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
 
     private void parseZone2(String text, boolean multipleInfo) {
         String value = text.trim();
+        if (!model.isInfoPresentInFlags(RotelFlagInfoType.ZONE2)) {
+            dispatchKeyValue(KEY_POWER_ZONE2, MSG_VALUE_OFF.equalsIgnoreCase(value) ? STANDBY : MSG_VALUE_ON);
+        }
         String valueLowerCase = value.toLowerCase();
         if (valueLowerCase.startsWith(KEY1_HEX_VOLUME) || valueLowerCase.startsWith(KEY2_HEX_VOLUME)) {
             value = extractNumber(value,
@@ -693,6 +776,9 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
 
     private void parseZone3(String text, boolean multipleInfo) {
         String value = text.trim();
+        if (!model.isInfoPresentInFlags(RotelFlagInfoType.ZONE3)) {
+            dispatchKeyValue(KEY_POWER_ZONE3, MSG_VALUE_OFF.equalsIgnoreCase(value) ? STANDBY : MSG_VALUE_ON);
+        }
         String valueLowerCase = value.toLowerCase();
         if (valueLowerCase.startsWith(KEY1_HEX_VOLUME) || valueLowerCase.startsWith(KEY2_HEX_VOLUME)) {
             value = extractNumber(value,
@@ -727,6 +813,9 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
 
     private void parseZone4(String text, boolean multipleInfo) {
         String value = text.trim();
+        if (!model.isInfoPresentInFlags(RotelFlagInfoType.ZONE4)) {
+            dispatchKeyValue(KEY_POWER_ZONE4, MSG_VALUE_OFF.equalsIgnoreCase(value) ? STANDBY : MSG_VALUE_ON);
+        }
         String valueLowerCase = value.toLowerCase();
         if (valueLowerCase.startsWith(KEY1_HEX_VOLUME) || valueLowerCase.startsWith(KEY2_HEX_VOLUME)) {
             value = extractNumber(value,

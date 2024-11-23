@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,7 +74,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeHandler.class);
     private final SerialPortManager serialPortManager;
-    private final Map<String, String> cache = new HashMap<String, String>();
+    private final Map<String, String> cache = new HashMap<>();
 
     protected final HttpClient httpClient;
     protected final Unit<Time> apiSecondUnit = Units.SECOND;
@@ -89,6 +89,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     protected int metaRuntimeMultiple = 1;
     protected int volume = 0;
     protected boolean volumeEnabled = false;
+    protected boolean volumeBasicEnabled = false;
     protected boolean isMuted = false;
     protected boolean isLoadHighlightedDetails = false;
     protected boolean isLoadAlbumDetails = false;
@@ -162,6 +163,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             this.volume = config.initialVolume;
             this.updateState(VOLUME, new PercentType(this.volume));
             this.updateState(MUTE, OnOffType.OFF);
+        } else if (config.volumeBasicEnabled) {
+            this.volumeBasicEnabled = true;
         }
 
         if (serialPort != null) {
@@ -254,6 +257,9 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     case CONTROL:
                     case MUSIC_CONTROL:
                         handleControlCommand(command);
+                        break;
+                    case CHANNEL_TYPE_SENDCMD:
+                        connector.sendCommand(command.toString());
                         break;
                     default:
                         logger.debug("Command {} from channel {} failed: unexpected command", command, channel);
@@ -494,6 +500,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             case TITLE_NUM:
             case TITLE_LENGTH:
             case TITLE_LOC:
+            case ENDTIME:
             case CHAPTER_NUM:
             case CHAPTER_LENGTH:
             case CHAPTER_LOC:
@@ -559,6 +566,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             case MUSIC_TRACK:
             case MUSIC_ARTIST:
             case MUSIC_ALBUM:
+            case MUSIC_TITLE_RAW:
             case MUSIC_TRACK_HANDLE:
             case MUSIC_ALBUM_HANDLE:
             case MUSIC_NOWPLAY_HANDLE:

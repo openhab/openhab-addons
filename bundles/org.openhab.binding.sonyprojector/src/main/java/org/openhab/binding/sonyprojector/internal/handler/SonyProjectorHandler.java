@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.sonyprojector.internal.handler;
 
 import static org.openhab.binding.sonyprojector.internal.SonyProjectorBindingConstants.*;
+import static org.openhab.binding.sonyprojector.internal.configuration.SonyProjectorEthernetConfiguration.MODEL_AUTO;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -67,7 +68,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SonyProjectorHandler extends BaseThingHandler {
 
-    private static final SonyProjectorModel DEFAULT_MODEL = SonyProjectorModel.VW520;
+    public static final SonyProjectorModel DEFAULT_MODEL = SonyProjectorModel.VW528;
     private static final long POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(15);
 
     private final Logger logger = LoggerFactory.getLogger(SonyProjectorHandler.class);
@@ -83,6 +84,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
+    private boolean identifyMac;
     private boolean identifyProjector;
     private SonyProjectorModel projectorModel = DEFAULT_MODEL;
     private SonyProjectorConnector connector = new SonyProjectorSdcpSimuConnector(DEFAULT_MODEL);
@@ -321,10 +323,13 @@ public class SonyProjectorHandler extends BaseThingHandler {
             logger.debug("Ethernet config port {}", config.port);
             logger.debug("Ethernet config model {}", configModel);
             logger.debug("Ethernet config community {}", config.community);
-            if (config.host == null || config.host.isEmpty()) {
+            if (config.host.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-host");
-            } else if (configModel == null || configModel.isEmpty()) {
+            } else if (config.port <= 0) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.config-error-invalid-port");
+            } else if (configModel.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-model");
             } else {
@@ -332,8 +337,9 @@ public class SonyProjectorHandler extends BaseThingHandler {
 
                 connector = simu ? new SonyProjectorSdcpSimuConnector(DEFAULT_MODEL)
                         : new SonyProjectorSdcpConnector(config.host, config.port, config.community, DEFAULT_MODEL);
-                identifyProjector = "AUTO".equals(configModel);
-                projectorModel = switchToModel("AUTO".equals(configModel) ? null : configModel, true);
+                identifyMac = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS) == null;
+                identifyProjector = MODEL_AUTO.equals(configModel);
+                projectorModel = switchToModel(identifyProjector ? null : configModel, true);
 
                 updateStatus(ThingStatus.UNKNOWN);
             }
@@ -342,13 +348,13 @@ public class SonyProjectorHandler extends BaseThingHandler {
             String configModel = config.model;
             logger.debug("Serial config port {}", config.port);
             logger.debug("Serial config model {}", configModel);
-            if (config.port == null || config.port.isEmpty()) {
+            if (config.port.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-port");
             } else if (config.port.toLowerCase().startsWith("rfc2217")) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-invalid-thing-type");
-            } else if (configModel == null || configModel.isEmpty()) {
+            } else if (configModel.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-model");
             } else {
@@ -356,6 +362,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
 
                 connector = simu ? new SonyProjectorSerialSimuConnector(serialPortManager, DEFAULT_MODEL)
                         : new SonyProjectorSerialConnector(serialPortManager, config.port, DEFAULT_MODEL);
+                identifyMac = false;
                 identifyProjector = false;
                 projectorModel = switchToModel(configModel, true);
 
@@ -367,16 +374,13 @@ public class SonyProjectorHandler extends BaseThingHandler {
             logger.debug("Serial over IP config host {}", config.host);
             logger.debug("Serial over IP config port {}", config.port);
             logger.debug("Serial over IP config model {}", configModel);
-            if (config.host == null || config.host.isEmpty()) {
+            if (config.host.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-host");
-            } else if (config.port == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-unknown-port");
             } else if (config.port <= 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-invalid-port");
-            } else if (configModel == null || configModel.isEmpty()) {
+            } else if (configModel.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-model");
             } else {
@@ -385,6 +389,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
                 connector = simu ? new SonyProjectorSerialSimuConnector(serialPortManager, DEFAULT_MODEL)
                         : new SonyProjectorSerialOverIpConnector(serialPortManager, config.host, config.port,
                                 DEFAULT_MODEL);
+                identifyMac = false;
                 identifyProjector = false;
                 projectorModel = switchToModel(configModel, true);
 
@@ -432,6 +437,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
 
             boolean isOn = refreshPowerState();
             refreshModel();
+            refreshMacAddress();
             refreshChannel(CHANNEL_INPUT, isOn);
             refreshChannel(CHANNEL_CALIBRATION_PRESET, isOn);
             refreshChannel(CHANNEL_CONTRAST, isOn);
@@ -535,6 +541,19 @@ public class SonyProjectorHandler extends BaseThingHandler {
                             model.getCalibrPresetCommandOptions(), model.getAspectCommandOptions()));
         }
         return model;
+    }
+
+    private void refreshMacAddress() {
+        if (identifyMac && getThing().getThingTypeUID().equals(THING_TYPE_ETHERNET)) {
+            try {
+                String mac = ((SonyProjectorSdcpConnector) connector).getMacAddress();
+                logger.debug("getMacAddress returned {}", mac);
+                getThing().setProperty(Thing.PROPERTY_MAC_ADDRESS, mac);
+                identifyMac = false;
+            } catch (SonyProjectorException e) {
+                logger.debug("getMacAddress failed: {}", e.getMessage());
+            }
+        }
     }
 
     private boolean refreshPowerState() {

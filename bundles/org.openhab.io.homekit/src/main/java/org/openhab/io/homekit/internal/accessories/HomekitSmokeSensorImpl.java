@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,10 +19,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.SmokeSensorAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.smokesensor.SmokeDetectedStateEnum;
 import io.github.hapjava.services.impl.SmokeSensorService;
@@ -32,13 +34,19 @@ import io.github.hapjava.services.impl.SmokeSensorService;
  * @author Cody Cutrer - Initial contribution
  */
 public class HomekitSmokeSensorImpl extends AbstractHomekitAccessoryImpl implements SmokeSensorAccessory {
-    private final Map<SmokeDetectedStateEnum, String> mapping;
+    private final Map<SmokeDetectedStateEnum, Object> mapping;
 
     public HomekitSmokeSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         mapping = createMapping(SMOKE_DETECTED_STATE, SmokeDetectedStateEnum.class);
-        this.getServices().add(new SmokeSensorService(this));
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new SmokeSensorService(this));
     }
 
     @Override

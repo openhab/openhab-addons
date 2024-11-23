@@ -21,18 +21,19 @@
 			<label>MQTT Command Topic</label>
 			<description>An MQTT topic that this thing will send a command to. If not set, this will be a read-only switch.</description>
 		</parameter>
-		<parameter name="transformationPattern" type="text" groupName="transformations">
+		<parameter name="transformationPattern" type="text" groupName="transformations" multiple="true">
 			<label>Incoming Value Transformations</label>
 			<description><![CDATA[
 			Applies transformations to an incoming MQTT topic value.
 			A transformation example for a received JSON would be "JSONPATH:$.device.status.temperature" for
 			a json {device: {status: { temperature: 23.2 }}}.
 
-			You can chain transformations by separating them with the intersection character ∩.
+			You can chain transformations by listing each transformation on a separate line, or
+			by separating them with the intersection character ∩.
 			]]></description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="transformationPatternOut" type="text" groupName="transformations">
+		<parameter name="transformationPatternOut" type="text" groupName="transformations" multiple="true">
 			<label>Outgoing Value Transformation</label>
 			<description><![CDATA[
 			Applies a transformation before publishing a MQTT topic value.
@@ -97,16 +98,12 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="on" type="text">
-			<label>Custom On/Open Value</label>
-			<description>A number (like 1, 10) or a string (like "enabled") that is additionally recognised as on/open state. You
-				can use this parameter for a second keyword, next to ON (OPEN respectively on a Contact).</description>
-			<default>1</default>
+			<label>Custom ON Command</label>
+			<description>A string (like "ON") that is sent to MQTT when an ON command is received, instead of an explicit 100%.</description>
 		</parameter>
 		<parameter name="off" type="text">
-			<label>Custom Off/Closed Value</label>
-			<description>A number (like 0, -10) or a string (like "disabled") that is additionally recognised as off/closed
-				state. You can use this parameter for a second keyword, next to OFF (CLOSED respectively on a Contact).</description>
-			<default>0</default>
+			<label>Custom OFF Command</label>
+			<description>A string (like "OFF") that is sent to MQTT when an OFF command is received, instead of an explicit 0%.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

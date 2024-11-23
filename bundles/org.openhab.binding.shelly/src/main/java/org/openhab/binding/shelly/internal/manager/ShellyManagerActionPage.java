@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -442,7 +442,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
     }
 
     private void setRestarted(ShellyManagerInterface th, String uid) {
-        th.setThingOffline(ThingStatusDetail.GONE, "offline.status-error-restarted");
+        th.setThingOfflineAndDisconnect(ThingStatusDetail.GONE, "offline.status-error-restarted");
         scheduleUpdate(th, uid + "_upgrade", 25); // wait 25s before refresh
     }
 }

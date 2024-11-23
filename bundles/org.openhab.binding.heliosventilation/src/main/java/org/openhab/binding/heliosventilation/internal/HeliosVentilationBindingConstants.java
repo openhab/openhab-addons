@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,7 +57,7 @@ public class HeliosVentilationBindingConstants {
      *
      */
     private static Map<Byte, HeliosVentilationDataPoint> readChannelProperties() {
-        HashMap<Byte, HeliosVentilationDataPoint> result = new HashMap<Byte, HeliosVentilationDataPoint>();
+        HashMap<Byte, HeliosVentilationDataPoint> result = new HashMap<>();
 
         URL resource = Thread.currentThread().getContextClassLoader().getResource(DATAPOINT_FILE);
         Properties properties = new Properties();
@@ -68,7 +69,8 @@ public class HeliosVentilationBindingConstants {
                 String channel = (String) keys.nextElement();
                 HeliosVentilationDataPoint dp;
                 try {
-                    dp = new HeliosVentilationDataPoint(channel, properties.getProperty(channel));
+                    dp = new HeliosVentilationDataPoint(channel,
+                            Objects.requireNonNull(properties.getProperty(channel)));
                     if (result.containsKey(dp.address())) {
                         result.get(dp.address()).append(dp);
                     } else {

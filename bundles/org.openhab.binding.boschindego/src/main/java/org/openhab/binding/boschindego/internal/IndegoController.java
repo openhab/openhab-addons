@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,6 @@ import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandE
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidResponseException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoTimeoutException;
 import org.openhab.core.library.types.RawType;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +74,7 @@ public class IndegoController {
     public IndegoController(HttpClient httpClient, AuthorizationProvider authorizationProvider) {
         this.httpClient = httpClient;
         this.authorizationProvider = authorizationProvider;
-        userAgent = "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
+        userAgent = "Indego-Connect_4.0.3.12955";
     }
 
     /**

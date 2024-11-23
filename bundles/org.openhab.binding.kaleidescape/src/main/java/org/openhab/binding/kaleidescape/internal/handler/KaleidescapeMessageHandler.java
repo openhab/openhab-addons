@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,13 +17,12 @@ import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -31,6 +30,7 @@ import org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeException;
 import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeFormatter;
 import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeStatusCodes;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -118,19 +118,23 @@ public enum KaleidescapeMessageHandler {
 
                 handler.updateChannel(TITLE_NUM, new DecimalType(Integer.parseInt(matcher.group(3))));
 
-                handler.updateChannel(TITLE_LENGTH,
-                        new QuantityType<Time>(Integer.parseInt(matcher.group(4)), handler.apiSecondUnit));
+                final int titleLength = Integer.parseInt(matcher.group(4));
+                final int titleLoc = Integer.parseInt(matcher.group(5));
 
-                handler.updateChannel(TITLE_LOC,
-                        new QuantityType<Time>(Integer.parseInt(matcher.group(5)), handler.apiSecondUnit));
+                handler.updateChannel(TITLE_LENGTH, new QuantityType<>(titleLength, handler.apiSecondUnit));
+
+                handler.updateChannel(TITLE_LOC, new QuantityType<>(titleLoc, handler.apiSecondUnit));
+
+                handler.updateChannel(ENDTIME, titleLength < 1 ? UnDefType.UNDEF
+                        : new DateTimeType(ZonedDateTime.now().plusSeconds(titleLength - titleLoc)));
 
                 handler.updateChannel(CHAPTER_NUM, new DecimalType(Integer.parseInt(matcher.group(6))));
 
                 handler.updateChannel(CHAPTER_LENGTH,
-                        new QuantityType<Time>(Integer.parseInt(matcher.group(7)), handler.apiSecondUnit));
+                        new QuantityType<>(Integer.parseInt(matcher.group(7)), handler.apiSecondUnit));
 
                 handler.updateChannel(CHAPTER_LOC,
-                        new QuantityType<Time>(Integer.parseInt(matcher.group(8)), handler.apiSecondUnit));
+                        new QuantityType<>(Integer.parseInt(matcher.group(8)), handler.apiSecondUnit));
             } else {
                 logger.debug("PLAY_STATUS - no match on message: {}", message);
             }
@@ -272,6 +276,10 @@ public enum KaleidescapeMessageHandler {
             // first replace delimited : in track/artist/album name with ||, fix it later in formatString()
             Matcher matcher = p.matcher(message.replace("\\:", "||"));
             if (matcher.find()) {
+                // if not an empty message, the colon delimiters in raw MUSIC_TITLE message are changed to pipe
+                handler.updateChannel(MUSIC_TITLE_RAW, ":::::".equals(matcher.group(0)) ? UnDefType.NULL
+                        : new StringType(KaleidescapeFormatter.formatString(matcher.group(0).replace(":", "|"))));
+
                 handler.updateChannel(MUSIC_TRACK,
                         new StringType(KaleidescapeFormatter.formatString(matcher.group(1))));
 
@@ -321,10 +329,10 @@ public enum KaleidescapeMessageHandler {
                 handler.updateChannel(MUSIC_PLAY_SPEED, new StringType(matcher.group(2)));
 
                 handler.updateChannel(MUSIC_TRACK_LENGTH,
-                        new QuantityType<Time>(Integer.parseInt(matcher.group(3)), handler.apiSecondUnit));
+                        new QuantityType<>(Integer.parseInt(matcher.group(3)), handler.apiSecondUnit));
 
                 handler.updateChannel(MUSIC_TRACK_POSITION,
-                        new QuantityType<Time>(Integer.parseInt(matcher.group(4)), handler.apiSecondUnit));
+                        new QuantityType<>(Integer.parseInt(matcher.group(4)), handler.apiSecondUnit));
 
                 handler.updateChannel(MUSIC_TRACK_PROGRESS,
                         new DecimalType(BigDecimal.valueOf(Math.round(Double.parseDouble(matcher.group(5))))));
@@ -432,7 +440,7 @@ public enum KaleidescapeMessageHandler {
                         }
                         // special case for running time to create a QuantityType<Time>
                     } else if (DETAIL_RUNNING_TIME.equals(metaType)) {
-                        handler.updateDetailChannel(DETAIL_RUNNING_TIME, new QuantityType<Time>(
+                        handler.updateDetailChannel(DETAIL_RUNNING_TIME, new QuantityType<>(
                                 Integer.parseInt(value) * handler.metaRuntimeMultiple, handler.apiSecondUnit));
                         // everything else just send it as a string
                     } else {
@@ -480,6 +488,10 @@ public enum KaleidescapeMessageHandler {
                                 handler.connector.sendCommand(SEND_EVENT_VOLUME_LEVEL_EQ + handler.volume);
                                 handler.connector.sendCommand(SEND_EVENT_MUTE + (handler.isMuted ? MUTE_ON : MUTE_OFF));
                             }
+                        } else if (handler.volumeBasicEnabled) {
+                            synchronized (handler.sequenceLock) {
+                                handler.connector.sendCommand(SEND_EVENT_VOLUME_CAPABILITIES_3);
+                            }
                         }
                         break;
                     case "VOLUME_UP":
@@ -516,10 +528,8 @@ public enum KaleidescapeMessageHandler {
                             }
                         }
                         break;
-                    // the default is to just publish all other USER_DEFINED_EVENTs
-                    default:
-                        handler.updateChannel(KaleidescapeBindingConstants.USER_DEFINED_EVENT, new StringType(message));
                 }
+                handler.updateChannel(KaleidescapeBindingConstants.USER_DEFINED_EVENT, new StringType(message));
             } catch (KaleidescapeException e) {
                 logger.debug("USER_DEFINED_EVENT - exception on message: {}", message);
             }

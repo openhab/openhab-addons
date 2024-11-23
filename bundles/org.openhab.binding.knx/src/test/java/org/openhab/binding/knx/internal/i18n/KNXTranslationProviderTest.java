@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,6 +97,7 @@ class KNXTranslationProviderTest {
         final Exception se = new KNXLinkClosedException("connection closed", e);
         assertNotNull(KNXTranslationProvider.I18N.getLocalizedException(e));
         assertNotNull(KNXTranslationProvider.I18N.getLocalizedException(se));
+        assertNotNull(KNXTranslationProvider.I18N.getLocalizedException(new Exception()));
         assertEquals("KNXException, error 1", KNXTranslationProvider.I18N.getLocalizedException(e));
 
         // use mockup classes with known dictionary

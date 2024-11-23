@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,10 @@ public abstract class Event extends NAObject {
 
     public String getCameraId() {
         return cameraId;
+    }
+
+    public void setCameraId(String cameraId) {
+        this.cameraId = cameraId;
     }
 
     @Override

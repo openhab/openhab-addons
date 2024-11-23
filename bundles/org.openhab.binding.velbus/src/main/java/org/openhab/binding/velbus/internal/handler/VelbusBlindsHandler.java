@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,8 +48,8 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class VelbusBlindsHandler extends VelbusThingHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_VMB1BL, THING_TYPE_VMB1BLS, THING_TYPE_VMB2BL, THING_TYPE_VMB2BLE));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB1BL,
+            THING_TYPE_VMB1BLS, THING_TYPE_VMB2BL, THING_TYPE_VMB2BLE, THING_TYPE_VMB2BLE_10));
 
     public VelbusBlindsHandler(Thing thing) {
         super(thing, 0);
@@ -128,8 +128,10 @@ public class VelbusBlindsHandler extends VelbusThingHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        logger.trace("onPacketReceived() was called");
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
+        }
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
@@ -144,5 +146,7 @@ public class VelbusBlindsHandler extends VelbusThingHandler {
                 updateState(getModuleAddress().getChannelId(velbusChannelIdentifier), state);
             }
         }
+
+        return true;
     }
 }

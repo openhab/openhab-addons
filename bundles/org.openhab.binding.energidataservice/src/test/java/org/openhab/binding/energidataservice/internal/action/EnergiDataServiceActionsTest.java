@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -239,6 +240,7 @@ public class EnergiDataServiceActionsTest {
     void calculatePriceSimple() throws IOException {
         mockCommonDatasets(actions);
 
+        @Nullable
         BigDecimal actual = actions.calculatePrice(Instant.parse("2023-02-04T15:30:00Z"),
                 Instant.parse("2023-02-04T16:30:00Z"), new QuantityType<>(150, Units.WATT));
         assertThat(actual, is(equalTo(new BigDecimal("0.311447631975000000")))); // 0.3114476319750
@@ -257,6 +259,7 @@ public class EnergiDataServiceActionsTest {
     void calculatePriceFullHours() throws IOException {
         mockCommonDatasets(actions);
 
+        @Nullable
         BigDecimal actual = actions.calculatePrice(Instant.parse("2023-02-04T15:00:00Z"),
                 Instant.parse("2023-02-04T17:00:00Z"), new QuantityType<>(1, Units.KILOVAR));
         assertThat(actual, is(equalTo(new BigDecimal("4.152635093000000000")))); // 4.152635093
@@ -266,18 +269,20 @@ public class EnergiDataServiceActionsTest {
     void calculatePriceOutOfRangeStart() throws IOException {
         mockCommonDatasets(actions);
 
+        @Nullable
         BigDecimal actual = actions.calculatePrice(Instant.parse("2023-02-03T23:59:00Z"),
                 Instant.parse("2023-02-04T12:30:00Z"), new QuantityType<>(1000, Units.WATT));
-        assertThat(actual, is(equalTo(BigDecimal.ZERO)));
+        assertThat(actual, is(nullValue()));
     }
 
     @Test
     void calculatePriceOutOfRangeEnd() throws IOException {
         mockCommonDatasets(actions);
 
+        @Nullable
         BigDecimal actual = actions.calculatePrice(Instant.parse("2023-02-05T22:00:00Z"),
                 Instant.parse("2023-02-05T23:01:00Z"), new QuantityType<>(1000, Units.WATT));
-        assertThat(actual, is(equalTo(BigDecimal.ZERO)));
+        assertThat(actual, is(nullValue()));
     }
 
     /**

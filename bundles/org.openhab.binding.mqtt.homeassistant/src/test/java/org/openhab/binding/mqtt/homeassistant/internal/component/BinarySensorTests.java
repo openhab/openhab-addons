@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,9 +65,9 @@ public class BinarySensorTests extends AbstractComponentTests {
 
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("onoffsensor"));
-        assertThat(component.getGroupUID().getId(), is("sn1"));
+        assertThat(component.getComponentId(), is("sn1"));
 
-        assertChannel(component, BinarySensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "value",
+        assertChannel(component, BinarySensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "onoffsensor",
                 OnOffValue.class);
 
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"ON_\" }");

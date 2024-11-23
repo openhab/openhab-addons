@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.jupnp.model.ValidationException;
 import org.mockito.ArgumentCaptor;
@@ -68,6 +69,7 @@ public class WemoHandlerOSGiTest extends GenericWemoOSGiTest {
     }
 
     @Test
+    @Disabled("https://github.com/openhab/openhab-addons/issues/12474")
     public void assertThatThingHandlesOnOffCommandCorrectly()
             throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = OnOffType.OFF;
@@ -104,6 +106,7 @@ public class WemoHandlerOSGiTest extends GenericWemoOSGiTest {
     }
 
     @Test
+    @Disabled("https://github.com/openhab/openhab-addons/issues/12474")
     public void assertThatThingHandlesREFRESHCommandCorrectly()
             throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = RefreshType.REFRESH;

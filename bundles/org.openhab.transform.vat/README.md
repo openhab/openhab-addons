@@ -19,7 +19,7 @@ Add Danish VAT to price:
 
 ::: tab DSL
 
-```javascript
+```java
 var Number price = 499
 logInfo("Price", "Price incl. VAT: " + transform("VAT", "DK", price.toString))
 ```
@@ -35,12 +35,27 @@ console.log("Price incl. VAT: " + actions.Transformation.transform("VAT", "DK", 
 
 :::
 
+::: tab JRuby
+
+```ruby
+price = 499
+# The currency name can be either a Symbol or a String
+# The input value doesn't need to be converted to string, however, the return value is a String
+price_incl_vat = transform(:vat, :DK, price)
+logger.info "Price incl. VAT: #{price_incl_vat}"
+```
+
+:::
+
 ::::
 
 ## Usage as a Profile
 
 The functionality of this `TransformationService` can also be used in a `Profile` on an `ItemChannelLink`.
 This is the most powerful usage since VAT will be added without providing any explicit country code, percentage or configuration.
+Time series are supported when using this Profile, including applying VAT rates accurately based on the specific date and time of each state, even as new VAT rates come into effect.
+This ensures that the correct VAT rate is applied for historical, current, or future data points, reflecting any changes in VAT regulations that occur over time.
+
 To use this, an `.items` file can be configured as follows:
 
 ```java

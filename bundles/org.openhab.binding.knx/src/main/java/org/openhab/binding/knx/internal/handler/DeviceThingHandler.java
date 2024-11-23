@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -300,7 +300,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         if (knxChannel == null) {
             return;
         }
-        Set<GroupAddress> rsa = knxChannel.getWriteAddresses();
+        List<GroupAddress> rsa = knxChannel.getWriteAddresses();
         if (!rsa.isEmpty()) {
             logger.trace("onGroupRead size '{}'", rsa.size());
             OutboundSpec os = groupAddressesRespondingSpec.get(destination);
@@ -370,9 +370,8 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                 logger.trace(
                         "onGroupWrite Thing '{}' processes a GroupValueWrite telegram for destination '{}' for channel '{}'",
                         getThing().getUID(), destination, knxChannel.getChannelUID());
-                /**
-                 * Remember current KNXIO outboundSpec only if it is a control channel.
-                 */
+
+                // Remember current KNXIO outboundSpec only if it is a control channel
                 if (knxChannel.isControl()) {
                     logger.trace("onGroupWrite isControl");
                     Type value = ValueDecoder.decode(listenSpec.getDPT(), asdu, knxChannel.preferredType());
@@ -478,7 +477,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         DeviceInspector.Result result = inspector.readDeviceInfo();
         if (result != null) {
             Map<String, String> properties = editProperties();
-            properties.putAll(result.getProperties());
+            properties.putAll(result.properties());
             updateProperties(properties);
             return true;
         }

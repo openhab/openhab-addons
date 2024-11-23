@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = PlayerActions.class)
 @ThingActionsScope(name = "freeboxos")
 @NonNullByDefault
 public class PlayerActions implements ThingActions {
@@ -87,6 +90,38 @@ public class PlayerActions implements ThingActions {
             playerHandler.sendKey(key, false, count);
         } else {
             logger.warn("Freebox Player Action service ThingHandler is null");
+        }
+    }
+
+    public static void sendKey(ThingActions actions, String key) {
+        if (actions instanceof PlayerActions playerActions) {
+            playerActions.sendKey(key);
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a PlayerActions class.");
+        }
+    }
+
+    public static void sendLongKey(ThingActions actions, String key) {
+        if (actions instanceof PlayerActions playerActions) {
+            playerActions.sendLongKey(key);
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a PlayerActions class.");
+        }
+    }
+
+    public static void sendMultipleKeys(ThingActions actions, String keys) {
+        if (actions instanceof PlayerActions playerActions) {
+            playerActions.sendMultipleKeys(keys);
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a PlayerActions class.");
+        }
+    }
+
+    public static void sendKeyRepeat(ThingActions actions, String key, int count) {
+        if (actions instanceof PlayerActions playerActions) {
+            playerActions.sendKeyRepeat(key, count);
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a PlayerActions class.");
         }
     }
 }

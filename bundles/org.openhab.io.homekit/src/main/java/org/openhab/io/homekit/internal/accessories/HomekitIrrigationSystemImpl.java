@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,10 +20,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.IrrigationSystemAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.common.ActiveEnum;
 import io.github.hapjava.characteristics.impl.common.InUseEnum;
@@ -44,33 +46,27 @@ import io.github.hapjava.services.impl.ServiceLabelService;
  */
 @NonNullByDefault({})
 public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl implements IrrigationSystemAccessory {
-    private Map<InUseEnum, String> inUseMapping;
-    private Map<ProgramModeEnum, String> programModeMap;
-    private static final String SERVICE_LABEL = "ServiceLabel";
+    private Map<InUseEnum, Object> inUseMapping;
+    private Map<ProgramModeEnum, Object> programModeMap;
 
     public HomekitIrrigationSystemImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         inUseMapping = createMapping(HomekitCharacteristicType.INUSE_STATUS, InUseEnum.class);
         programModeMap = HomekitCharacteristicFactory
                 .createMapping(getCharacteristic(HomekitCharacteristicType.PROGRAM_MODE).get(), ProgramModeEnum.class);
-        getServices().add(new IrrigationSystemService(this));
+        addService(new IrrigationSystemService(this));
     }
 
     @Override
-    public void init() {
-        String serviceLabelNamespaceConfig = getAccessoryConfiguration(SERVICE_LABEL, "ARABIC_NUMERALS");
-        ServiceLabelNamespaceEnum serviceLabelEnum;
+    public void init() throws HomekitException {
+        super.init();
 
-        try {
-            serviceLabelEnum = ServiceLabelNamespaceEnum.valueOf(serviceLabelNamespaceConfig.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            serviceLabelEnum = ServiceLabelNamespaceEnum.ARABIC_NUMERALS;
-        }
-        final var finalEnum = serviceLabelEnum;
-        var serviceLabelNamespace = getCharacteristic(ServiceLabelNamespaceCharacteristic.class).orElseGet(
-                () -> new ServiceLabelNamespaceCharacteristic(() -> CompletableFuture.completedFuture(finalEnum)));
-        getServices().add(new ServiceLabelService(serviceLabelNamespace));
+        var serviceLabelNamespace = getCharacteristic(ServiceLabelNamespaceCharacteristic.class)
+                .orElseGet(() -> new ServiceLabelNamespaceCharacteristic(
+                        () -> CompletableFuture.completedFuture(ServiceLabelNamespaceEnum.ARABIC_NUMERALS)));
+        addService(new ServiceLabelService(serviceLabelNamespace));
     }
 
     @Override

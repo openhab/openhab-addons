@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,12 @@ package org.openhab.binding.mybmw.internal.handler.enums;
 
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_AIR_CONDITIONING_START;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_AIR_CONDITIONING_STOP;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_CHARGE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_DOOR_LOCK;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_DOOR_UNLOCK;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_HORN;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_LIGHT_FLASH;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_START_CHARGING;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_STOP_CHARGING;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_VEHICLE_FINDER;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +40,8 @@ public enum RemoteService {
     HORN_BLOW("Horn Blow", REMOTE_SERVICE_HORN, REMOTE_SERVICE_HORN, ""),
     CLIMATE_NOW_START("Start Climate", REMOTE_SERVICE_AIR_CONDITIONING_START, "climate-now", "{\"action\": \"START\"}"),
     CLIMATE_NOW_STOP("Stop Climate", REMOTE_SERVICE_AIR_CONDITIONING_STOP, "climate-now", "{\"action\": \"STOP\"}"),
-    CHARGE_NOW("Charge", REMOTE_SERVICE_CHARGE, "start-charging", "");
+    START_CHARGING("Start Charging", REMOTE_SERVICE_START_CHARGING, "start-charging", ""),
+    STOP_CHARGING("Stop Charging", REMOTE_SERVICE_STOP_CHARGING, "stop-charging", "");
 
     private final String label;
     private final String id;

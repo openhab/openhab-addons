@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SpotAreaCleaningCommand extends AbstractAreaCleaningCommand {
-    public SpotAreaCleaningCommand(List<String> roomIds, int cleanPasses) {
-        super("spotArea", String.join(",", roomIds), cleanPasses);
+    public SpotAreaCleaningCommand(List<String> roomIds, int cleanPasses, boolean usesFreeClean) {
+        super(usesFreeClean ? "freeClean" : "spotArea", prepareRoomIds(roomIds, usesFreeClean), cleanPasses);
+    }
+
+    private static String prepareRoomIds(List<String> roomIds, boolean usesFreeClean) {
+        String prefix = usesFreeClean ? "1," : "";
+        String separator = usesFreeClean ? ";" : ",";
+        return prefix + String.join(separator, roomIds);
     }
 }

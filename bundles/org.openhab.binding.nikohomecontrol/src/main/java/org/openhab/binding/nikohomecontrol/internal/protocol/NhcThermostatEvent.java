@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public interface NhcThermostatEvent {
+public interface NhcThermostatEvent extends NhcBaseEvent {
 
     /**
      * This method is called when thermostat event is received from the Niko Home Control controller.
@@ -36,16 +36,4 @@ public interface NhcThermostatEvent {
      * @param demand 0 if no demand, > 0 if heating, &lt; 0 if cooling
      */
     void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand);
-
-    /**
-     * Called to indicate the thermostat has been initialized.
-     *
-     */
-    void thermostatInitialized();
-
-    /**
-     * Called to indicate the thermostat has been removed from the Niko Home Control controller.
-     *
-     */
-    void thermostatRemoved();
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,9 @@ import org.openhab.binding.openweathermap.internal.dto.base.City;
 import org.openhab.binding.openweathermap.internal.dto.forecast.hourly.List;
 
 /**
- * The {@link OpenWeatherMapJsonHourlyForecastData} is the Java class used to map the JSON response to an OpenWeatherMap
- * request.
+ * Holds the data from the deserialised JSON response of the
+ * <a href="https://openweathermap.org/api/hourly-forecast">Hourly forecast API</a> and the
+ * <a href="https://openweathermap.org/forecast5">5 day weather forecast API</a>.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -399,7 +399,8 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
     private Request createRequest(String url) {
         return httpClient.newRequest(url).method(HttpMethod.POST).header(HttpHeader.ACCEPT, APPLICATION_JSON)
                 .header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfig.getLang()).header(HttpHeader.ACCEPT_ENCODING, "*")
-                .header("x-vendor-id", VENDOR).agent(AGENT).timeout(TIMEOUT_SEC, TimeUnit.SECONDS);
+                .header("x-vendor-id", VENDOR).header("x-client-version", CLIENT_VERSION)
+                .header("x-client-device", CLIENT_DEVICE).agent(AGENT).timeout(TIMEOUT_SEC, TimeUnit.SECONDS);
     }
 
     private void relogin() {

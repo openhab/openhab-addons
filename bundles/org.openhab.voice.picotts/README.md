@@ -5,7 +5,7 @@ The Pico Text-to-Speech (TTS) service uses the TTS binary from SVOX for producin
 You manually need to install the pico2wave binary in order for this service to work correctly. You can,
 e.g., install it with apt-get on an Ubuntu system:
 
-```
+```bash
 sudo apt-get install libttspico-utils
 ```
 
@@ -34,14 +34,14 @@ Italian (it-IT)
 
 You can setup your preferred default Text-to-Speech and default voice in the UI:
 
-* Go to **Settings**.
-* Edit **System Services - Voice**.
-* Set **PicoTTS** as **Default Text-to-Speech**.
-* Choose your preferred **Default Voice** for your setup.
+- Go to **Settings**.
+- Edit **System Services - Voice**.
+- Set **PicoTTS** as **Default Text-to-Speech**.
+- Choose your preferred **Default Voice** for your setup.
 
 In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
 
-```
+```ini
 org.openhab.voice:defaultTTS=picotts
 org.openhab.voice:defaultVoice=picotts:frFR
 ```

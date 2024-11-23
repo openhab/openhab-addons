@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,14 +40,14 @@ import org.openhab.binding.plugwise.internal.protocol.RoleCallRequestMessage;
 import org.openhab.binding.plugwise.internal.protocol.RoleCallResponseMessage;
 import org.openhab.binding.plugwise.internal.protocol.field.DeviceType;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,9 +58,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born, Karel Goderis - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = PlugwiseThingDiscoveryService.class)
 @NonNullByDefault
-public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
-        implements PlugwiseMessageListener, PlugwiseStickStatusListener, ThingHandlerService {
+public class PlugwiseThingDiscoveryService extends AbstractThingHandlerDiscoveryService<PlugwiseStickHandler>
+        implements PlugwiseMessageListener, PlugwiseStickStatusListener {
 
     private static class CurrentRoleCall {
         private boolean isRoleCalling;
@@ -100,8 +101,6 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseThingDiscoveryService.class);
 
-    private @NonNullByDefault({}) PlugwiseStickHandler stickHandler;
-
     private @Nullable ScheduledFuture<?> discoveryJob;
     private @Nullable ScheduledFuture<?> watchJob;
     private CurrentRoleCall currentRoleCall = new CurrentRoleCall();
@@ -109,7 +108,7 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     private final Map<MACAddress, DiscoveredNode> discoveredNodes = new ConcurrentHashMap<>();
 
     public PlugwiseThingDiscoveryService() throws IllegalArgumentException {
-        super(DISCOVERED_THING_TYPES_UIDS, 1, true);
+        super(PlugwiseStickHandler.class, DISCOVERED_THING_TYPES_UIDS, 1, true);
     }
 
     @Override
@@ -120,14 +119,9 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         stopDiscoveryWatchJob();
     }
 
-    @Override
-    public void activate() {
-        super.activate(new HashMap<>());
-    }
-
     private void createDiscoveryResult(DiscoveredNode node) {
         String mac = node.macAddress.toString();
-        ThingUID bridgeUID = stickHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingTypeUID thingTypeUID = PlugwiseUtils.getThingTypeUID(node.deviceType);
         if (thingTypeUID != null) {
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, mac);
@@ -141,10 +135,10 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void deactivate() {
-        super.deactivate();
-        stickHandler.removeMessageListener(this);
-        stickHandler.removeStickStatusListener(this);
+    public void dispose() {
+        super.dispose();
+        thingHandler.removeMessageListener(this);
+        thingHandler.removeStickStatusListener(this);
     }
 
     private void discoverNewNodeDetails(MACAddress macAddress) {
@@ -168,7 +162,7 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         } else if (currentRoleCall.isRoleCalling) {
             logger.debug("Discovery with role call not possible (already role calling)");
         } else {
-            stickHandler.addMessageListener(this);
+            thingHandler.addMessageListener(this);
             discoveredNodes.clear();
             currentRoleCall.isRoleCalling = true;
             currentRoleCall.currentNodeID = Integer.MIN_VALUE;
@@ -182,16 +176,11 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     }
 
     private @Nullable MACAddress getCirclePlusMAC() {
-        return stickHandler.getCirclePlusMAC();
+        return thingHandler.getCirclePlusMAC();
     }
 
     private ThingStatus getStickStatus() {
-        return stickHandler.getThing().getStatus();
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return stickHandler;
+        return thingHandler.getThing().getStatus();
     }
 
     private void handleAnnounceAwakeRequest(AnnounceAwakeRequestMessage message) {
@@ -254,7 +243,7 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     }
 
     private boolean isAlreadyDiscovered(MACAddress macAddress) {
-        Thing thing = stickHandler.getThingByMAC(macAddress);
+        Thing thing = thingHandler.getThingByMAC(macAddress);
         if (thing != null) {
             logger.debug("Node ({}) has existing thing: {}", macAddress, thing.getUID());
         }
@@ -284,15 +273,13 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     }
 
     private void sendMessage(Message message) {
-        stickHandler.sendMessage(message, PlugwiseMessagePriority.UPDATE_AND_DISCOVERY);
+        thingHandler.sendMessage(message, PlugwiseMessagePriority.UPDATE_AND_DISCOVERY);
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof PlugwiseStickHandler plugwiseStickHandler) {
-            stickHandler = plugwiseStickHandler;
-            stickHandler.addStickStatusListener(this);
-        }
+    public void initialize() {
+        thingHandler.addStickStatusListener(this);
+        super.initialize();
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,10 +17,12 @@ import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.SpeakerAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.services.impl.SpeakerService;
 
@@ -33,10 +35,16 @@ public class HomekitSpeakerImpl extends AbstractHomekitAccessoryImpl implements 
     private final BooleanItemReader muteReader;
 
     public HomekitSpeakerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         muteReader = createBooleanReader(HomekitCharacteristicType.MUTE);
-        getServices().add(new SpeakerService(this));
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new SpeakerService(this));
     }
 
     @Override

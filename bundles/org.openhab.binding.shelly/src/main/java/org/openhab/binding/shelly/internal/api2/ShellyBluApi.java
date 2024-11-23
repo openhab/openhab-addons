@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,9 +18,10 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
@@ -33,6 +34,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorAccel;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorBat;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorHum;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorState;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
@@ -50,25 +52,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class ShellyBluApi extends Shelly2ApiRpc {
-    private static final Logger logger = LoggerFactory.getLogger(ShellyBluApi.class);
+    private final Logger logger = LoggerFactory.getLogger(ShellyBluApi.class);
     private boolean connected = false; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
 
-    private static final Map<String, String> MAP_INPUT_EVENT_TYPE = new HashMap<>();
-    static {
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH);
-        MAP_INPUT_EVENT_TYPE.put("1", SHELLY_BTNEVENT_1SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put("2", SHELLY_BTNEVENT_2SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put("3", SHELLY_BTNEVENT_3SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put("4", SHELLY_BTNEVENT_LONGPUSH);
-    }
+    private static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.of( //
+            SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH, //
+            SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH, //
+            SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH, //
+            SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH, //
+            SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH, //
+            SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH, //
+            "1", SHELLY_BTNEVENT_1SHORTPUSH, //
+            "2", SHELLY_BTNEVENT_2SHORTPUSH, //
+            "3", SHELLY_BTNEVENT_3SHORTPUSH, //
+            "4", SHELLY_BTNEVENT_LONGPUSH);
 
     /**
      * Regular constructor - called by Thing handler
@@ -92,7 +93,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         if (!initialized) {
             initialized = true;
             connected = false;
-        } else {
         }
     }
 
@@ -155,17 +155,14 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             profile.numInputs = 1;
             settings.btnType = SHELLY_BTNT_MOMENTARY;
 
-            if (profile.settings.inputs != null) {
-                profile.settings.inputs.set(0, settings);
+            List<ShellySettingsInput> inputs = profile.settings.inputs;
+            if (inputs != null) {
+                inputs.set(0, settings);
             } else {
-                profile.settings.inputs = new ArrayList<>();
-                profile.settings.inputs.add(settings);
+                inputs = profile.settings.inputs = new ArrayList<>();
+                inputs.add(settings);
             }
             profile.status = deviceStatus;
-        }
-
-        if (!connected) {
-            throw new ShellyApiException("BLU Device not yet connected");
         }
 
         profile.initialized = true;
@@ -275,8 +272,15 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             if (sensorData.tmp == null) {
                                 sensorData.tmp = new ShellySensorTmp();
                             }
+                            sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
                             sensorData.tmp.tC = e.data.temperature;
                             sensorData.tmp.isValid = true;
+                        }
+                        if (e.data.humidity != null) {
+                            if (sensorData.hum == null) {
+                                sensorData.hum = new ShellySensorHum();
+                            }
+                            sensorData.hum.value = e.data.humidity;
                         }
                         if (e.data.rotation != null) {
                             if (sensorData.accel == null) {

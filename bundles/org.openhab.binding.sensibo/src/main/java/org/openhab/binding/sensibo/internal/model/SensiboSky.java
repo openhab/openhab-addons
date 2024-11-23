@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.util.Optional;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sensibo.internal.SensiboTemperatureUnitConverter;
 import org.openhab.binding.sensibo.internal.dto.poddetails.ModeCapabilityDTO;
@@ -55,7 +54,7 @@ public class SensiboSky extends Pod {
 
     public SensiboSky(final PodDetailsDTO dto) {
         super(dto.id);
-        this.macAddress = StringUtils.remove(dto.macAddress, ':');
+        this.macAddress = dto.macAddress.replace(":", "");
         this.firmwareVersion = dto.firmwareVersion;
         this.firmwareType = dto.firmwareType;
         this.serialNumber = dto.serialNumber;

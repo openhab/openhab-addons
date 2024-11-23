@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ public class PJLinkDeviceBindingConstants {
     public static final String CHANNEL_TYPE_INPUT = "input";
     public static final String CHANNEL_TYPE_AUDIO_MUTE = "audioMute";
     public static final String CHANNEL_TYPE_VIDEO_MUTE = "videoMute";
+    public static final String CHANNEL_TYPE_AUDIO_AND_VIDEO_MUTE = "audioAndVideoMute";
     public static final String CHANNEL_TYPE_LAMP_HOURS = "lampHours";
     public static final String CHANNEL_TYPE_LAMP_ACTIVE = "lampActive";
 

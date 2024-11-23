@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Scott Hanson - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ChromecastActions.class)
 @ThingActionsScope(name = "chromecast")
 @NonNullByDefault
 public class ChromecastActions implements ThingActions {
@@ -38,7 +41,7 @@ public class ChromecastActions implements ThingActions {
     private @Nullable ChromecastHandler handler;
 
     @RuleAction(label = "@text/playURLActionLabel", description = "@text/playURLActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean playURL(
+    public @ActionOutput(name = "result", label = "Success", type = "java.lang.Boolean") Boolean playURL(
             @ActionInput(name = "url") @Nullable String url) {
         if (url == null) {
             logger.warn("Cannot Play as URL is missing.");
@@ -55,7 +58,7 @@ public class ChromecastActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/playURLTypeActionLabel", description = "@text/playURLTypeActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean playURL(
+    public @ActionOutput(name = "result", label = "Success", type = "java.lang.Boolean") Boolean playURL(
             @ActionInput(name = "url") @Nullable String url,
             @ActionInput(name = "mediaType") @Nullable String mediaType) {
         if (url == null) {

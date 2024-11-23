@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -247,6 +247,11 @@ public class RobonectHandler extends BaseThingHandler {
                 updateState(CHANNEL_HEALTH_TEMP,
                         new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));
                 updateState(CHANNEL_HEALTH_HUM, new QuantityType<>(info.getHealth().getHumidity(), Units.PERCENT));
+            }
+            if (info.getBlades() != null) {
+                updateState(CHANNEL_BLADES_QUALITY, new QuantityType<>(info.getBlades().getQuality(), Units.PERCENT));
+                updateState(CHANNEL_BLADES_REPL_DAYS, new QuantityType<>(info.getBlades().getDays(), Units.DAY));
+                updateState(CHANNEL_BLADES_USAGE_HOURS, new QuantityType<>(info.getBlades().getHours(), Units.HOUR));
             }
             if (info.getTimer() != null) {
                 if (info.getTimer().getNext() != null) {

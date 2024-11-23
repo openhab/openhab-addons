@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
                 setData(ZERO, (byte) shutTime, MOVE_UP, TEACHIN_BIT); // => move completely up
             } else if (percentCommand.intValue() == PercentType.HUNDRED.intValue()) {
                 setData(ZERO, (byte) shutTime, MOVE_DOWN, TEACHIN_BIT); // => move completely down
-            } else if (channelState != null) {
+            } else {
                 PercentType current = channelState.as(PercentType.class);
                 if (current != null) {
                     if (current.intValue() != percentCommand.intValue()) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -296,12 +296,13 @@ public class WledApiV084 implements WledApi {
             // There is no thing setup for this segmentIndex.
             return;
         }
-        HSBType tempHSB = WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[0].toString());
+        HSBType tempHSB = WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[0].toString(),
+                state.stateResponse.seg[segmentIndex].bri);
         handler.update(segmentIndex, CHANNEL_PRIMARY_COLOR, tempHSB);
-        handler.update(segmentIndex, CHANNEL_SECONDARY_COLOR,
-                WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[1].toString()));
-        handler.update(segmentIndex, CHANNEL_THIRD_COLOR,
-                WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[2].toString()));
+        handler.update(segmentIndex, CHANNEL_SECONDARY_COLOR, WLedHelper.parseToHSBType(
+                state.stateResponse.seg[segmentIndex].col[1].toString(), state.stateResponse.seg[segmentIndex].bri));
+        handler.update(segmentIndex, CHANNEL_THIRD_COLOR, WLedHelper.parseToHSBType(
+                state.stateResponse.seg[segmentIndex].col[2].toString(), state.stateResponse.seg[segmentIndex].bri));
         if (state.ledInfo.rgbw) {
             handler.update(segmentIndex, CHANNEL_PRIMARY_WHITE,
                     WLedHelper.parseWhitePercent(state.stateResponse.seg[segmentIndex].col[0].toString()));
@@ -378,14 +379,17 @@ public class WledApiV084 implements WledApi {
     @Override
     public void setMasterHSB(HSBType hsbType, int segmentIndex) throws ApiException {
         if (hsbType.getBrightness().toBigDecimal().equals(BigDecimal.ZERO)) {
-            updateStateFromReply(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":false,\"id\":" + segmentIndex
-                    + ",\"fx\":0,\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue()
-                    + "," + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                    + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
+            updateStateFromReply(postState(
+                    "{\"tt\":2,\"v\":true,\"seg\":[{\"on\":false,\"id\":" + segmentIndex + ",\"fx\":0,\"bri\":"
+                            + hsbType.getBrightness().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue()
+                            + ",\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue()
+                            + "," + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
+                            + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
             return;
         }
         updateStateFromReply(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":true,\"id\":" + segmentIndex
-                + ",\"fx\":0,\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
+                + ",\"fx\":0,\"bri\":" + hsbType.getBrightness().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue()
+                + ",\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
     }
@@ -472,7 +476,8 @@ public class WledApiV084 implements WledApi {
 
     @Override
     public void setWhiteOnly(PercentType percentType, int segmentIndex) throws ApiException {
-        postState("{\"seg\":[{\"on\":true,\"id\":" + segmentIndex + ",\"fx\":0,\"col\":[[0,0,0,"
+        postState("{\"seg\":[{\"on\":true,\"id\":" + segmentIndex + ",\"fx\":0,\"bri\":"
+                + percentType.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ",\"col\":[[0,0,0,"
                 + percentType.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}");
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -125,8 +126,9 @@ public class JdbcConfiguration {
         logger.debug("JDBC::updateConfig: url={}", url);
 
         // set database type and database type class
-        setDBDAOClass(parsedURL.getProperty("dbShortcut")); // derby, h2, hsqldb, mariadb, mysql, postgresql,
-                                                            // sqlite, timescaledb
+        setDBDAOClass(Objects.requireNonNull(parsedURL.getProperty("dbShortcut"))); // derby, h2, hsqldb, mariadb,
+                                                                                    // mysql, postgresql, sqlite,
+                                                                                    // timescaledb, oracle
         // set user
         if (user != null && !user.isBlank()) {
             dBDAO.databaseProps.setProperty("dataSource.user", user);
@@ -229,12 +231,13 @@ public class JdbcConfiguration {
         String dn = dBDAO.databaseProps.getProperty("driverClassName");
         if (dn == null) {
             dn = dBDAO.databaseProps.getProperty("dataSourceClassName");
+            dBDAO.databaseProps.setProperty("dataSource.url", url);
         } else {
             dBDAO.databaseProps.setProperty("jdbcUrl", url);
         }
 
         // test if JDBC driver bundle is available
-        testJDBCDriver(dn);
+        testJDBCDriver(Objects.requireNonNull(dn));
 
         logger.debug("JDBC::updateConfig: configuration complete. service={}", getName());
 
@@ -330,13 +333,16 @@ public class JdbcConfiguration {
                         warn += "\tMariaDB:   version >= 3.0.8 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
                         break;
                     case "mysql":
-                        warn += "\tMySQL:     version >= 8.1.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
+                        warn += "\tMySQL:     version >= 8.2.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
                         break;
                     case "postgresql":
-                        warn += "\tPostgreSQL:version >= 42.4.3 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
+                        warn += "\tPostgreSQL:version >= 42.4.4 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
                         break;
                     case "sqlite":
                         warn += "\tSQLite:    version >= 3.42.0.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
+                        break;
+                    case "oracle":
+                        warn += "\tOracle:    version >= 23.5.0.0 from           https://mvnrepository.com/artifact/org.openhab.osgiify/com.oracle.database.jdbc.ojdbc11\n";
                         break;
                 }
             }

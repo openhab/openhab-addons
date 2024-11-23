@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ public class VolumioCommands {
 
     /* Player Status */
 
-    public static final String GET_STATE = "get-state";
+    public static final String GET_STATE = "getState";
 
     /* Player Controls */
 
@@ -46,9 +46,9 @@ public class VolumioCommands {
 
     public static final String SEEK = "seek";
 
-    public static final String RANDOM = "set-random";
+    public static final String RANDOM = "setRandom";
 
-    public static final String REPEAT = "set-repeat";
+    public static final String REPEAT = "setRepeat";
 
     /* Search */
 
@@ -64,27 +64,27 @@ public class VolumioCommands {
 
     /* MultiRoom */
 
-    public static final String GET_MULTIROOM_DEVICES = "get-multi-room-devices";
+    public static final String GET_MULTIROOM_DEVICES = "getMultiRoomDevices";
 
     /* Queue */
 
     /**
      * Replace the complete queue and play add/play the delivered entry.
      */
-    public static final String REPLACE_AND_PLAY = "replace-and-play";
+    public static final String REPLACE_AND_PLAY = "replaceAndPlay";
 
     public static final String ADD_PLAY = "addPlay";
 
-    public static final String CLEAR_QUEUE = "clear-queue";
+    public static final String CLEAR_QUEUE = "clearQueue";
 
     /* ... */
     public static final String SHUTDOWN = "shutdown";
 
     public static final String REBOOT = "reboot";
 
-    public static final String PLAY_PLAYLIST = "play-playlist";
+    public static final String PLAY_PLAYLIST = "playPlaylist";
 
-    public static final String PLAY_FAVOURITES = "play-favourites";
+    public static final String PLAY_FAVOURITES = "playFavourites";
 
-    public static final String PLAY_RADIO_FAVOURITES = "play-radio-favourites";
+    public static final String PLAY_RADIO_FAVOURITES = "playRadioFavourites";
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -118,7 +119,8 @@ public class ChargingStatisticsTest {
             Method updateChargeStatisticsMethod = VehicleHandler.class.getDeclaredMethod("updateChargingStatistics",
                     ChargingStatisticsContainer.class, String.class);
             updateChargeStatisticsMethod.setAccessible(true);
-            updateChargeStatisticsMethod.invoke(vehicleHandler,
+            assertNotNull(vehicleHandler);
+            updateChargeStatisticsMethod.invoke(Objects.requireNonNull(vehicleHandler),
                     JsonStringDeserializer.getChargingStatistics(statusContent), null);
         } catch (Exception e) {
             logger.error("chargeStatistics could not be set", e);

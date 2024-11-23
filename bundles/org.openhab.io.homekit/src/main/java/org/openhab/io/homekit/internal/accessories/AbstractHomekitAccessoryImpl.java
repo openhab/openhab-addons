@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,8 +45,16 @@ import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.CharacteristicEnum;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.accessoryinformation.FirmwareRevisionCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.HardwareRevisionCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.IdentifyCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.ManufacturerCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.ModelCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.SerialNumberCharacteristic;
 import io.github.hapjava.characteristics.impl.base.BaseCharacteristic;
+import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 import io.github.hapjava.services.Service;
+import io.github.hapjava.services.impl.AccessoryInformationService;
 
 /**
  * Abstract class for Homekit Accessory implementations, this provides the
@@ -62,10 +70,12 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     private final HomekitSettings settings;
     private final List<Service> services;
     private final Map<Class<? extends Characteristic>, Characteristic> rawCharacteristics;
+    private boolean isLinkedService = false;
 
-    public AbstractHomekitAccessoryImpl(HomekitTaggedItem accessory, List<HomekitTaggedItem> characteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        this.characteristics = characteristics;
+    public AbstractHomekitAccessoryImpl(HomekitTaggedItem accessory, List<HomekitTaggedItem> mandatoryCharacteristics,
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        this.characteristics = mandatoryCharacteristics;
         this.accessory = accessory;
         this.updater = updater;
         this.services = new ArrayList<>();
@@ -79,6 +89,15 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 rawCharacteristics.put(rawCharacteristic.getClass(), rawCharacteristic);
             }
         });
+        mandatoryRawCharacteristics.forEach(c -> {
+            if (rawCharacteristics.get(c.getClass()) != null) {
+                logger.warn(
+                        "Accessory {} already has a characteristic of type {}; ignoring additional definition from metadata.",
+                        accessory.getName(), c.getClass().getSimpleName());
+            } else {
+                rawCharacteristics.put(c.getClass(), c);
+            }
+        });
     }
 
     /**
@@ -88,6 +107,52 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @throws HomekitException
      */
     public void init() throws HomekitException {
+        // initialize the AccessoryInformation Service with defaults if not specified
+        if (!rawCharacteristics.containsKey(NameCharacteristic.class)) {
+            rawCharacteristics.put(NameCharacteristic.class, new NameCharacteristic(() -> {
+                return CompletableFuture.completedFuture(accessory.getItem().getLabel());
+            }));
+        }
+
+        if (!isLinkedService()) {
+            if (!rawCharacteristics.containsKey(IdentifyCharacteristic.class)) {
+                rawCharacteristics.put(IdentifyCharacteristic.class, new IdentifyCharacteristic(v -> {
+                }));
+            }
+            if (!rawCharacteristics.containsKey(ManufacturerCharacteristic.class)) {
+                rawCharacteristics.put(ManufacturerCharacteristic.class, new ManufacturerCharacteristic(() -> {
+                    return CompletableFuture.completedFuture("none");
+                }));
+            }
+            if (!rawCharacteristics.containsKey(ModelCharacteristic.class)) {
+                rawCharacteristics.put(ModelCharacteristic.class, new ModelCharacteristic(() -> {
+                    return CompletableFuture.completedFuture("none");
+                }));
+            }
+            if (!rawCharacteristics.containsKey(SerialNumberCharacteristic.class)) {
+                rawCharacteristics.put(SerialNumberCharacteristic.class, new SerialNumberCharacteristic(() -> {
+                    return CompletableFuture.completedFuture(accessory.getItem().getName());
+                }));
+            }
+            if (!rawCharacteristics.containsKey(FirmwareRevisionCharacteristic.class)) {
+                rawCharacteristics.put(FirmwareRevisionCharacteristic.class, new FirmwareRevisionCharacteristic(() -> {
+                    return CompletableFuture.completedFuture("none");
+                }));
+            }
+
+            var service = new AccessoryInformationService(getCharacteristic(IdentifyCharacteristic.class).get(),
+                    getCharacteristic(ManufacturerCharacteristic.class).get(),
+                    getCharacteristic(ModelCharacteristic.class).get(),
+                    getCharacteristic(NameCharacteristic.class).get(),
+                    getCharacteristic(SerialNumberCharacteristic.class).get(),
+                    getCharacteristic(FirmwareRevisionCharacteristic.class).get());
+
+            getCharacteristic(HardwareRevisionCharacteristic.class)
+                    .ifPresent(c -> service.addOptionalCharacteristic(c));
+
+            // make sure this is the first service
+            services.add(0, service);
+        }
     }
 
     /**
@@ -97,6 +162,20 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      */
     public boolean isLinkable(HomekitAccessory parentAccessory) {
         return false;
+    }
+
+    /**
+     * Sets if this accessory is being used as a linked service.
+     */
+    public void setIsLinkedService(boolean value) {
+        isLinkedService = value;
+    }
+
+    /**
+     * @return If this accessory is being used as a linked service.
+     */
+    public boolean isLinkedService() {
+        return isLinkedService;
     }
 
     /**
@@ -118,32 +197,36 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
 
     @Override
     public CompletableFuture<String> getName() {
-        return CompletableFuture.completedFuture(accessory.getItem().getLabel());
+        return getCharacteristic(NameCharacteristic.class).get().getValue();
     }
 
     @Override
     public CompletableFuture<String> getManufacturer() {
-        return CompletableFuture.completedFuture("none");
+        return getCharacteristic(ManufacturerCharacteristic.class).get().getValue();
     }
 
     @Override
     public CompletableFuture<String> getModel() {
-        return CompletableFuture.completedFuture("none");
+        return getCharacteristic(ModelCharacteristic.class).get().getValue();
     }
 
     @Override
     public CompletableFuture<String> getSerialNumber() {
-        return CompletableFuture.completedFuture(accessory.getItem().getName());
+        return getCharacteristic(SerialNumberCharacteristic.class).get().getValue();
     }
 
     @Override
     public CompletableFuture<String> getFirmwareRevision() {
-        return CompletableFuture.completedFuture("none");
+        return getCharacteristic(FirmwareRevisionCharacteristic.class).get().getValue();
     }
 
     @Override
     public void identify() {
-        // We're not going to support this for now
+        try {
+            getCharacteristic(IdentifyCharacteristic.class).get().setValue(true);
+        } catch (Exception e) {
+            // ignore
+        }
     }
 
     public HomekitTaggedItem getRootAccessory() {
@@ -153,6 +236,25 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     @Override
     public Collection<Service> getServices() {
         return this.services;
+    }
+
+    public void addService(Service service) {
+        services.add(service);
+
+        var serviceClass = service.getClass();
+        rawCharacteristics.values().forEach(characteristic -> {
+            // belongs on the accessory information service
+            if (characteristic.getClass() == NameCharacteristic.class) {
+                return;
+            }
+            try {
+                // if the service supports adding this characteristic as optional, add it!
+                serviceClass.getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
+                        characteristic);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                // the service doesn't support this optional characteristic; ignore it
+            }
+        });
     }
 
     protected HomekitAccessoryUpdater getUpdater() {
@@ -270,19 +372,19 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     @NonNullByDefault
-    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(
             HomekitCharacteristicType characteristicType, Class<T> klazz) {
         return createMapping(characteristicType, klazz, null, false);
     }
 
     @NonNullByDefault
-    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(
             HomekitCharacteristicType characteristicType, Class<T> klazz, boolean inverted) {
         return createMapping(characteristicType, klazz, null, inverted);
     }
 
     @NonNullByDefault
-    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(
             HomekitCharacteristicType characteristicType, Class<T> klazz, @Nullable List<T> customEnumList) {
         return createMapping(characteristicType, klazz, customEnumList, false);
     }
@@ -296,7 +398,7 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @return mapping of enum values to custom string values
      */
     @NonNullByDefault
-    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(
             HomekitCharacteristicType characteristicType, Class<T> klazz, @Nullable List<T> customEnumList,
             boolean inverted) {
         HomekitTaggedItem item = getCharacteristic(characteristicType).get();
@@ -314,11 +416,12 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @return key for the value
      */
     @NonNullByDefault
-    public <T> T getKeyFromMapping(HomekitCharacteristicType characteristicType, Map<T, String> mapping,
+    public <T> T getKeyFromMapping(HomekitCharacteristicType characteristicType, Map<T, Object> mapping,
             T defaultValue) {
         final Optional<HomekitTaggedItem> c = getCharacteristic(characteristicType);
         if (c.isPresent()) {
-            return HomekitCharacteristicFactory.getKeyFromMapping(c.get(), mapping, defaultValue);
+            return HomekitCharacteristicFactory.getKeyFromMapping(c.get(), c.get().getItem().getState(), mapping,
+                    defaultValue);
         }
         return defaultValue;
     }
@@ -348,11 +451,40 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
             return;
         }
         rawCharacteristics.put(characteristic.getClass(), characteristic);
+        // belongs on the accessory information service
+        if (characteristic.getClass() == NameCharacteristic.class) {
+            return;
+        }
         var service = getPrimaryService();
         if (service != null) {
             // find the corresponding add method at service and call it.
             service.getClass().getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
                     characteristic);
+        }
+    }
+
+    /**
+     * Takes the NameCharacteristic that normally exists on the AccessoryInformationService,
+     * and puts it on the primary service.
+     */
+    public void promoteNameCharacteristic() {
+        var characteristic = getCharacteristic(NameCharacteristic.class);
+        if (!characteristic.isPresent()) {
+            return;
+        }
+
+        var service = getPrimaryService();
+        if (service != null) {
+            try {
+                // find the corresponding add method at service and call it.
+                service.getClass().getMethod("addOptionalCharacteristic", NameCharacteristic.class).invoke(service,
+                        characteristic.get());
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                // This should never happen; all services should support NameCharacteristic as an optional
+                // Characteristic.
+                // If HAP-Java defined a service that doesn't support addOptionalCharacteristic(NameCharacteristic),
+                // Then it's a bug there, and we're just going to ignore the exception here.
+            }
         }
     }
 

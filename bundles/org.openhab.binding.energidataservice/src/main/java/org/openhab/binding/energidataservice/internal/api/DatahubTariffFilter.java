@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,11 @@
 package org.openhab.binding.energidataservice.internal.api;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Filter for the DatahubPricelist dataset.
@@ -27,21 +29,31 @@ public class DatahubTariffFilter {
 
     private final Set<ChargeTypeCode> chargeTypeCodes;
     private final Set<String> notes;
-    private final DateQueryParameter dateQueryParameter;
+    private final DateQueryParameter start;
+    private final DateQueryParameter end;
 
-    public DatahubTariffFilter(DatahubTariffFilter filter, DateQueryParameter dateQueryParameter) {
-        this(filter.chargeTypeCodes, filter.notes, dateQueryParameter);
+    public DatahubTariffFilter(DatahubTariffFilter filter, DateQueryParameter start) {
+        this(filter, start, DateQueryParameter.EMPTY);
+    }
+
+    public DatahubTariffFilter(DatahubTariffFilter filter, DateQueryParameter start, DateQueryParameter end) {
+        this(filter.chargeTypeCodes, filter.notes, start, end);
     }
 
     public DatahubTariffFilter(Set<ChargeTypeCode> chargeTypeCodes, Set<String> notes) {
         this(chargeTypeCodes, notes, DateQueryParameter.EMPTY);
     }
 
-    public DatahubTariffFilter(Set<ChargeTypeCode> chargeTypeCodes, Set<String> notes,
-            DateQueryParameter dateQueryParameter) {
+    public DatahubTariffFilter(Set<ChargeTypeCode> chargeTypeCodes, Set<String> notes, DateQueryParameter start) {
+        this(chargeTypeCodes, notes, start, DateQueryParameter.EMPTY);
+    }
+
+    public DatahubTariffFilter(Set<ChargeTypeCode> chargeTypeCodes, Set<String> notes, DateQueryParameter start,
+            DateQueryParameter end) {
         this.chargeTypeCodes = chargeTypeCodes;
         this.notes = notes;
-        this.dateQueryParameter = dateQueryParameter;
+        this.start = start;
+        this.end = end;
     }
 
     public Collection<String> getChargeTypeCodesAsStrings() {
@@ -52,7 +64,34 @@ public class DatahubTariffFilter {
         return notes;
     }
 
-    public DateQueryParameter getDateQueryParameter() {
-        return dateQueryParameter;
+    public DateQueryParameter getStart() {
+        return start;
+    }
+
+    public DateQueryParameter getEnd() {
+        return end;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof DatahubTariffFilter other)) {
+            return false;
+        }
+
+        return chargeTypeCodes.equals(other.chargeTypeCodes) && notes.equals(other.notes) && start.equals(other.start)
+                && end.equals(other.end);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(chargeTypeCodes, notes, start, end);
+    }
+
+    @Override
+    public String toString() {
+        return chargeTypeCodes.toString() + "," + notes.toString() + "," + start + "," + end;
     }
 }

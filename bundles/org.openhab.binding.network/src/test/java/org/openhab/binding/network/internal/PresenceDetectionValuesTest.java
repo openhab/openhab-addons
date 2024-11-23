@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,9 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Duration;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -23,47 +26,40 @@ import org.junit.jupiter.api.Test;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class PresenceDetectionValuesTest {
     @Test
     public void updateLatencyTests() {
-        PresenceDetectionValue value = new PresenceDetectionValue("127.0.0.1", 10.0);
-        assertThat(value.getLowestLatency(), is(10.0));
-        value.updateLatency(20.0);
-        assertThat(value.getLowestLatency(), is(10.0));
-        value.updateLatency(0.0);
-        assertThat(value.getLowestLatency(), is(10.0));
-        value.updateLatency(5.0);
-        assertThat(value.getLowestLatency(), is(5.0));
+        PresenceDetectionValue value = new PresenceDetectionValue("127.0.0.1", Duration.ofMillis(10));
+        assertThat(value.getLowestLatency(), is(Duration.ofMillis(10)));
+        value.updateLatency(Duration.ofMillis(20));
+        assertThat(value.getLowestLatency(), is(Duration.ofMillis(10)));
+        value.updateLatency(Duration.ofMillis(0));
+        assertThat(value.getLowestLatency(), is(Duration.ofMillis(10)));
+        value.updateLatency(Duration.ofMillis(5));
+        assertThat(value.getLowestLatency(), is(Duration.ofMillis(5)));
     }
 
     @Test
     public void tcpTests() {
-        PresenceDetectionValue value = new PresenceDetectionValue("127.0.0.1", 10.0);
-        assertFalse(value.isTCPServiceReachable());
-        value.addReachableTcpService(1010);
-        assertThat(value.getReachableTCPports(), hasItem(1010));
-        value.addType(PresenceDetectionType.TCP_CONNECTION);
-        assertTrue(value.isTCPServiceReachable());
+        PresenceDetectionValue value = new PresenceDetectionValue("127.0.0.1", Duration.ofMillis(10));
+        assertFalse(value.isTcpServiceReachable());
+        value.addReachableTcpPort(1010);
+        assertThat(value.getReachableTcpPorts(), hasItem(1010));
+        value.addReachableDetectionType(PresenceDetectionType.TCP_CONNECTION);
+        assertTrue(value.isTcpServiceReachable());
         assertThat(value.getSuccessfulDetectionTypes(), is("TCP_CONNECTION"));
     }
 
     @Test
-    public void isFinishedTests() {
-        PresenceDetectionValue value = new PresenceDetectionValue("127.0.0.1", 10.0);
-        assertFalse(value.isFinished());
-        value.setDetectionIsFinished(true);
-        assertTrue(value.isFinished());
-    }
-
-    @Test
     public void pingTests() {
-        PresenceDetectionValue value = new PresenceDetectionValue("127.0.0.1", 10.0);
+        PresenceDetectionValue value = new PresenceDetectionValue("127.0.0.1", Duration.ofMillis(10));
         assertFalse(value.isPingReachable());
-        value.addType(PresenceDetectionType.ICMP_PING);
+        value.addReachableDetectionType(PresenceDetectionType.ICMP_PING);
         assertTrue(value.isPingReachable());
 
-        value.addType(PresenceDetectionType.ARP_PING);
-        value.addType(PresenceDetectionType.TCP_CONNECTION);
+        value.addReachableDetectionType(PresenceDetectionType.ARP_PING);
+        value.addReachableDetectionType(PresenceDetectionType.TCP_CONNECTION);
         assertThat(value.getSuccessfulDetectionTypes(), is("ARP_PING, ICMP_PING, TCP_CONNECTION"));
     }
 }

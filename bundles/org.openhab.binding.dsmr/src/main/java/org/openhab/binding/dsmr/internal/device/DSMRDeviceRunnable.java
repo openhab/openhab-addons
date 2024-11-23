@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dsmr.internal.device;
 
-import java.util.Optional;
+import java.util.Objects;
 import java.util.concurrent.Semaphore;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -88,7 +88,7 @@ public class DSMRDeviceRunnable implements Runnable {
         } catch (final RuntimeException e) {
             logger.warn("DSMRDeviceRunnable stopped with a RuntimeException", e);
             portEventListener.onError(DSMRErrorStatus.SERIAL_DATA_READ_ERROR,
-                    Optional.ofNullable(e.getMessage()).orElse(""));
+                    Objects.requireNonNullElse(e.getMessage(), ""));
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {

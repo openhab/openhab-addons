@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.digiplex.internal.communication;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -37,7 +38,7 @@ public enum ArmDisarmType {
     }
 
     public static ArmDisarmType fromMessage(String indicator) {
-        return Arrays.stream(ArmDisarmType.values()).filter(type -> type.indicator.equals(indicator)).findFirst()
-                .orElse(UNKNOWN);
+        return Objects.requireNonNull(Arrays.stream(ArmDisarmType.values())
+                .filter(type -> type.indicator.equals(indicator)).findFirst().orElse(UNKNOWN));
     }
 }

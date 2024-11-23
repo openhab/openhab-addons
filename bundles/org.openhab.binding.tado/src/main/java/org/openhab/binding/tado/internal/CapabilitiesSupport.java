@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,12 +18,12 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tado.internal.api.model.AcModeCapabilities;
-import org.openhab.binding.tado.internal.api.model.AirConditioningCapabilities;
-import org.openhab.binding.tado.internal.api.model.ControlDevice;
-import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
-import org.openhab.binding.tado.internal.api.model.TadoSystemType;
-import org.openhab.binding.tado.internal.api.model.Zone;
+import org.openhab.binding.tado.swagger.codegen.api.model.AcModeCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.AirConditioningCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.ControlDevice;
+import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.TadoSystemType;
+import org.openhab.binding.tado.swagger.codegen.api.model.Zone;
 
 /**
  * The {@link CapabilitiesSupport} class checks which type of channels are needed in a thing that is to be built around

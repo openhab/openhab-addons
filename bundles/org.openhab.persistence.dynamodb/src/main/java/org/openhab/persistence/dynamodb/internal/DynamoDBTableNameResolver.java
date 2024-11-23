@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,7 +105,7 @@ public class DynamoDBTableNameResolver {
      */
     private String getTableNameAccordingToLegacySchema(DynamoDBItem<?> item) {
         // Use the visitor pattern to deduce the table name
-        return item.accept(new DynamoDBItemVisitor<String>() {
+        return item.accept(new DynamoDBItemVisitor<>() {
 
             @Override
             public String visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {

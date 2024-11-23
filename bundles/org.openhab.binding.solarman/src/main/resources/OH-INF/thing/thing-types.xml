@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarman"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="logger" extensible="true">
+		<label>Solarman Logger</label>
+		<description>This thing allows communication with Solarman (IGEN-Tech) v5 based solar inverter data loggers over the
+			local network. Compatible with inverters from manufacturers such as Deye, Sofar, Solis, ZCS Azzurro, and KStar.</description>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the Solarman logger.</description>
+				<advanced>false</advanced>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>Port</label>
+				<description>Port of the Solarman logger (default 8899).</description>
+				<default>8899</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="inverterType" type="text" required="true">
+				<label>Inverter Type</label>
+				<description>The type of inverter connected to the logger (default deye_sg04lp3).</description>
+				<advanced>false</advanced>
+				<options>
+					<option value="deye_2mppt">DEYE Microinverter with 2 MPPT Trackers (deye_2mppt)</option>
+					<option value="deye_4mppt">DEYE Microinverter with 4 MPPT Trackers (deye_4mppt)</option>
+					<option value="deye_hybrid">Generic DEYE/Sunsynk/SolArk Hybrid inverters (deye_hybrid)</option>
+					<option value="deye_sg04lp3">DEYE/Sunsynk/SolArk Hybrid 8/12K-SG04LP3 (deye_sg04lp3)</option>
+					<option value="deye_string">Generic DEYE/Sunsynk/SolArk String inverters (deye_string)</option>
+					<option value="kstar_hybrid">KSTAR Hybrid Inverter (kstar_hybrid)</option>
+					<option value="sofar_g3hyd">SOFAR Hybrid Three-Phase Inverter (sofar_g3hyd)</option>
+					<option value="sofar_hyd3k-6k-es">SOFAR Hybrid Single-Phase Inverter (sofar_hyd3k-6k-es)</option>
+					<option value="sofar_lsw3">SOFAR Inverters (sofar_lsw3)</option>
+					<option value="sofar_wifikit">SOFAR WifiKit (sofar_wifikit)</option>
+					<option value="solis_1p8k-5g">SOLIS 1P8K-5G (solis_1p8k-5g)</option>
+					<option value="solis_3p-4g">SOLIS Three-Phase Inverter 4G Series (solis_3p-4g)</option>
+					<option value="solis_s6-gr1p">SOLIS Single-Phase Inverter S6-GR1P (solis_s6-gr1p)</option>
+					<option value="solis_hybrid">SOLIS Hybrid Inverter (solis_hybrid)</option>
+					<option value="hyd-zss-hp-3k-6k">ZCS Azzurro Hybrid HP 3K-6K Inverters (hyd-zss-hp-3k-6k)</option>
+					<option value="zcs_azzurro-ktl-v3">ZCS Azzurro KTL-V3 Inverters (zcs_azzurro-ktl-v3)</option>
+				</options>
+			</parameter>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>Serial number of the Solarman logger.</description>
+				<advanced>false</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false" unit="s" min="30">
+				<label>Refresh Interval</label>
+				<description>Interval to query the logger (default 60).</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="solarmanLoggerMode" type="text" required="false">
+				<label>Logger Mode</label>
+				<description>Use RAW Modbus for LAN Stick LSE-3 and V5 NODBUS for most Wifi Sticks. If your Wifi stick uses Raw
+					Modbus choose RAW. If you do not use this advanced option, V5 MODBUS will be the default.</description>
+				<options>
+					<option value="V5MODBUS">V5 Modbus</option>
+					<option value="RAWMODBUS">RAW Modbus</option>
+				</options>
+				<default>V5MODBUS</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="additionalRequests" type="text" required="false">
+				<label>Additional Requests</label>
+				<description>Additional requests besides the ones defined in the inverter definition.
+					Format is
+					mb_functioncode1:start1-end1, mb_functioncode2:start2-end2,...
+					Example 0x03:0x0000-0x0100,0x03:0x0200-0x0300
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

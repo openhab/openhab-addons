@@ -1,0 +1,394 @@
+# First version: 22.02.2023
+# Latest update: 08.09.2023
+# Microinverter SUN600G3 (DEYE/VESDAS)
+# 2x MPPT, 2x inverter
+# 1x Logger, 2x Module, 
+
+requests:
+  - start: 0x0001
+    end:  0x007D
+    mb_functioncode: 0x03
+
+parameters:
+  - group: solar
+    items: 
+    - name: "PV1 Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [0x006D]
+      icon: 'mdi:solar-power'
+
+    - name: "PV2 Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [0x006F]
+      icon: 'mdi:solar-power'
+
+    - name: "PV1 Current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [0x006E]
+      icon: 'mdi:solar-power'
+
+    - name: "PV2 Current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [0x0070]
+      icon: 'mdi:solar-power'
+
+    - name: "Daily Production"
+      class: "energy"
+      state_class: "total"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [0x003C]
+      icon: 'mdi:solar-power'
+
+    - name: "Daily Production 1"
+      class: "energy"
+      state_class: "total"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [0x0041]
+      icon: 'mdi:solar-power'
+
+    - name: "Daily Production 2"
+      class: "energy"
+      state_class: "total"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [0x0042]
+      icon: 'mdi:solar-power'
+
+    - name: "Total Production"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 0.1
+      rule: 3
+      registers: [0x003F,0x0040]
+      icon: 'mdi:solar-power'
+      validation:
+        min: 0.1
+
+    - name: "Total Production 1"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 0.1
+      rule: 3
+      registers: [0x0045]
+      icon: 'mdi:solar-power'
+
+    - name: "Total Production 2"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 0.1
+      rule: 3
+      registers: [0x0047]
+      icon: 'mdi:solar-power'
+
+    - name: "Active Power Regulations"
+      class: ""
+      state_class: ""
+      uom: "%"
+      scale: 1
+      rule: 1
+      registers: [0x0028]
+      icon: 'mdi:solar-power'
+
+  - group: Grid
+    items:
+    - name: "AC Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [0x0049]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Grid Current"
+      class: "current"
+      state_class: "measurement"      
+      uom: "A"
+      scale: 0.1
+      rule: 2
+      registers: [0x004C]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "AC Output Frequency"
+      class: "frequency"
+      state_class: "measurement"
+      uom: "Hz"
+      scale: 0.01
+      rule: 1
+      registers: [0x004F]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Grid Voltage Upp Limit"
+      class: "voltage"
+      state_class: ""
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [0x001B]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Grid Voltage Lower Limit"
+      class: "voltage"
+      state_class: ""
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [0x001C]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Grid Frequency Upper Limit"
+      class: "frequency"
+      state_class: ""
+      uom: "Hz"
+      scale: 0.01
+      rule: 1
+      registers: [0x001D]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Grid Frequency Lower Limit"
+      class: "frequency"
+      state_class: ""
+      uom: "Hz"
+      scale: 0.01
+      rule: 1
+      registers: [0x001E]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Overfrequency And Load Reduction Starting Point"
+      class: "frequency"
+      state_class: ""
+      uom: "Hz"
+      scale: 0.01
+      rule: 1
+      registers: [0x0022]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Overfrequency And Load Reduction Percentage"
+      class: ""
+      state_class: ""
+      uom: "%"
+      scale: 1
+      rule: 1
+      registers: [0x0023]
+      icon: ''
+
+    - name: "ON-OFF Enable"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x002B]
+      isstr: true
+      lookup:
+      - key: 0
+        value: "OFF"
+      - key: 1
+        value: "ON"
+      icon: 'mdi:toggle-switch'
+
+    - name: "Island Protection Enable"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x002E]
+      isstr: true
+      lookup:
+      - key: 0
+        value: "Disabled"
+      - key: 1
+        value: "Enabled"
+      icon: 'mdi:island'
+
+    - name: "Overfrequency&Load-shedding Enable"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x0031]
+      isstr: true
+      lookup:
+      - key: 0
+        value: "Disabled"
+      - key: 1
+        value: "Enabled"
+      icon: 'mdi:toggle-switch'
+
+  - group: Inverter
+    items:
+    - name: "Running Status"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x003B]
+      isstr: true
+      lookup:
+      - key: 0
+        value: "Stand-by"
+      - key: 1
+        value: "Self-check"
+      - key: 2
+        value: "Normal"
+      - key: 3
+        value: "Warning"
+      - key: 4
+        value: "Fault"
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Total AC Output Power (Active)"
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
+      scale: 0.1
+      rule: 3
+      registers: [0x0056, 0x0057]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Radiator Temperature"
+      class: "temperature"
+      uom: "°C"
+      state_class: "measurement"
+      scale: 0.01
+      rule: 1
+      offset: 1000
+      registers: [0x005a]
+
+    - name: "Inverter ID"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 5
+      registers: [0x0003,0x0004,0x0005,0x0006,0x0007]
+      isstr: true
+
+    - name: "Hardware Version"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 7
+      registers: [0x000C]
+      isstr: true
+
+    - name: "DC Master Firmware Version"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 7
+      registers: [0x000D]
+      isstr: true
+
+    - name: "AC Version. Number"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 7
+      registers: [0x000E]
+      isstr: true
+
+    - name: "Rated Power"
+      class: "energy"
+      state_class: ""
+      uom: "W"
+      scale: 0.1
+      rule: 1
+      registers: [0x0010]
+      icon: 'mdi:solar-power'
+
+    - name: "Communication Protocol Version"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 7
+      registers: [0x0012]
+      isstr: true
+
+    - name: "Start-up Self-checking Time "
+      class: ""
+      state_class: ""
+      uom: "s"
+      scale: 1
+      rule: 1
+      registers: [0x0015]
+      icon: 'mdi:solar-power'
+
+    - name: "Update Time"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 8
+      registers: [0x0016,0x0017,0x0018]
+      isstr: true
+
+    - name: "Soft Start Enable"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x002F]
+      isstr: true
+      lookup:
+      - key: 0
+        value: "Disabled"
+      - key: 1
+        value: "Enabled"
+      icon: 'mdi:toggle-switch'
+
+    - name: "Power Factor Regulation"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 0.1
+      rule: 2
+      registers: [0x0032]
+      icon: ''
+
+    - name: "Restore Factory Settings"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x0036]
+      isstr: true
+      lookup:
+      - key: 0
+        value: "Disabled"
+      - key: 1
+        value: "Enabled"
+      icon: 'mdi:factory'

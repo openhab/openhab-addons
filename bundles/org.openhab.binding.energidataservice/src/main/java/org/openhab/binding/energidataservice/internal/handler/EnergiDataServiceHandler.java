@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,50 +18,56 @@ import static org.openhab.core.types.TimeSeries.Policy.REPLACE;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Currency;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.energidataservice.internal.ApiController;
-import org.openhab.binding.energidataservice.internal.CacheManager;
 import org.openhab.binding.energidataservice.internal.DatahubTariff;
+import org.openhab.binding.energidataservice.internal.PriceListParser;
 import org.openhab.binding.energidataservice.internal.action.EnergiDataServiceActions;
 import org.openhab.binding.energidataservice.internal.api.ChargeType;
 import org.openhab.binding.energidataservice.internal.api.ChargeTypeCode;
 import org.openhab.binding.energidataservice.internal.api.DatahubTariffFilter;
-import org.openhab.binding.energidataservice.internal.api.DatahubTariffFilterFactory;
 import org.openhab.binding.energidataservice.internal.api.DateQueryParameter;
 import org.openhab.binding.energidataservice.internal.api.DateQueryParameterType;
 import org.openhab.binding.energidataservice.internal.api.GlobalLocationNumber;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecord;
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
+import org.openhab.binding.energidataservice.internal.api.filter.DatahubTariffFilterFactory;
 import org.openhab.binding.energidataservice.internal.config.DatahubPriceConfiguration;
 import org.openhab.binding.energidataservice.internal.config.EnergiDataServiceConfiguration;
 import org.openhab.binding.energidataservice.internal.exception.DataServiceException;
-import org.openhab.binding.energidataservice.internal.retry.RetryPolicyFactory;
-import org.openhab.binding.energidataservice.internal.retry.RetryStrategy;
+import org.openhab.binding.energidataservice.internal.provider.Co2EmissionProvider;
+import org.openhab.binding.energidataservice.internal.provider.ElectricityPriceProvider;
+import org.openhab.binding.energidataservice.internal.provider.cache.ElectricityPriceSubscriptionCache;
+import org.openhab.binding.energidataservice.internal.provider.listener.Co2EmissionListener;
+import org.openhab.binding.energidataservice.internal.provider.listener.ElectricityPriceListener;
+import org.openhab.binding.energidataservice.internal.provider.subscription.Co2EmissionSubscription;
+import org.openhab.binding.energidataservice.internal.provider.subscription.DatahubPriceSubscription;
+import org.openhab.binding.energidataservice.internal.provider.subscription.ElectricityPriceSubscription;
+import org.openhab.binding.energidataservice.internal.provider.subscription.SpotPriceSubscription;
+import org.openhab.binding.energidataservice.internal.provider.subscription.Subscription;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.CurrencyUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -77,8 +83,6 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link EnergiDataServiceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -86,30 +90,32 @@ import com.google.gson.Gson;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class EnergiDataServiceHandler extends BaseThingHandler {
+public class EnergiDataServiceHandler extends BaseThingHandler
+        implements ElectricityPriceListener, Co2EmissionListener {
+
+    private static final Map<String, DatahubTariff> CHANNEL_ID_TO_DATAHUB_TARIFF = Arrays.stream(DatahubTariff.values())
+            .collect(Collectors.toMap(DatahubTariff::getChannelId, Function.identity()));
 
     private final Logger logger = LoggerFactory.getLogger(EnergiDataServiceHandler.class);
     private final TimeZoneProvider timeZoneProvider;
     private final ApiController apiController;
-    private final CacheManager cacheManager;
-    private final Gson gson = new Gson();
+    private final ElectricityPriceProvider electricityPriceProvider;
+    private final Co2EmissionProvider co2EmissionProvider;
+    private final DatahubTariffFilterFactory datahubTariffFilterFactory;
+    private final Set<Subscription> activeSubscriptions = new HashSet<>();
 
     private EnergiDataServiceConfiguration config;
-    private RetryStrategy retryPolicy = RetryPolicyFactory.initial();
-    private @Nullable ScheduledFuture<?> refreshFuture;
-    private @Nullable ScheduledFuture<?> priceUpdateFuture;
 
-    private record Price(String hourStart, BigDecimal spotPrice, String spotPriceCurrency,
-            @Nullable BigDecimal gridTariff, @Nullable BigDecimal systemTariff,
-            @Nullable BigDecimal transmissionGridTariff, @Nullable BigDecimal electricityTax,
-            @Nullable BigDecimal reducedElectricityTax) {
-    }
-
-    public EnergiDataServiceHandler(Thing thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
+    public EnergiDataServiceHandler(final Thing thing, final HttpClient httpClient,
+            final TimeZoneProvider timeZoneProvider, final ElectricityPriceProvider electricityPriceProvider,
+            final Co2EmissionProvider co2EmissionProvider,
+            final DatahubTariffFilterFactory datahubTariffFilterFactory) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
         this.apiController = new ApiController(httpClient, timeZoneProvider);
-        this.cacheManager = new CacheManager();
+        this.electricityPriceProvider = electricityPriceProvider;
+        this.co2EmissionProvider = co2EmissionProvider;
+        this.datahubTariffFilterFactory = datahubTariffFilterFactory;
 
         // Default configuration
         this.config = new EnergiDataServiceConfiguration();
@@ -121,8 +127,17 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             return;
         }
 
-        if (ELECTRICITY_CHANNELS.contains(channelUID.getId())) {
-            refreshElectricityPrices();
+        String channelId = channelUID.getId();
+        if (ELECTRICITY_CHANNELS.contains(channelId)) {
+            if (!electricityPriceProvider.forceRefreshPrices(getChannelSubscription(channelId))) {
+                // All subscriptions are automatically notified upon actual changes after download.
+                // If cached values are the same, we will update the requested channel directly.
+                updateChannelFromCache(getChannelSubscription(channelId), channelId);
+            }
+        } else if (CO2_EMISSION_CHANNELS.contains(channelId)) {
+            Subscription subscription = getChannelSubscription(channelId);
+            unsubscribe(subscription);
+            subscribe(subscription);
         }
     }
 
@@ -148,25 +163,19 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
-
-        refreshFuture = scheduler.schedule(this::refreshElectricityPrices, 0, TimeUnit.SECONDS);
+        if (SUBSCRIPTION_CHANNELS.stream().anyMatch(this::isLinked)) {
+            updateStatus(ThingStatus.UNKNOWN);
+            subscribeLinkedChannels();
+        } else {
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> refreshFuture = this.refreshFuture;
-        if (refreshFuture != null) {
-            refreshFuture.cancel(true);
-            this.refreshFuture = null;
-        }
-        ScheduledFuture<?> priceUpdateFuture = this.priceUpdateFuture;
-        if (priceUpdateFuture != null) {
-            priceUpdateFuture.cancel(true);
-            this.priceUpdateFuture = null;
-        }
-
-        cacheManager.clear();
+        electricityPriceProvider.unsubscribe(this);
+        co2EmissionProvider.unsubscribe(this);
+        activeSubscriptions.clear();
     }
 
     @Override
@@ -174,123 +183,217 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         return Set.of(EnergiDataServiceActions.class);
     }
 
-    private void refreshElectricityPrices() {
-        RetryStrategy retryPolicy;
-        try {
-            if (isLinked(CHANNEL_SPOT_PRICE) || isLinked(CHANNEL_HOURLY_PRICES)) {
-                downloadSpotPrices();
-            }
-
-            for (DatahubTariff datahubTariff : DatahubTariff.values()) {
-                if (isLinked(datahubTariff.getChannelId()) || isLinked(CHANNEL_HOURLY_PRICES)) {
-                    downloadTariffs(datahubTariff);
-                }
-            }
-
-            updateStatus(ThingStatus.ONLINE);
-            updatePrices();
-            updateTimeSeries();
-
-            if (isLinked(CHANNEL_SPOT_PRICE) || isLinked(CHANNEL_HOURLY_PRICES)) {
-                if (cacheManager.getNumberOfFutureSpotPrices() < 13) {
-                    retryPolicy = RetryPolicyFactory.whenExpectedSpotPriceDataMissing(DAILY_REFRESH_TIME_CET,
-                            NORD_POOL_TIMEZONE);
-                } else {
-                    retryPolicy = RetryPolicyFactory.atFixedTime(DAILY_REFRESH_TIME_CET, NORD_POOL_TIMEZONE);
-                }
-            } else {
-                retryPolicy = RetryPolicyFactory.atFixedTime(LocalTime.MIDNIGHT, timeZoneProvider.getTimeZone());
-            }
-        } catch (DataServiceException e) {
-            if (e.getHttpStatus() != 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        HttpStatus.getCode(e.getHttpStatus()).getMessage());
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-            }
-            if (e.getCause() != null) {
-                logger.debug("Error retrieving prices", e);
-            }
-            retryPolicy = RetryPolicyFactory.fromThrowable(e);
-        } catch (InterruptedException e) {
-            logger.debug("Refresh job interrupted");
-            Thread.currentThread().interrupt();
-            return;
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        String channelId = channelUID.getId();
+        if (!SUBSCRIPTION_CHANNELS.contains(channelId)) {
+            // Do not trigger REFRESH command for subscription-based channels, we will trigger
+            // a state update ourselves through relevant provider.
+            super.channelLinked(channelUID);
         }
 
-        rescheduleRefreshJob(retryPolicy);
+        if (ELECTRICITY_CHANNELS.contains(channelId)) {
+            Subscription subscription = getChannelSubscription(channelId);
+            if (subscribe(subscription)) {
+                logger.debug("First item linked to channel '{}', starting {}", channelId, subscription);
+            } else {
+                updateChannelFromCache(subscription, channelId);
+            }
+        } else if (CO2_EMISSION_CHANNELS.contains(channelId)) {
+            if ("DK1".equals(config.priceArea) || "DK2".equals(config.priceArea)) {
+                Subscription subscription = getChannelSubscription(channelId);
+                if (subscribe(subscription)) {
+                    logger.debug("First item linked to channel '{}', starting {}", channelId, subscription);
+                }
+            } else {
+                logger.warn("Item linked to channel '{}', but price area {} is not supported for this channel",
+                        channelId, config.priceArea);
+            }
+        }
     }
 
-    private void downloadSpotPrices() throws InterruptedException, DataServiceException {
-        if (cacheManager.areSpotPricesFullyCached()) {
-            logger.debug("Cached spot prices still valid, skipping download.");
-            return;
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        super.channelUnlinked(channelUID);
+
+        String channelId = channelUID.getId();
+        if (SUBSCRIPTION_CHANNELS.contains(channelId) && !isLinked(channelId)) {
+            Subscription subscription = getChannelSubscription(channelId);
+            logger.debug("No more items linked to channel '{}', stopping {}", channelId, subscription);
+            unsubscribe(getChannelSubscription(channelId));
         }
-        DateQueryParameter start;
-        if (cacheManager.areHistoricSpotPricesCached()) {
-            start = DateQueryParameter.of(DateQueryParameterType.UTC_NOW);
-        } else {
-            start = DateQueryParameter.of(DateQueryParameterType.UTC_NOW,
-                    Duration.ofHours(-CacheManager.NUMBER_OF_HISTORIC_HOURS));
+    }
+
+    @Override
+    public void onDayAheadAvailable() {
+        triggerChannel(CHANNEL_EVENT, EVENT_DAY_AHEAD_AVAILABLE);
+    }
+
+    @Override
+    public void onCurrentSpotPrice(@Nullable BigDecimal price, Currency currency) {
+        updateStatus(ThingStatus.ONLINE);
+        updatePriceState(CHANNEL_SPOT_PRICE, price, currency);
+    }
+
+    @Override
+    public void onSpotPrices(Map<Instant, BigDecimal> spotPrices, Currency currency) {
+        updateStatus(ThingStatus.ONLINE);
+        updatePriceTimeSeries(CHANNEL_SPOT_PRICE, spotPrices, currency, false);
+    }
+
+    @Override
+    public void onCurrentTariff(DatahubTariff datahubTariff, @Nullable BigDecimal tariff) {
+        updateStatus(ThingStatus.ONLINE);
+        updatePriceState(datahubTariff.getChannelId(), tariff, CURRENCY_DKK);
+    }
+
+    @Override
+    public void onTariffs(DatahubTariff datahubTariff, Map<Instant, BigDecimal> tariffs) {
+        updateStatus(ThingStatus.ONLINE);
+        updatePriceTimeSeries(datahubTariff.getChannelId(), tariffs, CURRENCY_DKK, true);
+    }
+
+    @Override
+    public void onCurrentEmission(Co2EmissionSubscription.Type type, BigDecimal emission) {
+        updateStatus(ThingStatus.ONLINE);
+        updateState(type == Co2EmissionSubscription.Type.Prognosis ? CHANNEL_CO2_EMISSION_PROGNOSIS
+                : CHANNEL_CO2_EMISSION_REALTIME, new QuantityType<>(emission, Units.GRAM_PER_KILOWATT_HOUR));
+    }
+
+    @Override
+    public void onEmissions(Co2EmissionSubscription.Type type, Map<Instant, BigDecimal> emissions) {
+        updateStatus(ThingStatus.ONLINE);
+        TimeSeries timeSeries = new TimeSeries(REPLACE);
+        for (Entry<Instant, BigDecimal> emission : emissions.entrySet()) {
+            timeSeries.add(emission.getKey(), new QuantityType<>(emission.getValue(), Units.GRAM_PER_KILOWATT_HOUR));
         }
-        Map<String, String> properties = editProperties();
-        ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(config.priceArea, config.getCurrency(),
-                start, properties);
-        cacheManager.putSpotPrices(spotPriceRecords, config.getCurrency());
+        sendTimeSeries(type == Co2EmissionSubscription.Type.Prognosis ? CHANNEL_CO2_EMISSION_PROGNOSIS
+                : CHANNEL_CO2_EMISSION_REALTIME, timeSeries);
+    }
+
+    @Override
+    public void onPropertiesUpdated(Map<String, String> properties) {
         updateProperties(properties);
     }
 
-    private void downloadTariffs(DatahubTariff datahubTariff) throws InterruptedException, DataServiceException {
-        GlobalLocationNumber globalLocationNumber = switch (datahubTariff) {
+    @Override
+    public void onCommunicationError(@Nullable String description) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, description);
+    }
+
+    @Override
+    public String toString() {
+        return this.thing.getUID().getAsString();
+    }
+
+    private void subscribeLinkedChannels() {
+        if (isLinked(CHANNEL_SPOT_PRICE)) {
+            subscribe(getChannelSubscription(CHANNEL_SPOT_PRICE));
+        }
+
+        Arrays.stream(DatahubTariff.values()).filter(tariff -> isLinked(tariff.getChannelId()))
+                .map(tariff -> DatahubPriceSubscription.of(tariff, getGlobalLocationNumber(tariff),
+                        getDatahubTariffFilter(tariff)))
+                .forEach(this::subscribe);
+
+        if ("DK1".equals(config.priceArea) || "DK2".equals(config.priceArea)) {
+            CO2_EMISSION_CHANNELS.stream().filter(this::isLinked)
+                    .forEach(channelId -> subscribe(getChannelSubscription(channelId)));
+        }
+    }
+
+    private boolean subscribe(Subscription subscription) {
+        if (activeSubscriptions.add(subscription)) {
+            if (subscription instanceof ElectricityPriceSubscription) {
+                electricityPriceProvider.subscribe(this, subscription);
+            } else if (subscription instanceof Co2EmissionSubscription) {
+                co2EmissionProvider.subscribe(this, subscription);
+            } else {
+                throw new IllegalArgumentException(subscription.getClass().getName() + " is not supported");
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void unsubscribe(Subscription subscription) {
+        if (activeSubscriptions.remove(subscription)) {
+            if (subscription instanceof ElectricityPriceSubscription) {
+                electricityPriceProvider.unsubscribe(this, subscription);
+            } else if (subscription instanceof Co2EmissionSubscription) {
+                co2EmissionProvider.unsubscribe(this, subscription);
+            } else {
+                throw new IllegalArgumentException(subscription.getClass().getName() + " is not supported");
+            }
+        }
+    }
+
+    private Subscription getChannelSubscription(String channelId) {
+        if (CHANNEL_SPOT_PRICE.equals(channelId)) {
+            return SpotPriceSubscription.of(config.priceArea, config.getCurrency());
+        } else if (CHANNEL_CO2_EMISSION_PROGNOSIS.equals(channelId)) {
+            return Co2EmissionSubscription.of(config.priceArea, Co2EmissionSubscription.Type.Prognosis);
+        } else if (CHANNEL_CO2_EMISSION_REALTIME.equals(channelId)) {
+            return Co2EmissionSubscription.of(config.priceArea, Co2EmissionSubscription.Type.Realtime);
+        } else {
+            DatahubTariff tariff = CHANNEL_ID_TO_DATAHUB_TARIFF.get(channelId);
+
+            if (tariff != null) {
+                return DatahubPriceSubscription.of(tariff, getGlobalLocationNumber(tariff),
+                        getDatahubTariffFilter(tariff));
+            }
+        }
+        throw new IllegalArgumentException("Could not create subscription for channel id " + channelId);
+    }
+
+    private void updateChannelFromCache(Subscription subscription, String channelId) {
+        BigDecimal currentPrice = electricityPriceProvider.getCurrentPriceIfCached(subscription);
+        Map<Instant, BigDecimal> prices = electricityPriceProvider.getPricesIfCached(subscription);
+        if (subscription instanceof SpotPriceSubscription) {
+            updatePriceState(channelId, currentPrice, config.getCurrency());
+            updatePriceTimeSeries(channelId, prices, config.getCurrency(), false);
+        } else if (subscription instanceof DatahubPriceSubscription) {
+            updatePriceState(channelId, currentPrice, CURRENCY_DKK);
+            updatePriceTimeSeries(channelId, prices, CURRENCY_DKK, true);
+        }
+    }
+
+    private DatahubTariffFilter getDatahubTariffFilter(DatahubTariff datahubTariff) {
+        return switch (datahubTariff) {
+            case GRID_TARIFF -> getGridTariffFilter();
+            case SYSTEM_TARIFF -> DatahubTariffFilterFactory.getSystemTariff();
+            case TRANSMISSION_GRID_TARIFF -> DatahubTariffFilterFactory.getTransmissionGridTariff();
+            case ELECTRICITY_TAX -> DatahubTariffFilterFactory.getElectricityTax();
+            case REDUCED_ELECTRICITY_TAX -> DatahubTariffFilterFactory.getReducedElectricityTax();
+        };
+    }
+
+    private GlobalLocationNumber getGlobalLocationNumber(DatahubTariff datahubTariff) {
+        return switch (datahubTariff) {
             case GRID_TARIFF -> config.getGridCompanyGLN();
             default -> config.getEnerginetGLN();
         };
-        if (globalLocationNumber.isEmpty()) {
-            return;
-        }
-        if (cacheManager.areTariffsValidTomorrow(datahubTariff)) {
-            logger.debug("Cached tariffs of type {} still valid, skipping download.", datahubTariff);
-            cacheManager.updateTariffs(datahubTariff);
-        } else {
-            DatahubTariffFilter filter = switch (datahubTariff) {
-                case GRID_TARIFF -> getGridTariffFilter();
-                case SYSTEM_TARIFF -> DatahubTariffFilterFactory.getSystemTariff();
-                case TRANSMISSION_GRID_TARIFF -> DatahubTariffFilterFactory.getTransmissionGridTariff();
-                case ELECTRICITY_TAX -> DatahubTariffFilterFactory.getElectricityTax();
-                case REDUCED_ELECTRICITY_TAX -> DatahubTariffFilterFactory.getReducedElectricityTax();
-            };
-            cacheManager.putTariffs(datahubTariff, downloadPriceLists(globalLocationNumber, filter));
-        }
-    }
-
-    private Collection<DatahubPricelistRecord> downloadPriceLists(GlobalLocationNumber globalLocationNumber,
-            DatahubTariffFilter filter) throws InterruptedException, DataServiceException {
-        Map<String, String> properties = editProperties();
-        Collection<DatahubPricelistRecord> records = apiController.getDatahubPriceLists(globalLocationNumber,
-                ChargeType.Tariff, filter, properties);
-        updateProperties(properties);
-
-        return records;
     }
 
     private DatahubTariffFilter getGridTariffFilter() {
         Channel channel = getThing().getChannel(CHANNEL_GRID_TARIFF);
         if (channel == null) {
-            return DatahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN);
+            return datahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN);
         }
 
         DatahubPriceConfiguration datahubPriceConfiguration = channel.getConfiguration()
                 .as(DatahubPriceConfiguration.class);
 
         if (!datahubPriceConfiguration.hasAnyFilterOverrides()) {
-            return DatahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN);
+            return datahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN);
         }
 
         DateQueryParameter start = datahubPriceConfiguration.getStart();
         if (start == null) {
             logger.warn("Invalid channel configuration parameter 'start' or 'offset': {} (offset: {})",
                     datahubPriceConfiguration.start, datahubPriceConfiguration.offset);
-            return DatahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN);
+            return datahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN);
         }
 
         Set<ChargeTypeCode> chargeTypeCodes = datahubPriceConfiguration.getChargeTypeCodes();
@@ -301,38 +404,12 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             filter = new DatahubTariffFilter(chargeTypeCodes, notes, start);
         } else {
             // Only override start date in pre-configured filter.
-            filter = new DatahubTariffFilter(DatahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN),
+            filter = new DatahubTariffFilter(datahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN),
                     start);
         }
 
-        return new DatahubTariffFilter(filter, DateQueryParameter.of(filter.getDateQueryParameter(),
-                Duration.ofHours(-CacheManager.NUMBER_OF_HISTORIC_HOURS)));
-    }
-
-    private void updatePrices() {
-        cacheManager.cleanup();
-
-        updateCurrentSpotPrice();
-        Arrays.stream(DatahubTariff.values())
-                .forEach(tariff -> updateCurrentTariff(tariff.getChannelId(), cacheManager.getTariff(tariff)));
-        updateHourlyPrices();
-
-        reschedulePriceUpdateJob();
-    }
-
-    private void updateCurrentSpotPrice() {
-        if (!isLinked(CHANNEL_SPOT_PRICE)) {
-            return;
-        }
-        BigDecimal spotPrice = cacheManager.getSpotPrice();
-        updatePriceState(CHANNEL_SPOT_PRICE, spotPrice, config.getCurrency());
-    }
-
-    private void updateCurrentTariff(String channelId, @Nullable BigDecimal tariff) {
-        if (!isLinked(channelId)) {
-            return;
-        }
-        updatePriceState(channelId, tariff, CURRENCY_DKK);
+        return new DatahubTariffFilter(filter, DateQueryParameter.of(filter.getStart(),
+                Duration.ofHours(-ElectricityPriceSubscriptionCache.NUMBER_OF_HISTORIC_HOURS)));
     }
 
     private void updatePriceState(String channelID, @Nullable BigDecimal price, Currency currency) {
@@ -340,89 +417,125 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     }
 
     private State getEnergyPrice(BigDecimal price, Currency currency) {
-        Unit<?> unit = CurrencyUnits.getInstance().getUnit(currency.getCurrencyCode());
+        String currencyCode = currency.getCurrencyCode();
+        Unit<?> unit = CurrencyUnits.getInstance().getUnit(currencyCode);
         if (unit == null) {
             logger.trace("Currency {} is unknown, falling back to DecimalType", currency.getCurrencyCode());
             return new DecimalType(price);
         }
         try {
-            String currencyUnit = unit.getSymbol();
-            if (currencyUnit == null) {
-                currencyUnit = unit.getName();
-            }
-            return new QuantityType<>(price + " " + currencyUnit + "/kWh");
+            return new QuantityType<>(price + " " + currencyCode + "/kWh");
         } catch (IllegalArgumentException e) {
             logger.debug("Unable to create QuantityType, falling back to DecimalType", e);
             return new DecimalType(price);
         }
     }
 
-    private void updateHourlyPrices() {
-        if (!isLinked(CHANNEL_HOURLY_PRICES)) {
-            return;
+    /**
+     * Download spot prices in requested period and update corresponding channel with time series.
+     * 
+     * @param startDate Start date of period
+     * @param endDate End date of period
+     * @return number of published states
+     */
+    public int updateSpotPriceTimeSeries(LocalDate startDate, LocalDate endDate)
+            throws InterruptedException, DataServiceException {
+        if (!isLinked(CHANNEL_SPOT_PRICE)) {
+            return 0;
         }
-        Map<Instant, BigDecimal> spotPriceMap = cacheManager.getSpotPrices();
-        Price[] targetPrices = new Price[spotPriceMap.size()];
-        List<Entry<Instant, BigDecimal>> sourcePrices = spotPriceMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey()).toList();
-
-        int i = 0;
-        for (Entry<Instant, BigDecimal> sourcePrice : sourcePrices) {
-            Instant hourStart = sourcePrice.getKey();
-            BigDecimal gridTariff = cacheManager.getTariff(DatahubTariff.GRID_TARIFF, hourStart);
-            BigDecimal systemTariff = cacheManager.getTariff(DatahubTariff.SYSTEM_TARIFF, hourStart);
-            BigDecimal transmissionGridTariff = cacheManager.getTariff(DatahubTariff.TRANSMISSION_GRID_TARIFF,
-                    hourStart);
-            BigDecimal electricityTax = cacheManager.getTariff(DatahubTariff.ELECTRICITY_TAX, hourStart);
-            BigDecimal reducedElectricityTax = cacheManager.getTariff(DatahubTariff.REDUCED_ELECTRICITY_TAX, hourStart);
-            targetPrices[i++] = new Price(hourStart.toString(), sourcePrice.getValue(), config.currencyCode, gridTariff,
-                    systemTariff, electricityTax, reducedElectricityTax, transmissionGridTariff);
+        Map<String, String> properties = editProperties();
+        try {
+            Currency currency = config.getCurrency();
+            ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(config.priceArea, currency,
+                    DateQueryParameter.of(startDate), DateQueryParameter.of(endDate.plusDays(1)), properties);
+            boolean isDKK = CURRENCY_DKK.equals(currency);
+            TimeSeries spotPriceTimeSeries = new TimeSeries(REPLACE);
+            if (spotPriceRecords.length == 0) {
+                return 0;
+            }
+            for (ElspotpriceRecord record : Arrays.stream(spotPriceRecords)
+                    .sorted(Comparator.comparing(ElspotpriceRecord::hour)).toList()) {
+                spotPriceTimeSeries.add(record.hour(), getEnergyPrice(
+                        (isDKK ? record.spotPriceDKK() : record.spotPriceEUR()).divide(BigDecimal.valueOf(1000)),
+                        currency));
+            }
+            sendTimeSeries(CHANNEL_SPOT_PRICE, spotPriceTimeSeries);
+            return spotPriceRecords.length;
+        } finally {
+            updateProperties(properties);
         }
-        updateState(CHANNEL_HOURLY_PRICES, new StringType(gson.toJson(targetPrices)));
     }
 
-    private void updateTimeSeries() {
-        TimeSeries spotPriceTimeSeries = new TimeSeries(REPLACE);
-        Map<DatahubTariff, TimeSeries> datahubTimeSeriesMap = new HashMap<>();
-        for (DatahubTariff datahubTariff : DatahubTariff.values()) {
-            datahubTimeSeriesMap.put(datahubTariff, new TimeSeries(REPLACE));
+    /**
+     * Download tariffs in requested period and update corresponding channel with time series.
+     * 
+     * @param datahubTariff Tariff to update
+     * @param startDate Start date of period
+     * @param endDate End date of period
+     * @return number of published states
+     */
+    public int updateTariffTimeSeries(DatahubTariff datahubTariff, LocalDate startDate, LocalDate endDate)
+            throws InterruptedException, DataServiceException {
+        if (!isLinked(datahubTariff.getChannelId())) {
+            return 0;
         }
+        GlobalLocationNumber globalLocationNumber = getGlobalLocationNumber(datahubTariff);
+        if (globalLocationNumber.isEmpty()) {
+            return 0;
+        }
+        DatahubTariffFilter filter = getDatahubTariffFilter(datahubTariff);
+        DateQueryParameter start = filter.getStart();
+        DateQueryParameterType filterStartDateType = start.getDateType();
+        LocalDate filterStartDate = start.getDate();
+        if (filterStartDateType != null) {
+            // For filters with date relative to current date, override with provided parameters.
+            filter = new DatahubTariffFilter(filter, DateQueryParameter.of(startDate), DateQueryParameter.of(endDate));
+        } else if (filterStartDate != null && startDate.isBefore(filterStartDate)) {
+            throw new IllegalArgumentException("Start date before " + start.getDate() + " is not supported");
+        }
+        Collection<DatahubPricelistRecord> datahubRecords = downloadPriceLists(globalLocationNumber, filter);
+        ZoneId zoneId = timeZoneProvider.getTimeZone();
+        Instant firstHourStart = startDate.atStartOfDay(zoneId).toInstant();
+        Instant lastHourStart = endDate.plusDays(1).atStartOfDay(zoneId).toInstant();
+        Map<Instant, BigDecimal> tariffMap = new PriceListParser().toHourly(datahubRecords, firstHourStart,
+                lastHourStart);
 
-        Map<Instant, BigDecimal> spotPriceMap = cacheManager.getSpotPrices();
-        List<Entry<Instant, BigDecimal>> spotPrices = spotPriceMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey()).toList();
-        for (Entry<Instant, BigDecimal> spotPrice : spotPrices) {
-            Instant hourStart = spotPrice.getKey();
-            if (isLinked(CHANNEL_SPOT_PRICE)) {
-                spotPriceTimeSeries.add(hourStart, getEnergyPrice(spotPrice.getValue(), config.getCurrency()));
-            }
-            for (Map.Entry<DatahubTariff, TimeSeries> entry : datahubTimeSeriesMap.entrySet()) {
-                DatahubTariff datahubTariff = entry.getKey();
-                String channelId = datahubTariff.getChannelId();
-                if (!isLinked(channelId)) {
-                    continue;
-                }
-                BigDecimal tariff = cacheManager.getTariff(datahubTariff, hourStart);
-                if (tariff != null) {
-                    TimeSeries timeSeries = entry.getValue();
-                    timeSeries.add(hourStart, getEnergyPrice(tariff, CURRENCY_DKK));
-                }
-            }
+        return updatePriceTimeSeries(datahubTariff.getChannelId(), tariffMap, CURRENCY_DKK, true);
+    }
+
+    private Collection<DatahubPricelistRecord> downloadPriceLists(GlobalLocationNumber globalLocationNumber,
+            DatahubTariffFilter filter) throws InterruptedException, DataServiceException {
+        Map<String, String> properties = editProperties();
+        try {
+            return apiController.getDatahubPriceLists(globalLocationNumber, ChargeType.Tariff, filter, properties);
+        } finally {
+            updateProperties(properties);
         }
-        if (spotPriceTimeSeries.size() > 0) {
-            sendTimeSeries(CHANNEL_SPOT_PRICE, spotPriceTimeSeries);
+    }
+
+    private int updatePriceTimeSeries(String channelId, Map<Instant, BigDecimal> priceMap, Currency currency,
+            boolean deduplicate) {
+        if (!isLinked(channelId)) {
+            return 0;
         }
-        for (Map.Entry<DatahubTariff, TimeSeries> entry : datahubTimeSeriesMap.entrySet()) {
-            DatahubTariff datahubTariff = entry.getKey();
-            String channelId = datahubTariff.getChannelId();
-            if (!isLinked(channelId)) {
+        List<Entry<Instant, BigDecimal>> prices = priceMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .toList();
+        TimeSeries timeSeries = new TimeSeries(REPLACE);
+        BigDecimal previousTariff = null;
+        for (Entry<Instant, BigDecimal> price : prices) {
+            Instant hourStart = price.getKey();
+            BigDecimal priceValue = price.getValue();
+            if (deduplicate && priceValue.equals(previousTariff)) {
+                // Skip redundant states.
                 continue;
             }
-            TimeSeries timeSeries = entry.getValue();
-            if (timeSeries.size() > 0) {
-                sendTimeSeries(channelId, timeSeries);
-            }
+            timeSeries.add(hourStart, getEnergyPrice(priceValue, currency));
+            previousTariff = priceValue;
         }
+        if (timeSeries.size() > 0) {
+            sendTimeSeries(channelId, timeSeries);
+        }
+        return timeSeries.size();
     }
 
     /**
@@ -441,19 +554,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
      * @return Map of future spot prices
      */
     public Map<Instant, BigDecimal> getSpotPrices() {
-        try {
-            downloadSpotPrices();
-        } catch (DataServiceException e) {
-            if (logger.isDebugEnabled()) {
-                logger.warn("Error retrieving spot prices", e);
-            } else {
-                logger.warn("Error retrieving spot prices: {}", e.getMessage());
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        return cacheManager.getSpotPrices();
+        return this.getPrices(getChannelSubscription(CHANNEL_SPOT_PRICE));
     }
 
     /**
@@ -463,19 +564,20 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
      * @return Map of future tariffs
      */
     public Map<Instant, BigDecimal> getTariffs(DatahubTariff datahubTariff) {
+        return this.getPrices(DatahubPriceSubscription.of(datahubTariff, getGlobalLocationNumber(datahubTariff),
+                getDatahubTariffFilter(datahubTariff)));
+    }
+
+    private Map<Instant, BigDecimal> getPrices(Subscription subscription) {
         try {
-            downloadTariffs(datahubTariff);
+            return electricityPriceProvider.getPrices(subscription);
         } catch (DataServiceException e) {
-            if (logger.isDebugEnabled()) {
-                logger.warn("Error retrieving tariffs", e);
-            } else {
-                logger.warn("Error retrieving tariffs of type {}: {}", datahubTariff, e.getMessage());
-            }
+            logger.warn("Error retrieving prices for subscription {}: {}", subscription, e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
-        return cacheManager.getTariffs(datahubTariff);
+        return Map.of();
     }
 
     /**
@@ -485,43 +587,5 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
      */
     public boolean isReducedElectricityTax() {
         return config.reducedElectricityTax;
-    }
-
-    private void reschedulePriceUpdateJob() {
-        ScheduledFuture<?> priceUpdateJob = this.priceUpdateFuture;
-        if (priceUpdateJob != null) {
-            // Do not interrupt ourselves.
-            priceUpdateJob.cancel(false);
-            this.priceUpdateFuture = null;
-        }
-
-        Instant now = Instant.now();
-        long millisUntilNextClockHour = Duration
-                .between(now, now.plus(1, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS)).toMillis() + 1;
-        this.priceUpdateFuture = scheduler.schedule(this::updatePrices, millisUntilNextClockHour,
-                TimeUnit.MILLISECONDS);
-        logger.debug("Price update job rescheduled in {} milliseconds", millisUntilNextClockHour);
-    }
-
-    private void rescheduleRefreshJob(RetryStrategy retryPolicy) {
-        // Preserve state of previous retry policy when configuration is the same.
-        if (!retryPolicy.equals(this.retryPolicy)) {
-            this.retryPolicy = retryPolicy;
-        }
-
-        ScheduledFuture<?> refreshJob = this.refreshFuture;
-
-        long secondsUntilNextRefresh = this.retryPolicy.getDuration().getSeconds();
-        Instant timeOfNextRefresh = Instant.now().plusSeconds(secondsUntilNextRefresh);
-        this.refreshFuture = scheduler.schedule(this::refreshElectricityPrices, secondsUntilNextRefresh,
-                TimeUnit.SECONDS);
-        logger.debug("Refresh job rescheduled in {} seconds: {}", secondsUntilNextRefresh, timeOfNextRefresh);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PROPERTY_DATETIME_FORMAT);
-        updateProperty(PROPERTY_NEXT_CALL, LocalDateTime.ofInstant(timeOfNextRefresh, timeZoneProvider.getTimeZone())
-                .truncatedTo(ChronoUnit.SECONDS).format(formatter));
-
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
-        }
     }
 }

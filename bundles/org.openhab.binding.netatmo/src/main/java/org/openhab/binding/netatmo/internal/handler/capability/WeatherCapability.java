@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,11 +30,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class WeatherCapability extends CacheWeatherCapability {
+public class WeatherCapability extends CacheCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(WeatherCapability.class);
 
     public WeatherCapability(CommonInterface handler) {
-        super(handler, Duration.ofSeconds(2));
+        super(handler, Duration.ofSeconds(10), WeatherApi.class);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class WeatherCapability extends CacheWeatherCapability {
         try {
             return List.of(owned ? api.getOwnedStationData(handler.getId()) : api.getStationData(handler.getId()));
         } catch (NetatmoException e) {
-            logger.warn("Error retrieving weather data '{}' : {}", handler.getId(), e.getMessage());
+            logger.warn("Error retrieving weather data '{}': {}", handler.getId(), e.getMessage());
         }
         return List.of();
     }

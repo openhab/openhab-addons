@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,8 +43,8 @@ import org.xml.sax.SAXException;
  *
  * This class parses this XML data and provides functions for reading and casting typical fields.
  *
- * @author Rainer Ostendorf
- * @author Patrick Koenemann
+ * @author Rainer Ostendorf - Initial contribution
+ * @author Patrick Koenemann - Improvements
  *
  */
 public class FrontierSiliconRadioApiResult {

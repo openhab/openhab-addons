@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -33,6 +33,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.DoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,6 +70,7 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceCronStrategy;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -98,8 +100,18 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
-        QueryablePersistenceService.class }, configurationPid = "org.openhab.rrd4j", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+        QueryablePersistenceService.class }, configurationPid = "org.openhab.rrd4j", configurationPolicy = ConfigurationPolicy.OPTIONAL, property = Constants.SERVICE_PID
+                + "=org.openhab.rrd4j")
 public class RRD4jPersistenceService implements QueryablePersistenceService {
+
+    private record Key(long timestamp, String name) implements Comparable<Key> {
+        @Override
+        public int compareTo(Key other) {
+            int c = Long.compare(timestamp, other.timestamp);
+
+            return (c == 0) ? Objects.compare(name, other.name, String::compareTo) : c;
+        }
+    }
 
     public static final String SERVICE_ID = "rrd4j";
 
@@ -115,7 +127,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     private final Map<String, RrdDefConfig> rrdDefs = new ConcurrentHashMap<>();
 
-    private final ConcurrentSkipListMap<Long, Map<String, Double>> storageMap = new ConcurrentSkipListMap<>();
+    private final ConcurrentSkipListMap<Key, Double> storageMap = new ConcurrentSkipListMap<>(Key::compareTo);
 
     private static final String DATASOURCE_STATE = "state";
 
@@ -317,7 +329,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         long now = System.currentTimeMillis() / 1000;
-        Double oldValue = storageMap.computeIfAbsent(now, t -> new ConcurrentHashMap<>()).put(name, value);
+        Double oldValue = storageMap.put(new Key(now, name), value);
         if (oldValue != null && !oldValue.equals(value)) {
             logger.debug(
                     "Discarding value {} for item {} with timestamp {} because a new value ({}) arrived with the same timestamp.",
@@ -326,14 +338,14 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     private void doStore(boolean force) {
+        long now = System.currentTimeMillis() / 1000;
         while (!storageMap.isEmpty()) {
-            long timestamp = storageMap.firstKey();
-            long now = System.currentTimeMillis() / 1000;
-            if (now > timestamp || force) {
+            Key key = storageMap.firstKey();
+            if (now > key.timestamp || force) {
                 // no new elements can be added for this timestamp because we are already past that time or the service
                 // requires forced storing
-                Map<String, Double> values = storageMap.pollFirstEntry().getValue();
-                values.forEach((name, value) -> writePointToDatabase(name, value, timestamp));
+                Double value = storageMap.pollFirstEntry().getValue();
+                writePointToDatabase(key.name, value, key.timestamp);
             } else {
                 return;
             }
@@ -360,9 +372,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 if (timestamp - 1 > db.getLastUpdateTime()) {
                     // only do it if there is not already a value
                     double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
-                    if (!Double.isNaN(lastValue)) {
-                        Sample sample = db.createSample();
-                        sample.setTime(timestamp - 1);
+                    if (!Double.isNaN(lastValue) && lastValue != value) {
+                        Sample sample = db.createSample(timestamp - 1);
                         sample.setValue(DATASOURCE_STATE, lastValue);
                         sample.update();
                         logger.debug("Stored '{}' as value '{}' with timestamp {} in rrd4j database (again)", name,
@@ -374,12 +385,11 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             }
         }
         try {
-            Sample sample = db.createSample();
-            sample.setTime(timestamp);
+            Sample sample = db.createSample(timestamp);
             double storeValue = value;
             if (db.getDatasource(DATASOURCE_STATE).getType() == DsType.COUNTER) {
                 // counter values must be adjusted by stepsize
-                storeValue = value * db.getRrdDef().getStep();
+                storeValue = value * db.getHeader().getStep();
             }
             sample.setValue(DATASOURCE_STATE, storeValue);
             sample.update();
@@ -430,6 +440,9 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         Unit<?> unit = null;
         try {
             item = itemRegistry.getItem(itemName);
+            if (item instanceof GroupItem groupItem) {
+                item = groupItem.getBaseItem();
+            }
             if (item instanceof NumberItem numberItem) {
                 // we already retrieve the unit here once as it is a very costly operation,
                 // see https://github.com/openhab/openhab-addons/issues/8928
@@ -443,6 +456,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         long end = filterEndDate == null ? System.currentTimeMillis() / 1000
                 : filterEndDate.toInstant().getEpochSecond();
 
+        DoubleFunction<State> toState = toStateMapper(item, unit);
+
         try {
             if (filterBeginDate == null) {
                 // as rrd goes back for years and gets more and more inaccurate, we only support descending order
@@ -451,13 +466,12 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
                         && filter.getPageNumber() == 0) {
                     if (filterEndDate == null || Duration.between(filterEndDate, ZonedDateTime.now()).getSeconds() < db
-                            .getRrdDef().getStep()) {
+                            .getHeader().getStep()) {
                         // we are asked only for the most recent value!
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
-                            HistoricItem rrd4jItem = new RRD4jItem(itemName, mapToState(lastValue, item, unit),
-                                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(db.getLastArchiveUpdateTime() * 1000),
-                                            ZoneId.systemDefault()));
+                            HistoricItem rrd4jItem = new RRD4jItem(itemName, toState.apply(lastValue),
+                                    Instant.ofEpochSecond(db.getLastArchiveUpdateTime()));
                             return List.of(rrd4jItem);
                         } else {
                             return List.of();
@@ -487,10 +501,21 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             List<HistoricItem> items = new ArrayList<>();
             long ts = result.getFirstTimestamp();
             long step = result.getRowCount() > 1 ? result.getStep() : 0;
+
+            double prevValue = Double.NaN;
+            State prevState = null;
             for (double value : result.getValues(DATASOURCE_STATE)) {
                 if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
-                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, mapToState(value, item, unit),
-                            ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
+                    State state;
+
+                    if (prevValue == value) {
+                        state = prevState;
+                    } else {
+                        prevState = state = toState.apply(value);
+                        prevValue = value;
+                    }
+
+                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, state, Instant.ofEpochSecond(ts));
                     items.add(rrd4jItem);
                 }
                 ts += step;
@@ -597,31 +622,33 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     public ConsolFun getConsolidationFunction(RrdDb db) {
         try {
-            return db.getRrdDef().getArcDefs()[0].getConsolFun();
+            return db.getArchive(0).getConsolFun();
         } catch (IOException e) {
             return ConsolFun.MAX;
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private State mapToState(double value, @Nullable Item item, @Nullable Unit unit) {
-        if (item instanceof GroupItem groupItem) {
-            item = groupItem.getBaseItem();
-        }
-
+    /**
+     * Get the state Mapper for a given item
+     *
+     * @param item the item (in case of a group item, the base item has to be supplied)
+     * @param unit the unit to use
+     * @return the state mapper
+     */
+    private <Q extends Quantity<Q>> DoubleFunction<State> toStateMapper(@Nullable Item item, @Nullable Unit<Q> unit) {
         if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
-            return OnOffType.from(value != 0.0d);
+            return (value) -> OnOffType.from(value != 0.0d);
         } else if (item instanceof ContactItem) {
-            return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            return (value) -> value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
         } else if (item instanceof DimmerItem || item instanceof RollershutterItem || item instanceof ColorItem) {
             // make sure Items that need PercentTypes instead of DecimalTypes do receive the right information
-            return new PercentType((int) Math.round(value * 100));
+            return (value) -> new PercentType((int) Math.round(value * 100));
         } else if (item instanceof NumberItem) {
             if (unit != null) {
-                return new QuantityType(value, unit);
+                return (value) -> new QuantityType<>(value, unit);
             }
         }
-        return new DecimalType(value);
+        return DecimalType::new;
     }
 
     private boolean isSupportedItemType(Item item) {

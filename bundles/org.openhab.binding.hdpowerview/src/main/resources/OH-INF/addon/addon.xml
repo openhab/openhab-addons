@@ -27,6 +27,15 @@
 				</discovery-parameter>
 			</discovery-parameters>
 		</discovery-method>
+		<discovery-method>
+			<service-type>sddp</service-type>
+			<match-properties>
+				<match-property>
+					<name>type</name>
+					<regex>hunterdouglas.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
 	</discovery-methods>
 
 </addon:addon>

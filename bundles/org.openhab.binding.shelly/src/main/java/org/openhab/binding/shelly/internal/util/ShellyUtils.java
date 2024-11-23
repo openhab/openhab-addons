@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import javax.measure.Unit;
 
@@ -236,13 +237,16 @@ public class ShellyUtils {
     }
 
     public static Double getNumber(Command command) throws IllegalArgumentException {
+        if (command instanceof QuantityType<?> quantityCommand) {
+            return quantityCommand.doubleValue();
+        }
         if (command instanceof DecimalType decimalCommand) {
             return decimalCommand.doubleValue();
         }
-        if (command instanceof QuantityType quantityCommand) {
-            return quantityCommand.doubleValue();
+        if (command instanceof Number numberCommand) {
+            return numberCommand.doubleValue();
         }
-        throw new IllegalArgumentException("Unable to convert number");
+        throw new IllegalArgumentException("Invalid Number type for conversion: " + command);
     }
 
     public static OnOffType getOnOff(@Nullable Boolean value) {
@@ -287,12 +291,12 @@ public class ShellyUtils {
         }
     }
 
-    public static Long now() {
-        return System.currentTimeMillis() / 1000L;
+    public static double now() {
+        return System.currentTimeMillis() / 1000.0;
     }
 
     public static DateTimeType getTimestamp() {
-        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(now()), ZoneId.systemDefault()));
+        return new DateTimeType(ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     }
 
     public static DateTimeType getTimestamp(String zone, long timestamp) {

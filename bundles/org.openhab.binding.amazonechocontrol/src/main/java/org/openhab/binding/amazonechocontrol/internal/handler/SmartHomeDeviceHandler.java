@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -184,7 +184,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         AccountHandler accountHandler = getAccountHandler();
         SmartHomeBaseDevice smartHomeBaseDevice = this.smartHomeBaseDevice;
         if (smartHomeBaseDevice == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Can't find smarthomeBaseDevice!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Can't find smarthomeBaseDevice");
             return;
         }
 

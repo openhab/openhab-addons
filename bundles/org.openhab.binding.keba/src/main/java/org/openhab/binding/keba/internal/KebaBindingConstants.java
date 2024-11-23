@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,10 +79,17 @@ public class KebaBindingConstants {
 
     public enum KebaSeries {
 
+        /*
+         * Mapping derived from:
+         * - https://www.keba.com/download/x/ea958eb797/kecontactp30_bden_web.pdf
+         * - https://www.keba.com/file/downloads/e-mobility/KeContact_KCP20_30_ih_de.pdf
+         * 'G' is still unclear
+         */
         E('0'),
         B('1'),
-        C('2', '3'),
-        X('A', 'B', 'C', 'D', 'E', 'G', 'H');
+        C('2', '3', 'A'), // '3' is P20 c-series + PLC
+        // A('3'), // '3' is also P30 a-series - but P30 a-series doesn't support the required UDS protocol
+        X('B', 'C', 'D', 'E', 'G', 'H', 'S', 'U');
 
         private final List<Character> things = new ArrayList<>();
 

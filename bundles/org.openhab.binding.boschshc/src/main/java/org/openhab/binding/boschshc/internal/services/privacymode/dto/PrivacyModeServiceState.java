@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.boschshc.internal.services.privacymode.dto;
 
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
-import org.openhab.binding.boschshc.internal.services.privacymode.PrivacyModeState;
+import org.openhab.binding.boschshc.internal.services.dto.EnabledDisabledState;
 
 /**
  * Represents the privacy mode of cameras as reported by the Smart Home Controller.
@@ -35,5 +35,5 @@ public class PrivacyModeServiceState extends BoschSHCServiceState {
      * {"@type":"privacyModeState","value":"ENABLED"}
      * </pre>
      */
-    public PrivacyModeState value;
+    public EnabledDisabledState value;
 }

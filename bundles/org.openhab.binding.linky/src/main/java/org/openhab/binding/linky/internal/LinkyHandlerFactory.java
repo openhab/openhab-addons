@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,6 +56,7 @@ import com.google.gson.JsonDeserializer;
 public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private static final DateTimeFormatter LINKY_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
     private static final int REQUEST_BUFFER_SIZE = 8000;
+    private static final int RESPONSE_BUFFER_SIZE = 200000;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
     private final Gson gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
@@ -83,6 +84,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
         this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID, sslContextFactory);
         httpClient.setFollowRedirects(false);
         httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
+        httpClient.setResponseBufferSize(RESPONSE_BUFFER_SIZE);
     }
 
     @Override

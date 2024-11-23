@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -33,6 +35,7 @@ public abstract class NeoHubSocketBase implements Closeable {
     protected final String hubId;
 
     private static final int REQUEST_INTERVAL_MILLISECS = 1000;
+    private final Lock lock = new ReentrantLock(true);
     private Optional<Instant> lastRequestTime = Optional.empty();
 
     public NeoHubSocketBase(NeoHubConfiguration config, String hubId) {
@@ -51,22 +54,31 @@ public abstract class NeoHubSocketBase implements Closeable {
     public abstract String sendMessage(final String requestJson) throws IOException, NeoHubException;
 
     /**
-     * Method for throttling requests to prevent overloading the hub.
+     * Class for throttling requests to prevent overloading the hub.
      * <p>
      * The NeoHub can get confused if, while it is uploading data to the cloud, it also receives too many local
      * requests, so this method throttles the requests to one per REQUEST_INTERVAL_MILLISECS maximum.
      *
-     * @throws NeoHubException if the wait is interrupted
+     * @throws InterruptedException if the wait is interrupted
      */
-    protected synchronized void throttle() throws NeoHubException {
-        try {
-            Instant now = Instant.now();
-            long delay = lastRequestTime
-                    .map(t -> Math.max(0, Duration.between(now, t).toMillis() + REQUEST_INTERVAL_MILLISECS)).orElse(0L);
-            lastRequestTime = Optional.of(now.plusMillis(delay));
+    protected class Throttler implements AutoCloseable {
+
+        public Throttler() throws InterruptedException {
+            lock.lock();
+            long delay;
+            synchronized (NeoHubSocketBase.this) {
+                Instant now = Instant.now();
+                delay = lastRequestTime
+                        .map(t -> Math.max(0, Duration.between(now, t).toMillis() + REQUEST_INTERVAL_MILLISECS))
+                        .orElse(0L);
+                lastRequestTime = Optional.of(now.plusMillis(delay));
+            }
             Thread.sleep(delay);
-        } catch (InterruptedException e) {
-            throw new NeoHubException("Throttle sleep interrupted", e);
+        }
+
+        @Override
+        public void close() {
+            lock.unlock();
         }
     }
 }

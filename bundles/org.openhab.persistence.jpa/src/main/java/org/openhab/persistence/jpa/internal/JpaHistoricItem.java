@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,13 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
@@ -34,12 +38,16 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.persistence.jpa.internal.model.JpaPersistentItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The historic item as returned when querying the service.
@@ -49,15 +57,16 @@ import org.openhab.persistence.jpa.internal.model.JpaPersistentItem;
  */
 @NonNullByDefault
 public class JpaHistoricItem implements HistoricItem {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JpaHistoricItem.class);
 
     private final String name;
     private final State state;
-    private final ZonedDateTime timestamp;
+    private final Instant instant;
 
-    public JpaHistoricItem(String name, State state, ZonedDateTime timestamp) {
+    public JpaHistoricItem(String name, State state, Instant instant) {
         this.name = name;
         this.state = state;
-        this.timestamp = timestamp;
+        this.instant = instant;
     }
 
     @Override
@@ -67,7 +76,12 @@ public class JpaHistoricItem implements HistoricItem {
 
     @Override
     public ZonedDateTime getTimestamp() {
-        return timestamp;
+        return instant.atZone(ZoneId.systemDefault());
+    }
+
+    @Override
+    public Instant getInstant() {
+        return instant;
     }
 
     @Override
@@ -77,7 +91,7 @@ public class JpaHistoricItem implements HistoricItem {
 
     @Override
     public String toString() {
-        return DateFormat.getDateTimeInstance().format(timestamp) + ": " + name + " -> " + state.toString();
+        return DateFormat.getDateTimeInstance().format(getTimestamp()) + ": " + name + " -> " + state;
     }
 
     /**
@@ -88,7 +102,8 @@ public class JpaHistoricItem implements HistoricItem {
      * @return list of historic items
      */
     public static List<HistoricItem> fromResultList(List<JpaPersistentItem> jpaQueryResult, Item item) {
-        return jpaQueryResult.stream().map(pItem -> fromPersistedItem(pItem, item)).collect(Collectors.toList());
+        return jpaQueryResult.stream().map(pItem -> fromPersistedItem(pItem, item)).filter(Objects::nonNull)
+                .map(Objects::requireNonNull).collect(Collectors.toList());
     }
 
     /**
@@ -98,10 +113,26 @@ public class JpaHistoricItem implements HistoricItem {
      * @param item the source reference Item
      * @return historic item
      */
-    public static HistoricItem fromPersistedItem(JpaPersistentItem pItem, Item item) {
+    public static @Nullable HistoricItem fromPersistedItem(JpaPersistentItem pItem, Item item) {
         State state;
-        if (item instanceof NumberItem) {
-            state = new DecimalType(Double.valueOf(pItem.getValue()));
+        if (item instanceof NumberItem numberItem) {
+            Unit<?> unit = numberItem.getUnit();
+            QuantityType<?> value = QuantityType.valueOf(pItem.getValue());
+            if (unit == null) {
+                // Item has no unit; drop any persisted unit
+                state = Objects.requireNonNull(value.as(DecimalType.class));
+            } else if (value.getUnit() == Units.ONE) {
+                // No persisted unit; assume the item's unit
+                state = new QuantityType<>(value.toBigDecimal(), unit);
+            } else {
+                // Ensure we return in the item's unit
+                state = value.toUnit(unit);
+                if (state == null) {
+                    LOGGER.warn("Persisted state {} for item {} is incompatible with item's unit {}; ignoring", value,
+                            item.getName(), unit);
+                    return null;
+                }
+            }
         } else if (item instanceof DimmerItem) {
             state = new PercentType(Integer.parseInt(pItem.getValue()));
         } else if (item instanceof SwitchItem) {
@@ -130,6 +161,6 @@ public class JpaHistoricItem implements HistoricItem {
             state = new StringType(pItem.getValue());
         }
 
-        return new JpaHistoricItem(item.getName(), state, pItem.getTimestamp());
+        return new JpaHistoricItem(item.getName(), state, pItem.getInstant());
     }
 }

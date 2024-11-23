@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,18 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.VideoStatu
 @NonNullByDefault
 public class HomeEvent extends Event {
     public class NAEventsDataResponse extends ApiResponse<BodyResponse<Home>> {
+    }
+
+    private record Snapshot(@Nullable String url, @Nullable ZonedDateTime expiresAt) {
+        public @Nullable String url() {
+            ZonedDateTime expires = expiresAt;
+            // If no expiration data provided, lets consider it is available
+            if (expires == null) {
+                return url;
+            }
+            // If the snapshot is expired we consider it as not available, so do not provide the url
+            return expires.isAfter(ZonedDateTime.now().withZoneSameInstant(expires.getZone())) ? url : null;
+        }
     }
 
     private ZonedDateTime time = ZonedDateTime.now();
@@ -93,20 +105,18 @@ public class HomeEvent extends Event {
 
     @Override
     public @Nullable String getSnapshotUrl() {
-        Snapshot image = snapshot;
-        return image != null ? image.getUrl() : null;
+        return internalGetUrl(snapshot);
     }
 
     public @Nullable String getVignetteUrl() {
-        Snapshot image = vignette;
-        return image != null ? image.getUrl() : null;
+        return internalGetUrl(vignette);
     }
 
-    public List<HomeEvent> getSubevents() {
-        return subevents;
+    public List<HomeEvent> getSubEvents() {
+        return subevents.stream().peek(subevent -> subevent.setCameraId(getCameraId())).toList();
     }
 
-    public @Nullable Snapshot getVignette() {
-        return vignette;
+    private @Nullable String internalGetUrl(@Nullable Snapshot image) {
+        return image == null ? null : image.url();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,8 +69,7 @@ public class DatahubPriceConfiguration {
      */
     public Set<ChargeTypeCode> getChargeTypeCodes() {
         return chargeTypeCodes.isBlank() ? new HashSet<>()
-                : new HashSet<ChargeTypeCode>(
-                        Arrays.stream(chargeTypeCodes.split(",")).map(ChargeTypeCode::new).toList());
+                : new HashSet<>(Arrays.stream(chargeTypeCodes.split(",")).map(ChargeTypeCode::new).toList());
     }
 
     /**
@@ -79,7 +78,7 @@ public class DatahubPriceConfiguration {
      * @return Set of notes.
      */
     public Set<String> getNotes() {
-        return notes.isBlank() ? new HashSet<>() : new HashSet<String>(Arrays.asList(notes.split(",")));
+        return notes.isBlank() ? new HashSet<>() : new HashSet<>(Arrays.asList(notes.split(",")));
     }
 
     /**

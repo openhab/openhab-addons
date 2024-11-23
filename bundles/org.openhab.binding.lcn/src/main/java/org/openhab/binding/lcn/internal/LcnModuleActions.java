@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.lcn.internal;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,6 +29,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Fabian Wolter - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = LcnModuleActions.class)
 @ThingActionsScope(name = "lcn")
 @NonNullByDefault
 public class LcnModuleActions implements ThingActions {
@@ -200,10 +204,10 @@ public class LcnModuleActions implements ThingActions {
                 localCount = 1;
             }
 
-            String filteredTonality = LcnBindingConstants.ALLOWED_BEEP_TONALITIES.stream() //
+            String filteredTonality = Objects.requireNonNull(LcnBindingConstants.ALLOWED_BEEP_TONALITIES.stream() //
                     .filter(t -> t.equals(tonality)) //
                     .findAny() //
-                    .orElse("N");
+                    .orElse("N"));
 
             getHandler().sendPck(PckGenerator.beep(filteredTonality, Math.min(localCount, MAX_BEEP_COUNT)));
         } catch (LcnException e) {

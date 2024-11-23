@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,17 +48,13 @@ public class Scenario extends BoschSHCServiceState {
         return scenario;
     }
 
-    public static Boolean isValid(Scenario[] scenarios) {
+    public static boolean isValid(Scenario[] scenarios) {
         return Arrays.stream(scenarios).allMatch(scenario -> (scenario.id != null));
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Scenario{");
-        sb.append("name='").append(name).append("'");
-        sb.append(", id='").append(id).append("'");
-        sb.append(", lastTimeTriggered='").append(lastTimeTriggered).append("'");
-        sb.append('}');
-        return sb.toString();
+        return "Scenario{" + "name='" + name + "'" + ", id='" + id + "'" + ", lastTimeTriggered='" + lastTimeTriggered
+                + "'" + '}';
     }
 }

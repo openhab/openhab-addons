@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,6 @@ public class SnmpTargetConfiguration {
     // v3 only
     public SnmpSecurityModel securityModel = SnmpSecurityModel.NO_AUTH_NO_PRIV;
     public @Nullable String user;
-    public @Nullable String engineId;
     public SnmpAuthProtocol authProtocol = SnmpAuthProtocol.MD5;
     public @Nullable String authPassphrase;
     public SnmpPrivProtocol privProtocol = SnmpPrivProtocol.DES;

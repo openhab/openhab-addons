@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -173,7 +173,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
                     Thing.PROPERTY_FIRMWARE_VERSION, result.getFwVersion(), //
                     Thing.PROPERTY_SERIAL_NUMBER, result.getSerialNumber());
         } catch (JsonParseException e) {
-            throw new HubProcessingException("getFirmwareVersions(): JsonParseException");
+            throw new HubProcessingException("getInformation(): JsonParseException");
         }
     }
 

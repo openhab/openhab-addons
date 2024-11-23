@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="growatt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Bridge Thing Type -->
+	<bridge-type id="bridge">
+		<label>Growatt Bridge</label>
+		<description>Bridge Thing for Growatt Binding</description>
+
+		<config-description>
+			<parameter name="userName" type="text" required="false">
+				<label>User Name</label>
+				<description>User name to login to the Shine App.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to login to the Shine App.</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Inverter Thing Type -->
+	<thing-type id="inverter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Growatt Inverter</label>
+		<description>Inverter Thing for Growatt Binding</description>
+
+		<!-- All known channels; unused channels are dynamically deleted -->
+		<channels>
+			<channel id="system-status" typeId="system-status-code">
+				<label>Inverter Status</label>
+				<description>Status code of the inverter.</description>
+			</channel>
+
+			<!-- solar generation -->
+			<channel id="pv-power" typeId="system.electric-power">
+				<label>Solar Input Power</label>
+				<description>Power from solar panels.</description>
+			</channel>
+
+			<!-- electric data for strings #1 and #2 -->
+			<channel id="pv1-voltage" typeId="advanced-electric-voltage">
+				<label>String #1 Voltage</label>
+				<description>Voltage from solar panel string #1.</description>
+			</channel>
+			<channel id="pv2-voltage" typeId="advanced-electric-voltage">
+				<label>String #2 Voltage</label>
+				<description>Voltage from solar panel string #2.</description>
+			</channel>
+
+			<channel id="pv1-current" typeId="advanced-electric-current">
+				<label>String #1 Current</label>
+				<description>Current from solar panel string #1.</description>
+			</channel>
+			<channel id="pv2-current" typeId="advanced-electric-current">
+				<label>String #2 Current</label>
+				<description>Current from solar panel string #2.</description>
+			</channel>
+
+			<channel id="pv1-power" typeId="advanced-electric-power">
+				<label>String #1 Power</label>
+				<description>Power from solar panel string #1.</description>
+			</channel>
+			<channel id="pv2-power" typeId="advanced-electric-power">
+				<label>String #2 Power</label>
+				<description>Power from solar panel string #2.</description>
+			</channel>
+
+			<!-- grid electric data (1-phase resp. 3-phase) -->
+			<channel id="grid-frequency" typeId="advanced-electric-frequency">
+				<label>Grid Frequency</label>
+				<description>Frequency of the grid.</description>
+			</channel>
+			<channel id="grid-voltage-r" typeId="system.electric-voltage">
+				<label>Grid Voltage (#R)</label>
+				<description>Voltage of the grid (phase #R).</description>
+			</channel>
+			<channel id="grid-voltage-s" typeId="advanced-electric-voltage">
+				<label>Grid Voltage #S</label>
+				<description>Voltage of the grid phase #S.</description>
+			</channel>
+			<channel id="grid-voltage-t" typeId="advanced-electric-voltage">
+				<label>Grid Voltage #T</label>
+				<description>Voltage of the grid phase #T.</description>
+			</channel>
+			<channel id="grid-voltage-rs" typeId="advanced-electric-voltage">
+				<label>Grid Voltage #RS</label>
+				<description>Voltage of the grid phases #RS.</description>
+			</channel>
+			<channel id="grid-voltage-st" typeId="advanced-electric-voltage">
+				<label>Grid Voltage #ST</label>
+				<description>Voltage of the grid phases #ST.</description>
+			</channel>
+			<channel id="grid-voltage-tr" typeId="advanced-electric-voltage">
+				<label>Grid Voltage #TR</label>
+				<description>Voltage of the grid phases #TR.</description>
+			</channel>
+
+			<!-- inverter power to grid -->
+			<channel id="inverter-current-r" typeId="system.electric-current">
+				<label>Inverter Current (#R)</label>
+				<description>AC current from inverter (phase #R).</description>
+			</channel>
+			<channel id="inverter-current-s" typeId="advanced-electric-current">
+				<label>Inverter Current #S</label>
+				<description>AC current from inverter phase #S.</description>
+			</channel>
+			<channel id="inverter-current-t" typeId="advanced-electric-current">
+				<label>Inverter Current #T</label>
+				<description>AC current from inverter phase #T.</description>
+			</channel>
+
+			<channel id="inverter-power" typeId="system.electric-power">
+				<label>Inverter Power</label>
+				<description>AC power the inverter (total).</description>
+			</channel>
+			<channel id="inverter-power-r" typeId="system.electric-power">
+				<label>Inverter Power (#R)</label>
+				<description>AC power from inverter (phase #R).</description>
+			</channel>
+			<channel id="inverter-power-s" typeId="advanced-electric-power">
+				<label>Inverter Power #S</label>
+				<description>AC power from inverter phase #S.</description>
+			</channel>
+			<channel id="inverter-power-t" typeId="advanced-electric-power">
+				<label>Inverter Power #T</label>
+				<description>AC power from inverter phase #T.</description>
+			</channel>
+
+			<channel id="inverter-va" typeId="advanced-electric-va">
+				<label>Inverter VA</label>
+				<description>AC VA produced by inverter.</description>
+			</channel>
+
+			<!-- battery power -->
+			<channel id="charge-power" typeId="system.electric-power">
+				<label>Charge Power </label>
+				<description>Charge power to battery.</description>
+			</channel>
+			<channel id="charge-current" typeId="system.electric-current">
+				<label>Charge Current</label>
+				<description>Charge current to battery.</description>
+			</channel>
+			<channel id="discharge-power" typeId="system.electric-power">
+				<label>Discharge Power</label>
+				<description>Discharge power from battery.</description>
+			</channel>
+			<channel id="discharge-va" typeId="advanced-electric-va">
+				<label>Discharge VA</label>
+				<description>Discharge VA from battery.</description>
+			</channel>
+
+			<!-- power export to grid -->
+			<channel id="export-power" typeId="system.electric-power">
+				<label>Export Power</label>
+				<description>Power exported to grid.</description>
+			</channel>
+			<channel id="export-power-r" typeId="advanced-electric-power">
+				<label>Export Power #R</label>
+				<description>Power exported to grid phase #R.</description>
+			</channel>
+			<channel id="export-power-s" typeId="advanced-electric-power">
+				<label>Export Power #S</label>
+				<description>Power exported to grid phase #S.</description>
+			</channel>
+			<channel id="export-power-t" typeId="advanced-electric-power">
+				<label>Export Power #T</label>
+				<description>Power exported to grid phase #T.</description>
+			</channel>
+
+			<!-- power import from grid user -->
+			<channel id="import-power" typeId="system.electric-power">
+				<label>Import Power</label>
+				<description>Power imported.</description>
+			</channel>
+			<channel id="import-power-r" typeId="advanced-electric-power">
+				<label>Import Power #R</label>
+				<description>Power imported phase #R.</description>
+			</channel>
+			<channel id="import-power-s" typeId="advanced-electric-power">
+				<label>Import Power #S</label>
+				<description>Power imported phase #S.</description>
+			</channel>
+			<channel id="import-power-t" typeId="advanced-electric-power">
+				<label>Import Power #T</label>
+				<description>Power imported phase #T.</description>
+			</channel>
+
+			<!-- power to local load -->
+			<channel id="load-power" typeId="system.electric-power">
+				<label>Load Power</label>
+				<description>Power supplied to load.</description>
+			</channel>
+			<channel id="load-power-r" typeId="advanced-electric-power">
+				<label>Load Power #R</label>
+				<description>Power supplied to load phase #R.</description>
+			</channel>
+			<channel id="load-power-s" typeId="advanced-electric-power">
+				<label>Load Power #S</label>
+				<description>Power supplied to load phase #S.</description>
+			</channel>
+			<channel id="load-power-t" typeId="advanced-electric-power">
+				<label>Load Power #T</label>
+				<description>Power supplied to load phase #T.</description>
+			</channel>
+
+			<!-- inverter AC output energy -->
+			<channel id="inverter-energy-today" typeId="system.electric-energy">
+				<label>Inverter Energy Today</label>
+				<description>Inverter output energy produced today.</description>
+			</channel>
+			<channel id="inverter-energy-total" typeId="system.electric-energy">
+				<label>Inverter Energy Total</label>
+				<description>Total inverter output energy produced.</description>
+			</channel>
+
+			<!-- solar DC energy -->
+			<channel id="pv-energy-today" typeId="system.electric-energy">
+				<label>DC Energy Today</label>
+				<description>Solar DC energy collected.</description>
+			</channel>
+			<channel id="pv1-energy-today" typeId="advanced-electric-energy">
+				<label>DC Energy #1 Today</label>
+				<description>Solar DC energy collected by string #1 to grid today.</description>
+			</channel>
+			<channel id="pv2-energy-today" typeId="advanced-electric-energy">
+				<label>DC Energy #2 Today</label>
+				<description>Solar DC energy collected by string #2 to grid today.</description>
+			</channel>
+
+			<channel id="pv-energy-total" typeId="system.electric-energy">
+				<label>DC Energy Total</label>
+				<description>Total solar energy supplied to grid.</description>
+			</channel>
+			<channel id="pv1-energy-total" typeId="advanced-electric-energy">
+				<label>DC Energy #1 Total</label>
+				<description>Total solar DC collected by string #1.</description>
+			</channel>
+			<channel id="pv2-energy-total" typeId="advanced-electric-energy">
+				<label>DC Energy #2 Total</label>
+				<description>Total solar DC collected by string #2.</description>
+			</channel>
+
+			<!-- energy exported to grid -->
+			<channel id="export-energy-today" typeId="system.electric-energy">
+				<label>Export Energy Today</label>
+				<description>Energy exported to grid today.</description>
+			</channel>
+			<channel id="export-energy-total" typeId="system.electric-energy">
+				<label>Export Energy Total</label>
+				<description>Total energy exported to grid.</description>
+			</channel>
+
+			<!-- energy imported from grid -->
+			<channel id="import-energy-today" typeId="system.electric-energy">
+				<label>Import Energy Today</label>
+				<description>Energy imported from grid today.</description>
+			</channel>
+			<channel id="import-energy-total" typeId="system.electric-energy">
+				<label>Import Energy Total</label>
+				<description>Total energy imported from grid.</description>
+			</channel>
+
+			<!-- energy supplied to local -->
+			<channel id="load-energy-today" typeId="system.electric-energy">
+				<label>Load Energy Today</label>
+				<description>Energy supplied to load today.</description>
+			</channel>
+			<channel id="load-energy-total" typeId="system.electric-energy">
+				<label>Load Energy Total</label>
+				<description>Total energy supplied to load.</description>
+			</channel>
+
+			<!-- energy imported from grid to charge -->
+			<channel id="import-charge-energy-today" typeId="system.electric-energy">
+				<label>Battery Import Energy Today</label>
+				<description>Energy imported from grid to charge battery today.</description>
+			</channel>
+			<channel id="import-charge-energy-total" typeId="system.electric-energy">
+				<label>Battery Import Energy Totals</label>
+				<description>Total energy imported from grid to charge battery.</description>
+			</channel>
+
+			<!-- inverter energy to charge -->
+			<channel id="inverter-charge-energy-today" typeId="system.electric-energy">
+				<label>Battery Inverter Energy Today</label>
+				<description>Energy from inverter to charge battery today.</description>
+			</channel>
+			<channel id="inverter-charge-energy-total" typeId="system.electric-energy">
+				<label>Battery Inverter Energy Total</label>
+				<description>Total energy from inverter to charge battery.</description>
+			</channel>
+
+			<!-- energy consumed from battery -->
+			<channel id="discharge-energy-today" typeId="system.electric-energy">
+				<label>Battery Energy Today</label>
+				<description>Energy consumed from battery today.</description>
+			</channel>
+			<channel id="discharge-energy-total" typeId="system.electric-energy">
+				<label>Battery Energy Total</label>
+				<description>Total energy consumed from battery.</description>
+			</channel>
+
+			<!-- inverter up time -->
+			<channel id="total-work-time" typeId="advanced-work-time">
+				<label>Total Working Time</label>
+				<description>Total inverter working time.</description>
+			</channel>
+
+			<!-- bus voltages -->
+			<channel id="p-bus-voltage" typeId="advanced-electric-voltage">
+				<label>P Bus Voltage</label>
+				<description>P Bus voltage.</description>
+			</channel>
+			<channel id="n-bus-voltage" typeId="advanced-electric-voltage">
+				<label>N Bus Voltage</label>
+				<description>N Bus voltage.</description>
+			</channel>
+			<channel id="sp-bus-voltage" typeId="advanced-electric-voltage">
+				<label>SP Bus Voltage</label>
+				<description>SP Bus voltage.</description>
+			</channel>
+
+			<!-- temperatures -->
+			<channel id="pv-temperature" typeId="advanced-outdoor-temperature">
+				<label>Solar Panel Temperature</label>
+				<description>Temperature of the solar panels (string #1).</description>
+			</channel>
+			<channel id="pv-ipm-temperature" typeId="advanced-outdoor-temperature">
+				<label>Solar IPM Temperature</label>
+				<description>Temperature of the IPM.</description>
+			</channel>
+			<channel id="pv-boost-temperature" typeId="advanced-outdoor-temperature">
+				<label>Boost Temperature</label>
+				<description>Boost temperature.</description>
+			</channel>
+			<channel id="temperature-4" typeId="advanced-outdoor-temperature">
+				<label>Temperature #4</label>
+				<description>Temperature #4.</description>
+			</channel>
+			<channel id="pv2-temperature" typeId="advanced-outdoor-temperature">
+				<label>Solar Panel Temperature #2</label>
+				<description>Temperature of the solar panels (string #2).</description>
+			</channel>
+
+			<!-- battery data -->
+			<channel id="battery-type" typeId="advanced-status-code">
+				<label>Battery Type</label>
+				<description>Type code of the battery.</description>
+			</channel>
+			<channel id="battery-temperature" typeId="advanced-outdoor-temperature">
+				<label>Battery Temperature</label>
+				<description>Battery temperature.</description>
+			</channel>
+			<channel id="battery-voltage" typeId="advanced-electric-voltage">
+				<label>Battery Voltage</label>
+				<description>Battery voltage.</description>
+			</channel>
+			<channel id="battery-display" typeId="advanced-electric-voltage">
+				<label>Battery Display</label>
+				<description>Battery display voltage.</description>
+			</channel>
+			<channel id="battery-soc" typeId="advanced-percent">
+				<label>Battery Charge</label>
+				<description>Battery state of charge.</description>
+			</channel>
+
+			<!-- fault codes -->
+			<channel id="system-fault-0" typeId="advanced-fault-code">
+				<label>Fault Code #0</label>
+				<description>System fault code #0.</description>
+			</channel>
+			<channel id="system-fault-1" typeId="advanced-fault-code">
+				<label>Fault Code #1</label>
+				<description>System fault code #1.</description>
+			</channel>
+			<channel id="system-fault-2" typeId="advanced-fault-code">
+				<label>Fault Code #2</label>
+				<description>System fault code #2.</description>
+			</channel>
+			<channel id="system-fault-3" typeId="advanced-fault-code">
+				<label>Fault Code #3</label>
+				<description>System fault code #3.</description>
+			</channel>
+			<channel id="system-fault-4" typeId="advanced-fault-code">
+				<label>Fault Code #4</label>
+				<description>System fault code #4.</description>
+			</channel>
+			<channel id="system-fault-5" typeId="advanced-fault-code">
+				<label>Fault Code #5</label>
+				<description>System fault code #5.</description>
+			</channel>
+			<channel id="system-fault-6" typeId="advanced-fault-code">
+				<label>Fault Code #6</label>
+				<description>System fault code #6.</description>
+			</channel>
+			<channel id="system-fault-7" typeId="advanced-fault-code">
+				<label>Fault Code #7</label>
+				<description>System fault code #7.</description>
+			</channel>
+
+			<!-- miscellaneous -->
+			<channel id="system-work-mode" typeId="advanced-status-code">
+				<label>System Work Mode</label>
+				<description>System work mode code.</description>
+			</channel>
+			<channel id="sp-display-status" typeId="advanced-status-code">
+				<label>Solar Panel Display</label>
+				<description>Solar panel display status code.</description>
+			</channel>
+			<channel id="constant-power-ok" typeId="advanced-status-code">
+				<label>Constant Power OK</label>
+				<description>Constant power OK code.</description>
+			</channel>
+			<channel id="load-percent" typeId="advanced-percent">
+				<label>Load Percent</label>
+				<description>Percent of full load.</description>
+			</channel>
+
+			<!-- reactive power resp. energy -->
+			<channel id="rac" typeId="advanced-electric-var">
+				<label>Reactive Power</label>
+				<description>Reactive power output.</description>
+			</channel>
+			<channel id="erac-today" typeId="advanced-electric-kvarh">
+				<label>Reactive Energy Today</label>
+				<description>Reactive energy supplied today.</description>
+			</channel>
+			<channel id="erac-total" typeId="advanced-electric-kvarh">
+				<label>Total Reactive Energy</label>
+				<description>Total reactive energy supplied.</description>
+			</channel>
+
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Id (serial number) of the inverter.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Binding Specific Channel Types -->
+	<channel-type id="system-status-code">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Status Code</label>
+		<category>Status</category>
+		<state readOnly="true" pattern="%00d"/>
+	</channel-type>
+
+	<channel-type id="advanced-status-code" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Status Code</label>
+		<category>Status</category>
+		<state readOnly="true" pattern="%00d"/>
+	</channel-type>
+
+	<channel-type id="advanced-fault-code" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fault Code</label>
+		<category>Siren</category>
+		<state readOnly="true" pattern="%00d"/>
+	</channel-type>
+
+	<channel-type id="advanced-percent" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Percentage</label>
+		<state readOnly="true" pattern="%0.1f %%"/>
+	</channel-type>
+
+	<channel-type id="advanced-electric-frequency" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Electric Frequency</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%0.2f Hz"/>
+	</channel-type>
+
+	<channel-type id="advanced-electric-va" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Electric VA</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%0.0f VA"/>
+	</channel-type>
+
+	<channel-type id="advanced-work-time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Work Time</label>
+		<category>Time</category>
+		<state readOnly="true" pattern="%0.1f h"/>
+	</channel-type>
+
+	<channel-type id="advanced-electric-power" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Electric Power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%0.0f W"/>
+	</channel-type>
+
+	<channel-type id="advanced-electric-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Electric Current</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%0.1f A"/>
+	</channel-type>
+
+	<channel-type id="advanced-electric-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Electric Voltage</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%0.1f V"/>
+	</channel-type>
+
+	<channel-type id="advanced-electric-energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Electric Energy</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%0.0f kWh"/>
+	</channel-type>
+
+	<channel-type id="advanced-electric-var" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Electric Reactive Power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%0.0f var"/>
+	</channel-type>
+
+	<channel-type id="advanced-electric-kvarh" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Electric Reactive Energy</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%0.0f kvarh"/>
+	</channel-type>
+
+	<channel-type id="advanced-outdoor-temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor Temperature</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%0.0f °C"/>
+	</channel-type>
+
+</thing:thing-descriptions>

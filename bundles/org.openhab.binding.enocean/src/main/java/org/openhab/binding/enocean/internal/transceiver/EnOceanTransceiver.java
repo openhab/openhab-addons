@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -448,7 +448,8 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     protected abstract byte[] serializePacket(BasePacket packet) throws EnOceanException;
 
     public synchronized void addPacketListener(PacketListener listener, long senderIdToListenTo) {
-        if (listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<>()).add(listener)) {
+        HashSet<PacketListener> lst = listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<>());
+        if (lst != null && lst.add(listener)) {
             logger.debug("Listener added: {}", senderIdToListenTo);
         }
     }

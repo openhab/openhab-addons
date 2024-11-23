@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -167,7 +167,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
+            return EnhancedType.of(ZonedDateTime.class);
         }
 
         @Override
@@ -206,7 +206,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
+            return EnhancedType.of(ZonedDateTime.class);
         }
 
         @Override
@@ -451,7 +451,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
             if (deserializedState == null) {
                 return null;
             }
-            return new DynamoDBHistoricItem(getName(), deserializedState, getTime());
+            return new DynamoDBHistoricItem(getName(), deserializedState, getTime().toInstant());
         } catch (Exception e) {
             logger.trace("Failed to convert state '{}' to item {} {}: {} {}. Data persisted with incompatible item.",
                     this.state, item.getClass().getSimpleName(), item.getName(), e.getClass().getSimpleName(),

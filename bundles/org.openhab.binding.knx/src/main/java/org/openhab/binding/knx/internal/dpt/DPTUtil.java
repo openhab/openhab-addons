@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,12 +50,12 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorString;
 public class DPTUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(DPTUtil.class);
 
-    // DPT: "123.001", 1-3 digits main type (no leading zero), optional sub-type 3-4 digits (leading zeros allowed)
+    // DPT: "123.001", 1-3 digits main type (no leading zero), optional subtype 3-4 digits (leading zeros allowed)
     public static final Pattern DPT_PATTERN = Pattern.compile("^(?<main>[1-9][0-9]{0,2})(?:\\.(?<sub>\\d{3,5}))?$");
 
     // used to map vendor-specific data to standard DPT
     public static final Map<String, String> NORMALIZED_DPT = Map.of(//
-            "232.60000", "232.600");
+            "232.60000", "232.600", "251.60600", "251.600");
 
     // fall back if no specific type is defined in DPT_TYPE_MAP
     private static final Map<String, Set<Class<? extends Type>>> DPT_MAIN_TYPE_MAP = Map.ofEntries( //
@@ -64,7 +64,7 @@ public class DPTUtil {
             Map.entry("3", Set.of(IncreaseDecreaseType.class)), //
             Map.entry("4", Set.of(StringType.class)), //
             Map.entry("5", Set.of(QuantityType.class, DecimalType.class)), //
-            Map.entry("6", Set.of(QuantityType.class, DecimalType.class)), //
+            Map.entry("6", Set.of(QuantityType.class, DecimalType.class, StringType.class)), //
             Map.entry("7", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("8", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("9", Set.of(QuantityType.class, DecimalType.class)), //
@@ -84,6 +84,7 @@ public class DPTUtil {
             Map.entry("29", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("229", Set.of(DecimalType.class)), //
             Map.entry("232", Set.of(HSBType.class)), //
+            Map.entry("235", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("242", Set.of(HSBType.class)), //
             Map.entry("243", Set.of(StringType.class)), //
             Map.entry("249", Set.of(StringType.class)), //

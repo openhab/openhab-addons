@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velbus.internal;
 
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,7 @@ import org.openhab.core.thing.ChannelUID;
  * The {@link VelbusModuleAddress} represents the address and possible subaddresses of a Velbus module.
  *
  * @author Cedric Boon - Initial contribution
+ * @author Daniel Rosengarten - Review sub-addresses management
  */
 @NonNullByDefault
 public class VelbusModuleAddress {
@@ -45,6 +48,18 @@ public class VelbusModuleAddress {
         this.subAddresses = subAddresses;
     }
 
+    public void setSubAddresses(byte[] subAddresses, int subTypeNumber) {
+        int srcLength = subAddresses.length;
+        int destPos = srcLength * (subTypeNumber - 1);
+        int copyLength = srcLength - ((4 * subTypeNumber) - this.subAddresses.length);
+
+        if (copyLength > srcLength) {
+            copyLength = srcLength;
+        }
+
+        System.arraycopy(subAddresses, 0, this.subAddresses, destPos, copyLength);
+    }
+
     public byte[] getSubAddresses() {
         return subAddresses;
     }
@@ -57,6 +72,23 @@ public class VelbusModuleAddress {
             if (subAddresses[i] != (byte) 0xFF) {
                 activeAddresses.add(subAddresses[i]);
             }
+        }
+
+        byte[] result = new byte[activeAddresses.size()];
+
+        for (int i = 0; i < activeAddresses.size(); i++) {
+            result[i] = activeAddresses.get(i);
+        }
+
+        return result;
+    }
+
+    public byte[] getAllAddresses() {
+        List<Byte> activeAddresses = new ArrayList<>();
+        activeAddresses.add(address);
+
+        for (int i = 0; i < subAddresses.length; i++) {
+            activeAddresses.add(subAddresses[i]);
         }
 
         byte[] result = new byte[activeAddresses.size()];
@@ -83,7 +115,7 @@ public class VelbusModuleAddress {
     }
 
     public String getChannelId(VelbusChannelIdentifier velbusChannelIdentifier) {
-        return "CH" + getChannelNumber(velbusChannelIdentifier);
+        return CHANNEL + getChannelNumber(velbusChannelIdentifier);
     }
 
     public int getChannelIndex(VelbusChannelIdentifier velbusChannelIdentifier) {
@@ -91,10 +123,11 @@ public class VelbusModuleAddress {
     }
 
     public int getChannelNumber(VelbusChannelIdentifier velbusChannelIdentifier) {
-        byte[] activeAddresses = getActiveAddresses();
+        byte[] allAddresses = getAllAddresses();
 
-        for (int i = 0; i < activeAddresses.length; i++) {
-            if (velbusChannelIdentifier.getAddress() == activeAddresses[i]) {
+        for (int i = 0; i < allAddresses.length; i++) {
+            if ((allAddresses[i] != SUB_ADDRESS_DISABLED)
+                    && (velbusChannelIdentifier.getAddress() == allAddresses[i])) {
                 return (i * 8) + velbusChannelIdentifier.getChannelNumberFromBitNumber();
             }
         }

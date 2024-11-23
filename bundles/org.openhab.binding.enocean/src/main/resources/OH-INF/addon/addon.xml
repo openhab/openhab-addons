@@ -8,4 +8,20 @@
 	<description>The EnOcean binding integrates the EnOcean system into openHAB.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>usb</service-type>
+			<match-properties>
+				<match-property>
+					<name>remote</name>
+					<regex>false</regex>
+				</match-property>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i).*enocean.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

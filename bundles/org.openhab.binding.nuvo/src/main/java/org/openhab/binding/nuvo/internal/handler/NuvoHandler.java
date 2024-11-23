@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +55,6 @@ import org.openhab.binding.nuvo.internal.NuvoStateDescriptionOptionProvider;
 import org.openhab.binding.nuvo.internal.NuvoThingActions;
 import org.openhab.binding.nuvo.internal.communication.NuvoCommand;
 import org.openhab.binding.nuvo.internal.communication.NuvoConnector;
-import org.openhab.binding.nuvo.internal.communication.NuvoDefaultConnector;
 import org.openhab.binding.nuvo.internal.communication.NuvoEnum;
 import org.openhab.binding.nuvo.internal.communication.NuvoImageResizer;
 import org.openhab.binding.nuvo.internal.communication.NuvoIpConnector;
@@ -62,6 +62,7 @@ import org.openhab.binding.nuvo.internal.communication.NuvoMessageEvent;
 import org.openhab.binding.nuvo.internal.communication.NuvoMessageEventListener;
 import org.openhab.binding.nuvo.internal.communication.NuvoSerialConnector;
 import org.openhab.binding.nuvo.internal.communication.NuvoStatusCodes;
+import org.openhab.binding.nuvo.internal.configuration.NuvoBindingConfiguration;
 import org.openhab.binding.nuvo.internal.configuration.NuvoThingConfiguration;
 import org.openhab.binding.nuvo.internal.dto.JAXBUtils;
 import org.openhab.binding.nuvo.internal.dto.NuvoMenu;
@@ -136,8 +137,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private static final Pattern ZONE_CFG_EQ_PATTERN = Pattern.compile("^BASS(.*),TREB(.*),BAL(.*),LOUDCMP([0-1])$");
     private static final Pattern ZONE_CFG_PATTERN = Pattern.compile(
             "^ENABLE1,NAME\"(.*)\",SLAVETO(.*),GROUP([0-4]),SOURCES(.*),XSRC(.*),IR(.*),DND(.*),LOCKED(.*),SLAVEEQ(.*)$");
+    private static final Pattern MCS_INSTANCE_PATTERN = Pattern.compile("MCSInstance\",\"value\":\"(.*?)\"");
+    private static final Pattern ART_GUID_PATTERN = Pattern.compile("NowPlayingGuid\",\"value\":\"\\{(.*?)\\}\"\\}");
 
     private final Logger logger = LoggerFactory.getLogger(NuvoHandler.class);
+    private final NuvoBindingConfiguration bindingConf;
     private final NuvoStateDescriptionOptionProvider stateDescriptionProvider;
     private final SerialPortManager serialPortManager;
     private final HttpClient httpClient;
@@ -147,7 +151,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private @Nullable ScheduledFuture<?> clockSyncJob;
     private @Nullable ScheduledFuture<?> pingJob;
 
-    private NuvoConnector connector = new NuvoDefaultConnector();
+    private NuvoConnector connector = new NuvoIpConnector();
     private long lastEventReceived = System.currentTimeMillis();
     private int numZones = 1;
     private String versionString = BLANK;
@@ -156,33 +160,38 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
     private boolean isAnyOhNuvoNet = false;
     private NuvoMenu nuvoMenus = new NuvoMenu();
-    private HashMap<String, Set<NuvoEnum>> nuvoGroupMap = new HashMap<String, Set<NuvoEnum>>();
-    private HashMap<NuvoEnum, Integer> nuvoNetSrcMap = new HashMap<NuvoEnum, Integer>();
-    private HashMap<NuvoEnum, String> favPrefixMap = new HashMap<NuvoEnum, String>();
-    private HashMap<NuvoEnum, String[]> favoriteMap = new HashMap<NuvoEnum, String[]>();
+    private HashMap<String, Set<NuvoEnum>> nuvoGroupMap = new HashMap<>();
+    private HashMap<NuvoEnum, Integer> nuvoNetSrcMap = new HashMap<>();
+    private HashMap<NuvoEnum, String> favPrefixMap = new HashMap<>();
+    private HashMap<NuvoEnum, String[]> favoriteMap = new HashMap<>();
+    private HashMap<NuvoEnum, NuvoEnum> sourceZoneMap = new HashMap<>();
+    private HashMap<NuvoEnum, String> sourceInstanceMap = new HashMap<>();
 
-    private HashMap<NuvoEnum, byte[]> albumArtMap = new HashMap<NuvoEnum, byte[]>();
-    private HashMap<NuvoEnum, Integer> albumArtIds = new HashMap<NuvoEnum, Integer>();
-    private HashMap<NuvoEnum, String> dispInfoCache = new HashMap<NuvoEnum, String>();
+    private HashMap<NuvoEnum, byte[]> albumArtMap = new HashMap<>();
+    private HashMap<NuvoEnum, Integer> albumArtIds = new HashMap<>();
+    private HashMap<NuvoEnum, String> dispInfoCache = new HashMap<>();
+    private HashMap<NuvoEnum, String> mps4ArtGuids = new HashMap<>();
 
     Set<Integer> activeZones = new HashSet<>(1);
 
     // A tree map that maps the source ids to source labels
-    TreeMap<String, String> sourceLabels = new TreeMap<String, String>();
+    TreeMap<String, String> sourceLabels = new TreeMap<>();
 
     // Indicates if there is a need to poll status because of a disconnection used for MPS4 systems
     boolean pollStatusNeeded = true;
     boolean isMps4 = false;
+    String mps4Host = BLANK;
 
     /**
      * Constructor
      */
     public NuvoHandler(Thing thing, NuvoStateDescriptionOptionProvider stateDescriptionProvider,
-            SerialPortManager serialPortManager, HttpClient httpClient) {
+            SerialPortManager serialPortManager, HttpClient httpClient, NuvoBindingConfiguration bindingConf) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.serialPortManager = serialPortManager;
         this.httpClient = httpClient;
+        this.bindingConf = bindingConf;
     }
 
     @Override
@@ -220,6 +229,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         } else if (host != null && port != null) {
             connector = new NuvoIpConnector(host, port, uid);
             this.isMps4 = (port.intValue() == MPS4_PORT);
+            mps4Host = host;
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Either Serial port or Host & Port must be specifed");
@@ -233,10 +243,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         nuvoNetSrcMap.put(NuvoEnum.SOURCE5, config.nuvoNetSrc5);
         nuvoNetSrcMap.put(NuvoEnum.SOURCE6, config.nuvoNetSrc6);
 
-        nuvoGroupMap.put("1", new HashSet<NuvoEnum>());
-        nuvoGroupMap.put("2", new HashSet<NuvoEnum>());
-        nuvoGroupMap.put("3", new HashSet<NuvoEnum>());
-        nuvoGroupMap.put("4", new HashSet<NuvoEnum>());
+        IntStream.range(1, 5).forEach(i -> nuvoGroupMap.put(String.valueOf(i), new HashSet<>()));
 
         if (this.isMps4) {
             logger.debug("Port set to {} configuring binding for MPS4 compatability", MPS4_PORT);
@@ -244,6 +251,13 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             this.isAnyOhNuvoNet = (config.nuvoNetSrc1.equals(2) || config.nuvoNetSrc2.equals(2)
                     || config.nuvoNetSrc3.equals(2) || config.nuvoNetSrc4.equals(2) || config.nuvoNetSrc5.equals(2)
                     || config.nuvoNetSrc6.equals(2));
+
+            mps4ArtGuids.put(NuvoEnum.SOURCE1, BLANK);
+            mps4ArtGuids.put(NuvoEnum.SOURCE2, BLANK);
+            mps4ArtGuids.put(NuvoEnum.SOURCE3, BLANK);
+            mps4ArtGuids.put(NuvoEnum.SOURCE4, BLANK);
+            mps4ArtGuids.put(NuvoEnum.SOURCE5, BLANK);
+            mps4ArtGuids.put(NuvoEnum.SOURCE6, BLANK);
 
             if (this.isAnyOhNuvoNet) {
                 logger.debug("At least one source is configured as an openHAB NuvoNet source");
@@ -290,13 +304,13 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             this.numZones = numZones;
         }
 
-        activeZones = IntStream.range((1), (this.numZones + 1)).boxed().collect(Collectors.toSet());
+        activeZones = IntStream.range(1, this.numZones + 1).boxed().collect(Collectors.toSet());
 
         // remove the channels for the zones we are not using
         if (this.numZones < MAX_ZONES) {
             List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
 
-            List<Integer> zonesToRemove = IntStream.range((this.numZones + 1), (MAX_ZONES + 1)).boxed()
+            List<Integer> zonesToRemove = IntStream.range(this.numZones + 1, MAX_ZONES + 1).boxed()
                     .collect(Collectors.toList());
 
             zonesToRemove.forEach(zone -> channels.removeIf(c -> (c.getUID().getId().contains("zone" + zone))));
@@ -306,25 +320,25 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         // Build a list of State options for the global favorites using user config values (if supplied)
         String[] favoritesArr = !config.favoriteLabels.isEmpty() ? config.favoriteLabels.split(COMMA) : new String[0];
         List<StateOption> favoriteLabelsStateOptions = new ArrayList<>();
-        for (int i = 0; i < MAX_FAV; i++) {
-            if (favoritesArr.length > i) {
-                favoriteLabelsStateOptions.add(new StateOption(String.valueOf(i + 1), favoritesArr[i]));
+        IntStream.range(1, MAX_FAV + 1).forEach(i -> {
+            if (favoritesArr.length >= i) {
+                favoriteLabelsStateOptions.add(new StateOption(String.valueOf(i), favoritesArr[i - 1]));
             } else if (favoritesArr.length == 0) {
-                favoriteLabelsStateOptions.add(new StateOption(String.valueOf(i + 1), "Favorite " + (i + 1)));
+                favoriteLabelsStateOptions.add(new StateOption(String.valueOf(i), "Favorite " + (i)));
             }
-        }
+        });
 
         // Also add any openHAB NuvoNet source favorites to the list
-        for (int src = 1; src <= MAX_SRC; src++) {
+        IntStream.range(1, MAX_SRC + 1).forEach(src -> {
             NuvoEnum source = NuvoEnum.valueOf(SOURCE + src);
             String[] favorites = favoriteMap.get(source);
             if (favorites != null) {
-                for (int fav = 0; fav < favorites.length; fav++) {
+                IntStream.range(0, favorites.length).forEach(fav -> {
                     favoriteLabelsStateOptions.add(new StateOption(String.valueOf(src * 100 + fav),
                             favPrefixMap.get(source) + favorites[fav]));
-                }
+                });
             }
-        }
+        });
 
         // Put the global favorites labels on all active zones
         activeZones.forEach(zoneNum -> {
@@ -366,12 +380,13 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 });
 
                 // need '1' flag for sources configured as an MPS4 NuvoNet source, but disable openHAB NuvoNet sources
-                connector.sendCommand("SNUMBERS" + (nuvoNetSrcMap.get(NuvoEnum.SOURCE1).equals(1) ? ONE : ZERO) + COMMA
-                        + (nuvoNetSrcMap.get(NuvoEnum.SOURCE2).equals(1) ? ONE : ZERO) + COMMA
-                        + (nuvoNetSrcMap.get(NuvoEnum.SOURCE3).equals(1) ? ONE : ZERO) + COMMA
-                        + (nuvoNetSrcMap.get(NuvoEnum.SOURCE4).equals(1) ? ONE : ZERO) + COMMA
-                        + (nuvoNetSrcMap.get(NuvoEnum.SOURCE5).equals(1) ? ONE : ZERO) + COMMA
-                        + (nuvoNetSrcMap.get(NuvoEnum.SOURCE6).equals(1) ? ONE : ZERO));
+                connector.sendCommand(
+                        "SNUMBERS" + (nuvoNetSrcMap.getOrDefault(NuvoEnum.SOURCE1, 0).equals(1) ? ONE : ZERO) + COMMA
+                                + (nuvoNetSrcMap.getOrDefault(NuvoEnum.SOURCE2, 0).equals(1) ? ONE : ZERO) + COMMA
+                                + (nuvoNetSrcMap.getOrDefault(NuvoEnum.SOURCE3, 0).equals(1) ? ONE : ZERO) + COMMA
+                                + (nuvoNetSrcMap.getOrDefault(NuvoEnum.SOURCE4, 0).equals(1) ? ONE : ZERO) + COMMA
+                                + (nuvoNetSrcMap.getOrDefault(NuvoEnum.SOURCE5, 0).equals(1) ? ONE : ZERO) + COMMA
+                                + (nuvoNetSrcMap.getOrDefault(NuvoEnum.SOURCE6, 0).equals(1) ? ONE : ZERO));
             } catch (NuvoException e) {
                 logger.debug("Error sending SNUMBERS command to disable NuvoNet sources");
             }
@@ -442,6 +457,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                                 // update the other group member's selected source
                                 updateSrcForZoneGroup(target, String.valueOf(value));
+                                sourceZoneMap.put(NuvoEnum.valueOf(SOURCE + value), target);
                             }
                         }
                         break;
@@ -455,7 +471,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                                 String sourceNum = String.valueOf(value / 100);
                                 NuvoEnum source = NuvoEnum.valueOf(SOURCE + sourceNum);
                                 updateChannelState(source, CHANNEL_BUTTON_PRESS,
-                                        PLAY_MUSIC_PRESET + favoriteMap.get(source)[value % 100]);
+                                        PLAY_MUSIC_PRESET + getFavorite(source, value % 100));
                                 connector.sendCommand(target, NuvoCommand.SOURCE, sourceNum);
 
                                 // if this zone is in a group, update the other group member's selected source
@@ -583,7 +599,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                                 // if 'albumartid' is present, substitute it with the albumArtId hex string
                                 connector.sendCommand(commandStr.replace(ALBUM_ART_ID,
-                                        (OFFSET_ZERO + Integer.toHexString(albumArtIds.get(source)))));
+                                        (OFFSET_ZERO + Integer.toHexString(albumArtIds.getOrDefault(source, 0)))));
                             } else {
                                 connector.sendCommand(commandStr);
                             }
@@ -619,14 +635,20 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                                 // re-send the cached DISPINFOTWO message, substituting in the new albumArtId
                                 if (dispInfoCache.get(target) != null) {
-                                    connector.sendCommand(dispInfoCache.get(target).replace(ALBUM_ART_ID,
-                                            (OFFSET_ZERO + Integer.toHexString(albumArtIds.get(target)))));
+                                    connector.sendCommand(dispInfoCache.getOrDefault(target, BLANK).replace(
+                                            ALBUM_ART_ID,
+                                            (OFFSET_ZERO + Integer.toHexString(albumArtIds.getOrDefault(target, 0)))));
                                 }
                             } else {
                                 albumArtMap.put(target, NO_ART);
                                 albumArtIds.put(target, 0);
                                 updateChannelState(target, CHANNEL_ALBUM_ART, UNDEF);
                             }
+                        }
+                        break;
+                    case CHANNEL_SOURCE_MENU:
+                        if (command instanceof StringType) {
+                            updateChannelState(target, CHANNEL_BUTTON_PRESS, command.toString());
                         }
                 }
             } catch (NuvoException e) {
@@ -747,6 +769,20 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         updateChannelState(source, CHANNEL_TRACK_LENGTH, matcher.group(1));
                         updateChannelState(source, CHANNEL_TRACK_POSITION, matcher.group(2));
                         updateChannelState(source, CHANNEL_PLAY_MODE, matcher.group(3));
+
+                        // if this is an MPS4 source, the following retrieves album art when the source is playing
+                        if (nuvoNetSrcMap.get(source) == 1
+                                && isLinked(source.name().toLowerCase() + CHANNEL_DELIMIT + CHANNEL_ALBUM_ART)) {
+                            if (MPS4_PLAYING_MODES.contains(matcher.group(3))) {
+                                logger.debug("DISPINFO update, trying to get album art");
+                                getMps4AlbumArt(source);
+                            } else if (MPS4_IDLE_MODES.contains(matcher.group(3)) && ZERO.equals(matcher.group(1))) {
+                                // clear album art channel for this source
+                                logger.debug("DISPINFO update- not playing; clearing art, mode: {}", matcher.group(3));
+                                updateChannelState(source, CHANNEL_ALBUM_ART, UNDEF);
+                                mps4ArtGuids.put(source, BLANK);
+                            }
+                        }
                     } else {
                         logger.debug("no match on message: {}", updateData);
                     }
@@ -770,6 +806,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     if (matcher.find()) {
                         updateChannelState(zone, CHANNEL_TYPE_POWER, ON);
                         updateChannelState(zone, CHANNEL_TYPE_SOURCE, matcher.group(1));
+                        sourceZoneMap.put(NuvoEnum.valueOf(SOURCE + matcher.group(1)), zone);
 
                         // update the other group member's selected source
                         updateSrcForZoneGroup(zone, matcher.group(1));
@@ -810,7 +847,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
             case TYPE_NN_MENU_ITEM_SELECTED:
                 // ignore this update unless openHAB is handling this source
-                if (nuvoNetSrcMap.get(source).equals(2)) {
+                if (nuvoNetSrcMap.getOrDefault(source, 0).equals(2)) {
                     String[] updateDataSplit = updateData.split(COMMA);
                     String menuId = updateDataSplit[0];
                     int menuItemIdx = Integer.parseInt(updateDataSplit[1]) - 1;
@@ -871,7 +908,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
             case TYPE_NN_MENUREQ:
                 // ignore this update unless openHAB is handling this source
-                if (nuvoNetSrcMap.get(source).equals(2)) {
+                if (nuvoNetSrcMap.getOrDefault(source, 0).equals(2)) {
                     logger.debug("Menu Request: Source: {} - Value: {}", source.getNum(), updateData);
                     // For now we only support one level deep menus. If second field is '1', indicates go back to main
                     // menu.
@@ -902,7 +939,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                         // if this zone is a member of a group (1-4), add the zone's enum to the appropriate group map
                         if (!ZERO.equals(matcher.group(3))) {
-                            nuvoGroupMap.get(matcher.group(3)).add(zone);
+                            nuvoGroupMap.getOrDefault(matcher.group(3), new HashSet<>()).add(zone);
                         }
                     } else {
                         logger.debug("no match on message: {}", updateData);
@@ -911,16 +948,17 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
             case TYPE_NN_ALBUM_ART_REQ:
                 // ignore this update unless openHAB is handling this source
-                if (nuvoNetSrcMap.get(source).equals(2)) {
+                if (nuvoNetSrcMap.getOrDefault(source, 0).equals(2)) {
                     logger.debug("Album Art Request for Source: {} - Data: {}", source.getNum(), updateData);
                     // 0x620FD879,80,80,2,0x00C0C0C0,0,0,0,0,1
                     String[] albumArtReq = updateData.split(COMMA);
                     albumArtIds.put(source, Integer.decode(albumArtReq[0]));
 
                     try {
-                        if (albumArtMap.get(source).length > 1) {
-                            connector.sendCommand(source.getId() + ALBUM_ART_AVAILABLE + albumArtIds.get(source) + COMMA
-                                    + albumArtMap.get(source).length);
+                        if (albumArtMap.getOrDefault(source, NO_ART).length > 1) {
+                            connector.sendCommand(
+                                    source.getId() + ALBUM_ART_AVAILABLE + albumArtIds.getOrDefault(source, 0) + COMMA
+                                            + albumArtMap.getOrDefault(source, NO_ART).length);
                         } else {
                             connector.sendCommand(source.getId() + ALBUM_ART_AVAILABLE + ZERO_COMMA);
                         }
@@ -931,7 +969,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
             case TYPE_NN_ALBUM_ART_FRAG_REQ:
                 // ignore this update unless openHAB is handling this source
-                if (nuvoNetSrcMap.get(source).equals(2)) {
+                if (nuvoNetSrcMap.getOrDefault(source, 0).equals(2)) {
                     logger.debug("Album Art Fragment Request for Source: {} - Data: {}", source.getNum(), updateData);
                     // 0x620FD879,0,750 (id, requested offset from start of image, byte length requested)
                     String[] albumArtFragReq = updateData.split(COMMA);
@@ -959,12 +997,12 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
             case TYPE_NN_FAVORITE_REQ:
                 // ignore this update unless openHAB is handling this source
-                if (nuvoNetSrcMap.get(source).equals(2)) {
+                if (nuvoNetSrcMap.getOrDefault(source, 0).equals(2)) {
                     logger.debug("Favorite request for source: {} - favoriteId: {}", source.getNum(), updateData);
                     try {
                         int playlistIdx = Integer.parseInt(updateData, 16) - 1000;
                         updateChannelState(source, CHANNEL_BUTTON_PRESS,
-                                PLAY_MUSIC_PRESET + favoriteMap.get(source)[playlistIdx]);
+                                PLAY_MUSIC_PRESET + getFavorite(source, playlistIdx));
                     } catch (NumberFormatException nfe) {
                         logger.debug("Unable to parse favoriteId: {}", updateData);
                     }
@@ -1055,12 +1093,12 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
         try {
             // set '1' flag for each source configured as an MPS4 NuvoNet source or openHAB NuvoNet source
-            connector.sendCommand("SNUMBERS" + nuvoNetSrcMap.get(NuvoEnum.SOURCE1).compareTo(0) + COMMA
-                    + nuvoNetSrcMap.get(NuvoEnum.SOURCE2).compareTo(0) + COMMA
-                    + nuvoNetSrcMap.get(NuvoEnum.SOURCE3).compareTo(0) + COMMA
-                    + nuvoNetSrcMap.get(NuvoEnum.SOURCE4).compareTo(0) + COMMA
-                    + nuvoNetSrcMap.get(NuvoEnum.SOURCE5).compareTo(0) + COMMA
-                    + nuvoNetSrcMap.get(NuvoEnum.SOURCE6).compareTo(0));
+            connector.sendCommand("SNUMBERS" + nuvoNetSrcMap.getOrDefault(NuvoEnum.SOURCE1, 0).compareTo(0) + COMMA
+                    + nuvoNetSrcMap.getOrDefault(NuvoEnum.SOURCE2, 0).compareTo(0) + COMMA
+                    + nuvoNetSrcMap.getOrDefault(NuvoEnum.SOURCE3, 0).compareTo(0) + COMMA
+                    + nuvoNetSrcMap.getOrDefault(NuvoEnum.SOURCE4, 0).compareTo(0) + COMMA
+                    + nuvoNetSrcMap.getOrDefault(NuvoEnum.SOURCE5, 0).compareTo(0) + COMMA
+                    + nuvoNetSrcMap.getOrDefault(NuvoEnum.SOURCE6, 0).compareTo(0));
             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
         } catch (NuvoException | InterruptedException e) {
             logger.debug("Error sending SNUMBERS command");
@@ -1083,6 +1121,18 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                                     + topMenuItems.get(i).getText() + "\"");
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                         }
+
+                        // Build a State options selection that represents this source's custom menu
+                        List<StateOption> sourceMenuStateOptions = new ArrayList<>();
+                        topMenuItems.forEach(topItem -> {
+                            sourceMenuStateOptions.add(new StateOption(topItem.getText(), topItem.getText()));
+                            topItem.getItems().forEach(subItem -> sourceMenuStateOptions
+                                    .add(new StateOption(topItem.getText() + "|" + subItem, "-> " + subItem)));
+                        });
+                        stateDescriptionProvider.setStateOptions(
+                                new ChannelUID(getThing().getUID(),
+                                        source.name().toLowerCase() + CHANNEL_DELIMIT + CHANNEL_SOURCE_MENU),
+                                sourceMenuStateOptions);
                     }
 
                     String[] favorites = favoriteMap.get(source);
@@ -1385,7 +1435,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
             case CHANNEL_TRACK_LENGTH:
             case CHANNEL_TRACK_POSITION:
-                state = new QuantityType<Time>(Integer.parseInt(value) / 10, NuvoHandler.API_SECOND_UNIT);
+                state = new QuantityType<>(Integer.parseInt(value) / 10, NuvoHandler.API_SECOND_UNIT);
                 break;
             case CHANNEL_ALBUM_ART:
                 state = new RawType(bytes, "image/jpeg");
@@ -1433,5 +1483,131 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         } else {
             logger.warn("Unknown control command: {}", command);
         }
+    }
+
+    /**
+     * Scrapes the MPS4's json api to retrieve the currently playing media's album art
+     *
+     * @param source the source that should be queried to load the current album art
+     */
+    private void getMps4AlbumArt(NuvoEnum source) {
+        final String clientId = UUID.randomUUID().toString();
+
+        // try to get cached source instance
+        String instance = sourceInstanceMap.get(source);
+
+        // if not found, need to retrieve from the api, once found these calls will be skipped
+        if (instance == null) {
+            // find which zone is using this source
+            NuvoEnum zone = sourceZoneMap.get(source);
+
+            if (zone == null) {
+                logger.debug("Unable to determine zone that is using source {}", source);
+                return;
+            } else {
+                try {
+                    final String json = getMcsJson(String.format(GET_MCS_INSTANCE, mps4Host, zone.getNum(), clientId),
+                            clientId);
+
+                    Matcher matcher = MCS_INSTANCE_PATTERN.matcher(json);
+                    if (matcher.find()) {
+                        instance = matcher.group(1);
+                        sourceInstanceMap.put(source, instance);
+                        logger.debug("Found instance '{}' for source {}", instance, source);
+                    } else {
+                        logger.debug("No instance match found for json: {}", json);
+                        return;
+                    }
+                } catch (TimeoutException | ExecutionException e) {
+                    logger.debug("Failed getting instance name", e);
+                    return;
+                } catch (InterruptedException e) {
+                    logger.debug("InterruptedException getting instance name", e);
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }
+
+        try {
+            logger.debug("Using MCS instance '{}' for source {}", instance, source);
+            final String json = getMcsJson(String.format(GET_MCS_STATUS, mps4Host, instance, clientId), clientId);
+
+            if (json.contains("\"name\":\"PlayState\",\"value\":1}")
+                    || json.contains("\"name\":\"PlayState\",\"value\":3}")) {
+                Matcher matcher = ART_GUID_PATTERN.matcher(json);
+                if (matcher.find()) {
+                    final String nowPlayingGuid = matcher.group(1);
+
+                    // If streaming (not local mp3 or flac) always retrieve because the same NowPlayingGuid can
+                    // get a different image written to it by Gracenote when the track changes
+                    if (!mps4ArtGuids.getOrDefault(source, BLANK).equals(nowPlayingGuid)
+                            || !(json.contains("NowPlayingSrce\",\"value\":\"WMP\"")
+                                    || json.contains("NowPlayingSrce\",\"value\":\"Flac\""))) {
+                        ContentResponse artResponse = httpClient
+                                .newRequest(String.format(GET_MCS_ART, mps4Host, nowPlayingGuid, instance,
+                                        bindingConf.imageHeight, bindingConf.imageWidth))
+                                .method(GET).timeout(10, TimeUnit.SECONDS).send();
+
+                        if (artResponse.getStatus() == OK_200) {
+                            logger.debug("Retrieved album art for guid: {}", nowPlayingGuid);
+                            updateChannelState(source, CHANNEL_ALBUM_ART, BLANK, artResponse.getContent());
+                            mps4ArtGuids.put(source, nowPlayingGuid);
+                        }
+                    } else {
+                        logger.debug("Album art has not changed, guid: {}", nowPlayingGuid);
+                    }
+                } else {
+                    logger.debug("NowPlayingGuid not found");
+                }
+            } else {
+                logger.debug("PlayState not valid");
+            }
+        } catch (TimeoutException | ExecutionException e) {
+            logger.debug("Failed getting album art", e);
+            updateChannelState(source, CHANNEL_ALBUM_ART, UNDEF);
+            mps4ArtGuids.put(source, BLANK);
+        } catch (InterruptedException e) {
+            logger.debug("InterruptedException getting album art", e);
+            updateChannelState(source, CHANNEL_ALBUM_ART, UNDEF);
+            mps4ArtGuids.put(source, BLANK);
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Used by getMps4AlbumArt to abstract retrieval of status json from MCS
+     *
+     * @param commandUrl the url with the embedded commands to send to MCS
+     * @param clientId the current clientId
+     * @return string json result from the command executed
+     *
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
+    private String getMcsJson(String commandUrl, String clientId)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        ContentResponse commandResp = httpClient.newRequest(commandUrl).method(GET).timeout(10, TimeUnit.SECONDS)
+                .send();
+
+        if (commandResp.getStatus() == OK_200) {
+            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+            ContentResponse jsonResp = httpClient.newRequest(String.format(GET_MCS_JSON, mps4Host, clientId))
+                    .method(GET).timeout(10, TimeUnit.SECONDS).send();
+            if (jsonResp.getStatus() == OK_200) {
+                return jsonResp.getContentAsString();
+            } else {
+                logger.debug("Got error response {} when getting json from MCS", commandResp.getStatus());
+                return BLANK;
+            }
+        }
+        logger.debug("Got error response {} when sending json command url: {}", commandResp.getStatus(), commandUrl);
+        return BLANK;
+    }
+
+    private String getFavorite(NuvoEnum source, int playlistIdx) {
+        final String[] favoritesArr = favoriteMap.get(source);
+        return favoritesArr != null ? favoritesArr[playlistIdx] : BLANK;
     }
 }

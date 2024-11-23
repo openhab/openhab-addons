@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -173,7 +173,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                     availablePorts);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
             return;
-
         }
 
         // initialize serial port
@@ -322,7 +321,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                         Thread.sleep(sleep);
                     } catch (InterruptedException e) {
                     }
-
                 }
             } catch (InterruptedIOException e) {
                 Thread.currentThread().interrupt();

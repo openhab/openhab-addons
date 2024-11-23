@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.boschshc.internal.devices.camera;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_CAMERA_NOTIFICATION;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_PRIVACY_MODE;
 
 import java.util.List;
 
@@ -20,10 +21,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.cameranotification.CameraNotificationService;
-import org.openhab.binding.boschshc.internal.services.cameranotification.CameraNotificationState;
 import org.openhab.binding.boschshc.internal.services.cameranotification.dto.CameraNotificationServiceState;
+import org.openhab.binding.boschshc.internal.services.dto.EnabledDisabledState;
 import org.openhab.binding.boschshc.internal.services.privacymode.PrivacyModeService;
-import org.openhab.binding.boschshc.internal.services.privacymode.PrivacyModeState;
 import org.openhab.binding.boschshc.internal.services.privacymode.dto.PrivacyModeServiceState;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -91,13 +91,13 @@ public class CameraHandler extends BoschSHCDeviceHandler {
 
     private void updatePrivacyModeState(OnOffType command) {
         PrivacyModeServiceState serviceState = new PrivacyModeServiceState();
-        serviceState.value = PrivacyModeState.from(command);
+        serviceState.value = EnabledDisabledState.from(command);
         this.updateServiceState(this.privacyModeService, serviceState);
     }
 
     private void updateCameraNotificationState(OnOffType command) {
         CameraNotificationServiceState serviceState = new CameraNotificationServiceState();
-        serviceState.value = CameraNotificationState.from(command);
+        serviceState.value = EnabledDisabledState.from(command);
         this.updateServiceState(this.cameraNotificationService, serviceState);
     }
 

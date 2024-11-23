@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ import gnu.io.UnsupportedCommOperationException;
  * Driver for the CM11 X10 interface.
  *
  *
- * @author Anthony Green - Original code
+ * @author Anthony Green - Initial contribution
  * @author Bob Raker - updates to setClock code, adapted code for use in openHAB2
  * @see <a href="http://www.heyu.org/docs/protocol.txt">CM11 Protocol specification</a>
  * @see <a href="http://www.rxtx.org">RXTX Serial API for Java</a>

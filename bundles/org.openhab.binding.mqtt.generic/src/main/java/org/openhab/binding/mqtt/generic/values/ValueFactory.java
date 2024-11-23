@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,8 +36,10 @@ public class ValueFactory {
         Value value;
         switch (channelTypeID) {
             case MqttBindingConstants.STRING:
-                value = config.allowedStates.isBlank() ? new TextValue()
+                TextValue textValue = config.allowedStates.isBlank() ? new TextValue()
                         : new TextValue(config.allowedStates.split(","));
+                textValue.setNullValue(config.nullValue);
+                value = textValue;
                 break;
             case MqttBindingConstants.DATETIME:
                 value = new DateTimeValue();
@@ -76,7 +78,8 @@ public class ValueFactory {
                 value = new OpenCloseValue(config.on, config.off);
                 break;
             case MqttBindingConstants.ROLLERSHUTTER:
-                value = new RollershutterValue(config.on, config.off, config.stop);
+                value = new RollershutterValue(config.on, config.off, config.stop, config.onState, config.offState,
+                        config.invert, config.transformExtentsToString);
                 break;
             case MqttBindingConstants.TRIGGER:
                 config.trigger = true;

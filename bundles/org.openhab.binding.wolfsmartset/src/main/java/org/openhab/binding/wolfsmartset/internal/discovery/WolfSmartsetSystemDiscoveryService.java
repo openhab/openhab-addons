@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,14 +25,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wolfsmartset.internal.dto.GetSystemListDTO;
 import org.openhab.binding.wolfsmartset.internal.dto.SubMenuEntryWithMenuItemTabView;
 import org.openhab.binding.wolfsmartset.internal.handler.WolfSmartsetSystemBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,39 +42,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bo Biene - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = WolfSmartsetSystemDiscoveryService.class)
 @NonNullByDefault
-public class WolfSmartsetSystemDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class WolfSmartsetSystemDiscoveryService
+        extends AbstractThingHandlerDiscoveryService<WolfSmartsetSystemBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(WolfSmartsetSystemDiscoveryService.class);
-
-    private @NonNullByDefault({}) WolfSmartsetSystemBridgeHandler bridgeHandler;
 
     private @Nullable Future<?> discoveryJob;
 
     public WolfSmartsetSystemDiscoveryService() {
-        super(SUPPORTED_SYSTEM_AND_UNIT_THING_TYPES_UIDS, 8, true);
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof WolfSmartsetSystemBridgeHandler systemBridgeHandler) {
-            this.bridgeHandler = systemBridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        super(WolfSmartsetSystemBridgeHandler.class, SUPPORTED_SYSTEM_AND_UNIT_THING_TYPES_UIDS, 8, true);
     }
 
     @Override
@@ -109,7 +87,7 @@ public class WolfSmartsetSystemDiscoveryService extends AbstractDiscoveryService
     }
 
     private void backgroundDiscover() {
-        var accountBridgeHandler = bridgeHandler.getAccountBridgeHandler();
+        var accountBridgeHandler = thingHandler.getAccountBridgeHandler();
         if (accountBridgeHandler == null || !accountBridgeHandler.isBackgroundDiscoveryEnabled()) {
             return;
         }
@@ -117,7 +95,7 @@ public class WolfSmartsetSystemDiscoveryService extends AbstractDiscoveryService
     }
 
     private void discover() {
-        if (bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("WolfSmartsetSystemDiscovery: Skipping discovery because Account Bridge thing is not ONLINE");
             return;
         }
@@ -126,21 +104,18 @@ public class WolfSmartsetSystemDiscoveryService extends AbstractDiscoveryService
     }
 
     private synchronized void discoverUnits() {
-        if (this.bridgeHandler != null) {
-            String systemId = this.bridgeHandler.getSystemId();
-            var systemConfig = this.bridgeHandler.getSystemConfig();
-            if (systemConfig != null) {
-                logger.debug("WolfSmartsetSystemDiscovery: Discovering units for system '{}' (id {})",
-                        systemConfig.getName(), systemId);
-                for (var unit : this.bridgeHandler.getUnits()) {
-                    ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
-                    ThingUID unitUID = new ThingUID(UID_UNIT_THING, bridgeUID,
-                            unit.menuItemTabViewDTO.bundleId.toString());
-                    thingDiscovered(createUnitDiscoveryResult(unitUID, bridgeUID, systemConfig, unit));
-                    logger.debug(
-                            "WolfSmartsetSystemDiscovery: Unit for '{}' with id '{}' and name '{}' added with UID '{}'",
-                            systemId, unit.menuItemTabViewDTO.bundleId, unit.menuItemTabViewDTO.tabName, unitUID);
-                }
+        String systemId = thingHandler.getSystemId();
+        var systemConfig = thingHandler.getSystemConfig();
+        if (systemConfig != null) {
+            logger.debug("WolfSmartsetSystemDiscovery: Discovering units for system '{}' (id {})",
+                    systemConfig.getName(), systemId);
+            for (var unit : thingHandler.getUnits()) {
+                ThingUID bridgeUID = thingHandler.getThing().getUID();
+                ThingUID unitUID = new ThingUID(UID_UNIT_THING, bridgeUID, unit.menuItemTabViewDTO.bundleId.toString());
+                thingDiscovered(createUnitDiscoveryResult(unitUID, bridgeUID, systemConfig, unit));
+                logger.debug(
+                        "WolfSmartsetSystemDiscovery: Unit for '{}' with id '{}' and name '{}' added with UID '{}'",
+                        systemId, unit.menuItemTabViewDTO.bundleId, unit.menuItemTabViewDTO.tabName, unitUID);
             }
         }
     }

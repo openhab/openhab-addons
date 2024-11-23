@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -206,7 +206,7 @@ public class LxControl {
     /*
      * JSON deserialization routine, called during parsing configuration by the GSON library
      */
-    public static final JsonDeserializer<LxControl> DESERIALIZER = new JsonDeserializer<LxControl>() {
+    public static final JsonDeserializer<LxControl> DESERIALIZER = new JsonDeserializer<>() {
         @Override
         public LxControl deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {

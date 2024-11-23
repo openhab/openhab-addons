@@ -320,4 +320,48 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="thing-type:rotel:serial6">
+		<parameter name="serialPort" type="text" required="false">
+			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
+			<label>@text/config.serialPort.label</label>
+			<description>@text/config.serialPort.description</description>
+		</parameter>
+		<parameter name="baudRate" type="integer" required="false">
+			<label>@text/config.baudRate.label</label>
+			<description>@text/config.baudRate.description</description>
+			<limitToOptions>true</limitToOptions>
+			<options>
+				<option value="19200">19200</option>
+				<option value="38400">38400</option>
+			</options>
+			<default>38400</default>
+		</parameter>
+		<parameter name="host" type="text" required="false">
+			<context>network-address</context>
+			<label>@text/config.hostOverIp.label</label>
+			<description>@text/config.hostOverIp.description</description>
+		</parameter>
+		<parameter name="port" type="integer" required="false">
+			<label>@text/config.portOverIp.label</label>
+			<description>@text/config.portOverIp.description</description>
+		</parameter>
+		<parameter name="inputLabelVideo1" type="text" required="false">
+			<label>@text/config.inputLabelVideo1.label</label>
+			<description>@text/config.inputLabelVideo1.description</description>
+		</parameter>
+		<parameter name="inputLabelVideo2" type="text" required="false">
+			<label>@text/config.inputLabelVideo2.label</label>
+			<description>@text/config.inputLabelVideo2.description</description>
+		</parameter>
+		<parameter name="inputLabelVideo3" type="text" required="false">
+			<label>@text/config.inputLabelVideo3.label</label>
+			<description>@text/config.inputLabelVideo3.description</description>
+		</parameter>
+		<parameter name="inputLabelVideo4" type="text" required="false">
+			<label>@text/config.inputLabelVideo4.label</label>
+			<description>@text/config.inputLabelVideo4.description</description>
+		</parameter>
+	</config-description>
+
 </config-description:config-descriptions>

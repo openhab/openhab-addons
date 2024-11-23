@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,10 +27,13 @@ import org.openhab.binding.deconz.internal.dto.NewSceneResponse;
 import org.openhab.binding.deconz.internal.handler.GroupThingHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
+import org.openhab.core.automation.annotation.ActionOutputs;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +46,7 @@ import com.google.gson.reflect.TypeToken;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = GroupActions.class)
 @ThingActionsScope(name = "deconz")
 @NonNullByDefault
 public class GroupActions implements ThingActions {
@@ -56,8 +60,9 @@ public class GroupActions implements ThingActions {
     private @Nullable GroupThingHandler handler;
 
     @RuleAction(label = "@text/action.create-scene.label", description = "@text/action.create-scene.description")
-    public @ActionOutput(name = NEW_SCENE_ID_OUTPUT, type = "java.lang.Integer") Map<String, Object> createScene(
-            @ActionInput(name = "name", label = "@text/action.create-scene.name.label", description = "@text/action.create-scene.name.description") @Nullable String name) {
+    public @ActionOutputs({
+            @ActionOutput(name = NEW_SCENE_ID_OUTPUT, label = "Scene Id", type = "java.lang.Integer") }) Map<String, Object> createScene(
+                    @ActionInput(name = "name", label = "@text/action.create-scene.name.label", description = "@text/action.create-scene.name.description") @Nullable String name) {
         GroupThingHandler handler = this.handler;
 
         if (handler == null) {

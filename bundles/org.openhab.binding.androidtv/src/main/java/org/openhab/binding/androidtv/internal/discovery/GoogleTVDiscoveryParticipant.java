@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.androidtv.internal.discovery;
 import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 
 import java.net.InetAddress;
-import java.util.Map;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -45,7 +44,7 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return SUPPORTED_THING_TYPES;
+        return Set.of(THING_TYPE_GOOGLETV);
     }
 
     @Override
@@ -54,8 +53,8 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public @Nullable DiscoveryResult createResult(@Nullable ServiceInfo service) {
-        if ((service == null) || !service.hasData()) {
+    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
+        if (!service.hasData()) {
             return null;
         }
 
@@ -79,9 +78,9 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
             if (uid != null) {
                 final String id = uid.getId();
                 final String label = service.getName() + " (" + id + ")";
-                final Map<String, Object> properties = Map.of(PROPERTY_IP_ADDRESS, ipAddress);
-
-                return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
+                return DiscoveryResultBuilder.create(uid).withLabel(label)
+                        .withRepresentationProperty(PARAMETER_IP_ADDRESS).withProperty(PARAMETER_IP_ADDRESS, ipAddress)
+                        .build();
             } else {
                 return null;
             }
@@ -91,8 +90,8 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public @Nullable ThingUID getThingUID(@Nullable ServiceInfo service) {
-        if ((service == null) || !service.hasData() || (service.getPropertyString("bt") == null)) {
+    public @Nullable ThingUID getThingUID(ServiceInfo service) {
+        if (!service.hasData() || (service.getPropertyString("bt") == null)) {
             return null;
         }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public class GetBatteryCommand extends GetCommand {
         }
         if (data != null) {
             int value = data[0] & 0xFF;
-            resultHandler.complete(new QuantityType<Dimensionless>(value, Units.PERCENT));
+            resultHandler.complete(new QuantityType<>(value, Units.PERCENT));
         } else {
             resultHandler.complete(null);
         }

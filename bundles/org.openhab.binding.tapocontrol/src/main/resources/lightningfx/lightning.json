@@ -1,0 +1,91 @@
+ {
+  "id": "TapoStrip_7OGzfSfnOdhoO2ri4gOHWn",
+  "name": "Lightning",
+  "brightness": 100,
+  "display_colors": [
+    [
+      210,
+      10,
+      100
+    ],
+    [
+      200,
+      50,
+      100
+    ],
+    [
+      200,
+      100,
+      100
+    ]
+  ],
+  "enable": 1,
+  "bAdjusted": null,
+  "brightness_range": [
+    90,
+    100
+  ],
+  "backgrounds": [
+    [
+      200,
+      100,
+      100
+    ],
+    [
+      200,
+      50,
+      10
+    ],
+    [
+      210,
+      10,
+      50
+    ],
+    [
+      240,
+      10,
+      0
+    ]
+  ],
+  "custom": 0,
+  "direction": null,
+  "duration": 0,
+  "expansion_strategy": 1,
+  "fadeoff": 150,
+  "hue_range": [
+    240,
+    240
+  ],
+  "init_states": [
+    [
+      240,
+      30,
+      100
+    ]
+  ],
+  "random_seed": 600,
+  "repeat_times": null,
+  "saturation_range": [
+    10,
+    11
+  ],
+  "segment_length": null,
+  "segments": [
+    7,
+    20,
+    23,
+    32,
+    34,
+    35,
+    49,
+    65,
+    66,
+    74,
+    80
+  ],
+  "sequence": null,
+  "spread": null,
+  "transition": 50,
+  "transition_range": null,
+  "type": "random"
+}

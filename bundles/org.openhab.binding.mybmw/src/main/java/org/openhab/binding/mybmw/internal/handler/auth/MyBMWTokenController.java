@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -291,7 +291,7 @@ public class MyBMWTokenController {
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);
         final StringBuilder codeFound = new StringBuilder();
         tokenMap.forEach((key, value) -> {
-            if (value.size() > 0) {
+            if (!value.isEmpty()) {
                 String val = value.get(0);
                 if (key.endsWith(CODE) && (val != null)) {
                     codeFound.append(val.toString());

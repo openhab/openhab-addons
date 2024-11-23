@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -181,9 +181,12 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_TYPE_AUDIO_MUTE:
                 case CHANNEL_TYPE_VIDEO_MUTE:
+                case CHANNEL_TYPE_AUDIO_AND_VIDEO_MUTE:
                     boolean isAudioMute = channelTypeId.equals(PJLinkDeviceBindingConstants.CHANNEL_TYPE_AUDIO_MUTE);
                     boolean isVideoMute = channelTypeId.equals(PJLinkDeviceBindingConstants.CHANNEL_TYPE_VIDEO_MUTE);
-                    if (isVideoMute || isAudioMute) {
+                    boolean isAudioAndVideoMute = channelTypeId
+                            .equals(PJLinkDeviceBindingConstants.CHANNEL_TYPE_AUDIO_AND_VIDEO_MUTE);
+                    if (isVideoMute || isAudioMute || isAudioAndVideoMute) {
                         if (command == RefreshType.REFRESH) {
                             // refresh both video and audio mute, as it's one request
                             MuteQueryResponseValue muteStatus = device.getMuteStatus();
@@ -191,6 +194,8 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                                     OnOffType.from(muteStatus.isAudioMuted()));
                             updateState(PJLinkDeviceBindingConstants.CHANNEL_VIDEO_MUTE,
                                     OnOffType.from(muteStatus.isVideoMuted()));
+                            updateState(PJLinkDeviceBindingConstants.CHANNEL_TYPE_AUDIO_AND_VIDEO_MUTE,
+                                    OnOffType.from(muteStatus.isAudioAndVideoMuted()));
                         } else {
                             if (isAudioMute) {
                                 logger.trace("Received audio mute command {}", command);
@@ -201,6 +206,11 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                                 logger.trace("Received video mute command {}", command);
                                 boolean muteOn = command == OnOffType.ON;
                                 device.setMute(MuteInstructionChannel.VIDEO, muteOn);
+                            }
+                            if (isAudioAndVideoMute) {
+                                logger.trace("Received video mute command {}", command);
+                                boolean muteOn = command == OnOffType.ON;
+                                device.setMute(MuteInstructionChannel.AUDIO_AND_VIDEO, muteOn);
                             }
                         }
                     } else {

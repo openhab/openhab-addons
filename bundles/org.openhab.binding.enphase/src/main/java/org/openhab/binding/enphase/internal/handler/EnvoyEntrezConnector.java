@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,6 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
                             check(configuration.password, "Password parameter is empty"),
                             check(configuration.siteName, "siteName parameter is empty"))
                     .filter(s -> !s.isEmpty()).collect(Collectors.joining(", "));
-
         }
         if (!message.isEmpty()) {
             return message;

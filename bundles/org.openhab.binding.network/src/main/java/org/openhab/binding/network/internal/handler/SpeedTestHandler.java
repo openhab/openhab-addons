@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,7 +131,6 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
         if (SpeedTestError.UNSUPPORTED_PROTOCOL.equals(testError) || SpeedTestError.MALFORMED_URI.equals(testError)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
             freeRefreshTask();
-            return;
         } else if (SpeedTestError.SOCKET_TIMEOUT.equals(testError)) {
             timeouts--;
             if (timeouts <= 0) {
@@ -141,12 +140,10 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
                 logger.warn("Speedtest timed out, {} attempts left. Message '{}'", timeouts, errorMessage);
                 stopSpeedTest();
             }
-            return;
         } else if (SpeedTestError.SOCKET_ERROR.equals(testError)
                 || SpeedTestError.INVALID_HTTP_RESPONSE.equals(testError)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             freeRefreshTask();
-            return;
         } else {
             stopSpeedTest();
             logger.warn("Speedtest failed: {}", errorMessage);

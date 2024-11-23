@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -316,7 +316,7 @@ public class LGWebOSTVSocket {
         payload.addProperty("pairingType", "PROMPT"); // PIN, COMBINED
         payload.add("manifest", manifest);
         packet.add("payload", payload);
-        ResponseListener<JsonObject> dummyListener = new ResponseListener<JsonObject>() {
+        ResponseListener<JsonObject> dummyListener = new ResponseListener<>() {
 
             @Override
             public void onSuccess(@Nullable JsonObject payload) {
@@ -418,6 +418,10 @@ public class LGWebOSTVSocket {
     @OnWebSocketMessage
     public void onMessage(String message) {
         Response response = GSON.fromJson(message, Response.class);
+        if (response == null) {
+            logger.warn("Received an unexpected null response. Ignoring the response");
+            return;
+        }
         JsonElement payload = response.getPayload();
         JsonObject jsonPayload = payload == null ? null : payload.getAsJsonObject();
         String messageToLog = (jsonPayload != null && jsonPayload.has("client-key")) ? "***" : message;
@@ -494,6 +498,7 @@ public class LGWebOSTVSocket {
                 map.put(PROPERTY_DEVICE_OS, jsonPayload.get("deviceOS").getAsString());
                 map.put(PROPERTY_DEVICE_OS_VERSION, jsonPayload.get("deviceOSVersion").getAsString());
                 map.put(PROPERTY_DEVICE_OS_RELEASE_VERSION, jsonPayload.get("deviceOSReleaseVersion").getAsString());
+                map.put(PROPERTY_DEVICE_ID, jsonPayload.get("deviceUUID").getAsString());
                 map.put(PROPERTY_LAST_CONNECTED, Instant.now().toString());
                 config.storeProperties(map);
                 sendRegister();
@@ -672,7 +677,7 @@ public class LGWebOSTVSocket {
     public void powerOff(ResponseListener<CommandConfirmation> listener) {
         String uri = "ssap://system/turnOff";
 
-        ResponseListener<CommandConfirmation> interceptor = new ResponseListener<CommandConfirmation>() {
+        ResponseListener<CommandConfirmation> interceptor = new ResponseListener<>() {
 
             @Override
             public void onSuccess(CommandConfirmation confirmation) {
@@ -848,7 +853,7 @@ public class LGWebOSTVSocket {
     }
 
     public ServiceSubscription<AppInfo> subscribeRunningApp(ResponseListener<AppInfo> listener) {
-        ResponseListener<AppInfo> interceptor = new ResponseListener<AppInfo>() {
+        ResponseListener<AppInfo> interceptor = new ResponseListener<>() {
 
             @Override
             public void onSuccess(AppInfo appInfo) {
@@ -926,7 +931,7 @@ public class LGWebOSTVSocket {
 
         String uri = "ssap://com.webos.service.networkinput/getPointerInputSocket";
 
-        ResponseListener<JsonObject> listener = new ResponseListener<JsonObject>() {
+        ResponseListener<JsonObject> listener = new ResponseListener<>() {
 
             @Override
             public void onSuccess(@Nullable JsonObject jsonObj) {

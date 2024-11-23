@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -235,7 +235,7 @@ public class MyRenaultHttpSession {
     public void getCockpit(Car car) throws RenaultForbiddenException, RenaultUpdateException,
             RenaultNotImplementedException, RenaultAPIGatewayException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
-                + "/kamereon/kca/car-adapter/v2/cars/" + config.vin + "/cockpit?country=" + getCountry(config));
+                + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/cockpit?country=" + getCountry(config));
         if (responseJson != null) {
             car.setCockpit(responseJson);
         }

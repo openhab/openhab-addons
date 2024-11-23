@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,7 +111,7 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
             throws TellstickException, InterruptedException {
         TellstickLocalDevicesDTO newList = controller
                 .callRestMethod(TelldusLocalDeviceController.HTTP_LOCAL_API_DEVICES, TellstickLocalDevicesDTO.class);
-        if (newList.getDevices() != null) {
+        if (newList != null && newList.getDevices() != null) {
             logger.debug("Device list {}", newList.getDevices());
             if (previouslist == null) {
                 for (TellstickLocalDeviceDTO device : newList.getDevices()) {
@@ -167,8 +167,8 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
             throws TellstickException, InterruptedException {
         TellstickLocalSensorsDTO newList = controller
                 .callRestMethod(TelldusLocalDeviceController.HTTP_LOCAL_API_SENSORS, TellstickLocalSensorsDTO.class);
-        logger.debug("Updated sensors:{}", newList.getSensors());
-        if (newList.getSensors() != null) {
+        if (newList != null && newList.getSensors() != null) {
+            logger.debug("Updated sensors:{}", newList.getSensors());
             if (previouslist == null) {
                 this.sensorList = newList;
                 for (TellstickLocalSensorDTO sensor : sensorList.getSensors()) {

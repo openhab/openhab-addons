@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -158,11 +158,15 @@ public class RadioThermostatConnector {
 
     /**
      * Dispatch an event (key, value) to the event listeners
+     * Events with a null value are discarded
      *
      * @param key the key
      * @param value the value
      */
-    private void dispatchKeyValue(String key, String value) {
+    private void dispatchKeyValue(String key, @Nullable String value) {
+        if (value == null) {
+            return;
+        }
         RadioThermostatEvent event = new RadioThermostatEvent(this, key, value);
         for (RadioThermostatEventListener listener : listeners) {
             listener.onNewMessageEvent(event);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
     public void onDeviceReady(String channelId, LGWebOSHandler handler) {
         super.onDeviceReady(channelId, handler);
 
-        handler.getSocket().getAppList(new ResponseListener<List<AppInfo>>() {
+        handler.getSocket().getAppList(new ResponseListener<>() {
 
             @Override
             public void onError(String error) {
@@ -109,7 +109,7 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
     }
 
     private ResponseListener<AppInfo> createResponseListener(String channelId, LGWebOSHandler handler) {
-        return new ResponseListener<AppInfo>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(@Nullable String error) {

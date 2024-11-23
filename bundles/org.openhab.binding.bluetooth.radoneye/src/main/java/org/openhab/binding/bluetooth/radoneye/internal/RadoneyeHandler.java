@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
@@ -57,7 +56,7 @@ public class RadoneyeHandler extends AbstractRadoneyeHandler {
             Number radon = data.get(RadoneyeDataParser.RADON);
             logger.debug("Parsed data radon number: {}", radon);
             if (radon != null) {
-                updateState(CHANNEL_ID_RADON, new QuantityType<Density>(radon, BECQUEREL_PER_CUBIC_METRE));
+                updateState(CHANNEL_ID_RADON, new QuantityType<>(radon, BECQUEREL_PER_CUBIC_METRE));
             }
         } catch (RadoneyeParserException e) {
             logger.error("Failed to parse data received from Radoneye sensor: {}", e.getMessage());

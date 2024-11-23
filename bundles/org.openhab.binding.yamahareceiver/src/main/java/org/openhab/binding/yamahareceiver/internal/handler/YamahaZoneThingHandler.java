@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,11 +18,9 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.yamahareceiver.internal.ChannelsTypeProviderAvailableInputs;
@@ -75,6 +73,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -124,9 +123,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections
-                .unmodifiableList(Stream.of(ChannelsTypeProviderAvailableInputs.class, ChannelsTypeProviderPreset.class)
-                        .collect(Collectors.toList()));
+        return List.of(ChannelsTypeProviderAvailableInputs.class, ChannelsTypeProviderPreset.class);
     }
 
     /**
@@ -759,8 +756,12 @@ public class YamahaZoneThingHandler extends BaseThingHandler
         // Remove the old channel and add the new channel. The channel will be requested from the
         // yamahaChannelTypeProvider.
         ChannelUID inputChannelUID = new ChannelUID(thing.getUID(), CHANNEL_GROUP_ZONE, CHANNEL_INPUT);
-        Channel channel = ChannelBuilder.create(inputChannelUID, "String")
-                .withType(channelsTypeProviderAvailableInputs.getChannelTypeUID()).build();
+        ChannelTypeUID channelTypeUID = channelsTypeProviderAvailableInputs.getChannelTypeUID();
+        if (channelTypeUID == null) {
+            logger.warn("ChannelTypeUID is null, this should not happen.");
+            return;
+        }
+        Channel channel = ChannelBuilder.create(inputChannelUID, "String").withType(channelTypeUID).build();
         updateThing(editThing().withoutChannel(inputChannelUID).withChannel(channel).build());
     }
 
@@ -799,11 +800,15 @@ public class YamahaZoneThingHandler extends BaseThingHandler
 
             // Remove the old channel and add the new channel. The channel will be requested from the
             // channelsTypeProviderPreset.
-            ChannelUID inputChannelUID = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PLAYBACK,
+            ChannelUID presetChannelUID = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PLAYBACK,
                     CHANNEL_PLAYBACK_PRESET);
-            Channel channel = ChannelBuilder.create(inputChannelUID, "Number")
-                    .withType(channelsTypeProviderPreset.getChannelTypeUID()).build();
-            updateThing(editThing().withoutChannel(inputChannelUID).withChannel(channel).build());
+            ChannelTypeUID channelTypeUID = channelsTypeProviderPreset.getChannelTypeUID();
+            if (channelTypeUID == null) {
+                logger.warn("ChannelTypeUID is null, this should not happen.");
+                return;
+            }
+            Channel channel = ChannelBuilder.create(presetChannelUID, "Number").withType(channelTypeUID).build();
+            updateThing(editThing().withoutChannel(presetChannelUID).withChannel(channel).build());
         }
 
         updateState(grpPlayback(CHANNEL_PLAYBACK_PRESET), new DecimalType(msg.presetChannel));

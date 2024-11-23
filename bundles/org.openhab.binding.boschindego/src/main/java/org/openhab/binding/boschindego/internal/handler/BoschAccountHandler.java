@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -174,7 +174,7 @@ public class BoschAccountHandler extends BaseBridgeHandler implements Authorizat
 
     public Collection<DevicePropertiesResponse> getDevices() throws IndegoException {
         Collection<String> serialNumbers = controller.getSerialNumbers();
-        List<DevicePropertiesResponse> devices = new ArrayList<DevicePropertiesResponse>(serialNumbers.size());
+        List<DevicePropertiesResponse> devices = new ArrayList<>(serialNumbers.size());
 
         for (String serialNumber : serialNumbers) {
             DevicePropertiesResponse properties = controller.getDeviceProperties(serialNumber);

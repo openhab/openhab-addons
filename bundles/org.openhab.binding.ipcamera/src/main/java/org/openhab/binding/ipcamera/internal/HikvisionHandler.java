@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -178,11 +178,11 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                             removeChannels.add(channel);
                         }
                         // start checking the input IO status
-                        ipCameraHandler.lowPriorityRequests.set(0,
+                        ipCameraHandler.lowPriorityRequests.add(0,
                                 "/ISAPI/System/IO/inputs/" + ipCameraHandler.cameraConfig.getNvrChannel() + "/status");
                     } else {
                         // start checking the input IO status
-                        ipCameraHandler.lowPriorityRequests.set(0,
+                        ipCameraHandler.lowPriorityRequests.add(0,
                                 "/ISAPI/System/IO/inputs/" + ipCameraHandler.cameraConfig.getNvrChannel() + "/status");
                     }
                     ipCameraHandler.removeChannels(removeChannels);

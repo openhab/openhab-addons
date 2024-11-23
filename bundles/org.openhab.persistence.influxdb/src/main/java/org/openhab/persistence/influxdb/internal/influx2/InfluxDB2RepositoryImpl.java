@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,6 @@ import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.InfluxDBClientOptions;
 import com.influxdb.client.QueryApi;
 import com.influxdb.client.WriteApi;
-import com.influxdb.client.domain.HealthCheck;
 import com.influxdb.client.domain.Ready;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
@@ -78,7 +77,7 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     @Override
     public boolean isConnected() {
         InfluxDBClient client = this.client;
-        return client != null && client.health().getStatus() == HealthCheck.StatusEnum.PASS;
+        return client != null && client.ping();
     }
 
     @Override
@@ -97,9 +96,10 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         this.client = createdClient;
 
         queryAPI = createdClient.getQueryApi();
-        writeAPI = createdClient.getWriteApi();
+        writeAPI = createdClient.makeWriteApi();
         deleteAPI = createdClient.getDeleteApi();
-        logger.debug("Successfully connected to InfluxDB. Instance ready={}", createdClient.ready());
+
+        logger.debug("Successfully connected to InfluxDB. Instance pingable={}", createdClient.ping());
 
         return checkConnectionStatus();
     }
@@ -117,8 +117,16 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     public boolean checkConnectionStatus() {
         final InfluxDBClient currentClient = client;
         if (currentClient != null) {
+            boolean isUp = false;
             Ready ready = currentClient.ready();
-            boolean isUp = ready != null && ready.getStatus() == Ready.StatusEnum.READY;
+            if (ready != null) {
+                isUp = ready.getStatus() == Ready.StatusEnum.READY;
+            } else {
+                logger.debug(
+                        "Failure resolving database readiness. Falling back to ping check. This is normal when using InfluxDB Cloud Serverless.");
+                isUp = currentClient.ping();
+            }
+
             if (isUp) {
                 logger.debug("database status is OK");
             } else {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.energidataservice.internal.action;
 
-import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
+import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.CURRENCY_DKK;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -24,9 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
@@ -35,16 +33,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.energidataservice.internal.DatahubTariff;
 import org.openhab.binding.energidataservice.internal.PriceCalculator;
+import org.openhab.binding.energidataservice.internal.PriceComponent;
 import org.openhab.binding.energidataservice.internal.exception.MissingPriceException;
 import org.openhab.binding.energidataservice.internal.handler.EnergiDataServiceHandler;
+import org.openhab.core.automation.Visibility;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
+import org.openhab.core.automation.annotation.ActionOutputs;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +56,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jacob Laursen - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = EnergiDataServiceActions.class)
 @ThingActionsScope(name = "energidataservice")
 @NonNullByDefault
 public class EnergiDataServiceActions implements ThingActions {
@@ -61,46 +65,8 @@ public class EnergiDataServiceActions implements ThingActions {
 
     private @Nullable EnergiDataServiceHandler handler;
 
-    private enum PriceComponent {
-        SPOT_PRICE("spotprice", null),
-        GRID_TARIFF("gridtariff", DatahubTariff.GRID_TARIFF),
-        SYSTEM_TARIFF("systemtariff", DatahubTariff.SYSTEM_TARIFF),
-        TRANSMISSION_GRID_TARIFF("transmissiongridtariff", DatahubTariff.TRANSMISSION_GRID_TARIFF),
-        ELECTRICITY_TAX("electricitytax", DatahubTariff.ELECTRICITY_TAX),
-        REDUCED_ELECTRICITY_TAX("reducedelectricitytax", DatahubTariff.REDUCED_ELECTRICITY_TAX);
-
-        private static final Map<String, PriceComponent> NAME_MAP = Stream.of(values())
-                .collect(Collectors.toMap(PriceComponent::toString, Function.identity()));
-
-        private String name;
-        private @Nullable DatahubTariff datahubTariff;
-
-        private PriceComponent(String name, @Nullable DatahubTariff datahubTariff) {
-            this.name = name;
-            this.datahubTariff = datahubTariff;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-
-        public static PriceComponent fromString(final String name) {
-            PriceComponent myEnum = NAME_MAP.get(name.toLowerCase());
-            if (null == myEnum) {
-                throw new IllegalArgumentException(String.format("'%s' has no corresponding value. Accepted values: %s",
-                        name, Arrays.asList(values())));
-            }
-            return myEnum;
-        }
-
-        public @Nullable DatahubTariff getDatahubTariff() {
-            return datahubTariff;
-        }
-    }
-
-    @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description")
-    public @ActionOutput(name = "prices", type = "java.util.Map<java.time.Instant, java.math.BigDecimal>") Map<Instant, BigDecimal> getPrices() {
+    @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description", visibility = Visibility.HIDDEN)
+    public @ActionOutput(type = "java.util.Map<java.time.Instant, java.math.BigDecimal>") Map<Instant, BigDecimal> getPrices() {
         EnergiDataServiceHandler handler = this.handler;
         if (handler == null) {
             logger.warn("EnergiDataServiceActions ThingHandler is null.");
@@ -115,8 +81,8 @@ public class EnergiDataServiceActions implements ThingActions {
                 .collect(Collectors.toSet()));
     }
 
-    @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description")
-    public @ActionOutput(name = "prices", type = "java.util.Map<java.time.Instant, java.math.BigDecimal>") Map<Instant, BigDecimal> getPrices(
+    @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description", visibility = Visibility.HIDDEN)
+    public @ActionOutput(type = "java.util.Map<java.time.Instant, java.math.BigDecimal>") Map<Instant, BigDecimal> getPrices(
             @ActionInput(name = "priceComponents", label = "@text/action.get-prices.priceComponents.label", description = "@text/action.get-prices.priceComponents.description") @Nullable String priceComponents) {
         if (priceComponents == null) {
             logger.warn("Argument 'priceComponents' is null");
@@ -125,7 +91,7 @@ public class EnergiDataServiceActions implements ThingActions {
 
         Set<PriceComponent> priceComponentsSet;
         try {
-            priceComponentsSet = new HashSet<PriceComponent>(
+            priceComponentsSet = new HashSet<>(
                     Arrays.stream(priceComponents.split(",")).map(PriceComponent::fromString).toList());
         } catch (IllegalArgumentException e) {
             logger.warn("{}", e.getMessage());
@@ -136,25 +102,27 @@ public class EnergiDataServiceActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.calculate-price.label", description = "@text/action.calculate-price.description")
-    public @ActionOutput(name = "price", type = "java.math.BigDecimal") BigDecimal calculatePrice(
-            @ActionInput(name = "start", type = "java.time.Instant") Instant start,
-            @ActionInput(name = "end", type = "java.time.Instant") Instant end,
-            @ActionInput(name = "power", type = "QuantityType<Power>") QuantityType<Power> power) {
+    public @ActionOutput(label = "@text/action.calculate-price.output.label", type = "java.math.BigDecimal") @Nullable BigDecimal calculatePrice(
+            @ActionInput(name = "start", label = "@text/action.calculate-price.input.start.label", type = "java.time.Instant") Instant start,
+            @ActionInput(name = "end", label = "@text/action.calculate-price.input.end.label", type = "java.time.Instant") Instant end,
+            @ActionInput(name = "power", label = "@text/action.calculate-price.input.power.label", type = "QuantityType<Power>") QuantityType<Power> power) {
         PriceCalculator priceCalculator = new PriceCalculator(getPrices());
 
         try {
             return priceCalculator.calculatePrice(start, end, power);
         } catch (MissingPriceException e) {
             logger.warn("{}", e.getMessage());
-            return BigDecimal.ZERO;
+            return null;
         }
     }
 
     @RuleAction(label = "@text/action.calculate-cheapest-period.label", description = "@text/action.calculate-cheapest-period.description")
-    public @ActionOutput(name = "result", type = "java.util.Map<String, Object>") Map<String, Object> calculateCheapestPeriod(
-            @ActionInput(name = "earliestStart", type = "java.time.Instant") Instant earliestStart,
-            @ActionInput(name = "latestEnd", type = "java.time.Instant") Instant latestEnd,
-            @ActionInput(name = "duration", type = "java.time.Duration") Duration duration) {
+    public @ActionOutputs({
+            @ActionOutput(name = "CheapestStart", label = "@text/action.calculate-cheapest-period.output.cheapest-start.label", type = "java.time.Instant"),
+            @ActionOutput(name = "MostExpensiveStart", label = "@text/action.calculate-cheapest-period.output.most-expensive-start.label", type = "java.time.Instant"), }) Map<String, Object> calculateCheapestPeriod(
+                    @ActionInput(name = "earliestStart", label = "@text/action.calculate-cheapest-period.input.earliest-start.label", type = "java.time.Instant") Instant earliestStart,
+                    @ActionInput(name = "latestEnd", label = "@text/action.calculate-cheapest-period.input.latest-end.label", type = "java.time.Instant") Instant latestEnd,
+                    @ActionInput(name = "duration", label = "@text/action.calculate-cheapest-period.input.duration.label", type = "java.time.Duration") Duration duration) {
         PriceCalculator priceCalculator = new PriceCalculator(getPrices());
 
         try {
@@ -179,11 +147,15 @@ public class EnergiDataServiceActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.calculate-cheapest-period.label", description = "@text/action.calculate-cheapest-period.description")
-    public @ActionOutput(name = "result", type = "java.util.Map<String, Object>") Map<String, Object> calculateCheapestPeriod(
-            @ActionInput(name = "earliestStart", type = "java.time.Instant") Instant earliestStart,
-            @ActionInput(name = "latestEnd", type = "java.time.Instant") Instant latestEnd,
-            @ActionInput(name = "duration", type = "java.time.Duration") Duration duration,
-            @ActionInput(name = "power", type = "QuantityType<Power>") QuantityType<Power> power) {
+    public @ActionOutputs({
+            @ActionOutput(name = "CheapestStart", label = "@text/action.calculate-cheapest-period.output.cheapest-start.label", type = "java.time.Instant"),
+            @ActionOutput(name = "LowestPrice", label = "@text/action.calculate-cheapest-period.output.lowest-price.label", type = "java.math.BigDecimal"),
+            @ActionOutput(name = "MostExpensiveStart", label = "@text/action.calculate-cheapest-period.output.most-expensive-start.label", type = "java.time.Instant"),
+            @ActionOutput(name = "HighestPrice", label = "@text/action.calculate-cheapest-period.output.highest-price.label", type = "java.math.BigDecimal") }) Map<String, Object> calculateCheapestPeriod(
+                    @ActionInput(name = "earliestStart", label = "@text/action.calculate-cheapest-period.input.earliest-start.label", type = "java.time.Instant") Instant earliestStart,
+                    @ActionInput(name = "latestEnd", label = "@text/action.calculate-cheapest-period.input.latest-end.label", type = "java.time.Instant") Instant latestEnd,
+                    @ActionInput(name = "duration", label = "@text/action.calculate-cheapest-period.input.duration.label", type = "java.time.Duration") Duration duration,
+                    @ActionInput(name = "power", label = "@text/action.calculate-cheapest-period.input.power.label", type = "QuantityType<Power>") QuantityType<Power> power) {
         PriceCalculator priceCalculator = new PriceCalculator(getPrices());
 
         try {
@@ -195,12 +167,16 @@ public class EnergiDataServiceActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.calculate-cheapest-period.label", description = "@text/action.calculate-cheapest-period.description")
-    public @ActionOutput(name = "result", type = "java.util.Map<String, Object>") Map<String, Object> calculateCheapestPeriod(
-            @ActionInput(name = "earliestStart", type = "java.time.Instant") Instant earliestStart,
-            @ActionInput(name = "latestEnd", type = "java.time.Instant") Instant latestEnd,
-            @ActionInput(name = "totalDuration", type = "java.time.Duration") Duration totalDuration,
-            @ActionInput(name = "durationPhases", type = "java.util.List<java.time.Duration>") List<Duration> durationPhases,
-            @ActionInput(name = "energyUsedPerPhase", type = "QuantityType<Energy>") QuantityType<Energy> energyUsedPerPhase) {
+    public @ActionOutputs({
+            @ActionOutput(name = "CheapestStart", label = "@text/action.calculate-cheapest-period.output.cheapest-start.label", type = "java.time.Instant"),
+            @ActionOutput(name = "LowestPrice", label = "@text/action.calculate-cheapest-period.output.lowest-price.label", type = "java.math.BigDecimal"),
+            @ActionOutput(name = "MostExpensiveStart", label = "@text/action.calculate-cheapest-period.output.most-expensive-start.label", type = "java.time.Instant"),
+            @ActionOutput(name = "HighestPrice", label = "@text/action.calculate-cheapest-period.output.highest-price.label", type = "java.math.BigDecimal") }) Map<String, Object> calculateCheapestPeriod(
+                    @ActionInput(name = "earliestStart", label = "@text/action.calculate-cheapest-period.input.earliest-start.label", type = "java.time.Instant") Instant earliestStart,
+                    @ActionInput(name = "latestEnd", label = "@text/action.calculate-cheapest-period.input.latest-end.label", type = "java.time.Instant") Instant latestEnd,
+                    @ActionInput(name = "totalDuration", label = "@text/action.calculate-cheapest-period.input.total-duration.label", type = "java.time.Duration") Duration totalDuration,
+                    @ActionInput(name = "durationPhases", label = "@text/action.calculate-cheapest-period.input.duration-phases.label", type = "java.util.List<java.time.Duration>") List<Duration> durationPhases,
+                    @ActionInput(name = "energyUsedPerPhase", label = "@text/action.calculate-cheapest-period.input.energy-used-per-phase.label", type = "QuantityType<Energy>") QuantityType<Energy> energyUsedPerPhase) {
         PriceCalculator priceCalculator = new PriceCalculator(getPrices());
 
         try {
@@ -213,11 +189,15 @@ public class EnergiDataServiceActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.calculate-cheapest-period.label", description = "@text/action.calculate-cheapest-period.description")
-    public @ActionOutput(name = "result", type = "java.util.Map<String, Object>") Map<String, Object> calculateCheapestPeriod(
-            @ActionInput(name = "earliestStart", type = "java.time.Instant") Instant earliestStart,
-            @ActionInput(name = "latestEnd", type = "java.time.Instant") Instant latestEnd,
-            @ActionInput(name = "durationPhases", type = "java.util.List<java.time.Duration>") List<Duration> durationPhases,
-            @ActionInput(name = "powerPhases", type = "java.util.List<QuantityType<Power>>") List<QuantityType<Power>> powerPhases) {
+    public @ActionOutputs({
+            @ActionOutput(name = "CheapestStart", label = "@text/action.calculate-cheapest-period.output.cheapest-start.label", type = "java.time.Instant"),
+            @ActionOutput(name = "LowestPrice", label = "@text/action.calculate-cheapest-period.output.lowest-price.label", type = "java.math.BigDecimal"),
+            @ActionOutput(name = "MostExpensiveStart", label = "@text/action.calculate-cheapest-period.output.most-expensive-start.label", type = "java.time.Instant"),
+            @ActionOutput(name = "HighestPrice", label = "@text/action.calculate-cheapest-period.output.highest-price.label", type = "java.math.BigDecimal") }) Map<String, Object> calculateCheapestPeriod(
+                    @ActionInput(name = "earliestStart", label = "@text/action.calculate-cheapest-period.input.earliest-start.label", type = "java.time.Instant") Instant earliestStart,
+                    @ActionInput(name = "latestEnd", label = "@text/action.calculate-cheapest-period.input.latest-end.label", type = "java.time.Instant") Instant latestEnd,
+                    @ActionInput(name = "durationPhases", label = "@text/action.calculate-cheapest-period.input.duration-phases.label", type = "java.util.List<java.time.Duration>") List<Duration> durationPhases,
+                    @ActionInput(name = "powerPhases", label = "@text/action.calculate-cheapest-period.input.power-phases.label", type = "java.util.List<QuantityType<Power>>") List<QuantityType<Power>> powerPhases) {
         if (durationPhases.size() != powerPhases.size()) {
             logger.warn("Number of duration phases ({}) is different from number of consumption phases ({})",
                     durationPhases.size(), powerPhases.size());
@@ -311,10 +291,10 @@ public class EnergiDataServiceActions implements ThingActions {
      * @param power Constant power consumption
      * @return Map of prices
      */
-    public static BigDecimal calculatePrice(@Nullable ThingActions actions, @Nullable Instant start,
+    public static @Nullable BigDecimal calculatePrice(@Nullable ThingActions actions, @Nullable Instant start,
             @Nullable Instant end, @Nullable QuantityType<Power> power) {
         if (start == null || end == null || power == null) {
-            return BigDecimal.ZERO;
+            return null;
         }
         if (actions instanceof EnergiDataServiceActions serviceActions) {
             return serviceActions.calculatePrice(start, end, power);

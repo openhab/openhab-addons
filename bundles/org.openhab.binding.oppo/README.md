@@ -114,7 +114,7 @@ The following channels are available:
 | sub_shift         | Number      | Sets the subtitle shift (-10 to 10) [10x models and up] (note more than 5 from 0 throws an error on the BDP103)                       |
 | hdmi_mode         | String      | Sets the current HDMI output mode (options vary by model; see notes above for allowed values)                                         |
 | hdr_mode          | String      | Sets current HDR output mode (Auto, On, Off) [UDP-203/205 only]                                                                       |
-| remote_button     | String      | Simulate pressing a button on the remote control (3 letter code; codes can be found in Appendix A below)                              |
+| remote_button     | String      | Simulate pressing a button on the remote control [3 letter code; codes can be found in Appendix A below] (WriteOnly)                  |
 
 ## Full Example
 
@@ -160,7 +160,7 @@ Number oppo_osd_position "OSD Position [%s]" { channel="oppo:player:myoppo:osd_p
 Number oppo_sub_shift "Subtitle Shift [%s]" { channel="oppo:player:myoppo:sub_shift" }
 String oppo_hdmi_mode "HDMI Mode [%s]" { channel="oppo:player:myoppo:hdmi_mode" }
 String oppo_hdr_mode "HDR Mode [%s]" { channel="oppo:player:myoppo:hdr_mode" }
-String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:remote_button", autoupdate="false" }
+String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:remote_button" }
 ```
 
 secondsformat.js:
@@ -221,12 +221,14 @@ sitemap oppo label="Oppo Blu-ray" {
         Setpoint item=oppo_sub_shift label="Sub Title Shift [%d]" minValue=-10 maxValue=10 step=1 visibility=[oppo_power==ON]
         Selection item=oppo_hdmi_mode visibility=[oppo_power==ON] icon="video"
         Selection item=oppo_hdr_mode visibility=[oppo_power==ON] icon="colorwheel"
+        // This Selection is deprecated in favor of the Buttongrid element below
         Selection item=oppo_remote_button visibility=[oppo_power==ON]
+        Buttongrid label="Remote Control" staticIcon=material:tv_remote item=oppo_remote_button buttons=[1:1:POW="Power"=switch-off, 1:3:SRC="Input", 1:4:EJT="Open"=f7:eject, 2:2:NFX="Netflix", 2:3:VDU="Vudu", 3:1:PUR="Pure Audio", 3:2:VDN="Volume -", 3:3:VUP="Volume +", 3:4:MUT="Mute"=soundvolume_mute, 4:1:NU1="1", 4:2:NU2="2", 4:3:NU3="3", 4:4:HOM="Home"=f7:house, 5:1:NU4="4", 5:2:NU5="5", 5:3:NU6="6", 5:4:PUP="Page Up", 6:1:NU7="7", 6:2:NU8="8", 6:3:NU9="9", 6:4:PDN="Page Down", 7:1:CLR="Clear", 7:2:NU0="0", 7:3:GOT="Goto", 7:4:OSD="Info", 8:1:TTL="Top Menu", 8:2:NUP="Up"=f7:arrowtriangle_up, 8:3:MNU="Pop-Up Menu", 9:1:NLT="Left"=f7:arrowtriangle_left, 9:2:SEL="Enter", 9:3:NRT="Right"=f7:arrowtriangle_right, 10:1:OPT="Option", 10:2:NDN="Down"=f7:arrowtriangle_down, 10:3:RET="Return", 11:1:RED="Red", 11:2:GRN="Green", 11:3:BLU="Blue", 11:4:YLW="Yellow", 12:1:STP="Stop"=f7:stop, 12:2:PLA="Play"=f7:play, 12:3:PAU="Pause"=f7:pause, 13:1:PRE="Prev"=f7:backward_end_alt, 13:2:REV="Rev"=f7:backward, 13:3:FWD="Fwd"=f7:forward, 13:4:NXT="Next"=f7:forward_end_alt, 14:1:AUD="Audio", 14:2:SUB="Subtitle", 14:3:ZOM="Zoom", 14:4:M3D="3D", 15:1:SET="Setup", 15:2:ATB="AB Replay", 15:3:RPT="Repeat", 15:4:DIM="Dimmer", 16:1:HDM="Resolution", 16:2:SEH="Picture", 16:3:INH="Detail Info", 16:4:HDR="HDR"]
     }
 }
 ```
 
-### Appendix A - 'remote_button' codes:
+### Appendix A - 'remote_button' codes
 
 | Command | Function                                                                    |
 |---------|-----------------------------------------------------------------------------|
@@ -294,7 +296,7 @@ sitemap oppo label="Oppo Blu-ray" {
 | SEH     | Display the Picture Adjustment menu                                         |
 | DRB     | Display the Darbee Adjustment menu                                          |
 
-#### Extra buttons on UDP models:
+#### Extra buttons on UDP models
 
 | Command | Function                                                                            |
 |---------|-------------------------------------------------------------------------------------|

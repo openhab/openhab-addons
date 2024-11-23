@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,7 +104,7 @@ class AuthTest {
             Request loginRequest = authHttpClient.POST(authUrl);
             loginRequest.header("Content-Type", "application/x-www-form-urlencoded");
 
-            MultiMap<String> baseParams = new MultiMap<String>();
+            MultiMap<String> baseParams = new MultiMap<>();
             baseParams.put("client_id", aqr.clientId);
             baseParams.put("response_type", "code");
             baseParams.put("redirect_uri", aqr.returnUrl);
@@ -114,7 +114,7 @@ class AuthTest {
             baseParams.put("code_challenge", codeChallenge);
             baseParams.put("code_challenge_method", "S256");
 
-            MultiMap<String> loginParams = new MultiMap<String>(baseParams);
+            MultiMap<String> loginParams = new MultiMap<>(baseParams);
             loginParams.put("grant_type", "authorization_code");
             loginParams.put("username", user);
             loginParams.put("password", pwd);
@@ -125,7 +125,7 @@ class AuthTest {
             String authCode = getAuthCode(secondResonse.getContentAsString());
             logger.info(authCode);
 
-            MultiMap<String> authParams = new MultiMap<String>(baseParams);
+            MultiMap<String> authParams = new MultiMap<>(baseParams);
             authParams.put("authorization", authCode);
             Request authRequest = authHttpClient.POST(authUrl).followRedirects(false);
             authRequest.header("Content-Type", "application/x-www-form-urlencoded");
@@ -147,7 +147,7 @@ class AuthTest {
             codeRequest.header("Content-Type", "application/x-www-form-urlencoded");
             codeRequest.header(AUTHORIZATION, basicAuth);
 
-            MultiMap<String> codeParams = new MultiMap<String>();
+            MultiMap<String> codeParams = new MultiMap<>();
             codeParams.put("code", code);
             codeParams.put("code_verifier", codeVerifier);
             codeParams.put("redirect_uri", aqr.returnUrl);
@@ -170,7 +170,7 @@ class AuthTest {
             HttpClient apiHttpClient = new HttpClient(sslContextFactory);
             apiHttpClient.start();
 
-            MultiMap<String> vehicleParams = new MultiMap<String>();
+            MultiMap<String> vehicleParams = new MultiMap<>();
             vehicleParams.put("tireGuardMode", "ENABLED");
             vehicleParams.put("appDateTime", Long.toString(System.currentTimeMillis()));
             vehicleParams.put("apptimezone", "60");
@@ -193,7 +193,7 @@ class AuthTest {
             /**
              * CHARGE STATISTICS
              */
-            MultiMap<String> chargeStatisticsParams = new MultiMap<String>();
+            MultiMap<String> chargeStatisticsParams = new MultiMap<>();
             chargeStatisticsParams.put("vin", "WBY1Z81040V905639");
             chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
             params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
@@ -221,7 +221,7 @@ class AuthTest {
             /**
              * CHARGE SESSIONS
              */
-            MultiMap<String> chargeSessionsParams = new MultiMap<String>();
+            MultiMap<String> chargeSessionsParams = new MultiMap<>();
             chargeSessionsParams.put("vin", "WBY1Z81040V905639");
             chargeSessionsParams.put("maxResults", "40");
             chargeSessionsParams.put("include_date_picker", "true");
@@ -274,7 +274,7 @@ class AuthTest {
     }
 
     public static String codeFromUrl(String encodedUrl) {
-        final MultiMap<String> tokenMap = new MultiMap<String>();
+        final MultiMap<String> tokenMap = new MultiMap<>();
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);
         final StringBuilder codeFound = new StringBuilder();
         tokenMap.forEach((key, value) -> {

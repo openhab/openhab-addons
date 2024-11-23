@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,12 @@
  */
 package org.openhab.binding.knx.internal.itests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterAll;
@@ -73,7 +68,6 @@ import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
  * handled by this test. However, new subtypes are not detected.
  *
  * @see DummyKNXNetworkLink
- * @see DummyClient
  * @author Holger Friedrich - Initial contribution
  *
  */
@@ -81,7 +75,7 @@ import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
 public class Back2BackTest {
     public static final Logger LOGGER = LoggerFactory.getLogger(Back2BackTest.class);
     static Set<Integer> dptTested = new HashSet<>();
-    boolean testsMissing = false;
+    static final byte[] F32_MINUS_ONE = new byte[] { (byte) 0xbf, (byte) 0x80, 0, 0 };
 
     /**
      * helper method for integration tests
@@ -91,7 +85,7 @@ public class Back2BackTest {
      * @param ohReferenceData OpenHAB data type, initialized to known good value
      * @param maxDistance byte array containing maximal deviations when comparing byte arrays (rawData against created
      *            KNX frame), may be empty if no deviation is considered
-     * @param bitmask to mask certain bits in the raw to raw comparison, required for multi-valued KNX frames
+     * @param bitmask to mask certain bits in the raw to raw comparison, required for multivalued KNX frames
      */
     void helper(String dpt, byte[] rawData, Type ohReferenceData, byte[] maxDistance, byte[] bitmask) {
         try {
@@ -105,7 +99,7 @@ public class Back2BackTest {
                     DPTUtil.NORMALIZED_DPT.getOrDefault(dpt, dpt));
 
             // 0) check usage of helper()
-            assertEquals(true, rawData.length > 0);
+            assertTrue(rawData.length > 0);
             if (maxDistance.length == 0) {
                 maxDistance = new byte[rawData.length];
             }
@@ -116,7 +110,7 @@ public class Back2BackTest {
             }
             assertEquals(rawData.length, bitmask.length, "incorrect length of bitmask array");
             int mainType = Integer.parseUnsignedInt(dpt.substring(0, dpt.indexOf('.')));
-            dptTested.add(Integer.valueOf(mainType));
+            dptTested.add(mainType);
             // check if OH would be able to send out a frame, given the type
             Set<Integer> knownWorking = Set.of(1, 3, 5);
             if (!knownWorking.contains(mainType)) {
@@ -147,7 +141,8 @@ public class Back2BackTest {
 
             // 2) check the encoding (ohData to raw data)
             //
-            // Test approach is to a) encode the value into String format using ValueEncoder.encode(),
+            // Test approach is to
+            // a) encode the value into String format using ValueEncoder.encode(),
             // b) pass it to Calimero for conversion into a raw representation, and
             // c) finally grab raw data bytes from a custom KNXNetworkLink implementation
             String enc = ValueEncoder.encode(ohData, dpt);
@@ -179,7 +174,7 @@ public class Back2BackTest {
 
             pc.close();
         } catch (KNXException e) {
-            LOGGER.warn("exception occurred", e.toString());
+            LOGGER.warn("exception occurred: {}", e.toString());
             assertEquals("", e.toString());
         }
     }
@@ -190,46 +185,119 @@ public class Back2BackTest {
 
     @Test
     void testDpt1() {
-        // for now only the DPTs for general use, others omitted
-        // TODO add tests for more subtypes
-
         helper("1.001", new byte[] { 0 }, OnOffType.OFF);
         helper("1.001", new byte[] { 1 }, OnOffType.ON);
+        helper("1.001", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.001", new byte[] { 1 }, OpenClosedType.OPEN);
         helper("1.002", new byte[] { 0 }, OnOffType.OFF);
         helper("1.002", new byte[] { 1 }, OnOffType.ON);
+        helper("1.002", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.002", new byte[] { 1 }, OpenClosedType.OPEN);
         helper("1.003", new byte[] { 0 }, OnOffType.OFF);
         helper("1.003", new byte[] { 1 }, OnOffType.ON);
-
+        helper("1.003", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.003", new byte[] { 1 }, OpenClosedType.OPEN);
+        helper("1.004", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.004", new byte[] { 1 }, OnOffType.ON);
+        helper("1.004", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.004", new byte[] { 1 }, OpenClosedType.OPEN);
+        helper("1.005", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.005", new byte[] { 1 }, OnOffType.ON);
+        helper("1.005", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.005", new byte[] { 1 }, OpenClosedType.OPEN);
+        helper("1.006", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.006", new byte[] { 1 }, OnOffType.ON);
+        helper("1.006", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.006", new byte[] { 1 }, OpenClosedType.OPEN);
+        helper("1.007", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.007", new byte[] { 1 }, OnOffType.ON);
+        helper("1.007", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.007", new byte[] { 1 }, OpenClosedType.OPEN);
         helper("1.008", new byte[] { 0 }, UpDownType.UP);
         helper("1.008", new byte[] { 1 }, UpDownType.DOWN);
         // NOTE: This is how DPT 1.009 is defined: 0: open, 1: closed
         // For historical reasons it is defined the other way on OH
+        helper("1.009", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.009", new byte[] { 1 }, OnOffType.ON);
         helper("1.009", new byte[] { 0 }, OpenClosedType.CLOSED);
         helper("1.009", new byte[] { 1 }, OpenClosedType.OPEN);
         helper("1.010", new byte[] { 0 }, StopMoveType.STOP);
         helper("1.010", new byte[] { 1 }, StopMoveType.MOVE);
-
+        helper("1.011", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.011", new byte[] { 1 }, OnOffType.ON);
+        helper("1.011", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.011", new byte[] { 1 }, OpenClosedType.OPEN);
+        helper("1.012", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.012", new byte[] { 1 }, OnOffType.ON);
+        helper("1.012", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.012", new byte[] { 1 }, OpenClosedType.OPEN);
+        helper("1.013", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.013", new byte[] { 1 }, OnOffType.ON);
+        helper("1.013", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.013", new byte[] { 1 }, OpenClosedType.OPEN);
+        helper("1.014", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.014", new byte[] { 1 }, OnOffType.ON);
+        helper("1.014", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.014", new byte[] { 1 }, OpenClosedType.OPEN);
         helper("1.015", new byte[] { 0 }, OnOffType.OFF);
         helper("1.015", new byte[] { 1 }, OnOffType.ON);
+        helper("1.015", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.015", new byte[] { 1 }, OpenClosedType.OPEN);
         helper("1.016", new byte[] { 0 }, OnOffType.OFF);
         helper("1.016", new byte[] { 1 }, OnOffType.ON);
+        helper("1.016", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.016", new byte[] { 1 }, OpenClosedType.OPEN);
         // DPT 1.017 is a special case, "trigger" has no "value", both 0 and 1 shall trigger
         helper("1.017", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.017", new byte[] { 0 }, OpenClosedType.CLOSED);
         // Calimero maps it always to 0
         // helper("1.017", new byte[] { 1 }, OnOffType.ON);
         helper("1.018", new byte[] { 0 }, OnOffType.OFF);
         helper("1.018", new byte[] { 1 }, OnOffType.ON);
+        helper("1.018", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.018", new byte[] { 1 }, OpenClosedType.OPEN);
+        helper("1.019", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.019", new byte[] { 1 }, OnOffType.ON);
         helper("1.019", new byte[] { 0 }, OpenClosedType.CLOSED);
         helper("1.019", new byte[] { 1 }, OpenClosedType.OPEN);
 
+        helper("1.021", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.021", new byte[] { 1 }, OnOffType.ON);
+        helper("1.021", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.021", new byte[] { 1 }, OpenClosedType.OPEN);
+        // DPT 1.022 is mapped to decimal, Calimero does not follow the recommendation
+        // from KNX spec to add offset 1
+        helper("1.022", new byte[] { 0 }, DecimalType.valueOf("0"));
+        helper("1.022", new byte[] { 1 }, DecimalType.valueOf("1"));
+        helper("1.023", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.023", new byte[] { 1 }, OnOffType.ON);
+        helper("1.023", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.023", new byte[] { 1 }, OpenClosedType.OPEN);
         helper("1.024", new byte[] { 0 }, OnOffType.OFF);
         helper("1.024", new byte[] { 1 }, OnOffType.ON);
+        helper("1.024", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.024", new byte[] { 1 }, OpenClosedType.OPEN);
+
+        helper("1.100", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.100", new byte[] { 1 }, OnOffType.ON);
+        helper("1.100", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.100", new byte[] { 1 }, OpenClosedType.OPEN);
+
+        helper("1.1200", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.1200", new byte[] { 1 }, OnOffType.ON);
+        helper("1.1200", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.1200", new byte[] { 1 }, OpenClosedType.OPEN);
+        helper("1.1201", new byte[] { 0 }, OnOffType.OFF);
+        helper("1.1201", new byte[] { 1 }, OnOffType.ON);
+        helper("1.1201", new byte[] { 0 }, OpenClosedType.CLOSED);
+        helper("1.1201", new byte[] { 1 }, OpenClosedType.OPEN);
     }
 
     @Test
     void testDpt2() {
         for (int subType = 1; subType <= 12; subType++) {
-            helper("2." + String.format("%03d", subType), new byte[] { 3 }, new DecimalType(3));
+            helper("2." + String.format("%03d", subType), new byte[] { (byte) (subType % 4) },
+                    new DecimalType(subType % 4));
         }
     }
 
@@ -260,10 +328,24 @@ public class Back2BackTest {
 
     @Test
     void testDpt5() {
-        // TODO add tests for more subtypes
+        helper("5.001", new byte[] { 0 }, new QuantityType<>("0 %"));
+        helper("5.001", new byte[] { (byte) 0xff }, new QuantityType<>("100 %"));
+        // fallback: PercentType
         helper("5.001", new byte[] { 0 }, new PercentType(0));
         helper("5.001", new byte[] { (byte) 0x80 }, new PercentType(50));
         helper("5.001", new byte[] { (byte) 0xff }, new PercentType(100));
+
+        helper("5.003", new byte[] { 0 }, new QuantityType<>("0 °"));
+        helper("5.003", new byte[] { (byte) 0xff }, new QuantityType<>("360 °"));
+        helper("5.004", new byte[] { 0 }, new QuantityType<>("0 %"));
+        helper("5.004", new byte[] { (byte) 0x64 }, new QuantityType<>("100 %"));
+        helper("5.004", new byte[] { (byte) 0xff }, new QuantityType<>("255 %"));
+        // PercentType cannot encode values >100%, not supported for 5.004
+        helper("5.005", new byte[] { 42 }, new DecimalType(42));
+        helper("5.005", new byte[] { (byte) 0xff }, new DecimalType(255));
+        helper("5.006", new byte[] { 0 }, new DecimalType(0));
+        helper("5.006", new byte[] { 42 }, new DecimalType(42));
+        helper("5.006", new byte[] { (byte) 0xfe }, new DecimalType(254));
 
         helper("5.010", new byte[] { 42 }, new DecimalType(42));
         helper("5.010", new byte[] { (byte) 0xff }, new DecimalType(255));
@@ -271,31 +353,188 @@ public class Back2BackTest {
 
     @Test
     void testDpt6() {
+        helper("6.001", new byte[] { 0 }, new QuantityType<>("0 %"));
+        helper("6.001", new byte[] { (byte) 0x7f }, new QuantityType<>("127 %"));
+        helper("6.001", new byte[] { (byte) 0xff }, new QuantityType<>("-1 %"));
+        // PercentType cannot encode values >100% or <0%, not supported for 6.001
+
         helper("6.010", new byte[] { 0 }, new DecimalType(0));
         helper("6.010", new byte[] { (byte) 0x7f }, new DecimalType(127));
         helper("6.010", new byte[] { (byte) 0xff }, new DecimalType(-1));
-        // TODO 6.001 is mapped to PercentType, which can only cover 0-100%, not -128..127%
-        // helper("6.001", new byte[] { 0 }, new DecimalType(0));
+
+        helper("6.020", new byte[] { 9 }, StringType.valueOf("0/0/0/0/1 0"));
     }
 
     @Test
     void testDpt7() {
-        // TODO add tests for more subtypes
         helper("7.001", new byte[] { 0, 42 }, new DecimalType(42));
         helper("7.001", new byte[] { (byte) 0xff, (byte) 0xff }, new DecimalType(65535));
+        helper("7.002", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 ms"));
+        helper("7.002", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
+        helper("7.002", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 ms"));
+        helper("7.003", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
+        helper("7.003", new byte[] { (byte) 0x00, (byte) 0x64 }, new QuantityType<>("1000 ms"));
+        helper("7.003", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("2550 ms"));
+        helper("7.003", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("655350 ms"));
+        helper("7.004", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
+        helper("7.004", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("25500 ms"));
+        helper("7.004", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("6553500 ms"));
+        helper("7.005", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 s"));
+        helper("7.005", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 s"));
+        helper("7.005", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 s"));
+        helper("7.006", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 min"));
+        helper("7.006", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 min"));
+        helper("7.006", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 min"));
+        helper("7.006", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("3932100 s"));
+        helper("7.007", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 h"));
+        helper("7.007", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 h"));
+        helper("7.007", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("918000 s"));
+        helper("7.007", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 h"));
+
+        helper("7.010", new byte[] { 0, 42 }, new DecimalType(42));
+        helper("7.010", new byte[] { (byte) 0xff, (byte) 0xff }, new DecimalType(65535));
+        helper("7.011", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 mm"));
+        helper("7.011", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 mm"));
+        helper("7.011", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 mm"));
+        helper("7.012", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 mA"));
+        helper("7.012", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 mA"));
+        helper("7.012", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 mA"));
+        helper("7.013", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 lx"));
+        helper("7.013", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 lx"));
+        helper("7.013", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 lx"));
+
+        helper("7.600", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 K"));
+        helper("7.600", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 K"));
+        helper("7.600", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 K"));
     }
 
     @Test
     void testDpt8() {
-        // TODO add tests for more subtypes
         helper("8.001", new byte[] { (byte) 0x7f, (byte) 0xff }, new DecimalType(32767));
         helper("8.001", new byte[] { (byte) 0x80, (byte) 0x00 }, new DecimalType(-32768));
+        helper("8.002", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 ms"));
+        helper("8.002", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 ms"));
+        helper("8.002", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
+        helper("8.003", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-327680 ms"));
+        helper("8.003", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("327670 ms"));
+        helper("8.003", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
+        helper("8.004", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-3276800 ms"));
+        helper("8.004", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("3276700 ms"));
+        helper("8.004", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
+        helper("8.005", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 s"));
+        helper("8.005", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 s"));
+        helper("8.005", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 s"));
+        helper("8.006", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 min"));
+        helper("8.006", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 min"));
+        helper("8.006", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 min"));
+        helper("8.007", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 h"));
+        helper("8.007", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 h"));
+        helper("8.007", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 h"));
+
+        helper("8.010", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-327.68 %"));
+        helper("8.011", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 °"));
+        helper("8.011", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 °"));
+        helper("8.011", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 °"));
+        helper("8.012", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 m"));
+        helper("8.012", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 m"));
+        helper("8.012", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 m"));
     }
 
     @Test
     void testDpt9() {
-        // TODO add tests for more subtypes
-        helper("9.001", new byte[] { (byte) 0x00, (byte) 0x64 }, new QuantityType<Temperature>("1 °C"));
+        // special float with sign, 4-bit exponent, and mantissa in two's complement notation
+        // ref: KNX spec, 03_07_02-Datapoint-Types
+        // FIXME according to spec, value 0x7fff shall be regarded as "invalid data"
+        // TODO add tests for clipping at lower boundary (e.g. absolute zero)
+        helper("9.001", new byte[] { (byte) 0x00, (byte) 0x64 }, new QuantityType<>("1 °C"));
+        helper("9.001", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 °C"));
+        helper("9.001", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 °C"));
+        helper("9.001", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 °C"));
+        // lower values than absolute zero will be set to abs. zero (-273 °C)
+        // helper("9.001", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-273 °C"));
+        helper("9.002", new byte[] { (byte) 0x00, (byte) 0x64 }, new QuantityType<>("1 K"));
+        helper("9.002", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 K"));
+        helper("9.002", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 K"));
+        helper("9.002", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 K"));
+        helper("9.002", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K"));
+        helper("9.003", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 K/h"));
+        helper("9.003", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 K/h"));
+        helper("9.003", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 K/h"));
+        helper("9.003", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K/h"));
+        helper("9.004", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 lx"));
+        helper("9.004", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 lx"));
+        helper("9.004", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 lx"));
+        // no negative values allowed for DPTs 9.004-9.008
+        helper("9.005", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 m/s"));
+        helper("9.005", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 m/s"));
+        helper("9.005", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 m/s"));
+        helper("9.005", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 m/s"));
+        helper("9.005", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 m/s"));
+        helper("9.005", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 m/s"));
+        helper("9.006", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 Pa"));
+        helper("9.006", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 Pa"));
+        helper("9.006", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 Pa"));
+        helper("9.007", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 %"));
+        helper("9.007", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 %"));
+        helper("9.007", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 %"));
+        helper("9.008", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 ppm"));
+        helper("9.008", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 ppm"));
+        helper("9.008", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ppm"));
+        helper("9.009", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 m³/h"));
+        helper("9.009", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 m³/h"));
+        helper("9.009", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 m³/h"));
+        helper("9.009", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 m³/h"));
+        helper("9.010", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 s"));
+        helper("9.010", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 s"));
+        helper("9.010", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 s"));
+        helper("9.010", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 s"));
+        helper("9.011", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 ms"));
+        helper("9.011", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 ms"));
+        helper("9.011", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 ms"));
+        helper("9.011", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 ms"));
+
+        helper("9.020", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 mV"));
+        helper("9.020", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 mV"));
+        helper("9.020", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 mV"));
+        helper("9.020", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 mV"));
+        helper("9.021", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 mA"));
+        helper("9.021", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 mA"));
+        helper("9.021", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 mA"));
+        helper("9.021", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 mA"));
+        helper("9.022", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 W/m²"));
+        helper("9.022", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 W/m²"));
+        helper("9.022", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 W/m²"));
+        helper("9.022", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 W/m²"));
+        helper("9.023", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 K/%"));
+        helper("9.023", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 K/%"));
+        helper("9.023", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 K/%"));
+        helper("9.023", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K/%"));
+        helper("9.024", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 kW"));
+        helper("9.024", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 kW"));
+        helper("9.024", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 kW"));
+        helper("9.024", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 kW"));
+        helper("9.025", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 l/h"));
+        helper("9.025", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 l/h"));
+        helper("9.025", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 l/h"));
+        helper("9.025", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 l/h"));
+        helper("9.026", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 l/m²"));
+        helper("9.026", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 l/m²"));
+        helper("9.026", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 l/m²"));
+        helper("9.026", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 l/m²"));
+        helper("9.027", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 °F"));
+        helper("9.027", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 °F"));
+        helper("9.027", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 °F"));
+        // lower values than absolute zero will be set to abs. zero (-459.6 °F)
+        helper("9.028", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 km/h"));
+        helper("9.028", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 km/h"));
+        helper("9.028", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 km/h"));
+        // no negative values allowed for DPTs 9.028-9.030
+        helper("9.029", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 g/m³"));
+        helper("9.029", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 g/m³"));
+        helper("9.029", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 g/m³"));
+        helper("9.030", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 µg/m³"));
+        helper("9.030", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 µg/m³"));
+        helper("9.030", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 µg/m³"));
     }
 
     @Test
@@ -351,7 +590,6 @@ public class Back2BackTest {
 
     @Test
     void testDpt13() {
-        // TODO add tests for more subtypes
         helper("13.001", new byte[] { 0, 0, 0, 0 }, new DecimalType(0));
         helper("13.001", new byte[] { 0, 0, 0, 42 }, new DecimalType(42));
         helper("13.001", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
@@ -359,12 +597,154 @@ public class Back2BackTest {
         // KNX representation typically uses two's complement
         helper("13.001", new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff }, new DecimalType(-1));
         helper("13.001", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 }, new DecimalType(-2147483648));
+        helper("13.002", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 m³/h"));
+        helper("13.002", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 m³/h"));
+        helper("13.002", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 m³/h"));
+
+        helper("13.010", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 Wh"));
+        helper("13.010", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 Wh"));
+        helper("13.010", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 Wh"));
+        helper("13.011", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 VAh"));
+        helper("13.011", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 VAh"));
+        helper("13.011", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 VAh"));
+        helper("13.012", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 varh"));
+        helper("13.012", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 varh"));
+        helper("13.012", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 varh"));
+        helper("13.013", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 kWh"));
+        helper("13.013", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 kWh"));
+        helper("13.013", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 kWh"));
+        helper("13.014", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 VAh"));
+        helper("13.014", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648000 VAh"));
+        helper("13.014", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647000 VAh"));
+        helper("13.015", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 kvarh"));
+        helper("13.015", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 kvarh"));
+        helper("13.015", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 kvarh"));
+        helper("13.016", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 MWh"));
+        helper("13.016", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 MWh"));
+        helper("13.016", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 MWh"));
+
+        helper("13.100", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 s"));
+        helper("13.100", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 s"));
+        helper("13.100", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 s"));
+
+        helper("13.1200", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 l"));
+        helper("13.1200", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 l"));
+        helper("13.1200", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 l"));
+        helper("13.1201", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 m³"));
+        helper("13.1201", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 m³"));
+        helper("13.1201", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 m³"));
     }
 
     @Test
     void testDpt14() {
-        // TODO add tests for more subtypes
-        helper("14.068", new byte[] { (byte) 0x3f, (byte) 0x80, 0, 0 }, new QuantityType<Temperature>("1 °C"));
+        helper("14.000", new byte[] { (byte) 0x3f, (byte) 0x80, 0, 0 }, new QuantityType<>("1 m/s²"));
+        helper("14.000", F32_MINUS_ONE, new QuantityType<>("-1 m/s²"));
+        helper("14.001", F32_MINUS_ONE, new QuantityType<>("-1 rad/s²"));
+        helper("14.002", F32_MINUS_ONE, new QuantityType<>("-1 J/mol"));
+        helper("14.003", F32_MINUS_ONE, new QuantityType<>("-1 /s"));
+        helper("14.004", F32_MINUS_ONE, new QuantityType<>("-1 mol"));
+        helper("14.005", F32_MINUS_ONE, new DecimalType("-1"));
+        helper("14.006", F32_MINUS_ONE, new QuantityType<>("-1 rad"));
+        helper("14.007", F32_MINUS_ONE, new QuantityType<>("-1 °"));
+        helper("14.008", F32_MINUS_ONE, new QuantityType<>("-1 J*s"));
+        helper("14.009", F32_MINUS_ONE, new QuantityType<>("-1 rad/s"));
+        helper("14.010", F32_MINUS_ONE, new QuantityType<>("-1 m²"));
+        helper("14.011", F32_MINUS_ONE, new QuantityType<>("-1 F"));
+        helper("14.012", F32_MINUS_ONE, new QuantityType<>("-1 C/m²"));
+        helper("14.013", F32_MINUS_ONE, new QuantityType<>("-1 C/m³"));
+        helper("14.014", F32_MINUS_ONE, new QuantityType<>("-1 m²/N"));
+        helper("14.015", F32_MINUS_ONE, new QuantityType<>("-1 S"));
+        helper("14.016", F32_MINUS_ONE, new QuantityType<>("-1 S/m"));
+        helper("14.017", F32_MINUS_ONE, new QuantityType<>("-1 kg/m³"));
+        helper("14.018", F32_MINUS_ONE, new QuantityType<>("-1 C"));
+        helper("14.019", F32_MINUS_ONE, new QuantityType<>("-1 A"));
+        helper("14.020", F32_MINUS_ONE, new QuantityType<>("-1 A/m²"));
+        helper("14.021", F32_MINUS_ONE, new QuantityType<>("-1 C*m"));
+        helper("14.022", F32_MINUS_ONE, new QuantityType<>("-1 C/m²"));
+        helper("14.023", F32_MINUS_ONE, new QuantityType<>("-1 V/m"));
+        helper("14.024", F32_MINUS_ONE, new QuantityType<>("-1 V*m")); // SI unit is Vm
+        helper("14.025", F32_MINUS_ONE, new QuantityType<>("-1 C/m²"));
+        helper("14.026", F32_MINUS_ONE, new QuantityType<>("-1 C/m²"));
+        helper("14.027", F32_MINUS_ONE, new QuantityType<>("-1 V"));
+        helper("14.028", F32_MINUS_ONE, new QuantityType<>("-1 V"));
+        helper("14.029", F32_MINUS_ONE, new QuantityType<>("-1 A*m²"));
+        helper("14.030", F32_MINUS_ONE, new QuantityType<>("-1 V"));
+        helper("14.031", F32_MINUS_ONE, new QuantityType<>("-1 J"));
+        helper("14.032", F32_MINUS_ONE, new QuantityType<>("-1 N"));
+        helper("14.033", F32_MINUS_ONE, new QuantityType<>("-1 /s"));
+        helper("14.034", F32_MINUS_ONE, new QuantityType<>("-1 rad/s"));
+        helper("14.035", F32_MINUS_ONE, new QuantityType<>("-1 J/K"));
+        helper("14.036", F32_MINUS_ONE, new QuantityType<>("-1 W"));
+        helper("14.037", F32_MINUS_ONE, new QuantityType<>("-1 J"));
+        helper("14.038", F32_MINUS_ONE, new QuantityType<>("-1 Ohm"));
+        helper("14.039", F32_MINUS_ONE, new QuantityType<>("-1 m"));
+        helper("14.040", F32_MINUS_ONE, new QuantityType<>("-1 J"));
+        helper("14.041", F32_MINUS_ONE, new QuantityType<>("-1 cd/m²"));
+        helper("14.042", F32_MINUS_ONE, new QuantityType<>("-1 lm"));
+        helper("14.043", F32_MINUS_ONE, new QuantityType<>("-1 cd"));
+        helper("14.044", F32_MINUS_ONE, new QuantityType<>("-1 A/m"));
+        helper("14.045", F32_MINUS_ONE, new QuantityType<>("-1 Wb"));
+        helper("14.046", F32_MINUS_ONE, new QuantityType<>("-1 T"));
+        helper("14.047", F32_MINUS_ONE, new QuantityType<>("-1 A*m²"));
+        helper("14.048", F32_MINUS_ONE, new QuantityType<>("-1 T"));
+        helper("14.049", F32_MINUS_ONE, new QuantityType<>("-1 A/m"));
+        helper("14.050", F32_MINUS_ONE, new QuantityType<>("-1 A"));
+        helper("14.051", F32_MINUS_ONE, new QuantityType<>("-1 kg"));
+        helper("14.052", F32_MINUS_ONE, new QuantityType<>("-1 kg/s"));
+        helper("14.053", F32_MINUS_ONE, new QuantityType<>("-1 N/s"));
+        helper("14.054", F32_MINUS_ONE, new QuantityType<>("-1 rad"));
+        helper("14.055", F32_MINUS_ONE, new QuantityType<>("-1 °"));
+        helper("14.056", F32_MINUS_ONE, new QuantityType<>("-1 W"));
+        helper("14.057", F32_MINUS_ONE, new DecimalType("-1"));
+        helper("14.058", F32_MINUS_ONE, new QuantityType<>("-1 Pa"));
+        helper("14.059", F32_MINUS_ONE, new QuantityType<>("-1 Ohm"));
+        helper("14.060", F32_MINUS_ONE, new QuantityType<>("-1 Ohm"));
+        helper("14.061", F32_MINUS_ONE, new QuantityType<>("-1 Ohm*m"));
+        helper("14.062", F32_MINUS_ONE, new QuantityType<>("-1 H"));
+        helper("14.063", F32_MINUS_ONE, new QuantityType<>("-1 sr"));
+        helper("14.064", F32_MINUS_ONE, new QuantityType<>("-1 W/m²"));
+        helper("14.065", F32_MINUS_ONE, new QuantityType<>("-1 m/s"));
+        helper("14.066", F32_MINUS_ONE, new QuantityType<>("-1 Pa"));
+        helper("14.067", F32_MINUS_ONE, new QuantityType<>("-1 N/m"));
+        helper("14.068", new byte[] { (byte) 0x3f, (byte) 0x80, 0, 0 }, new QuantityType<>("1 °C"));
+        helper("14.068", F32_MINUS_ONE, new QuantityType<>("-1 °C"));
+        helper("14.069", F32_MINUS_ONE, new QuantityType<>("-1 K"));
+        helper("14.070", F32_MINUS_ONE, new QuantityType<>("-1 K"));
+        helper("14.071", F32_MINUS_ONE, new QuantityType<>("-1 J/K"));
+        helper("14.072", F32_MINUS_ONE, new QuantityType<>("-1 W/m/K"));
+        helper("14.073", F32_MINUS_ONE, new QuantityType<>("-1 V/K"));
+        helper("14.074", F32_MINUS_ONE, new QuantityType<>("-1 s"));
+        helper("14.075", F32_MINUS_ONE, new QuantityType<>("-1 N*m"));
+        helper("14.076", F32_MINUS_ONE, new QuantityType<>("-1 m³"));
+        helper("14.077", F32_MINUS_ONE, new QuantityType<>("-1 m³/s"));
+        helper("14.078", F32_MINUS_ONE, new QuantityType<>("-1 N"));
+        helper("14.079", F32_MINUS_ONE, new QuantityType<>("-1 J"));
+        helper("14.080", F32_MINUS_ONE, new QuantityType<>("-1 VA"));
+
+        helper("14.1200", F32_MINUS_ONE, new QuantityType<>("-1 m³/h"));
+        helper("14.1201", F32_MINUS_ONE, new QuantityType<>("-1 l/s"));
     }
 
     @Test
@@ -406,6 +786,7 @@ public class Back2BackTest {
                 new DateTimeType("2019-07-15T17:30:00"), new byte[0], new byte[] { 0, 0, 0, 0, 0, 0, 0, 1 });
         helper("19.001", new byte[] { (byte) (2019 - 1900), 7, 15, 17, 30, 0, (byte) 0x24, (byte) 0x00 },
                 new DateTimeType("2019-07-15T17:30:00"), new byte[0], new byte[] { 0, 0, 0, 0, 0, 0, 0, 1 });
+        // TODO add tests for incompletly filled frames (e.g. containing only date or time)
     }
 
     @Test
@@ -420,14 +801,15 @@ public class Back2BackTest {
         helper("20.002", new byte[] { 2 }, new StringType("building protection"));
 
         // test DecimalType representation of enum
-        int[] subTypes = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 17, 20, 21, 100, 101, 102, 103, 104, 105,
-                106, 107, 108, 109, 110, 111, 112, 113, 114, 120, 121, 122, 600, 601, 602, 603, 604, 605, 606, 607, 608,
-                609, 610, 801, 802, 803, 804, 1000, 1001, 1002, 1003, 1004, 1005, 1200, 1202 };
+        int[] subTypes = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 17, 20, 21, 22, 100, 101, 102, 103, 104,
+                105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 120, 121, 122, 600, 601, 602, 603, 604, 605, 606,
+                607, 608, 609, 610, 611, 612, 613, 801, 802, 803, 804, 1000, 1001, 1002, 1003, 1004, 1005, 1200, 1202,
+                1203, 1204, 1205, 1206, 1207, 1208, 1209 };
         for (int subType : subTypes) {
             helper("20." + String.format("%03d", subType), new byte[] { 1 }, new DecimalType(1));
         }
         // once these DPTs are available in Calimero, add to check above
-        int[] unsupportedSubTypes = new int[] { 22, 115, 611, 612, 613, 1203, 1204, 1205, 1206, 1207, 1208, 1209 };
+        int[] unsupportedSubTypes = new int[] {};
         for (int subType : unsupportedSubTypes) {
             assertNull(ValueDecoder.decode("20." + String.format("%03d", subType), new byte[] { 0 }, StringType.class));
         }
@@ -439,13 +821,10 @@ public class Back2BackTest {
         helper("21.001", new byte[] { 5 }, new StringType("overridden, out of service"));
 
         // test DecimalType representation of bitfield
-        int[] subTypes = new int[] { 1, 2, 100, 101, 102, 103, 104, 105, 106, 601, 1000, 1001, 1002, 1010 };
+        int[] subTypes = new int[] { 1, 2, 100, 101, 102, 103, 104, 105, 106, 601, 1000, 1001, 1002, 1010, 1200, 1201 };
         for (int subType : subTypes) {
             helper("21." + String.format("%03d", subType), new byte[] { 1 }, new DecimalType(1));
         }
-        // once these DPTs are available in Calimero, add to check above
-        assertNull(ValueDecoder.decode("21.1200", new byte[] { 0 }, StringType.class));
-        assertNull(ValueDecoder.decode("21.1201", new byte[] { 0 }, StringType.class));
     }
 
     @Test
@@ -455,11 +834,10 @@ public class Back2BackTest {
         helper("22.101", new byte[] { 1, 2 }, new StringType("heating mode, heating eco mode"));
 
         // test DecimalType representation of bitfield
+        helper("22.100", new byte[] { 0, 2 }, new DecimalType(2));
         helper("22.101", new byte[] { 0, 2 }, new DecimalType(2));
         helper("22.1000", new byte[] { 0, 2 }, new DecimalType(2));
-        // once these DPTs are available in Calimero, add to check above
-        assertNull(ValueDecoder.decode("22.100", new byte[] { 0, 2 }, StringType.class));
-        assertNull(ValueDecoder.decode("22.1010", new byte[] { 0, 2 }, StringType.class));
+        helper("22.1010", new byte[] { 0, 2 }, new DecimalType(2));
     }
 
     @Test
@@ -510,6 +888,16 @@ public class Back2BackTest {
         // RGBW, only RGB part
         helper("251.600", new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x00, 0x00, 0x0e },
                 new HSBType("0, 0, 100"), new byte[] { 1, 1, 1, 0, 0, 0 }, new byte[0]);
+        // RGBW, only W part
+        helper("251.600", new byte[] { 0x0, 0x0, 0x0, 0x1A, 0x00, 0x01 }, new PercentType("10.2"));
+        // RGBW, all
+        helper("251.60600", new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0xff, 0x00, 0x0f },
+                new HSBType("0, 0, 100"), new byte[] { 1, 1, 1, 2, 0, 0 }, new byte[0]);
+        // RGBW, mixed
+        int[] rgbw = new int[] { 240, 0x0, 0x0, 0x0f };
+        HSBType hsb = ColorUtil.rgbToHsb(rgbw);
+        helper("251.60600", new byte[] { (byte) rgbw[0], (byte) rgbw[1], (byte) rgbw[2], (byte) rgbw[3], 0x00, 0x0f },
+                hsb, new byte[] { 2, 2, 2, 2, 0, 0 }, new byte[0]);
     }
 
     @Test
@@ -517,10 +905,19 @@ public class Back2BackTest {
         // DPT 243.600 DPT_Colour_Transition_xyY
         // time(2) y(2) x(2), %brightness(1), flags(1)
         helper("243.600", new byte[] { 0, 5, 0x7F, 0, (byte) 0xfe, 0, 42, 3 },
-                new StringType("(0.9922, 0.4961) 16.5 % 0.5 s"));
+                new StringType("(0.9922, 0.4961) 16.5 % 500 ms"));
+        helper("243.600", new byte[] { (byte) 0x02, (byte) 0x00, 0x7F, 0, (byte) 0xfe, 0, 42, 3 },
+                new StringType("(0.9922, 0.4961) 16.5 % 51200 ms"));
+        helper("243.600", new byte[] { (byte) 0x40, (byte) 0x00, 0x7F, 0, (byte) 0xfe, 0, 42, 3 },
+                new StringType("(0.9922, 0.4961) 16.5 % 1638400 ms"));
+        helper("243.600", new byte[] { (byte) 0xff, (byte) 0xff, 0x7F, 0, (byte) 0xfe, 0, 42, 3 },
+                new StringType("(0.9922, 0.4961) 16.5 % 6553500 ms"));
         // DPT 249.600 DPT_Brightness_Colour_Temperature_Transition
         // time(2) colortemp(2), brightness(1), flags(1)
         helper("249.600", new byte[] { 0, 5, 0, 40, 127, 7 }, new StringType("49.8 % 40 K 0.5 s"));
+        helper("249.600", new byte[] { (byte) 0xff, (byte) 0xfa, 0, 40, 127, 7 }, new StringType("49.8 % 40 K 6553 s"));
+        helper("249.600", new byte[] { (byte) 0xff, (byte) 0xff, 0, 40, 127, 7 },
+                new StringType("49.8 % 40 K 6553.5 s"));
         // DPT 250.600 DPT_Brightness_Colour_Temperature_Control
         // cct(1) cb(1) flags(1)
         helper("250.600", new byte[] { 0x0f, 0x0e, 3 }, new StringType("CT increase 7 steps BRT increase 6 steps"));
@@ -548,10 +945,10 @@ public class Back2BackTest {
         };
         TranslatorTypes.getAllMainTypes().forEach((i, t) -> {
             if (!dptTested.contains(i)) {
-                LOGGER.warn("missing tests for main DPT type " + i);
+                LOGGER.warn("missing tests for main DPT type {}", i);
                 wrapper.testsMissing = true;
             }
         });
-        assertEquals(false, wrapper.testsMissing, "add tests for new DPT main types");
+        assertFalse(wrapper.testsMissing, "add tests for new DPT main types");
     }
 }

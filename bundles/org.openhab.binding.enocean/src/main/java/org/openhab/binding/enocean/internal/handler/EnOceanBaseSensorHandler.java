@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -155,9 +155,6 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
         ERP1Message msg = (ERP1Message) packet;
 
         EEPType localReceivingType = receivingEEPTypes.get(msg.getRORG());
-        if (localReceivingType == null) {
-            return;
-        }
 
         EEP eep = EEPFactory.buildEEP(localReceivingType, (ERP1Message) packet);
         logger.debug("ESP Packet payload {} for {} received", HexUtils.bytesToHex(packet.getPayload()),

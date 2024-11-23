@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,8 @@ import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = TPLinkSmartHomeActions.class)
 @ThingActionsScope(name = "tplinksmarthome")
 @NonNullByDefault
 public class TPLinkSmartHomeActions implements ThingActions, ThingHandlerService {
@@ -40,8 +43,7 @@ public class TPLinkSmartHomeActions implements ThingActions, ThingHandlerService
     private @Nullable SmartHomeHandler handler;
 
     @RuleAction(label = "@text/actions.tplinksmarthome.send.label", description = "@text/actions.tplinksmarthome.send.description")
-    @ActionOutput(name = "response", label = "@text/actions.tplinksmarthome.send.response.label", description = "@text/actions.tplinksmarthome.send.response.description", type = "java.lang.String")
-    public String send(
+    public @ActionOutput(label = "@text/actions.tplinksmarthome.send.response.label", description = "@text/actions.tplinksmarthome.send.response.description", type = "java.lang.String") String send(
             @ActionInput(name = "command", label = "@text/actions.tplinksmarthome.send.command.label", description = "@text/actions.tplinksmarthome.send.command.description", type = "java.lang.String", required = true) final String command)
             throws IOException {
         if (handler instanceof SmartHomeHandler) {

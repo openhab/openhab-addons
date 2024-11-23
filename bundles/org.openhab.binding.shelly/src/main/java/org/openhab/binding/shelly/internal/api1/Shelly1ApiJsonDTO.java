@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
 import org.openhab.core.thing.CommonTriggerEvents;
 
 import com.google.gson.annotations.SerializedName;
@@ -553,6 +554,23 @@ public class Shelly1ApiJsonDTO {
         public Double current; // 3EM
     }
 
+    public static class ShellyEMNCurrentSettings {
+        // "emeter_n":{ "range_extender":1, "mismatch_threshold":0.00}
+        @SerializedName("range_extender")
+        public Integer rangeExtender;
+        @SerializedName("mismatch_threshold")
+        public Double mismatchThreshold;
+    }
+
+    public static class ShellyEMNCurrentStatus {
+        // "emeter_n":{"current":2.28,"ixsum":2.29,"mismatch":false,"is_valid":true}
+        public Double current;
+        public Double ixsum;
+        public Boolean mismatch;
+        @SerializedName("is_valid")
+        public Boolean isValid;
+    }
+
     public static class ShellySettingsUpdate {
         public String status;
         @SerializedName("has_update")
@@ -577,6 +595,7 @@ public class Shelly1ApiJsonDTO {
         public Boolean wifiRecoveryReboot; // FW 1.10+
         @SerializedName("ap_roaming")
         public ShellyApRoaming apRoaming; // FW 1.10+
+        public Boolean rangeExtender; // Gen2: Range extender
 
         public ShellySettingsMqtt mqtt = new ShellySettingsMqtt();
         public ShellySettingsSntp sntp = new ShellySettingsSntp();
@@ -621,6 +640,8 @@ public class Shelly1ApiJsonDTO {
         public @Nullable ArrayList<ShellySettingsRoller> rollers;
         public @Nullable ArrayList<ShellySettingsRgbwLight> lights;
         public @Nullable ArrayList<ShellySettingsEMeter> emeters;
+        @SerializedName("emeter_n")
+        public ShellyEMNCurrentSettings neutralCurrent;
         public @Nullable ArrayList<ShellyThermnostat> thermostats; // TRV
 
         @SerializedName("ext_switch_enable")
@@ -723,6 +744,7 @@ public class Shelly1ApiJsonDTO {
                                                                                     // /settings/sta for details
         public ShellyStatusCloud cloud = new ShellyStatusCloud();
         public ShellyStatusMqtt mqtt = new ShellyStatusMqtt();
+        public Shelly2APClientList rangeExtender;
 
         public String time;
         public Integer serial = -1;
@@ -745,8 +767,12 @@ public class Shelly1ApiJsonDTO {
         public ArrayList<ShellySettingsMeter> meters;
 
         public ArrayList<ShellySettingsEMeter> emeters;
+        @SerializedName("emeter_n")
+        public ShellyEMNCurrentStatus neutralCurrent;
+
         public Double totalCurrent;
         public Double totalPower;
+        public Double totalKWH;
         public Double totalReturned;
 
         @SerializedName("ext_temperature")
@@ -954,7 +980,7 @@ public class Shelly1ApiJsonDTO {
         public static class ShellySensorBat {
             public Double value; // estimated remaining battery capacity in %
             public Double voltage; // battery voltage
-        };
+        }
 
         // Door/Window sensor
         public static class ShellySensorState {

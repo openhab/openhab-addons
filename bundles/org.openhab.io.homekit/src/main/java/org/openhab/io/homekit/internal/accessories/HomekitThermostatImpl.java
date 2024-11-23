@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,32 +12,35 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
-import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_HEATING_COOLING_STATE;
-import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE;
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.*;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-import org.openhab.core.library.items.NumberItem;
-import org.openhab.core.library.types.DecimalType;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.items.GenericItem;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.hapjava.accessories.ThermostatAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.thermostat.CoolingThresholdTemperatureCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.CurrentHeatingCoolingStateCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.CurrentHeatingCoolingStateEnum;
 import io.github.hapjava.characteristics.impl.thermostat.CurrentTemperatureCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.HeatingThresholdTemperatureCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingStateCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingStateEnum;
 import io.github.hapjava.characteristics.impl.thermostat.TargetTemperatureCharacteristic;
-import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitEnum;
+import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitCharacteristic;
 import io.github.hapjava.services.impl.ThermostatService;
 
 /**
@@ -51,198 +54,158 @@ import io.github.hapjava.services.impl.ThermostatService;
  *
  * @author Andy Lintner - Initial contribution
  */
-class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements ThermostatAccessory {
+@NonNullByDefault
+class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl {
     private final Logger logger = LoggerFactory.getLogger(HomekitThermostatImpl.class);
-    private final Map<CurrentHeatingCoolingStateEnum, String> currentHeatingCoolingStateMapping;
-    private final Map<TargetHeatingCoolingStateEnum, String> targetHeatingCoolingStateMapping;
-    private final List<CurrentHeatingCoolingStateEnum> customCurrentHeatingCoolingStateList;
-    private final List<TargetHeatingCoolingStateEnum> customTargetHeatingCoolingStateList;
+    private @Nullable HomekitCharacteristicChangeCallback targetTemperatureCallback = null;
 
     public HomekitThermostatImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
-        customCurrentHeatingCoolingStateList = new ArrayList<>();
-        customTargetHeatingCoolingStateList = new ArrayList<>();
-        currentHeatingCoolingStateMapping = createMapping(CURRENT_HEATING_COOLING_STATE,
-                CurrentHeatingCoolingStateEnum.class, customCurrentHeatingCoolingStateList);
-        targetHeatingCoolingStateMapping = createMapping(TARGET_HEATING_COOLING_STATE,
-                TargetHeatingCoolingStateEnum.class, customTargetHeatingCoolingStateList);
-        this.getServices().add(new ThermostatService(this));
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
     }
 
     @Override
-    public CurrentHeatingCoolingStateEnum[] getCurrentHeatingCoolingStateValidValues() {
-        return customCurrentHeatingCoolingStateList.isEmpty()
-                ? currentHeatingCoolingStateMapping.keySet().toArray(new CurrentHeatingCoolingStateEnum[0])
-                : customCurrentHeatingCoolingStateList.toArray(new CurrentHeatingCoolingStateEnum[0]);
-    }
+    public void init() throws HomekitException {
+        super.init();
 
-    @Override
-    public TargetHeatingCoolingStateEnum[] getTargetHeatingCoolingStateValidValues() {
-        return customTargetHeatingCoolingStateList.isEmpty()
-                ? targetHeatingCoolingStateMapping.keySet().toArray(new TargetHeatingCoolingStateEnum[0])
-                : customTargetHeatingCoolingStateList.toArray(new TargetHeatingCoolingStateEnum[0]);
-    }
+        var coolingThresholdTemperatureCharacteristic = getCharacteristic(
+                CoolingThresholdTemperatureCharacteristic.class);
+        var heatingThresholdTemperatureCharacteristic = getCharacteristic(
+                HeatingThresholdTemperatureCharacteristic.class);
+        var targetTemperatureCharacteristic = getCharacteristic(TargetTemperatureCharacteristic.class);
 
-    @Override
-    public CompletableFuture<CurrentHeatingCoolingStateEnum> getCurrentState() {
-        return CompletableFuture.completedFuture(getKeyFromMapping(CURRENT_HEATING_COOLING_STATE,
-                currentHeatingCoolingStateMapping, CurrentHeatingCoolingStateEnum.OFF));
-    }
-
-    @Override
-    public CompletableFuture<Double> getCurrentTemperature() {
-        Double state = getStateAsTemperature(HomekitCharacteristicType.CURRENT_TEMPERATURE);
-        return CompletableFuture.completedFuture(state != null ? state : getMinCurrentTemperature());
-    }
-
-    @Override
-    public double getMinCurrentTemperature() {
-        // Apple defines default values in Celsius. We need to convert them to Fahrenheit if openHAB is using Fahrenheit
-        // convertToCelsius and convertFromCelsius are only converting if useFahrenheit is set to true, so no additional
-        // check here needed
-
-        return HomekitCharacteristicFactory.convertToCelsius(
-                getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
-                        BigDecimal.valueOf(HomekitCharacteristicFactory
-                                .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
-                        .doubleValue());
-    }
-
-    @Override
-    public double getMaxCurrentTemperature() {
-        return HomekitCharacteristicFactory.convertToCelsius(
-                getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
-                        BigDecimal.valueOf(HomekitCharacteristicFactory
-                                .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MAX_VALUE)))
-                        .doubleValue());
-    }
-
-    @Override
-    public double getMinStepCurrentTemperature() {
-        return HomekitCharacteristicFactory.getTemperatureStep(
-                getCharacteristic(HomekitCharacteristicType.CURRENT_TEMPERATURE).get(),
-                TargetTemperatureCharacteristic.DEFAULT_STEP);
-    }
-
-    @Override
-    public CompletableFuture<TargetHeatingCoolingStateEnum> getTargetState() {
-        return CompletableFuture.completedFuture(getKeyFromMapping(TARGET_HEATING_COOLING_STATE,
-                targetHeatingCoolingStateMapping, TargetHeatingCoolingStateEnum.OFF));
-    }
-
-    @Override
-    public CompletableFuture<TemperatureDisplayUnitEnum> getTemperatureDisplayUnit() {
-        return CompletableFuture
-                .completedFuture(HomekitCharacteristicFactory.useFahrenheit() ? TemperatureDisplayUnitEnum.FAHRENHEIT
-                        : TemperatureDisplayUnitEnum.CELSIUS);
-    }
-
-    @Override
-    public void setTemperatureDisplayUnit(TemperatureDisplayUnitEnum value) {
-        // TODO: add support for display unit change
-    }
-
-    @Override
-    public CompletableFuture<Double> getTargetTemperature() {
-        Double state = getStateAsTemperature(HomekitCharacteristicType.TARGET_TEMPERATURE);
-        return CompletableFuture.completedFuture(state != null ? state : 0.0);
-    }
-
-    @Override
-    public void setTargetState(TargetHeatingCoolingStateEnum mode) {
-        HomekitCharacteristicFactory.setValueFromEnum(getCharacteristic(TARGET_HEATING_COOLING_STATE).get(), mode,
-                targetHeatingCoolingStateMapping);
-    }
-
-    @Override
-    public void setTargetTemperature(Double value) {
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(
-                HomekitCharacteristicType.TARGET_TEMPERATURE);
-        if (characteristic.isPresent()) {
-            ((NumberItem) characteristic.get().getItem())
-                    .send(new DecimalType(BigDecimal.valueOf(HomekitCharacteristicFactory.convertFromCelsius(value))));
-        } else {
-            logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.TARGET_TEMPERATURE);
+        if (!coolingThresholdTemperatureCharacteristic.isPresent()
+                && !heatingThresholdTemperatureCharacteristic.isPresent()
+                && !targetTemperatureCharacteristic.isPresent()) {
+            throw new HomekitException(
+                    "Unable to create thermostat; at least one of TargetTemperature, CoolingThresholdTemperature, or HeatingThresholdTemperature is required.");
         }
+
+        var targetHeatingCoolingStateCharacteristic = getCharacteristic(TargetHeatingCoolingStateCharacteristic.class)
+                .get();
+
+        // TargetTemperature not provided; simulate by forwarding to HeatingThresholdTemperature and
+        // CoolingThresholdTemperature
+        // as appropriate
+        if (!targetTemperatureCharacteristic.isPresent()) {
+            if (Arrays.stream(targetHeatingCoolingStateCharacteristic.getValidValues())
+                    .anyMatch(v -> v.equals(TargetHeatingCoolingStateEnum.HEAT))
+                    && !heatingThresholdTemperatureCharacteristic.isPresent()) {
+                throw new HomekitException(
+                        "HeatingThresholdTemperature must be provided if HEAT mode is allowed and TargetTemperature is not provided.");
+            }
+            if (Arrays.stream(targetHeatingCoolingStateCharacteristic.getValidValues())
+                    .anyMatch(v -> v.equals(TargetHeatingCoolingStateEnum.COOL))
+                    && !coolingThresholdTemperatureCharacteristic.isPresent()) {
+                throw new HomekitException(
+                        "CoolingThresholdTemperature must be provided if COOL mode is allowed and TargetTemperature is not provided.");
+            }
+
+            double minValue, maxValue, minStep;
+            if (coolingThresholdTemperatureCharacteristic.isPresent()
+                    && heatingThresholdTemperatureCharacteristic.isPresent()) {
+                minValue = Math.min(coolingThresholdTemperatureCharacteristic.get().getMinValue(),
+                        heatingThresholdTemperatureCharacteristic.get().getMinValue());
+                maxValue = Math.max(coolingThresholdTemperatureCharacteristic.get().getMaxValue(),
+                        heatingThresholdTemperatureCharacteristic.get().getMaxValue());
+                minStep = Math.min(coolingThresholdTemperatureCharacteristic.get().getMinStep(),
+                        heatingThresholdTemperatureCharacteristic.get().getMinStep());
+            } else if (coolingThresholdTemperatureCharacteristic.isPresent()) {
+                minValue = coolingThresholdTemperatureCharacteristic.get().getMinValue();
+                maxValue = coolingThresholdTemperatureCharacteristic.get().getMaxValue();
+                minStep = coolingThresholdTemperatureCharacteristic.get().getMinStep();
+            } else {
+                minValue = heatingThresholdTemperatureCharacteristic.get().getMinValue();
+                maxValue = heatingThresholdTemperatureCharacteristic.get().getMaxValue();
+                minStep = heatingThresholdTemperatureCharacteristic.get().getMinStep();
+            }
+            targetTemperatureCharacteristic = Optional
+                    .of(new TargetTemperatureCharacteristic(minValue, maxValue, minStep, () -> {
+                        // return the value from the characteristic corresponding to the current mode
+                        try {
+                            switch (targetHeatingCoolingStateCharacteristic.getEnumValue().get()) {
+                                case HEAT:
+                                    return heatingThresholdTemperatureCharacteristic.get().getValue();
+                                case COOL:
+                                    return coolingThresholdTemperatureCharacteristic.get().getValue();
+                                default:
+                                    return CompletableFuture.completedFuture(
+                                            (heatingThresholdTemperatureCharacteristic.get().getValue().get()
+                                                    + coolingThresholdTemperatureCharacteristic.get().getValue().get())
+                                                    / 2);
+                            }
+                        } catch (InterruptedException | ExecutionException e) {
+                            return null;
+                        }
+                    }, value -> {
+                        try {
+                            // set the charactestic corresponding to the current mode
+                            switch (targetHeatingCoolingStateCharacteristic.getEnumValue().get()) {
+                                case HEAT:
+                                    heatingThresholdTemperatureCharacteristic.get().setValue(value);
+                                    break;
+                                case COOL:
+                                    coolingThresholdTemperatureCharacteristic.get().setValue(value);
+                                    break;
+                                default:
+                                    // ignore
+                            }
+                        } catch (InterruptedException | ExecutionException e) {
+                            // can't happen, since the futures are synchronous
+                        }
+                    }, cb -> {
+                        targetTemperatureCallback = cb;
+                        if (heatingThresholdTemperatureCharacteristic.isPresent()) {
+                            getUpdater().subscribe(
+                                    (GenericItem) getCharacteristic(HEATING_THRESHOLD_TEMPERATURE).get().getItem(),
+                                    TARGET_TEMPERATURE.getTag(), this::thresholdTemperatureChanged);
+                        }
+                        if (coolingThresholdTemperatureCharacteristic.isPresent()) {
+                            getUpdater().subscribe(
+                                    (GenericItem) getCharacteristic(COOLING_THRESHOLD_TEMPERATURE).get().getItem(),
+                                    TARGET_TEMPERATURE.getTag(), this::thresholdTemperatureChanged);
+                        }
+                        getUpdater().subscribe(
+                                (GenericItem) getCharacteristic(TARGET_HEATING_COOLING_STATE).get().getItem(),
+                                TARGET_TEMPERATURE.getTag(), this::thresholdTemperatureChanged);
+                    }, () -> {
+                        if (heatingThresholdTemperatureCharacteristic.isPresent()) {
+                            getUpdater().unsubscribe(
+                                    (GenericItem) getCharacteristic(HEATING_THRESHOLD_TEMPERATURE).get().getItem(),
+                                    TARGET_TEMPERATURE.getTag());
+                        }
+                        if (coolingThresholdTemperatureCharacteristic.isPresent()) {
+                            getUpdater().unsubscribe(
+                                    (GenericItem) getCharacteristic(COOLING_THRESHOLD_TEMPERATURE).get().getItem(),
+                                    TARGET_TEMPERATURE.getTag());
+                        }
+                        getUpdater().unsubscribe(
+                                (GenericItem) getCharacteristic(TARGET_HEATING_COOLING_STATE).get().getItem(),
+                                TARGET_TEMPERATURE.getTag());
+                        targetTemperatureCallback = null;
+                    }));
+        }
+
+        // These characteristics are technically mandatory, but we provide defaults if they're not provided
+        var currentHeatingCoolingStateCharacteristic = getCharacteristic(CurrentHeatingCoolingStateCharacteristic.class)
+                .orElseGet(() -> new CurrentHeatingCoolingStateCharacteristic(
+                        new CurrentHeatingCoolingStateEnum[] { CurrentHeatingCoolingStateEnum.OFF },
+                        () -> CompletableFuture.completedFuture(CurrentHeatingCoolingStateEnum.OFF), (cb) -> {
+                        }, () -> {
+                        })
+
+                );
+        var displayUnitCharacteristic = getCharacteristic(TemperatureDisplayUnitCharacteristic.class)
+                .orElseGet(() -> HomekitCharacteristicFactory.createSystemTemperatureDisplayUnitCharacteristic());
+
+        addService(
+                new ThermostatService(currentHeatingCoolingStateCharacteristic, targetHeatingCoolingStateCharacteristic,
+                        getCharacteristic(CurrentTemperatureCharacteristic.class).get(),
+                        targetTemperatureCharacteristic.get(), displayUnitCharacteristic));
     }
 
-    @Override
-    public double getMinTargetTemperature() {
-        return HomekitCharacteristicFactory
-                .convertToCelsius(
-                        getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE,
-                                HomekitTaggedItem.MIN_VALUE,
-                                BigDecimal.valueOf(HomekitCharacteristicFactory
-                                        .convertFromCelsius(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
-                                .doubleValue());
-    }
-
-    @Override
-    public double getMaxTargetTemperature() {
-        return HomekitCharacteristicFactory
-                .convertToCelsius(
-                        getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE,
-                                HomekitTaggedItem.MAX_VALUE,
-                                BigDecimal.valueOf(HomekitCharacteristicFactory
-                                        .convertFromCelsius(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)))
-                                .doubleValue());
-    }
-
-    @Override
-    public double getMinStepTargetTemperature() {
-        return HomekitCharacteristicFactory.getTemperatureStep(
-                getCharacteristic(HomekitCharacteristicType.TARGET_TEMPERATURE).get(),
-                TargetTemperatureCharacteristic.DEFAULT_STEP);
-    }
-
-    @Override
-    public void subscribeCurrentState(HomekitCharacteristicChangeCallback callback) {
-        subscribe(CURRENT_HEATING_COOLING_STATE, callback);
-    }
-
-    @Override
-    public void subscribeCurrentTemperature(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.CURRENT_TEMPERATURE, callback);
-    }
-
-    @Override
-    public void subscribeTargetState(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE, callback);
-    }
-
-    @Override
-    public void subscribeTargetTemperature(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.TARGET_TEMPERATURE, callback);
-    }
-
-    @Override
-    public void subscribeTemperatureDisplayUnit(HomekitCharacteristicChangeCallback callback) {
-        // TODO: add support for display unit change
-    }
-
-    @Override
-    public void unsubscribeCurrentState() {
-        unsubscribe(CURRENT_HEATING_COOLING_STATE);
-    }
-
-    @Override
-    public void unsubscribeCurrentTemperature() {
-        unsubscribe(HomekitCharacteristicType.CURRENT_TEMPERATURE);
-    }
-
-    @Override
-    public void unsubscribeTemperatureDisplayUnit() {
-        // TODO: add support for display unit change
-    }
-
-    @Override
-    public void unsubscribeTargetState() {
-        unsubscribe(HomekitCharacteristicType.TARGET_HEATING_COOLING_STATE);
-    }
-
-    @Override
-    public void unsubscribeTargetTemperature() {
-        unsubscribe(HomekitCharacteristicType.TARGET_TEMPERATURE);
+    private void thresholdTemperatureChanged() {
+        targetTemperatureCallback.changed();
     }
 }

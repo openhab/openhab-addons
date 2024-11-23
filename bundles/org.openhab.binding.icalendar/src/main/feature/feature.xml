@@ -3,7 +3,6 @@
 	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
 	<feature name="openhab-binding-icalendar" description="iCalendar Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature dependency="true">openhab.tp-jackson</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.icalendar/${project.version}</bundle>
 	</feature>
 </features>

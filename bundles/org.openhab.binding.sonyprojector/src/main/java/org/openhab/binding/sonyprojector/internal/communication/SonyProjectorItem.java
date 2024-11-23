@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -142,6 +142,9 @@ public enum SonyProjectorItem {
     MODEL_NAME("Model Name", new byte[] { (byte) 0x80, 0x01 }),
     SERIAL_NUMBER("Serial Number", new byte[] { (byte) 0x80, 0x02 }),
     INSTALLATION_LOCATION("Installation Location", new byte[] { (byte) 0x80, 0x03 }),
+
+    MAC_ADDRESS("MAC Address", new byte[] { (byte) 0x90, 0x00 }),
+    IP_ADDRESS("IP Address", new byte[] { (byte) 0x90, 0x01 }),
 
     MENU("Menu", null, new byte[] { 0x17, 0x29 }),
     UP("Cursor UP", null, new byte[] { 0x17, 0x35 }),

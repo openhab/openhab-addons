@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_FREE_HEAP_SIZE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_MAX_WIND_SPEED;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_MOISTURE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_UV_INDEX;
@@ -21,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -131,9 +133,9 @@ public enum Measurand {
     LEAK_CHX("water-leak-channel", new int[] { 0x58, 0x59, 0x5A, 0x5B }, "Leak", MeasureType.WATER_LEAK_DETECTION),
 
     // `LIGHTNING` is the name in the spec, so we keep it here as it
-    LIGHTNING("lightning-distance", 0x60, "lightning distance 1~40KM", MeasureType.LIGHTNING_DISTANCE),
+    LIGHTNING("lightning-distance", 0x60, "Lightning distance 1~40KM", MeasureType.LIGHTNING_DISTANCE),
 
-    LIGHTNING_TIME("lightning-time", 0x61, "lightning happened time", MeasureType.LIGHTNING_TIME),
+    LIGHTNING_TIME("lightning-time", 0x61, "Lightning happened time", MeasureType.LIGHTNING_TIME),
 
     // `LIGHTNING_POWER` is the name in the spec, so we keep it here as it
     LIGHTNING_POWER("lightning-counter", 0x62, "lightning counter for the day", MeasureType.LIGHTNING_COUNTER),
@@ -142,6 +144,9 @@ public enum Measurand {
             new MeasurandParser("temperature-external-channel", "Soil or Water temperature", MeasureType.TEMPERATURE),
             // skip battery-level, since it is read via Command.CMD_READ_SENSOR_ID_NEW
             new Skip(1)),
+
+    // This is for heap : the available stack top. If it is reducing, it means the stack is using up.
+    ITEM_HEAP_FREE("free-heap-size", 0x6c, "Free Heap Size", MeasureType.MEMORY, CHANNEL_TYPE_FREE_HEAP_SIZE),
 
     ITEM_SENSOR_CO2(0x70,
             new MeasurandParser("sensor-co2-temperature", "Temperature (CO₂-Sensor)", MeasureType.TEMPERATURE),
@@ -368,8 +373,8 @@ public enum Measurand {
             if (customizationType == null) {
                 return measureType;
             }
-            return Optional.ofNullable(customizations).map(m -> m.get(customizationType))
-                    .map(ParserCustomization::getMeasureType).orElse(measureType);
+            return Objects.requireNonNull(Optional.ofNullable(customizations).map(m -> m.get(customizationType))
+                    .map(ParserCustomization::getMeasureType).orElse(measureType));
         }
     }
 }

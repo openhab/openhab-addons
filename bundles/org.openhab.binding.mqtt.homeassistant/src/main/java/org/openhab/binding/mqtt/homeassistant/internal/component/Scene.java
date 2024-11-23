@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
 
@@ -44,14 +45,17 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
         protected String payloadOn = "ON";
     }
 
-    public Scene(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Scene(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         TextValue value = new TextValue(new String[] { channelConfiguration.payloadOn });
 
-        buildChannel(SCENE_CHANNEL_ID, value, getName(), componentConfiguration.getUpdateListener())
+        buildChannel(SCENE_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
+                componentConfiguration.getUpdateListener())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+
+        finalizeChannels();
     }
 }

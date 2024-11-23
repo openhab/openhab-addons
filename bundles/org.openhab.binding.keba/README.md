@@ -4,7 +4,7 @@ This binding integrates the [Keba KeContact EV Charging Stations](https://www.ke
 
 ## Supported Things
 
-The Keba KeContact P20 and P30 stations which are providing the UDP interface (P20 LSA+ socket, P30 c-series and x-series) are supported by this binding, the thing type id is `kecontact`.
+The Keba KeContact P20 and P30 stations which are providing the UDP interface (P20 LSA+ socket, P30 c-series and x-series or BMW wallbox) are supported by this binding, the thing type id is `kecontact`.
 
 ## Thing Configuration
 
@@ -61,11 +61,11 @@ demo.items:
 ```java
 Number:Dimensionless      KebaCurrentRange      "Maximum supply current [%.1f %%]"        {channel="keba:kecontact:1:maxpresetcurrentrange"}
 Number:ElectricCurrent    KebaCurrent           "Maximum supply current [%.3f A]"         {channel="keba:kecontact:1:maxpresetcurrent"}
-Number:ElectricCurrent    KebaSystemCurrent     "Maximum system supply current [%.3f A]"  {channel="keba:kecontact:1:maxsystemcurrent"} 
-Number:ElectricCurrent    KebaFailSafeCurrent   "Failsafe supply current [%.3f A]"        {channel="keba:kecontact:1:failsafecurrent"} 
+Number:ElectricCurrent    KebaSystemCurrent     "Maximum system supply current [%.3f A]"  {channel="keba:kecontact:1:maxsystemcurrent"}
+Number:ElectricCurrent    KebaFailSafeCurrent   "Failsafe supply current [%.3f A]"        {channel="keba:kecontact:1:failsafecurrent"}
 Number                    KebaState             "Operating State [%s]"                    {channel="keba:kecontact:1:state"}
 Switch                    KebaEnabledSystem     "Enabled (System)"                        {channel="keba:kecontact:1:enabledsystem"}
-Switch                    KebaEnabledUser       "Enabled (User)"                          {channel="keba:kecontact:1:enableduser"}  
+Switch                    KebaEnabledUser       "Enabled (User)"                          {channel="keba:kecontact:1:enableduser"}
 Switch                    KebaWallboxPlugged    "Plugged into wallbox"                    {channel="keba:kecontact:1:wallbox"}
 Switch                    KebaVehiclePlugged    "Plugged into vehicle"                    {channel="keba:kecontact:1:vehicle"}
 Switch                    KebaPlugLocked        "Plug locked"                             {channel="keba:kecontact:1:locked"}

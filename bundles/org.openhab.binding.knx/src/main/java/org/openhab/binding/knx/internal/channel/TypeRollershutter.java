@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.knx.internal.channel;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,21 +38,17 @@ class TypeRollershutter extends KNXChannel {
             CHANNEL_ROLLERSHUTTER_CONTROL);
 
     TypeRollershutter(Channel channel) {
-        super(Set.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA),
+        super(List.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA),
                 List.of(PercentType.class, UpDownType.class, StopMoveType.class), channel);
     }
 
     @Override
     protected String getDefaultDPT(String gaConfigKey) {
-        if (Objects.equals(gaConfigKey, UP_DOWN_GA)) {
-            return DPTXlatorBoolean.DPT_UPDOWN.getID();
-        }
-        if (Objects.equals(gaConfigKey, STOP_MOVE_GA)) {
-            return DPTXlatorBoolean.DPT_START.getID();
-        }
-        if (Objects.equals(gaConfigKey, POSITION_GA)) {
-            return DPTXlator8BitUnsigned.DPT_SCALING.getID();
-        }
-        throw new IllegalArgumentException("GA configuration '" + gaConfigKey + "' is not supported");
+        return switch (gaConfigKey) {
+            case UP_DOWN_GA -> DPTXlatorBoolean.DPT_UPDOWN.getID();
+            case STOP_MOVE_GA -> DPTXlatorBoolean.DPT_START.getID();
+            case POSITION_GA -> DPTXlator8BitUnsigned.DPT_SCALING.getID();
+            default -> throw new IllegalArgumentException("GA configuration '" + gaConfigKey + "' is not supported");
+        };
     }
 }

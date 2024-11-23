@@ -21,7 +21,7 @@ public abstract class AbstractMessage implements Serializable {
         Enc7,
         Enc8,
         EncUcs2,
-        EncCustom;
+        EncCustom
     }
 
     public enum DcsClass {

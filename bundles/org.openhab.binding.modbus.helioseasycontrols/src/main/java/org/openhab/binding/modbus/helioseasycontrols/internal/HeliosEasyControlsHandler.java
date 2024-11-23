@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -168,9 +168,10 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         } catch (IOException e) {
             this.handleError("Error reading variable definition file", ThingStatusDetail.CONFIGURATION_ERROR);
         }
+        Map<String, HeliosVariable> variableMap = this.variableMap;
         if (variableMap != null) {
             // add the name to the variable itself
-            for (Map.Entry<String, HeliosVariable> entry : this.variableMap.entrySet()) {
+            for (Map.Entry<String, HeliosVariable> entry : variableMap.entrySet()) {
                 entry.getValue().setName(entry.getKey()); // workaround to set the variable name inside the
                                                           // HeliosVariable object
                 if (!entry.getValue().isOk()) {
@@ -225,7 +226,6 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' is offline", label));
@@ -236,7 +236,6 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         comms = slaveEndpointThingHandler.getCommunicationInterface();
 
         if (comms == null) {
-            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' not completely initialized", label));
@@ -250,8 +249,9 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         this.config = getConfigAs(HeliosEasyControlsConfiguration.class);
         this.readVariableDefinition();
         this.connectEndpoint();
-        if ((this.comms != null) && (this.variableMap != null) && (this.config != null)) {
-            this.transactionLocks.putIfAbsent(this.comms.getEndpoint(), new Semaphore(1, true));
+        ModbusCommunicationInterface comms = this.comms;
+        if (comms != null && this.variableMap != null && this.config != null) {
+            this.transactionLocks.putIfAbsent(comms.getEndpoint(), new Semaphore(1, true));
             updateStatus(ThingStatus.UNKNOWN);
 
             // background initialization
@@ -264,6 +264,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
             HeliosEasyControlsConfiguration config = this.config;
             if (config != null) {
                 this.pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                    Map<String, HeliosVariable> variableMap = this.variableMap;
                     if (variableMap != null) {
                         for (Map.Entry<String, HeliosVariable> entry : variableMap.entrySet()) {
                             if (this.isProperty(entry.getKey()) || isLinked(entry.getValue().getGroupAndName())
@@ -293,8 +294,10 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (this.pollingJob != null) {
-            this.pollingJob.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+            this.pollingJob = null;
         }
         this.comms = null;
     }
@@ -382,6 +385,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                 scheduler.submit(() -> {
                     try {
                         writeValue(channelId, v);
+                        Map<String, HeliosVariable> variableMap = this.variableMap;
                         if (variableMap != null) {
                             HeliosVariable variable = variableMap.get(channelId);
                             if (variable != null) {
@@ -642,7 +646,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
     }
 
     private List<String> getMessages(long bitMask, int bits, String prefix) {
-        ArrayList<String> msg = new ArrayList<String>();
+        ArrayList<String> msg = new ArrayList<>();
         long mask = 1;
         for (int i = 0; i < bits; i++) {
             if ((bitMask & mask) != 0) {
@@ -693,7 +697,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @return an <code>List</code> of messages indicated by the status flags sent by the device
      */
     protected List<String> getStatusMessages() {
-        ArrayList<String> msg = new ArrayList<String>();
+        ArrayList<String> msg = new ArrayList<>();
         if (this.statusFlags.length() == HeliosEasyControlsBindingConstants.BITS_STATUS_MSG) {
             for (int i = 0; i < HeliosEasyControlsBindingConstants.BITS_STATUS_MSG; i++) {
                 String key = HeliosEasyControlsBindingConstants.PREFIX_STATUS_MSG + i + "."

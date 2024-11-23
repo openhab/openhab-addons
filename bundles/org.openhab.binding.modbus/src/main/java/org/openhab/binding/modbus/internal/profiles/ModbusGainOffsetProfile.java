@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -157,7 +157,6 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
                     result = applyGainTowardsItem(offsetted, gain);
                 } else {
                     result = applyGainTowardsHandler(quantityState, gain).subtract(pregainOffsetQt);
-
                 }
             } catch (UnconvertibleException | UnsupportedOperationException e) {
                 logger.warn(
@@ -196,7 +195,7 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
                         parameterName);
             }
         } else if (parameterValue instanceof BigDecimal parameterBigDecimal) {
-            result = Optional.of(new QuantityType<QU>(parameterBigDecimal.toString()));
+            result = Optional.of(new QuantityType<>(parameterBigDecimal.toString()));
         } else {
             logger.error("Parameter '{}' is not of type String or BigDecimal", parameterName);
             return result;

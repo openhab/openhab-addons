@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.ecovacs.internal.api.commands;
+
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecovacs.internal.api.impl.ProtocolVersion;
@@ -42,7 +44,8 @@ public class GetActiveMapIdCommand extends IotDeviceCommand<String> {
             throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
             CachedMapInfoReport resp = jsonResponse.getResponsePayloadAs(gson, CachedMapInfoReport.class);
-            return resp.mapInfos.stream().filter(i -> i.used != 0).map(i -> i.mapId).findFirst().orElse("");
+            return Objects.requireNonNull(
+                    resp.mapInfos.stream().filter(i -> i.used != 0).map(i -> i.mapId).findFirst().orElse(""));
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();
             return XPathUtils.getFirstXPathMatch(payload, "//@i").getNodeValue();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,10 +30,12 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
@@ -61,11 +69,19 @@ class ScenarioHandlerTest {
                 .toArray(Exception[]::new);
     }
 
+    private @NonNullByDefault({}) ScenarioHandler fixture;
+
+    private @NonNullByDefault({}) @Mock BoschHttpClient httpClient;
+    private @NonNullByDefault({}) @Mock Request request;
+
+    @BeforeEach
+    void beforeEach() {
+        fixture = new ScenarioHandler();
+    }
+
     @Test
-    void triggerScenario_ShouldSendPOST_ToBoschAPI() throws Exception {
+    void triggerScenarioShouldSendPOSTToBoschAPI() throws Exception {
         // GIVEN
-        final var httpClient = mock(BoschHttpClient.class);
-        final var request = mock(Request.class);
         final var contentResponse = mock(ContentResponse.class);
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenReturn("http://localhost/smartHome/scenarios")
                 .thenReturn("http://localhost/smartHome/scenarios/1234/triggers");
@@ -74,10 +90,8 @@ class ScenarioHandlerTest {
         when(request.send()).thenReturn(contentResponse);
         when(contentResponse.getStatus()).thenReturn(HttpStatus.OK_200);
 
-        final var handler = new ScenarioHandler();
-
         // WHEN
-        handler.triggerScenario(httpClient, "Scenario 1");
+        fixture.triggerScenario(httpClient, "Scenario 1");
 
         // THEN
         verify(httpClient).getBoschSmartHomeUrl("scenarios");
@@ -85,19 +99,15 @@ class ScenarioHandlerTest {
     }
 
     @Test
-    void triggerScenario_ShouldNoSendPOST_ToScenarioNameDoesNotExist() throws Exception {
+    void triggerScenarioShouldNotSendPOSTToScenarioNameDoesNotExist() throws Exception {
         // GIVEN
-        final var httpClient = mock(BoschHttpClient.class);
-        final var request = mock(Request.class);
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenReturn("http://localhost/smartHome/scenarios")
                 .thenReturn("http://localhost/smartHome/scenarios/1234/triggers");
         when(httpClient.createRequest(anyString(), any(HttpMethod.class))).thenReturn(request).thenReturn(request);
         when(httpClient.sendRequest(any(Request.class), any(), any(), any())).thenReturn(existingScenarios);
 
-        final var handler = new ScenarioHandler();
-
         // WHEN
-        handler.triggerScenario(httpClient, "not existing Scenario");
+        fixture.triggerScenario(httpClient, "not existing Scenario");
 
         // THEN
         verify(httpClient).getBoschSmartHomeUrl("scenarios");
@@ -106,19 +116,15 @@ class ScenarioHandlerTest {
 
     @ParameterizedTest
     @MethodSource("exceptionData")
-    void triggerScenario_ShouldNotPanic_IfBoschAPIThrowsException(final Exception exception) throws Exception {
+    void triggerScenarioShouldNotPanicIfBoschAPIThrowsException(final Exception exception) throws Exception {
         // GIVEN
-        final var httpClient = mock(BoschHttpClient.class);
-        final var request = mock(Request.class);
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenReturn("http://localhost/smartHome/scenarios")
                 .thenReturn("http://localhost/smartHome/scenarios/1234/triggers");
         when(httpClient.createRequest(anyString(), any(HttpMethod.class))).thenReturn(request);
         when(httpClient.sendRequest(any(Request.class), any(), any(), any())).thenThrow(exception);
 
-        final var handler = new ScenarioHandler();
-
         // WHEN
-        handler.triggerScenario(httpClient, "Scenario 1");
+        fixture.triggerScenario(httpClient, "Scenario 1");
 
         // THEN
         verify(httpClient).getBoschSmartHomeUrl("scenarios");
@@ -126,10 +132,8 @@ class ScenarioHandlerTest {
     }
 
     @Test
-    void triggerScenario_ShouldNotPanic_IfPOSTIsNotSuccessful() throws Exception {
+    void triggerScenarioShouldNotPanicIfPOSTIsNotSuccessful() throws Exception {
         // GIVEN
-        final var httpClient = mock(BoschHttpClient.class);
-        final var request = mock(Request.class);
         final var contentResponse = mock(ContentResponse.class);
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenReturn("http://localhost/smartHome/scenarios")
                 .thenReturn("http://localhost/smartHome/scenarios/1234/triggers");
@@ -138,10 +142,8 @@ class ScenarioHandlerTest {
         when(request.send()).thenReturn(contentResponse);
         when(contentResponse.getStatus()).thenReturn(HttpStatus.METHOD_NOT_ALLOWED_405);
 
-        final var handler = new ScenarioHandler();
-
         // WHEN
-        handler.triggerScenario(httpClient, "Scenario 1");
+        fixture.triggerScenario(httpClient, "Scenario 1");
 
         // THEN
         verify(httpClient).getBoschSmartHomeUrl("scenarios");
@@ -150,23 +152,29 @@ class ScenarioHandlerTest {
 
     @ParameterizedTest
     @MethodSource("httpExceptionData")
-    void triggerScenario_ShouldNotPanic_IfPOSTThrowsException(final Exception exception) throws Exception {
+    void triggerScenarioShouldNotPanicIfPOSTThrowsException(final Exception exception) throws Exception {
         // GIVEN
-        final var httpClient = mock(BoschHttpClient.class);
-        final var request = mock(Request.class);
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenReturn("http://localhost/smartHome/scenarios")
                 .thenReturn("http://localhost/smartHome/scenarios/1234/triggers");
         when(httpClient.createRequest(anyString(), any(HttpMethod.class))).thenReturn(request).thenReturn(request);
         when(httpClient.sendRequest(any(Request.class), any(), any(), any())).thenReturn(existingScenarios);
         when(request.send()).thenThrow(exception);
 
-        final var handler = new ScenarioHandler();
-
         // WHEN
-        handler.triggerScenario(httpClient, "Scenario 1");
+        fixture.triggerScenario(httpClient, "Scenario 1");
 
         // THEN
         verify(httpClient).getBoschSmartHomeUrl("scenarios");
         verify(request).send();
+    }
+
+    @Test
+    void prettyLogScenarios() {
+        Scenario scenario1 = Scenario.createScenario("id1", "Scenario 1", "1708619045411");
+        Scenario scenario2 = Scenario.createScenario("id2", "Scenario 2", "1708619065445");
+        assertEquals(
+                "[\n" + "  Scenario{name='Scenario 1', id='id1', lastTimeTriggered='1708619045411'}\n"
+                        + "  Scenario{name='Scenario 2', id='id2', lastTimeTriggered='1708619065445'}\n" + "]",
+                fixture.prettyLogScenarios(new Scenario[] { scenario1, scenario2 }));
     }
 }

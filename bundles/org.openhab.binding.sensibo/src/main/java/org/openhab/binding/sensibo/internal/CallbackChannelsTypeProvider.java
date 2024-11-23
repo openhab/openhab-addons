@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.sensibo.internal;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,12 +28,16 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * Channel Type Provider that does a callback the SensiboSkyHandler that initiated it.
  *
  * @author Arne Seime - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = { CallbackChannelsTypeProvider.class, ChannelTypeProvider.class,
+        ChannelGroupTypeProvider.class })
 @NonNullByDefault
 public class CallbackChannelsTypeProvider
         implements ChannelTypeProvider, ChannelGroupTypeProvider, ThingHandlerService {
@@ -40,12 +45,12 @@ public class CallbackChannelsTypeProvider
 
     @Override
     public Collection<ChannelType> getChannelTypes(@Nullable final Locale locale) {
-        return handler.getChannelTypes(locale);
+        return handler != null ? handler.getChannelTypes(locale) : List.of();
     }
 
     @Override
     public @Nullable ChannelType getChannelType(final ChannelTypeUID channelTypeUID, @Nullable final Locale locale) {
-        return handler.getChannelType(channelTypeUID, locale);
+        return handler != null ? handler.getChannelType(channelTypeUID, locale) : null;
     }
 
     @Override

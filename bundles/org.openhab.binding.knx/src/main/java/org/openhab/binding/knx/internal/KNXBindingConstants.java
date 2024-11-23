@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link KNXBindingConstants} class defines common constants, which are
@@ -62,10 +63,13 @@ public class KNXBindingConstants {
     public static final String PORT_NUMBER = "portNumber";
     public static final String SERIAL_PORT = "serialPort";
     public static final String USE_CEMI = "useCemi";
+    public static final String KEYRING_FILE = "keyringFile";
+    public static final String KEYRING_PASSWORD = "keyringPassword";
     public static final String ROUTER_BACKBONE_GROUP_KEY = "routerBackboneGroupKey";
     public static final String TUNNEL_USER_ID = "tunnelUserId";
     public static final String TUNNEL_USER_PASSWORD = "tunnelUserPassword";
     public static final String TUNNEL_DEVICE_AUTHENTICATION = "tunnelDeviceAuthentication";
+    public static final String TUNNEL_SOURCE_ADDRESS = "tunnelSourceAddress";
 
     // The default multicast ip address (see <a
     // href="http://www.iana.org/assignments/multicast-addresses/multicast-addresses.xml">iana</a> EIBnet/IP
@@ -88,6 +92,9 @@ public class KNXBindingConstants {
     public static final String CHANNEL_STRING_CONTROL = "string-control";
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_SWITCH_CONTROL = "switch-control";
+
+    public static final ChannelTypeUID CHANNEL_CONTACT_CONTROL_UID = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_CONTACT_CONTROL);
 
     public static final Set<String> CONTROL_CHANNEL_TYPES = Set.of( //
             CHANNEL_COLOR_CONTROL, //

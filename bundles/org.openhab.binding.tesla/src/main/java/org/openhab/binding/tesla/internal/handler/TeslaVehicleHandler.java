@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -791,8 +791,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         if (authHeader != null) {
             try {
                 // get a list of vehicles
-                synchronized (account.vehiclesTarget) {
-                    Response response = account.vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
+                synchronized (account.productsTarget) {
+                    Response response = account.productsTarget.request(MediaType.APPLICATION_JSON_TYPE)
                             .header("Authorization", authHeader).get();
 
                     logger.debug("Querying the vehicle, response : {}, {}", response.getStatus(),

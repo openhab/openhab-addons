@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +51,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = FritzboxActions.class)
 @ThingActionsScope(name = "tr064")
 @NonNullByDefault
 public class FritzboxActions implements ThingActions {
@@ -59,27 +62,27 @@ public class FritzboxActions implements ThingActions {
     private @Nullable Tr064RootHandler handler;
 
     @RuleAction(label = "@text/phonebookLookupActionLabel", description = "@text/phonebookLookupActionDescription")
-    public @ActionOutput(name = "name", label = "@text/phonebookLookupActionOutputLabel", description = "@text/phonebookLookupActionOutputDescription", type = "java.lang.String") String phonebookLookup(
+    public @ActionOutput(label = "@text/phonebookLookupActionOutputLabel", description = "@text/phonebookLookupActionOutputDescription", type = "java.lang.String") String phonebookLookup(
             @ActionInput(name = "phonenumber", label = "@text/phonebookLookupActionInputPhoneNumberLabel", description = "@text/phonebookLookupActionInputPhoneNumberDescription", type = "java.lang.String", required = true) @Nullable String phonenumber,
             @ActionInput(name = "matches", label = "@text/phonebookLookupActionInputMatchesLabel", description = "@text/phonebookLookupActionInputMatchesDescription", type = "java.lang.Integer") @Nullable Integer matchCount) {
         return phonebookLookup(phonenumber, null, matchCount);
     }
 
     @RuleAction(label = "@text/phonebookLookupActionLabel", description = "@text/phonebookLookupActionDescription")
-    public @ActionOutput(name = "name", label = "@text/phonebookLookupActionOutputLabel", description = "@text/phonebookLookupActionOutputDescription", type = "java.lang.String") String phonebookLookup(
+    public @ActionOutput(label = "@text/phonebookLookupActionOutputLabel", description = "@text/phonebookLookupActionOutputDescription", type = "java.lang.String") String phonebookLookup(
             @ActionInput(name = "phonenumber", label = "@text/phonebookLookupActionInputPhoneNumberLabel", description = "@text/phonebookLookupActionInputPhoneNumberDescription", type = "java.lang.String", required = true) @Nullable String phonenumber) {
         return phonebookLookup(phonenumber, null, null);
     }
 
     @RuleAction(label = "@text/phonebookLookupActionLabel", description = "@text/phonebookLookupActionDescription")
-    public @ActionOutput(name = "name", label = "@text/phonebookLookupActionOutputLabel", description = "@text/phonebookLookupActionOutputDescription", type = "java.lang.String") String phonebookLookup(
+    public @ActionOutput(label = "@text/phonebookLookupActionOutputLabel", description = "@text/phonebookLookupActionOutputDescription", type = "java.lang.String") String phonebookLookup(
             @ActionInput(name = "phonenumber", label = "@text/phonebookLookupActionInputPhoneNumberLabel", description = "@text/phonebookLookupActionInputPhoneNumberDescription", type = "java.lang.String", required = true) @Nullable String phonenumber,
             @ActionInput(name = "phonebook", label = "@text/phonebookLookupActionInputPhoneBookLabel", description = "@text/phonebookLookupActionInputPhoneBookDescription", type = "java.lang.String") @Nullable String phonebook) {
         return phonebookLookup(phonenumber, phonebook, null);
     }
 
     @RuleAction(label = "@text/phonebookLookupActionLabel", description = "@text/phonebookLookupActionDescription")
-    public @ActionOutput(name = "name", label = "@text/phonebookLookupActionOutputLabel", description = "@text/phonebookLookupActionOutputDescription", type = "java.lang.String") String phonebookLookup(
+    public @ActionOutput(label = "@text/phonebookLookupActionOutputLabel", description = "@text/phonebookLookupActionOutputDescription", type = "java.lang.String") String phonebookLookup(
             @ActionInput(name = "phonenumber", label = "@text/phonebookLookupActionInputPhoneNumberLabel", description = "@text/phonebookLookupActionInputPhoneNumberDescription", type = "java.lang.String", required = true) @Nullable String phonenumber,
             @ActionInput(name = "phonebook", label = "@text/phonebookLookupActionInputPhoneBookLabel", description = "@text/phonebookLookupActionInputPhoneBookDescription", type = "java.lang.String") @Nullable String phonebook,
             @ActionInput(name = "matches", label = "@text/phonebookLookupActionInputMatchesLabel", description = "@text/phonebookLookupActionInputMatchesDescription", type = "java.lang.Integer") @Nullable Integer matchCount) {

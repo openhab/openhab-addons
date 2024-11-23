@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.openweathermap.internal.dto.forecast.daily;
 
 /**
- * Generated Plain Old Java Objects class for {@link FeelsLikeTemp} from JSON.
+ * Holds the data from the <code>feels_like</code> object of the JSON response of the Daily Forecast 16 Days API.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
@@ -27,31 +27,15 @@ public class FeelsLikeTemp {
         return day;
     }
 
-    public void setDay(Double day) {
-        this.day = day;
-    }
-
     public Double getNight() {
         return night;
-    }
-
-    public void setNight(Double night) {
-        this.night = night;
     }
 
     public Double getEve() {
         return eve;
     }
 
-    public void setEve(Double eve) {
-        this.eve = eve;
-    }
-
     public Double getMorn() {
         return morn;
-    }
-
-    public void setMorn(Double morn) {
-        this.morn = morn;
     }
 }

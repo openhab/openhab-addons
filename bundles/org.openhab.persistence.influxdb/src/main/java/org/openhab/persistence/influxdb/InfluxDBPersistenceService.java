@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.persistence.influxdb;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -170,7 +169,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
 
     @Override
     public String getLabel(@Nullable Locale locale) {
-        return "InfluxDB persistence layer";
+        return "InfluxDB";
     }
 
     @Override
@@ -255,8 +254,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
 
     private HistoricItem mapRowToHistoricItem(InfluxDBRepository.InfluxRow row) {
         State state = InfluxDBStateConvertUtils.objectToState(row.value(), row.itemName(), itemRegistry);
-        return new InfluxDBHistoricItem(row.itemName(), state,
-                ZonedDateTime.ofInstant(row.time(), ZoneId.systemDefault()));
+        return new InfluxDBHistoricItem(row.itemName(), state, row.time());
     }
 
     @Override

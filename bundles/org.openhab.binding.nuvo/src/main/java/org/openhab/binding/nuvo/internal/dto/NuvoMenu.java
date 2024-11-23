@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NuvoMenu {
 
     @XmlElement(required = true)
-    protected List<NuvoMenu.Source> source = new ArrayList<NuvoMenu.Source>();
+    protected List<NuvoMenu.Source> source = new ArrayList<>();
 
     public List<NuvoMenu.Source> getSource() {
         return this.source;
@@ -46,7 +46,7 @@ public class NuvoMenu {
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
     public static class Source {
-        protected List<NuvoMenu.Source.TopMenu> topmenu = new ArrayList<NuvoMenu.Source.TopMenu>();
+        protected List<NuvoMenu.Source.TopMenu> topmenu = new ArrayList<>();
 
         public List<NuvoMenu.Source.TopMenu> getTopMenu() {
             return this.topmenu;
@@ -55,7 +55,7 @@ public class NuvoMenu {
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "")
         public static class TopMenu {
-            protected List<String> item = new ArrayList<String>();
+            protected List<String> item = new ArrayList<>();
             @XmlAttribute(name = "text", required = true)
             protected String text = "";
 
