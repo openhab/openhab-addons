@@ -420,7 +420,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
     protected final String sendV2BypassControlCommand(final String method,
             final VeSyncRequestManagedDeviceBypassV2.EmptyPayload payload, final boolean readbackDevice) {
         final String result = sendV2BypassCommand(method, payload);
-        if (!result.equals(EMPTY_STRING) && readbackDevice) {
+        if (!EMPTY_STRING.equals(result) && readbackDevice) {
             performReadbackPoll();
         }
         return result;
@@ -433,7 +433,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
     protected final String sendV1ControlCommand(final String urlPath, final VeSyncAuthenticatedRequest request,
             final boolean readbackDevice) {
         final String result = sendV1Command(urlPath, request);
-        if (!result.equals(EMPTY_STRING) && readbackDevice) {
+        if (!EMPTY_STRING.equals(result) && readbackDevice) {
             performReadbackPoll();
         }
         return result;

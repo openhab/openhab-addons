@@ -86,7 +86,7 @@ public class VeSyncDeviceHumidifierMetadata extends VeSyncDeviceMetadata {
         if (!remapsAutoToHumidity) {
             return mode;
         } else {
-            if (mode.equals(MODE_AUTO)) {
+            if (MODE_AUTO.equals(mode)) {
                 return MODE_AUTO_HUMIDITY;
             }
             return mode;

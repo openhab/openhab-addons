@@ -82,7 +82,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     private @Nullable ScheduledFuture<?> backgroundDiscoveryPollingJob;
     private HttpClient httpClient;
 
-    public VeSyncBridgeHandler(Bridge bridge, @NotNull HttpClientFactory httpClientFactory,
+    public VeSyncBridgeHandler(Bridge bridge, @Reference HttpClientFactory httpClientFactory,
             @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
         super(bridge);
         this.httpClient = httpClientFactory.getCommonHttpClient();

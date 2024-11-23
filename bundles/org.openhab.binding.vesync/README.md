@@ -83,9 +83,10 @@ Channel names in **bold** are read/write, everything else is read-only
 | airQualityPM25       | Number:Density       | The air quality as represented by the Core400S             | 600S, 400S, 300S, Vital 100S, Vital 200S       |                            | µg/m³ |
 | errorCode            | Number:Dimensionless | The error code reported by the device                      | 600S, 400S, 300S, Vital 100S, Vital 200S       |                            |       |
 | timerExpiry          | DateTime             | The expected expiry time of the current timer              | 600S, 400S                                     |                            |       |
-| schedulesCount       | Number:Dimensionless | The number of schedules which are configured               | 600S, 400S                                     |                            |       |
+| schedulesCount       | Number:Dimensionless | The number of schedules which are configured               | 600S, 400S                                     |                            | one   |
 | configDisplayForever | Switch               | Config: Whether the display will disable when not active   | 600S, 400S, 300S                               |                            |       |
-| configAutoRoomSize   | Number:Dimensionless | Config: The room size set when auto utilises the room size | 600S, 400S, 300S                               |                            |       |
+| configAutoMode       | String               | Config: The mode of operation when auto is active          | 600S, 400S, 300S                               |                            |       |
+| configAutoRoomSize   | Number:Dimensionless | Config: The room size set when auto utilises the room size | 600S, 400S, 300S                               |                            | one   |
 
 ### AirHumidifier Thing
 
