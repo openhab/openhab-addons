@@ -159,7 +159,7 @@ public class GrottValues {
     // battery data
     public @Nullable @SerializedName(value = "batterytype") Integer battery_type;
     public @Nullable @SerializedName(value = "batttemp", alternate = { "bdc1_tempa" }) Integer battery_temperature;
-    public @Nullable @SerializedName(value = "vbat", alternate = { "uwBatVolt_DSP", "bat_Volt", "bms_batteryvolt" }) Integer battery_voltage;
+    public @Nullable @SerializedName(value = "vbat", alternate = { "uwBatVolt_DSP", "bms_batteryvolt" }) Integer battery_voltage;
     public @Nullable @SerializedName(value = "bat_dsp") Integer battery_display;
     public @Nullable @SerializedName(value = "SOC", alternate = { "batterySOC", "batterySoc", "bms_soc" }) Integer battery_soc;
 
@@ -185,11 +185,12 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "eractotal") Integer erac_total;
 
     /*
-     * ============== NEW FIELDS ADDED IN NOVEMBER 2024 ==============
+     * ============== CHANNELS ADDED IN NOVEMBER 2024  ==============
      */
 
     // battery instantaneous measurements
-    public @Nullable @SerializedName(value = "acchr_VA" ) Integer charge_va;
+    public @Nullable @SerializedName(value = "bat_Volt") Integer battery_voltage2;
+    public @Nullable @SerializedName(value = "acchr_VA") Integer charge_va;
     public @Nullable @SerializedName(value = "BatDischarVA") Integer bat_discharge_va;
     public @Nullable @SerializedName(value = "BatDischarWatt", alternate = { "BatWatt" }) Integer bat_discharge_watt;
 

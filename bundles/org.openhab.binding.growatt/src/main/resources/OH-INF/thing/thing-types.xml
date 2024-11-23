@@ -439,9 +439,13 @@
 				<description>Total reactive energy supplied.</description>
 			</channel>
 
-			<!-- ============== NEW FIELDS ADDED IN NOVEMBER 2024 ============== -->
+			<!-- ============== CHANNELS ADDED IN NOVEMBER 2024 ============== -->
 
 			<!-- battery instantaneous measurements -->
+			<channel id="battery-voltage2" typeId="advanced-electric-voltage">
+				<label>Battery Voltage</label>
+				<description>Battery voltage.</description>
+			</channel>
 			<channel id="charge-va" typeId="advanced-electric-var">
 				<label>Charge VA</label>
 				<description>Charging reactive power.</description>
@@ -466,6 +470,7 @@
 			</channel>
 
 			<!-- inverter -->
+			<channel typeId="inverter-clock-offset" id="advanced-time"/>
 			<channel id="inverter-current" typeId="advanced-electric-current">
 				<label>Inverter Current</label>
 				<description>Inverter current.</description>
@@ -475,7 +480,6 @@
 				<description>Inverter fan speed.</description>
 			</channel>
 
-			<channel typeId="inverter-time" id="advanced-time"/>
 		</channels>
 
 		<config-description>
@@ -586,11 +590,11 @@
 	</channel-type>
 
 	<channel-type id="advanced-time" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Inverter Time</label>
-		<description>Inverter internal clock time.</description>
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Inverter Clock Offset</label>
+		<description>Time offset of inverter clock vs. OH system clock.</description>
 		<category>Time</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%0.0f s"/>
 	</channel-type>
 
 </thing:thing-descriptions>

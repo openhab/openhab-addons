@@ -52,6 +52,15 @@ public class GrottDevice {
         return values;
     }
 
+    /**
+     * Return the time stamp of the data DTO sent by the inverter data-logger.
+     * <p>
+     * Note: the inverter provides a time stamp formatted as a {@link LocalDateTime} without any time zone information,
+     * so we convert it to an {@link Instant} based on the OH system time zone. i.e. we are forced to assume the
+     * inverter and the OH PC are both physically in the same time zone.
+     *
+     * @return the time stamp {@link Instant}
+     */
     public @Nullable Instant getTimeStamp() {
         try {
             return ZonedDateTime.of(LocalDateTime.parse(Objects.requireNonNull(timeStamp)), ZoneId.systemDefault())

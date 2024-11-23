@@ -189,12 +189,13 @@ public class GrowattChannels {
             new AbstractMap.SimpleEntry<String, UoM>("erac-total", new UoM(Units.KILOVAR_HOUR, 10)),
 
             /*
-             * ============== NEW FIELDS ADDED IN NOVEMBER 2024 ==============
+             * ============== CHANNELS ADDED IN NOVEMBER 2024 ==============
              */
 
             // battery instantaneous measurements
-            new AbstractMap.SimpleEntry<String, UoM>("charge-va", new UoM(Units.VAR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("bat-discharge-va", new UoM(Units.VAR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("battery-voltage2", new UoM(Units.VOLT, 100)),
+            new AbstractMap.SimpleEntry<String, UoM>("charge-va", new UoM(Units.VOLT_AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("bat-discharge-va", new UoM(Units.VOLT_AMPERE, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("bat-discharge-watt", new UoM(Units.WATT, 10)),
 
             // battery energy
@@ -203,8 +204,7 @@ public class GrowattChannels {
 
             // inverter
             new AbstractMap.SimpleEntry<String, UoM>("inverter-current", new UoM(Units.AMPERE, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("inverter-fan-speed", new UoM(Units.PERCENT, 10))
-
+            new AbstractMap.SimpleEntry<String, UoM>("inverter-fan-speed", new UoM(Units.PERCENT, 1))
     //
     );
 

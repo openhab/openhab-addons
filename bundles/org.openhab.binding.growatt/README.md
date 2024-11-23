@@ -116,6 +116,7 @@ The list of all possible channels is as follows:
 | battery-type                  | Number:Dimensionless      | Type code of the battery.                            | yes      |
 | battery-temperature           | Number:Temperature        | Battery temperature.                                 | yes      |
 | battery-voltage               | Number:ElectricPotential  | Battery voltage.                                     | yes      |
+| battery-voltage2              | Number:ElectricPotential  | Battery voltage (alternate).                         | yes      |
 | battery-display               | Number:Dimensionless      | Battery display code.                                | yes      |
 | battery-soc                   | Number:Dimensionless      | Battery State of Charge percent.                     | yes      |
 | system-fault-0                | Number:Dimensionless      | System fault code #0.                                | yes      |
@@ -138,9 +139,9 @@ The list of all possible channels is as follows:
 | bat-discharge-watt            | Number:Power              | Battery discharging power.                           | yes      |
 | bat-discharge-energy-today    | Number:Energy             | Battery discharge energy today.                      | yes      |
 | bat-discharge-energy-total    | Number:Energy             | Total battery discharge energy.                      | yes      |
+| inverter-clock-offset         | Number:Time               | Time offset of inverter clock vs. OH system clock.   | yes      |
 | inverter-current              | Number:ElectricCurrent    | Inverter current.                                    | yes      |
 | inverter-fan-speed            | Number:Dimensionless      | Inverter fan speed percent.                          | yes      |
-| inverter-time                 | Datetime                  | Inverter clock time.                                 | yes      |
 
 ## Rule Actions
 

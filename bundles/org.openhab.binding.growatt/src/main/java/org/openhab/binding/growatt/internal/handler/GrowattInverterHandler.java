@@ -14,13 +14,11 @@ package org.openhab.binding.growatt.internal.handler;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,8 +30,8 @@ import org.openhab.binding.growatt.internal.config.GrowattInverterConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
 import org.openhab.binding.growatt.internal.dto.GrottValues;
 import org.openhab.binding.growatt.internal.dto.helper.GrottValuesHelper;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -43,8 +41,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,16 +54,12 @@ public class GrowattInverterHandler extends BaseThingHandler {
 
     // data-logger sends packets each 5 minutes; timeout means 2 packets missed
     private static final int AWAITING_DATA_TIMEOUT_MINUTES = 11;
-    private static final int TIME_POLLING_INTERVAL_SECONDS = 30;
 
     private final Logger logger = LoggerFactory.getLogger(GrowattInverterHandler.class);
 
     private String deviceId = "unknown";
-    private Instant inverterTimeStamp = Instant.MIN;
-    private Instant inverterTimeStampLastUpdated = Instant.MIN;
 
     private @Nullable ScheduledFuture<?> awaitingDataTimeoutTask;
-    private @Nullable ScheduledFuture<?> inverterTimePollingTask;
 
     public GrowattInverterHandler(Thing thing) {
         super(thing);
@@ -76,10 +68,6 @@ public class GrowattInverterHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         ScheduledFuture<?> task = awaitingDataTimeoutTask;
-        if (task != null) {
-            task.cancel(true);
-        }
-        task = inverterTimePollingTask;
         if (task != null) {
             task.cancel(true);
         }
@@ -102,7 +90,6 @@ public class GrowattInverterHandler extends BaseThingHandler {
         thing.setProperty(GrowattInverterConfiguration.DEVICE_ID, deviceId);
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.awaiting-data");
         scheduleAwaitingDataTimeoutTask();
-        scheduleInverterTimePollingTask();
         logger.debug("initialize() thing has {} channels", thing.getChannels().size());
     }
 
@@ -117,42 +104,29 @@ public class GrowattInverterHandler extends BaseThingHandler {
         }, AWAITING_DATA_TIMEOUT_MINUTES, TimeUnit.MINUTES);
     }
 
-    private void scheduleInverterTimePollingTask() {
-        ScheduledFuture<?> task = inverterTimePollingTask;
-        if (task != null) {
-            task.cancel(true);
-        }
-        inverterTimePollingTask = scheduler.scheduleWithFixedDelay(() -> {
-            State state = inverterTimeStampLastUpdated == Instant.MIN ? UnDefType.UNDEF
-                    : new DateTimeType(
-                            inverterTimeStamp.plus(Duration.between(inverterTimeStampLastUpdated, Instant.now()))
-                                    .atZone(ZoneId.systemDefault()));
-            updateState(GrowattBindingConstants.CHANNEL_INVERTER_TIME, state);
-        }, TIME_POLLING_INTERVAL_SECONDS, TIME_POLLING_INTERVAL_SECONDS, TimeUnit.SECONDS);
-    }
-
     /**
      * Receives a collection of GrottDevice inverter objects containing potential data for this thing. If the collection
-     * contains an entry matching the things's deviceId, and it contains GrottValues, then process it further. Otherwise
-     * go offline with a configuration error.
+     * contains an entry matching the things's deviceId, and it contains GrottValues and a time-stamp, then process it
+     * further. Otherwise go offline with a configuration or communication error.
      *
      * @param inverters collection of GrottDevice objects.
      */
     public void updateInverters(Collection<GrottDevice> inverters) {
-        inverters.stream().filter(inverter -> deviceId.equals(inverter.getDeviceId()))
-                .map(inverter -> inverter.getValues()).filter(values -> values != null).findAny()
-                .ifPresentOrElse(values -> {
-                    updateStatus(ThingStatus.ONLINE);
-                    scheduleAwaitingDataTimeoutTask();
-                    updateInverterValues(values);
+        inverters.stream().filter(thisInverter -> deviceId.equals(thisInverter.getDeviceId())).findAny()
+                .ifPresentOrElse(thisInverter -> {
+                    GrottValues grottValues = thisInverter.getValues();
+                    Instant dtoTimeStamp = thisInverter.getTimeStamp();
+                    if (grottValues != null && dtoTimeStamp != null) {
+                        updateStatus(ThingStatus.ONLINE);
+                        updateInverterValues(grottValues);
+                        updateState(GrowattBindingConstants.CHANNEL_INVERTER_CLOCK_OFFSET, QuantityType
+                                .valueOf(Duration.between(Instant.now(), dtoTimeStamp).toSeconds(), Units.SECOND));
+                        scheduleAwaitingDataTimeoutTask();
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    }
                 }, () -> {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-                });
-        inverters.stream().filter(inverter -> deviceId.equals(inverter.getDeviceId()))
-                .map(inverter -> inverter.getTimeStamp()).filter(timeStamp -> timeStamp != null).findAny()
-                .ifPresent(timeStamp -> {
-                    inverterTimeStamp = timeStamp;
-                    inverterTimeStampLastUpdated = Instant.now();
                 });
     }
 
@@ -177,8 +151,9 @@ public class GrowattInverterHandler extends BaseThingHandler {
         List<Channel> actualChannels = thing.getChannels();
         List<Channel> unusedChannels = actualChannels.stream()
                 .filter(channel -> !channelStates.containsKey(channel.getUID().getId()))
-                .filter(channel -> !GrowattBindingConstants.CHANNEL_INVERTER_TIME.equals(channel.getUID().getId()))
-                .collect(Collectors.toList());
+                .filter(channel -> !GrowattBindingConstants.CHANNEL_INVERTER_CLOCK_OFFSET
+                        .equals(channel.getUID().getId()))
+                .toList();
 
         // remove unused channels
         if (!unusedChannels.isEmpty()) {
@@ -187,8 +162,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
                     unusedChannels.size(), thing.getChannels().size());
         }
 
-        List<String> thingChannelIds = thing.getChannels().stream().map(channel -> channel.getUID().getId())
-                .collect(Collectors.toList());
+        List<String> thingChannelIds = thing.getChannels().stream().map(channel -> channel.getUID().getId()).toList();
 
         // update channel states
         channelStates.forEach((channelId, state) -> {
