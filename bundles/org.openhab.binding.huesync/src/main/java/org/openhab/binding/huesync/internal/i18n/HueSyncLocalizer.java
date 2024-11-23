@@ -27,21 +27,22 @@ import org.osgi.framework.ServiceReference;
  */
 @NonNullByDefault
 public class HueSyncLocalizer {
-    private static final Locale locale = Locale.ENGLISH;
-    private static final BundleContext bundleContext = FrameworkUtil.getBundle(HueSyncLocalizer.class)
+    private static final Locale LOCALE = Locale.ENGLISH;
+    private static final BundleContext BUNDLE_CONTEXT = FrameworkUtil.getBundle(HueSyncLocalizer.class)
             .getBundleContext();
-    private static final ServiceReference<TranslationProvider> serviceReference = bundleContext
+    private static final ServiceReference<TranslationProvider> SERVICE_REFERENCE = BUNDLE_CONTEXT
             .getServiceReference(TranslationProvider.class);
-    private static final Bundle bundle = bundleContext.getBundle();
+    private static final Bundle BUNDLE = BUNDLE_CONTEXT.getBundle();
 
     public static String getResourceString(String key) {
         String lookupKey = key.replace("@text/", "");
 
         String missingKey = "Missing Translation: " + key;
 
-        String result = (bundleContext.getService(serviceReference) instanceof TranslationProvider translationProvider)
-                ? translationProvider.getText(bundle, lookupKey, missingKey, locale)
-                : missingKey;
+        String result = (BUNDLE_CONTEXT
+                .getService(SERVICE_REFERENCE) instanceof TranslationProvider translationProvider)
+                        ? translationProvider.getText(BUNDLE, lookupKey, missingKey, LOCALE)
+                        : missingKey;
 
         return result == null ? missingKey : result;
     }
