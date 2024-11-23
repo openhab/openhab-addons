@@ -470,7 +470,7 @@
 			</channel>
 
 			<!-- inverter -->
-			<channel typeId="inverter-clock-offset" id="advanced-time"/>
+			<channel id="inverter-clock-offset" typeId="advanced-time"/>
 			<channel id="inverter-current" typeId="advanced-electric-current">
 				<label>Inverter Current</label>
 				<description>Inverter current.</description>
