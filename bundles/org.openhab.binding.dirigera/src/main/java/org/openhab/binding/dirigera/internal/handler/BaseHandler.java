@@ -149,11 +149,6 @@ public class BaseHandler extends BaseThingHandler {
         }
 
         if (!config.id.isBlank()) {
-            BaseHandler proxy = child;
-            if (proxy != null) {
-                gateway().registerDevice(proxy, config.id);
-            }
-
             // fill canSend and canReceive capabilities
             Map<String, Object> modelProperties = gateway().model().getPropertiesFor(config.id);
             Object canReceiveCapabilities = modelProperties.get(Model.PROPERTY_CAN_RECEIVE);
@@ -178,6 +173,11 @@ public class BaseHandler extends BaseThingHandler {
                 handlerProperties.put(key, value.toString());
             });
             updateProperties(handlerProperties);
+
+            BaseHandler proxy = child;
+            if (proxy != null) {
+                gateway().registerDevice(proxy, config.id);
+            }
         }
     }
 

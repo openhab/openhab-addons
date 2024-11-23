@@ -75,6 +75,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.StringUtils;
 import org.osgi.framework.BundleContext;
@@ -93,6 +94,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandler.class);
 
     // Can be overwritten by Unit test for mocking API
+    protected Map<String, State> channelStateMap = new HashMap<>();
     protected Class<?> apiProvider = DirigeraAPIImpl.class;
 
     private final Map<String, BaseHandler> deviceTree = new HashMap<>();
@@ -100,11 +102,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private final DirigeraCommandProvider commandProvider;
     private final TimeZoneProvider timeZoneProvider;
     private final BundleContext bundleContext;
+    private final Websocket websocket;
 
-    private Optional<Websocket> websocket = Optional.empty();
     private Optional<DirigeraAPI> api = Optional.empty();
     private Optional<Model> model = Optional.empty();
-    private Optional<ScheduledFuture<?>> heartbeat = Optional.empty();
+    private Optional<ScheduledFuture<?>> watchdog = Optional.empty();
+    private Optional<ScheduledFuture<?>> updater = Optional.empty();
     private Optional<ScheduledFuture<?>> detectionSchedule = Optional.empty();
 
     // private ScheduledExecutorService sequentialScheduler;
@@ -136,6 +139,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         this.commandProvider = commandProvider;
         this.bundleContext = bundleContext;
         config = new DirigeraConfiguration();
+        websocket = new Websocket(this, insecureClient);
 
         List<CommandOption> locationOptions = new ArrayList<>();
         // not working right now
@@ -159,9 +163,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         logger.info("DIRIGERA HANDLER command {} : {} {}", channelUID, command.toFullString(), command.getClass());
         String channel = channelUID.getIdWithoutGroup();
         if (command instanceof RefreshType) {
-            JSONObject values = model().getAllFor(config.id, PROPERTY_DEVICES);
-            handleUpdate(values);
-            updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(model().getModelString()));
+            State cachedState = channelStateMap.get(channel);
+            if (cachedState != null) {
+                super.updateState(channelUID, cachedState);
+            }
         } else if (CHANNEL_PAIRING.equals(channel)) {
             JSONObject permissionAttributes = new JSONObject();
             permissionAttributes.put(PROPERTY_PERMIT_JOIN, OnOffType.ON.equals(command));
@@ -208,17 +213,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         // for discovery known device are stored in storage in order not to report them again and again through
         // DiscoveryService
         getKnownDevicesFromStorage();
-
-        // get token from storage
         token = getTokenFromStorage();
+        // Step 1 - check if token is available or stored
         if (token.isBlank()) {
-            logger.warn("DIRIGERA HANDLER no token in storage");
-        } else {
-            logger.info("DIRIGERA HANDLER obtained token {} from storage", token);
-        }
-
-        // Step 2 - check if token is available or stored
-        if (token.isBlank()) {
+            logger.info("DIRIGERA HANDLER no token in storage");
             // Step 2.2 - if token wasn't recovered from storage begin pairing process
             String codeVerifier = generateCodeVerifier();
             String challenge = generateCodeChallenge(codeVerifier);
@@ -246,22 +244,22 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 }
                 if (token.isBlank()) {
                     logger.info("DIRIGERA HANDLER pairing failed - Stop/Start bridge to initialize new pairing");
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NOT_YET_READY,
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY,
                             "@text/dirigera.gateway.status.pairing-retry");
+                    // stay in this state - user action required
                     return;
                 } else {
                     storeToken(token);
                 }
             }
         } else {
-            logger.info("DIRIGERA HANDLER token available");
+            logger.info("DIRIGERA HANDLER obtained token {} from storage", token);
         }
 
-        // Step 3 - ip address and token fine, now start initializing
+        // Step 2 - ip address and token fine, now start initializing
         logger.info("DIRIGERA HANDLER Step 3 with {}", config.toString());
         if (!config.ipAddress.isBlank() && !token.isBlank()) {
             // looks good, ip and token fine, now create api and model
-
             DirigeraAPI apiProviderInstance = null;
             try {
                 apiProviderInstance = (DirigeraAPI) apiProvider.getConstructor(HttpClient.class, Gateway.class)
@@ -279,49 +277,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             }
             Model houseModel = new DirigeraModel(this);
             model = Optional.of(houseModel);
-            int status = houseModel.update();
-            if (status != 200) {
-                logger.error("DIRIGERA HANDLER Model init failed {}", status);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/dirigera.gateway.status.comm-error" + " [\"" + status + "\"]");
-                return;
-            }
-            // Step 3.1 - check if id is already obtained
-            if (config.id.isBlank()) {
-                List<String> gatewayList = houseModel.getDevicesForTypes(List.of(DEVICE_TYPE_GATEWAY));
-                logger.info("DIRIGERA HANDLER try to get gateway id {}", gatewayList);
-                if (gatewayList.isEmpty()) {
-                    logger.warn("DIRIGERA HANDLER no Gateway found in model");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/dirigera.gateway.status.no-gateway");
-                    return;
-                } else if (gatewayList.size() > 1) {
-                    logger.warn("DIRIGERA HANDLER found {} Gateways - don't choose, ambigious result",
-                            gatewayList.size());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/dirigera.gateway.status.ambiguous-gateway");
-                    return;
-                } else {
-                    String id = gatewayList.get(0);
-                    Configuration configUpdate = editConfiguration();
-                    configUpdate.put(PROPERTY_DEVICE_ID, id);
-                    updateConfiguration(configUpdate);
-                    // get fresh config after update
-                    config = getConfigAs(DirigeraConfiguration.class);
-                }
-            }
-            updateProperties();
-            // now start websocket an listen to changes
-            logger.info("DIRIGERA HANDLER start websocket");
-            websocket = Optional.of(new Websocket(this, httpClient));
-            websocket.get().start();
-            heartbeat = Optional.of(scheduler.scheduleWithFixedDelay(this::heartbeat, 5, 5, TimeUnit.MINUTES));
-
-            // update latest model data
-            JSONObject values = model().getAllFor(config.id, PROPERTY_DEVICES);
-            handleUpdate(values);
-
-            updateStatus(ThingStatus.ONLINE);
+            modelUpdate(); // initialize model
+            connectGateway(); // chacks API access and starts websocket
+            // start watchdog to check gateway connection and start recovery if necessary
+            watchdog = Optional.of(scheduler.scheduleWithFixedDelay(this::watchdog, 15, 15, TimeUnit.SECONDS));
+            // unfrequent updates for gateway itsself
+            updater = Optional.of(scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES));
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
@@ -330,12 +291,13 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     @Override
     public void dispose() {
         super.dispose();
-        heartbeat.ifPresent(refresher -> {
+        watchdog.ifPresent(watchdogSchedule -> {
+            watchdogSchedule.cancel(false);
+        });
+        updater.ifPresent(refresher -> {
             refresher.cancel(false);
         });
-        websocket.ifPresent(client -> {
-            client.dispose();
-        });
+        websocket.dispose();
     }
 
     @Override
@@ -417,43 +379,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         }
         logger.info("DIRIGERA HANDLER nothing found in storage for Gateway {}", config.id);
         return new JSONObject();
-    }
-
-    private void heartbeat() {
-        JSONObject gatewayInfo = api().readDevice(config.id);
-        if (gatewayInfo.has(DirigeraAPI.HTTP_ERROR_FLAG)) {
-            String message = gatewayInfo.getInt(DirigeraAPI.HTTP_ERROR_STATUS) + " - "
-                    + gatewayInfo.getString(DirigeraAPI.HTTP_ERROR_MESSAGE);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/dirigera.gateway.status.comm-error" + " [\"" + message + "\"]");
-        } else {
-            updateStatus(ThingStatus.ONLINE);
-            websocket.ifPresentOrElse((wsClient) -> {
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_STATISTICS),
-                        StringType.valueOf(wsClient.getStatistics().toString()));
-                if (!wsClient.isRunning()) {
-                    logger.trace("DIRIGERA HANDLER WS restart necessary");
-                    wsClient.start();
-                } else {
-                    Map<String, Instant> pingPnogMap = wsClient.getPingPongMap();
-                    if (pingPnogMap.size() > 1) {
-                        logger.warn("DIRIGERA HANDLER WS HEARTBEAT PANIC! - {} pings not answered", pingPnogMap.size());
-                        wsClient.dispose();
-                        Websocket ws = new Websocket(this, httpClient);
-                        ws.start();
-                        websocket = Optional.of(ws);
-                    } else {
-                        wsClient.ping();
-                    }
-                }
-            }, () -> {
-                logger.warn("DIRIGERA HANDLER WS no websocket present - start new one");
-                Websocket ws = new Websocket(this, httpClient);
-                ws.start();
-                websocket = Optional.of(ws);
-            });
-            handleUpdate(gatewayInfo);
-        }
     }
 
     /**
@@ -818,6 +743,106 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 Duration.between(startTime, Instant.now()).toMillis());
     }
 
+    private void watchdog() {
+        // check updater is still active - maybe an exception caused termination
+        updater.ifPresent(refresher -> {
+            if (refresher.isDone()) {
+                updater = Optional.of(scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES));
+            }
+        });
+        // check websocket
+        if (websocket.isRunning()) {
+            Map<String, Instant> pingPnogMap = websocket.getPingPongMap();
+            if (pingPnogMap.size() > 1) { // at least 2 shall be missing before watchdog trigger
+                logger.warn("DIRIGERA HANDLER Watchdog Ping ong Panic - {} pings not answered", pingPnogMap.size());
+                websocket.dispose();
+                String message = "ping not answered";
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/dirigera.gateway.status.comm-error" + " [\"" + message + "\"]");
+                scheduler.execute(this::connectGateway);
+            } else {
+                // good case - ping socket and check in next call for answers
+                websocket.ping();
+            }
+        } else {
+            String message = "try to recover";
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/dirigera.gateway.status.comm-error" + " [\"" + message + "\"]");
+            scheduler.execute(this::connectGateway);
+        }
+    }
+
+    /**
+     * Establish connections
+     * 1) Check API response
+     * 2) Start websocket and wait for positive answer
+     *
+     * @see websocketConnected
+     */
+    private void connectGateway() {
+        JSONObject gatewayInfo = api().readDevice(config.id);
+        // check if API call was successful, otherwise starting websocket doesn't make sense
+        if (!gatewayInfo.has(DirigeraAPI.HTTP_ERROR_FLAG)) {
+            if (!websocket.isRunning()) {
+                logger.trace("DIRIGERA HANDLER WS restart necessary");
+                websocket.start();
+                // onConnect shall switch to ONLINE!
+            } else {
+                logger.trace("DIRIGERA HANDLER WS running fine");
+            }
+        } else {
+            String message = gatewayInfo.getInt(DirigeraAPI.HTTP_ERROR_STATUS) + " - "
+                    + gatewayInfo.getString(DirigeraAPI.HTTP_ERROR_MESSAGE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/dirigera.gateway.status.comm-error" + " [\"" + message + "\"]");
+        }
+    }
+
+    private void updateGateway() {
+        JSONObject gatewayInfo = api().readDevice(config.id);
+        if (!gatewayInfo.has(DirigeraAPI.HTTP_ERROR_FLAG)) {
+            handleUpdate(gatewayInfo);
+        } else {
+            String message = gatewayInfo.getInt(DirigeraAPI.HTTP_ERROR_STATUS) + " - "
+                    + gatewayInfo.getString(DirigeraAPI.HTTP_ERROR_MESSAGE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/dirigera.gateway.status.comm-error" + " [\"" + message + "\"]");
+        }
+    }
+
+    private void configureGateway() {
+        if (config.id.isBlank()) {
+            List<String> gatewayList = model().getDevicesForTypes(List.of(DEVICE_TYPE_GATEWAY));
+            logger.info("DIRIGERA HANDLER try to get gateway id {}", gatewayList);
+            if (gatewayList.isEmpty()) {
+                logger.warn("DIRIGERA HANDLER no Gateway found in model");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/dirigera.gateway.status.no-gateway");
+            } else if (gatewayList.size() > 1) {
+                logger.warn("DIRIGERA HANDLER found {} Gateways - don't choose, ambigious result", gatewayList.size());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "@text/dirigera.gateway.status.ambiguous-gateway");
+            } else {
+                String id = gatewayList.get(0);
+                Configuration configUpdate = editConfiguration();
+                configUpdate.put(PROPERTY_DEVICE_ID, id);
+                updateConfiguration(configUpdate);
+                // get fresh config after update
+                config = getConfigAs(DirigeraConfiguration.class);
+                updateProperties();
+            }
+        }
+    }
+
+    @Override
+    public void websocketConnected(boolean connected, String reason) {
+        if (connected) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/dirigera.gateway.status.comm-error" + " [\"" + reason + "\"]");
+        }
+    }
+
     @Override
     public void websocketUpdate(String update) {
         synchronized (websocketQueue) {
@@ -849,7 +874,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 logger.info("DIRIGERA HANDLER cannot decode update {} {}", exception.getMessage(), json);
                 return;
             }
-            // First update device
 
             String type = update.getString(PROPERTY_TYPE);
             switch (type) {
@@ -869,6 +893,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                     modelUpdate();
                     break;
                 case EVENT_TYPE_DEVICE_CHANGE:
+                case EVENT_TYPE_SCENE_UPDATE:
                     if (targetId != null) {
                         if (targetId.equals(config.id)) {
                             this.handleUpdate(data);
@@ -882,31 +907,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                                 if (data.has(PROPERTY_ATTRIBUTES)) {
                                     JSONObject attributes = data.getJSONObject(PROPERTY_ATTRIBUTES);
                                     if (attributes.has(Model.CUSTOM_NAME)) {
-                                        logger.info("DIRIGERA HANDLER possible device name change detected {}",
+                                        logger.info("DIRIGERA HANDLER possible name change detected {}",
                                                 attributes.getString(Model.CUSTOM_NAME));
                                         modelUpdate();
                                     }
-                                }
-                            }
-                        }
-                    }
-                    // logger.info("DIRIGERA HANDLER update performance - device update {}",
-                    // Duration.between(startTime, Instant.now()).toMillis());
-                    break;
-                case EVENT_TYPE_SCENE_UPDATE:
-                    if (targetId != null) {
-                        BaseHandler targetHandler = deviceTree.get(targetId);
-                        if (targetHandler != null) {
-                            targetHandler.handleUpdate(data);
-                        } else {
-                            // special case: if custom name is changed in attributes force model update
-                            // in order to present the updated name in discovery
-                            if (data.has(PROPERTY_ATTRIBUTES)) {
-                                JSONObject attributes = data.getJSONObject(PROPERTY_ATTRIBUTES);
-                                if (attributes.has(Model.CUSTOM_NAME)) {
-                                    logger.info("DIRIGERA HANDLER possible scene name change detected {}",
-                                            attributes.getString(Model.CUSTOM_NAME));
-                                    modelUpdate();
                                 }
                             }
                         }
@@ -918,6 +922,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         }
     }
 
+    /**
+     * Called in 3 different situations
+     * 1) initialize
+     * 2) adding / removing devices or scenes
+     * 3) renaming devices or scenes
+     */
     private void modelUpdate() {
         Instant modelUpdateStartTime = Instant.now();
         int status = model().update();
@@ -928,11 +938,13 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             return;
         }
         long durationUpdateTime = Duration.between(modelUpdateStartTime, Instant.now()).toMillis();
-        websocket.get().increase(Websocket.MODEL_UPDATES);
-        websocket.get().getStatistics().put(Websocket.MODEL_UPDATE_TIME, durationUpdateTime + " ms");
-        websocket.get().getStatistics().put(Websocket.MODEL_UPDATE_LAST,
+        websocket.increase(Websocket.MODEL_UPDATES);
+        websocket.getStatistics().put(Websocket.MODEL_UPDATE_TIME, durationUpdateTime + " ms");
+        websocket.getStatistics().put(Websocket.MODEL_UPDATE_LAST,
                 Instant.now().atZone(timeZoneProvider.getTimeZone()));
         updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(model().getModelString()));
+        configureGateway();
+        updateGateway();
     }
 
     private void handleUpdate(JSONObject data) {
@@ -1014,5 +1026,15 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             return null;
         }
         return sunsetInstant.atZone(timeZoneProvider.getTimeZone());
+    }
+
+    /**
+     * Update cache for refresh, then update state
+     */
+
+    @Override
+    protected void updateState(ChannelUID channelUID, State state) {
+        channelStateMap.put(channelUID.getIdWithoutGroup(), state);
+        super.updateState(channelUID, state);
     }
 }

@@ -41,12 +41,6 @@ import org.openhab.core.types.State;
 class TestAirQualityDevice {
 
     @Test
-    void testAirQualityDeviceWithMockBridge() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareMockBridge();
-        testAirQuality(hubBridge);
-    }
-
-    @Test
     void testAirQualityDeviceWithSimuBridge() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         testAirQuality(hubBridge);
