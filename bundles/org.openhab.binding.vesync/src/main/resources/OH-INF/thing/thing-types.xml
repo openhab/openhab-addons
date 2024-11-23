@@ -319,7 +319,7 @@
 	</channel-type>
 
 	<channel-type id="deviceMistLevelType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Mist Level</label>
 		<description>System representation of mist level</description>
 		<state readOnly="false" pattern="%.0f"/>
@@ -346,7 +346,7 @@
 	</channel-type>
 
 	<channel-type id="warmLevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Warm Level</label>
 		<description>Warm Level</description>
 		<state readOnly="false" pattern="%.0f"/>
