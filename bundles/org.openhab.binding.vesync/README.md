@@ -266,7 +266,6 @@ Number               LoungeAHSchedulesCount    "Lounge Air Humidifier Schedules 
 Number               LoungeAHErrorCode         "Lounge Air Humidifier Error Code"                             { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:errorCode" }
 ```
 
-
 ### Configuration (*.sitemap)
 
 #### Air Purifier Core 400S / 600S Model
