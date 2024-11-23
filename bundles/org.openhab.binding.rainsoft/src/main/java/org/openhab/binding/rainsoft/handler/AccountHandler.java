@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -143,10 +143,17 @@ public class AccountHandler extends AbstractRainSoftHandler implements RainSoftA
     private void refreshRegistry() throws ParseException, AuthenticationException, DuplicateIdException {
         int count = 0;
         String locations = restClient.getLocations(this.customerId, this.authToken);
-        JSONArray array = ((JSONArray) new JSONParser().parse(locations));
+        JSONParser parser = new JSONParser();
+        Object content = parser.parse(locations);
+        String locationData = ((JSONObject) content).get("locationListData").toString();
+        content = parser.parse(locationData);
+        JSONArray array = new JSONArray();
+        array.add(content);
         for (Object obj : array) {
-            String id = ((JSONObject) obj).get("id").toString();
-            String devices = ((JSONObject) obj).get("devices").toString();
+            logger.debug("refreshRegistry - Entry: {}", obj.toString());
+            Object thisEntry = ((JSONArray) parser.parse(obj.toString())).get(0);
+            String id = ((JSONObject) thisEntry).get("id").toString();
+            String devices = ((JSONObject) thisEntry).get("devices").toString();
             JSONArray devicesArray = ((JSONArray) new JSONParser().parse(devices));
             logger.debug("refreshRegistry - found location: {} devices: {}", id, devices);
             registry = RainSoftDeviceRegistry.getInstance();
