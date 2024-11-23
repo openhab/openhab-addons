@@ -77,6 +77,11 @@ public class Websocket {
     }
 
     public void start() {
+        if ("unit-test".equals(gateway.getToken())) {
+            // handle unit tests online
+            gateway.websocketConnected(true, "unit test");
+            return;
+        }
         if (disposed) {
             logger.trace("DIRIGERA WS start rejected, disposed {}", disposed);
             return;
@@ -189,24 +194,32 @@ public class Websocket {
         }
     }
 
+    @OnWebSocketConnect
+    public void onConnect(Session session) {
+        logger.debug("DIRIGERA WS onConnect");
+        this.session = Optional.of(session);
+        session.setIdleTimeout(-1);
+        gateway.websocketConnected(true, "connected");
+    }
+
     @OnWebSocketClose
     public void onDisconnect(Session session, int statusCode, String reason) {
         logger.debug("DIRIGERA WS onDisconnect Status {} Reason {}", statusCode, reason);
         this.session = Optional.empty();
         increase(DISCONNECTS);
-    }
-
-    @OnWebSocketConnect
-    public void onConnect(Session session) {
-        logger.debug("DIRIGERA WS onConnect ");
-        session.setIdleTimeout(-1);
-        this.session = Optional.of(session);
+        gateway.websocketConnected(false, reason);
     }
 
     @OnWebSocketError
     public void onError(Throwable t) {
-        logger.info("DIRIGERA WS onError {}", t.getMessage());
+        String message = t.getMessage();
+        logger.info("DIRIGERA WS onError {}", message);
+        this.session = Optional.empty();
+        if (message == null) {
+            message = "unknown";
+        }
         increase(ERRORS);
+        gateway.websocketConnected(false, message);
     }
 
     /**

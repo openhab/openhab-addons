@@ -18,6 +18,8 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -34,6 +36,7 @@ import org.openhab.binding.dirigera.internal.handler.light.LightCommand;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.util.ColorUtil;
 
@@ -44,6 +47,7 @@ import org.openhab.core.util.ColorUtil;
  */
 @NonNullByDefault
 class TestGeneric {
+    static String output = "fine!";
 
     @Test
     void testStringFormatWithNull() {
@@ -127,5 +131,30 @@ class TestGeneric {
         assertTrue(apiResponse.has(DirigeraAPI.HTTP_ERROR_STATUS));
         assertEquals(500, apiResponse.getInt(DirigeraAPI.HTTP_ERROR_STATUS));
         assertTrue(apiResponse.has(DirigeraAPI.HTTP_ERROR_MESSAGE));
+    }
+
+    @Test
+    void testThreadpoolExcpetion() {
+        ScheduledExecutorService ses = ThreadPoolManager.getScheduledPool("test");
+        ScheduledFuture sf = ses.scheduleAtFixedRate(this::printOutput, 0, 50, TimeUnit.MILLISECONDS);
+        System.out.println("Done? " + sf.isDone());
+        sleep();
+        System.out.println("Done? " + sf.isDone());
+        output = "throw";
+        sleep();
+        System.out.println("Done? " + sf.isDone());
+    }
+
+    void printOutput() {
+        if ("throw".equals(output)) {
+            throw new RuntimeException("thats it!");
+        }
+    }
+
+    void sleep() {
+        try {
+            Thread.sleep(250);
+        } catch (InterruptedException e) {
+        }
     }
 }
