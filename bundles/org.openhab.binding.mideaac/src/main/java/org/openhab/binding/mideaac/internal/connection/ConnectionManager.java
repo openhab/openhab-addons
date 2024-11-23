@@ -70,7 +70,7 @@ public class ConnectionManager {
     private int droppedCommands = 0;
 
     /**
-     * True allows one short retry after connection problem
+     * True allows command retry if null response
      */
     private boolean retry = true;
 
@@ -124,35 +124,34 @@ public class ConnectionManager {
     public synchronized void connect() throws MideaConnectionException, MideaAuthenticationException {
         logger.trace("Connecting to {}:{}", ipAddress, ipPort);
 
+        int maxTries = 3;
+        int retryCount = 0;
+
         // Open socket
-        try {
-            socket = new Socket();
-            socket.setSoTimeout(timeout * 1000);
-            socket.connect(new InetSocketAddress(ipAddress, ipPort), timeout * 1000);
-        } catch (IOException e) {
-            // Retry addresses most common wifi connection problems- wait 5 seconds and try again
-            if (retry) {
-                logger.debug("Retrying Socket, IOException connecting to {}: {}", ipAddress, e.getMessage());
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ex) {
-                    logger.debug("An interupted error (socket retry) has occured {}", ex.getMessage());
+        // Retry addresses most common wifi connection problems- wait 5 seconds and try again
+        while (retryCount < maxTries) {
+            try {
+                socket = new Socket();
+                socket.setSoTimeout(timeout * 1000);
+                socket.connect(new InetSocketAddress(ipAddress, ipPort), timeout * 1000);
+                break;
+            } catch (IOException e) {
+                retryCount++;
+                if (retryCount < maxTries) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ex) {
+                        logger.debug("An interupted error (socket retry) has occured {}", ex.getMessage());
+                    }
+                    logger.debug("Socket retry count {}, IOException connecting to {}: {}", retryCount, ipAddress,
+                            e.getMessage());
                 }
-                retry = false;
-                try {
-                    socket.close();
-                    socket = new Socket();
-                    socket.setSoTimeout(timeout * 1000);
-                    socket.connect(new InetSocketAddress(ipAddress, ipPort), timeout * 1000);
-                } catch (IOException e2) {
-                    deviceIsConnected = false;
-                    logger.debug("Second try IOException connecting to {}: {}", ipAddress, e2.getMessage());
-                    throw new MideaConnectionException(e2);
-                }
-            } else {
-                deviceIsConnected = false;
-                throw new MideaConnectionException(e);
             }
+        }
+        if (retryCount == maxTries) {
+            deviceIsConnected = false;
+            logger.info("Failed to connect after {} tries. Try again with next scheduled poll", maxTries);
+            throw new MideaConnectionException("Failed to connect after maximum tries");
         }
 
         // Create streams
@@ -180,7 +179,6 @@ public class ConnectionManager {
         }
         logger.debug("Connected to IP {}", ipAddress);
         deviceIsConnected = true;
-        retry = true;
     }
 
     /**
@@ -321,6 +319,7 @@ public class ConnectionManager {
             byte[] responseBytes = read();
 
             if (responseBytes != null) {
+                retry = true;
                 if (version == 3) {
                     Decryption8370Result result = security.decode8370(responseBytes);
                     for (byte[] response : result.getResponses()) {
@@ -412,14 +411,30 @@ public class ConnectionManager {
                             Utils.bytesToHex(data));
                     if (data.length > 0) {
                         data = Arrays.copyOfRange(data, 10, data.length);
+                        byte bodyType = data[0x0];
                         logger.trace("V2 Bytes decoded and stripped without header: length: {}, data: {}", data.length,
                                 Utils.bytesToHex(data));
-
-                        lastResponse = new Response(data, version, "", (byte) 0x00);
-                        logger.debug("Data length is {}, version is {}, Ip Address is {}", data.length, version,
-                                ipAddress);
-                        if (callback != null) {
-                            callback.updateChannels(lastResponse);
+                        if (data.length < 21) {
+                            logger.warn("Response data is {} long, minimum is 21!", data.length);
+                            return;
+                        }
+                        if (bodyType != -64) {
+                            if (bodyType == 30) {
+                                logger.warn("Error response 0x1E received {} from IP Address:{}", bodyType, ipAddress);
+                                return;
+                            }
+                            logger.warn("Unexpected response bodyType {}", bodyType);
+                            return;
+                        }
+                        lastResponse = new Response(data, version, "", bodyType);
+                        try {
+                            logger.trace("Data length is {}, version is {}, Ip Address is {}", data.length, version,
+                                    ipAddress);
+                            if (callback != null) {
+                                callback.updateChannels(lastResponse);
+                            }
+                        } catch (Exception ex) {
+                            logger.warn("Processing response exception: {}", ex.getMessage());
                         }
                     } else {
                         droppedCommands = droppedCommands + 1;
@@ -429,10 +444,17 @@ public class ConnectionManager {
                 }
                 return;
             } else {
-                droppedCommands = droppedCommands + 1;
-                logger.debug("Problem with reading response, skipping {} skipped count since startup {}", command,
-                        droppedCommands);
-                return;
+                if (retry) {
+                    logger.debug("Resending Command {}", command);
+                    retry = false;
+                    sendCommand(command, callback);
+                } else {
+                    droppedCommands = droppedCommands + 1;
+                    logger.info("Problem with reading response, skipping {} skipped count since startup {}", command,
+                            droppedCommands);
+                    retry = true;
+                    return;
+                }
             }
         } catch (SocketException e) {
             droppedCommands = droppedCommands + 1;
