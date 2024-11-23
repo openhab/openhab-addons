@@ -176,7 +176,7 @@ public class DataPayload {
      * @return current active voltage
      */
     public int getActiveVoltage() {
-        return (int) activeVoltage;
+        return (int) Math.round(activeVoltage);
     }
 
     /**
@@ -185,7 +185,7 @@ public class DataPayload {
      * @return active voltage on phase 1
      */
     public int getActiveVoltageL1() {
-        return (int) activeVoltageL1;
+        return (int) Math.round(activeVoltageL1);
     }
 
     /**
@@ -194,7 +194,7 @@ public class DataPayload {
      * @return active voltage on phase 2
      */
     public int getActiveVoltageL2() {
-        return (int) activeVoltageL2;
+        return (int) Math.round(activeVoltageL2);
     }
 
     /**
@@ -203,7 +203,7 @@ public class DataPayload {
      * @return active voltage on phase 3
      */
     public int getActiveVoltageL3() {
-        return (int) activeVoltageL3;
+        return (int) Math.round(activeVoltageL3);
     }
 
     /**
