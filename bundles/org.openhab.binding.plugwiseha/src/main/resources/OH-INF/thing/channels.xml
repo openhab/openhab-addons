@@ -155,7 +155,7 @@
 	<channel-type id="burnerDHWOpTime">
 		<item-type unitHint="h">Number:Time</item-type>
 		<label>DHW Operation Time</label>
-		<description>Total operation time for domostic hot water</description>
+		<description>Total operation time for domestic hot water</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
