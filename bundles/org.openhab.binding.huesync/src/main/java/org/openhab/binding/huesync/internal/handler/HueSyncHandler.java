@@ -171,7 +171,6 @@ public class HueSyncHandler extends BaseThingHandler {
                 "@text/thing.config.huesync.box.registration");
     }
 
-    @SuppressWarnings("null")
     private void handleUpdate(@Nullable HueSyncUpdateTaskResult dto) {
         try {
             HueSyncUpdateTaskResult update = Optional.ofNullable(dto).get();
@@ -258,7 +257,6 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private void checkCompatibility() throws HueSyncApiException {
         try {
-            @SuppressWarnings("null")
             HueSyncDevice deviceInformation = this.deviceInfo.orElseThrow();
 
             if (deviceInformation.apiLevel < HueSyncConstants.MINIMAL_API_VERSION) {
