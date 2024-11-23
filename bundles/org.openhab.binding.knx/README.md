@@ -657,26 +657,26 @@ This affects only the log of the binding and does not include Calimero library u
 In special cases, it might be useful to set both KNX logging and Calimero logging.
 This can be done in the openHAB console:
 
-```
+```shell
 log:set TRACE org.openhab.binding.knx
 log:set TRACE calimero
 ```
 
-Note that this will lead to a few lines in the log for each KNX frame received or sent!
+Note that this will lead to a few lines in the log for each KNX frame received or sent.
 
-Logging can be set back to normal, similarly using
+Logging can be set back to normal, similarly using:
 
-```
-log:set TRACE org.openhab.binding.knx
-log:set TRACE calimero
+```shell
+log:set DEFAULT org.openhab.binding.knx
+log:set DEFAULT calimero
 ```
 
 ### Serial Devices
 
 In case you experience communication errors like incomplete or dropped frames, BCU reset errors in the log, or similar problems:
 
-- Make sure that no other service accesses the serial port (e.g., ```knxd```, ```hciuart```, etc.).
-Use ```ps aux``` and make sure none of those are running in parallel.
+- Make sure that no other service accesses the serial port (e.g., `knxd`, `hciuart`, etc.).
+Use `ps aux` and make sure none of those are running in parallel.
 - Increase the log level also for Calimero library, see above.
 - If the problem relates only to KNX data secure, please note that very old KNX devices do not support long frames, which are required for KNX data secure. Check your interface and the couplers (technical reference manual, ETS, or openHAB device info when fetch is enabled).
 
@@ -713,7 +713,7 @@ Remove the part that refers to the serial port, e.g. `console=serial0,115200`.
 
 Finally, reboot the PI.
 
-#### OpenHAB Configuration
+#### openHAB Configuration
 
 Add a KNX Thing manually, KNX FT1.2 Interface, select `/dev/ttyAMA0` as port.
 If you use file-based configuration, see the example above.
