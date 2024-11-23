@@ -48,7 +48,7 @@ public class ServerActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "reboot freebox server", description = "Reboots the Freebox Server")
+    @RuleAction(label = "@text/action.rebootServer.label", description = "@text/action.rebootServer.description")
     public void rebootServer() {
         logger.debug("Server reboot called");
         ServerHandler serverHandler = this.handler;
