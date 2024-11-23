@@ -20,15 +20,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class HdmiChannels {
-    public String NAME;
-    public String TYPE;
-    public String MODE;
-    public String STATUS;
+    public String name;
+    public String type;
+    public String mode;
+    public String status;
 
     public HdmiChannels(String name, String type, String mode, String status) {
-        NAME = name;
-        TYPE = type;
-        MODE = mode;
-        STATUS = status;
+        this.name = name;
+        this.type = type;
+        this.mode = mode;
+        this.status = status;
     }
 }

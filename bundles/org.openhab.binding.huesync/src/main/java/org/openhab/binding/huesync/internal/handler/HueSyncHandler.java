@@ -210,10 +210,10 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private void updateHdmiStatus(HdmiChannels channels, @Nullable HueSyncHdmiConnectionInfo hdmiStatusInfo) {
         if (hdmiStatusInfo != null) {
-            this.updateState(channels.NAME, new StringType(hdmiStatusInfo.name));
-            this.updateState(channels.TYPE, new StringType(hdmiStatusInfo.type));
-            this.updateState(channels.MODE, new StringType(hdmiStatusInfo.lastSyncMode));
-            this.updateState(channels.STATUS, new StringType(hdmiStatusInfo.status));
+            this.updateState(channels.name, new StringType(hdmiStatusInfo.name));
+            this.updateState(channels.type, new StringType(hdmiStatusInfo.type));
+            this.updateState(channels.mode, new StringType(hdmiStatusInfo.lastSyncMode));
+            this.updateState(channels.status, new StringType(hdmiStatusInfo.status));
         }
     }
 
