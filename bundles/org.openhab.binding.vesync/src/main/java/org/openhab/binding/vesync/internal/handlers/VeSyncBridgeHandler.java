@@ -27,8 +27,8 @@ import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
-import org.openhab.binding.vesync.internal.api.IHttpClientProvider;
 import org.openhab.binding.vesync.internal.api.VeSyncV2ApiHelper;
 import org.openhab.binding.vesync.internal.discovery.DeviceMetaDataUpdatedHandler;
 import org.openhab.binding.vesync.internal.discovery.VeSyncDiscoveryService;
@@ -39,6 +39,7 @@ import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -79,12 +80,12 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     private final Bundle bundle;
 
     private @Nullable ScheduledFuture<?> backgroundDiscoveryPollingJob;
-    private IHttpClientProvider httpClientProvider;
+    private HttpClient httpClient;
 
-    public VeSyncBridgeHandler(Bridge bridge, @NotNull IHttpClientProvider httpClientProvider,
+    public VeSyncBridgeHandler(Bridge bridge, @NotNull HttpClientFactory httpClientFactory,
             @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
         super(bridge);
-        this.httpClientProvider = httpClientProvider;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
         this.bundle = FrameworkUtil.getBundle(getClass());
@@ -217,7 +218,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
 
     @Override
     public void initialize() {
-        api.setHttpClient(httpClientProvider.getHttpClient());
+        api.setHttpClient(httpClient);
 
         VeSyncBridgeConfiguration config = getConfigAs(VeSyncBridgeConfiguration.class);
 
