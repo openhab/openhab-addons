@@ -92,6 +92,10 @@
 			<channel id="valvePosition" typeId="valvePosition"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>id</representation-property>
 
 		<config-description-ref uri="thing-type:plugwiseha:appliance_valve"/>
