@@ -150,8 +150,10 @@ public class WCSHandler extends RainSoftDeviceHandler {
                             ((JSONObject) new JSONParser().parse(deviceInfo)).get("airPurgeHour").toString()));
                     updateChannelState(CHANNEL_STATUS_AIRPURGEMINUTE, new DecimalType(
                             ((JSONObject) new JSONParser().parse(deviceInfo)).get("airPurgeMinute").toString()));
-                    updateChannelState(CHANNEL_STATUS_FLTREGENTIME, new DateTimeType(
-                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("fltRegenTime").toString()));
+                    // Resolve this by passing the new decimaltype to updatechannelstate and do a null check before
+                    // tostring
+                    // updateChannelState(CHANNEL_STATUS_FLTREGENTIME, new DateTimeType(
+                    // ((JSONObject) new JSONParser().parse(deviceInfo)).get("fltRegenTime").toString()));
                     updateChannelState(CHANNEL_STATUS_MAXSALT, new DecimalType(
                             ((JSONObject) new JSONParser().parse(deviceInfo)).get("maxSalt").toString()));
                     updateChannelState(CHANNEL_STATUS_SALTLBS, new DecimalType(
@@ -210,7 +212,7 @@ public class WCSHandler extends RainSoftDeviceHandler {
                     logger.debug("WCSHandler - minuteTick - dailyWaterUsageLabels - {}", dailyWaterUsageLabels);
                     logger.debug("WCSHandler - minuteTick - dailyWaterUsageData - {}", dailyWaterUsageData);
                     logger.debug("WCSHandler - minuteTick - dailySaltUsageData - {}", dailySaltUsageData);
-                    for (int i = 0; i < 28; i++) {
+                    for (int i = 0; i < 27; i++) {
                         String label = dailyWaterUsageLabelsArray.get(i).toString();
                         String water = dailyWaterUsageDataArray.get(i).toString();
                         String salt = dailySaltUsageDataArray.get(i).toString();
