@@ -248,7 +248,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                                 new VeSyncRequestManagedDeviceBypassV2.SetTargetHumidity(targetHumidity));
                         break;
                     case DEVICE_CHANNEL_MIST_LEVEL:
-                        int targetMistLevel = ((QuantityType<?>) command).intValue();
+                        int targetMistLevel = quantityCommand.intValue();
                         if (!devContraints.isTargetMistLevelSupported(targetMistLevel)) {
                             logger.warn("{}",
                                     getLocalizedText("warning.device.mist-level-invalid", command,
@@ -284,7 +284,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                                         targetMistLevel));
                         break;
                     case DEVICE_CHANNEL_WARM_LEVEL:
-                        int targetWarmMistLevel = ((QuantityType<?>) command).intValue();
+                        int targetWarmMistLevel = quantityCommand.intValue();
                         if (!devContraints.isTargetWramMistLevelSupported(targetWarmMistLevel)) {
                             logger.warn("{}",
                                     getLocalizedText("warning.device.mist-level-invalid", command,

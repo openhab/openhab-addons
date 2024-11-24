@@ -331,7 +331,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
             } else if (command instanceof QuantityType quantityCommand) {
                 switch (channelUID.getId()) {
                     case DEVICE_CHANNEL_FAN_SPEED_ENABLED:
-                        int requestedLevel = ((QuantityType<?>) command).intValue();
+                        int requestedLevel = quantityCommand.intValue();
                         if (!devContraints.isFanSpeedSupported(requestedLevel)) {
                             logger.warn("{}",
                                     getLocalizedText("warning.device.fan-speed-invalid", command,
@@ -404,7 +404,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                 logger.trace("Using cached response {}", response);
             }
 
-            if (response.equals(EMPTY_STRING)) {
+            if (EMPTY_STRING.equals(response)) {
                 return;
             }
 
