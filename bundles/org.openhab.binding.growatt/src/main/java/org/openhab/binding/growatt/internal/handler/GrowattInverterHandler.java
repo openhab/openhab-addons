@@ -112,7 +112,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
      * @param inverters collection of GrottDevice objects.
      */
     public void updateInverters(Collection<GrottDevice> inverters) {
-        inverters.stream().filter(thisInverter -> deviceId.equals(thisInverter.getDeviceId())).findAny()
+        inverters.stream().filter(inverter -> deviceId.equals(inverter.getDeviceId())).findAny()
                 .ifPresentOrElse(thisInverter -> {
                     GrottValues grottValues = thisInverter.getValues();
                     Instant dtoTimeStamp = thisInverter.getTimeStamp();
