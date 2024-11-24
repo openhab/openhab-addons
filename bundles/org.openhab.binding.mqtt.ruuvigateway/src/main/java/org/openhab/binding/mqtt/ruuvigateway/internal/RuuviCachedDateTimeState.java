@@ -13,7 +13,6 @@
 package org.openhab.binding.mqtt.ruuvigateway.internal;
 
 import java.time.Instant;
-import java.time.ZoneId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.ChannelConfig;
@@ -33,8 +32,6 @@ import org.openhab.core.thing.ChannelUID;
 @NonNullByDefault
 public class RuuviCachedDateTimeState extends ChannelState {
 
-    private static final ZoneId UTC = ZoneId.of("UTC");
-
     /**
      * Construct cache for DateTime values
      *
@@ -51,6 +48,6 @@ public class RuuviCachedDateTimeState extends ChannelState {
      * @param value instant representing value
      */
     public void update(Instant value) {
-        cachedValue.update(new DateTimeType(value.atZone(UTC)));
+        cachedValue.update(new DateTimeType(value));
     }
 }
