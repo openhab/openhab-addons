@@ -96,7 +96,7 @@ All devices support some of the following channels:
 |           | output2          | Switch                 | Power socket 2 on or off            | P300                                                             |
 |           | output3          | Switch                 | Power socket 3 on or off            | P300                                                             |
 |           | brightness       | Dimmer                 | Brightness 0-100%                   | L510, L530, L610, L630, L900, L920                               |
-|           | colorTemperature | Number                 | White-Color-Temp 2500-6500K         | L510, L530, L610, L630, L900, L920                               |
+|           | colorTemperature | Number:Temperature     | Color Temperature in Kelvin         | L530 (2500 K .. 6500 K), L630 (2200 K .. 6500 K)                 |
 |           | color            | Color                  | Color                               | L530, L630, L900, L920                                           |
 | sensor    | isOpen           | Switch                 | Contact (Door/Window) is Open       | T110                                                             |
 |           | currentTemp      | Number:Temperature     | Current Temperature                 | T310, T315                                                       |
