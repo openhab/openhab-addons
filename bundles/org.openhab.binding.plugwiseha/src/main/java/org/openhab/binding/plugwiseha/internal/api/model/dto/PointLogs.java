@@ -15,15 +15,18 @@ package org.openhab.binding.plugwiseha.internal.api.model.dto;
 import java.util.Map;
 import java.util.Optional;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 /**
- * The {@link Logs} class is an object model class that
+ * The {@link PointLogs} class is an object model class that
  * mirrors the XML structure provided by the Plugwise Home Automation
  * controller for the collection of logs.
  * It extends the {@link PlugwiseHACollection} class.
  * 
  * @author B. van Wetten - Initial contribution
  */
-public class Logs extends PlugwiseHACollection<Log> {
+@XStreamAlias("logs")
+public class PointLogs extends PlugwiseHACollection<PointLog> {
 
     private static final String THERMOSTAT = "thermostat";
     private static final String TEMPERATURE = "temperature";
@@ -181,16 +184,16 @@ public class Logs extends PlugwiseHACollection<Log> {
         return this.getLog(POWER_USAGE).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
     }
 
-    public Optional<Log> getLog(String logItem) {
+    public Optional<PointLog> getLog(String logItem) {
         return Optional.ofNullable(this.get(logItem));
     }
 
     @Override
-    public void merge(Map<String, Log> logsToMerge) {
+    public void merge(Map<String, PointLog> logsToMerge) {
         if (logsToMerge != null) {
-            for (Log logToMerge : logsToMerge.values()) {
+            for (PointLog logToMerge : logsToMerge.values()) {
                 String type = logToMerge.getType();
-                Log originalLog = this.get(type);
+                PointLog originalLog = this.get(type);
 
                 if (originalLog == null || originalLog.isOlderThan(logToMerge)) {
                     this.put(type, logToMerge);
