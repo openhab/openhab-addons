@@ -157,6 +157,7 @@ public class VeSyncV2ApiHelper {
             }
             veSyncRequestManagedDeviceBypassV2.cid = deviceData.cid;
             veSyncRequestManagedDeviceBypassV2.configModule = deviceData.configModule;
+            veSyncRequestManagedDeviceBypassV2.configModel = deviceData.configModule;
             veSyncRequestManagedDeviceBypassV2.deviceRegion = deviceData.deviceRegion;
         }
         return reqV1Authorized(url, requestData);

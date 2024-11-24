@@ -34,6 +34,9 @@ public class VeSyncRequestManagedDeviceBypassV2 extends VeSyncAuthenticatedReque
     @SerializedName("configModule")
     public String configModule = "";
 
+    @SerializedName("configModel")
+    public String configModel = "";
+
     @SerializedName("payload")
     public VesyncManagedDeviceBase payload = new VesyncManagedDeviceBase();
 
