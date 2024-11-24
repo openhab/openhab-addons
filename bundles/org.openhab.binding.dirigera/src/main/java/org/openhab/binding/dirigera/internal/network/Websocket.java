@@ -118,6 +118,9 @@ public class Websocket {
     }
 
     private void internalStop() {
+        session.ifPresent(session -> {
+            session.close();
+        });
         websocketClient.ifPresent(client -> {
             try {
                 client.stop();

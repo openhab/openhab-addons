@@ -180,7 +180,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="pm25">
-		<item-type unitHint="µm/m³">Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Particulate Matter category 2.5</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -190,11 +190,11 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="time">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Time</label>
 	</channel-type>
 	<channel-type id="duration">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Time</label>
 		<command>
 			<options>

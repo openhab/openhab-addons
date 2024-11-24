@@ -745,10 +745,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     private void watchdog() {
         // check updater is still active - maybe an exception caused termination
-        updater.ifPresent(refresher -> {
+        updater.ifPresentOrElse(refresher -> {
             if (refresher.isDone()) {
                 updater = Optional.of(scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES));
             }
+        }, () -> {
+            updater = Optional.of(scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES));
         });
         // check websocket
         if (websocket.isRunning()) {
@@ -948,6 +950,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     private void handleUpdate(JSONObject data) {
+        // websocket stats for each update
+        updateState(new ChannelUID(thing.getUID(), CHANNEL_STATISTICS),
+                StringType.valueOf(websocket.getStatistics().toString()));
+
         if (data.has(Model.ATTRIBUTES)) {
             JSONObject attributes = data.getJSONObject(Model.ATTRIBUTES);
             // check ota for each device

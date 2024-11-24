@@ -198,7 +198,7 @@ public class Constants {
     // Air purifier channels
     public static final String CHANNEL_PURIFIER_FAN_MODE = "fan-mode";
     public static final String CHANNEL_PURIFIER_FAN_SPEED = "fan-speed";
-    public static final String CHANNEL_PURIFIER_FAN_RUNTIME = "fab-runtime";
+    public static final String CHANNEL_PURIFIER_FAN_RUNTIME = "fan-runtime";
     public static final String CHANNEL_PURIFIER_FAN_SEQUENCE = "fan-sequence";
     public static final String CHANNEL_PURIFIER_FILTER_ELAPSED = "filter-elapsed";
     public static final String CHANNEL_PURIFIER_FILTER_REMAIN = "filter-remain";
