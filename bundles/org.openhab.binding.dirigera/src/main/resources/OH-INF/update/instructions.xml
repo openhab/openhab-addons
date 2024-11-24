@@ -3,6 +3,23 @@
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
+	<thing-type uid="dirigera:air-purifier">
+		<instruction-set targetVersion="1">
+			<add-channel id="fan-speed">
+				<type>dirigera:dimmer</type>
+				<label>Fan Speed</label>
+				<description>Manual regulation of fan speed </description>
+			</add-channel>
+			<remove-channel id="motor-time">
+			</remove-channel>
+			<add-channel id="fan-time">
+				<type>dirigera:time</type>
+				<label>Fan Runtime</label>
+				<description>Fan runtime in minutes</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 	<thing-type uid="dirigera:air-quality">
 		<instruction-set targetVersion="1">
 			<update-channel id="temperature">
