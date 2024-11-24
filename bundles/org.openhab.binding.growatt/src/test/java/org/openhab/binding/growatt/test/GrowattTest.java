@@ -106,6 +106,8 @@ public class GrowattTest {
         testGrottValuesAccessibility("simple");
         testGrottValuesAccessibility("sph");
         testGrottValuesAccessibility("spf");
+        testGrottValuesAccessibility("mid");
+        testGrottValuesAccessibility("meter");
     }
 
     /**
@@ -238,6 +240,8 @@ public class GrowattTest {
         testJsonFieldsMappedToDto("simple");
         testJsonFieldsMappedToDto("sph");
         testJsonFieldsMappedToDto("spf");
+        testGrottValuesAccessibility("mid");
+        testGrottValuesAccessibility("meter");
     }
 
     /**
@@ -358,7 +362,7 @@ public class GrowattTest {
     @Test
     void testThreePhaseGrottValuesContents() throws FileNotFoundException, IOException, NoSuchFieldException,
             SecurityException, IllegalAccessException, IllegalArgumentException {
-        GrottValues grottValues = loadGrottValues("3phase");
+        GrottValues grottValues = loadGrottValues("mid");
         assertNotNull(grottValues);
 
         Map<String, QuantityType<?>> channelStates = GrottValuesHelper.getChannelStates(grottValues);
