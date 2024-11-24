@@ -100,6 +100,8 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
     private final LocaleProvider localeProvider;
     private final Bundle bundle;
 
+    private String deviceId = "";
+
     public VeSyncBaseDeviceHandler(Thing thing, @Reference TranslationProvider translationProvider,
             @Reference LocaleProvider localeProvider) {
         super(thing);
@@ -190,6 +192,8 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             }
 
             newProps = getMetadataProperities(metadata);
+
+            deviceId = metadata.getUuid();
 
             // Refresh the device -> protocol mapping
             deviceLookupKey = getValidatedIdString();
@@ -485,6 +489,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         VeSyncRequestManagedDeviceBypassV2 readReq = new VeSyncRequestManagedDeviceBypassV2();
         readReq.payload.method = method;
         readReq.payload.data = payload;
+        readReq.deviceId = deviceId;
 
         try {
             if (MARKER_INVALID_DEVICE_KEY.equals(deviceLookupKey)) {

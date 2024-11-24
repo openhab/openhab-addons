@@ -46,6 +46,9 @@ public class VeSyncRequest {
     @SerializedName("method")
     public String method;
 
+    @SerializedName("deviceId")
+    public String deviceId;
+
     public VeSyncRequest() {
         traceId = String.valueOf(System.currentTimeMillis());
         httpMethod = HttpMethod.POST;
