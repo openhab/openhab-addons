@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.handler;
 
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_RSSI;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CONFIG_DEVICE_ID;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CONFIG_IP;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.FORCED_REFRESH_BOUNDERY_SECONDS;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.FORCED_REFRESH_BOUNDERY_SWITCHED_SECONDS;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -33,6 +29,8 @@ import org.openhab.binding.tplinksmarthome.internal.TPLinkIpAddressService;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.DeviceType;
+import org.openhab.binding.tplinksmarthome.internal.TPLinkStateDescriptionProvider;
+import org.openhab.binding.tplinksmarthome.internal.device.BulbDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.DeviceState;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.openhab.core.cache.ExpiringCache;
@@ -69,6 +67,7 @@ public class SmartHomeHandler extends BaseThingHandler {
     private final SmartHomeDevice smartHomeDevice;
     private final TPLinkIpAddressService ipAddressService;
     private final int forceRefreshThreshold;
+    private final TPLinkStateDescriptionProvider stateDescriptionProvider;
 
     private @NonNullByDefault({}) TPLinkSmartHomeConfiguration configuration;
     private @NonNullByDefault({}) Connection connection;
@@ -86,15 +85,18 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @param smartHomeDevice Specific Smart Home device handler
      * @param type The device type
      * @param ipAddressService Cache keeping track of ip addresses of tp link devices
+     * @param stateDescriptionProvider
      */
     public SmartHomeHandler(final Thing thing, final SmartHomeDevice smartHomeDevice,
-            final TPLinkSmartHomeThingType type, final TPLinkIpAddressService ipAddressService) {
+            final TPLinkSmartHomeThingType type, final TPLinkIpAddressService ipAddressService,
+            final TPLinkStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.smartHomeDevice = smartHomeDevice;
         this.ipAddressService = ipAddressService;
         this.forceRefreshThreshold = type.getDeviceType() == DeviceType.SWITCH
                 || type.getDeviceType() == DeviceType.DIMMER ? FORCED_REFRESH_BOUNDERY_SWITCHED_SECONDS
                         : FORCED_REFRESH_BOUNDERY_SECONDS;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -148,6 +150,10 @@ public class SmartHomeHandler extends BaseThingHandler {
                 ? new ExpiringCache<>(ONE_SECOND, this::forceCacheUpdate)
                 : cache;
         updateStatus(ThingStatus.UNKNOWN);
+        if (smartHomeDevice instanceof BulbDevice bulb) {
+            stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
+                    bulb.getColorTempMin(), bulb.getColorTempMax());
+        }
         // While config.xml defines refresh as min 1, this check is used to run a test that doesn't start refresh.
         if (configuration.refresh > 0) {
             startAutomaticRefresh(configuration);

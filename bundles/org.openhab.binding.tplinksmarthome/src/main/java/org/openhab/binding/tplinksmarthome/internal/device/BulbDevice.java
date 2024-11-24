@@ -12,13 +12,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNELS_BULB_SWITCH;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_BRIGHTNESS;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_COLOR;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_COLOR_TEMPERATURE;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_COLOR_TEMPERATURE_ABS;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_ENERGY_POWER;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_SWITCH;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
 
@@ -162,5 +156,13 @@ public class BulbDevice extends SmartHomeDevice {
 
     private int guardColorTemperature(final int colorTemperature) {
         return Math.max(colorTempMin, Math.min(colorTempMax, colorTemperature));
+    }
+
+    public int getColorTempMin() {
+        return colorTempMin;
+    }
+
+    public int getColorTempMax() {
+        return colorTempMax;
     }
 }
