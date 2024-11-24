@@ -34,6 +34,12 @@
 					</options>
 				</state>
 			</update-channel>
+			<update-channel id="deviceAFConfigAutoPrefRoomSizeType">
+				<item-type unitHint="one">Number:Dimensionless</item-type>
+			</update-channel>
+			<update-channel id="deviceAFConfigAutoScheduleCountType">
+				<item-type unitHint="one">Number:Dimensionless</item-type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 

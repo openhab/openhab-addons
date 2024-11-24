@@ -5,7 +5,24 @@
 
 	<thing-type uid="vesync:airHumidifier">
 		<instruction-set targetVersion="1">
-
+			<add-channel id="schedulesCount">
+				<type>vesync:deviceAFConfigAutoScheduleCountType</type>
+			</add-channel>
+			<add-channel id="timerExpiry">
+				<type>vesync:deviceAFTimerExpiry</type>
+			</add-channel>
+			<update-channel id="deviceMistLevelType">
+				<item-type unitHint="one">Number:Dimensionless</item-type>
+			</update-channel>
+			<update-channel id="warmLevel">
+				<item-type unitHint="one">Number:Dimensionless</item-type>
+			</update-channel>
+			<update-channel id="deviceAFConfigAutoPrefRoomSizeType">
+				<item-type unitHint="one">Number:Dimensionless</item-type>
+			</update-channel>
+			<update-channel id="deviceAFConfigAutoScheduleCountType">
+				<item-type unitHint="one">Number:Dimensionless</item-type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
