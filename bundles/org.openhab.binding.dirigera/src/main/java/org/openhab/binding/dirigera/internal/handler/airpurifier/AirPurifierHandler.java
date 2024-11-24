@@ -23,6 +23,7 @@ import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -41,8 +42,17 @@ import org.slf4j.LoggerFactory;
 public class AirPurifierHandler extends BaseHandler {
     private final Logger logger = LoggerFactory.getLogger(AirPurifierHandler.class);
 
+    /**
+     * see
+     * https://github.com/dvdgeisler/DirigeraClient/blob/a760b4419a8b1adf469d14a6ce4e750e52d4d540/dirigera-client-api/src/main/java/de/dvdgeisler/iot/dirigera/client/api/model/device/airpurifier/AirPurifierFanMode.java#L5
+     **/
     public static final Map<String, Integer> FAN_MODES = Map.of("auto", 0, "low", 1, "medium", 2, "high", 3, "on", 4,
             "off", 5);
+    /**
+     * see
+     * https://github.com/Leggin/dirigera/blob/790a3151d8b61151dcd31f2194297dc8d4d89640/src/dirigera/devices/air_purifier.py#L61
+     **/
+    public static final int FAN_SPEED_MAX = 50;
     public static Map<Integer, String> fanModeToState = reverseStateMapping(FAN_MODES);
 
     public AirPurifierHandler(Thing thing, Map<String, String> mapping) {
@@ -73,6 +83,14 @@ public class AirPurifierHandler extends BaseHandler {
                         JSONObject onOffAttributes = new JSONObject();
                         onOffAttributes.put(targetProperty, OnOffType.ON.equals(onOff));
                         gateway().api().sendAttributes(config.id, onOffAttributes);
+                    }
+                    break;
+                case CHANNEL_PURIFIER_FAN_SPEED:
+                    if (command instanceof PercentType percent) {
+                        long speedAbs = Math.round(percent.intValue() * FAN_SPEED_MAX / 100.0);
+                        JSONObject fanSpeedAttributes = new JSONObject();
+                        fanSpeedAttributes.put(targetProperty, speedAbs);
+                        gateway().api().sendAttributes(config.id, fanSpeedAttributes);
                     }
                     break;
                 case CHANNEL_PURIFIER_FAN_MODE:
@@ -109,7 +127,13 @@ public class AirPurifierHandler extends BaseHandler {
                                         new DecimalType(fanModeNumber));
                             }
                             break;
-                        case CHANNEL_PURIFIER_MOTOR_RUNTIME:
+                        case CHANNEL_PURIFIER_FAN_SPEED:
+                            float speed = attributes.getFloat(key);
+                            speed = Math.max(Math.min(speed, FAN_SPEED_MAX), 0);
+                            int percent = Math.round(speed * 100 / FAN_SPEED_MAX);
+                            updateState(new ChannelUID(thing.getUID(), targetChannel), new PercentType(percent));
+                            break;
+                        case CHANNEL_PURIFIER_FAN_RUNTIME:
                         case CHANNEL_PURIFIER_FILTER_LIFETIME:
                             updateState(new ChannelUID(thing.getUID(), targetChannel),
                                     QuantityType.valueOf(attributes.getDouble(key), Units.MINUTE));
