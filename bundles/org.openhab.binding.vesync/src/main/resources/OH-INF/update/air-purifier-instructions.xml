@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="vesync:airPurifier">
+		<instruction-set targetVersion="1">
+			<add-channel id="lightDetection">
+				<type>vesync:deviceAFLightDetection</type>
+			</add-channel>
+			<add-channel id="lightDetected">
+				<type>vesync:deviceAFLightDetected</type>
+			</add-channel>
+			<update-channel id="deviceFilterLifePercentageType">
+				<item-type unitHint="%">Number:Dimensionless</item-type>
+				<state readOnly="true" pattern="%.0f %unit%"/>
+			</update-channel>
+			<update-channel id="airPurifierFanLevelType">
+				<item-type unitHint="one">Number:Dimensionless</item-type>
+			</update-channel>
+			<update-channel id="deviceErrorCodeType">
+				<item-type unitHint="one">Number:Dimensionless</item-type>
+			</update-channel>
+			<update-channel id="airQualityPM25">
+				<item-type unitHint="µg/m³">Number:Density</item-type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>
