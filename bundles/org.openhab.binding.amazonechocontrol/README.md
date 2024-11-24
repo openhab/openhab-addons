@@ -442,8 +442,9 @@ The channels of the smarthome devices will be generated at runtime. Check in the
 |--------------------------|----------------------|-------------|-------------------------------|------------------------------------------------------------------------------------------
 | powerState               | Switch               | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the state (ON/OFF) of your device
 | brightness               | Dimmer               | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the brightness of your lamp
-| color                    | Color                | R           | smartHomeDevice, smartHomeDeviceGroup | Shows the color of your light
+| color                    | Color                | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows the color of your light
 | colorName                | String               | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the color name of your light (groups are not able to show their color)
+| colorTemperatureInKelvin | Number:Temperature   | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows the color temperature of your light
 | colorTemperatureName     | String               | R/W         | smartHomeDevice, smartHomeDeviceGroup | White temperatures name of your lights (groups are not able to show their color)
 | armState                 | String               | R/W         | smartHomeDevice, smartHomeDeviceGroup | State of your alarm guard. Options: ARMED_AWAY, ARMED_STAY, ARMED_NIGHT, DISARMED (groups are not able to show their state)
 | burglaryAlarm            | Contact              | R           | smartHomeDevice | Burglary alarm
