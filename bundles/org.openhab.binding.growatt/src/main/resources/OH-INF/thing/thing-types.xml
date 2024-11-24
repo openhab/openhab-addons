@@ -443,28 +443,28 @@
 
 			<!-- battery instantaneous measurements -->
 			<channel id="battery-voltage2" typeId="advanced-electric-voltage">
-				<label>Battery Voltage</label>
+				<label>Battery Voltage #2</label>
 				<description>Battery voltage.</description>
 			</channel>
 			<channel id="charge-va" typeId="advanced-electric-var">
 				<label>Charge VA</label>
 				<description>Charging reactive power.</description>
 			</channel>
-			<channel id="bat-discharge-va" typeId="advanced-electric-var">
+			<channel id="battery-discharge-va" typeId="advanced-electric-var">
 				<label>Battery discharge VA</label>
 				<description>Discharging reactive power.</description>
 			</channel>
-			<channel id="bat-discharge-watt" typeId="advanced-electric-power">
+			<channel id="battery-discharge-watt" typeId="advanced-electric-power">
 				<label>Battery discharge power</label>
 				<description>Battery discharging power.</description>
 			</channel>
 
 			<!-- battery energy -->
-			<channel id="bat-discharge-energy-today" typeId="advanced-electric-energy">
+			<channel id="battery-discharge-energy-today" typeId="advanced-electric-energy">
 				<label>Discharge Energy Today</label>
 				<description>Battery discharge energy today.</description>
 			</channel>
-			<channel id="bat-discharge-energy-total" typeId="advanced-electric-energy">
+			<channel id="battery-discharge-energy-total" typeId="advanced-electric-energy">
 				<label>Discharge Energy Total</label>
 				<description>Total battery discharge energy.</description>
 			</channel>

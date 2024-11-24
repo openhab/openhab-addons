@@ -240,8 +240,6 @@ public class GrowattTest {
         testJsonFieldsMappedToDto("simple");
         testJsonFieldsMappedToDto("sph");
         testJsonFieldsMappedToDto("spf");
-        // TODO -- see Issue #17799 -- testJsonFieldsMappedToDto("mid");
-        // TODO -- see Issue #17799 -- testJsonFieldsMappedToDto("meter");
     }
 
     /**
@@ -253,7 +251,6 @@ public class GrowattTest {
      * @throws FileNotFoundException
      */
     private void testJsonFieldsMappedToDto(String fileName) throws FileNotFoundException, IOException {
-        // System.out.println(fileName);
         Field[] fields = GrottValues.class.getFields();
         String json = load(fileName);
         JsonParser.parseString(json).getAsJsonObject().get("values").getAsJsonObject().entrySet().forEach(e -> {
@@ -267,7 +264,6 @@ public class GrowattTest {
                 for (Field field : fields) {
                     try {
                         if (field.get(testDto) != null) {
-                            // System.out.println(key + "=" + field.getName());
                             mappedFieldCount++;
                         }
                     } catch (IllegalAccessException | IllegalArgumentException ex) {
@@ -281,7 +277,6 @@ public class GrowattTest {
                 assertEquals(1, mappedFieldCount);
             }
         });
-        // System.out.println();
     }
 
     /**

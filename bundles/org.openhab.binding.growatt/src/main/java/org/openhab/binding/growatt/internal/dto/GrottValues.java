@@ -191,12 +191,12 @@ public class GrottValues {
     // battery instantaneous measurements
     public @Nullable @SerializedName(value = "bat_Volt") Integer battery_voltage2;
     public @Nullable @SerializedName(value = "acchr_VA") Integer charge_va;
-    public @Nullable @SerializedName(value = "BatDischarVA") Integer bat_discharge_va;
-    public @Nullable @SerializedName(value = "BatDischarWatt", alternate = { "BatWatt" }) Integer bat_discharge_watt;
+    public @Nullable @SerializedName(value = "BatDischarVA") Integer battery_discharge_va;
+    public @Nullable @SerializedName(value = "BatDischarWatt", alternate = { "BatWatt" }) Integer battery_discharge_watt;
 
     // battery energy
-    public @Nullable @SerializedName(value = "ebatDischarToday") Integer bat_discharge_energy_today;
-    public @Nullable @SerializedName(value = "ebatDischarTotal") Integer bat_discharge_energy_total;
+    public @Nullable @SerializedName(value = "ebatDischarToday") Integer battery_discharge_energy_today;
+    public @Nullable @SerializedName(value = "ebatDischarTotal") Integer battery_discharge_energy_total;
 
     // inverter
     public @Nullable @SerializedName(value = "Inv_Curr") Integer inverter_current;

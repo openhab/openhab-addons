@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,10 +61,12 @@ public class GrottDevice {
      * @return the time stamp {@link Instant}
      */
     public @Nullable Instant getTimeStamp() {
-        try {
-            return ZonedDateTime.of(LocalDateTime.parse(Objects.requireNonNull(timeStamp)), ZoneId.systemDefault())
-                    .toInstant();
-        } catch (NullPointerException | DateTimeException e) {
+        String timeStamp = this.timeStamp;
+        if (timeStamp != null) {
+            try {
+                return ZonedDateTime.of(LocalDateTime.parse(timeStamp), ZoneId.systemDefault()).toInstant();
+            } catch (DateTimeException e) {
+            }
         }
         return null;
     }

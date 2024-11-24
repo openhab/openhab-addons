@@ -195,12 +195,14 @@ public class GrowattChannels {
             // battery instantaneous measurements
             new AbstractMap.SimpleEntry<String, UoM>("battery-voltage2", new UoM(Units.VOLT, 100)),
             new AbstractMap.SimpleEntry<String, UoM>("charge-va", new UoM(Units.VOLT_AMPERE, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("bat-discharge-va", new UoM(Units.VOLT_AMPERE, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("bat-discharge-watt", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("battery-discharge-va", new UoM(Units.VOLT_AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("battery-discharge-watt", new UoM(Units.WATT, 10)),
 
             // battery energy
-            new AbstractMap.SimpleEntry<String, UoM>("bat-discharge-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("bat-discharge-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("battery-discharge-energy-today",
+                    new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("battery-discharge-energy-total",
+                    new UoM(Units.KILOWATT_HOUR, 10)),
 
             // inverter
             new AbstractMap.SimpleEntry<String, UoM>("inverter-current", new UoM(Units.AMPERE, 10)),
