@@ -67,6 +67,9 @@ public class AirPurifierHandler extends BaseHandler {
             JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
         }
+        // String simu = gateway().model().getTemplate("/json/starkvind.json");
+        // JSONObject simuJson = new JSONObject(simu);
+        // handleUpdate(simuJson);
     }
 
     @Override
