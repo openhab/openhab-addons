@@ -21,7 +21,7 @@
 				<label>Fan Speed</label>
 				<description>Manual regulation of fan speed </description>
 			</channel>
-			<channel id="fan-time" typeId="time">
+			<channel id="fan-runtime" typeId="time">
 				<label>Fan Runtime</label>
 				<description>Fan runtime in minutes</description>
 			</channel>
