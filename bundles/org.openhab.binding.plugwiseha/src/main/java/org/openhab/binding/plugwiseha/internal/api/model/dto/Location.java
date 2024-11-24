@@ -42,7 +42,7 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
     private List<String> locationAppliances = new ArrayList<>();
 
     @XStreamImplicit(itemFieldName = "point_log", keyFieldName = "type")
-    private Logs pointLogs;
+    private PointLogs pointLogs;
 
     @XStreamImplicit(itemFieldName = "actuator_functionality", keyFieldName = "type")
     private ActuatorFunctionalities actuatorFunctionalities;
@@ -67,9 +67,9 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
         return locationAppliances;
     }
 
-    public Logs getPointLogs() {
+    public PointLogs getPointLogs() {
         if (pointLogs == null) {
-            pointLogs = new Logs();
+            pointLogs = new PointLogs();
         }
         return pointLogs;
     }

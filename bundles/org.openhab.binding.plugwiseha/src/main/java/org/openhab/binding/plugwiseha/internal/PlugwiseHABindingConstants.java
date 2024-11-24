@@ -107,6 +107,13 @@ public class PlugwiseHABindingConstants {
     public static final String APPLIANCE_COOLINGSTATE_CHANNEL = "coolingState";
     public static final String APPLIANCE_INTENDEDBOILERTEMP_CHANNEL = "intendedBoilerTemp";
     public static final String APPLIANCE_FLAMESTATE_CHANNEL = "flameState";
+
+    public static final String APPLIANCE_BURNER_STARTS_FAILED_CHANNEL = "burnerStartsFailed";
+    public static final String APPLIANCE_BURNER_STARTS_CHANNEL = "burnerStarts";
+    public static final String APPLIANCE_BURNER_OP_TIME_CHANNEL = "burnerOpTime";
+    public static final String APPLIANCE_BURNER_DHW_OP_TIME_CHANNEL = "burnerDHWOpTime";
+    public static final String APPLIANCE_BURNER_IGNITIONS_FAILEDCHANNEL = "burnerIgnitionsFailed";
+
     public static final String APPLIANCE_INTENDEDHEATINGSTATE_CHANNEL = "intendedHeatingState";
     public static final String APPLIANCE_MODULATIONLEVEL_CHANNEL = "modulationLevel";
     public static final String APPLIANCE_OTAPPLICATIONFAULTCODE_CHANNEL = "otAppFaultCode";
