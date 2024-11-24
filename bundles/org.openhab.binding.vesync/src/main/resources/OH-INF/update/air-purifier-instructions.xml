@@ -24,6 +24,16 @@
 			<update-channel id="airQualityPM25">
 				<item-type unitHint="µg/m³">Number:Density</item-type>
 			</update-channel>
+			<update-channel id="airPurifierModeType">
+				<state readOnly="false">
+					<options>
+						<option value="auto">Auto</option>
+						<option value="manual">Manual Fan Control</option>
+						<option value="sleep">Sleeping Auto</option>
+						<option value="pet">Pet Auto</option>
+					</options>
+				</state>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
