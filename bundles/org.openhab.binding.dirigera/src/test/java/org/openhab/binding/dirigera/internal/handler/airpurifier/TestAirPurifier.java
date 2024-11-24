@@ -148,7 +148,7 @@ class TestAirPurifier {
         assertEquals(Units.MINUTE, ((QuantityType<?>) filterLifetimedState).getUnit());
         assertEquals(259200, ((QuantityType<?>) filterLifetimedState).intValue());
 
-        State motorRuntimeState = callback.getState("dirigera:air-purifier:test-device:fab-runtime");
+        State motorRuntimeState = callback.getState("dirigera:air-purifier:test-device:fan-runtime");
         assertNotNull(motorRuntimeState);
         assertTrue(motorRuntimeState instanceof QuantityType);
         assertEquals(Units.MINUTE, ((QuantityType<?>) motorRuntimeState).getUnit());

@@ -12,7 +12,7 @@
 			</add-channel>
 			<remove-channel id="motor-time">
 			</remove-channel>
-			<add-channel id="fan-time">
+			<add-channel id="fan-runtime">
 				<type>dirigera:time</type>
 				<label>Fan Runtime</label>
 				<description>Fan runtime in minutes</description>
