@@ -4,8 +4,8 @@ Its current support is for the Air Purifiers & Humidifer's branded as Levoit whi
 
 ## Verified Models
 
-Air Filtering models supported are Core300S, Core400S.
-Air Humidifier models supported are Dual 200S, Classic 300S, 600S, OasisMist Smart Humidifier
+Air Filtering models verified are Core300S, Core400S, Vital 100S.
+Air Humidifier models verified are Dual 200S, Classic 300S, 600S, OasisMist Smart Humidifier
 
 ## Awaiting User Verification Models
 
@@ -24,7 +24,7 @@ This binding supports the follow thing types:
 
 This binding was developed from the great work in the listed projects.
 
-The only Air Filter unit it has been tested against is the Core400S unit, **I'm looking for others to confirm** my queries regarding **the Core200S and Core300S** units.
+The only Air Filter unit it has been tested against are the Core400S unit and Vital 100S, **I'm looking for others to confirm** my queries regarding **the Core200S and Core300S** units.
 The **Classic 300S Humidifier** has been tested, and **600S with current warm mode restrictions**.
 
 ## Discovery
