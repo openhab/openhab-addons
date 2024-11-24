@@ -17,9 +17,13 @@
 				<label>Fan Mode</label>
 				<description>Fan on, off, speed or automatic behavior </description>
 			</channel>
-			<channel id="motor-time" typeId="time">
-				<label>Motor Runtime</label>
-				<description>Motor runtime in minutes</description>
+			<channel id="fan-speed" typeId="dimmer">
+				<label>Fan Speed</label>
+				<description>Manual regulation of fan speed </description>
+			</channel>
+			<channel id="fan-time" typeId="time">
+				<label>Fan Runtime</label>
+				<description>Fan runtime in minutes</description>
 			</channel>
 			<channel id="filter-elapsed" typeId="time">
 				<label>Filter Elapsed</label>
@@ -70,6 +74,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>
