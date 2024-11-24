@@ -24,7 +24,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -360,8 +359,8 @@ public class RuuviGatewayTest extends MqttOSGiTest {
 
         assertEquals(new QuantityType<>(new BigDecimal(rssiDecibelMilliwatts), Units.DECIBEL_MILLIWATTS),
                 channelStateGetter.apply(CHANNEL_ID_RSSI));
-        assertEquals(new DateTimeType(ts.atZone(ZoneId.of("UTC"))), channelStateGetter.apply(CHANNEL_ID_TS));
-        assertEquals(new DateTimeType(gwts.atZone(ZoneId.of("UTC"))), channelStateGetter.apply(CHANNEL_ID_GWTS));
+        assertEquals(new DateTimeType(ts), channelStateGetter.apply(CHANNEL_ID_TS));
+        assertEquals(new DateTimeType(gwts), channelStateGetter.apply(CHANNEL_ID_GWTS));
         assertEquals(new StringType(gwMac), channelStateGetter.apply(CHANNEL_ID_GWMAC));
     }
 
