@@ -33,6 +33,7 @@ import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException
 import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAController;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.Appliance;
 import org.openhab.binding.plugwiseha.internal.config.PlugwiseHAThingConfig;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -198,6 +199,11 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             case APPLIANCE_COOLINGSTATE_CHANNEL:
             case APPLIANCE_INTENDEDBOILERTEMP_CHANNEL:
             case APPLIANCE_FLAMESTATE_CHANNEL:
+            case APPLIANCE_BURNER_STARTS_FAILED_CHANNEL:
+            case APPLIANCE_BURNER_STARTS_CHANNEL:
+            case APPLIANCE_BURNER_OP_TIME_CHANNEL:
+            case APPLIANCE_BURNER_DHW_OP_TIME_CHANNEL:
+            case APPLIANCE_BURNER_IGNITIONS_FAILEDCHANNEL:
             case APPLIANCE_INTENDEDHEATINGSTATE_CHANNEL:
             case APPLIANCE_MODULATIONLEVEL_CHANNEL:
             case APPLIANCE_OTAPPLICATIONFAULTCODE_CHANNEL:
@@ -334,6 +340,31 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             case APPLIANCE_FLAMESTATE_CHANNEL:
                 if (entity.getFlameState().isPresent()) {
                     state = OnOffType.from(entity.getFlameState().get());
+                }
+                break;
+            case APPLIANCE_BURNER_STARTS_FAILED_CHANNEL:
+                if (entity.getBurnerFailedStarts().isPresent()) {
+                    state = new DecimalType(entity.getBurnerFailedStarts().get());
+                }
+                break;
+            case APPLIANCE_BURNER_STARTS_CHANNEL:
+                if (entity.getBurnerStarts().isPresent()) {
+                    state = new DecimalType(entity.getBurnerStarts().get());
+                }
+                break;
+            case APPLIANCE_BURNER_OP_TIME_CHANNEL:
+                if (entity.getBurnerOpTime().isPresent()) {
+                    state = new QuantityType<>(entity.getBurnerOpTime().get(), Units.HOUR);
+                }
+                break;
+            case APPLIANCE_BURNER_DHW_OP_TIME_CHANNEL:
+                if (entity.getBurnerDHWOPTime().isPresent()) {
+                    state = new QuantityType<>(entity.getBurnerDHWOPTime().get(), Units.HOUR);
+                }
+                break;
+            case APPLIANCE_BURNER_IGNITIONS_FAILEDCHANNEL:
+                if (entity.getBurnerFailedIgnitions().isPresent()) {
+                    state = new DecimalType(entity.getBurnerFailedIgnitions().get());
                 }
                 break;
             case APPLIANCE_INTENDEDHEATINGSTATE_CHANNEL:

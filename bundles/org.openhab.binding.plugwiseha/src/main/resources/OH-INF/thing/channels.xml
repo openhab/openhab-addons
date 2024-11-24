@@ -120,6 +120,49 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="burnerStartsFailed">
+		<item-type>Number</item-type>
+		<label>Burner Starts Failed</label>
+		<description>Total count of failed burner starts</description>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="burnerStarts">
+		<item-type>Number</item-type>
+		<label>Burner Starts</label>
+		<description>Total count of burner starts</description>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="burnerIgnitionsFailed">
+		<item-type>Number</item-type>
+		<label>Burner Ignitions Failed</label>
+		<description>Total count of failed burner ignitions</description>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="burnerOpTime">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Operation Time</label>
+		<description>Total operation time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="burnerDHWOpTime">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>DHW Operation Time</label>
+		<description>Total operation time for domestic hot water</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="intendedHeatingState">
 		<item-type>Switch</item-type>
 		<label>Intended Heating State</label>
@@ -145,11 +188,11 @@
 	</channel-type>
 
 	<channel-type id="modulationLevel">
-		<item-type>Number</item-type>
+		<item-type>Number:DimensionLess</item-type>
 		<label>Modulelation Level</label>
 		<description>Gets the modulation level of this boiler</description>
 		<category>heating</category>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="otAppFaultCode">
@@ -209,7 +252,7 @@
 		<label>Domestic Hot Water Setpoint Temperature</label>
 		<description>Gets the temperature of the domestic hot water setpoint</description>
 		<category>heating</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxBoilerTemperature">
@@ -217,7 +260,7 @@
 		<label>Max Boiler Temperature</label>
 		<description>Gets the maximum temperature of this boiler</description>
 		<category>heating</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="waterPressure">
@@ -249,7 +292,7 @@
 	</channel-type>
 
 	<channel-type id="valvePosition">
-		<item-type>Number</item-type>
+		<item-type>Number:DimensionLess</item-type>
 		<label>Valve Position</label>
 		<description>Gets the position of the valve (0% closed, 100% open)</description>
 		<category>heating</category>
@@ -257,7 +300,7 @@
 			<tag>Status</tag>
 			<tag>OpenLevel</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

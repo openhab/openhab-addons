@@ -37,7 +37,7 @@ public class Locations extends PlugwiseHACollection<Location> {
                 }
 
                 if (originalLocation != null && originalLocationIsOlder) {
-                    Logs updatedPointLogs = location.getPointLogs();
+                    PointLogs updatedPointLogs = location.getPointLogs();
                     if (updatedPointLogs != null) {
                         updatedPointLogs.merge(originalLocation.getPointLogs());
                     }
