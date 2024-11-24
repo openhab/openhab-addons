@@ -25,6 +25,7 @@ import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -83,18 +84,29 @@ class TestAirPurifier {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FILTER_ALARM), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FILTER_ELAPSED), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FILTER_LIFETIME), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_MOTOR_RUNTIME), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FAN_RUNTIME), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FAN_MODE), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FAN_SPEED), RefreshType.REFRESH);
         checkAirPurifierStates(callback);
     }
 
     @Test
     void testCommands() {
         testHandlerCreation();
-        handler.handleCommand(new ChannelUID(thing.getUID(), "fan-mode"), new DecimalType(4));
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FAN_MODE), new DecimalType(4));
         String patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"fanMode\":\"on\"}}", patch, "Fan Mode on");
+
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FAN_SPEED), new PercentType(23));
+        patch = DirigeraAPISimu.patchMap.get(deviceId);
+        assertNotNull(patch);
+        assertEquals("{\"attributes\":{\"motorState\":12}}", patch, "Fan Speed");
+
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FAN_SPEED), new PercentType(100));
+        patch = DirigeraAPISimu.patchMap.get(deviceId);
+        assertNotNull(patch);
+        assertEquals("{\"attributes\":{\"motorState\":50}}", patch, "Fan Speed");
     }
 
     void checkAirPurifierStates(CallbackMock callback) {
@@ -136,11 +148,15 @@ class TestAirPurifier {
         assertEquals(Units.MINUTE, ((QuantityType<?>) filterLifetimedState).getUnit());
         assertEquals(259200, ((QuantityType<?>) filterLifetimedState).intValue());
 
-        State motorRuntimeState = callback.getState("dirigera:air-purifier:test-device:motor-runtime");
+        State motorRuntimeState = callback.getState("dirigera:air-purifier:test-device:fab-runtime");
         assertNotNull(motorRuntimeState);
         assertTrue(motorRuntimeState instanceof QuantityType);
         assertEquals(Units.MINUTE, ((QuantityType<?>) motorRuntimeState).getUnit());
         assertEquals(472283, ((QuantityType<?>) motorRuntimeState).intValue());
+        State fanSpeedState = callback.getState("dirigera:air-purifier:test-device:fan-speed");
+        assertNotNull(fanSpeedState);
+        assertTrue(fanSpeedState instanceof PercentType);
+        assertEquals(20, ((PercentType) fanSpeedState).intValue());
         State fanModeState = callback.getState("dirigera:air-purifier:test-device:fan-mode");
         assertNotNull(fanModeState);
         assertTrue(fanModeState instanceof DecimalType);
