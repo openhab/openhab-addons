@@ -23,6 +23,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,11 +48,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
+import org.openhab.binding.dirigera.internal.actions.DeviceActions;
 import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
 import org.openhab.binding.dirigera.internal.exception.ApiMissingException;
 import org.openhab.binding.dirigera.internal.exception.ModelMissingException;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
+import org.openhab.binding.dirigera.internal.interfaces.DumpHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.binding.dirigera.internal.model.DirigeraModel;
@@ -72,6 +76,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
@@ -89,7 +94,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
+public class DirigeraHandler extends BaseBridgeHandler implements Gateway, DumpHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandler.class);
 
@@ -1043,5 +1048,20 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     protected void updateState(ChannelUID channelUID, State state) {
         channelStateMap.put(channelUID.getIdWithoutGroup(), state);
         super.updateState(channelUID, state);
+    }
+
+    /**
+     * Add dump action Actions
+     */
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(DeviceActions.class);
+    }
+
+    @Override
+    public void dump() {
+        logger.info("Dump {}", thing.getLabel());
+        // dump freshest values
+        logger.info("{}", api().readHome().toString());
     }
 }

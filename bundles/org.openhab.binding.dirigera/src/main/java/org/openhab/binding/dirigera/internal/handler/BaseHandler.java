@@ -16,6 +16,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +27,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.actions.DeviceActions;
 import org.openhab.binding.dirigera.internal.config.BaseDeviceConfiguration;
 import org.openhab.binding.dirigera.internal.exception.NoGatewayException;
+import org.openhab.binding.dirigera.internal.interfaces.DumpHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.interfaces.LightListener;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
@@ -45,6 +48,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
@@ -59,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class BaseHandler extends BaseThingHandler {
+public class BaseHandler extends BaseThingHandler implements DumpHandler {
     private final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
     private List<LightListener> powerListeners = new ArrayList<>();
     private @Nullable Gateway gateway;
@@ -634,6 +638,21 @@ public class BaseHandler extends BaseThingHandler {
         synchronized (powerListeners) {
             powerListeners.remove(listener);
         }
+    }
+
+    /**
+     * Add dump action Actions
+     */
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(DeviceActions.class);
+    }
+
+    @Override
+    public void dump() {
+        logger.info("Dump {}", thing.getLabel());
+        logger.info("{}", channelStateMap.get(CHANNEL_JSON));
     }
 
     /**
