@@ -13,15 +13,15 @@
 package org.openhab.binding.dirigera.internal.interfaces;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.binding.ThingHandler;
 
 /**
- * {@link LightListener} for notifications of device power events
+ * {@link DumpHandler} interface for handling json dumps
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public interface LightListener {
+public interface DumpHandler extends ThingHandler {
 
-    void powerChanged(OnOffType power, boolean requested);
+    void dump();
 }

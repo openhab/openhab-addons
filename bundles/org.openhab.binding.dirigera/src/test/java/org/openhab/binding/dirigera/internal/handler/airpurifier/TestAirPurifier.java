@@ -109,6 +109,12 @@ class TestAirPurifier {
         assertEquals("{\"attributes\":{\"motorState\":50}}", patch, "Fan Speed");
     }
 
+    @Test
+    void testDump() {
+        testHandlerCreation();
+        handler.dump();
+    }
+
     void checkAirPurifierStates(CallbackMock callback) {
         State otaStatus = callback.getState("dirigera:air-purifier:test-device:ota-status");
         assertNotNull(otaStatus);
