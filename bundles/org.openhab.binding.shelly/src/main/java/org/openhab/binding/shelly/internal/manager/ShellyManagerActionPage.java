@@ -103,7 +103,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                                 // maybe the device restarts before returning the http response
                             }
                             setRestarted(th, uid); // refresh after reboot
-                        }).start();
+                        }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-deviceReboot").start();
                         refreshTimer = profile.isMotion ? 60 : 30;
                     } else {
                         message = getMessageS("action.restart.confirm", MCINFO);
@@ -162,7 +162,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                                 // maybe the device restarts before returning the http response
                             }
                             setRestarted(th, uid); // refresh after reboot
-                        }).start();
+                        }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-reboot").start();
 
                         // The device needs a restart after changing the peer mode
                         message = getMessageP("action.restart.info", MCINFO);
@@ -188,7 +188,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                             } catch (ShellyApiException e) {
                                 // maybe the device restarts before returning the http response
                             }
-                        }).start();
+                        }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-factoryReset").start();
                         message = getMessageP("action.reset.confirm", MCINFO, serviceName);
                         refreshTimer = 5;
                     }
@@ -216,7 +216,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                             } catch (ShellyApiException e) {
                                 // maybe the device restarts before returning the http response
                             }
-                        }).start();
+                        }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-setDebug").start();
 
                         message = getMessage("action.debug-confirm", enable ? "enabled" : "disabled");
                         refreshTimer = 3;

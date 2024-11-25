@@ -520,7 +520,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
                     SatelModule.this.communicationLoop(CommunicationWatchdog.this);
                     logger.debug("Communication thread stopped");
                 }
-            });
+            }, "OH-binding-" + SatelBindingConstants.BINDING_ID + "-dispatcher");
             thread.start();
             this.thread = thread;
             // if module is not initialized yet, send version command

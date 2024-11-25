@@ -178,9 +178,9 @@ public class LegacyPort {
         }
 
         readThread = new Thread(reader);
-        setParamsAndStart(readThread, "Reader");
+        setParamsAndStart(readThread, "OH-binding-" + InsteonBindingConstants.BINDING_ID + "-LegacyReader");
         writeThread = new Thread(writer);
-        setParamsAndStart(writeThread, "Writer");
+        setParamsAndStart(writeThread, "OH-binding-" + InsteonBindingConstants.BINDING_ID + "-LegacyWriter");
 
         if (!mdbb.isComplete()) {
             modem.initialize();

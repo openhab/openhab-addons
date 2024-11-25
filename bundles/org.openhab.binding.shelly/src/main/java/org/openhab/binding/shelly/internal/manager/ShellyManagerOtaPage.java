@@ -134,7 +134,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
                         // maybe the device restarts before returning the http response
                         logger.warn("{}: {}", th.getThingName(), getMessage("fwupdate.initiated", e.toString()));
                     }
-                }).start();
+                }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-scheduleUpdate").start();
             } else {
                 String message = getMessageP("fwupdate.confirm", MCINFO);
                 properties.put(ATTRIBUTE_MESSAGE, message);

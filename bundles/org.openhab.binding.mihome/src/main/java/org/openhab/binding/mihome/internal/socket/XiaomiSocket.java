@@ -71,7 +71,7 @@ public abstract class XiaomiSocket {
      */
     public XiaomiSocket(int port, String owner) {
         this.port = port;
-        socketReceiveThread.setName("XiaomiSocketReceiveThread(" + port + ", " + owner + ")");
+        socketReceiveThread.setName("OH-binding-" + this.getThing().getUID() + "-XiaomiSocket(" + port + ", " + owner + ")");
     }
 
     public void initialize() {
