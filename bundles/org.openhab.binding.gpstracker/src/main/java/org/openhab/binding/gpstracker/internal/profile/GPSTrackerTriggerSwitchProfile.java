@@ -68,8 +68,13 @@ public class GPSTrackerTriggerSwitchProfile implements TriggerProfile {
 
     @Override
     public void onTriggerFromHandler(String payload) {
-        if (payload.startsWith(regionName)) {
-            OnOffType state = OnOffType.from(payload.endsWith("enter"));
+        if (!payload.contains("/")) {
+            logger.debug("Transition trigger {} caught mallformed payload, missing '\''", payload, regionName);
+            return;
+        }
+        String[] splitted = payload.split("/");
+        if (splitted[0].equals(regionName)) {
+            OnOffType state = OnOffType.from("enter".equals(splitted[1]));
             callback.sendCommand(state);
             logger.debug("Transition trigger {} handled for region {} by profile: {}", payload, regionName, state);
         }
