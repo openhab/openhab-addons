@@ -377,43 +377,44 @@ public class ConnectionManager {
                             logger.debug("Bytes in BINARY, decoded and stripped without header: length: {}, data: {}",
                                     data.length, Utils.bytesToBinary(data));
 
-                            if (data.length > 0) {
-                                if (data.length < 21) {
-                                    logger.warn("Response data is {} long, minimum is 21!", data.length);
+                            if (data.length < 21) {
+                                logger.warn("Response data is {} long, minimum is 21!", data.length);
+                                return;
+                            }
+                            if (bodyType != -64) {
+                                if (bodyType == 30) {
+                                    logger.warn("Error response 0x1E received {} from IP Address:{}", bodyType,
+                                            ipAddress);
                                     return;
                                 }
-                                if (bodyType != -64) {
-                                    if (bodyType == 30) {
-                                        logger.warn("Error response 0x1E received {} from IP Address:{}", bodyType,
-                                                ipAddress);
-                                        return;
-                                    }
-                                    logger.warn("Unexpected response bodyType {}", bodyType);
-                                    return;
+                                logger.warn("Unexpected response bodyType {}", bodyType);
+                                return;
+                            }
+                            lastResponse = new Response(data, version, responseType, bodyType);
+                            try {
+                                logger.trace("Data length is {}, version is {}, IP address is {}", data.length, version,
+                                        ipAddress);
+                                if (callback != null) {
+                                    callback.updateChannels(lastResponse);
                                 }
-                                lastResponse = new Response(data, version, responseType, bodyType);
-                                try {
-                                    logger.trace("Data length is {}, version is {}, IP address is {}", data.length,
-                                            version, ipAddress);
-                                    if (callback != null) {
-                                        callback.updateChannels(lastResponse);
-                                    }
-                                } catch (Exception ex) {
-                                    logger.warn("Processing response exception: {}", ex.getMessage());
-                                }
+                            } catch (Exception ex) {
+                                logger.warn("Processing response exception: {}", ex.getMessage());
                             }
                         }
                     }
                 } else {
-                    byte[] data = security.aesDecrypt(Arrays.copyOfRange(responseBytes, 40, responseBytes.length - 16));
-                    // The response data from the appliance includes a packet header which we don't want
-                    logger.trace("V2 Bytes decoded with header: length: {}, data: {}", data.length,
-                            Utils.bytesToHex(data));
-                    if (data.length > 0) {
+                    if (responseBytes.length > 40 + 16) {
+                        byte[] data = security
+                                .aesDecrypt(Arrays.copyOfRange(responseBytes, 40, responseBytes.length - 16));
+                        logger.trace("V2 Bytes decoded with header: length: {}, data: {}", data.length,
+                                Utils.bytesToHex(data));
+
+                        // The response data from the appliance includes a packet header which we don't want
                         data = Arrays.copyOfRange(data, 10, data.length);
                         byte bodyType = data[0x0];
                         logger.trace("V2 Bytes decoded and stripped without header: length: {}, data: {}", data.length,
                                 Utils.bytesToHex(data));
+
                         if (data.length < 21) {
                             logger.warn("Response data is {} long, minimum is 21!", data.length);
                             return;
@@ -436,10 +437,6 @@ public class ConnectionManager {
                         } catch (Exception ex) {
                             logger.warn("Processing response exception: {}", ex.getMessage());
                         }
-                    } else {
-                        droppedCommands = droppedCommands + 1;
-                        logger.debug("Problem with reading V2 response, skipping {} skipped count since startup {}",
-                                command, droppedCommands);
                     }
                 }
                 return;
@@ -495,7 +492,7 @@ public class ConnectionManager {
     /**
      * Reads the inputStream byte array
      * 
-     * @return byte array
+     * @return byte array or null
      */
     public synchronized byte @Nullable [] read() {
         byte[] bytes = new byte[512];
