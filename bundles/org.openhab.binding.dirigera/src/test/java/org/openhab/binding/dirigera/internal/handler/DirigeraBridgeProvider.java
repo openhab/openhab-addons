@@ -113,6 +113,7 @@ public class DirigeraBridgeProvider {
         HandlerFactoryMock hfm = new HandlerFactoryMock(storageService);
         assertTrue(hfm.supportsThingType(thingTypeUID));
         ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
+        thing.setLabel("Unit Test Device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         ThingHandler handler = hfm.createHandler(thing);
         assertNotNull(handler);
