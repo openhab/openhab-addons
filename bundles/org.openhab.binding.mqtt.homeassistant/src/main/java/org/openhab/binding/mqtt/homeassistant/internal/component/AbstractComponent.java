@@ -185,9 +185,6 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         if (newStyleChannels && channels.size() == 1) {
             componentId = componentId + "_" + haID.component;
             channels.values().forEach(c -> c.resetUID(buildChannelUID(componentId)));
-        } else if (newStyleChannels) {
-            groupId = componentId = componentId + "_" + haID.component;
-            channels.values().forEach(c -> c.resetUID(buildChannelUID(c.getChannel().getUID().getIdWithoutGroup())));
         } else {
             groupId = componentId = componentId + "_" + haID.component;
             channels.values().forEach(c -> c.resetUID(buildChannelUID(c.getChannel().getUID().getIdWithoutGroup())));
