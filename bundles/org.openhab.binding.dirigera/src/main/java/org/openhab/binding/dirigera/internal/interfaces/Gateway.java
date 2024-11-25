@@ -38,21 +38,21 @@ public interface Gateway {
      *
      * @return Thing
      */
-    public Thing getThing();
+    Thing getThing();
 
     /**
      * Get IP address from gateway for API calls and WebSocket connections.
      *
      * @return ip address as String
      */
-    public String getIpAddress();
+    String getIpAddress();
 
     /**
      * Get token associated to this gateway for API calls and WebSocket connections.
      *
      * @return token as String
      */
-    public String getToken();
+    String getToken();
 
     /**
      * Get CommandProvider associated to this binding. For links and link candidates the command options are filled with
@@ -60,21 +60,21 @@ public interface Gateway {
      *
      * @return DirigeraCommandProvider as DynamicCommandDescriptionProvider
      */
-    public DirigeraCommandProvider getCommandProvider();
+    DirigeraCommandProvider getCommandProvider();
 
     /**
      * Get TimeZoneProvider to convert timestamps correctly.
      *
      * @return TimeZoneProvider
      */
-    public TimeZoneProvider getTimeZoneProvider();
+    TimeZoneProvider getTimeZoneProvider();
 
     /**
      * Returns the configuration setting if discovery is enabled.
      *
      * @return boolean discovery flag
      */
-    public boolean discoveryEnabled();
+    boolean discoveryEnabled();
 
     /**
      * Register a handler with the given deviceId reflecting a device or scene. Shall be called during
@@ -85,7 +85,7 @@ public interface Gateway {
      * @param deviceHandler handler of this binding
      * @param deviceId connected device id
      */
-    public void registerDevice(BaseHandler deviceHandler, String deviceId);
+    void registerDevice(BaseHandler deviceHandler, String deviceId);
 
     /**
      * Unregister a handler associated with the given deviceId reflecting a device or scene. Shall be called
@@ -96,7 +96,7 @@ public interface Gateway {
      * @param deviceHandler handler of this binding
      * @param deviceId connected device id
      */
-    public void unregisterDevice(BaseHandler deviceHandler, String deviceId);
+    void unregisterDevice(BaseHandler deviceHandler, String deviceId);
 
     /**
      * Deletes an openHAB handler associated with the given deviceId reflecting a device or scene. Shall be called
@@ -107,7 +107,7 @@ public interface Gateway {
      * @param deviceHandler handler of this binding
      * @param deviceId connected device id
      */
-    public void deleteDevice(BaseHandler deviceHandler, String deviceId);
+    void deleteDevice(BaseHandler deviceHandler, String deviceId);
 
     /**
      * Deletes a device or scene detected by the model. A device can be deleted without openHAB interaction in IKEA Home
@@ -115,14 +115,14 @@ public interface Gateway {
      *
      * @param deviceId device id to be removed
      */
-    public void deleteDevice(String deviceId);
+    void deleteDevice(String deviceId);
 
     /**
      * Check if device id is known in the gateway namely if a handler is created or not.
      *
      * @param deviceId connected device id
      */
-    public boolean isKnownDevice(String deviceId);
+    boolean isKnownDevice(String deviceId);
 
     /**
      * Update websocket connected statues.
@@ -130,7 +130,7 @@ public interface Gateway {
      * @param boolean connected
      * @param reason as String
      */
-    public void websocketConnected(boolean connected, String reason);
+    void websocketConnected(boolean connected, String reason);
 
     /**
      * Update from websocket regarding changed data.
@@ -139,7 +139,7 @@ public interface Gateway {
      *
      * @param String content of update
      */
-    public void websocketUpdate(String update);
+    void websocketUpdate(String update);
 
     /**
      * Update links for all devices. Devices which are storing the links (hard link) are responsible to detect changes.
@@ -149,7 +149,7 @@ public interface Gateway {
      *
      * @param String content of update
      */
-    public void updateLinks();
+    void updateLinks();
 
     /**
      * Next sunrise ZonedDateTime. Value is presented if gateway allows access to GPS position. Handler needs to take
@@ -157,7 +157,8 @@ public interface Gateway {
      *
      * @return next sunrise as ZonedDateTime
      */
-    public @Nullable ZonedDateTime getSunriseDateTime();
+    @Nullable
+    ZonedDateTime getSunriseDateTime();
 
     /**
      * Next sunset ZonedDateTime. Value is presented if gateway allows access to GPS position. Handler needs to take
@@ -165,7 +166,8 @@ public interface Gateway {
      *
      * @return next sunrise as ZonedDateTime
      */
-    public @Nullable ZonedDateTime getSunsetDateTime();
+    @Nullable
+    ZonedDateTime getSunsetDateTime();
 
     /**
      * Comfort access towards API which is only present after initialization.
@@ -173,7 +175,7 @@ public interface Gateway {
      * @throws ApiMissingException
      * @return DirigeraAPI
      */
-    public DirigeraAPI api() throws ApiMissingException;
+    DirigeraAPI api() throws ApiMissingException;
 
     /**
      * Comfort access towards Model which is only present after initialization.
@@ -181,19 +183,19 @@ public interface Gateway {
      * @throws ModelMissingException
      * @return Model
      */
-    public Model model() throws ModelMissingException;
+    Model model() throws ModelMissingException;
 
     /**
      * Comfort access towards DirigeraDiscoveryManager.
      *
      * @return DirigeraDiscoveryManager
      */
-    public DirigeraDiscoveryManager discovery();
+    DirigeraDiscoveryManager discovery();
 
     /**
      * Comfort access towards DirigeraDiscoveryManager.
      *
      * @return DirigeraDiscoveryManager
      */
-    public BundleContext getBundleContext();
+    BundleContext getBundleContext();
 }
