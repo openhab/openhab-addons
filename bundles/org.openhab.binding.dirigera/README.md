@@ -163,7 +163,7 @@ Air cleaning device with particle filter.
 | Channel               | Type              | Read/Write | Description                                  | Advanced |
 |-----------------------|-------------------|------------|----------------------------------------------|----------|
 | `fan-mode`            | Number            | RW         | Fan on, off, speed or automatic behavior     |          |
-| `fan-speed`           | Dimmer            | RW         | >Manual regulation of fan speed              |          |
+| `fan-speed`           | Dimmer            | RW         | Manual regulation of fan speed               |          |
 | `fan-runtime`         | Number:Time       | R          | Fan runtime in minutes                       |          |
 | `filter-elapsed`      | Number:Time       | R          | Filter elapsed time in minutes               |          |
 | `filter-remain`       | Number:Time       | R          | Time to filter replacement in minutes        |          |
@@ -493,6 +493,10 @@ Sensor detecting motion events.
 | `ota-progress`        | Number                | R          | Over-the-air current progress                    |    X     |
 | `json`                | String                | R          | JSON structure and updates of this device        |    X     |
 
+When motion is detected via `motion` channel all connected devices from `links` channel will be active for the time configured in `active-duration`.
+Standard duration is seconds if raw number is sent as command. 
+See [Motion Sensor Rules](#motion-sensor-rules) for further examples.
+  
 Mappings for `schedule`
 
 - 0 : Always, sensor is always active
@@ -773,7 +777,14 @@ Bridge dirigera:gateway:myhome                      "My wonderful Home"         
 ### Item Configuration
 
 ```java
-Switch                      Table_Lamp_Power_State      { channel="dirigera:temperature-light:myhome:living-room-bulb:power-state" }
+Switch                      Bedroom_Motion_Detection        { channel="dirigera:motion-sensor:myhome:bedroom-motion:motion" }
+Number:Time                 Bedroom_Motion_Active_Duration  { channel="dirigera:motion-sensor:myhome:bedroom-motion:active-duration" }
+Number                      Bedroom_Motion_Schedule         { channel="dirigera:motion-sensor:myhome:bedroom-motion:schedule" }
+DateTime                    Bedroom_Motion_Schedule_Start   { channel="dirigera:motion-sensor:myhome:bedroom-motion:schedule-start" }
+DateTime                    Bedroom_Motion_Schedule_End     { channel="dirigera:motion-sensor:myhome:bedroom-motion:schedule-end" }
+Number:Dimensionless        Bedroom_Motion_Battery_Level    { channel="dirigera:motion-sensor:myhome:bedroom-motion:battery-level" }
+
+Switch                      Table_Lamp_Power_State      { channel="dirigera:temperature-light:myhome:living-room-bulb:power" }
 Dimmer                      Table_Lamp_Brightness       { channel="dirigera:temperature-light:myhome:living-room-bulb:brightness" }
 Dimmer                      Table_Lamp_Temperature      { channel="dirigera:temperature-light:myhome:living-room-bulb:color-temperature" }
 Number                      Table_Lamp_Startup          { channel="dirigera:temperature-light:myhome:living-room-bulb:startup" }
@@ -799,17 +810,37 @@ String                      Dishwasher_JSON             { channel="dirigera:smar
 
 ### Rule Examples
 
+#### Shortcut Controller Rules
+
 Catch triggers from shortcut controller and trigger a scene.
 
 ```java
-rule "Ikea Button 1 Triggers"
+rule "Shortcut Button 1 Triggers"
 when
     Channel 'dirigera:double-shortcut:myhome:my-shortcut-controller:button1' triggered
 then
-    logInfo("Ikea","Button 1 {}",receivedEvent)
+    logInfo("DIRIGERA","Button 1 {}",receivedEvent)
     myhome-light-scene.sendCommand(0)
 end
 ```
+
+#### Motion Sensor Rules
+
+Change the active duration time 
+
+```java
+rule "Sensor configuration"
+when
+    System started
+then
+    logInfo("DIRIGERA","Configuring Ikea sensors")
+    // active duration = 180 seconds
+    Bedroom_Motion_Active_Duration.sendCommand(180)
+    // active duration = 3 minutes aka 180 seconds
+    Bedroom_Motion_Active_Duration.sendCommand("3 min")
+end
+```
+
 
 ## Credits
 
