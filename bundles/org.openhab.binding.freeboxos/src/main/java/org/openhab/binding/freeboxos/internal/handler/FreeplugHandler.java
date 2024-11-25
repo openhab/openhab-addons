@@ -14,7 +14,7 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -84,7 +84,7 @@ public class FreeplugHandler extends ApiConsumerHandler {
                     "internalPoll is not possible because MAC address is undefined for the thing " + thing.getUID());
         }
         getManager(FreeplugManager.class).getPlug(mac).ifPresent(plug -> {
-            updateChannelDateTimeState(LAST_SEEN, ZonedDateTime.now().minusSeconds(plug.inactive()));
+            updateChannelDateTimeState(LAST_SEEN, Instant.now().minusSeconds(plug.inactive()));
 
             updateChannelString(LINE_STATUS, plug.ethPortStatus());
             updateChannelOnOff(REACHABLE, plug.hasNetwork());
