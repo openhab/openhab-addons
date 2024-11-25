@@ -15,7 +15,7 @@ without any need for a dedicated MQTT server.
 Roombas on the same network will be discovered automatically, however in order to connect to them a password is needed. The
 password is a machine-generated string, which is unfortunately not exposed by the original iRobot smartphone application,
 but it can be downloaded from the robot itself. If no password is configured, the Thing enters "CONFIGURATION PENDING" state.
-Now you need to perform authorization by pressing and holding the HOME button on your robot until it plays series of tones
+Now you need to perform authorization by pressing and holding the HOME/DOCK button on your robot until it plays series of tones
 (approximately 2 seconds). The Wi-Fi indicator on the robot will flash for 30 seconds, the binding should automatically
 receive the password and go ONLINE.
 
