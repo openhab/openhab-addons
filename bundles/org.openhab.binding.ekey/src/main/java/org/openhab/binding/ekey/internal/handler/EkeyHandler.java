@@ -84,7 +84,8 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
                 populateChannels(config.protocol);
 
                 EkeyUdpPacketReceiver localReceiver = receiver = new EkeyUdpPacketReceiver(
-                        Objects.requireNonNullElse(config.natIp, config.ipAddress), config.port, getThing().getUID().getAsString());
+                        Objects.requireNonNullElse(config.natIp, config.ipAddress), config.port,
+                        getThing().getUID().getAsString());
                 localReceiver.addEkeyPacketListener(this);
                 try {
                     localReceiver.openConnection();
