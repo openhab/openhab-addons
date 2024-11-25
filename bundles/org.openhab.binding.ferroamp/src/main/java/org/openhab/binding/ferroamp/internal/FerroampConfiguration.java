@@ -27,6 +27,4 @@ public class FerroampConfiguration {
     public String userName = "";
     public String password = "";
     public boolean hasBattery = false;
-    public boolean eso = false;
-    public boolean esm = false;
 }

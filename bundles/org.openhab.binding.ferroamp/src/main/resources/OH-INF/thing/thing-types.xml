@@ -461,16 +461,6 @@
 				<description>Has the system a battery connected?</description>
 				<default>false</default>
 			</parameter>
-			<parameter name="eso" type="boolean" required="false">
-				<label>ESO Module Available</label>
-				<description>Has the system an Eso unit connected?</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="esm" type="boolean" required="false">
-				<label>ESM Module Available</label>
-				<description>Has the system an Esm unit connected?</description>
-				<default>false</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 

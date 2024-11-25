@@ -5,7 +5,7 @@ The Ferroamp binding is used to get live data from Ferroamp EnergyHub
 The Ferroamp binding is compatible with EnergyHub Wall and EnergyHub XL, and connects to your local EnergyHub via LAN.
 Data and commands are received/sent using MQTT where the user connects to the MQTT broker residing on the EnergyHub.
 The communication with the broker might take some minute to establish, so Please just be patient. The Thing will be
-in state INITIALIZATION during this time and then change to state ONLINE once connection is established.
+in state INITIALIZATION and UNKNOWN during this time and then change to state ONLINE once connection is established.
 
 *note* Contact Ferroamp support to enable MQTT in the EnergyHub and to get the Username and Password:
 
@@ -37,8 +37,6 @@ The following configuration parameters are available.
 | userName        | text    | Username to access the device                         | N/A     | yes      | no       |
 | password        | text    | Password to access the device                         | N/A     | yes      | no       |
 | hasBattery      | boolean | Has the system a battery connected?                   | N/A     | no       | yes      |
-| eso             | boolean | Has the system an Eso unit connected?                 | N/A     | no       | no       |
-| esm             | boolean | Has the system an Esm unit connected?                 | N/A     | no       | no       |
 
 ## Channels
 
@@ -126,8 +124,8 @@ The following configuration parameters are available.
 | timestamp                             | DateTime                   | R          | Time Stamp                               | Time stamp when message was published                                                                |
 | battery-energy-produced               | Number:Energy              | R          | Battery Energy Produced                  | Only sent when system has batteries                                                                  |
 | battery-energy-consumed               | Number:Energy              | R          | Battery Energy Consumed                  | Only sent when system has batteries                                                                  |
-| soc                                   | Number:Percentage          | R          | System State of Check                    | State of the system                                                                                  |
-| soh                                   | Number:Percentage          | R          | System State of Health                   |                                                                                                      |
+| soc                                   | Number:Dimensionless       | R          | System State of Check                    | State of the system                                                                                  |
+| soh                                   | Number:Dimensionless       | R          | System State of Health                   |                                                                                                      |
 | power-battery                         | Number:Power               | R          | Battery Power                            | Only sent when system has batteries                                                                  |
 | total-capacity-batteries              | Number:Energy              | R          | Total Capacity Batteries                 | Total rated capacity of all batteries                                                                |
 
@@ -176,7 +174,7 @@ The following configuration parameters are available.
 | eso-current-battery                   | Number:ElectricCurrent     | R          | Eso Current on Battery Side              | Measured on battery side                                                                             |
 | eso-battery-energy-produced           | Number:Energy              | R          | Eso Battery Energy Produced              | Total energy produced by ESO, i.e total energy charged                                               |
 | eso-battery-energy-consumed           | Number:Energy              | R          | Eso Battery Energy Consumed              | Total energy consumed by ESO, i.e total energy discharged                                            |
-| eso-soc                               | Number:Percentage          | R          | Eso State of Charge                      | State of Charge for ESO                                                                              |
+| eso-soc                               | Number:Dimensionless       | R          | Eso State of Charge                      | State of Charge for ESO                                                                              |
 | eso-relay-status                      | Contact                    | R          | Eso Relay Status                         | 0 = relay closed, 1 = relay open                                                                     |
 | eso-temperature                       | Number:Temperature         | R          | Eso Temperature on PCB                   | Measured inside ESO                                                                                  |
 | eso-fault-code                        | String                     | R          | Eso FaultCode                            | See section 4.1.3.1 in Ferroamp-External-API-specifikation                                           |
@@ -186,8 +184,8 @@ The following configuration parameters are available.
 
 
 | esm-id                                | String                     | R          | Esm Unique Identifier                    | Unique identifier of battery. If available, this will be the unique id that the battery reports      |
-| esm-soh                               | Number:Percentage          | R          | Esm System State of Health               | State of Health for ESM                                                                              |
-| esm-soc                               | Number:Percentage          | R          | Esm System State of Charge               | State of Charge for ESM                                                                              |
+| esm-soh                               | Number:Dimensionless       | R          | Esm System State of Health               | State of Health for ESM                                                                              |
+| esm-soc                               | Number:Dimensionless       | R          | Esm System State of Charge               | State of Charge for ESM                                                                              |
 | esm-total-capacity                    | Number:Energy              | R          | Esm Rated Capacity                       | Rated capacity of all batteries                                                                      |
 | esm-power-battery                     | Number:Power               | R          | Esm Rated Power of Battery               | Rated power of battery                                                                               |
 | esm-status                            | String                     | R          | Esm Status                               | Dependent on battery manufacturer                                                                    |

@@ -44,9 +44,9 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
     private final static Logger logger = LoggerFactory.getLogger(FerroampHandler.class);
     private @Nullable static MqttBrokerConnection ferroampConnection;
     FerroampMqttCommunication ferroampMqttCommunication = new FerroampMqttCommunication(thing);
-    final FerroampConfiguration ferroampConfig = getConfigAs(FerroampConfiguration.class);
+    private @Nullable FerroampConfiguration ferroampConfig;
 
-    private List<FerroampChannelConfiguration> channelConfigEhub = new ArrayList<>();
+    private static List<FerroampChannelConfiguration> channelConfigEhub = new ArrayList<>();
     private static List<FerroampChannelConfiguration> channelConfigSsoS1 = new ArrayList<>();
     private static List<FerroampChannelConfiguration> channelConfigSsoS2 = new ArrayList<>();
     private static List<FerroampChannelConfiguration> channelConfigSsoS3 = new ArrayList<>();
@@ -55,8 +55,6 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
     private static List<FerroampChannelConfiguration> channelConfigEsm = new ArrayList<>();
 
     long refreshInterval = 30;
-    static boolean isEsoAvailable = false;
-    static boolean isEsmAvailable = false;
 
     public FerroampHandler(Thing thing) {
         super(thing);
@@ -84,6 +82,8 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
 
     @Override
     public void initialize() {
+        // Set configuration parameters
+        ferroampConfig = getConfigAs(FerroampConfiguration.class);
         // Set channel configuration parameters
         channelConfigEhub = FerroampChannelConfiguration.getChannelConfigurationEhub();
         channelConfigSsoS1 = FerroampChannelConfiguration.getChannelConfigurationSsoS1();
@@ -93,32 +93,39 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         channelConfigEso = FerroampChannelConfiguration.getChannelConfigurationEso();
         channelConfigEsm = FerroampChannelConfiguration.getChannelConfigurationEsm();
 
-        final MqttBrokerConnection ferroampConnection = new MqttBrokerConnection(ferroampConfig.hostName,
-                FerroampBindingConstants.BROKER_PORT, false, false, ferroampConfig.userName);
+        if (ferroampConfig != null && channelConfigEhub != null && channelConfigSsoS1 != null
+                && channelConfigSsoS2 != null && channelConfigSsoS3 != null && channelConfigSsoS4 != null
+                && channelConfigEso != null && channelConfigEsm != null) {
 
-        scheduler.scheduleWithFixedDelay(this::pollTask, 60, refreshInterval, TimeUnit.SECONDS);
-        this.setFerroampConnection(ferroampConnection);
+            final MqttBrokerConnection ferroampConnection = new MqttBrokerConnection(ferroampConfig.hostName,
+                    FerroampBindingConstants.BROKER_PORT, false, false, ferroampConfig.userName);
+
+            scheduler.scheduleWithFixedDelay(this::pollTask, 60, refreshInterval, TimeUnit.SECONDS);
+            this.setFerroampConnection(ferroampConnection);
+            updateStatus(ThingStatus.UNKNOWN);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            logger.debug("Configuration problems");
+        }
     }
 
     private void pollTask() {
         try {
             startMqttConnection();
         } catch (InterruptedException e) {
-            logger.debug("Problems with startMqttConnection()");
+            logger.debug("Not connected to the MqttBroker");
+            return;
         }
 
-        Objects.requireNonNull(ferroampConnection, "MqttBrokerConnection ferroampConnection cannot be null");
-        if (ferroampConnection.connectionState().toString().equals("DISCONNECTED")) {
+        MqttBrokerConnection ferroampConnection = FerroampHandler.ferroampConnection;
+
+        if (ferroampConnection == null || ferroampConnection.connectionState().toString().equals("DISCONNECTED")) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.debug("Problem connection to MqttBroker");
-        }
-
-        Objects.requireNonNull(ferroampConnection, "MqttBrokerConnection ferroampConnection cannot be null, ");
-        if (ferroampConnection.connectionState().toString().equals("CONNECTED")) {
+        } else if (ferroampConnection.connectionState().toString().equals("CONNECTED")) {
+            updateStatus(ThingStatus.ONLINE);
             try {
                 channelUpdate();
-                updateStatus(ThingStatus.ONLINE);
-
             } catch (RuntimeException scheduleWithFixedDelayException) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         scheduleWithFixedDelayException.getClass().getName() + ":"
@@ -128,6 +135,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
     }
 
     private void startMqttConnection() throws InterruptedException {
+
         MqttBrokerConnection localSubscribeConnection = FerroampHandler.getFerroampConnection();
 
         Objects.requireNonNull(localSubscribeConnection,
@@ -201,27 +209,31 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
             }
         }
 
-        if (ferroampConfig.eso == true) {
-            String[] esoUpdateChannels;
-            esoUpdateChannels = FerroampMqttCommunication.getEsoChannelUpdateValues();
+        String[] esoUpdateChannels = new String[11];
+        esoUpdateChannels = FerroampMqttCommunication.getEsoChannelUpdateValues();
+        if (esoUpdateChannels.length > 0) {
             int channelValuesCounterEso = 0;
-            for (FerroampChannelConfiguration cConfig : channelConfigEso) {
-                String esoChannel = cConfig.id;
-                State esoState = StringType.valueOf(esoUpdateChannels[channelValuesCounterEso]);
-                updateState(esoChannel, esoState);
-                channelValuesCounterEso++;
+            if (esoUpdateChannels.length <= 9) {
+                for (FerroampChannelConfiguration cConfig : channelConfigEso) {
+                    String esoChannel = cConfig.id;
+                    State esoState = StringType.valueOf(esoUpdateChannels[channelValuesCounterEso]);
+                    updateState(esoChannel, esoState);
+                    channelValuesCounterEso++;
+                }
             }
         }
 
-        if (ferroampConfig.esm == true) {
-            String[] esmUpdateChannels;
-            esmUpdateChannels = FerroampMqttCommunication.getEsmChannelUpdateValues();
+        String[] esmUpdateChannels = new String[7];
+        esmUpdateChannels = FerroampMqttCommunication.getEsmChannelUpdateValues();
+        if (esmUpdateChannels.length > 0) {
             int channelValuesCounterEsm = 0;
-            for (FerroampChannelConfiguration cConfig : channelConfigEsm) {
-                String esmChannel = cConfig.id;
-                State esmState = StringType.valueOf(esmUpdateChannels[channelValuesCounterEsm]);
-                updateState(esmChannel, esmState);
-                channelValuesCounterEsm++;
+            if (esmUpdateChannels.length <= 9) {
+                for (FerroampChannelConfiguration cConfig : channelConfigEsm) {
+                    String esmChannel = cConfig.id;
+                    State esmState = StringType.valueOf(esmUpdateChannels[channelValuesCounterEsm]);
+                    updateState(esmChannel, esmState);
+                    channelValuesCounterEsm++;
+                }
             }
         }
     }

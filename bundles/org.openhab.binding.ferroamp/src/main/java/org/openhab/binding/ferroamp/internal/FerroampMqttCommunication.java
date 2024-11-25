@@ -51,9 +51,6 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
     static String ssoS3IdCheck = "";
     static String ssoS4IdCheck = "";
 
-    static boolean isEsoAvailable = false;
-    static boolean isEsmAvailable = false;
-
     private final static Logger logger = LoggerFactory.getLogger(FerroampMqttCommunication.class);
 
     public FerroampMqttCommunication(Thing thing) {
@@ -690,7 +687,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
 
     // Prepare actual Json-topic Eso-message and update values for channels
     void processIncomingJsonMessageEso(String topic, String messageJsonEso) {
-        String[] esoChannelPostsValue = new String[10]; // Array for ESO, Energy Storage Optimizer ) Posts
+        String[] esoChannelPostsValue = new String[11]; // Array for ESO, Energy Storage Optimizer ) Posts
         JsonObject jsonElementsObjectEso = new Gson().fromJson(new Gson().fromJson(messageJsonEso, JsonObject.class),
                 JsonObject.class);
 
@@ -699,61 +696,75 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         String jsonElementsStringTemp = "";
         Gson gson = new Gson();
 
-        // faultcode
-        jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(0)).toString();
+        if (!jsonElementsObjectEso.isEmpty()) {
+            // id
+            jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(0)).toString();
+            GetGeneralValues id = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esoChannelPostsValue[0] = id.getVal();
 
-        GetGeneralValues faultcode = checkNullGeneralValues(
-                gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esoChannelPostsValue[0] = faultcode.getVal();
+            // ubat
+            jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(1)).toString();
+            GetGeneralValues ubat = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esoChannelPostsValue[1] = ubat.getVal();
 
-        // id
-        jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(1)).toString();
-        GetGeneralValues id = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esoChannelPostsValue[1] = id.getVal();
+            // ibat
+            jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(2)).toString();
+            GetGeneralValues ibat = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esoChannelPostsValue[2] = ibat.getVal();
 
-        // ibat
-        jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(2)).toString();
-        GetGeneralValues ibat = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esoChannelPostsValue[2] = ibat.getVal();
+            // wbatprod
+            jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(3)).toString();
+            GetGeneralValues wbatprod = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esoChannelPostsValue[3] = mJTokWh(jsonStripOneLiners(wbatprod.getVal()));
 
-        // ubat
-        jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(3)).toString();
-        GetGeneralValues ubat = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esoChannelPostsValue[3] = ubat.getVal();
+            // wbatcons
+            jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(4)).toString();
+            GetGeneralValues wbatcons = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esoChannelPostsValue[4] = mJTokWh(jsonStripOneLiners(wbatcons.getVal()));
 
-        // relaystatus
-        jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(4)).toString();
-        GetGeneralValues relaystatus = checkNullGeneralValues(
-                gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esoChannelPostsValue[4] = relaystatus.getVal();
+            // soc
+            jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(5)).toString();
+            GetGeneralValues soc = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esoChannelPostsValue[5] = soc.getVal();
 
-        // soc
-        jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(5)).toString();
-        GetGeneralValues soc = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esoChannelPostsValue[5] = soc.getVal();
+            // relaystatus
+            jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(6)).toString();
+            GetGeneralValues relaystatus = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esoChannelPostsValue[6] = relaystatus.getVal();
 
-        // temp
-        jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(6)).toString();
-        GetGeneralValues temp = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esoChannelPostsValue[6] = temp.getVal();
+            // temp
+            jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(7)).toString();
+            GetGeneralValues temp = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esoChannelPostsValue[7] = temp.getVal();
 
-        // wbatprod
-        jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(7)).toString();
-        GetGeneralValues wbatprod = checkNullGeneralValues(
-                gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esoChannelPostsValue[7] = mJTokWh(jsonStripOneLiners(wbatprod.getVal()));
+            // faultcode
+            jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(8)).toString();
+            GetGeneralValues faultcode = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esoChannelPostsValue[8] = faultcode.getVal();
 
-        // udc
-        jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(8)).toString();
-        GetGeneralValues udc = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esoChannelPostsValue[8] = udc.getVal();
+            // udc
+            jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(9)).toString();
+            GetGeneralValues udc = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esoChannelPostsValue[9] = udc.getVal();
 
-        // ts
-        jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(9)).toString();
-        GetGeneralValues ts = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esoChannelPostsValue[9] = ts.getVal();
+            // ts
+            jsonElementsStringTemp = jsonElementsObjectEso.get(EsoJsonElements.getJsonElementsEso().get(10)).toString();
+            GetGeneralValues ts = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esoChannelPostsValue[10] = ts.getVal();
 
-        esoChannelsUpdateValues = esoChannelPostsValue;
+            esoChannelsUpdateValues = esoChannelPostsValue;
+        } else {
+            return;
+        }
     }
 
     // Prepare actual Json-topic Esm-message and update values for channels
@@ -767,44 +778,51 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         String jsonElementsStringTemp = "";
         Gson gson = new Gson();
 
-        // soc
-        jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(0)).toString();
-        GetGeneralValues soc = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esmChannelPostsValue[0] = soc.getVal();
+        if (!jsonElementsObjectEsm.isEmpty()) {
+            // id
+            jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(0)).toString();
+            GetGeneralValues id = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esmChannelPostsValue[0] = id.getVal();
 
-        // soh
-        jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(1)).toString();
-        GetGeneralValues soh = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esmChannelPostsValue[1] = soh.getVal();
+            // soh
+            jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(1)).toString();
+            GetGeneralValues soh = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esmChannelPostsValue[1] = soh.getVal();
 
-        // ratedcapacity
-        jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(2)).toString();
-        GetGeneralValues ratedcapacity = checkNullGeneralValues(
-                gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esmChannelPostsValue[2] = ratedcapacity.getVal();
+            // soc
+            jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(2)).toString();
+            GetGeneralValues soc = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esmChannelPostsValue[2] = soc.getVal();
 
-        // id
-        jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(3)).toString();
-        GetGeneralValues id = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esmChannelPostsValue[3] = id.getVal();
+            // ratedcapacity
+            jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(3)).toString();
+            GetGeneralValues ratedcapacity = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esmChannelPostsValue[3] = ratedcapacity.getVal();
 
-        // ratedpower
-        jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(4)).toString();
-        GetGeneralValues ratedpower = checkNullGeneralValues(
-                gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esmChannelPostsValue[4] = ratedpower.getVal();
+            // ratedpower
+            jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(4)).toString();
+            GetGeneralValues ratedpower = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esmChannelPostsValue[4] = ratedpower.getVal();
 
-        // status
-        jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(5)).toString();
-        GetGeneralValues status = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esmChannelPostsValue[5] = status.getVal();
+            // status
+            jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(5)).toString();
+            GetGeneralValues status = checkNullGeneralValues(
+                    gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esmChannelPostsValue[5] = status.getVal();
 
-        // ts
-        jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(6)).toString();
-        GetGeneralValues ts = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
-        esmChannelPostsValue[6] = ts.getVal();
+            // ts
+            jsonElementsStringTemp = jsonElementsObjectEsm.get(EsmJsonElements.getJsonElementsEsm().get(6)).toString();
+            GetGeneralValues ts = checkNullGeneralValues(gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+            esmChannelPostsValue[6] = ts.getVal();
 
-        esmChannelsUpdateValues = esmChannelPostsValue;
+            esmChannelsUpdateValues = esmChannelPostsValue;
+        } else {
+            return;
+        }
     }
 
     public @Nullable static String[] getEhubChannelUpdateValues() {
