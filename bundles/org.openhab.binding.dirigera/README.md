@@ -163,9 +163,10 @@ Air cleaning device with particle filter.
 | Channel               | Type              | Read/Write | Description                                  | Advanced |
 |-----------------------|-------------------|------------|----------------------------------------------|----------|
 | `fan-mode`            | Number            | RW         | Fan on, off, speed or automatic behavior     |          |
-| `motor-time`          | Number:Time       | R          | Motor runtime in minutes                     |          |
+| `fan-speed`           | Dimmer            | RW         | >Manual regulation of fan speed              |          |
+| `fan-runtime`         | Number:Time       | R          | Fan runtime in minutes                       |          |
 | `filter-elapsed`      | Number:Time       | R          | Filter elapsed time in minutes               |          |
-| `filter-reamin`       | Number:Time       | R          | Time to filter replacement in minutes        |          |
+| `filter-remain`       | Number:Time       | R          | Time to filter replacement in minutes        |          |
 | `filter-lifetime`     | Number:Time       | R          | Filter lifetime in minutes                   |          |
 | `filter-alarm`        | Switch            | R          | Filter alarm signal                          |          |
 | `particulate-matter`  | Number:Density    | R          | Category 2.5 particulate matter              |          |
@@ -176,6 +177,10 @@ Air cleaning device with particle filter.
 | `ota-state`           | Number            | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number            | R          | Over-the-air current progress                |    X     |
 | `json`                | String            | R          | JSON structure and updates of this device    |    X     |
+
+There are several `Number:Time` which are delivered in minutes as default.
+Note you can change the unit when connecting an item e.g. to `d` (days) for readability.
+So you can check in a rule if your remaining filter time is going below 7 days instead of calculating minutes. 
 
 ### Air Purifier Channel Mappings
 
@@ -441,7 +446,8 @@ Smart plug like [Power Plug](#power-plug) plus measuring capability.
 | `disable-light`       | Switch                    | RW         | Disable status light on plug                 |          |
 | `electric-power`      | Number:Power              | R          | Electric power delivered by plug             |          |
 | `energy-total`        | Number:Energy             | R          | Total energy consumption                     |          |
-| `energy-reset`        | Number:Energy             | RW         | Energy consumption since last rese           |          |
+| `energy-reset`        | Number:Energy             | R          | Energy consumption since last reset          |          |
+| `reset-date`          | DateTime                  | RW         | Date and time of last reset                  |          |
 | `electric-current`    | Number:ElectricCurrent    | R          | Electric current measured by plug            |          | 
 | `electric-voltage`    | Number:ElectricPotential  | R          | Electric potential of plug                   |          |
 | `startup`             | Number                    | RW         | Startup behavior after power cutoff          |          |
@@ -452,6 +458,10 @@ Smart plug like [Power Plug](#power-plug) plus measuring capability.
 | `ota-state`           | Number                    | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                    | R          | Over-the-air current progress                |    X     |
 | `json`                | String                    | R          | JSON structure and updates of this device    |    X     |
+
+Smart plug provides `energy-total` measuring energy consumption over lifetime and `energy-reset` measuring energy consumption from `reset-date` till now.
+Channel `reset-date` is writable and will set the date time to the timestamp of command execution.
+Past and future timestamps are not possible and will be ignored.
 
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.
 See [OTA channel mappings](#ota-mappings) for over the air updates.

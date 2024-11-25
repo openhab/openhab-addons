@@ -15,11 +15,11 @@
 		<channels>
 			<channel id="fan-mode" typeId="fan-mode">
 				<label>Fan Mode</label>
-				<description>Fan on, off, speed or automatic behavior </description>
+				<description>Fan on, off, speed or automatic behavior</description>
 			</channel>
 			<channel id="fan-speed" typeId="dimmer">
 				<label>Fan Speed</label>
-				<description>Manual regulation of fan speed </description>
+				<description>Manual regulation of fan speed</description>
 			</channel>
 			<channel id="fan-runtime" typeId="time">
 				<label>Fan Runtime</label>

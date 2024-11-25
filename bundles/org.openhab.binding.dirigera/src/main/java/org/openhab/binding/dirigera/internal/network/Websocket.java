@@ -76,6 +76,10 @@ public class Websocket {
         this.httpClient = httpClient;
     }
 
+    public void initialize() {
+        disposed = false;
+    }
+
     public void start() {
         if ("unit-test".equals(gateway.getToken())) {
             // handle unit tests online
@@ -83,7 +87,7 @@ public class Websocket {
             return;
         }
         if (disposed) {
-            logger.trace("DIRIGERA WS start rejected, disposed {}", disposed);
+            logger.debug("DIRIGERA WS start rejected, disposed {}", disposed);
             return;
         }
         increase(STARTS);

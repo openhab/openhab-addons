@@ -278,6 +278,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             Model houseModel = new DirigeraModel(this);
             model = Optional.of(houseModel);
             modelUpdate(); // initialize model
+            websocket.initialize();
             connectGateway(); // chacks API access and starts websocket
             // start watchdog to check gateway connection and start recovery if necessary
             watchdog = Optional.of(scheduler.scheduleWithFixedDelay(this::watchdog, 15, 15, TimeUnit.SECONDS));
@@ -756,8 +757,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         if (websocket.isRunning()) {
             Map<String, Instant> pingPnogMap = websocket.getPingPongMap();
             if (pingPnogMap.size() > 1) { // at least 2 shall be missing before watchdog trigger
-                logger.warn("DIRIGERA HANDLER Watchdog Ping ong Panic - {} pings not answered", pingPnogMap.size());
-                websocket.dispose();
+                logger.warn("DIRIGERA HANDLER Watchdog Ping Pong Panic - {} pings not answered", pingPnogMap.size());
+                websocket.stop();
                 String message = "ping not answered";
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/dirigera.gateway.status.comm-error" + " [\"" + message + "\"]");
