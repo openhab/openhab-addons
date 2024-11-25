@@ -15,8 +15,6 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -48,8 +46,7 @@ public class PirHandler extends HomeNodeHandler {
     protected State getChannelState(String channelId, EndpointState state, Optional<Endpoint> endPoint) {
         if (PIR_TAMPER_UPDATE.equals(channelId) || PIR_TRIGGER_UPDATE.equals(channelId)) {
             return Objects.requireNonNull(endPoint.map(ep -> ep.getLastChange()
-                    .map(change -> (State) new DateTimeType(
-                            ZonedDateTime.ofInstant(Instant.ofEpochSecond(change.timestamp()), ZoneOffset.UTC)))
+                    .map(change -> (State) new DateTimeType(Instant.ofEpochSecond(change.timestamp())))
                     .orElse(UnDefType.UNDEF)).orElse(UnDefType.UNDEF));
         }
 
