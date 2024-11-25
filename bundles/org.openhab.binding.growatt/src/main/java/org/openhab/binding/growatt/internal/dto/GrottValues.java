@@ -185,7 +185,7 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "eractotal") Integer erac_total;
 
     /*
-     * ============== CHANNELS ADDED IN NOVEMBER 2024  ==============
+     * ============== CHANNELS ADDED IN PR #17795 ==============
      */
 
     // battery instantaneous measurements

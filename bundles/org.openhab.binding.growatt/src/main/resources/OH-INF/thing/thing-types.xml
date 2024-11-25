@@ -439,7 +439,7 @@
 				<description>Total reactive energy supplied.</description>
 			</channel>
 
-			<!-- ============== CHANNELS ADDED IN NOVEMBER 2024 ============== -->
+			<!-- ============== CHANNELS ADDED IN PR #17795 ============== -->
 
 			<!-- battery instantaneous measurements -->
 			<channel id="battery-voltage2" typeId="advanced-electric-voltage">

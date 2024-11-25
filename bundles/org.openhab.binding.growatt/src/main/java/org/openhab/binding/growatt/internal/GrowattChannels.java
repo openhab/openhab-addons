@@ -189,7 +189,7 @@ public class GrowattChannels {
             new AbstractMap.SimpleEntry<String, UoM>("erac-total", new UoM(Units.KILOVAR_HOUR, 10)),
 
             /*
-             * ============== CHANNELS ADDED IN NOVEMBER 2024 ==============
+             * ============== CHANNELS ADDED IN PR #17795 ==============
              */
 
             // battery instantaneous measurements

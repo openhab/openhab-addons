@@ -3,6 +3,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
 	<thing-type uid="growatt:inverter">
+		<!-- ============== CHANNELS ADDED IN PR #17795 ============== -->
 		<instruction-set targetVersion="1">
 			<add-channel id="battery-voltage2">
 				<type>growatt:advanced-electric-voltage</type>
