@@ -851,7 +851,7 @@ public class WizHandler extends BaseThingHandler {
         if (isFanOnly) {
             updateState(channelId, state);
         } else {
-            updateState(new ChannelUID(this.getThing().getUID(), CHANNEL_GROUP_LIGHT, channelId), state);
+            updateState(new ChannelUID(this.getThing().getUID(), CHANNEL_GROUP_FAN, channelId), state);
         }
     }
 
