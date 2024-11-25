@@ -69,7 +69,7 @@ public class GPSTrackerTriggerSwitchProfile implements TriggerProfile {
     @Override
     public void onTriggerFromHandler(String payload) {
         if (!payload.contains("/")) {
-            logger.debug("Transition trigger {} caught mallformed payload, missing '\''", payload, regionName);
+            logger.debug("Transition trigger {} caught mallformed payload, missing '\''", payload);
             return;
         }
         String[] splitted = payload.split("/");
