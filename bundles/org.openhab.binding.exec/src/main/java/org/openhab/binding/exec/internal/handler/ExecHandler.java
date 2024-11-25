@@ -18,7 +18,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -296,9 +295,7 @@ public class ExecHandler extends BaseThingHandler {
             }
 
             updateState(OUTPUT, new StringType(transformedResponse));
-
-            DateTimeType stampType = new DateTimeType(ZonedDateTime.now());
-            updateState(LAST_EXECUTION, stampType);
+            updateState(LAST_EXECUTION, new DateTimeType());
         }
     }
 
