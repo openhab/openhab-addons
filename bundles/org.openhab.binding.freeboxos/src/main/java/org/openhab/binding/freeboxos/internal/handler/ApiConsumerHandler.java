@@ -13,6 +13,7 @@
 package org.openhab.binding.freeboxos.internal.handler;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -288,7 +289,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
         }
     }
 
-    protected void updateChannelDateTimeState(String channelId, @Nullable ZonedDateTime timestamp) {
+    protected void updateChannelDateTimeState(String channelId, @Nullable Instant timestamp) {
         updateIfActive(channelId, timestamp == null ? UnDefType.NULL : new DateTimeType(timestamp));
     }
 
