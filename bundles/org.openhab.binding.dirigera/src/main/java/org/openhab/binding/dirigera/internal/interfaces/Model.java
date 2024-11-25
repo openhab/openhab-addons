@@ -29,30 +29,30 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public interface Model {
 
-    public static final String REACHABLE = "isReachable";
-    public static final String ATTRIBUTES = "attributes";
-    public static final String CAPABILITIES = "capabilities";
-    public static final String PROPERTY_CAN_RECEIVE = "canReceive";
-    public static final String PROPERTY_CAN_SEND = "canSend";
-    public static final String SCENES = "scenes";
-    public static final String CUSTOM_NAME = "customName";
-    public static final String DEVICE_MODEL = "model";
-    public static final String DEVICE_TYPE = "deviceType";
-    public static final String PROPERTY_RELATION_ID = "relationId";
+    static final String REACHABLE = "isReachable";
+    static final String ATTRIBUTES = "attributes";
+    static final String CAPABILITIES = "capabilities";
+    static final String PROPERTY_CAN_RECEIVE = "canReceive";
+    static final String PROPERTY_CAN_SEND = "canSend";
+    static final String SCENES = "scenes";
+    static final String CUSTOM_NAME = "customName";
+    static final String DEVICE_MODEL = "model";
+    static final String DEVICE_TYPE = "deviceType";
+    static final String PROPERTY_RELATION_ID = "relationId";
 
-    public static final String COLOR_TEMPERATURE_CAPABILITY = "colorTemperature";
+    static final String COLOR_TEMPERATURE_CAPABILITY = "colorTemperature";
 
-    public static final String TEMPLATE_LIGHT_PRESET_BRIGHT = "/json/light-presets/bright.json";
-    public static final String TEMPLATE_LIGHT_PRESET_SLOWDOWN = "/json/light-presets/slowdown.json";
-    public static final String TEMPLATE_LIGHT_PRESET_SMOOTH = "/json/light-presets/smooth.json";
-    public static final String TEMPLATE_LIGHT_PRESET_WARM = "/json/light-presets/warm.json";
-    public static final String TEMPLATE_SENSOR_ALWQAYS_ON = "/json/sensor-config/always-on.json";
-    public static final String TEMPLATE_SENSOR_DURATION_UPDATE = "/json/sensor-config/duration-update.json";
-    public static final String TEMPLATE_SENSOR_FOLLOW_SUN = "/json/sensor-config/follow-sun.json";
-    public static final String TEMPLATE_SENSOR_SCHEDULE_ON = "/json/sensor-config/schedule-on.json";
-    public static final String TEMPLATE_CLICK_SCENE = "/json/scenes/click-scene.json";
-    public static final String TEMPLATE_COORDINATES = "/json/gateway/coordinates.json";
-    public static final String TEMPLATE_NULL_COORDINATES = "/json/gateway/null-coordinates.json";
+    static final String TEMPLATE_LIGHT_PRESET_BRIGHT = "/json/light-presets/bright.json";
+    static final String TEMPLATE_LIGHT_PRESET_SLOWDOWN = "/json/light-presets/slowdown.json";
+    static final String TEMPLATE_LIGHT_PRESET_SMOOTH = "/json/light-presets/smooth.json";
+    static final String TEMPLATE_LIGHT_PRESET_WARM = "/json/light-presets/warm.json";
+    static final String TEMPLATE_SENSOR_ALWQAYS_ON = "/json/sensor-config/always-on.json";
+    static final String TEMPLATE_SENSOR_DURATION_UPDATE = "/json/sensor-config/duration-update.json";
+    static final String TEMPLATE_SENSOR_FOLLOW_SUN = "/json/sensor-config/follow-sun.json";
+    static final String TEMPLATE_SENSOR_SCHEDULE_ON = "/json/sensor-config/schedule-on.json";
+    static final String TEMPLATE_CLICK_SCENE = "/json/scenes/click-scene.json";
+    static final String TEMPLATE_COORDINATES = "/json/gateway/coordinates.json";
+    static final String TEMPLATE_NULL_COORDINATES = "/json/gateway/null-coordinates.json";
 
     /**
      * Get structure model as JSON String.
@@ -60,7 +60,7 @@ public interface Model {
      * @see json channel
      * @return JSON String
      */
-    public String getModelString();
+    String getModelString();
 
     /**
      * Model update will be performed with API request. Relative expensive operation depending on number of connected
@@ -69,12 +69,12 @@ public interface Model {
      * - add / remove device to DIRIGERA gateway, not openHAB
      * - custom name changes for Discovery updates
      */
-    public int update();
+    int update();
 
     /**
      * Starts a new detection without model update. If handlers are removed they shall appear in discovery again.
      */
-    public void detection();
+    void detection();
 
     /**
      * Get all id's for a specific type. Used to identify link candidates for a specific device.
@@ -85,14 +85,14 @@ public interface Model {
      * @param types as list of types to query
      * @return list of matching device id's
      */
-    public List<String> getDevicesForTypes(List<String> types);
+    List<String> getDevicesForTypes(List<String> types);
 
     /**
      * Returns a list of all device id's.
      *
      * @return list of all connected devices
      */
-    public List<String> getAllDeviceIds();
+    List<String> getAllDeviceIds();
 
     /**
      * Returns a list with resolved relation id's. There are complex device registering more than one id with different
@@ -102,7 +102,7 @@ public interface Model {
      *
      * @return list of device id's without related devices
      */
-    public List<String> getResolvedDeviceList();
+    List<String> getResolvedDeviceList();
 
     /**
      * Get all stored information for one device or scene.
@@ -111,7 +111,7 @@ public interface Model {
      * @param type device or scene
      * @return data as JSON
      */
-    public JSONObject getAllFor(String id, String type);
+    JSONObject getAllFor(String id, String type);
 
     /**
      * Gets all relations marked into relationId property
@@ -128,7 +128,7 @@ public interface Model {
      * @param relationId
      * @return List of id's with same serial number
      */
-    public TreeMap<String, String> getRelations(String relationId);
+    TreeMap<String, String> getRelations(String relationId);
 
     /**
      * Get relationId for a given device id
@@ -136,7 +136,7 @@ public interface Model {
      * @param id to check
      * @return same id if no relations are found or relationId
      */
-    public String getRelationId(String id);
+    String getRelationId(String id);
 
     /**
      * Identify device which is present in model with openHAB ThingTypeUID.
@@ -144,7 +144,7 @@ public interface Model {
      * @param id to identify
      * @return ThingTypeUID
      */
-    public ThingTypeUID identifyDeviceFromModel(String id);
+    ThingTypeUID identifyDeviceFromModel(String id);
 
     /**
      * Check if given id is present in devices or scenes.
@@ -152,7 +152,7 @@ public interface Model {
      * @param id to check
      * @return true if id is found
      */
-    public boolean has(String id);
+    boolean has(String id);
 
     /**
      * Get the custom name configured in IKEA Smart home app.
@@ -160,7 +160,7 @@ public interface Model {
      * @param id to query
      * @return name as String
      */
-    public String getCustonNameFor(String id);
+    String getCustonNameFor(String id);
 
     /**
      * Properties Map for Discovery
@@ -168,7 +168,7 @@ public interface Model {
      * @param id to query
      * @return Map with attributes for Thing properties
      */
-    public Map<String, Object> getPropertiesFor(String id);
+    Map<String, Object> getPropertiesFor(String id);
 
     /**
      * Read a resource file from this bundle. Some presets and commands sent to API shall not be implemented
@@ -177,5 +177,5 @@ public interface Model {
      *
      * @return
      */
-    public String getTemplate(String name);
+    String getTemplate(String name);
 }
