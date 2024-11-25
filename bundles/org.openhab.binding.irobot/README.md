@@ -19,7 +19,7 @@ Now you need to perform authorization by pressing and holding the HOME/DOCK butt
 The Wi-Fi indicator on the robot will flash for 30 seconds, the binding should automatically receive the password and go ONLINE.
 
 After you've done this procedure you can write the password somewhere in case if you need to reconfigure your binding.
-It'snot known, however, whether the password is eternal or can change during factory reset.
+It's not known, however, whether the password is eternal or can change during factory reset.
 If you have issues getting the password make sure there are no other devices like your smartphone communicating with the robot.
 You can also try using [these python scripts](https://github.com/NickWaterton/Roomba980-Python) to get the password.
 
