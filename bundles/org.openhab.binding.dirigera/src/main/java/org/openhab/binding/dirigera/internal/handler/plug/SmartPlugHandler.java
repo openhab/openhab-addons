@@ -69,7 +69,7 @@ public class SmartPlugHandler extends PowerPlugHandler {
 
     private void energyReset() {
         JSONObject reset = new JSONObject("{\"energyConsumedAtLastReset\": 0}");
-        gateway().api().sendAttributes(config.id, reset);
+        super.sendAttributes(reset);
     }
 
     @Override

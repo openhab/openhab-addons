@@ -136,7 +136,7 @@ class TestGeneric {
     @Test
     void testThreadpoolExcpetion() {
         ScheduledExecutorService ses = ThreadPoolManager.getScheduledPool("test");
-        ScheduledFuture sf = ses.scheduleAtFixedRate(this::printOutput, 0, 50, TimeUnit.MILLISECONDS);
+        ScheduledFuture<?> sf = ses.scheduleWithFixedDelay(this::printOutput, 0, 50, TimeUnit.MILLISECONDS);
         System.out.println("Done? " + sf.isDone());
         sleep();
         System.out.println("Done? " + sf.isDone());
