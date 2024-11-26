@@ -84,6 +84,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
     public void initialize() {
         // Set configuration parameters
         ferroampConfig = getConfigAs(FerroampConfiguration.class);
+
         // Set channel configuration parameters
         channelConfigEhub = FerroampChannelConfiguration.getChannelConfigurationEhub();
         channelConfigSsoS1 = FerroampChannelConfiguration.getChannelConfigurationSsoS1();
@@ -93,13 +94,11 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         channelConfigEso = FerroampChannelConfiguration.getChannelConfigurationEso();
         channelConfigEsm = FerroampChannelConfiguration.getChannelConfigurationEsm();
 
-        if (ferroampConfig != null && channelConfigEhub != null && channelConfigSsoS1 != null
-                && channelConfigSsoS2 != null && channelConfigSsoS3 != null && channelConfigSsoS4 != null
-                && channelConfigEso != null && channelConfigEsm != null) {
+        if (ferroampConfig != null) {
 
+            FerroampConfiguration ferroampConfig = getConfigAs(FerroampConfiguration.class);
             final MqttBrokerConnection ferroampConnection = new MqttBrokerConnection(ferroampConfig.hostName,
                     FerroampBindingConstants.BROKER_PORT, false, false, ferroampConfig.userName);
-
             scheduler.scheduleWithFixedDelay(this::pollTask, 60, refreshInterval, TimeUnit.SECONDS);
             this.setFerroampConnection(ferroampConnection);
             updateStatus(ThingStatus.UNKNOWN);
@@ -111,7 +110,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
 
     private void pollTask() {
         try {
-            startMqttConnection();
+            startMqttConnection(getConfigAs(FerroampConfiguration.class));
         } catch (InterruptedException e) {
             logger.debug("Not connected to the MqttBroker");
             return;
@@ -134,7 +133,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         }
     }
 
-    private void startMqttConnection() throws InterruptedException {
+    private void startMqttConnection(FerroampConfiguration ferroampConfig) throws InterruptedException {
 
         MqttBrokerConnection localSubscribeConnection = FerroampHandler.getFerroampConnection();
 
