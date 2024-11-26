@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @NonNullByDefault
 public class HueSyncExecution {
-    private static final Logger logger = LoggerFactory.getLogger(HueSyncExecution.class);
+    private final Logger logger = LoggerFactory.getLogger(HueSyncExecution.class);
 
     public static final List<String> KNOWN_MODES = Collections
             .unmodifiableList(Arrays.asList("powersave", "passthrough", "video", "game", "music"));

@@ -69,15 +69,15 @@ public class HueSyncDeviceConnection {
 
     private void registerCommandHandlers() {
         this.deviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.MODE,
-                defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.MODE));
+                defaultHandler(HueSyncConstants.ENDPOINTS.COMMANDS.MODE));
         this.deviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.SOURCE,
-                defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.SOURCE));
+                defaultHandler(HueSyncConstants.ENDPOINTS.COMMANDS.SOURCE));
         this.deviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.BRIGHTNESS,
-                defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.BRIGHTNESS));
+                defaultHandler(HueSyncConstants.ENDPOINTS.COMMANDS.BRIGHTNESS));
         this.deviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.SYNC,
-                defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.SYNC));
+                defaultHandler(HueSyncConstants.ENDPOINTS.COMMANDS.SYNC));
         this.deviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.HDMI,
-                defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.HDMI));
+                defaultHandler(HueSyncConstants.ENDPOINTS.COMMANDS.HDMI));
     }
 
     private Consumer<Command> defaultHandler(String endpoint) {

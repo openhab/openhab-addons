@@ -29,7 +29,7 @@ public class HueSyncConstants {
         public static final String HDMI = "hdmi";
         public static final String EXECUTION = "execution";
 
-        public static class EXECUTION_ENDPOINTS {
+        public static class COMMANDS {
             public static final String MODE = "mode";
             public static final String SYNC = "syncActive";
             public static final String HDMI = "hdmiActive";
