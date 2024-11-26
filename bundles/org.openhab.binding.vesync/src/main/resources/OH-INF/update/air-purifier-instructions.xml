@@ -11,34 +11,26 @@
 			<add-channel id="lightDetected">
 				<type>vesync:deviceAFLightDetected</type>
 			</add-channel>
-			<update-channel id="deviceFilterLifePercentageType">
-				<item-type unitHint="%">Number:Dimensionless</item-type>
-				<state readOnly="true" pattern="%.0f %unit%"/>
+			<update-channel id="manualFanSpeed">
+				<type>vesync:airPurifierFanLevelType</type>
 			</update-channel>
-			<update-channel id="airPurifierFanLevelType">
-				<item-type unitHint="one">Number:Dimensionless</item-type>
+			<update-channel id="fanMode">
+				<type>vesync:airPurifierModeType</type>
 			</update-channel>
-			<update-channel id="deviceErrorCodeType">
-				<item-type unitHint="one">Number:Dimensionless</item-type>
+			<update-channel id="filterLifePercentage">
+				<type>vesync:deviceFilterLifePercentageType</type>
+			</update-channel>
+			<update-channel id="errorCode">
+				<type>vesync:deviceErrorCodeType</type>
+			</update-channel>
+			<update-channel id="configAutoRoomSize">
+				<type>vesync:deviceAFConfigAutoPrefRoomSizeType</type>
+			</update-channel>
+			<update-channel id="schedulesCount">
+				<type>vesync:deviceAFConfigAutoScheduleCountType</type>
 			</update-channel>
 			<update-channel id="airQualityPM25">
-				<item-type unitHint="µg/m³">Number:Density</item-type>
-			</update-channel>
-			<update-channel id="airPurifierModeType">
-				<state readOnly="false">
-					<options>
-						<option value="auto">Auto</option>
-						<option value="manual">Manual Fan Control</option>
-						<option value="sleep">Sleeping Auto</option>
-						<option value="pet">Pet Auto</option>
-					</options>
-				</state>
-			</update-channel>
-			<update-channel id="deviceAFConfigAutoPrefRoomSizeType">
-				<item-type unitHint="one">Number:Dimensionless</item-type>
-			</update-channel>
-			<update-channel id="deviceAFConfigAutoScheduleCountType">
-				<item-type unitHint="one">Number:Dimensionless</item-type>
+				<type>vesync:airQualityPM25</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>

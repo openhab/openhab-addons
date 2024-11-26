@@ -12,6 +12,7 @@
 			<property name="Registration Time"/>
 			<property name="Country Code"/>
 			<property name="Accept Language"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -66,7 +67,6 @@
 			<channel id="nightLightMode" typeId="deviceAFNightLight"/>
 			<channel id="lightDetection" typeId="deviceAFLightDetection"/>
 			<channel id="lightDetected" typeId="deviceAFLightDetected"/>
-
 		</channels>
 
 		<properties>
@@ -74,6 +74,7 @@
 			<property name="Device Type"/>
 			<property name="MAC Id"/>
 			<property name="Device Family"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>macId</representation-property>
 
