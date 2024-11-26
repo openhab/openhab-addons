@@ -112,7 +112,7 @@ class TestAirPurifier {
     @Test
     void testDump() {
         testHandlerCreation();
-        handler.dump();
+        assertEquals("unit-test", handler.dumpToken());
     }
 
     void checkAirPurifierStates(CallbackMock callback) {
