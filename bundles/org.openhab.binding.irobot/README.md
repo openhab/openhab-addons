@@ -24,7 +24,7 @@ If you have issues getting the password make sure there are no other devices lik
 You can also try using [these python scripts](https://github.com/NickWaterton/Roomba980-Python) to get the password.
 
 **NOTE:** For file based configuration storing the password is essential.
-Once the password is populated in the MainUI Thing's codetab, you must copy that into the [config files](#irobotthings-example) in order for it to persist.
+Once the password for the Thing is populated in the Code tab in the UI, you must copy that into the [config files](#irobotthings-example) in order for it to persist.
 Without this the Roomba will appear to work temporarily, but as soon as the Things file is edited, the password is lost and the button needs to be pushed again.
 
 ## Thing Configuration
