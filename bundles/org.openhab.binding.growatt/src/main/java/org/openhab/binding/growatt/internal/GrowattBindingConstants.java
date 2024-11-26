@@ -28,4 +28,6 @@ public class GrowattBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(BINDING_ID, "inverter");
+
+    public static final String CHANNEL_INVERTER_CLOCK_OFFSET = "inverter-clock-offset";
 }

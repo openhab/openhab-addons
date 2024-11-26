@@ -13,6 +13,11 @@
 package org.openhab.binding.growatt.internal.dto;
 
 import java.lang.reflect.Type;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,6 +39,7 @@ public class GrottDevice {
     // @formatter:on
 
     private @Nullable @SerializedName("device") String deviceId;
+    private @Nullable @SerializedName("time") String timeStamp;
     private @Nullable GrottValues values;
 
     public String getDeviceId() {
@@ -43,5 +49,25 @@ public class GrottDevice {
 
     public @Nullable GrottValues getValues() {
         return values;
+    }
+
+    /**
+     * Return the time stamp of the data DTO sent by the inverter data-logger.
+     * <p>
+     * Note: the inverter provides a time stamp formatted as a {@link LocalDateTime} without any time zone information,
+     * so we convert it to an {@link Instant} based on the OH system time zone. i.e. we are forced to assume the
+     * inverter and the OH PC are both physically in the same time zone.
+     *
+     * @return the time stamp {@link Instant}
+     */
+    public @Nullable Instant getTimeStamp() {
+        String timeStamp = this.timeStamp;
+        if (timeStamp != null) {
+            try {
+                return ZonedDateTime.of(LocalDateTime.parse(timeStamp), ZoneId.systemDefault()).toInstant();
+            } catch (DateTimeException e) {
+            }
+        }
+        return null;
     }
 }

@@ -1,0 +1,54 @@
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="growatt:inverter">
+		<!-- ============== CHANNELS ADDED IN PR #17795 ============== -->
+		<instruction-set targetVersion="1">
+			<add-channel id="battery-voltage2">
+				<type>growatt:advanced-electric-voltage</type>
+				<label>Battery Voltage #2</label>
+				<description>Battery voltage.</description>
+			</add-channel>
+			<add-channel id="charge-va">
+				<type>growatt:advanced-electric-var</type>
+				<label>Charge VA</label>
+				<description>Charging reactive power.</description>
+			</add-channel>
+			<add-channel id="battery-discharge-va">
+				<type>growatt:advanced-electric-var</type>
+				<label>Battery discharge VA</label>
+				<description>Discharging reactive power.</description>
+			</add-channel>
+			<add-channel id="battery-discharge-watt">
+				<type>growatt:advanced-electric-power</type>
+				<label>Battery discharge power</label>
+				<description>Battery discharging power.</description>
+			</add-channel>
+			<add-channel id="battery-discharge-energy-today">
+				<type>growatt:advanced-electric-energy</type>
+				<label>Discharge Energy Today</label>
+				<description>Battery discharge energy today.</description>
+			</add-channel>
+			<add-channel id="battery-discharge-energy-total">
+				<type>growatt:advanced-electric-energy</type>
+				<label>Discharge Energy Total</label>
+				<description>Total battery discharge energy.</description>
+			</add-channel>
+			<add-channel id="inverter-clock-offset">
+				<type>growatt:advanced-time</type>
+			</add-channel>
+			<add-channel id="inverter-current">
+				<type>growatt:advanced-electric-current</type>
+				<label>Inverter Current</label>
+				<description>Inverter current.</description>
+			</add-channel>
+			<add-channel id="inverter-fan-speed">
+				<type>growatt:advanced-percent</type>
+				<label>Inverter Fan</label>
+				<description>Inverter fan speed.</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

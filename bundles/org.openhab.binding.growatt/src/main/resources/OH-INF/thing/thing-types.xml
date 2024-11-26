@@ -439,7 +439,52 @@
 				<description>Total reactive energy supplied.</description>
 			</channel>
 
+			<!-- ============== CHANNELS ADDED IN PR #17795 ============== -->
+
+			<!-- battery instantaneous measurements -->
+			<channel id="battery-voltage2" typeId="advanced-electric-voltage">
+				<label>Battery Voltage #2</label>
+				<description>Battery voltage.</description>
+			</channel>
+			<channel id="charge-va" typeId="advanced-electric-var">
+				<label>Charge VA</label>
+				<description>Charging reactive power.</description>
+			</channel>
+			<channel id="battery-discharge-va" typeId="advanced-electric-var">
+				<label>Battery discharge VA</label>
+				<description>Discharging reactive power.</description>
+			</channel>
+			<channel id="battery-discharge-watt" typeId="advanced-electric-power">
+				<label>Battery discharge power</label>
+				<description>Battery discharging power.</description>
+			</channel>
+
+			<!-- battery energy -->
+			<channel id="battery-discharge-energy-today" typeId="advanced-electric-energy">
+				<label>Discharge Energy Today</label>
+				<description>Battery discharge energy today.</description>
+			</channel>
+			<channel id="battery-discharge-energy-total" typeId="advanced-electric-energy">
+				<label>Discharge Energy Total</label>
+				<description>Total battery discharge energy.</description>
+			</channel>
+
+			<!-- inverter -->
+			<channel id="inverter-clock-offset" typeId="advanced-time"/>
+			<channel id="inverter-current" typeId="advanced-electric-current">
+				<label>Inverter Current</label>
+				<description>Inverter current.</description>
+			</channel>
+			<channel id="inverter-fan-speed" typeId="advanced-percent">
+				<label>Inverter Fan</label>
+				<description>Inverter fan speed.</description>
+			</channel>
+
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
@@ -546,6 +591,14 @@
 		<label>Outdoor Temperature</label>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%0.0f °C"/>
+	</channel-type>
+
+	<channel-type id="advanced-time" advanced="true">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Inverter Clock Offset</label>
+		<description>Time offset of inverter clock vs. OH system clock.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%0.0f s"/>
 	</channel-type>
 
 </thing:thing-descriptions>
