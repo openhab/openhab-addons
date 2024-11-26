@@ -176,7 +176,6 @@ public class HueSyncConnection {
                     this.authentication = Optional.empty();
                     throw new HueSyncConnectionException("@text/connection.invalid-login");
                 }
-
                 case HttpStatus.NOT_FOUND_404 -> this.logger.warn("invalid device URI or API endpoint");
                 case HttpStatus.INTERNAL_SERVER_ERROR_500 -> this.logger.warn("hue sync box server problem");
                 default -> this.logger.warn("unexpected HTTP status: {}", status);
