@@ -172,7 +172,7 @@ public class BaseLight extends BaseHandler implements LightListener {
             case BRIGHTNESS:
             case TEMPERARTURE:
             case COLOR:
-                gateway().api().sendAttributes(config.id, request.request);
+                super.sendAttributes(request.request);
                 if (isPowered()) {
                     addonMillis = lightConfig.fadeTime;
                 }

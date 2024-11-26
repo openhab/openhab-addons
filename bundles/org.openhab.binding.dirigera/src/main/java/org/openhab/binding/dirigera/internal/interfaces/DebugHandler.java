@@ -16,12 +16,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.binding.ThingHandler;
 
 /**
- * {@link DumpHandler} interface for handling json dumps
+ * {@link DebugHandler} interface for handling json dumps
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public interface DumpHandler extends ThingHandler {
+public interface DebugHandler extends ThingHandler {
 
-    void dump();
+    String dumpToken();
+
+    String dumpJSON();
+
+    void setDebug(boolean debug);
 }

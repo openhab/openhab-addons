@@ -27,10 +27,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openhab.binding.dirigera.internal.actions.DeviceActions;
+import org.openhab.binding.dirigera.internal.actions.DebugActions;
 import org.openhab.binding.dirigera.internal.config.BaseDeviceConfiguration;
 import org.openhab.binding.dirigera.internal.exception.NoGatewayException;
-import org.openhab.binding.dirigera.internal.interfaces.DumpHandler;
+import org.openhab.binding.dirigera.internal.interfaces.DebugHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.interfaces.LightListener;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class BaseHandler extends BaseThingHandler implements DumpHandler {
+public class BaseHandler extends BaseThingHandler implements DebugHandler {
     private final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
     private List<LightListener> powerListeners = new ArrayList<>();
     private @Nullable Gateway gateway;
@@ -103,6 +103,7 @@ public class BaseHandler extends BaseThingHandler implements DumpHandler {
     protected String deviceType = "";
     protected boolean disposed = true;
     protected boolean online = false;
+    protected boolean customDebug = false;
 
     public BaseHandler(Thing thing, Map<String, String> mapping) {
         super(thing);
@@ -153,36 +154,39 @@ public class BaseHandler extends BaseThingHandler implements DumpHandler {
         }
 
         if (!config.id.isBlank()) {
-            // fill canSend and canReceive capabilities
-            Map<String, Object> modelProperties = gateway().model().getPropertiesFor(config.id);
-            Object canReceiveCapabilities = modelProperties.get(Model.PROPERTY_CAN_RECEIVE);
-            if (canReceiveCapabilities instanceof JSONArray jsonArray) {
-                jsonArray.forEach(capability -> {
-                    if (!receiveCapabilities.contains(capability.toString())) {
-                        receiveCapabilities.add(capability.toString());
-                    }
-                });
-            }
-            Object canSendCapabilities = modelProperties.get(Model.PROPERTY_CAN_SEND);
-            if (canSendCapabilities instanceof JSONArray jsonArray) {
-                jsonArray.forEach(capability -> {
-                    if (!sendCapabilities.contains(capability.toString())) {
-                        sendCapabilities.add(capability.toString());
-                    }
-                });
-            }
-
-            TreeMap<String, String> handlerProperties = new TreeMap<>(editProperties());
-            modelProperties.forEach((key, value) -> {
-                handlerProperties.put(key, value.toString());
-            });
-            updateProperties(handlerProperties);
-
+            updateProperties();
             BaseHandler proxy = child;
             if (proxy != null) {
                 gateway().registerDevice(proxy, config.id);
             }
         }
+    }
+
+    private void updateProperties() {
+        // fill canSend and canReceive capabilities
+        Map<String, Object> modelProperties = gateway().model().getPropertiesFor(config.id);
+        Object canReceiveCapabilities = modelProperties.get(Model.PROPERTY_CAN_RECEIVE);
+        if (canReceiveCapabilities instanceof JSONArray jsonArray) {
+            jsonArray.forEach(capability -> {
+                if (!receiveCapabilities.contains(capability.toString())) {
+                    receiveCapabilities.add(capability.toString());
+                }
+            });
+        }
+        Object canSendCapabilities = modelProperties.get(Model.PROPERTY_CAN_SEND);
+        if (canSendCapabilities instanceof JSONArray jsonArray) {
+            jsonArray.forEach(capability -> {
+                if (!sendCapabilities.contains(capability.toString())) {
+                    sendCapabilities.add(capability.toString());
+                }
+            });
+        }
+
+        TreeMap<String, String> handlerProperties = new TreeMap<>(editProperties());
+        modelProperties.forEach((key, value) -> {
+            handlerProperties.put(key, value.toString());
+        });
+        updateProperties(handlerProperties);
     }
 
     /**
@@ -193,6 +197,10 @@ public class BaseHandler extends BaseThingHandler implements DumpHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (customDebug) {
+            logger.info("DIRIGERA {} handleCommand channel {} command {} {}", thing.getUID(), channelUID.getAsString(),
+                    command.toFullString(), command.getClass());
+        }
         if (command instanceof RefreshType) {
             String channel = channelUID.getIdWithoutGroup();
             State cachedState = channelStateMap.get(channel);
@@ -210,7 +218,7 @@ public class BaseHandler extends BaseThingHandler implements DumpHandler {
                             if (behaviorCommand != null) {
                                 JSONObject stqartupAttributes = new JSONObject();
                                 stqartupAttributes.put(targetProperty, behaviorCommand);
-                                gateway().api().sendAttributes(config.id, stqartupAttributes);
+                                sendAttributes(stqartupAttributes);
                             }
                             break;
                         }
@@ -224,7 +232,7 @@ public class BaseHandler extends BaseThingHandler implements DumpHandler {
                                 JSONObject attributes = new JSONObject();
                                 attributes.put(targetProperty, onOff.equals(OnOffType.ON));
                                 logger.trace("DIRIGERA BASE_HANDLER {} send to API {}", thing.getLabel(), attributes);
-                                gateway().api().sendAttributes(config.id, attributes);
+                                sendAttributes(attributes);
                             } else {
                                 requestedPowerState = UnDefType.UNDEF;
                                 logger.trace("DIRIGERA BASE_HANDLER Dismiss {} {}", thing.getLabel(), onOff);
@@ -236,7 +244,7 @@ public class BaseHandler extends BaseThingHandler implements DumpHandler {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, string.toString());
                             logger.trace("DIRIGERA BASE_HANDLER {} send to API {}", thing.getLabel(), attributes);
-                            gateway().api().sendAttributes(config.id, attributes);
+                            sendAttributes(attributes);
                         }
                         break;
                     case CHANNEL_LINKS:
@@ -258,6 +266,34 @@ public class BaseHandler extends BaseThingHandler implements DumpHandler {
     }
 
     /**
+     * Wrapper function to respect customDebug flag
+     *
+     * @param attributes
+     * @return status
+     */
+    protected int sendAttributes(JSONObject attributes) {
+        int status = gateway().api().sendAttributes(config.id, attributes);
+        if (customDebug) {
+            logger.info("DIRIGERA {} API call: Status {} payload {}", thing.getUID(), status, attributes);
+        }
+        return status;
+    }
+
+    /**
+     * Wrapper function to respect customDebug flag
+     *
+     * @param attributes
+     * @return status
+     */
+    protected int sendPatch(JSONObject patch) {
+        int status = gateway().api().sendPatch(config.id, patch);
+        if (customDebug) {
+            logger.info("DIRIGERA {} API call: Status {} payload {}", thing.getUID(), status, patch);
+        }
+        return status;
+    }
+
+    /**
      * Handling generic channel updates for many devices.
      * If they are not present in child configuration they won't be triggered.
      * - Reachable flag for every device to evaluate ONLINE and OFFLINE states
@@ -270,6 +306,9 @@ public class BaseHandler extends BaseThingHandler implements DumpHandler {
      * @param update
      */
     public void handleUpdate(JSONObject update) {
+        if (customDebug) {
+            logger.info("DIRIGERA {} handleUpdate JSON {}", thing.getUID(), update);
+        }
         // check online offline for each device
         if (update.has(Model.REACHABLE)) {
             if (update.getBoolean(Model.REACHABLE)) {
@@ -316,6 +355,8 @@ public class BaseHandler extends BaseThingHandler implements DumpHandler {
                 Integer otaState = OTA_STATE_MAP.get(otaStateString);
                 if (otaState != null) {
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), new DecimalType(otaState));
+                    // if ota state changes also update properties to keep firmware in thing properties up to date
+                    updateProperties();
                 } else {
                     logger.warn("DIRIGERA BASE_HANDLER {} Cannot decode ota state {}", thing.getLabel(),
                             otaStateString);
@@ -646,13 +687,28 @@ public class BaseHandler extends BaseThingHandler implements DumpHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(DeviceActions.class);
+        return Collections.singleton(DebugActions.class);
     }
 
     @Override
-    public void dump() {
-        logger.info("Dump {}", thing.getLabel());
-        logger.info("{}", channelStateMap.get(CHANNEL_JSON));
+    public String dumpJSON() {
+        Object state = channelStateMap.get(CHANNEL_JSON);
+        String json = "{}";
+        if (state != null) {
+            json = state.toString();
+        }
+        logger.info("Dump {}: {}", thing.getUID(), json);
+        return json;
+    }
+
+    @Override
+    public String dumpToken() {
+        return gateway().getToken();
+    }
+
+    @Override
+    public void setDebug(boolean debug) {
+        customDebug = debug;
     }
 
     /**
