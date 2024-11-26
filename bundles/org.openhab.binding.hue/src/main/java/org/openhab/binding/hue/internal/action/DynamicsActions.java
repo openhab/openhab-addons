@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = DynamicsActions.class)
-@ThingActionsScope(name = "hue-dynamics")
+@ThingActionsScope(name = "hue")
 @NonNullByDefault
 public class DynamicsActions implements ThingActions {
 
