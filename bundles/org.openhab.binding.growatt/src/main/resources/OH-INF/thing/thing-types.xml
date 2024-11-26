@@ -480,7 +480,7 @@
 				<description>Inverter fan speed.</description>
 			</channel>
 
-			<!-- ============== CHANNELS ADDED IN PR #99999 ============== -->
+			<!-- ============== CHANNELS ADDED IN PR #17810 ============== -->
 
 			<!-- DC electric data for strings #3 and #4 -->
 			<channel id="pv3-voltage" typeId="advanced-electric-voltage">

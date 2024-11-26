@@ -110,10 +110,10 @@ public class GrottValues {
 
     // solar DC pv energy
     public @Nullable @SerializedName(value = "epvtoday") Integer pv_energy_today;
-    public @Nullable @SerializedName(value = "epv1today", alternate = { "epv1tod", "epv1today " }) Integer pv1_energy_today;
+    public @Nullable @SerializedName(value = "epv1today", alternate = { "epv1tod", "epv1today " }) Integer pv1_energy_today; // alternate intentionally has trailing space
     public @Nullable @SerializedName(value = "epv2today", alternate = { "epv2tod" }) Integer pv2_energy_today;
 
-    public @Nullable @SerializedName(value = "epvtotal", alternate = { "epvtotal " }) Integer pv_energy_total;
+    public @Nullable @SerializedName(value = "epvtotal", alternate = { "epvtotal " }) Integer pv_energy_total; // alternate intentionally has trailing space
     public @Nullable @SerializedName(value = "epv1total", alternate = { "epv1tot" }) Integer pv1_energy_total;
     public @Nullable @SerializedName(value = "epv2total", alternate = { "epv2tot" }) Integer pv2_energy_total;
 
@@ -203,7 +203,7 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "invfanspeed") Integer inverter_fan_speed;
 
     /*
-     * ============== CHANNELS ADDED IN PR #99999 ==============
+     * ============== CHANNELS ADDED IN PR #17810 ==============
      */
 
     // DC electric data for strings #3 and #4

@@ -258,8 +258,8 @@ public class GrowattTest {
         String json = load(fileName);
         JsonParser.parseString(json).getAsJsonObject().get("values").getAsJsonObject().entrySet().forEach(e -> {
             String key = e.getKey();
-            if (GrowattChannels.UNUSED_FIELDS.containsKey(fileName)
-                    && !Objects.requireNonNull(GrowattChannels.UNUSED_FIELDS.get(fileName)).contains(key)) {
+            assertTrue(GrowattChannels.UNUSED_FIELDS.containsKey(fileName));
+            if (!Objects.requireNonNull(GrowattChannels.UNUSED_FIELDS.get(fileName)).contains(key)) {
                 JsonObject testJsonObject = new JsonObject();
                 testJsonObject.add(key, e.getValue());
                 GrottValues testDto = gson.fromJson(testJsonObject, GrottValues.class);

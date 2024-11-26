@@ -212,7 +212,7 @@ public class GrowattChannels {
             new AbstractMap.SimpleEntry<String, UoM>("inverter-fan-speed", new UoM(Units.PERCENT, 1)),
 
             /*
-             * ============== CHANNELS ADDED IN ISSUE #99999 ==============
+             * ============== CHANNELS ADDED IN PR #17810 ==============
              */
 
             // DC electric data for strings #3 and #4

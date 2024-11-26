@@ -50,7 +50,7 @@
 			</add-channel>
 		</instruction-set>
 
-		<!-- ============== CHANNELS ADDED IN PR #99999 ============== -->
+		<!-- ============== CHANNELS ADDED IN PR #17810 ============== -->
 		<instruction-set targetVersion="2">
 			<!-- DC electric data for strings #3 and #4 -->
 			<add-channel id="pv3-voltage">
