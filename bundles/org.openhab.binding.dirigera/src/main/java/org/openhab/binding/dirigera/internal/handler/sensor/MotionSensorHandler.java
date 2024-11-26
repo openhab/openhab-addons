@@ -85,7 +85,7 @@ public class MotionSensorHandler extends BaseHandler {
                 if (seconds > 0) {
                     String updateData = String
                             .format(gateway().model().getTemplate(Model.TEMPLATE_SENSOR_DURATION_UPDATE), seconds);
-                    gateway().api().sendPatch(config.id, new JSONObject(updateData));
+                    sendPatch(new JSONObject(updateData));
                 }
                 break;
             case CHANNEL_SCHEDULE:
@@ -161,7 +161,7 @@ public class MotionSensorHandler extends BaseHandler {
                     }
                     JSONObject preset = new JSONObject();
                     preset.put("circadianPresets", presetValues);
-                    gateway().api().sendAttributes(config.id, preset);
+                    super.sendAttributes(preset);
                 }
         }
     }

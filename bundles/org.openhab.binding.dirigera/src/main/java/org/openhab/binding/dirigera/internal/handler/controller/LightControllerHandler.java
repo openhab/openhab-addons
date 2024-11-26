@@ -86,7 +86,7 @@ public class LightControllerHandler extends BaseHandler {
                     }
                     JSONObject preset = new JSONObject();
                     preset.put("circadianPresets", presetValues);
-                    gateway().api().sendAttributes(config.id, preset);
+                    super.sendAttributes(preset);
                 }
         }
     }
