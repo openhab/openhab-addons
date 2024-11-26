@@ -584,7 +584,7 @@ When activated it sends a "virtual short press" event (where=212, button=5) on t
 when
     Item iCENPlusProxyItem received command
 then
-    val actions = getActions("openwebnet","openwebnet:bus_cenplus_scenario_control:mybridge:212")
+    val actions = getActions("openwebnet-cen","openwebnet:bus_cenplus_scenario_control:mybridge:212")
     actions.virtualPress("SHORT_PRESS", 5)
 end
 
