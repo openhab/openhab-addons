@@ -11,14 +11,11 @@
 			<add-channel id="timerExpiry">
 				<type>vesync:deviceAFTimerExpiry</type>
 			</add-channel>
-			<update-channel id="deviceMistLevelType">
-				<item-type unitHint="one">Number:Dimensionless</item-type>
+			<update-channel id="mistLevel">
+				<type>vesync:deviceMistLevelType</type>
 			</update-channel>
 			<update-channel id="warmLevel">
-				<item-type unitHint="one">Number:Dimensionless</item-type>
-			</update-channel>
-			<update-channel id="deviceAFConfigAutoScheduleCountType">
-				<item-type unitHint="one">Number:Dimensionless</item-type>
+				<type>vesync:warmLevel</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
