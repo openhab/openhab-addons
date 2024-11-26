@@ -12,17 +12,21 @@ without any need for a dedicated MQTT server.
 
 ## Discovery
 
-Roombas on the same network will be discovered automatically, however in order to connect to them a password is needed. The
-password is a machine-generated string, which is unfortunately not exposed by the original iRobot smartphone application,
-but it can be downloaded from the robot itself. If no password is configured, the Thing enters "CONFIGURATION PENDING" state.
-Now you need to perform authorization by pressing and holding the HOME button on your robot until it plays series of tones
-(approximately 2 seconds). The Wi-Fi indicator on the robot will flash for 30 seconds, the binding should automatically
-receive the password and go ONLINE.
+Roombas on the same network will be discovered automatically, however in order to connect to them a password is needed.
+The password is a machine-generated string, which is unfortunately not exposed by the original iRobot smartphone application, but it can be downloaded from the robot itself.
+If no password is configured, the Thing enters "CONFIGURATION PENDING" state.
+Now you need to perform authorization by pressing and holding the HOME/DOCK button on your robot until it plays series of tones (approximately 2 seconds).
+The Wi-Fi indicator on the robot will flash for 30 seconds, the binding should automatically receive the password and go ONLINE.
 
-After you've done this procedure you can write the password somewhere in case if you need to reconfigure your binding. It's
-not known, however, whether the password is eternal or can change during factory reset.
+After you've done this procedure you can write the password somewhere in case if you need to reconfigure your binding.
+It's not known, however, whether the password is eternal or can change during factory reset.
 If you have issues getting the password make sure there are no other devices like your smartphone communicating with the robot.
 You can also try using [these python scripts](https://github.com/NickWaterton/Roomba980-Python) to get the password.
+
+**NOTE:** For file-based configuration, storing the password is essential.
+Once the password for the Thing is populated in the Code tab in the UI, you must copy that into the [config files](#irobotthings-example) in order for it to persist.
+Without this, the Roomba will appear to work temporarily.
+However, as soon as the Things file is edited, the password will be lost, and the button will need to be pressed again.
 
 ## Thing Configuration
 
@@ -167,13 +171,13 @@ The easiest way to determine the pmapId, region_ids/zoneids and userPmapvId is t
 
 ## Example
 
-irobot.things:
+### `irobot.things` Example
 
 ```java
 Thing irobot:roomba:my_roomba [ ipaddress="192.168.0.5", password="xxxxxxxx" ]
 ```
 
-irobot.items:
+### `irobot.items` Example
 
 ```java
 String Roomba_Command { channel="irobot:roomba:my_roomba:command" }
@@ -184,7 +188,7 @@ String Roomba_Bin { channel="irobot:roomba:my_roomba:bin" }
 String Roomba_Error { channel="irobot:roomba:my_roomba:error" }
 ```
 
-irobot.sitemap:
+### `irobot.sitemap` Example
 
 ```perl
 Selection item=Roomba_Command mappings=["clean"="Clean", "spot"="Spot", dock="Dock", pause="Pause", stop="Stop"]
