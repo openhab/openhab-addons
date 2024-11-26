@@ -48,13 +48,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
-import org.openhab.binding.dirigera.internal.actions.DeviceActions;
+import org.openhab.binding.dirigera.internal.actions.DebugActions;
 import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
 import org.openhab.binding.dirigera.internal.exception.ApiMissingException;
 import org.openhab.binding.dirigera.internal.exception.ModelMissingException;
+import org.openhab.binding.dirigera.internal.interfaces.DebugHandler;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
-import org.openhab.binding.dirigera.internal.interfaces.DumpHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.binding.dirigera.internal.model.DirigeraModel;
@@ -94,7 +94,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class DirigeraHandler extends BaseBridgeHandler implements Gateway, DumpHandler {
+public class DirigeraHandler extends BaseBridgeHandler implements Gateway, DebugHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandler.class);
 
@@ -533,10 +533,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, DumpH
                 endUpdate();
             }
         }
-        if (deviceModificationQueue.isEmpty() && !Instant.MIN.equals(peakRecognitionTime)) {
-            logger.trace("DIRIGERA HANDLER Peak to zero time {} ms",
-                    Duration.between(peakRecognitionTime, Instant.now()).toMillis());
-            peakRecognitionTime = Instant.MIN;
+        synchronized (deviceModificationQueue) {
+            if (deviceModificationQueue.isEmpty() && !Instant.MIN.equals(peakRecognitionTime)) {
+                logger.trace("DIRIGERA HANDLER Peak to zero time {} ms",
+                        Duration.between(peakRecognitionTime, Instant.now()).toMillis());
+                peakRecognitionTime = Instant.MIN;
+            }
         }
     }
 
@@ -989,6 +991,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, DumpH
                     Integer otaState = OTA_STATE_MAP.get(otaStateString);
                     if (otaState != null) {
                         updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), new DecimalType(otaState));
+                        // if ota state changes also update properties to keep firmware in thing properties up to date
+                        updateProperties();
                     } else {
                         logger.warn("Cannot decode ota state {}", otaStateString);
                     }
@@ -1055,13 +1059,23 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, DumpH
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(DeviceActions.class);
+        return Collections.singleton(DebugActions.class);
     }
 
     @Override
-    public void dump() {
-        logger.info("Dump {}", thing.getLabel());
-        // dump freshest values
-        logger.info("{}", api().readHome().toString());
+    public String dumpJSON() {
+        String json = api().readHome().toString();
+        logger.info("Dump {}: {}", thing.getUID(), json);
+        return json;
+    }
+
+    @Override
+    public String dumpToken() {
+        return token;
+    }
+
+    @Override
+    public void setDebug(boolean debug) {
+        // TODO not yet implemented
     }
 }
