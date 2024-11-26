@@ -25,7 +25,8 @@ You can also try using [these python scripts](https://github.com/NickWaterton/Ro
 
 **NOTE:** For file-based configuration, storing the password is essential.
 Once the password for the Thing is populated in the Code tab in the UI, you must copy that into the [config files](#irobotthings-example) in order for it to persist.
-Without this the Roomba will appear to work temporarily, but as soon as the Things file is edited, the password is lost and the button needs to be pushed again.
+Without this, the Roomba will appear to work temporarily.
+However, as soon as the Things file is edited, the password will be lost, and the button will need to be pressed again.
 
 ## Thing Configuration
 
