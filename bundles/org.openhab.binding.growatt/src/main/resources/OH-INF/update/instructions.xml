@@ -83,8 +83,6 @@
 				<label>String #4 Power</label>
 				<description>Power from solar panel string #4.</description>
 			</add-channel>
-
-			<!-- solar DC pv energy -->
 			<add-channel id="pv3-energy-today">
 				<type>growatt:advanced-electric-energy</type>
 				<label>DC Energy #3 Today</label>
