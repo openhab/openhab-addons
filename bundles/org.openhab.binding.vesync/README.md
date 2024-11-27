@@ -86,7 +86,7 @@ Channel names in **bold** are read/write, everything else is read-only
 | schedulesCount       | Number:Dimensionless | The number of schedules which are configured               | 600S, 400S                                     |                            | one   |
 | configDisplayForever | Switch               | Config: Whether the display will disable when not active   | 600S, 400S, 300S                               |                            |       |
 | configAutoMode       | String               | Config: The mode of operation when auto is active          | 600S, 400S, 300S                               |                            |       |
-| configAutoRoomSize   | Number:Dimensionless | Config: The room size set when auto utilises the room size | 600S, 400S, 300S                               |                            | one   |
+| configAutoRoomSize   | Number:Area          | Config: The room size set when auto utilises the room size | 600S, 400S, 300S                               |                            |       |
 
 ### AirHumidifier Thing
 
