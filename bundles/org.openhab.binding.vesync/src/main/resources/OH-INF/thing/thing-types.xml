@@ -263,10 +263,10 @@
 	</channel-type>
 
 	<channel-type id="deviceAFConfigAutoPrefRoomSizeType">
-		<item-type unitHint="one">Number:Dimensionless</item-type>
+		<item-type unitHint="ft2">Number:Area</item-type>
 		<label>Config: Room size</label>
-		<description>Room size (foot sq) for efficient auto mode</description>
-		<state readOnly="true" pattern="%.0f sq ft"/>
+		<description>Room size for efficient auto mode</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="deviceAFConfigAutoScheduleCountType">

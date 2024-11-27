@@ -48,6 +48,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -521,8 +522,8 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                 OnOffType.from(purifierStatus.result.result.configuration.displayForever));
         updateState(DEVICE_CHANNEL_AF_CONFIG_AUTO_MODE_PREF,
                 new StringType(purifierStatus.result.result.configuration.autoPreference.autoType));
-        updateState(DEVICE_CHANNEL_AF_CONFIG_AUTO_ROOM_SIZE,
-                new DecimalType(purifierStatus.result.result.configuration.autoPreference.roomSize));
+        updateState(DEVICE_CHANNEL_AF_CONFIG_AUTO_ROOM_SIZE, new QuantityType<>(
+                purifierStatus.result.result.configuration.autoPreference.roomSize, ImperialUnits.SQUARE_FOOT));
 
         // Only 400S appears to have this JSON extension object
         if (purifierStatus.result.result.extension != null) {
