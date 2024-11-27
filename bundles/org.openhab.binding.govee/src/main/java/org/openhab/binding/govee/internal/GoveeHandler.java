@@ -41,6 +41,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,8 +90,9 @@ public class GoveeHandler extends BaseThingHandler {
 
     private CommunicationManager communicationManager;
 
+    private OnOffType lastOn = OnOffType.OFF;
     private HSBType lastColor = new HSBType();
-    private int lastKelvin = COLOR_TEMPERATURE_MIN_VALUE.intValue();
+    private int lastKelvin;
 
     /**
      * This thing related job <i>thingRefreshSender</i> triggers an update to the Govee device.
@@ -159,23 +161,31 @@ public class GoveeHandler extends BaseThingHandler {
             } else {
                 switch (channelUID.getId()) {
                     case CHANNEL_COLOR:
+                        boolean triggerRefresh = false;
                         Command doCommand = command;
                         if (doCommand instanceof HSBType hsb) {
                             sendColor(hsb);
+                            triggerRefresh = true;
                             doCommand = hsb.getBrightness(); // fall through
                         }
                         if (doCommand instanceof PercentType percent) {
                             sendBrightness(percent);
+                            triggerRefresh = true;
                             doCommand = OnOffType.from(percent.intValue() > 0); // fall through
                         }
                         if (doCommand instanceof OnOffType onOff) {
                             sendOnOff(onOff);
+                            triggerRefresh = true;
+                        }
+                        if (triggerRefresh) {
+                            triggerDeviceStatusRefresh();
                         }
                         break;
 
                     case CHANNEL_COLOR_TEMPERATURE:
                         if (command instanceof PercentType percent) {
                             sendKelvin(percentToKelvin(percent));
+                            triggerDeviceStatusRefresh();
                         }
                         break;
 
@@ -187,6 +197,7 @@ public class GoveeHandler extends BaseThingHandler {
                                 break;
                             }
                             sendKelvin(kelvin.intValue());
+                            triggerDeviceStatusRefresh();
                         }
                         break;
                 }
@@ -218,7 +229,6 @@ public class GoveeHandler extends BaseThingHandler {
         GenericGoveeData data = new ColorData(new Color(normalRGB[0], normalRGB[1], normalRGB[2]), 0);
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("colorwc", data));
         communicationManager.sendRequest(this, request);
-        lastColor = color;
     }
 
     /**
@@ -229,7 +239,6 @@ public class GoveeHandler extends BaseThingHandler {
         GenericGoveeData data = new ValueIntData(brightness.intValue());
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("brightness", data));
         communicationManager.sendRequest(this, request);
-        lastColor = new HSBType(lastColor.getHue(), lastColor.getSaturation(), brightness);
     }
 
     /**
@@ -250,23 +259,23 @@ public class GoveeHandler extends BaseThingHandler {
         GenericGoveeData data = new ColorData(new Color(0, 0, 0), kelvin);
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("colorwc", data));
         communicationManager.sendRequest(this, request);
-        lastKelvin = kelvin;
     }
 
     /**
-     * Build an {@link HSBType} from the given normalized {@link Color} record, brightness, and on state.
+     * Build an {@link HSBType} from the given normalized {@link Color} RGB parameters, brightness, and on-off state
+     * parameters. If the on parameter is true then use the brightness parameter, otherwise use a brightness of zero.
      *
-     * @param normalColor record containing the lamp's normalized RGB parameters (0..255)
-     * @param brightness the lamp brightness in range 0..100
-     * @param on the lamp state
+     * @param normalRgbParams record containing the lamp's normalized RGB parameters (0..255)
+     * @param brightnessParam the lamp brightness in range 0..100
+     * @param onParam the lamp on-off state
      *
-     * @return the HSB presentation state
+     * @return the respective HSBType
      */
-    private static HSBType buildHSB(Color normalColor, int brightness, boolean on) {
-        int[] normalRGB = { normalColor.r(), normalColor.g(), normalColor.b() };
-        HSBType normalHSB = ColorUtil.rgbToHsb(normalRGB);
-        PercentType brightnessPercent = on ? new PercentType(brightness) : PercentType.ZERO;
-        return new HSBType(normalHSB.getHue(), normalHSB.getSaturation(), brightnessPercent);
+    private static HSBType buildHSB(Color normalRgbParams, int brightnessParam, boolean onParam) {
+        HSBType normalColor = ColorUtil
+                .rgbToHsb(new int[] { normalRgbParams.r(), normalRgbParams.g(), normalRgbParams.b() });
+        PercentType brightness = onParam ? new PercentType(brightnessParam) : PercentType.ZERO;
+        return new HSBType(normalColor.getHue(), normalColor.getSaturation(), brightness);
     }
 
     void handleIncomingStatus(String response) {
@@ -294,7 +303,7 @@ public class GoveeHandler extends BaseThingHandler {
 
         logger.trace("Receiving Device State");
 
-        boolean on = message.msg().data().onOff() == 1;
+        OnOffType on = OnOffType.from(message.msg().data().onOff() == 1);
         logger.trace("on:{}", on);
 
         int brightness = message.msg().data().brightness();
@@ -306,23 +315,28 @@ public class GoveeHandler extends BaseThingHandler {
         int kelvin = message.msg().data().colorTemInKelvin();
         logger.trace("kelvin:{}", kelvin);
 
-        HSBType color = buildHSB(normalRGB, brightness, on);
+        HSBType color = buildHSB(normalRGB, brightness, true);
 
-        kelvin = Math.min(COLOR_TEMPERATURE_MAX_VALUE.intValue(),
-                Math.max(COLOR_TEMPERATURE_MIN_VALUE.intValue(), kelvin));
-
-        logger.trace("Comparing color old:{} to new:{}", lastColor, color);
-        if (!color.equals(lastColor)) {
-            logger.trace("Updating color old:{} to new:{}", lastColor, color);
-            updateState(CHANNEL_COLOR, color);
+        logger.trace("Comparing color old:{} to new:{}, on state old:{} to new:{}", lastColor, color, lastOn, on);
+        if ((on != lastOn) || !color.equals(lastColor)) {
+            logger.trace("Updating color old:{} to new:{}, on state old:{} to new:{}", lastColor, color, lastOn, on);
+            updateState(CHANNEL_COLOR, buildHSB(normalRGB, brightness, on == OnOffType.ON));
+            lastOn = on;
             lastColor = color;
         }
 
         logger.trace("Comparing color temperature old:{} to new:{}", lastKelvin, kelvin);
         if (kelvin != lastKelvin) {
             logger.trace("Updating color temperature old:{} to new:{}", lastKelvin, kelvin);
-            updateState(CHANNEL_COLOR_TEMPERATURE_ABS, QuantityType.valueOf(kelvin, Units.KELVIN));
-            updateState(CHANNEL_COLOR_TEMPERATURE, kelvinToPercent(kelvin));
+            if (kelvin != 0) {
+                kelvin = Math.min(COLOR_TEMPERATURE_MAX_VALUE.intValue(),
+                        Math.max(COLOR_TEMPERATURE_MIN_VALUE.intValue(), kelvin));
+                updateState(CHANNEL_COLOR_TEMPERATURE, kelvinToPercent(kelvin));
+                updateState(CHANNEL_COLOR_TEMPERATURE_ABS, QuantityType.valueOf(kelvin, Units.KELVIN));
+            } else {
+                updateState(CHANNEL_COLOR_TEMPERATURE, UnDefType.UNDEF);
+                updateState(CHANNEL_COLOR_TEMPERATURE_ABS, UnDefType.UNDEF);
+            }
             lastKelvin = kelvin;
         }
     }
