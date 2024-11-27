@@ -12,12 +12,8 @@
  */
 package org.openhab.binding.govee.internal;
 
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -135,7 +131,7 @@ public class GoveeSerializeGoveeHandlerTest {
 
             verify(callback).stateUpdated(
                     new ChannelUID(thing.getUID(), GoveeBindingConstants.CHANNEL_COLOR_TEMPERATURE_ABS),
-                    getState(2000, Units.KELVIN));
+                    getState(9000, Units.KELVIN));
         } finally {
             handler.dispose();
         }

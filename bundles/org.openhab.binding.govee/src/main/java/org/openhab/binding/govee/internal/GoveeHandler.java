@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.govee.internal.model.Color;
 import org.openhab.binding.govee.internal.model.ColorData;
 import org.openhab.binding.govee.internal.model.EmptyValueQueryStatusData;
+import org.openhab.binding.govee.internal.model.GenericGoveeData;
 import org.openhab.binding.govee.internal.model.GenericGoveeMsg;
 import org.openhab.binding.govee.internal.model.GenericGoveeRequest;
 import org.openhab.binding.govee.internal.model.StatusResponse;
@@ -88,10 +89,8 @@ public class GoveeHandler extends BaseThingHandler {
 
     private CommunicationManager communicationManager;
 
-    private int lastOnOff;
-    private int lastBrightness;
     private HSBType lastColor = new HSBType();
-    private int lastColorTempInKelvin = COLOR_TEMPERATURE_MIN_VALUE.intValue();
+    private int lastKelvin = COLOR_TEMPERATURE_MIN_VALUE.intValue();
 
     /**
      * This thing related job <i>thingRefreshSender</i> triggers an update to the Govee device.
@@ -153,43 +152,41 @@ public class GoveeHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
+            logger.debug("handleCommand({}, {})", channelUID, command);
             if (command instanceof RefreshType) {
                 // we are refreshing all channels at once, as we get all information at the same time
                 triggerDeviceStatusRefresh();
-                logger.debug("Triggering Refresh");
             } else {
-                logger.debug("Channel ID {} type {}", channelUID.getId(), command.getClass());
                 switch (channelUID.getId()) {
                     case CHANNEL_COLOR:
-                        if (command instanceof HSBType hsbCommand) {
-                            int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
-                            sendColor(new Color(rgb[0], rgb[1], rgb[2]));
-                        } else if (command instanceof PercentType percent) {
-                            sendBrightness(percent.intValue());
-                        } else if (command instanceof OnOffType onOffCommand) {
-                            sendOnOff(onOffCommand);
+                        Command doCommand = command;
+                        if (doCommand instanceof HSBType hsb) {
+                            sendColor(hsb);
+                            doCommand = hsb.getBrightness(); // fall through
+                        }
+                        if (doCommand instanceof PercentType percent) {
+                            sendBrightness(percent);
+                            doCommand = OnOffType.from(percent.intValue() > 0); // fall through
+                        }
+                        if (doCommand instanceof OnOffType onOff) {
+                            sendOnOff(onOff);
                         }
                         break;
+
                     case CHANNEL_COLOR_TEMPERATURE:
                         if (command instanceof PercentType percent) {
-                            logger.debug("COLOR_TEMPERATURE: Color Temperature change with Percent Type {}", command);
-                            Double colorTemp = (COLOR_TEMPERATURE_MIN_VALUE + percent.intValue()
-                                    * (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) / 100.0);
-                            lastColorTempInKelvin = colorTemp.intValue();
-                            logger.debug("lastColorTempInKelvin {}", lastColorTempInKelvin);
-                            sendColorTemp(lastColorTempInKelvin);
+                            sendKelvin(percentToKelvin(percent));
                         }
                         break;
+
                     case CHANNEL_COLOR_TEMPERATURE_ABS:
-                        if (command instanceof QuantityType<?> quantity) {
-                            logger.debug("Color Temperature Absolute change with Percent Type {}", command);
-                            lastColorTempInKelvin = quantity.intValue();
-                            logger.debug("COLOR_TEMPERATURE_ABS: lastColorTempInKelvin {}", lastColorTempInKelvin);
-                            int lastColorTempInPercent = ((Double) ((lastColorTempInKelvin
-                                    - COLOR_TEMPERATURE_MIN_VALUE)
-                                    / (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) * 100.0)).intValue();
-                            logger.debug("computed lastColorTempInPercent {}", lastColorTempInPercent);
-                            sendColorTemp(lastColorTempInKelvin);
+                        if (command instanceof QuantityType<?> genericQuantity) {
+                            QuantityType<?> kelvin = genericQuantity.toInvertibleUnit(Units.KELVIN);
+                            if (kelvin == null) {
+                                logger.warn("handleCommand() invalid QuantityType:{}", genericQuantity);
+                                break;
+                            }
+                            sendKelvin(kelvin.intValue());
                         }
                         break;
                 }
@@ -203,62 +200,73 @@ public class GoveeHandler extends BaseThingHandler {
     }
 
     /**
-     * Initiate a refresh to our thing devicee
-     *
+     * Initiate a refresh to our thing device
      */
     private void triggerDeviceStatusRefresh() throws IOException {
         logger.debug("trigger Refresh Status of device {}", thing.getLabel());
-        GenericGoveeRequest lightQuery = new GenericGoveeRequest(
-                new GenericGoveeMsg("devStatus", new EmptyValueQueryStatusData()));
-        communicationManager.sendRequest(this, lightQuery);
-    }
-
-    public void sendColor(Color color) throws IOException {
-        lastColor = ColorUtil.rgbToHsb(new int[] { color.r(), color.g(), color.b() });
-
-        GenericGoveeRequest lightColor = new GenericGoveeRequest(
-                new GenericGoveeMsg("colorwc", new ColorData(color, 0)));
-        communicationManager.sendRequest(this, lightColor);
-    }
-
-    public void sendBrightness(int brightness) throws IOException {
-        lastBrightness = brightness;
-        GenericGoveeRequest lightBrightness = new GenericGoveeRequest(
-                new GenericGoveeMsg("brightness", new ValueIntData(brightness)));
-        communicationManager.sendRequest(this, lightBrightness);
-    }
-
-    private void sendOnOff(OnOffType switchValue) throws IOException {
-        lastOnOff = (switchValue == OnOffType.ON) ? 1 : 0;
-        GenericGoveeRequest switchLight = new GenericGoveeRequest(
-                new GenericGoveeMsg("turn", new ValueIntData(lastOnOff)));
-        communicationManager.sendRequest(this, switchLight);
-    }
-
-    private void sendColorTemp(int colorTemp) throws IOException {
-        lastColorTempInKelvin = colorTemp;
-        logger.debug("sendColorTemp {}", colorTemp);
-        GenericGoveeRequest lightColor = new GenericGoveeRequest(
-                new GenericGoveeMsg("colorwc", new ColorData(new Color(0, 0, 0), colorTemp)));
-        communicationManager.sendRequest(this, lightColor);
+        GenericGoveeData data = new EmptyValueQueryStatusData();
+        GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("devStatus", data));
+        communicationManager.sendRequest(this, request);
     }
 
     /**
-     * Creates a Color state by using the last color information from lastColor
-     * The brightness is overwritten either by the provided lastBrightness
-     * or if lastOnOff = 0 (off) then the brightness is set 0
-     *
-     * @see #lastColor
-     * @see #lastBrightness
-     * @see #lastOnOff
-     *
-     * @return the computed state
+     * Send the normalized RGB color parameters.
      */
-    private HSBType getColorState(Color color, int brightness) {
-        PercentType computedBrightness = lastOnOff == 0 ? new PercentType(0) : new PercentType(brightness);
-        int[] rgb = { color.r(), color.g(), color.b() };
-        HSBType hsb = ColorUtil.rgbToHsb(rgb);
-        return new HSBType(hsb.getHue(), hsb.getSaturation(), computedBrightness);
+    public void sendColor(HSBType color) throws IOException {
+        logger.debug("sendColor({})", color);
+        int[] normalRGB = ColorUtil.hsbToRgb(new HSBType(color.getHue(), color.getSaturation(), PercentType.HUNDRED));
+        GenericGoveeData data = new ColorData(new Color(normalRGB[0], normalRGB[1], normalRGB[2]), 0);
+        GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("colorwc", data));
+        communicationManager.sendRequest(this, request);
+        lastColor = color;
+    }
+
+    /**
+     * Send the brightness parameter.
+     */
+    public void sendBrightness(PercentType brightness) throws IOException {
+        logger.debug("sendBrightness({})", brightness);
+        GenericGoveeData data = new ValueIntData(brightness.intValue());
+        GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("brightness", data));
+        communicationManager.sendRequest(this, request);
+        lastColor = new HSBType(lastColor.getHue(), lastColor.getSaturation(), brightness);
+    }
+
+    /**
+     * Send the on-off parameter.
+     */
+    private void sendOnOff(OnOffType onOff) throws IOException {
+        logger.debug("sendOnOff({})", onOff);
+        GenericGoveeData data = new ValueIntData(onOff == OnOffType.ON ? 1 : 0);
+        GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("turn", data));
+        communicationManager.sendRequest(this, request);
+    }
+
+    /**
+     * Set the color temperature (Kelvin) parameter.
+     */
+    private void sendKelvin(int kelvin) throws IOException {
+        logger.debug("sendKelvin({})", kelvin);
+        GenericGoveeData data = new ColorData(new Color(0, 0, 0), kelvin);
+        GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("colorwc", data));
+        communicationManager.sendRequest(this, request);
+        lastKelvin = kelvin;
+    }
+
+    /**
+     * Build an {@link HSBType} from the given normalized {@link Color} record, brightness, and on state.
+     *
+     * @param normalColor record containing the lamp's normalized RGB parameters (0..255)
+     * @param brightness the lamp brightness in range 0..100
+     * @param on the lamp state
+     *
+     * @return the HSB presentation state
+     */
+    private static HSBType buildHSB(Color normalColor, int brightness, boolean on) {
+        int[] normalizedRGB = { normalColor.r(), normalColor.g(), normalColor.b() };
+        HSBType normalizedHSB = ColorUtil.rgbToHsb(normalizedRGB);
+        PercentType brightnessParam = on ? new PercentType(brightness) : PercentType.ZERO;
+        return new HSBType(normalizedHSB.getHue(), normalizedHSB.getSaturation(), brightnessParam);
     }
 
     void handleIncomingStatus(String response) {
@@ -285,46 +293,54 @@ public class GoveeHandler extends BaseThingHandler {
         }
 
         logger.trace("Receiving Device State");
-        int newOnOff = message.msg().data().onOff();
-        logger.trace("newOnOff = {}", newOnOff);
-        int newBrightness = message.msg().data().brightness();
-        logger.trace("newBrightness = {}", newBrightness);
-        Color newColor = message.msg().data().color();
-        logger.trace("newColor = {}", newColor);
-        int newColorTempInKelvin = message.msg().data().colorTemInKelvin();
-        logger.trace("newColorTempInKelvin = {}", newColorTempInKelvin);
 
-        newColorTempInKelvin = (newColorTempInKelvin < COLOR_TEMPERATURE_MIN_VALUE)
-                ? COLOR_TEMPERATURE_MIN_VALUE.intValue()
-                : newColorTempInKelvin;
-        newColorTempInKelvin = (newColorTempInKelvin > COLOR_TEMPERATURE_MAX_VALUE)
-                ? COLOR_TEMPERATURE_MAX_VALUE.intValue()
-                : newColorTempInKelvin;
+        boolean on = message.msg().data().onOff() == 1;
+        logger.trace("on:{}", on);
 
-        int newColorTempInPercent = ((Double) ((newColorTempInKelvin - COLOR_TEMPERATURE_MIN_VALUE)
-                / (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) * 100.0)).intValue();
+        int brightness = message.msg().data().brightness();
+        logger.trace("brightness:{}", brightness);
 
-        HSBType adaptedColor = getColorState(newColor, newBrightness);
+        Color normalRGB = message.msg().data().color();
+        logger.trace("normalRGB:{}", normalRGB);
 
-        logger.trace("HSB old: {} vs adaptedColor: {}", lastColor, adaptedColor);
-        // avoid noise by only updating if the value has changed on the device
-        if (!adaptedColor.equals(lastColor)) {
-            logger.trace("UPDATING HSB old: {} != {}", lastColor, adaptedColor);
-            updateState(CHANNEL_COLOR, adaptedColor);
+        int kelvin = message.msg().data().colorTemInKelvin();
+        logger.trace("kelvin:{}", kelvin);
+
+        HSBType color = buildHSB(normalRGB, brightness, on);
+
+        kelvin = Math.min(COLOR_TEMPERATURE_MAX_VALUE.intValue(),
+                Math.max(COLOR_TEMPERATURE_MIN_VALUE.intValue(), kelvin));
+
+        logger.trace("Comparing color old:{} to new:{}", lastColor, color);
+        if (!color.equals(lastColor)) {
+            logger.trace("Updating color old:{} to new:{}", lastColor, color);
+            updateState(CHANNEL_COLOR, color);
+            lastColor = color;
         }
 
-        // avoid noise by only updating if the value has changed on the device
-        logger.trace("Color-Temperature Status: old: {} K {}% vs new: {} K", lastColorTempInKelvin,
-                newColorTempInPercent, newColorTempInKelvin);
-        if (newColorTempInKelvin != lastColorTempInKelvin) {
-            logger.trace("Color-Temperature Status: old: {} K {}% vs new: {} K", lastColorTempInKelvin,
-                    newColorTempInPercent, newColorTempInKelvin);
-            updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType<>(lastColorTempInKelvin, Units.KELVIN));
-            updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(newColorTempInPercent));
+        logger.trace("Comparing color temperature old:{} to new:{}", lastKelvin, kelvin);
+        if (kelvin != lastKelvin) {
+            logger.trace("Updating color temperature old:{} to new:{}", lastKelvin, kelvin);
+            updateState(CHANNEL_COLOR_TEMPERATURE_ABS, QuantityType.valueOf(kelvin, Units.KELVIN));
+            updateState(CHANNEL_COLOR_TEMPERATURE, kelvinToPercent(kelvin));
+            lastKelvin = kelvin;
         }
+    }
 
-        lastOnOff = newOnOff;
-        lastColor = adaptedColor;
-        lastBrightness = newBrightness;
+    /**
+     * Convert PercentType to Kelvin.
+     */
+    private static int percentToKelvin(PercentType percent) {
+        return (int) Math
+                .round((((COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) * percent.doubleValue() / 100.0)
+                        + COLOR_TEMPERATURE_MIN_VALUE));
+    }
+
+    /**
+     * Convert Kelvin to PercentType.
+     */
+    private static PercentType kelvinToPercent(int kelvin) {
+        return new PercentType((int) Math.round((kelvin - COLOR_TEMPERATURE_MIN_VALUE) * 100.0
+                / (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE)));
     }
 }
