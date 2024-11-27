@@ -61,7 +61,6 @@ import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -175,7 +174,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
     private final Clip2StateDescriptionProvider stateDescriptionProvider;
-    private final TimeZoneProvider timeZoneProvider;
 
     private String resourceId = "?";
     private Resource thisResource;
@@ -197,8 +195,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable Future<?> updateServiceContributorsTask;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
-            TimeZoneProvider timeZoneProvider, ThingRegistry thingRegistry,
-            ItemChannelLinkRegistry itemChannelLinkRegistry) {
+            ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -215,7 +212,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         this.thingRegistry = thingRegistry;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -926,7 +922,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     updateState(CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
                 }
                 // Update channel from timestamp if last button pressed.
-                State buttonLastUpdatedState = resource.getButtonLastUpdatedState(timeZoneProvider.getTimeZone());
+                State buttonLastUpdatedState = resource.getButtonLastUpdatedState();
                 if (buttonLastUpdatedState instanceof DateTimeType) {
                     Instant buttonLastUpdatedInstant = ((DateTimeType) buttonLastUpdatedState).getInstant();
                     if (buttonLastUpdatedInstant.isAfter(buttonGroupLastUpdated)) {
@@ -968,16 +964,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case LIGHT_LEVEL:
                 updateState(CHANNEL_2_LIGHT_LEVEL, resource.getLightLevelState(), fullUpdate);
-                updateState(CHANNEL_2_LIGHT_LEVEL_LAST_UPDATED,
-                        resource.getLightLevelLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_LIGHT_LEVEL_LAST_UPDATED, resource.getLightLevelLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_LIGHT_LEVEL_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case MOTION:
             case CAMERA_MOTION:
                 updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
-                updateState(CHANNEL_2_MOTION_LAST_UPDATED,
-                        resource.getMotionLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
@@ -988,14 +982,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 } else {
                     updateState(CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
                 }
-                updateState(CHANNEL_2_ROTARY_STEPS_LAST_UPDATED,
-                        resource.getRotaryStepsLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_ROTARY_STEPS_LAST_UPDATED, resource.getRotaryStepsLastUpdatedState(), fullUpdate);
                 break;
 
             case TEMPERATURE:
                 updateState(CHANNEL_2_TEMPERATURE, resource.getTemperatureState(), fullUpdate);
-                updateState(CHANNEL_2_TEMPERATURE_LAST_UPDATED,
-                        resource.getTemperatureLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_TEMPERATURE_LAST_UPDATED, resource.getTemperatureLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_TEMPERATURE_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
@@ -1009,15 +1001,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CONTACT:
                 updateState(CHANNEL_2_SECURITY_CONTACT, resource.getContactState(), fullUpdate);
-                updateState(CHANNEL_2_SECURITY_CONTACT_LAST_UPDATED,
-                        resource.getContactLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_CONTACT_LAST_UPDATED, resource.getContactLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_SECURITY_CONTACT_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case TAMPER:
                 updateState(CHANNEL_2_SECURITY_TAMPER, resource.getTamperState(), fullUpdate);
-                updateState(CHANNEL_2_SECURITY_TAMPER_LAST_UPDATED,
-                        resource.getTamperLastUpdatedState(timeZoneProvider.getTimeZone()), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_TAMPER_LAST_UPDATED, resource.getTamperLastUpdatedState(), fullUpdate);
                 break;
 
             case SMART_SCENE:
