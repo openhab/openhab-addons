@@ -263,10 +263,10 @@ public class GoveeHandler extends BaseThingHandler {
      * @return the HSB presentation state
      */
     private static HSBType buildHSB(Color normalColor, int brightness, boolean on) {
-        int[] normalizedRGB = { normalColor.r(), normalColor.g(), normalColor.b() };
-        HSBType normalizedHSB = ColorUtil.rgbToHsb(normalizedRGB);
-        PercentType brightnessParam = on ? new PercentType(brightness) : PercentType.ZERO;
-        return new HSBType(normalizedHSB.getHue(), normalizedHSB.getSaturation(), brightnessParam);
+        int[] normalRGB = { normalColor.r(), normalColor.g(), normalColor.b() };
+        HSBType normalHSB = ColorUtil.rgbToHsb(normalRGB);
+        PercentType brightnessPercent = on ? new PercentType(brightness) : PercentType.ZERO;
+        return new HSBType(normalHSB.getHue(), normalHSB.getSaturation(), brightnessPercent);
     }
 
     void handleIncomingStatus(String response) {
