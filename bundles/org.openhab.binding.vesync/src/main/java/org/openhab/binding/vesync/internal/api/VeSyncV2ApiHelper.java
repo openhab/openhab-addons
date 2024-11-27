@@ -63,7 +63,7 @@ public class VeSyncV2ApiHelper {
 
     private volatile @Nullable VeSyncUserSession loggedInSession;
 
-    private @Nullable HttpClient httpClient;
+    private final @Nullable HttpClient httpClient;
 
     private Map<String, @NotNull VeSyncManagedDeviceBase> macLookup;
 
@@ -168,10 +168,11 @@ public class VeSyncV2ApiHelper {
     private String directReqV1Authorized(final String url, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException {
         try {
-            if (httpClient == null) {
+            final HttpClient client = httpClient;
+            if (client == null) {
                 throw new AuthenticationException("No HTTP Client");
             }
-            Request request = httpClient.newRequest(url).method(requestData.httpMethod).timeout(RESPONSE_TIMEOUT_SEC,
+            Request request = client.newRequest(url).method(requestData.httpMethod).timeout(RESPONSE_TIMEOUT_SEC,
                     TimeUnit.SECONDS);
 
             // No headers for login
@@ -226,11 +227,12 @@ public class VeSyncV2ApiHelper {
     private VeSyncLoginResponse processLogin(String username, String password, String timezone)
             throws AuthenticationException {
         try {
-            if (httpClient == null) {
+            final HttpClient client = httpClient;
+            if (client == null) {
                 throw new AuthenticationException("No HTTP Client");
             }
-            Request request = httpClient.newRequest(V1_LOGIN_ENDPOINT).method(HttpMethod.POST)
-                    .timeout(RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS);
+            Request request = client.newRequest(V1_LOGIN_ENDPOINT).method(HttpMethod.POST).timeout(RESPONSE_TIMEOUT_SEC,
+                    TimeUnit.SECONDS);
 
             // No headers for login
             request.content(new StringContentProvider(
