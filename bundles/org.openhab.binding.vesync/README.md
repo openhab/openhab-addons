@@ -24,7 +24,7 @@ This binding supports the follow thing types:
 
 This binding was developed from the great work in the listed projects.
 
-The only Air Filter unit it has been tested against are the Core400S unit and Vital 100S, **I'm looking for others to confirm** my queries regarding **the Core200S and Core300S** units.
+The binding has been tested against the following Air Filter unit's: Core400S and Vital 100S, **I'm looking for others to confirm** my queries regarding **the Core200S and Core300S** units.
 The **Classic 300S Humidifier** has been tested, and **600S with current warm mode restrictions**.
 
 ## Discovery
