@@ -2,7 +2,6 @@
 <update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
-
 	<thing-type uid="vesync:airHumidifier">
 		<instruction-set targetVersion="1">
 			<add-channel id="schedulesCount">
@@ -11,13 +10,6 @@
 			<add-channel id="timerExpiry">
 				<type>vesync:deviceAFTimerExpiry</type>
 			</add-channel>
-			<update-channel id="mistLevel">
-				<type>vesync:deviceMistLevelType</type>
-			</update-channel>
-			<update-channel id="warmLevel">
-				<type>vesync:warmLevel</type>
-			</update-channel>
 		</instruction-set>
 	</thing-type>
-
 </update:update-descriptions>

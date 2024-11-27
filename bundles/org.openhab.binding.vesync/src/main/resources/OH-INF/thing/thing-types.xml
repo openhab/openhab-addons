@@ -12,7 +12,6 @@
 			<property name="Registration Time"/>
 			<property name="Country Code"/>
 			<property name="Accept Language"/>
-			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -122,6 +121,7 @@
 			<property name="Device Type"/>
 			<property name="MAC Id"/>
 			<property name="Device Family"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>macId</representation-property>
 

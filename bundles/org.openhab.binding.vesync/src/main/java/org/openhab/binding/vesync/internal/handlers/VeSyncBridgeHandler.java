@@ -27,7 +27,6 @@ import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.api.VeSyncV2ApiHelper;
 import org.openhab.binding.vesync.internal.discovery.DeviceMetaDataUpdatedHandler;
@@ -71,7 +70,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
 
     private volatile int backgroundScanTime = -1;
 
-    protected final VeSyncV2ApiHelper api = new VeSyncV2ApiHelper();
+    protected final VeSyncV2ApiHelper api;
     private final Logger logger = LoggerFactory.getLogger(VeSyncBridgeHandler.class);
     private final Object scanConfigLock = new Object();
 
@@ -80,12 +79,11 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     private final Bundle bundle;
 
     private @Nullable ScheduledFuture<?> backgroundDiscoveryPollingJob;
-    private HttpClient httpClient;
 
     public VeSyncBridgeHandler(Bridge bridge, @Reference HttpClientFactory httpClientFactory,
             @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
         super(bridge);
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        api = new VeSyncV2ApiHelper(httpClientFactory.getCommonHttpClient());
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
         this.bundle = FrameworkUtil.getBundle(getClass());
@@ -218,8 +216,6 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
 
     @Override
     public void initialize() {
-        api.setHttpClient(httpClient);
-
         VeSyncBridgeConfiguration config = getConfigAs(VeSyncBridgeConfiguration.class);
 
         scheduler.submit(() -> {
@@ -243,7 +239,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     @Override
     public void dispose() {
         setBackgroundScanInterval(DEFAULT_DEVICE_SCAN_DISABLED);
-        api.setHttpClient(null);
+        api.dispose();
     }
 
     @Override

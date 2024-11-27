@@ -2,7 +2,6 @@
 <update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
-
 	<thing-type uid="vesync:airPurifier">
 		<instruction-set targetVersion="1">
 			<add-channel id="lightDetection">
@@ -11,28 +10,9 @@
 			<add-channel id="lightDetected">
 				<type>vesync:deviceAFLightDetected</type>
 			</add-channel>
-			<update-channel id="manualFanSpeed">
-				<type>vesync:airPurifierFanLevelType</type>
-			</update-channel>
 			<update-channel id="fanMode">
 				<type>vesync:airPurifierModeType</type>
 			</update-channel>
-			<update-channel id="filterLifePercentage">
-				<type>vesync:deviceFilterLifePercentageType</type>
-			</update-channel>
-			<update-channel id="errorCode">
-				<type>vesync:deviceErrorCodeType</type>
-			</update-channel>
-			<update-channel id="configAutoRoomSize">
-				<type>vesync:deviceAFConfigAutoPrefRoomSizeType</type>
-			</update-channel>
-			<update-channel id="schedulesCount">
-				<type>vesync:deviceAFConfigAutoScheduleCountType</type>
-			</update-channel>
-			<update-channel id="airQualityPM25">
-				<type>vesync:airQualityPM25</type>
-			</update-channel>
 		</instruction-set>
 	</thing-type>
-
 </update:update-descriptions>

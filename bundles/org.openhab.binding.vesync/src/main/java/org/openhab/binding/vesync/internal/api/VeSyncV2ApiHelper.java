@@ -63,11 +63,12 @@ public class VeSyncV2ApiHelper {
 
     private volatile @Nullable VeSyncUserSession loggedInSession;
 
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private @Nullable HttpClient httpClient;
 
     private Map<String, @NotNull VeSyncManagedDeviceBase> macLookup;
 
-    public VeSyncV2ApiHelper() {
+    public VeSyncV2ApiHelper(final HttpClient httpClient) {
+        this.httpClient = httpClient;
         macLookup = new HashMap<>();
     }
 
@@ -75,13 +76,9 @@ public class VeSyncV2ApiHelper {
         return macLookup;
     }
 
-    /**
-     * Sets the httpClient object to be used for API calls to Vesync.
-     *
-     * @param httpClient the client to be used.
-     */
-    public void setHttpClient(@Nullable HttpClient httpClient) {
-        this.httpClient = httpClient;
+    public void dispose() {
+        loggedInSession = null;
+        macLookup.clear();
     }
 
     public static @NotNull String calculateMd5(final @Nullable String password) {
@@ -171,7 +168,11 @@ public class VeSyncV2ApiHelper {
     private String directReqV1Authorized(final String url, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException {
         try {
-            Request request = httpClient.newRequest(url).method(requestData.httpMethod).timeout(RESPONSE_TIMEOUT_SEC,
+            final HttpClient client = httpClient;
+            if (client == null) {
+                throw new AuthenticationException("No HTTP Client");
+            }
+            Request request = client.newRequest(url).method(requestData.httpMethod).timeout(RESPONSE_TIMEOUT_SEC,
                     TimeUnit.SECONDS);
 
             // No headers for login
@@ -226,8 +227,12 @@ public class VeSyncV2ApiHelper {
     private VeSyncLoginResponse processLogin(String username, String password, String timezone)
             throws AuthenticationException {
         try {
-            Request request = httpClient.newRequest(V1_LOGIN_ENDPOINT).method(HttpMethod.POST)
-                    .timeout(RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS);
+            final HttpClient client = httpClient;
+            if (client == null) {
+                throw new AuthenticationException("No HTTP Client");
+            }
+            Request request = client.newRequest(V1_LOGIN_ENDPOINT).method(HttpMethod.POST).timeout(RESPONSE_TIMEOUT_SEC,
+                    TimeUnit.SECONDS);
 
             // No headers for login
             request.content(new StringContentProvider(
