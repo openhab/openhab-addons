@@ -17,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.time.ZoneId;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +37,7 @@ class BoschSHCHandlerFactoryTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        fixture = new BoschSHCHandlerFactory(() -> ZoneId.systemDefault());
+        fixture = new BoschSHCHandlerFactory();
     }
 
     @Test
