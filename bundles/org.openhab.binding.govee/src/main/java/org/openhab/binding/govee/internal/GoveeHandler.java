@@ -92,7 +92,7 @@ public class GoveeHandler extends BaseThingHandler {
     private final CommunicationManager communicationManager;
     private final GoveeStateDescriptionProvider stateDescriptionProvider;
 
-    private OnOffType lastOn = OnOffType.OFF;
+    private OnOffType lastSwitch = OnOffType.OFF;
     private HSBType lastColor = new HSBType();
     private int lastKelvin;
 
@@ -321,8 +321,8 @@ public class GoveeHandler extends BaseThingHandler {
 
         logger.debug("updateDeviceState() for {}", thing.getUID());
 
-        OnOffType on = OnOffType.from(message.msg().data().onOff() == 1);
-        logger.trace("- on:{}", on);
+        OnOffType switchValue = OnOffType.from(message.msg().data().onOff() == 1);
+        logger.trace("- switch:{}", switchValue);
 
         int brightness = message.msg().data().brightness();
         logger.trace("- brightness:{}", brightness);
@@ -335,11 +335,11 @@ public class GoveeHandler extends BaseThingHandler {
 
         HSBType color = buildHSB(normalRGB, brightness, true);
 
-        logger.trace("Compare color old:{} to new:{}, on-state old:{} to new:{}", lastColor, color, lastOn, on);
-        if ((on != lastOn) || !color.equals(lastColor)) {
-            logger.trace("Update color old:{} to new:{}, on-state old:{} to new:{}", lastColor, color, lastOn, on);
-            updateState(CHANNEL_COLOR, buildHSB(normalRGB, brightness, on == OnOffType.ON));
-            lastOn = on;
+        logger.trace("Compare color old:{} to new:{}, on-state old:{} to new:{}", lastColor, color, lastSwitch, switchValue);
+        if ((switchValue != lastSwitch) || !color.equals(lastColor)) {
+            logger.trace("Update color old:{} to new:{}, on-state old:{} to new:{}", lastColor, color, lastSwitch, switchValue);
+            updateState(CHANNEL_COLOR, buildHSB(normalRGB, brightness, switchValue == OnOffType.ON));
+            lastSwitch = switchValue;
             lastColor = color;
         }
 
