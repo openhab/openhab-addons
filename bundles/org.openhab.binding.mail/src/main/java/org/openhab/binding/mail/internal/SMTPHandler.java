@@ -142,7 +142,6 @@ public class SMTPHandler extends BaseThingHandler {
 
             // fix command map not available
             DataHandler dataHandler = mail.getMimeMessage().getDataHandler();
-
             dataHandler.setCommandMap(commandMap);
             try {
                 DataSource dataSource = dataHandler.getDataSource();
