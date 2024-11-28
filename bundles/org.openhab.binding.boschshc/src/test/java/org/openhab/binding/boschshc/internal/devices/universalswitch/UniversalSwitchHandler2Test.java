@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.boschshc.internal.devices.universalswitch;
 
-import java.time.ZoneId;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
@@ -29,7 +27,7 @@ class UniversalSwitchHandler2Test extends UniversalSwitchHandlerTest {
 
     @Override
     protected UniversalSwitchHandler createFixture() {
-        return new UniversalSwitch2Handler(getThing(), () -> ZoneId.systemDefault());
+        return new UniversalSwitch2Handler(getThing());
     }
 
     @Override
