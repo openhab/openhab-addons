@@ -90,25 +90,26 @@ Channel names in **bold** are read/write, everything else is read-only
 
 ### AirHumidifier Thing
 
-| Channel                    | Type                 | Description                                                   | Model's Supported                                    | Controllable Values | Unit |
-|----------------------------|----------------------|---------------------------------------------------------------|------------------------------------------------------|---------------------|------|
-| **enabled**                | Switch               | Whether the hardware device is enabled (Switched on)          | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 | [ON, OFF]           |      |
-| **display**                | Switch               | Whether the display is enabled (display is shown)             | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 | [ON, OFF]           |      |
-| waterLacking               | Switch               | Indicator whether the unit is lacking water                   | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 |                     |      |
-| humidityHigh               | Switch               | Indicator for high humidity                                   | 200S, Dual200S, 300S, 600S, OasisMist                |                     |      |
-| waterTankLifted            | Switch               | Indicator for whether the water tank is removed               | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 |                     |      |
-| **stopAtHumiditySetpoint** | Switch               | Whether the unit is set to stop when the set point is reached | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 | [ON, OFF]           |      |
-| humidity                   | Number:Dimensionless | Indicator for the currently measured humidity % level         | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 |                     |      |
-| **mistLevel**              | Number:Dimensionless | The current mist level set                                    | 300S                                                 | [1...2]             | one  |
-| **mistLevel**              | Number:Dimensionless | The current mist level set                                    | 200S, Dual200S, 600S, OasisMist, OasisMist1000       | [1...3]             | one  |
-| **humidifierMode**         | String               | The current mode of operation                                 | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 | [auto, sleep]       |      |
-| **nightLightMode**         | String               | The night light mode                                          | 200S, Dual200S, 300S                                 | [on, dim, off]      |      |
-| **humiditySetpoint**       | Number:Dimensionless | Humidity % set point to reach                                 | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 | [30...80]           |      |
-| warmEnabled                | Switch               | Indicator for warm mist mode                                  | 600S, OasisMist                                      |                     |      |
-| **warmLevel**              | Number:Dimensionless | The current warm mist level set                               | 600S, OasisMist                                      | [0..3]              | one  |
-| errorCode                  | Number:Dimensionless | The error code reported by the device                         | OasisMist1000                                        |                     | one  |
-| timerExpiry                | DateTime             | The expected expiry time of the current timer                 | OasisMist1000                                        |                     |      |
-| schedulesCount             | Number:Dimensionless | The number schedules configured                               | OasisMist1000                                        |                     | one  |
+| Channel                    | Type                 | Description                                                   | Model's Supported                                    | Controllable Values   | Unit |
+|----------------------------|----------------------|---------------------------------------------------------------|------------------------------------------------------|-----------------------|------|
+| **enabled**                | Switch               | Whether the hardware device is enabled (Switched on)          | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 | [ON, OFF]             |      |
+| **display**                | Switch               | Whether the display is enabled (display is shown)             | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 | [ON, OFF]             |      |
+| waterLacking               | Switch               | Indicator whether the unit is lacking water                   | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 |                       |      |
+| humidityHigh               | Switch               | Indicator for high humidity                                   | 200S, Dual200S, 300S, 600S, OasisMist                |                       |      |
+| waterTankLifted            | Switch               | Indicator for whether the water tank is removed               | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 |                       |      |
+| **stopAtHumiditySetpoint** | Switch               | Whether the unit is set to stop when the set point is reached | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 | [ON, OFF]             |      |
+| humidity                   | Number:Dimensionless | Indicator for the currently measured humidity % level         | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 |                       |      |
+| **mistLevel**              | Number:Dimensionless | The current mist level set                                    | 300S                                                 | [1...2]               | one  |
+| **mistLevel**              | Number:Dimensionless | The current mist level set                                    | 200S, Dual200S, 600S, OasisMist, OasisMist1000       | [1...3]               | one  |
+| **humidifierMode**         | String               | The current mode of operation                                 | 200S, Dual200S, OasisMist (EU Model)                 | [auto, manual]        |      |
+| **humidifierMode**         | String               | The current mode of operation                                 | 300S, 600S, OasisMist1000, OasisMist (Non EU Models) | [auto, manual, sleep] |      |
+| **nightLightMode**         | String               | The night light mode                                          | 200S, Dual200S, 300S, OasisMist (EU Model)           | [on, dim, off]        |      |
+| **humiditySetpoint**       | Number:Dimensionless | Humidity % set point to reach                                 | 200S, Dual200S, 300S, 600S, OasisMist, OasisMist1000 | [30...80]             |      |
+| warmEnabled                | Switch               | Indicator for warm mist mode                                  | 600S, OasisMist                                      |                       |      |
+| **warmLevel**              | Number:Dimensionless | The current warm mist level set                               | 600S, OasisMist                                      | [0..3]                | one  |
+| errorCode                  | Number:Dimensionless | The error code reported by the device                         | OasisMist1000                                        |                       | one  |
+| timerExpiry                | DateTime             | The expected expiry time of the current timer                 | OasisMist1000                                        |                       |      |
+| schedulesCount             | Number:Dimensionless | The number schedules configured                               | OasisMist1000                                        |                       | one  |
 
 ## Full Example
 

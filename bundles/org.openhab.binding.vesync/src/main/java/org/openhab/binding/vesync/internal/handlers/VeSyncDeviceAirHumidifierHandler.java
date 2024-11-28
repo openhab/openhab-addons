@@ -72,6 +72,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
     public static final String DEV_FAMILY_CLASSIC_300S = "Classic 300S";
     public static final String DEV_FAMILY_DUAL_200S = "Dual 200S";
     public static final String DEV_FAMILY_600S = "600S";
+    public static final String DEV_FAMILY_OASIS_MIST_EU = "Oasis Mist EU";
     public static final String DEV_FAMILY_OASIS_MIST = "Oasis Mist";
 
     public static final String DEV_FAMILY_OASIS_MIST_1000 = "Oasis Mist 1000";
@@ -98,16 +99,20 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             Arrays.asList("A602S"), Collections.emptyList(), AUTO_MAN_SLEEP_MODES, 1, 3, 0, 3, true,
             CLASSIC_300S_NIGHT_LIGHT_MODES);
 
+    public static final VeSyncDeviceHumidifierMetadata OASIS_MIST_EU = new VeSyncDeviceHumidifierMetadata(1,
+            DEV_FAMILY_OASIS_MIST_EU, Collections.emptyList(), Arrays.asList("LUH-O451S-WEU"), AUTO_MAN_MODES, 1, 3, 0,
+            3, false, CLASSIC_300S_NIGHT_LIGHT_MODES);
+
     public static final VeSyncDeviceHumidifierMetadata OASIS_MIST = new VeSyncDeviceHumidifierMetadata(1,
-            DEV_FAMILY_OASIS_MIST, Arrays.asList("O451S"), Collections.emptyList(), AUTO_MAN_SLEEP_MODES, 1, 3, 0, 3,
-            true, Collections.emptyList());
+            DEV_FAMILY_OASIS_MIST, Arrays.asList("0601S"), Arrays.asList("LUH-O451S-WUS", "LUH-O451S-WUSR"),
+            AUTO_MAN_SLEEP_MODES, 1, 3, 0, 3, true, Collections.emptyList());
 
     public static final VeSyncDeviceHumidifierMetadata OASIS_MIST_1000 = new VeSyncDeviceHumidifierMetadata(2,
             DEV_FAMILY_OASIS_MIST_1000, Arrays.asList("M101S"), Collections.emptyList(), AUTO_MAN_SLEEP_MODES, 1, 3, 0,
             3, false, Collections.emptyList());
 
     public static final List<VeSyncDeviceMetadata> SUPPORTED_MODEL_FAMILIES = Arrays.asList(LV600S, CLASSIC300S,
-            CLASSIC200S, DUAL200S, OASIS_MIST);
+            CLASSIC200S, DUAL200S, OASIS_MIST, OASIS_MIST_EU);
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncDeviceAirHumidifierHandler.class);
 
@@ -122,6 +127,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             put(DUAL200S.deviceFamilyName, DUAL200S);
             put(LV600S.deviceFamilyName, LV600S);
             put(OASIS_MIST.deviceFamilyName, OASIS_MIST);
+            put(OASIS_MIST_EU.deviceFamilyName, OASIS_MIST_EU);
             put(OASIS_MIST_1000.deviceFamilyName, OASIS_MIST_1000);
         }
     };
@@ -154,6 +160,9 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                 case DEV_FAMILY_OASIS_MIST:
                     toRemove = new String[] { DEVICE_CHANNEL_AF_NIGHT_LIGHT, DEVICE_CHANNEL_AF_SCHEDULES_COUNT,
                             DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME };
+                    break;
+                case DEV_FAMILY_OASIS_MIST_EU:
+                    toRemove = new String[] { DEVICE_CHANNEL_AF_SCHEDULES_COUNT, DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME };
                     break;
             }
         }
