@@ -44,7 +44,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
     private final static Logger logger = LoggerFactory.getLogger(FerroampHandler.class);
     private @Nullable static MqttBrokerConnection ferroampConnection;
     FerroampMqttCommunication ferroampMqttCommunication = new FerroampMqttCommunication(thing);
-    private @Nullable FerroampConfiguration ferroampConfig;
+    FerroampConfiguration ferroampConfig = new FerroampConfiguration();
 
     private static List<FerroampChannelConfiguration> channelConfigEhub = new ArrayList<>();
     private static List<FerroampChannelConfiguration> channelConfigSsoS1 = new ArrayList<>();
@@ -94,18 +94,12 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         channelConfigEso = FerroampChannelConfiguration.getChannelConfigurationEso();
         channelConfigEsm = FerroampChannelConfiguration.getChannelConfigurationEsm();
 
-        if (ferroampConfig != null) {
-
-            FerroampConfiguration ferroampConfig = getConfigAs(FerroampConfiguration.class);
-            final MqttBrokerConnection ferroampConnection = new MqttBrokerConnection(ferroampConfig.hostName,
-                    FerroampBindingConstants.BROKER_PORT, false, false, ferroampConfig.userName);
-            scheduler.scheduleWithFixedDelay(this::pollTask, 60, refreshInterval, TimeUnit.SECONDS);
-            this.setFerroampConnection(ferroampConnection);
-            updateStatus(ThingStatus.UNKNOWN);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            logger.debug("Configuration problems");
-        }
+        FerroampConfiguration ferroampConfig = getConfigAs(FerroampConfiguration.class);
+        final MqttBrokerConnection ferroampConnection = new MqttBrokerConnection(ferroampConfig.hostName,
+                FerroampBindingConstants.BROKER_PORT, false, false, ferroampConfig.userName);
+        scheduler.scheduleWithFixedDelay(this::pollTask, 60, refreshInterval, TimeUnit.SECONDS);
+        this.setFerroampConnection(ferroampConnection);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     private void pollTask() {
@@ -244,7 +238,6 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
 
     public @Nullable static MqttBrokerConnection getFerroampConnection() {
         try {
-
             return ferroampConnection;
         } catch (Exception e) {
             logger.debug("Connection to MqttBroker disturbed during startup of MqttConnection");
