@@ -19,6 +19,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,9 +72,20 @@ public class CommunicationManager {
     public CommunicationManager() {
     }
 
+    /**
+     * Get the resolved IP address from the given host name
+     */
+    private static String ipAddressFrom(String host) {
+        try {
+            return InetAddress.getByName(host).getHostAddress();
+        } catch (UnknownHostException e) {
+        }
+        return host;
+    }
+
     public void registerHandler(GoveeHandler handler) {
         synchronized (thingHandlers) {
-            thingHandlers.put(handler.getHostname(), handler);
+            thingHandlers.put(ipAddressFrom(handler.getHostname()), handler);
             if (receiverThread == null) {
                 receiverThread = new StatusReceiver();
                 receiverThread.start();
@@ -83,7 +95,7 @@ public class CommunicationManager {
 
     public void unregisterHandler(GoveeHandler handler) {
         synchronized (thingHandlers) {
-            thingHandlers.remove(handler.getHostname());
+            thingHandlers.remove(ipAddressFrom(handler.getHostname()));
             if (thingHandlers.isEmpty()) {
                 StatusReceiver receiver = receiverThread;
                 if (receiver != null) {
@@ -102,7 +114,7 @@ public class CommunicationManager {
         final byte[] data = message.getBytes();
         final InetAddress address = InetAddress.getByName(hostname);
         DatagramPacket packet = new DatagramPacket(data, data.length, address, REQUEST_PORT);
-        logger.trace("Sending {} to {}", message, hostname);
+        logger.trace("Sending request to {} with content = {}", address.getHostAddress(), message);
         socket.send(packet);
         socket.close();
     }
@@ -212,7 +224,7 @@ public class CommunicationManager {
 
                         String response = new String(packet.getData(), packet.getOffset(), packet.getLength());
                         String deviceIPAddress = packet.getAddress().toString().replace("/", "");
-                        logger.trace("Response from {} = {}", deviceIPAddress, response);
+                        logger.trace("Received response from {} with content = {}", deviceIPAddress, response);
 
                         final DiscoveryResultReceiver discoveryReceiver;
                         synchronized (this) {
@@ -240,15 +252,15 @@ public class CommunicationManager {
                                 handler = thingHandlers.get(deviceIPAddress);
                             }
                             if (handler == null) {
-                                logger.warn("thing Handler for {} couldn't be found.", deviceIPAddress);
+                                logger.warn("Handler not found for {}", deviceIPAddress);
                             } else {
-                                logger.debug("processing status updates for thing {} ", handler.getThing().getLabel());
+                                logger.debug("Processing response for {}", deviceIPAddress);
                                 handler.handleIncomingStatus(response);
                             }
                         }
                     }
                 } catch (IOException e) {
-                    logger.warn("exception when receiving status packet", e);
+                    logger.warn("Exception when receiving status packet", e);
                     // as we haven't received a packet we also don't know where it should have come from
                     // hence, we don't know which thing put offline.
                     // a way to monitor this would be to keep track in a list, which device answers we expect
