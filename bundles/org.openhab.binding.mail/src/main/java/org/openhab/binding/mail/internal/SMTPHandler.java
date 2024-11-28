@@ -24,7 +24,6 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.internet.MimeMultipart;
 
-import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
@@ -95,7 +94,7 @@ public class SMTPHandler extends BaseThingHandler {
         }
 
         if (!(config.username.isEmpty() || config.password.isEmpty())) {
-            mail.setAuthenticator(new DefaultAuthenticator(config.username, config.password));
+            mail.setAuthentication(config.username, config.password);
         }
 
         Session localSession;
@@ -113,7 +112,15 @@ public class SMTPHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        session = null;
+        Session localSession = session;
+        if (localSession != null) {
+            try {
+                localSession.getTransport().close();
+            } catch (MessagingException ignore) {
+            }
+            session = null;
+        }
+
     }
 
     /**
