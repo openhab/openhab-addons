@@ -99,6 +99,8 @@ public class GoveeHandler extends BaseThingHandler {
     private int minKelvin;
     private int maxKelvin;
 
+    private static final int INTER_COMMAND_SLEEP_MILLISEC = 100;
+
     /**
      * This thing related job <i>thingRefreshSender</i> triggers an update to the Govee device.
      * The device sends it back to the common port and the response is
@@ -184,26 +186,32 @@ public class GoveeHandler extends BaseThingHandler {
                         if (doCommand instanceof HSBType hsb) {
                             sendColor(hsb);
                             triggerRefresh = true;
-                            doCommand = hsb.getBrightness(); // fall through
+                            doCommand = hsb.getBrightness();
+                            Thread.sleep(INTER_COMMAND_SLEEP_MILLISEC);
+                            // fall through
                         }
                         if (doCommand instanceof PercentType percent) {
                             sendBrightness(percent);
                             triggerRefresh = true;
-                            doCommand = OnOffType.from(percent.intValue() > 0); // fall through
+                            doCommand = OnOffType.from(percent.intValue() > 0);
+                            Thread.sleep(INTER_COMMAND_SLEEP_MILLISEC);
+                            // fall through
                         }
                         if (doCommand instanceof OnOffType onOff) {
                             sendOnOff(onOff);
                             triggerRefresh = true;
+                            Thread.sleep(INTER_COMMAND_SLEEP_MILLISEC);
                         }
                         if (triggerRefresh) {
-                            scheduler.submit(thingRefreshSender);
+                            triggerDeviceStatusRefresh();
                         }
                         break;
 
                     case CHANNEL_COLOR_TEMPERATURE:
                         if (command instanceof PercentType percent) {
                             sendKelvin(percentToKelvin(percent));
-                            scheduler.submit(thingRefreshSender);
+                            Thread.sleep(INTER_COMMAND_SLEEP_MILLISEC);
+                            triggerDeviceStatusRefresh();
                         }
                         break;
 
@@ -215,7 +223,8 @@ public class GoveeHandler extends BaseThingHandler {
                                 break;
                             }
                             sendKelvin(kelvin.intValue());
-                            scheduler.submit(thingRefreshSender);
+                            Thread.sleep(INTER_COMMAND_SLEEP_MILLISEC);
+                            triggerDeviceStatusRefresh();
                         }
                         break;
                 }
@@ -225,6 +234,8 @@ public class GoveeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
                             + "\"]");
+        } catch (InterruptedException e) {
+            logger.debug("Inter command sleep was interrupted");
         }
     }
 
