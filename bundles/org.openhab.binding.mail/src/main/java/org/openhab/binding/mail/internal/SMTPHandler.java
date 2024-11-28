@@ -120,7 +120,6 @@ public class SMTPHandler extends BaseThingHandler {
             }
             session = null;
         }
-
     }
 
     /**
