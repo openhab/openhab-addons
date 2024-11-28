@@ -21,17 +21,21 @@ import javax.activation.DataSource;
 import javax.activation.PatchedMailcapCommandMap;
 import javax.mail.MessagingException;
 import javax.mail.Part;
+import javax.mail.Session;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mail.internal.action.SendMailActions;
 import org.openhab.binding.mail.internal.config.SMTPConfig;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -45,13 +49,15 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - Initial contribution
  * @author Hans-Jörg Merk - Fixed UnsupportedDataTypeException - Originally by Jan N. Klug
  *         - Fix sending HTML/Multipart mail - Originally by Jan N. Klug
+ * @author Gaël L'hopital - Added session initialization for thing status check
  */
 @NonNullByDefault
 public class SMTPHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SMTPHandler.class);
     private final PatchedMailcapCommandMap commandMap = new PatchedMailcapCommandMap();
 
-    private @NonNullByDefault({}) SMTPConfig config;
+    private String sender = "";
+    private @Nullable Session session;
 
     public SMTPHandler(Thing thing) {
         super(thing);
@@ -63,17 +69,51 @@ public class SMTPHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(SMTPConfig.class);
+        updateStatus(ThingStatus.UNKNOWN);
 
-        if (config.port == 0) {
-            if (config.security == ServerSecurity.SSL) {
-                config.port = 465;
-            } else {
-                config.port = 25;
-            }
+        SMTPConfig config = getConfigAs(SMTPConfig.class);
+        if (config.sender instanceof String confSender) {
+            sender = confSender;
         }
 
+        Email mail = new SimpleEmail();
+        mail.setHostName(config.hostname);
+
+        int port = config.port != 0 ? config.port : config.security == ServerSecurity.SSL ? 465 : 25;
+        switch (config.security) {
+            case SSL:
+                mail.setSSLOnConnect(true);
+                mail.setSslSmtpPort(Integer.toString(port));
+                break;
+            case STARTTLS:
+                mail.setStartTLSEnabled(true);
+                mail.setStartTLSRequired(true);
+                mail.setSmtpPort(port);
+                break;
+            case PLAIN:
+                mail.setSmtpPort(port);
+        }
+
+        if (!(config.username.isEmpty() || config.password.isEmpty())) {
+            mail.setAuthenticator(new DefaultAuthenticator(config.username, config.password));
+        }
+
+        Session localSession;
+        try {
+            localSession = mail.getMailSession();
+            localSession.getTransport().connect();
+        } catch (EmailException | MessagingException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
+
+        this.session = localSession;
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void dispose() {
+        session = null;
     }
 
     /**
@@ -83,32 +123,26 @@ public class SMTPHandler extends BaseThingHandler {
      * @return true if successful, false if failed
      */
     public boolean sendMail(Email mail) {
-        try {
-            if (mail.getFromAddress() == null) {
-                mail.setFrom(config.sender);
-            }
-            mail.setHostName(config.hostname);
-            switch (config.security) {
-                case SSL:
-                    mail.setSSLOnConnect(true);
-                    mail.setSslSmtpPort(config.port.toString());
-                    break;
-                case STARTTLS:
-                    mail.setStartTLSEnabled(true);
-                    mail.setStartTLSRequired(true);
-                    mail.setSmtpPort(config.port);
-                    break;
-                case PLAIN:
-                    mail.setSmtpPort(config.port);
-            }
-            if (!config.username.isEmpty() && !config.password.isEmpty()) {
-                mail.setAuthenticator(new DefaultAuthenticator(config.username, config.password));
-            }
+        Session localSession = session;
+        if (localSession == null) {
+            logger.warn("Thing {} is not ONLINE, can't send mail", thing.getUID());
+            return false;
+        }
 
+        mail.setMailSession(localSession);
+
+        try {
+            if (mail.getFromAddress() == null && !sender.isEmpty()) {
+                mail.setFrom(sender);
+            } else {
+                logger.warn("No sender defined, can't send mail");
+                return false;
+            }
             mail.buildMimeMessage();
 
             // fix command map not available
             DataHandler dataHandler = mail.getMimeMessage().getDataHandler();
+
             dataHandler.setCommandMap(commandMap);
             try {
                 DataSource dataSource = dataHandler.getDataSource();
@@ -127,11 +161,7 @@ public class SMTPHandler extends BaseThingHandler {
             mail.sendMimeMessage();
         } catch (MessagingException | EmailException e) {
             Throwable cause = e.getCause();
-            if (cause != null) {
-                logger.warn("{}", cause.toString());
-            } else {
-                logger.warn("{}", e.getMessage());
-            }
+            logger.warn("{}", cause != null ? cause.toString() : e.getMessage());
             return false;
         }
         return true;
