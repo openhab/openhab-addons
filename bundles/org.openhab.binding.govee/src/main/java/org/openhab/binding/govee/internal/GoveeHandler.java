@@ -214,7 +214,7 @@ public class GoveeHandler extends BaseThingHandler {
      * Initiate a refresh to our thing device
      */
     private void triggerDeviceStatusRefresh() throws IOException {
-        logger.debug("trigger Refresh Status of device {}", thing.getLabel());
+        logger.debug("triggerDeviceStatusRefresh() on {}", thing.getUID());
         GenericGoveeData data = new EmptyValueQueryStatusData();
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("devStatus", data));
         communicationManager.sendRequest(this, request);
@@ -224,7 +224,7 @@ public class GoveeHandler extends BaseThingHandler {
      * Send the normalized RGB color parameters.
      */
     public void sendColor(HSBType color) throws IOException {
-        logger.debug("sendColor({})", color);
+        logger.debug("sendColor({}) to {}", color, thing.getUID());
         int[] normalRGB = ColorUtil.hsbToRgb(new HSBType(color.getHue(), color.getSaturation(), PercentType.HUNDRED));
         GenericGoveeData data = new ColorData(new Color(normalRGB[0], normalRGB[1], normalRGB[2]), 0);
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("colorwc", data));
@@ -235,7 +235,7 @@ public class GoveeHandler extends BaseThingHandler {
      * Send the brightness parameter.
      */
     public void sendBrightness(PercentType brightness) throws IOException {
-        logger.debug("sendBrightness({})", brightness);
+        logger.debug("sendBrightness({}) to {}", brightness, thing.getUID());
         GenericGoveeData data = new ValueIntData(brightness.intValue());
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("brightness", data));
         communicationManager.sendRequest(this, request);
@@ -245,7 +245,7 @@ public class GoveeHandler extends BaseThingHandler {
      * Send the on-off parameter.
      */
     private void sendOnOff(OnOffType onOff) throws IOException {
-        logger.debug("sendOnOff({})", onOff);
+        logger.debug("sendOnOff({}) to {}", onOff, thing.getUID());
         GenericGoveeData data = new ValueIntData(onOff == OnOffType.ON ? 1 : 0);
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("turn", data));
         communicationManager.sendRequest(this, request);
@@ -255,7 +255,7 @@ public class GoveeHandler extends BaseThingHandler {
      * Set the color temperature (Kelvin) parameter.
      */
     private void sendKelvin(int kelvin) throws IOException {
-        logger.debug("sendKelvin({})", kelvin);
+        logger.debug("sendKelvin({}) to {}", kelvin, thing.getUID());
         GenericGoveeData data = new ColorData(new Color(0, 0, 0), kelvin);
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("colorwc", data));
         communicationManager.sendRequest(this, request);
@@ -301,33 +301,33 @@ public class GoveeHandler extends BaseThingHandler {
             return;
         }
 
-        logger.trace("Receiving Device State");
+        logger.debug("updateDeviceState() for {}", thing.getUID());
 
         OnOffType on = OnOffType.from(message.msg().data().onOff() == 1);
-        logger.trace("on:{}", on);
+        logger.trace("- on:{}", on);
 
         int brightness = message.msg().data().brightness();
-        logger.trace("brightness:{}", brightness);
+        logger.trace("- brightness:{}", brightness);
 
         Color normalRGB = message.msg().data().color();
-        logger.trace("normalRGB:{}", normalRGB);
+        logger.trace("- normalRGB:{}", normalRGB);
 
         int kelvin = message.msg().data().colorTemInKelvin();
-        logger.trace("kelvin:{}", kelvin);
+        logger.trace("- kelvin:{}", kelvin);
 
         HSBType color = buildHSB(normalRGB, brightness, true);
 
-        logger.trace("Comparing color old:{} to new:{}, on state old:{} to new:{}", lastColor, color, lastOn, on);
+        logger.trace("Compare color old:{} to new:{}, on-state old:{} to new:{}", lastColor, color, lastOn, on);
         if ((on != lastOn) || !color.equals(lastColor)) {
-            logger.trace("Updating color old:{} to new:{}, on state old:{} to new:{}", lastColor, color, lastOn, on);
+            logger.trace("Update color old:{} to new:{}, on-state old:{} to new:{}", lastColor, color, lastOn, on);
             updateState(CHANNEL_COLOR, buildHSB(normalRGB, brightness, on == OnOffType.ON));
             lastOn = on;
             lastColor = color;
         }
 
-        logger.trace("Comparing color temperature old:{} to new:{}", lastKelvin, kelvin);
+        logger.trace("Compare color temperature old:{} to new:{}", lastKelvin, kelvin);
         if (kelvin != lastKelvin) {
-            logger.trace("Updating color temperature old:{} to new:{}", lastKelvin, kelvin);
+            logger.trace("Update color temperature old:{} to new:{}", lastKelvin, kelvin);
             if (kelvin != 0) {
                 kelvin = Math.min(COLOR_TEMPERATURE_MAX_VALUE.intValue(),
                         Math.max(COLOR_TEMPERATURE_MIN_VALUE.intValue(), kelvin));
