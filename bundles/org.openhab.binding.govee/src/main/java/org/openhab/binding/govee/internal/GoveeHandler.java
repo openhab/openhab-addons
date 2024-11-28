@@ -196,14 +196,14 @@ public class GoveeHandler extends BaseThingHandler {
                             triggerRefresh = true;
                         }
                         if (triggerRefresh) {
-                            triggerDeviceStatusRefresh();
+                            scheduler.submit(thingRefreshSender);
                         }
                         break;
 
                     case CHANNEL_COLOR_TEMPERATURE:
                         if (command instanceof PercentType percent) {
                             sendKelvin(percentToKelvin(percent));
-                            triggerDeviceStatusRefresh();
+                            scheduler.submit(thingRefreshSender);
                         }
                         break;
 
@@ -215,7 +215,7 @@ public class GoveeHandler extends BaseThingHandler {
                                 break;
                             }
                             sendKelvin(kelvin.intValue());
-                            triggerDeviceStatusRefresh();
+                            scheduler.submit(thingRefreshSender);
                         }
                         break;
                 }
@@ -321,8 +321,8 @@ public class GoveeHandler extends BaseThingHandler {
 
         logger.debug("updateDeviceState() for {}", thing.getUID());
 
-        OnOffType switchValue = OnOffType.from(message.msg().data().onOff() == 1);
-        logger.trace("- switch:{}", switchValue);
+        OnOffType sw = OnOffType.from(message.msg().data().onOff() == 1);
+        logger.trace("- switch:{}", sw);
 
         int brightness = message.msg().data().brightness();
         logger.trace("- brightness:{}", brightness);
@@ -335,11 +335,11 @@ public class GoveeHandler extends BaseThingHandler {
 
         HSBType color = buildHSB(normalRGB, brightness, true);
 
-        logger.trace("Compare color old:{} to new:{}, on-state old:{} to new:{}", lastColor, color, lastSwitch, switchValue);
-        if ((switchValue != lastSwitch) || !color.equals(lastColor)) {
-            logger.trace("Update color old:{} to new:{}, on-state old:{} to new:{}", lastColor, color, lastSwitch, switchValue);
-            updateState(CHANNEL_COLOR, buildHSB(normalRGB, brightness, switchValue == OnOffType.ON));
-            lastSwitch = switchValue;
+        logger.trace("Compare color old:{} to new:{}, on-state old:{} to new:{}", lastColor, color, lastSwitch, sw);
+        if ((sw != lastSwitch) || !color.equals(lastColor)) {
+            logger.trace("Update color old:{} to new:{}, on-state old:{} to new:{}", lastColor, color, lastSwitch, sw);
+            updateState(CHANNEL_COLOR, buildHSB(normalRGB, brightness, sw == OnOffType.ON));
+            lastSwitch = sw;
             lastColor = color;
         }
 
