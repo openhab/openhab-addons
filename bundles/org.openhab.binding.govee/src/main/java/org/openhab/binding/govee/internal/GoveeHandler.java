@@ -15,6 +15,7 @@ package org.openhab.binding.govee.internal;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -88,11 +89,15 @@ public class GoveeHandler extends BaseThingHandler {
     private ScheduledFuture<?> triggerStatusJob; // send device status update job
     private GoveeConfiguration goveeConfiguration = new GoveeConfiguration();
 
-    private CommunicationManager communicationManager;
+    private final CommunicationManager communicationManager;
+    private final GoveeStateDescriptionProvider stateDescriptionProvider;
 
     private OnOffType lastOn = OnOffType.OFF;
     private HSBType lastColor = new HSBType();
     private int lastKelvin;
+
+    private int minKelvin;
+    private int maxKelvin;
 
     /**
      * This thing related job <i>thingRefreshSender</i> triggers an update to the Govee device.
@@ -110,9 +115,11 @@ public class GoveeHandler extends BaseThingHandler {
         }
     };
 
-    public GoveeHandler(Thing thing, CommunicationManager communicationManager) {
+    public GoveeHandler(Thing thing, CommunicationManager communicationManager,
+            GoveeStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.communicationManager = communicationManager;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     public String getHostname() {
@@ -129,11 +136,22 @@ public class GoveeHandler extends BaseThingHandler {
                     "@text/offline.configuration-error.ip-address.missing");
             return;
         }
+
+        minKelvin = Objects.requireNonNullElse(goveeConfiguration.minKelvin, COLOR_TEMPERATURE_MIN_VALUE.intValue());
+        maxKelvin = Objects.requireNonNullElse(goveeConfiguration.maxKelvin, COLOR_TEMPERATURE_MAX_VALUE.intValue());
+        if ((minKelvin < COLOR_TEMPERATURE_MIN_VALUE) || (maxKelvin > COLOR_TEMPERATURE_MAX_VALUE)
+                || (minKelvin >= maxKelvin)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.invalid-color-temperature-range");
+            return;
+        }
+        stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
+                minKelvin, maxKelvin);
+
         updateStatus(ThingStatus.UNKNOWN);
         communicationManager.registerHandler(this);
         if (triggerStatusJob == null) {
             logger.debug("Starting refresh trigger job for thing {} ", thing.getLabel());
-
             triggerStatusJob = executorService.scheduleWithFixedDelay(thingRefreshSender, 100,
                     goveeConfiguration.refreshInterval * 1000L, TimeUnit.MILLISECONDS);
         }
@@ -329,8 +347,7 @@ public class GoveeHandler extends BaseThingHandler {
         if (kelvin != lastKelvin) {
             logger.trace("Update color temperature old:{} to new:{}", lastKelvin, kelvin);
             if (kelvin != 0) {
-                kelvin = Math.min(COLOR_TEMPERATURE_MAX_VALUE.intValue(),
-                        Math.max(COLOR_TEMPERATURE_MIN_VALUE.intValue(), kelvin));
+                kelvin = Math.round(Math.min(maxKelvin, Math.max(minKelvin, kelvin)));
                 updateState(CHANNEL_COLOR_TEMPERATURE, kelvinToPercent(kelvin));
                 updateState(CHANNEL_COLOR_TEMPERATURE_ABS, QuantityType.valueOf(kelvin, Units.KELVIN));
             } else {
@@ -344,17 +361,14 @@ public class GoveeHandler extends BaseThingHandler {
     /**
      * Convert PercentType to Kelvin.
      */
-    private static int percentToKelvin(PercentType percent) {
-        return (int) Math
-                .round((((COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) * percent.doubleValue() / 100.0)
-                        + COLOR_TEMPERATURE_MIN_VALUE));
+    private int percentToKelvin(PercentType percent) {
+        return (int) Math.round((((maxKelvin - minKelvin) * percent.doubleValue() / 100.0) + minKelvin));
     }
 
     /**
      * Convert Kelvin to PercentType.
      */
-    private static PercentType kelvinToPercent(int kelvin) {
-        return new PercentType((int) Math.round((kelvin - COLOR_TEMPERATURE_MIN_VALUE) * 100.0
-                / (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE)));
+    private PercentType kelvinToPercent(int kelvin) {
+        return new PercentType((int) Math.round((kelvin - minKelvin) * 100.0 / (maxKelvin - minKelvin)));
     }
 }

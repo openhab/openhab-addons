@@ -83,7 +83,10 @@ public class GoveeSerializeGoveeHandlerTest {
 
     private static GoveeHandlerMock createAndInitHandler(final ThingHandlerCallback callback, final Thing thing) {
         CommunicationManager communicationManager = mock(CommunicationManager.class);
-        final GoveeHandlerMock handler = spy(new GoveeHandlerMock(thing, communicationManager));
+        GoveeStateDescriptionProvider stateDescriptionProvider = mock(GoveeStateDescriptionProvider.class);
+
+        final GoveeHandlerMock handler = spy(
+                new GoveeHandlerMock(thing, communicationManager, stateDescriptionProvider));
 
         handler.setCallback(callback);
         handler.initialize();

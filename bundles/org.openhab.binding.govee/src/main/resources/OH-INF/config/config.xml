@@ -19,6 +19,16 @@
 			<description>The amount of time that passes until the device is refreshed (in seconds)</description>
 			<default>2</default>
 		</parameter>
+		<parameter name="minKelvin" type="integer" unit="K" required="false" min="2000" max="9000" step="100">
+			<label>Minimum Color Temperature</label>
+			<description>The minimum color temperature that the light supports (in Kelvin)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="maxKelvin" type="integer" unit="K" required="false" min="2000" max="9000" step="100">
+			<label>Maximum Color Temperature</label>
+			<description>The maximum color temperature that the light supports (in Kelvin)</description>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

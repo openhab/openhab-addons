@@ -172,11 +172,13 @@ arp -a | grep "MAC_ADDRESS"
 
 ### `govee-light` Thing Configuration
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| macAddress      | text    | MAC address of the device             | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 5       | no       | yes      |
+| Name            | Type    | Description                                                      | Default | Required | Advanced |
+|-----------------|---------|------------------------------------------------------------------|---------|----------|----------|
+| hostname        | text    | Hostname or IP address of the device                             | N/A     | yes      | no       |
+| macAddress      | text    | MAC address of the device                                        | N/A     | yes      | no       |
+| refreshInterval | integer | Interval the device is polled in sec.                            | 5       | no       | yes      |
+| minKelvin       | integer | The minimum color temperature that the light supports in Kelvin. | N/A     | no       | yes      |
+| maxKelvin       | integer | The maximum color temperature that the light supports in Kelvin. | N/A     | no       | yes      |
 
 ## Channels
 
