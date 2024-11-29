@@ -213,7 +213,7 @@ Number:Dimensionless  ForecastLondonPlus01PrecipitationProb             (gLondon
 Number:Length         ForecastLondonPlus01PrecipitationAmount           (gLondonNextHour) { unit="mm",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#precip-total" }
 Number:Length         ForecastLondonPlus01SnowAmount                    (gLondonNextHour) { unit="mm",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#snow-total" }
 Number:Dimensionless  ForecastLondonPlus01UvIndex                       (gLondonNextHour) { channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#uv-index" }
-Number:Pressure       ForecastLondonPlus01pressure                      (gLondonNextHour) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#pressure" }
+Number:Pressure       ForecastLondonPlus01Pressure                      (gLondonNextHour) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#pressure" }
 Number:Speed          ForecastLondonPlus0110mWindSpeed                  (gLondonNextHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#wind-speed" }
 Number:Speed          ForecastLondonPlus0110mGustWindSpeed              (gLondonNextHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#wind-speed-gust" }
 Number:Speed          ForecastLondonPlus0110mMaxGustWindSpeed           (gLondonNextHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#wind-gust-max" }
@@ -348,7 +348,7 @@ Frame {
    Text    item=ForecastLondonPlus01PrecipitationAmount icon="rain"
    Text    item=ForecastLondonPlus01SnowAmount icon="rain"
    Text    item=ForecastLondonPlus01UvIndex icon="sun"
-   Text    item=ForecastLondonPlus01pressure icon="pressure"
+   Text    item=ForecastLondonPlus01Pressure icon="pressure"
    Text    item=ForecastLondonPlus0110mWindSpeed icon="wind"
    Text    item=ForecastLondonPlus0110mGustWindSpeed icon="wind"
    Text    item=ForecastLondonPlus0110mMaxGustWindSpeed icon="wind"
