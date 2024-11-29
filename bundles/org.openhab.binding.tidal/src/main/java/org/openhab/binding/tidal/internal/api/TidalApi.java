@@ -12,11 +12,8 @@
  */
 package org.openhab.binding.tidal.internal.api;
 
-import static org.eclipse.jetty.http.HttpMethod.GET;
-import static org.eclipse.jetty.http.HttpMethod.POST;
-import static org.eclipse.jetty.http.HttpMethod.PUT;
-import static org.openhab.binding.tidal.internal.TidalBindingConstants.TIDAL_API_PLAYER_URL;
-import static org.openhab.binding.tidal.internal.TidalBindingConstants.TIDAL_API_URL;
+import static org.eclipse.jetty.http.HttpMethod.*;
+import static org.openhab.binding.tidal.internal.TidalBindingConstants.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -44,7 +41,6 @@ import org.openhab.binding.tidal.internal.api.model.Me;
 import org.openhab.binding.tidal.internal.api.model.ModelUtil;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.binding.tidal.internal.api.model.Playlists;
-import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
@@ -84,8 +80,7 @@ public class TidalApi {
      * @param scheduler
      * @param httpClient The Tidal connector handling the Web Api calls to Tidal
      */
-    public TidalApi(OAuthClientService oAuthClientService, ScheduledExecutorService scheduler,
-            HttpClient httpClient) {
+    public TidalApi(OAuthClientService oAuthClientService, ScheduledExecutorService scheduler, HttpClient httpClient) {
         this.oAuthClientService = oAuthClientService;
         connector = new TidalConnector(scheduler, httpClient);
     }
@@ -298,8 +293,20 @@ public class TidalApi {
         final Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method)
                 .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
         try {
-            final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-            final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
+            /*
+             * AccessTokenResponse aa = new AccessTokenResponse();
+             * aa.setAccessToken(
+             * "eyJraWQiOiJ2OU1GbFhqWSIsImFsZyI6IkVTMjU2In0.eyJ0eXBlIjoibzJfYWNjZXNzIiwic2NvcGUiOiIiLCJnVmVyIjowLCJzVmVyIjowLCJjaWQiOjE0NzM1LCJleHAiOjE3MzI5ODAyMzQsImlzcyI6Imh0dHBzOi8vYXV0aC50aWRhbC5jb20vdjEifQ.FuaaduFMTKEpjYGc0WAhLq9Of4ArCKDFeaoc0FD5c27nskoz8pnpoiqyuIpb4d_4ILTa7NBo6Q8DP67hk8vkSw"
+             * );
+             * aa.setRefreshToken("");
+             * // aa.setCreatedOn("");
+             * aa.setExpiresIn(86400);
+             * aa.setScope("");
+             * oAuthClientService.importAccessTokenResponse(aa);
+             */
+            // final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+            final String accessToken = "\"eyJraWQiOiJ2OU1GbFhqWSIsImFsZyI6IkVTMjU2In0.eyJ0eXBlIjoibzJfYWNjZXNzIiwic2NvcGUiOiIiLCJnVmVyIjowLCJzVmVyIjowLCJjaWQiOjE0NzM1LCJleHAiOjE3MzI5ODAyMzQsImlzcyI6Imh0dHBzOi8vYXV0aC50aWRhbC5jb20vdjEifQ.FuaaduFMTKEpjYGc0WAhLq9Of4ArCKDFeaoc0FD5c27nskoz8pnpoiqyuIpb4d_4ILTa7NBo6Q8DP67hk8vkSw\"";
+            // accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
             if (accessToken == null || accessToken.isEmpty()) {
                 throw new TidalAuthorizationException(
