@@ -1,4 +1,4 @@
-f# Met Office DataHub Binding
+# Met Office DataHub Binding
 
 This binding is for the UK Based Met Office Data Hub, weather service.
 Its purpose is to allow the retrieval of forecast (hourly and daily) for a given location (Site).
