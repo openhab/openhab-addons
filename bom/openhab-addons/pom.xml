@@ -2028,7 +2028,7 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.tindal</artifactId>
+      <artifactId>org.openhab.binding.tidal</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
