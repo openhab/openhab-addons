@@ -29,10 +29,6 @@
 				<label>OTA Progress</label>
 				<description>Over-the-air update progress</description>
 			</channel>
-			<channel id="json" typeId="json">
-				<label>Device JSON</label>
-				<description>JSON structure and updates of this device</description>
-			</channel>
 		</channels>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>

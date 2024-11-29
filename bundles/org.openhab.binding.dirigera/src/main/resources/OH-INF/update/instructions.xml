@@ -4,6 +4,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
 	<thing-type uid="dirigera:air-purifier">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<add-channel id="fan-speed">
 				<type>dirigera:dimmer</type>
@@ -21,6 +25,10 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:air-quality">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<update-channel id="temperature">
 				<type>system:indoor-temperature</type>
@@ -36,6 +44,16 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:blind">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<remove-channel id="current">
 			</remove-channel>
@@ -55,6 +73,16 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:blind-controller">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<update-channel id="battery-level">
 				<type>system:battery-level</type>
@@ -65,6 +93,16 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:color-light">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<remove-channel id="power-state">
 			</remove-channel>
@@ -94,6 +132,10 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:contact-sensor">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<update-channel id="battery-level">
 				<type>system:battery-level</type>
@@ -104,6 +146,16 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:dimmable-light">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<remove-channel id="power-state">
 			</remove-channel>
@@ -121,6 +173,10 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:double-shortcut">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<update-channel id="button1">
 				<type>system:button</type>
@@ -137,6 +193,16 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:light-controller">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<update-channel id="battery-level">
 				<type>system:battery-level</type>
@@ -147,6 +213,16 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:motion-light-sensor">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<remove-channel id="detection">
 			</remove-channel>
@@ -164,6 +240,16 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:motion-sensor">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<remove-channel id="detection">
 			</remove-channel>
@@ -181,6 +267,16 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:power-plug">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<remove-channel id="power-state">
 			</remove-channel>
@@ -193,6 +289,16 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:simple-plug">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<remove-channel id="power-state">
 			</remove-channel>
@@ -205,6 +311,10 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:single-shortcut">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<update-channel id="button1">
 				<type>system:button</type>
@@ -218,6 +328,16 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:smart-plug">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<remove-channel id="power-state">
 			</remove-channel>
@@ -257,6 +377,16 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:sound-controller">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<update-channel id="battery-level">
 				<type>system:battery-level</type>
@@ -267,6 +397,16 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:speaker">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<remove-channel id="player">
 			</remove-channel>
@@ -291,7 +431,30 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="dirigera:switch-light">
+		<instruction-set targetVersion="1">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
 	<thing-type uid="dirigera:temperature-light">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+			<update-channel id="links">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+			<update-channel id="link-candidates">
+				<type>dirigera:text-veto-advanced</type>
+			</update-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<remove-channel id="power-state">
 			</remove-channel>
@@ -314,6 +477,10 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:water-sensor">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<remove-channel id="detection">
 			</remove-channel>
@@ -331,6 +498,10 @@
 	</thing-type>
 
 	<thing-type uid="dirigera:gateway">
+		<instruction-set targetVersion="2">
+			<remove-channel id="json">
+			</remove-channel>
+		</instruction-set>
 		<instruction-set targetVersion="1">
 			<add-channel id="location">
 				<type>system:location</type>
