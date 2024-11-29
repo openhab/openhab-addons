@@ -28,16 +28,16 @@ Here is a list of the supported devices (the ones marked with * have been tested
 - H6052 Govee Table Lamp
 - H6056 H6056 Flow Plus
 - H6059 RGBWW Night Light for Kids
-- H6061 Glide Hexa LED Panels
+- H6061 Glide Hexa LED Panels (*)
 - H6062 Glide Wall Light
 - H6063 Gaming Wall Light
 - H6065 Glide RGBIC Y Lights
 - H6066 Glide Hexa Pro LED Panel
-- H6067 Glide Triangle Light Panels
+- H6067 Glide Triangle Light Panels (*)
 - H606A Glide Hexa Light Panel Ultra
-- H6072 RGBICWW Corner Floor Lamp
+- H6072 RGBICWW Corner Floor Lamp (*)
 - H6073 LED Floor Lamp
-- H6076 RGBICW Smart Corner Floor Lamp
+- H6076 RGBICW Smart Corner Floor Lamp (*)
 - H6078 Cylinder Floor Lamp
 - H607C Floor Lamp #2
 - H6087 RGBIC Smart Wall Sconces
@@ -46,7 +46,7 @@ Here is a list of the supported devices (the ones marked with * have been tested
 - H608B String Downlights 3M
 - H608C String Downlights 2M
 - H608D String Downlights 10M
-- H60A0 Ceiling Light
+- H60A0 Ceiling Light (*)
 - H60A1 Smart Ceiling Light
 - H610A Glide Lively Wall Lights
 - H610B Music Wall Lights
@@ -55,7 +55,7 @@ Here is a list of the supported devices (the ones marked with * have been tested
 - H6141 5M Smart Multicolor Strip Light
 - H6143 5M Strip Light
 - H6144 2x5M Strip Light
-- H6159 RGB Light Strip
+- H6159 RGB Light Strip (*)
 - H615A 5M Light Strip with Alexa
 - H615B 10M Light Strip with Alexa
 - H615C 15M Light Strip with Alexa
@@ -97,8 +97,8 @@ Here is a list of the supported devices (the ones marked with * have been tested
 - H61C2 Neon LED Strip Light 2M
 - H61C2 Neon LED Strip Light 3M
 - H61C2 Neon LED Strip Light 5M
-- H61D3 Neon Rope Light 2 3m
-- H61D5 Neon Rope Light 2 5m
+- H61D3 Neon Rope Light 2 3m (*)
+- H61D5 Neon Rope Light 2 5m (*)
 - H61E0 LED Strip Light M1
 - H61E1 LED Strip Light M1
 - H7012 Warm White Outdoor String Lights
@@ -131,8 +131,8 @@ Here is a list of the supported devices (the ones marked with * have been tested
 - H7075 Outdoor Wall Light
 - H70B1 520 LED Curtain Lights
 - H70BC 400 LED Curtain Lights
-- H70C1 RGBIC String Light 10M
-- H70C2 RGBIC String Light 20M
+- H70C1 RGBIC String Light 10M (*)
+- H70C2 RGBIC String Light 20M (*)
 - H805A Permanent Outdoor Lights Elite 30M
 - H805B Permanent Outdoor Lights Elite 15M
 - H805C Permanent Outdoor Lights Elite 45M
