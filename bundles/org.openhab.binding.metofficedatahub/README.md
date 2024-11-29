@@ -279,8 +279,8 @@ Number:Length         ForecastLondonPlus01MiddayVisibility                (gLond
 Number:Length         ForecastLondonPlus01MidnightVisibility              (gLondonNextDay) { unit="m",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#visibility-night" }
 Number:Dimensionless  ForecastLondonPlus01MiddayRelativeHumidity          (gLondonNextDay) { unit="%",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#humidity-day" }
 Number:Dimensionless  ForecastLondonPlus01MidnightRelativeHumidity        (gLondonNextDay) { unit="%",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#humidity-night" }
-Number:Pressure       ForecastLondonPlus01Middaypressure                  (gLondonNextDay) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#pressure-day" }
-Number:Pressure       ForecastLondonPlus01Midnightpressure                (gLondonNextDay) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#pressure-night" }
+Number:Pressure       ForecastLondonPlus01MiddayPressure                  (gLondonNextDay) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#pressure-day" }
+Number:Pressure       ForecastLondonPlus01MidnightPressure                (gLondonNextDay) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#pressure-night" }
 Number:Dimensionless  ForecastLondonPlus01MaxUvIndex                      (gLondonNextDay) { channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#uv-max" }
 Number:Temperature    ForecastLondonPlus01NightUpperBoundMinTemp          (gLondonNextDay) { unit="°C",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#temp-min-ub-night" }
 Number:Temperature    ForecastLondonPlus01DayLowerBoundMaxTemp            (gLondonNextDay) { unit="°C",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#temp-max-lb-day" }
@@ -414,8 +414,8 @@ Frame {
    Text  item=ForecastLondonPlus01MidnightVisibility icon="sun_clouds"
    Text  item=ForecastLondonPlus01MiddayRelativeHumidity icon="humidity"
    Text  item=ForecastLondonPlus01MidnightRelativeHumidity icon="humidity"
-   Text  item=ForecastLondonPlus01Middaypressure icon="pressure"
-   Text  item=ForecastLondonPlus01Midnightpressure icon="pressure"
+   Text  item=ForecastLondonPlus01MiddayPressure icon="pressure"
+   Text  item=ForecastLondonPlus01MidnightPressure icon="pressure"
    Text  item=ForecastLondonPlus01MaxUvIndex icon="pressure"
    Text  item=ForecastLondonPlus01NightUpperBoundMinTemp icon="temperature"
    Text  item=ForecastLondonPlus01DayLowerBoundMaxTemp icon="temperature"
