@@ -114,7 +114,7 @@ public class CommunicationManager {
         final byte[] data = message.getBytes();
         final InetAddress address = InetAddress.getByName(hostname);
         DatagramPacket packet = new DatagramPacket(data, data.length, address, REQUEST_PORT);
-        logger.trace("Sending request to {} with content = {}", address.getHostAddress(), message);
+        logger.trace("Sending request to {} on {} with content = {}", hostname, address.getHostAddress(), message);
         socket.send(packet);
         socket.close();
     }
@@ -254,7 +254,8 @@ public class CommunicationManager {
                             if (handler == null) {
                                 logger.warn("Handler not found for {}", deviceIPAddress);
                             } else {
-                                logger.debug("Processing response for {}", deviceIPAddress);
+                                logger.debug("Processing response for {} on {}", handler.getHostname(),
+                                        deviceIPAddress);
                                 handler.handleIncomingStatus(response);
                             }
                         }
