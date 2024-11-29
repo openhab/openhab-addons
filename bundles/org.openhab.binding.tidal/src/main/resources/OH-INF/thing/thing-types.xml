@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tidal"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- Tidal Player Device -->
+	<bridge-type id="player">
+
+		<label>Tidal Player Bridge</label>
+		<description>Bridge representing the Tidal Player in the context of a user account. The bridge is associated with
+			one specific Tidal account. If you want to control your devices in the context of different accounts you have to
+			register a bridge for each account. Go to http://your openHAB address::8080/connecttidal to authorize.</description>
+
+		<channels>
+			<channel id="accessToken" typeId="accessToken"/>
+
+			<channel id="deviceId" typeId="activeDeviceId"/>
+			<channel id="deviceName" typeId="activeDeviceName"/>
+			<channel id="devices" typeId="activeDevices"/>
+			<channel id="deviceType" typeId="activeDeviceType"/>
+			<channel id="deviceVolume" typeId="system.volume"/>
+			<channel id="deviceShuffle" typeId="activeDeviceShuffle"/>
+
+			<channel typeId="playlists" id="playlists"></channel>
+			<channel typeId="playlistName" id="playlistName"></channel>
+
+			<channel id="trackPlay" typeId="trackPlay"/>
+			<channel id="trackPlayer" typeId="system.media-control"/>
+			<channel id="trackRepeat" typeId="trackRepeat"/>
+			<channel id="trackId" typeId="currentlyPlayedTrackId"/>
+			<channel id="trackHref" typeId="currentlyPlayedTrackHref"/>
+			<channel id="trackUri" typeId="currentlyPlayedTrackUri"/>
+			<channel id="trackName" typeId="system.media-title"/>
+			<channel id="trackType" typeId="currentlyPlayedTrackType"/>
+			<channel id="trackNumber" typeId="currentlyPlayedTrackNumber"/>
+			<channel id="trackDiscNumber" typeId="currentlyPlayedTrackDiscNumber"/>
+			<channel id="trackPopularity" typeId="currentlyPlayedTrackPopularity"/>
+			<channel id="trackExplicit" typeId="currentlyPlayedTrackExplicit"/>
+			<channel id="trackDurationMs" typeId="currentlyPlayedTrackDurationMs"/>
+			<channel id="trackProgressMs" typeId="currentlyPlayedTrackProgressMs"/>
+			<channel id="trackDuration" typeId="currentlyPlayedTrackDuration"/>
+			<channel id="trackProgress" typeId="currentlyPlayedTrackProgress"/>
+
+			<channel id="albumId" typeId="currentlyPlayedAlbumId"/>
+			<channel id="albumUri" typeId="currentlyPlayedAlbumUri"/>
+			<channel id="albumHref" typeId="currentlyPlayedAlbumHref"/>
+			<channel id="albumType" typeId="currentlyPlayedAlbumType"/>
+			<channel id="albumImage" typeId="currentlyPlayedAlbumImage"/>
+			<channel id="albumImageUrl" typeId="currentlyPlayedAlbumImage"/>
+			<channel id="albumName" typeId="currentlyPlayedAlbumName"/>
+
+			<channel id="artistId" typeId="currentlyPlayedArtistId"/>
+			<channel id="artistUri" typeId="currentlyPlayedArtistUri"/>
+			<channel id="artistHref" typeId="currentlyPlayedArtistHref"/>
+			<channel id="artistType" typeId="currentlyPlayedArtistType"/>
+			<channel id="artistName" typeId="system.media-artist"/>
+		</channels>
+
+		<properties>
+			<property name="user"/>
+		</properties>
+
+		<representation-property>clientId</representation-property>
+
+		<config-description>
+			<parameter name="clientId" type="text" required="true">
+				<label>Application Client ID</label>
+				<description>This is the Client ID provided by Tidal when you add a new Application for openHAB to your Tidal
+					Account. Go to https://developer.tidal.com/</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="true">
+				<label>Application Client Secret</label>
+				<description>This is the Client Secret provided by Tidal when you add a new Application for openHAB to your
+					Tidal Account.</description>
+			</parameter>
+			<parameter name="refreshPeriod" type="integer" min="1" max="60" required="true">
+				<default>10</default>
+				<label>Connect Refresh Period (seconds)</label>
+				<description>This is the frequency of the polling requests to the Tidal Connect Web API. There are limits to the
+					number of requests that can be sent to the Web API. The more often you poll, the better status updates - at the
+					risk of running out of your request quota.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+
+	<!-- Tidal Player Device -->
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="player"/>
+		</supported-bridge-type-refs>
+
+		<label>Tidal Connect Device</label>
+		<description>Thing representing a Tidal Connect device. The device exists in the context of the bridge and the
+			Tidal account associated with the bride. This means the same device can be present as a thing under each Tidal
+			bridge you have configured.</description>
+
+		<channels>
+			<channel id="trackPlay" typeId="trackPlay"/>
+			<channel id="deviceId" typeId="deviceId"/>
+			<channel id="deviceName" typeId="deviceName"/>
+			<channel id="deviceType" typeId="deviceType"/>
+			<channel id="devicePlayer" typeId="system.media-control"/>
+			<channel id="deviceVolume" typeId="system.volume"/>
+			<channel id="deviceActive" typeId="deviceActive"/>
+			<channel id="deviceRestricted" typeId="deviceRestricted"/>
+			<channel id="deviceShuffle" typeId="deviceShuffle"/>
+		</channels>
+
+		<representation-property>deviceName</representation-property>
+
+		<config-description>
+			<parameter name="deviceName" type="text" required="true">
+				<label>Tidal Device Name</label>
+				<description>This is the device name provided by Tidal.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="accessToken" advanced="true">
+		<item-type>String</item-type>
+		<label>Access Token</label>
+		<description>The access token used to authorize calls to the Tidal Web API. It can be used from rules or client-side
+			scripting make call to Web API.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="activeDeviceId" advanced="true">
+		<item-type>String</item-type>
+		<label>Active Device Id</label>
+		<description>The Tidal ID of active device</description>
+	</channel-type>
+	<channel-type id="activeDeviceName">
+		<item-type>String</item-type>
+		<label>Active Device Name</label>
+		<description>The name of the currently active device</description>
+	</channel-type>
+	<channel-type id="activeDevices">
+		<item-type>String</item-type>
+		<label>Active Devices</label>
+		<description>List of active devices.</description>
+	</channel-type>
+	<channel-type id="activeDeviceType" advanced="true">
+		<item-type>String</item-type>
+		<label>Active Device Type</label>
+		<description>Currently active device type, such as "Computer", "Smartphone" or "Speaker".</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="activeDeviceShuffle">
+		<item-type>Switch</item-type>
+		<label>Active Device Shuffle</label>
+		<description>If shuffle is on or off on the active device</description>
+	</channel-type>
+
+	<channel-type id="playlists">
+		<item-type>String</item-type>
+		<label>Playlists</label>
+		<description>List of the users playlists</description>
+		<config-description-ref uri="tidal:config:playlists"/>
+	</channel-type>
+
+	<channel-type id="playlistName">
+		<item-type>String</item-type>
+		<label>Playlist Name</label>
+		<description>Name of the active playlist</description>
+	</channel-type>
+
+	<channel-type id="trackPlay" advanced="true">
+		<item-type>String</item-type>
+		<label>Track to Play</label>
+		<description>Assign track, album, or playlist to play. Accepts Tidal Uri's and links.</description>
+	</channel-type>
+	<channel-type id="trackRepeat">
+		<item-type>String</item-type>
+		<label>Repeat Mode</label>
+		<description>'track' will repeat the current track. 'context' will repeat the current context. 'off' will turn repeat
+			off.</description>
+		<state>
+			<options>
+				<option value="track">Track</option>
+				<option value="context">Context</option>
+				<option value="off">Off</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackId" advanced="true">
+		<item-type>String</item-type>
+		<label>Track Id</label>
+		<description>Channel reports track id currently being played.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackHref" advanced="true">
+		<item-type>String</item-type>
+		<label>Track URL</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackUri" advanced="true">
+		<item-type>String</item-type>
+		<label>Track URI</label>
+		<description>The Tidal URI for the track currently played</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackType" advanced="true">
+		<item-type>String</item-type>
+		<label>Track Type</label>
+		<description>The type of the track currently played track type</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackDurationMs" advanced="true">
+		<item-type>Number</item-type>
+		<label>Track Duration (ms)</label>
+		<description>The duration of the currently played track (ms)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackProgressMs" advanced="true">
+		<item-type>Number</item-type>
+		<label>Track Progress (ms)</label>
+		<description>The progress of the currently played track (ms)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackDuration">
+		<item-type>String</item-type>
+		<label>Track Duration (m:ss)</label>
+		<description>The duration currently played track formatted (m:ss)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackProgress">
+		<item-type>String</item-type>
+		<label>Track Progress (m:ss)</label>
+		<description>The progress of the currently played track formatted (m:ss)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackNumber" advanced="true">
+		<item-type>Number</item-type>
+		<label>Track Number</label>
+		<description>The track number of currently played track</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackDiscNumber" advanced="true">
+		<item-type>Number</item-type>
+		<label>Track Disc Number</label>
+		<description>The disk number of currently played track</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackPopularity" advanced="true">
+		<item-type>Number</item-type>
+		<label>Track Popularity</label>
+		<description>The popularity of the currently played track</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedTrackExplicit" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Track Explicit</label>
+		<description>Whether or not the track has explicit lyrics (On it does; Off it does not OR unknown)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="currentlyPlayedAlbumId" advanced="true">
+		<item-type>String</item-type>
+		<label>Album Id</label>
+		<description>The Tidal ID of the album</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumHref" advanced="true">
+		<item-type>String</item-type>
+		<label>Album URL</label>
+		<description>A link to the Web API endpoint providing full details of the album</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumUri" advanced="true">
+		<item-type>String</item-type>
+		<label>Album URI</label>
+		<description>The Tidal URI for the album</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumName">
+		<item-type>String</item-type>
+		<label>Album Name</label>
+		<description>The name of the album</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumType" advanced="true">
+		<item-type>String</item-type>
+		<label>Album Type</label>
+		<description>The object type: "album"</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumImage">
+		<item-type>Image</item-type>
+		<label>Album Image</label>
+		<description>The cover art for the album in widest size</description>
+		<state readOnly="true"/>
+		<config-description-ref uri="tidal:config:album-image"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumImageUrl">
+		<item-type>String</item-type>
+		<label>Album Image URL</label>
+		<description>The URL to the cover art for the album in widest size</description>
+		<state readOnly="true"/>
+		<config-description-ref uri="tidal:config:album-image"/>
+	</channel-type>
+
+	<channel-type id="currentlyPlayedArtistId" advanced="true">
+		<item-type>String</item-type>
+		<label>Artist Id</label>
+		<description>The Tidal ID for the artist</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedArtistHref" advanced="true">
+		<item-type>String</item-type>
+		<label>Artist URL</label>
+		<description>Channel reports currently played artist href</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedArtistUri" advanced="true">
+		<item-type>String</item-type>
+		<label>Artist URI</label>
+		<description>A link to the Web API endpoint providing full details of the artist</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedArtistType" advanced="true">
+		<item-type>String</item-type>
+		<label>Artist Type</label>
+		<description>The object type: "artist"</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="deviceId" advanced="true">
+		<item-type>String</item-type>
+		<label>Device Id</label>
+		<description>The Tidal ID of the device</description>
+	</channel-type>
+	<channel-type id="deviceName">
+		<item-type>String</item-type>
+		<label>Device Name</label>
+		<description>The name of the device</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="deviceType" advanced="true">
+		<item-type>String</item-type>
+		<label>Device Type</label>
+		<description>Device type, such as "Computer", "Smartphone" or "Speaker".</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="deviceShuffle">
+		<item-type>Switch</item-type>
+		<label>Device Shuffle</label>
+		<description>If shuffle is on or off</description>
+	</channel-type>
+	<channel-type id="deviceActive" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Device Active</label>
+		<description>If this device is the currently active device</description>
+	</channel-type>
+	<channel-type id="deviceRestricted" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Device Restricted</label>
+		<description>Whether controlling this device is restricted. At present if this is "true" then no Web API commands will
+			be accepted by this device</description>
+	</channel-type>
+
+</thing:thing-descriptions>
