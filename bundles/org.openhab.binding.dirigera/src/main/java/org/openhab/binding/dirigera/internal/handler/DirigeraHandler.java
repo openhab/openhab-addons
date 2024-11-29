@@ -762,9 +762,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         });
         // check websocket
         if (websocket.isRunning()) {
-            Map<String, Instant> pingPnogMap = websocket.getPingPongMap();
-            if (pingPnogMap.size() > 1) { // at least 2 shall be missing before watchdog trigger
-                logger.warn("DIRIGERA HANDLER Watchdog Ping Pong Panic - {} pings not answered", pingPnogMap.size());
+            Map<String, Instant> pingPongMap = websocket.getPingPongMap();
+            if (pingPongMap.size() > 1) { // at least 2 shall be missing before watchdog trigger
+                logger.warn("DIRIGERA HANDLER Watchdog Ping Pong Panic - {} pings not answered", pingPongMap.size());
                 websocket.stop();
                 String message = "ping not answered";
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -952,7 +952,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         websocket.getStatistics().put(Websocket.MODEL_UPDATE_TIME, durationUpdateTime + " ms");
         websocket.getStatistics().put(Websocket.MODEL_UPDATE_LAST,
                 Instant.now().atZone(timeZoneProvider.getTimeZone()));
-        updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(model().getModelString()));
+        // updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(model().getModelString()));
         configureGateway();
         updateGateway();
     }

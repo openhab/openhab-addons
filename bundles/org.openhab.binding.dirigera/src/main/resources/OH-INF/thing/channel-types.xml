@@ -252,7 +252,7 @@
 			</options>
 		</command>
 	</channel-type>
-	<channel-type id="ota-status" advanced="true">
+	<channel-type id="ota-status">
 		<item-type>Number</item-type>
 		<label>OTA Status</label>
 		<state readOnly="true">
@@ -286,8 +286,9 @@
 		<label>Percent Number</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="json" advanced="true">
+	<channel-type id="text-veto-advanced" advanced="true">
 		<item-type>String</item-type>
-		<label>JSON Content</label>
+		<label>Simple Text</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
