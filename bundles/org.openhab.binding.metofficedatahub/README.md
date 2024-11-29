@@ -24,14 +24,14 @@ You can then add things to get the forecast's for a specific location (site), us
 
 This binding supports the follow thing types:
 
-| Type UID  | Discovery | Description                                                                                 |
-|-----------|-----------|---------------------------------------------------------------------------------------------|
-| bridge    | Manual    | A single connection to the Met Office DataHub API with daily poll limiting for the Site API |
-| site      | Manual    | Provides the hourly and daily forecast data for a give location (site)                      |
+| Type UID | Discovery | Description                                                                                 |
+|----------|-----------|---------------------------------------------------------------------------------------------|
+| account  | Manual    | A single connection to the Met Office DataHub API with daily poll limiting for the Site API |
+| site     | Manual    | Provides the hourly and daily forecast data for a give location (site)                      |
 
 ## Configuration
 
-### `bridge` Configuration
+### `account` Configuration
 
 The bridge counts the total number of requests from 00:00 -> 23:59 under its properties during the runtime of the system.
 (This reset's if OH restarts, or the binding resets).
@@ -167,7 +167,7 @@ current-forecast-**plus02**#air-temp-current
 ### Configuration (*.things)
 
 ```java
-Bridge metofficedatahub:site:metoffice [siteRateDailyLimit=200, siteApiKey="<Site Specific API Key>"] {
+Bridge metofficedatahub:account:metoffice [siteRateDailyLimit=200, siteApiKey="<Site Specific API Key>"] {
   site londonForecast "London Forecast" [hourlyForecastPollRate=1, dailyForecastPollRate=3, location="51.509865,-0.118092"]
 }
 ```
@@ -192,7 +192,7 @@ Number:Speed          ForecastLondonPrecipitationRate             (gLondonCurren
 Number:Length         ForecastLondonPrecipitationAmount           (gLondonCurrentHour) { unit="mm",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#precip-total" }
 Number:Length         ForecastLondonSnowAmount                    (gLondonCurrentHour) { unit="mm",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#snow-total" }
 Number:Dimensionless  ForecastLondonUvIndex                       (gLondonCurrentHour) { channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#uv-index" }
-Number:Pressure       ForecastLondonpressure                          (gLondonCurrentHour) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#pressure" }
+Number:Pressure       ForecastLondonPressure                      (gLondonCurrentHour) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#pressure" }
 Number:Speed          ForecastLondon10mWindSpeed                  (gLondonCurrentHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#wind-speed" }
 Number:Speed          ForecastLondon10mGustWindSpeed              (gLondonCurrentHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#wind-speed-gust" }
 Number:Speed          ForecastLondon10mMaxGustWindSpeed           (gLondonCurrentHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#wind-gust-max" }
@@ -213,7 +213,7 @@ Number:Dimensionless  ForecastLondonPlus01PrecipitationProb             (gLondon
 Number:Length         ForecastLondonPlus01PrecipitationAmount           (gLondonNextHour) { unit="mm",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#precip-total" }
 Number:Length         ForecastLondonPlus01SnowAmount                    (gLondonNextHour) { unit="mm",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#snow-total" }
 Number:Dimensionless  ForecastLondonPlus01UvIndex                       (gLondonNextHour) { channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#uv-index" }
-Number:Pressure       ForecastLondonPlus01pressure                          (gLondonNextHour) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#pressure" }
+Number:Pressure       ForecastLondonPlus01Pressure                      (gLondonNextHour) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#pressure" }
 Number:Speed          ForecastLondonPlus0110mWindSpeed                  (gLondonNextHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#wind-speed" }
 Number:Speed          ForecastLondonPlus0110mGustWindSpeed              (gLondonNextHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#wind-speed-gust" }
 Number:Speed          ForecastLondonPlus0110mMaxGustWindSpeed           (gLondonNextHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#wind-gust-max" }
@@ -224,21 +224,21 @@ Number:Temperature    ForecastLondonPlus01DewPointTemp                  (gLondon
 #### Daily Forecast `example.items`
 
 ```java
-Group                 gdaily-forecast                         "Current Daily Forecast"
-Group                 gLondonCurrentDay                             "London Current Forecast" (gLondon,gdaily-forecast)
+Group                 gDailyForecast                                "Current Daily Forecast"
+Group                 gLondonCurrentDay                             "London Current Forecast" (gLondon,gDailyForecast)
 DateTime              ForecastLondonDailyForecastTs                 (gLondonCurrentDay) { channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#forecast-ts" }
 Number:Speed          ForecastLondonMiddayWindSpeed10m              (gLondonCurrentDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-speed-day" }
 Number:Speed          ForecastLondonMidnightWindSpeed10m            (gLondonCurrentDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-speed-night" }
-Number:Angle          ForecastLondonMidday10MWindDirection          (gLondonCurrentDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-direction-day" }
-Number:Angle          ForecastLondonMidnight10MWindDirection        (gLondonCurrentDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-direction-night" }
+Number:Angle          ForecastLondonMidday10MWindDirection          (gLondonCurrentDay) { unit="°",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-direction-day" }
+Number:Angle          ForecastLondonMidnight10MWindDirection        (gLondonCurrentDay) { unit="°",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-direction-night" }
 Number:Speed          ForecastLondonMidday10mWindGust               (gLondonCurrentDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-gust-day" }
 Number:Speed          ForecastLondonMidnight10mWindGust             (gLondonCurrentDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-gust-night" }
 Number:Length         ForecastLondonMiddayVisibility                (gLondonCurrentDay) { unit="m",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#visibility-day" }
 Number:Length         ForecastLondonMidnightVisibility              (gLondonCurrentDay) { unit="m",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#visibility-night" }
 Number:Dimensionless  ForecastLondonMiddayRelativeHumidity          (gLondonCurrentDay) { unit="%",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#humidity-day" }
 Number:Dimensionless  ForecastLondonMidnightRelativeHumidity        (gLondonCurrentDay) { unit="%",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#humidity-night" }
-Number:Pressure       ForecastLondonMiddaypressure                      (gLondonCurrentDay) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#pressure-day" }
-Number:Pressure       ForecastLondonMidnightpressure                    (gLondonCurrentDay) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#pressure-night" }
+Number:Pressure       ForecastLondonMiddaypressure                  (gLondonCurrentDay) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#pressure-day" }
+Number:Pressure       ForecastLondonMidnightpressure                (gLondonCurrentDay) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#pressure-night" }
 Number:Dimensionless  ForecastLondonMaxUvIndex                      (gLondonCurrentDay) { channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#uv-max" }
 Number:Temperature    ForecastLondonNightUpperBoundMinTemp          (gLondonCurrentDay) { unit="°C",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#temp-min-ub-night" }
 Number:Temperature    ForecastLondonDayLowerBoundMaxTemp            (gLondonCurrentDay) { unit="°C",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#temp-max-lb-day" }
@@ -266,21 +266,21 @@ Number:Dimensionless  ForecastLondonNightProbabilityOfHail          (gLondonCurr
 Number:Dimensionless  ForecastLondonDayProbabilityOfSferics         (gLondonCurrentDay) { unit="%",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#sferics-prob-day" }
 Number:Dimensionless  ForecastLondonNightProbabilityOfSferics       (gLondonCurrentDay) { unit="%",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#sferics-prob-night" }
 
-Group                 gCurrentDailyPlus01Forecast                         "Current Day +1 Daily Forecast"
-Group                 gLondonNextDay                                      "London Next Day Forecast" (gLondon,gCurrentDailyPlus01Forecast)
+Group                 gDailyPlus01Forecast                                "Current Day +1 Daily Forecast"
+Group                 gLondonNextDay                                      "London Next Day Forecast" (gLondon,gDailyPlus01Forecast)
 DateTime              ForecastLondonPlus01DailyForecastTs                 (gLondonNextDay) { channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#forecast-ts" }
 Number:Speed          ForecastLondonPlus01MiddayWindSpeed10m              (gLondonNextDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-speed-day" }
 Number:Speed          ForecastLondonPlus01MidnightWindSpeed10m            (gLondonNextDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-speed-night" }
-Number:Angle          ForecastLondonPlus01Midday10MWindDirection          (gLondonNextDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-direction-day" }
-Number:Angle          ForecastLondonPlus01Midnight10MWindDirection        (gLondonNextDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-direction-night" }
+Number:Angle          ForecastLondonPlus01Midday10MWindDirection          (gLondonNextDay) { unit="°",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-direction-day" }
+Number:Angle          ForecastLondonPlus01Midnight10MWindDirection        (gLondonNextDay) { unit="°",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-direction-night" }
 Number:Speed          ForecastLondonPlus01Midday10mWindGust               (gLondonNextDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-gust-day" }
 Number:Speed          ForecastLondonPlus01Midnight10mWindGust             (gLondonNextDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-gust-night" }
 Number:Length         ForecastLondonPlus01MiddayVisibility                (gLondonNextDay) { unit="m",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#visibility-day" }
 Number:Length         ForecastLondonPlus01MidnightVisibility              (gLondonNextDay) { unit="m",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#visibility-night" }
 Number:Dimensionless  ForecastLondonPlus01MiddayRelativeHumidity          (gLondonNextDay) { unit="%",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#humidity-day" }
 Number:Dimensionless  ForecastLondonPlus01MidnightRelativeHumidity        (gLondonNextDay) { unit="%",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#humidity-night" }
-Number:Pressure       ForecastLondonPlus01Middaypressure                      (gLondonNextDay) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#pressure-day" }
-Number:Pressure       ForecastLondonPlus01Midnightpressure                    (gLondonNextDay) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#pressure-night" }
+Number:Pressure       ForecastLondonPlus01MiddayPressure                  (gLondonNextDay) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#pressure-day" }
+Number:Pressure       ForecastLondonPlus01MidnightPressure                (gLondonNextDay) { unit="Pa",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#pressure-night" }
 Number:Dimensionless  ForecastLondonPlus01MaxUvIndex                      (gLondonNextDay) { channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#uv-max" }
 Number:Temperature    ForecastLondonPlus01NightUpperBoundMinTemp          (gLondonNextDay) { unit="°C",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#temp-min-ub-night" }
 Number:Temperature    ForecastLondonPlus01DayLowerBoundMaxTemp            (gLondonNextDay) { unit="°C",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#temp-max-lb-day" }
@@ -327,7 +327,7 @@ Frame {
    Text    item=ForecastLondonPrecipitationAmount icon="rain"
    Text    item=ForecastLondonSnowAmount icon="rain"
    Text    item=ForecastLondonUvIndex icon="sun"
-   Text    item=ForecastLondonpressure icon="pressure"
+   Text    item=ForecastLondonPressure icon="pressure"
    Text    item=ForecastLondon10mWindSpeed icon="wind"
    Text    item=ForecastLondon10mGustWindSpeed icon="wind"
    Text    item=ForecastLondon10mMaxGustWindSpeed icon="wind"
@@ -348,7 +348,7 @@ Frame {
    Text    item=ForecastLondonPlus01PrecipitationAmount icon="rain"
    Text    item=ForecastLondonPlus01SnowAmount icon="rain"
    Text    item=ForecastLondonPlus01UvIndex icon="sun"
-   Text    item=ForecastLondonPlus01pressure icon="pressure"
+   Text    item=ForecastLondonPlus01Pressure icon="pressure"
    Text    item=ForecastLondonPlus0110mWindSpeed icon="wind"
    Text    item=ForecastLondonPlus0110mGustWindSpeed icon="wind"
    Text    item=ForecastLondonPlus0110mMaxGustWindSpeed icon="wind"
@@ -414,8 +414,8 @@ Frame {
    Text  item=ForecastLondonPlus01MidnightVisibility icon="sun_clouds"
    Text  item=ForecastLondonPlus01MiddayRelativeHumidity icon="humidity"
    Text  item=ForecastLondonPlus01MidnightRelativeHumidity icon="humidity"
-   Text  item=ForecastLondonPlus01Middaypressure icon="pressure"
-   Text  item=ForecastLondonPlus01Midnightpressure icon="pressure"
+   Text  item=ForecastLondonPlus01MiddayPressure icon="pressure"
+   Text  item=ForecastLondonPlus01MidnightPressure icon="pressure"
    Text  item=ForecastLondonPlus01MaxUvIndex icon="pressure"
    Text  item=ForecastLondonPlus01NightUpperBoundMinTemp icon="temperature"
    Text  item=ForecastLondonPlus01DayLowerBoundMaxTemp icon="temperature"
