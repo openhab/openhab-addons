@@ -17,7 +17,7 @@
 				<label>Illuminance</label>
 				<description>Shows illuminance in Lux </description>
 			</channel>
-			<channel id="json" typeId="json">
+
 				<label>Device JSON</label>
 				<description>JSON structure and updates of this device</description>
 			</channel>

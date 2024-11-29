@@ -33,14 +33,6 @@
 				<label>Custom Name</label>
 				<description>Name given from IKEA home smart</description>
 			</channel>
-			<channel id="links" typeId="text-veto">
-				<label>Links</label>
-				<description>Linked controllers and sensors</description>
-			</channel>
-			<channel id="link-candidates" typeId="text-veto">
-				<label>Link Candidates</label>
-				<description>Candidates which can be linked</description>
-			</channel>
 			<channel id="ota-status" typeId="ota-status">
 				<label>OTA Status</label>
 				<description>Over-the-air overall status</description>
@@ -53,14 +45,18 @@
 				<label>OTA Progress</label>
 				<description>Over-the-air update progress</description>
 			</channel>
-			<channel id="json" typeId="json">
-				<label>Device JSON</label>
-				<description>JSON structure and updates of this device</description>
+			<channel id="links" typeId="text-veto-advanced">
+				<label>Links</label>
+				<description>Linked controllers and sensors</description>
+			</channel>
+			<channel id="link-candidates" typeId="text-vet-advancedo">
+				<label>Link Candidates</label>
+				<description>Candidates which can be linked</description>
 			</channel>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:color-light"/>
