@@ -403,17 +403,17 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
         }
 
         // store data for development and analysis purposes
-        if (deviceData.isEmpty()) {
-            deviceData = new JSONObject(update.toString());
-        } else {
-            updates.add(new JSONObject(update.toString()));
-            // keep last 10 updates for debugging
-            if (updates.size() > 10) {
-                updates.remove(0);
-            }
-        }
-        deviceData.put("updates", new JSONArray(updates));
-        updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(deviceData.toString()));
+        // if (deviceData.isEmpty()) {
+        // deviceData = new JSONObject(update.toString());
+        // } else {
+        // updates.add(new JSONObject(update.toString()));
+        // // keep last 10 updates for debugging
+        // if (updates.size() > 10) {
+        // updates.remove(0);
+        // }
+        // }
+        // deviceData.put("updates", new JSONArray(updates));
+        // updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(deviceData.toString()));
     }
 
     protected boolean isPowered() {
@@ -692,13 +692,11 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
 
     @Override
     public String dumpJSON() {
-        Object state = channelStateMap.get(CHANNEL_JSON);
-        String json = "{}";
-        if (state != null) {
-            json = state.toString();
+        if (THING_TYPE_SCENE.equals(thing.getThingTypeUID())) {
+            return gateway().api().readScene(config.id).toString();
+        } else {
+            return gateway().api().readDevice(config.id).toString();
         }
-        logger.info("Dump {}: {}", thing.getUID(), json);
-        return json;
     }
 
     @Override
