@@ -17,8 +17,9 @@ import static org.openhab.binding.govee.internal.GoveeBindingConstants.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -175,51 +176,48 @@ public class GoveeHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(ChannelUID channelUID, Command commandParam) {
+        Command command = commandParam;
+
         logger.debug("handleCommand({}, {})", channelUID, command);
 
-        List<ScheduledFuture<?>> communicationTasks = new ArrayList<>();
-        int nextCommTaskScheduleTime = 0;
+        List<Callable<?>> communicationTasks = new ArrayList<>();
+        boolean mustRefresh = false;
 
         if (command instanceof RefreshType) {
             // we are refreshing all channels at once, as we get all information at the same time
-            nextCommTaskScheduleTime++; // trigger refresh
+            mustRefresh = true;
         } else {
             switch (channelUID.getId()) {
                 case CHANNEL_COLOR:
-                    Command doCommand = command;
-                    if (doCommand instanceof HSBType hsb) {
-                        communicationTasks.add(scheduler.schedule(() -> {
+                    if (command instanceof HSBType hsb) {
+                        communicationTasks.add(() -> {
                             sendColor(hsb);
                             return true;
-                        }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
-                        nextCommTaskScheduleTime += INTER_COMMAND_DELAY_MILLISEC;
-                        doCommand = hsb.getBrightness(); // fall through
+                        });
+                        command = hsb.getBrightness(); // fall through
                     }
-                    if (doCommand instanceof PercentType percent) {
-                        communicationTasks.add(scheduler.schedule(() -> {
+                    if (command instanceof PercentType percent) {
+                        communicationTasks.add(() -> {
                             sendBrightness(percent);
                             return true;
-                        }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
-                        nextCommTaskScheduleTime += INTER_COMMAND_DELAY_MILLISEC;
-                        doCommand = OnOffType.from(percent.intValue() > 0); // fall through
+                        });
+                        command = OnOffType.from(percent.intValue() > 0); // fall through
                     }
-                    if (doCommand instanceof OnOffType onOff) {
-                        communicationTasks.add(scheduler.schedule(() -> {
+                    if (command instanceof OnOffType onOff) {
+                        communicationTasks.add(() -> {
                             sendOnOff(onOff);
                             return true;
-                        }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
-                        nextCommTaskScheduleTime += INTER_COMMAND_DELAY_MILLISEC;
+                        });
                     }
                     break;
 
                 case CHANNEL_COLOR_TEMPERATURE:
                     if (command instanceof PercentType percent) {
-                        communicationTasks.add(scheduler.schedule(() -> {
+                        communicationTasks.add(() -> {
                             sendKelvin(percentToKelvin(percent));
                             return true;
-                        }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
-                        nextCommTaskScheduleTime += INTER_COMMAND_DELAY_MILLISEC;
+                        });
                     }
                     break;
 
@@ -230,44 +228,60 @@ public class GoveeHandler extends BaseThingHandler {
                             logger.warn("handleCommand() invalid QuantityType:{}", genericQuantity);
                             break;
                         }
-                        communicationTasks.add(scheduler.schedule(() -> {
+                        communicationTasks.add(() -> {
                             sendKelvin(kelvin.intValue());
                             return true;
-                        }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
-                        nextCommTaskScheduleTime += INTER_COMMAND_DELAY_MILLISEC;
+                        });
                     }
                     break;
             }
 
-            if (nextCommTaskScheduleTime > 0) {
-                communicationTasks.add(scheduler.schedule(() -> {
+            if (mustRefresh || !communicationTasks.isEmpty()) {
+                communicationTasks.add(() -> {
                     triggerDeviceStatusRefresh();
                     return true;
-                }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
-                nextCommTaskScheduleTime += 5;
-
-                scheduler.schedule(() -> {
-                    boolean communicationError = false;
-                    for (ScheduledFuture<?> communicationTask : communicationTasks) {
-                        try {
-                            communicationTask.get();
-                        } catch (InterruptedException e) {
-                            logger.debug("Communication task interrupted");
-                            break;
-                        } catch (ExecutionException e) {
-                            communicationError = true;
-                            break;
-                        }
-                    }
-                    if (!communicationError) {
-                        updateStatus(ThingStatus.ONLINE);
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/offline.communication-error.could-not-query-device [\""
-                                        + goveeConfiguration.hostname + "\"]");
-                    }
-                }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS);
+                });
             }
+
+            if (!communicationTasks.isEmpty()) {
+                scheduler.submit(() -> runCallableTasks(communicationTasks));
+            }
+        }
+    }
+
+    /**
+     * Iterate over the given list of {@link Callable} tasks and run them with a delay between each. Reason for the
+     * delay is that Govee lamps cannot process multiple commands in short succession. Update the thing status depending
+     * on whether any of the tasks encountered an exception.
+     *
+     * @param callables a list of Callable tasks (which shall not be empty)
+     */
+    @SuppressWarnings("null")
+    private void runCallableTasks(List<Callable<?>> callables) {
+        boolean exception = false;
+        ListIterator<Callable<?>> tasks = callables.listIterator();
+        while (true) { // don't check hasNext() (we do it below)
+            try {
+                tasks.next().call();
+            } catch (Exception e) {
+                exception = true;
+                break;
+            }
+            if (!tasks.hasNext()) {
+                break;
+            }
+            try {
+                Thread.sleep(INTER_COMMAND_DELAY_MILLISEC);
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+        if (!exception) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
+                            + "\"]");
         }
     }
 
