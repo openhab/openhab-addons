@@ -442,6 +442,7 @@
     <module>org.openhab.binding.teslapowerwall</module>
     <module>org.openhab.binding.teslascope</module>
     <module>org.openhab.binding.tibber</module>
+    <module>org.openhab.binding.tindal</module>
     <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>
     <module>org.openhab.binding.tplinkrouter</module>
