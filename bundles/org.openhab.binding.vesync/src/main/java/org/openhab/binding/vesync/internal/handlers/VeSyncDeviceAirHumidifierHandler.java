@@ -104,8 +104,8 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             3, false, CLASSIC_300S_NIGHT_LIGHT_MODES);
 
     public static final VeSyncDeviceHumidifierMetadata OASIS_MIST = new VeSyncDeviceHumidifierMetadata(1,
-            DEV_FAMILY_OASIS_MIST, Arrays.asList("0601S"), Arrays.asList("LUH-O451S-WUS", "LUH-O451S-WUSR"),
-            AUTO_MAN_SLEEP_MODES, 1, 3, 0, 3, true, Collections.emptyList());
+            DEV_FAMILY_OASIS_MIST, Arrays.asList("O451S", "O601S"), Collections.emptyList(), AUTO_MAN_SLEEP_MODES, 1, 3,
+            0, 3, true, Collections.emptyList());
 
     public static final VeSyncDeviceHumidifierMetadata OASIS_MIST_1000 = new VeSyncDeviceHumidifierMetadata(2,
             DEV_FAMILY_OASIS_MIST_1000, Arrays.asList("M101S"), Collections.emptyList(), AUTO_MAN_SLEEP_MODES, 1, 3, 0,

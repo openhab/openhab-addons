@@ -16,15 +16,9 @@ import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.V2_BYPASS_ENDPOINT;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
@@ -561,17 +555,26 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
 
     public static VeSyncDeviceMetadata getDeviceFamilyMetadata(final @Nullable String deviceType,
             final String deviceProtocolPrefix, final List<VeSyncDeviceMetadata> metadata) {
+
         if (deviceType == null) {
             return UNKNOWN;
         }
+
+        // First look for a direct ID match, if no matches are found scan for the matches based on the generation ID.
+        final Optional<VeSyncDeviceMetadata> directIdMatch = metadata.stream()
+                .filter(x -> x.nonStandardIds.contains(deviceType)).findFirst();
+        if (directIdMatch.isPresent()) {
+            return directIdMatch.get();
+        }
+
         final String[] idParts = deviceType.split("-");
         if (idParts.length == 3) {
             if (!deviceProtocolPrefix.equals(idParts[0])) {
                 return UNKNOWN;
             }
         }
-        List<VeSyncDeviceMetadata> foundMatch = metadata.stream()
-                .filter(x -> x.deviceTypeIdMatches(deviceType, idParts)).collect(Collectors.toList());
+        final List<VeSyncDeviceMetadata> foundMatch = metadata.stream().filter(x -> x.deviceTypeIdMatches(idParts))
+                .toList();
         if (foundMatch.size() == 1) {
             return foundMatch.get(0);
         } else {
