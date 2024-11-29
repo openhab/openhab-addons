@@ -26,14 +26,16 @@ import org.openhab.core.thing.ThingTypeUID;
 public class TidalBindingConstants {
 
     // List of Tidal services related urls, information
-    public static final String TIDAL_ACCOUNT_URL = "https://accounts.tidal.com";
-    public static final String TIDAL_AUTHORIZE_URL = TIDAL_ACCOUNT_URL + "/authorize";
-    public static final String TIDAL_API_TOKEN_URL = TIDAL_ACCOUNT_URL + "/api/token";
+    public static final String TIDAL_LOGIN_URL = "https://login.tidal.com";
+    public static final String TIDAL_AUTH_URL = "https://auth.tidal.com";
+    public static final String TIDAL_AUTHORIZE_URL = TIDAL_LOGIN_URL + "/authorize";
+    public static final String TIDAL_API_TOKEN_URL = TIDAL_AUTH_URL + "/v1/oauth2/token";
     /**
      * Tidal scopes needed by this binding to work.
      */
-    public static final String TIDAL_SCOPES = Stream.of("user-read-playback-state", "user-modify-playback-state",
-            "playlist-read-private", "playlist-read-collaborative").collect(Collectors.joining(" "));
+    public static final String TIDAL_SCOPES = Stream.of("playlists.read", "entitlements.read", "collection.read",
+            "playlists.write", "collection.write", "user.read", "recommendations.read", "playback")
+            .collect(Collectors.joining(" "));
     public static final String TIDAL_API_URL = "https://api.tidal.com/v1/me";
     public static final String TIDAL_API_PLAYER_URL = TIDAL_API_URL + "/player";
 
