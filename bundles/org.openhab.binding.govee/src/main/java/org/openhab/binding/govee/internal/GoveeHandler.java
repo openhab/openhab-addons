@@ -244,6 +244,7 @@ public class GoveeHandler extends BaseThingHandler {
                     triggerDeviceStatusRefresh();
                     return true;
                 }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
+                nextCommTaskScheduleTime += 5;
 
                 scheduler.schedule(() -> {
                     boolean communicationError = false;
