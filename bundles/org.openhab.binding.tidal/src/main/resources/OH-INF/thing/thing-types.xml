@@ -10,8 +10,10 @@
 
 		<label>Tidal Player Bridge</label>
 		<description>Bridge representing the Tidal Player in the context of a user account. The bridge is associated with
-			one specific Tidal account. If you want to control your devices in the context of different accounts you have to
-			register a bridge for each account. Go to http://your openHAB address::8080/connecttidal to authorize.</description>
+			one
+			specific Tidal account. If you want to control your devices in the context of different accounts you have to
+			register
+			a bridge for each account. Go to http://your openHAB address::8080/connecttidal to authorize.</description>
 
 		<channels>
 			<channel id="accessToken" typeId="accessToken"/>
@@ -73,7 +75,8 @@
 			<parameter name="clientSecret" type="text" required="true">
 				<label>Application Client Secret</label>
 				<description>This is the Client Secret provided by Tidal when you add a new Application for openHAB to your
-					Tidal Account.</description>
+					Tidal
+					Account.</description>
 			</parameter>
 			<parameter name="refreshPeriod" type="integer" min="1" max="60" required="true">
 				<default>10</default>
@@ -94,8 +97,10 @@
 
 		<label>Tidal Connect Device</label>
 		<description>Thing representing a Tidal Connect device. The device exists in the context of the bridge and the
-			Tidal account associated with the bride. This means the same device can be present as a thing under each Tidal
-			bridge you have configured.</description>
+			Tidal
+			account associated with the bride. This means the same device can be present as a thing under each Tidal
+			bridge you
+			have configured.</description>
 
 		<channels>
 			<channel id="trackPlay" typeId="trackPlay"/>
