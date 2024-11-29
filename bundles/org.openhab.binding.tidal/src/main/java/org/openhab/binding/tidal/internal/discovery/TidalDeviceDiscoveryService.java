@@ -123,8 +123,8 @@ public class TidalDeviceDiscoveryService extends AbstractThingHandlerDiscoverySe
                 device.getId().substring(0, PLAYER_ID_LENGTH));
 
         final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thing).withBridge(bridgeUID)
-                .withProperties(properties).withRepresentationProperty(PROPERTY_TIDAL_DEVICE_NAME)
-                .withTTL(TTL_SECONDS).withLabel(device.getName()).build();
+                .withProperties(properties).withRepresentationProperty(PROPERTY_TIDAL_DEVICE_NAME).withTTL(TTL_SECONDS)
+                .withLabel(device.getName()).build();
 
         thingDiscovered(discoveryResult);
     }

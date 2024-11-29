@@ -138,8 +138,8 @@ public class TidalDeviceHandler extends BaseThingHandler {
         if (getThing().getStatus() != ThingStatus.OFFLINE
                 && getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.GONE) {
             logger.debug("Device is gone: {}", thing.getUID());
-            getThing().setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                    "Device not available on Tidal"));
+            getThing().setStatusInfo(
+                    new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not available on Tidal"));
             updateChannelState(CHANNEL_DEVICERESTRICTED, OnOffType.ON);
             updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.OFF);
             updateChannelState(CHANNEL_DEVICEPLAYER, PlayPauseType.PAUSE);
