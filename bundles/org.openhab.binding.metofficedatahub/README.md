@@ -224,13 +224,13 @@ Number:Temperature    ForecastLondonPlus01DewPointTemp                  (gLondon
 #### Daily Forecast `example.items`
 
 ```java
-Group                 gdaily-forecast                         "Current Daily Forecast"
-Group                 gLondonCurrentDay                             "London Current Forecast" (gLondon,gdaily-forecast)
+Group                 gDailyForecast                                "Current Daily Forecast"
+Group                 gLondonCurrentDay                             "London Current Forecast" (gLondon,gDailyForecast)
 DateTime              ForecastLondonDailyForecastTs                 (gLondonCurrentDay) { channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#forecast-ts" }
 Number:Speed          ForecastLondonMiddayWindSpeed10m              (gLondonCurrentDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-speed-day" }
 Number:Speed          ForecastLondonMidnightWindSpeed10m            (gLondonCurrentDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-speed-night" }
-Number:Angle          ForecastLondonMidday10MWindDirection          (gLondonCurrentDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-direction-day" }
-Number:Angle          ForecastLondonMidnight10MWindDirection        (gLondonCurrentDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-direction-night" }
+Number:Angle          ForecastLondonMidday10MWindDirection          (gLondonCurrentDay) { unit="°",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-direction-day" }
+Number:Angle          ForecastLondonMidnight10MWindDirection        (gLondonCurrentDay) { unit="°",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-direction-night" }
 Number:Speed          ForecastLondonMidday10mWindGust               (gLondonCurrentDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-gust-day" }
 Number:Speed          ForecastLondonMidnight10mWindGust             (gLondonCurrentDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#wind-gust-night" }
 Number:Length         ForecastLondonMiddayVisibility                (gLondonCurrentDay) { unit="m",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#visibility-day" }
@@ -266,13 +266,13 @@ Number:Dimensionless  ForecastLondonNightProbabilityOfHail          (gLondonCurr
 Number:Dimensionless  ForecastLondonDayProbabilityOfSferics         (gLondonCurrentDay) { unit="%",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#sferics-prob-day" }
 Number:Dimensionless  ForecastLondonNightProbabilityOfSferics       (gLondonCurrentDay) { unit="%",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast#sferics-prob-night" }
 
-Group                 gCurrentDailyPlus01Forecast                         "Current Day +1 Daily Forecast"
-Group                 gLondonNextDay                                      "London Next Day Forecast" (gLondon,gCurrentDailyPlus01Forecast)
+Group                 gDailyPlus01Forecast                                "Current Day +1 Daily Forecast"
+Group                 gLondonNextDay                                      "London Next Day Forecast" (gLondon,gDailyPlus01Forecast)
 DateTime              ForecastLondonPlus01DailyForecastTs                 (gLondonNextDay) { channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#forecast-ts" }
 Number:Speed          ForecastLondonPlus01MiddayWindSpeed10m              (gLondonNextDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-speed-day" }
 Number:Speed          ForecastLondonPlus01MidnightWindSpeed10m            (gLondonNextDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-speed-night" }
-Number:Angle          ForecastLondonPlus01Midday10MWindDirection          (gLondonNextDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-direction-day" }
-Number:Angle          ForecastLondonPlus01Midnight10MWindDirection        (gLondonNextDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-direction-night" }
+Number:Angle          ForecastLondonPlus01Midday10MWindDirection          (gLondonNextDay) { unit="°",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-direction-day" }
+Number:Angle          ForecastLondonPlus01Midnight10MWindDirection        (gLondonNextDay) { unit="°",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-direction-night" }
 Number:Speed          ForecastLondonPlus01Midday10mWindGust               (gLondonNextDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-gust-day" }
 Number:Speed          ForecastLondonPlus01Midnight10mWindGust             (gLondonNextDay) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#wind-gust-night" }
 Number:Length         ForecastLondonPlus01MiddayVisibility                (gLondonNextDay) { unit="m",channel="metofficedatahub:site:metoffice:londonForecast:daily-forecast-plus01#visibility-day" }
