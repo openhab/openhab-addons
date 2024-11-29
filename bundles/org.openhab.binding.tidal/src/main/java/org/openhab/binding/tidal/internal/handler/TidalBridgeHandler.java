@@ -82,8 +82,7 @@ import org.slf4j.LoggerFactory;
  * @author Hilbrand Bouwkamp - Just a lot of refactoring
  */
 @NonNullByDefault
-public class TidalBridgeHandler extends BaseBridgeHandler
-        implements TidalAccountHandler, AccessTokenRefreshListener {
+public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccountHandler, AccessTokenRefreshListener {
 
     private static final CurrentlyPlayingContext EMPTY_CURRENTLY_PLAYING_CONTEXT = new CurrentlyPlayingContext();
     private static final Album EMPTY_ALBUM = new Album();
@@ -256,7 +255,14 @@ public class TidalBridgeHandler extends BaseBridgeHandler
             if (oAuthService == null) {
                 throw new OAuthException("OAuth service is not initialized");
             }
-            return oAuthService.getAuthorizationUrl(redirectUri, null, thing.getUID().getAsString());
+            oAuthService.addExtraAuthField("test", "toto");
+            String oAuthorizationUrl = oAuthService.getAuthorizationUrl(redirectUri, null,
+                    thing.getUID().getAsString());
+
+            String cChallenge = "E9Melhoa2OwvFrEMTJguCHaoeKt8URWbuGJSstw-cM";
+            oAuthorizationUrl = oAuthorizationUrl + "&code_challenge_method=S256";
+            oAuthorizationUrl = oAuthorizationUrl + "&code_challenge=" + cChallenge;
+            return oAuthorizationUrl;
         } catch (final OAuthException e) {
             logger.debug("Error constructing AuthorizationUrl: ", e);
             return "";
