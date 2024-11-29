@@ -15,7 +15,10 @@ package org.openhab.binding.govee.internal;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -99,7 +102,7 @@ public class GoveeHandler extends BaseThingHandler {
     private int minKelvin;
     private int maxKelvin;
 
-    private static final int INTER_COMMAND_SLEEP_MILLISEC = 100;
+    private static final int INTER_COMMAND_DELAY_MILLISEC = 100;
 
     /**
      * This thing related job <i>thingRefreshSender</i> triggers an update to the Govee device.
@@ -173,69 +176,97 @@ public class GoveeHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        try {
-            logger.debug("handleCommand({}, {})", channelUID, command);
-            if (command instanceof RefreshType) {
-                // we are refreshing all channels at once, as we get all information at the same time
-                triggerDeviceStatusRefresh();
-            } else {
-                switch (channelUID.getId()) {
-                    case CHANNEL_COLOR:
-                        boolean triggerRefresh = false;
-                        Command doCommand = command;
-                        if (doCommand instanceof HSBType hsb) {
+        logger.debug("handleCommand({}, {})", channelUID, command);
+
+        List<ScheduledFuture<?>> communicationTasks = new ArrayList<>();
+        int nextCommTaskScheduleTime = 0;
+
+        if (command instanceof RefreshType) {
+            // we are refreshing all channels at once, as we get all information at the same time
+            nextCommTaskScheduleTime++; // trigger refresh
+        } else {
+            switch (channelUID.getId()) {
+                case CHANNEL_COLOR:
+                    Command doCommand = command;
+                    if (doCommand instanceof HSBType hsb) {
+                        communicationTasks.add(scheduler.schedule(() -> {
                             sendColor(hsb);
-                            triggerRefresh = true;
-                            doCommand = hsb.getBrightness();
-                            Thread.sleep(INTER_COMMAND_SLEEP_MILLISEC);
-                            // fall through
-                        }
-                        if (doCommand instanceof PercentType percent) {
+                            return true;
+                        }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
+                        nextCommTaskScheduleTime += INTER_COMMAND_DELAY_MILLISEC;
+                        doCommand = hsb.getBrightness(); // fall through
+                    }
+                    if (doCommand instanceof PercentType percent) {
+                        communicationTasks.add(scheduler.schedule(() -> {
                             sendBrightness(percent);
-                            triggerRefresh = true;
-                            doCommand = OnOffType.from(percent.intValue() > 0);
-                            Thread.sleep(INTER_COMMAND_SLEEP_MILLISEC);
-                            // fall through
-                        }
-                        if (doCommand instanceof OnOffType onOff) {
+                            return true;
+                        }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
+                        nextCommTaskScheduleTime += INTER_COMMAND_DELAY_MILLISEC;
+                        doCommand = OnOffType.from(percent.intValue() > 0); // fall through
+                    }
+                    if (doCommand instanceof OnOffType onOff) {
+                        communicationTasks.add(scheduler.schedule(() -> {
                             sendOnOff(onOff);
-                            triggerRefresh = true;
-                            Thread.sleep(INTER_COMMAND_SLEEP_MILLISEC);
-                        }
-                        if (triggerRefresh) {
-                            triggerDeviceStatusRefresh();
-                        }
-                        break;
+                            return true;
+                        }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
+                        nextCommTaskScheduleTime += INTER_COMMAND_DELAY_MILLISEC;
+                    }
+                    break;
 
-                    case CHANNEL_COLOR_TEMPERATURE:
-                        if (command instanceof PercentType percent) {
+                case CHANNEL_COLOR_TEMPERATURE:
+                    if (command instanceof PercentType percent) {
+                        communicationTasks.add(scheduler.schedule(() -> {
                             sendKelvin(percentToKelvin(percent));
-                            Thread.sleep(INTER_COMMAND_SLEEP_MILLISEC);
-                            triggerDeviceStatusRefresh();
-                        }
-                        break;
+                            return true;
+                        }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
+                        nextCommTaskScheduleTime += INTER_COMMAND_DELAY_MILLISEC;
+                    }
+                    break;
 
-                    case CHANNEL_COLOR_TEMPERATURE_ABS:
-                        if (command instanceof QuantityType<?> genericQuantity) {
-                            QuantityType<?> kelvin = genericQuantity.toInvertibleUnit(Units.KELVIN);
-                            if (kelvin == null) {
-                                logger.warn("handleCommand() invalid QuantityType:{}", genericQuantity);
-                                break;
-                            }
-                            sendKelvin(kelvin.intValue());
-                            Thread.sleep(INTER_COMMAND_SLEEP_MILLISEC);
-                            triggerDeviceStatusRefresh();
+                case CHANNEL_COLOR_TEMPERATURE_ABS:
+                    if (command instanceof QuantityType<?> genericQuantity) {
+                        QuantityType<?> kelvin = genericQuantity.toInvertibleUnit(Units.KELVIN);
+                        if (kelvin == null) {
+                            logger.warn("handleCommand() invalid QuantityType:{}", genericQuantity);
+                            break;
                         }
-                        break;
-                }
+                        communicationTasks.add(scheduler.schedule(() -> {
+                            sendKelvin(kelvin.intValue());
+                            return true;
+                        }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
+                        nextCommTaskScheduleTime += INTER_COMMAND_DELAY_MILLISEC;
+                    }
+                    break;
             }
-            updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
-                            + "\"]");
-        } catch (InterruptedException e) {
-            logger.debug("Inter command sleep was interrupted");
+
+            if (nextCommTaskScheduleTime > 0) {
+                communicationTasks.add(scheduler.schedule(() -> {
+                    triggerDeviceStatusRefresh();
+                    return true;
+                }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS));
+
+                scheduler.schedule(() -> {
+                    boolean communicationError = false;
+                    for (ScheduledFuture<?> communicationTask : communicationTasks) {
+                        try {
+                            communicationTask.get();
+                        } catch (InterruptedException e) {
+                            logger.debug("Communication task interrupted");
+                            break;
+                        } catch (ExecutionException e) {
+                            communicationError = true;
+                            break;
+                        }
+                    }
+                    if (!communicationError) {
+                        updateStatus(ThingStatus.ONLINE);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/offline.communication-error.could-not-query-device [\""
+                                        + goveeConfiguration.hostname + "\"]");
+                    }
+                }, nextCommTaskScheduleTime, TimeUnit.MILLISECONDS);
+            }
         }
     }
 
