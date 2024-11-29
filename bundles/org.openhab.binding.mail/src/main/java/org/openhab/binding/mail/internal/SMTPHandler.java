@@ -19,6 +19,7 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.PatchedMailcapCommandMap;
+import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.Session;
@@ -70,9 +71,18 @@ public class SMTPHandler extends BaseThingHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
+        scheduler.execute(this::checkConnection);
+    }
+
+    private @Nullable Session checkConnection() {
+        Session localSession = this.session;
+        if (localSession != null) {
+            return localSession;
+        }
+
         SMTPConfig config = getConfigAs(SMTPConfig.class);
         if (config.sender instanceof String confSender) {
-            sender = confSender;
+            this.sender = confSender;
         }
 
         Email mail = new SimpleEmail();
@@ -97,17 +107,20 @@ public class SMTPHandler extends BaseThingHandler {
             mail.setAuthentication(config.username, config.password);
         }
 
-        Session localSession;
         try {
             localSession = mail.getMailSession();
             localSession.getTransport().connect();
-        } catch (EmailException | MessagingException e) {
+        } catch (AuthenticationFailedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return;
+            return null;
+        } catch (EmailException | MessagingException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return null;
         }
 
         this.session = localSession;
         updateStatus(ThingStatus.ONLINE);
+        return localSession;
     }
 
     @Override
@@ -129,7 +142,7 @@ public class SMTPHandler extends BaseThingHandler {
      * @return true if successful, false if failed
      */
     public boolean sendMail(Email mail) {
-        Session localSession = session;
+        Session localSession = checkConnection();
         if (localSession == null) {
             logger.warn("Thing {} is not ONLINE, can't send mail", thing.getUID());
             return false;
