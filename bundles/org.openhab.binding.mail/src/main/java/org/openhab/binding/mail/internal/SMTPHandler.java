@@ -87,24 +87,22 @@ public class SMTPHandler extends BaseThingHandler {
 
         Email mail = new SimpleEmail();
         mail.setHostName(config.hostname);
+        if (!(config.username.isEmpty() || config.password.isEmpty())) {
+            mail.setAuthentication(config.username, config.password);
+        }
 
         int port = config.port != 0 ? config.port : config.security == ServerSecurity.SSL ? 465 : 25;
         switch (config.security) {
-            case SSL:
+            case SSL -> {
                 mail.setSSLOnConnect(true);
                 mail.setSslSmtpPort(Integer.toString(port));
-                break;
-            case STARTTLS:
+            }
+            case STARTTLS -> {
                 mail.setStartTLSEnabled(true);
                 mail.setStartTLSRequired(true);
                 mail.setSmtpPort(port);
-                break;
-            case PLAIN:
-                mail.setSmtpPort(port);
-        }
-
-        if (!(config.username.isEmpty() || config.password.isEmpty())) {
-            mail.setAuthentication(config.username, config.password);
+            }
+            case PLAIN -> mail.setSmtpPort(port);
         }
 
         try {
@@ -125,8 +123,7 @@ public class SMTPHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        Session localSession = session;
-        if (localSession != null) {
+        if (session instanceof Session localSession) {
             try {
                 localSession.getTransport().close();
             } catch (MessagingException ignore) {
@@ -142,47 +139,41 @@ public class SMTPHandler extends BaseThingHandler {
      * @return true if successful, false if failed
      */
     public boolean sendMail(Email mail) {
-        Session localSession = checkConnection();
-        if (localSession == null) {
-            logger.warn("Thing {} is not ONLINE, can't send mail", thing.getUID());
-            return false;
-        }
+        if (checkConnection() instanceof Session localSession) {
+            mail.setMailSession(localSession);
 
-        mail.setMailSession(localSession);
-
-        try {
-            if (mail.getFromAddress() == null && !sender.isEmpty()) {
-                mail.setFrom(sender);
-            } else {
-                logger.warn("No sender defined, can't send mail");
-                return false;
-            }
-            mail.buildMimeMessage();
-
-            // fix command map not available
-            DataHandler dataHandler = mail.getMimeMessage().getDataHandler();
-            dataHandler.setCommandMap(commandMap);
             try {
-                DataSource dataSource = dataHandler.getDataSource();
-                Field dataField = dataSource.getClass().getDeclaredField("data");
-                dataField.setAccessible(true);
-                Object data = dataField.get(dataSource);
-                if (data instanceof MimeMultipart mimeMultipart) {
-                    for (int i = 0; i < mimeMultipart.getCount(); i++) {
-                        Part mimePart = mimeMultipart.getBodyPart(i);
-                        mimePart.getDataHandler().setCommandMap(commandMap);
-                    }
+                if (mail.getFromAddress() == null) {
+                    mail.setFrom(sender);
                 }
-            } catch (NoSuchFieldException | IllegalAccessException ignored) {
-            }
+                mail.buildMimeMessage();
 
-            mail.sendMimeMessage();
-        } catch (MessagingException | EmailException e) {
-            Throwable cause = e.getCause();
-            logger.warn("{}", cause != null ? cause.toString() : e.getMessage());
-            return false;
+                // fix command map not available
+                DataHandler dataHandler = mail.getMimeMessage().getDataHandler();
+                dataHandler.setCommandMap(commandMap);
+                try {
+                    DataSource dataSource = dataHandler.getDataSource();
+                    Field dataField = dataSource.getClass().getDeclaredField("data");
+                    dataField.setAccessible(true);
+                    Object data = dataField.get(dataSource);
+                    if (data instanceof MimeMultipart mimeMultipart) {
+                        for (int i = 0; i < mimeMultipart.getCount(); i++) {
+                            Part mimePart = mimeMultipart.getBodyPart(i);
+                            mimePart.getDataHandler().setCommandMap(commandMap);
+                        }
+                    }
+                } catch (NoSuchFieldException | IllegalAccessException ignored) {
+                }
+
+                mail.sendMimeMessage();
+                return true;
+            } catch (MessagingException | EmailException e) {
+                logger.warn("{}", e.getCause() instanceof Throwable cause ? cause.toString() : e.getMessage());
+            }
+        } else {
+            logger.warn("Thing {} is not ONLINE, can't send mail", thing.getUID());
         }
-        return true;
+        return false;
     }
 
     @Override
