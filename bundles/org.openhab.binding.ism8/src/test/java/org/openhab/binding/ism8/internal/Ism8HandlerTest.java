@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ism8.internal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.openhab.binding.ism8.internal.Ism8BindingConstants.*;
 
@@ -31,7 +32,9 @@ import org.openhab.binding.ism8.server.DataPointChangedEvent;
 import org.openhab.binding.ism8.server.DataPointValue;
 import org.openhab.binding.ism8.server.IDataPoint;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -57,6 +60,7 @@ public class Ism8HandlerTest {
     private @NonNullByDefault({}) Ism8Handler thingHandler;
     private ThingUID thingUID = new ThingUID(BINDING_ID, "ism8server");
     private ChannelUID channel1001 = new ChannelUID(thingUID, "switch1");
+    private ChannelUID channel1001c = new ChannelUID(thingUID, "contact1");
     private ChannelUID channel9001 = new ChannelUID(thingUID, "tempC");
     private ChannelUID channel9002 = new ChannelUID(thingUID, "tempD");
     private ChannelUID channel20001 = new ChannelUID(thingUID, "mode1");
@@ -72,6 +76,8 @@ public class Ism8HandlerTest {
                         .withConfiguration(createChannelConfig("4", "9.001")).build())
                 .withChannel(ChannelBuilder.create(channel1001, "Switch")
                         .withConfiguration(createChannelConfig("9", "1.001")).build())
+                .withChannel(ChannelBuilder.create(channel1001c, "Contact")
+                        .withConfiguration(createChannelConfig("8", "1.001")).build())
                 .withChannel(ChannelBuilder.create(channel20001, "Switch")
                         .withConfiguration(createChannelConfig("2", "20.001")).build())
                 .build();
@@ -99,7 +105,24 @@ public class Ism8HandlerTest {
         thingHandler.dataPointChanged(event);
 
         // assert
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channel1001), eq(OnOffType.from(false)));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channel1001), eq(DecimalType.valueOf("0")));
+        assertEquals(OnOffType.from(false), OnOffType.from(DecimalType.valueOf("0").toString()));
+    }
+
+    // @Test
+    public void process1001cMessageAndUpdateChannel() {
+        // arrange
+        IDataPoint dataPoint = new DataPointBool(8, "1.001", "Datapoint_1.001");
+        dataPoint.processData(HexUtils.hexToBytes("0008030100"));
+        DataPointChangedEvent event = new DataPointChangedEvent(new Object(), dataPoint);
+        thingHandler.setCallback(thingHandlerCallback);
+
+        // act
+        thingHandler.dataPointChanged(event);
+
+        // assert
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channel1001c), eq(DecimalType.valueOf("0")));
+        assertEquals(OpenClosedType.CLOSED.as(DecimalType.class), DecimalType.valueOf("0"));
     }
 
     @Test

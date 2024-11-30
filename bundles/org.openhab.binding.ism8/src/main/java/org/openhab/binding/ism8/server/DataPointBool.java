@@ -55,7 +55,8 @@ public class DataPointBool extends DataPointBase<@Nullable Boolean> {
     @Override
     protected byte[] convertWriteValue(Object value) {
         String valueText = value.toString().toLowerCase();
-        if ("true".equalsIgnoreCase(valueText) || "1".equalsIgnoreCase(valueText) || "ON".equalsIgnoreCase(valueText)) {
+        if ("true".equalsIgnoreCase(valueText) || "1".equalsIgnoreCase(valueText) || "ON".equalsIgnoreCase(valueText)
+                || "OPEN".equalsIgnoreCase(valueText)) {
             this.setValue(true);
             return new byte[] { 0x01 };
         }
