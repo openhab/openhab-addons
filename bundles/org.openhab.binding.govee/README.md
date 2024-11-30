@@ -56,7 +56,7 @@ Here is a list of the supported devices (the ones marked with * have been tested
 - H6143 5M Strip Light
 - H6144 2x5M Strip Light
 - H6159 RGB Light Strip (*)
-- H615A 5M Light Strip with Alexa
+- H615A 5M Light Strip with Alexa (*)
 - H615B 10M Light Strip with Alexa
 - H615C 15M Light Strip with Alexa
 - H615D 20M Light Strip with Alexa
