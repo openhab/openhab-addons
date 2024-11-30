@@ -48,7 +48,7 @@ public class HostActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "wol host", description = "Sends a wake on lan packet to the lan connected host")
+    @RuleAction(label = "@text/action.wol.label", description = "@text/action.wol.description")
     public void wol() {
         logger.debug("Host WOL called");
         HostHandler hostHandler = this.handler;

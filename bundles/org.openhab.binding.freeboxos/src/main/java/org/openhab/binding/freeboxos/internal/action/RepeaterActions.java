@@ -48,7 +48,7 @@ public class RepeaterActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "reboot free repeater", description = "Reboots the Free Repeater")
+    @RuleAction(label = "@text/action.rebootRepeater.label", description = "@text/action.rebootRepeater.description")
     public void rebootRepeater() {
         logger.debug("Repeater reboot called");
         RepeaterHandler localHandler = this.handler;

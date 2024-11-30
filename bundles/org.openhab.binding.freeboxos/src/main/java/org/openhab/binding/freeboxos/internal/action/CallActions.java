@@ -48,7 +48,7 @@ public class CallActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "clear call queue", description = "Deletes all calls logged in the queue")
+    @RuleAction(label = "@text/action.resetCalls.label", description = "@text/action.resetCalls.description")
     public void resetCalls() {
         logger.debug("Call log clear called");
         CallHandler localHandler = handler;
