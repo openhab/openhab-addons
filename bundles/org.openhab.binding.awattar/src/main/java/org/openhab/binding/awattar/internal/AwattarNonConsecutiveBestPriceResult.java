@@ -17,6 +17,7 @@ import static org.openhab.binding.awattar.internal.AwattarUtil.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -33,13 +34,29 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
     private final ZoneId zoneId;
     private boolean sorted = true;
 
-    public AwattarNonConsecutiveBestPriceResult(ZoneId zoneId) {
+    public AwattarNonConsecutiveBestPriceResult(List<AwattarPrice> prices, int length, boolean inverted,
+            ZoneId zoneId) {
         super();
         this.zoneId = zoneId;
         members = new ArrayList<>();
+
+        prices.sort(Comparator.naturalOrder());
+
+        // sort in descending order when inverted
+        if (inverted) {
+            Collections.reverse(prices);
+        }
+
+        // take up to config.length prices
+        for (int i = 0; i < Math.min(length, prices.size()); i++) {
+            addMember(prices.get(i));
+        }
+
+        // sort the members
+        members.sort(Comparator.comparing(AwattarPrice::timerange));
     }
 
-    public void addMember(AwattarPrice member) {
+    private void addMember(AwattarPrice member) {
         sorted = false;
         members.add(member);
         updateStart(member.timerange().start());
@@ -67,6 +84,7 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
         boolean second = false;
         sort();
         StringBuilder res = new StringBuilder();
+
         for (AwattarPrice price : members) {
             if (second) {
                 res.append(',');
