@@ -44,4 +44,7 @@ public class GoveeBindingConstants {
     // Limit values of channels
     public static final Double COLOR_TEMPERATURE_MIN_VALUE = 2000.0;
     public static final Double COLOR_TEMPERATURE_MAX_VALUE = 9000.0;
+
+    public static final String PROPERTY_COLOR_TEMPERATURE_MIN = "minKelvin";
+    public static final String PROPERTY_COLOR_TEMPERATURE_MAX = "maxKelvin";
 }

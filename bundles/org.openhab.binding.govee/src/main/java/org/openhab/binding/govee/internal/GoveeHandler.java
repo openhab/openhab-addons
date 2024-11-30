@@ -34,6 +34,7 @@ import org.openhab.binding.govee.internal.model.GenericGoveeMsg;
 import org.openhab.binding.govee.internal.model.GenericGoveeRequest;
 import org.openhab.binding.govee.internal.model.StatusResponse;
 import org.openhab.binding.govee.internal.model.ValueIntData;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -151,6 +152,8 @@ public class GoveeHandler extends BaseThingHandler {
                     "@text/offline.configuration-error.invalid-color-temperature-range");
             return;
         }
+        thing.setProperty(PROPERTY_COLOR_TEMPERATURE_MIN, Integer.toString(minKelvin));
+        thing.setProperty(PROPERTY_COLOR_TEMPERATURE_MAX, Integer.toString(maxKelvin));
         stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
                 minKelvin, maxKelvin);
 
@@ -232,6 +235,11 @@ public class GoveeHandler extends BaseThingHandler {
                             sendKelvin(kelvin.intValue());
                             return true;
                         });
+                    } else if (command instanceof DecimalType kelvin) {
+                        communicationTasks.add(() -> {
+                            sendKelvin(kelvin.intValue());
+                            return true;
+                        });
                     }
                     break;
             }
@@ -289,7 +297,7 @@ public class GoveeHandler extends BaseThingHandler {
      * Initiate a refresh to our thing device
      */
     private void triggerDeviceStatusRefresh() throws IOException {
-        logger.debug("triggerDeviceStatusRefresh() on {}", thing.getUID());
+        logger.debug("triggerDeviceStatusRefresh() to {}", thing.getUID());
         GenericGoveeData data = new EmptyValueQueryStatusData();
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("devStatus", data));
         communicationManager.sendRequest(this, request);
@@ -379,30 +387,26 @@ public class GoveeHandler extends BaseThingHandler {
         logger.debug("updateDeviceState() for {}", thing.getUID());
 
         OnOffType sw = OnOffType.from(message.msg().data().onOff() == 1);
-        logger.trace("- switch:{}", sw);
-
         int brightness = message.msg().data().brightness();
-        logger.trace("- brightness:{}", brightness);
-
         Color normalRGB = message.msg().data().color();
-        logger.trace("- normalRGB:{}", normalRGB);
-
         int kelvin = message.msg().data().colorTemInKelvin();
-        logger.trace("- kelvin:{}", kelvin);
+
+        logger.trace("Update values: switch:{}, brightness:{}, normalRGB:{}, kelvin:{}", sw, brightness, normalRGB,
+                kelvin);
 
         HSBType color = buildHSB(normalRGB, brightness, true);
 
-        logger.trace("Compare color old:{} to new:{}, on-state old:{} to new:{}", lastColor, color, lastSwitch, sw);
+        logger.trace("Compare hsb old:{} to new:{}, switch old:{} to new:{}", lastColor, color, lastSwitch, sw);
         if ((sw != lastSwitch) || !color.equals(lastColor)) {
-            logger.trace("Update color old:{} to new:{}, on-state old:{} to new:{}", lastColor, color, lastSwitch, sw);
+            logger.trace("Update hsb old:{} to new:{}, switch old:{} to new:{}", lastColor, color, lastSwitch, sw);
             updateState(CHANNEL_COLOR, buildHSB(normalRGB, brightness, sw == OnOffType.ON));
             lastSwitch = sw;
             lastColor = color;
         }
 
-        logger.trace("Compare color temperature old:{} to new:{}", lastKelvin, kelvin);
+        logger.trace("Compare kelvin old:{} to new:{}", lastKelvin, kelvin);
         if (kelvin != lastKelvin) {
-            logger.trace("Update color temperature old:{} to new:{}", lastKelvin, kelvin);
+            logger.trace("Update kelvin old:{} to new:{}", lastKelvin, kelvin);
             if (kelvin != 0) {
                 kelvin = Math.round(Math.min(maxKelvin, Math.max(minKelvin, kelvin)));
                 updateState(CHANNEL_COLOR_TEMPERATURE, kelvinToPercent(kelvin));
