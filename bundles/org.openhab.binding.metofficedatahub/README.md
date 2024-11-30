@@ -14,8 +14,8 @@ A possible use case could be to pull forecast data, for the next day to determin
 ## Prerequisite
 
 In order to use this binding, you will need a Met Office Data Hub account.
-Once created you will need to create a plan for access to the "Site Specific" subscriptions.
-This will give you the client id and secret required for the bridge.
+Once created you will need to create a plan for access to the "Site Specific" Global Spot subscriptions.
+This will give you the API key required for the bridge.
 
 ## Supported Things
 
