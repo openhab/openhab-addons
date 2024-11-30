@@ -148,7 +148,7 @@ The list of all possible channels is as follows:
 | pv4-voltage                    | Number:ElectricPotential  | Voltage from solar panel string #4.                  | yes      |
 | pv4-current                    | Number:ElectricCurrent    | Current from solar panel string #4.                  | yes      |
 | pv4-power                      | Number:Power              | Power from solar panel string #4.                    | yes      |
-| pv3-energy-today               | Number:Energy             | Solar DC energy collected by string #3.              | yes      |
+| pv3-energy-today               | Number:Energy             | Solar DC energy collected by string #3 today.        | yes      |
 | pv3-energy-total               | Number:Energy             | Total solar DC energy collected by string #3.        | yes      |
 | power-factor                   | Number:Percent            | Electrical power factor                              | yes      |
 | eps-voltage-r                  | Number:ElectricPotential  | Emergency Power Supply voltage (phase #R).           | yes      |

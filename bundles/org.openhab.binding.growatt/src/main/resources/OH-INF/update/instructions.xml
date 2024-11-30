@@ -86,7 +86,7 @@
 			<add-channel id="pv3-energy-today">
 				<type>growatt:advanced-electric-energy</type>
 				<label>DC Energy #3 Today</label>
-				<description>Solar DC energy collected by string #3.</description>
+				<description>Solar DC energy collected by string #3 today.</description>
 			</add-channel>
 			<add-channel id="pv3-energy-total">
 				<type>growatt:advanced-electric-energy</type>
