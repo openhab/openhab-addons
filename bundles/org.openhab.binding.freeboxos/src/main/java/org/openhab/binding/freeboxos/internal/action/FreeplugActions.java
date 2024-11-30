@@ -48,7 +48,7 @@ public class FreeplugActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "reset freeplug", description = "Resets the Freeplug")
+    @RuleAction(label = "@text/action.resetPlug.label", description = "@text/action.resetPlug.description")
     public void resetPlug() {
         logger.debug("Freeplug reset requested");
         FreeplugHandler plugHandler = this.handler;
