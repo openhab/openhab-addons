@@ -142,6 +142,25 @@ The list of all possible channels is as follows:
 | charge-va                      | Number:Power              | Charging reactive power.                             | yes      |
 | inverter-clock-offset          | Number:Time               | Time offset of inverter clock vs. OH system clock.   | yes      |
 | inverter-fan-speed             | Number:Dimensionless      | Inverter fan speed percent.                          | yes      |
+| pv3-voltage                    | Number:ElectricPotential  | Voltage from solar panel string #3.                  | yes      |
+| pv3-current                    | Number:ElectricCurrent    | Current from solar panel string #3.                  | yes      |
+| pv3-power                      | Number:Power              | Power from solar panel string #3.                    | yes      |
+| pv4-voltage                    | Number:ElectricPotential  | Voltage from solar panel string #4.                  | yes      |
+| pv4-current                    | Number:ElectricCurrent    | Current from solar panel string #4.                  | yes      |
+| pv4-power                      | Number:Power              | Power from solar panel string #4.                    | yes      |
+| pv3-energy-today               | Number:Energy             | Solar DC energy collected by string #3 today.        | yes      |
+| pv3-energy-total               | Number:Energy             | Total solar DC energy collected by string #3.        | yes      |
+| power-factor                   | Number:Percent            | Electrical power factor                              | yes      |
+| eps-voltage-r                  | Number:ElectricPotential  | Emergency Power Supply voltage (phase #R).           | yes      |
+| eps-voltage-s                  | Number:ElectricPotential  | Emergency Power Supply voltage (phase #S).           | yes      |
+| eps-voltage-t                  | Number:ElectricPotential  | Emergency Power Supply voltage (phase #T).           | yes      |
+| eps-current-r                  | Number:ElectricCurrent    | Emergency Power Supply current (phase #R).           | yes      |
+| eps-current-s                  | Number:ElectricCurrent    | Emergency Power Supply current (phase #S).           | yes      |
+| eps-current-t                  | Number:ElectricCurrent    | Emergency Power Supply current (phase #T).           | yes      |
+| eps-power                      | Number:Power              | Total Emergency Power Supply power.                  | yes      |
+| eps-power-r                    | Number:Power              | Emergency Power Supply power (phase #R).             | yes      |
+| eps-power-s                    | Number:Power              | Emergency Power Supply power (phase #S).             | yes      |
+| eps-power-t                    | Number:Power              | Emergency Power Supply power (phase #T).             | yes      |
 
 ## Rule Actions
 

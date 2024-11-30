@@ -58,7 +58,7 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "pv2watt", alternate = { "ppv2" }) Integer pv2_power;
 
     // AC mains electric data (1-phase resp. 3-phase)
-    public @Nullable @SerializedName(value = "pvfrequentie", alternate = { "line_freq", "outputfreq" }) Integer grid_frequency;
+    public @Nullable @SerializedName(value = "pvfrequentie", alternate = { "line_freq", "outputfreq", "frequency" }) Integer grid_frequency;
     public @Nullable @SerializedName(value = "pvgridvoltage", alternate = { "grid_volt", "outputvolt", "voltage_l1" }) Integer grid_voltage_r;
     public @Nullable @SerializedName(value = "pvgridvoltage2", alternate = { "voltage_l2" }) Integer grid_voltage_s;
     public @Nullable @SerializedName(value = "pvgridvoltage3", alternate = { "voltage_l3" }) Integer grid_voltage_t;
@@ -110,10 +110,10 @@ public class GrottValues {
 
     // solar DC pv energy
     public @Nullable @SerializedName(value = "epvtoday") Integer pv_energy_today;
-    public @Nullable @SerializedName(value = "epv1today", alternate = { "epv1tod" }) Integer pv1_energy_today;
+    public @Nullable @SerializedName(value = "epv1today", alternate = { "epv1tod", "epv1today " }) Integer pv1_energy_today; // alternate intentionally has trailing space
     public @Nullable @SerializedName(value = "epv2today", alternate = { "epv2tod" }) Integer pv2_energy_today;
 
-    public @Nullable @SerializedName(value = "epvtotal") Integer pv_energy_total;
+    public @Nullable @SerializedName(value = "epvtotal", alternate = { "epvtotal " }) Integer pv_energy_total; // alternate intentionally has trailing space
     public @Nullable @SerializedName(value = "epv1total", alternate = { "epv1tot" }) Integer pv1_energy_total;
     public @Nullable @SerializedName(value = "epv2total", alternate = { "epv2tot" }) Integer pv2_energy_total;
 
@@ -201,6 +201,40 @@ public class GrottValues {
     // inverter
     public @Nullable @SerializedName(value = "Inv_Curr") Integer inverter_current;
     public @Nullable @SerializedName(value = "invfanspeed") Integer inverter_fan_speed;
+
+    /*
+     * ============== CHANNELS ADDED IN PR #17810 ==============
+     */
+
+    // DC electric data for strings #3 and #4
+    public @Nullable @SerializedName(value = "pv3voltage") Integer pv3_voltage;
+    public @Nullable @SerializedName(value = "pv3current") Integer pv3_current;
+    public @Nullable @SerializedName(value = "pv3watt") Integer pv3_power;
+
+    public @Nullable @SerializedName(value = "pv4voltage") Integer pv4_voltage;
+    public @Nullable @SerializedName(value = "pv4current") Integer pv4_current;
+    public @Nullable @SerializedName(value = "pv4watt") Integer pv4_power;
+
+    // solar DC pv energy
+    public @Nullable @SerializedName(value = "epv3today") Integer pv3_energy_today;
+    public @Nullable @SerializedName(value = "epv3total") Integer pv3_energy_total;
+
+    // power factor
+    public @Nullable @SerializedName(value = "pf", alternate = { "powerfactor" }) Integer power_factor;
+
+    // emergency power supply (eps)
+    public @Nullable @SerializedName(value = "epsvac1") Integer eps_voltage_r;
+    public @Nullable @SerializedName(value = "epsvac2") Integer eps_voltage_s;
+    public @Nullable @SerializedName(value = "epsvac3") Integer eps_voltage_t;
+
+    public @Nullable @SerializedName(value = "epsiac1") Integer eps_current_r;
+    public @Nullable @SerializedName(value = "epsiac2") Integer eps_current_s;
+    public @Nullable @SerializedName(value = "epsiac3") Integer eps_current_t;
+
+    public @Nullable @SerializedName(value = "epspac") Integer eps_power;
+    public @Nullable @SerializedName(value = "epspac1") Integer eps_power_r;
+    public @Nullable @SerializedName(value = "epspac2") Integer eps_power_s;
+    public @Nullable @SerializedName(value = "epspac3") Integer eps_power_t;
 
     // @formatter:on
 }
