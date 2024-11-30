@@ -90,7 +90,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
             ChannelTypeUID channelType = channel.getChannelTypeUID();
             if (channelType != null) {
                 if (channelType.getId().endsWith("-r")) {
-                    logger.info("Ism8: channel {} of type {} is read-only, cannot send command", channelUID.getId(),
+                    logger.warn("Ism8: channel {} of type {} is read-only, cannot send command", channelUID.getId(),
                             channelType.toString());
                     return;
                 }
