@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class ActivePlayerActions extends PlayerActions {
     private final Logger logger = LoggerFactory.getLogger(ActivePlayerActions.class);
 
-    @RuleAction(label = "reboot freebox player", description = "Reboots the Freebox Player")
+    @RuleAction(label = "@text/action.rebootPlayer.label", description = "@text/action.rebootPlayer.description")
     public void rebootPlayer() {
         logger.debug("Player reboot called");
         PlayerHandler localHandler = this.handler;
