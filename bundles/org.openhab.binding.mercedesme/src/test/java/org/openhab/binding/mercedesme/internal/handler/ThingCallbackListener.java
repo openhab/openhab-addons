@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.mercedesme.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +56,7 @@ public class ThingCallbackListener implements ThingHandlerCallback {
     public Map<String, Map<String, State>> updatesPerGroupMap = new HashMap<>();
     public boolean linked = false;
     public Optional<ThingStatusInfo> status = Optional.empty();
+    private Instant waitTime = Instant.MAX;
 
     public ThingStatusInfo getThingStatus() {
         return status.get();
@@ -78,6 +82,23 @@ public class ThingCallbackListener implements ThingHandlerCallback {
             }
         }
         groupMap.put(channelUID.toString(), state);
+        synchronized (updatesReceived) {
+            waitTime = Instant.now().plus(500, ChronoUnit.MILLIS);
+        }
+    }
+
+    public void waitForUpdates() {
+        Instant maxWaitTime = Instant.now().plus(5000, ChronoUnit.MILLIS);
+        synchronized (updatesReceived) {
+            while (Instant.now().isBefore(maxWaitTime) && waitTime.isAfter(Instant.now())) {
+                try {
+                    updatesReceived.wait(50);
+                } catch (InterruptedException e) {
+                    fail();
+                }
+            }
+        }
+        waitTime = Instant.MAX;
     }
 
     @Override

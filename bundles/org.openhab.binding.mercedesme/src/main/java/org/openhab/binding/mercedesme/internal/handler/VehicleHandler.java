@@ -134,6 +134,8 @@ public class VehicleHandler extends BaseThingHandler {
     private JSONObject chargeGroupValueStorage = new JSONObject();
     private Map<String, State> hvacGroupValueStorage = new HashMap<>();
     private String vehicleType = NOT_SET;
+    private List<VEPUpdate> eventQueue = new ArrayList<>();
+    private boolean updateRunning = false;
 
     Map<String, ChannelStateMap> eventStorage = new HashMap<>();
     Optional<AccountHandler> accountHandler = Optional.empty();
@@ -182,6 +184,7 @@ public class VehicleHandler extends BaseThingHandler {
         accountHandler.ifPresent(ah -> {
             ah.unregisterVin(config.get().vin);
         });
+        eventQueue.clear();
         super.dispose();
     }
 
@@ -587,13 +590,49 @@ public class VehicleHandler extends BaseThingHandler {
         });
     }
 
-    public void distributeContent(VEPUpdate data) {
+    public void enqueueUpdate(VEPUpdate update) {
+        synchronized (eventQueue) {
+            eventQueue.add(update);
+            scheduler.execute(this::scheduleUpdate);
+        }
+    }
+
+    private void scheduleUpdate() {
+        VEPUpdate data;
+        synchronized (eventQueue) {
+            while (updateRunning) {
+                try {
+                    eventQueue.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    eventQueue.clear();
+                    return;
+                }
+            }
+            if (!eventQueue.isEmpty()) {
+                data = eventQueue.remove(0);
+            } else {
+                return;
+            }
+            updateRunning = true;
+        }
+        try {
+            handleUpdate(data);
+        } finally {
+            synchronized (eventQueue) {
+                updateRunning = false;
+                eventQueue.notifyAll();
+            }
+        }
+    }
+
+    public void handleUpdate(VEPUpdate update) {
         updateStatus(ThingStatus.ONLINE);
-        boolean fullUpdate = data.getFullUpdate();
+        boolean fullUpdate = update.getFullUpdate();
         /**
          * Deliver proto update
          */
-        String newProto = Utils.proto2Json(data, thing.getThingTypeUID());
+        String newProto = Utils.proto2Json(update, thing.getThingTypeUID());
         String combinedProto = newProto;
         ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, OH_CHANNEL_PROTO_UPDATE);
         ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getId());
@@ -609,7 +648,7 @@ public class VehicleHandler extends BaseThingHandler {
                 StringType.valueOf(combinedProto));
         updateChannel(dataUpdateMap);
 
-        Map<String, VehicleAttributeStatus> atts = data.getAttributesMap();
+        Map<String, VehicleAttributeStatus> atts = update.getAttributesMap();
         /**
          * handle "simple" values
          */

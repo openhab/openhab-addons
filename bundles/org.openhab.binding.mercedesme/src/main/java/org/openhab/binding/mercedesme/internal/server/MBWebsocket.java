@@ -39,13 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
-import com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehicles;
-import com.daimler.mbcarkit.proto.VehicleEvents;
-import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
-import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
-import com.daimler.mbcarkit.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
-import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
-import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsRequest;
 
 /**
  * {@link MBWebsocket} as socket endpoint to communicate with Mercedes
@@ -128,9 +121,10 @@ public class MBWebsocket {
             accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/mercedesme.account.status.websocket-failure");
             logger.warn("Websocket handling exception: {}", t.getMessage());
-        }
-        synchronized (this) {
-            running = false;
+        } finally {
+            synchronized (this) {
+                running = false;
+            }
         }
     }
 
@@ -157,7 +151,7 @@ public class MBWebsocket {
         return false;
     }
 
-    private void sendAcknowledgeMessage(ClientMessage message) {
+    public void sendAcknowledgeMessage(ClientMessage message) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             message.writeTo(baos);
@@ -167,10 +161,6 @@ public class MBWebsocket {
         } catch (IOException e) {
             logger.warn("Error sending acknowledge {} : {}", message.getAllFields(), e.getMessage());
         }
-    }
-
-    public boolean isRunning() {
-        return running;
     }
 
     public void interrupt() {
@@ -202,47 +192,20 @@ public class MBWebsocket {
     @OnWebSocketMessage
     public void onBytes(InputStream is) {
         try {
-            PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
-            if (pm.hasVepUpdates()) {
-                boolean distributed = accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
-                if (distributed) {
-                    AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
-                            .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
-                    ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
-                    sendAcknowledgeMessage(cm);
-                }
-            } else if (pm.hasAssignedVehicles()) {
-                for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
-                    String vin = pm.getAssignedVehicles().getVins(0);
-                    accountHandler.discovery(vin);
-                }
-                AcknowledgeAssignedVehicles ack = AcknowledgeAssignedVehicles.newBuilder().build();
-                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeAssignedVehicles(ack).build();
-                sendAcknowledgeMessage(cm);
-            } else if (pm.hasApptwinCommandStatusUpdatesByVin()) {
-                AppTwinCommandStatusUpdatesByVIN csubv = pm.getApptwinCommandStatusUpdatesByVin();
-                accountHandler.commandStatusUpdate(csubv.getUpdatesByVinMap());
-                AcknowledgeAppTwinCommandStatusUpdatesByVIN ack = AcknowledgeAppTwinCommandStatusUpdatesByVIN
-                        .newBuilder().setSequenceNumber(csubv.getSequenceNumber()).build();
-                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeApptwinCommandStatusUpdateByVin(ack)
-                        .build();
-                sendAcknowledgeMessage(cm);
-            } else if (pm.hasApptwinPendingCommandRequest()) {
-                AppTwinPendingCommandsRequest pending = pm.getApptwinPendingCommandRequest();
-                if (!pending.getAllFields().isEmpty()) {
-                    logger.trace("Pending Command {}", pending.getAllFields());
-                }
-            } else if (pm.hasDebugMessage()) {
-                logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
-            } else {
-                logger.trace("MB Message: {} not handled", pm.getAllFields());
-            }
+            byte[] array = is.readAllBytes();
+            is.close();
+            accountHandler.enqueueMessage(array);
+            /**
+             * https://community.openhab.org/t/mercedes-me/136866/12
+             * Release Websocket thread as early as possible to avoid execeptions
+             *
+             * 1. Websocket thread responsible for reading stream in bytes and enqueue for AccountHandler.
+             * 2. AccountHamdler thread responsible for encoding proto message. In case of update enqueue proto message
+             * at VehicleHandöer
+             * 3. VehicleHandler responsible to update channels
+             */
         } catch (IOException e) {
-            // don't report thing status errors here.
-            // Sometimes messages cannot be decoded which doesn't effect the overall functionality
-            logger.trace("IOException {}", e.getMessage());
-        } catch (Error err) {
-            logger.trace("Error caught {}", err.getMessage());
+            logger.debug("IOException reading input stream {}", e.getMessage());
         }
     }
 
