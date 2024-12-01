@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link AutomowerBindingConstants} class defines common constants, which are
@@ -84,113 +85,49 @@ public class AutomowerBindingConstants {
     // Calendar Task Channels ids
     public static final String GROUP_CALENDARTASK = "calendartask#";
 
-    public static final ArrayList<String> CHANNEL_CALENDARTASKS = new ArrayList<>(List.of(
-            GROUP_CALENDARTASK + "01-start", GROUP_CALENDARTASK + "01-duration", GROUP_CALENDARTASK + "01-monday",
-            GROUP_CALENDARTASK + "01-tuesday", GROUP_CALENDARTASK + "01-wednesday", GROUP_CALENDARTASK + "01-thursday",
-            GROUP_CALENDARTASK + "01-friday", GROUP_CALENDARTASK + "01-saturday", GROUP_CALENDARTASK + "01-sunday",
-            GROUP_CALENDARTASK + "01-workAreaId", GROUP_CALENDARTASK + "01-workArea", GROUP_CALENDARTASK + "02-start",
-            GROUP_CALENDARTASK + "02-duration", GROUP_CALENDARTASK + "02-monday", GROUP_CALENDARTASK + "02-tuesday",
-            GROUP_CALENDARTASK + "02-wednesday", GROUP_CALENDARTASK + "02-thursday", GROUP_CALENDARTASK + "02-friday",
-            GROUP_CALENDARTASK + "02-saturday", GROUP_CALENDARTASK + "02-sunday", GROUP_CALENDARTASK + "02-workAreaId",
-            GROUP_CALENDARTASK + "02-workArea", GROUP_CALENDARTASK + "03-start", GROUP_CALENDARTASK + "03-duration",
-            GROUP_CALENDARTASK + "03-monday", GROUP_CALENDARTASK + "03-tuesday", GROUP_CALENDARTASK + "03-wednesday",
-            GROUP_CALENDARTASK + "03-thursday", GROUP_CALENDARTASK + "03-friday", GROUP_CALENDARTASK + "03-saturday",
-            GROUP_CALENDARTASK + "03-sunday", GROUP_CALENDARTASK + "03-workAreaId", GROUP_CALENDARTASK + "03-workArea",
-            GROUP_CALENDARTASK + "04-start", GROUP_CALENDARTASK + "04-duration", GROUP_CALENDARTASK + "04-monday",
-            GROUP_CALENDARTASK + "04-tuesday", GROUP_CALENDARTASK + "04-wednesday", GROUP_CALENDARTASK + "04-thursday",
-            GROUP_CALENDARTASK + "04-friday", GROUP_CALENDARTASK + "04-saturday", GROUP_CALENDARTASK + "04-sunday",
-            GROUP_CALENDARTASK + "04-workAreaId", GROUP_CALENDARTASK + "04-workArea", GROUP_CALENDARTASK + "05-start",
-            GROUP_CALENDARTASK + "05-duration", GROUP_CALENDARTASK + "05-monday", GROUP_CALENDARTASK + "05-tuesday",
-            GROUP_CALENDARTASK + "05-wednesday", GROUP_CALENDARTASK + "05-thursday", GROUP_CALENDARTASK + "05-friday",
-            GROUP_CALENDARTASK + "05-saturday", GROUP_CALENDARTASK + "05-sunday", GROUP_CALENDARTASK + "05-workAreaId",
-            GROUP_CALENDARTASK + "05-workArea", GROUP_CALENDARTASK + "06-start", GROUP_CALENDARTASK + "06-duration",
-            GROUP_CALENDARTASK + "06-monday", GROUP_CALENDARTASK + "06-tuesday", GROUP_CALENDARTASK + "06-wednesday",
-            GROUP_CALENDARTASK + "06-thursday", GROUP_CALENDARTASK + "06-friday", GROUP_CALENDARTASK + "06-saturday",
-            GROUP_CALENDARTASK + "06-sunday", GROUP_CALENDARTASK + "06-workAreaId", GROUP_CALENDARTASK + "06-workArea",
-            GROUP_CALENDARTASK + "07-start", GROUP_CALENDARTASK + "07-duration", GROUP_CALENDARTASK + "07-monday",
-            GROUP_CALENDARTASK + "07-tuesday", GROUP_CALENDARTASK + "07-wednesday", GROUP_CALENDARTASK + "07-thursday",
-            GROUP_CALENDARTASK + "07-friday", GROUP_CALENDARTASK + "07-saturday", GROUP_CALENDARTASK + "07-sunday",
-            GROUP_CALENDARTASK + "07-workAreaId", GROUP_CALENDARTASK + "07-workArea", GROUP_CALENDARTASK + "08-start",
-            GROUP_CALENDARTASK + "08-duration", GROUP_CALENDARTASK + "08-monday", GROUP_CALENDARTASK + "08-tuesday",
-            GROUP_CALENDARTASK + "08-wednesday", GROUP_CALENDARTASK + "08-thursday", GROUP_CALENDARTASK + "08-friday",
-            GROUP_CALENDARTASK + "08-saturday", GROUP_CALENDARTASK + "08-sunday", GROUP_CALENDARTASK + "08-workAreaId",
-            GROUP_CALENDARTASK + "08-workArea", GROUP_CALENDARTASK + "09-start", GROUP_CALENDARTASK + "09-duration",
-            GROUP_CALENDARTASK + "09-monday", GROUP_CALENDARTASK + "09-tuesday", GROUP_CALENDARTASK + "09-wednesday",
-            GROUP_CALENDARTASK + "09-thursday", GROUP_CALENDARTASK + "09-friday", GROUP_CALENDARTASK + "09-saturday",
-            GROUP_CALENDARTASK + "09-sunday", GROUP_CALENDARTASK + "09-workAreaId", GROUP_CALENDARTASK + "09-workArea",
-            GROUP_CALENDARTASK + "10-start", GROUP_CALENDARTASK + "10-duration", GROUP_CALENDARTASK + "10-monday",
-            GROUP_CALENDARTASK + "10-tuesday", GROUP_CALENDARTASK + "10-wednesday", GROUP_CALENDARTASK + "10-thursday",
-            GROUP_CALENDARTASK + "10-friday", GROUP_CALENDARTASK + "10-saturday", GROUP_CALENDARTASK + "10-sunday",
-            GROUP_CALENDARTASK + "10-workAreaId", GROUP_CALENDARTASK + "10-workArea"));
+    public static final ArrayList<String> CHANNEL_CALENDARTASK = new ArrayList<>(List.of("start", "duration", "monday",
+            "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "workAreaId", "workArea"));
+
+    public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_CALENDARTASK = new ArrayList<>(List.of(
+            new ChannelTypeUID(BINDING_ID, "calendarTaskStartType"),
+            new ChannelTypeUID(BINDING_ID, "calendarTaskDurationType"),
+            new ChannelTypeUID(BINDING_ID, "calendarTaskMondayType"),
+            new ChannelTypeUID(BINDING_ID, "calendarTaskTuesdayType"),
+            new ChannelTypeUID(BINDING_ID, "calendarTaskWednesdayType"),
+            new ChannelTypeUID(BINDING_ID, "calendarTaskThursdayType"),
+            new ChannelTypeUID(BINDING_ID, "calendarTaskFridayType"),
+            new ChannelTypeUID(BINDING_ID, "calendarTaskSaturdayType"),
+            new ChannelTypeUID(BINDING_ID, "calendarTaskSundayType"),
+            new ChannelTypeUID(BINDING_ID, "calendarTaskWorkAreaIdType"),
+            new ChannelTypeUID(BINDING_ID, "workAreaIdType"), new ChannelTypeUID(BINDING_ID, "workareaNameType")));
 
     // Position Channels ids
     public static final String GROUP_POSITION = "position#";
 
-    public static final String LAST_POSITION = GROUP_POSITION + "last";
-    public static final ArrayList<String> CHANNEL_POSITIONS = new ArrayList<>(
-            List.of(GROUP_POSITION + "01", GROUP_POSITION + "02", GROUP_POSITION + "03", GROUP_POSITION + "04",
-                    GROUP_POSITION + "05", GROUP_POSITION + "06", GROUP_POSITION + "07", GROUP_POSITION + "08",
-                    GROUP_POSITION + "09", GROUP_POSITION + "10", GROUP_POSITION + "11", GROUP_POSITION + "12",
-                    GROUP_POSITION + "13", GROUP_POSITION + "14", GROUP_POSITION + "15", GROUP_POSITION + "16",
-                    GROUP_POSITION + "17", GROUP_POSITION + "18", GROUP_POSITION + "19", GROUP_POSITION + "20",
-                    GROUP_POSITION + "21", GROUP_POSITION + "22", GROUP_POSITION + "23", GROUP_POSITION + "24",
-                    GROUP_POSITION + "25", GROUP_POSITION + "26", GROUP_POSITION + "27", GROUP_POSITION + "28",
-                    GROUP_POSITION + "29", GROUP_POSITION + "30", GROUP_POSITION + "31", GROUP_POSITION + "32",
-                    GROUP_POSITION + "33", GROUP_POSITION + "34", GROUP_POSITION + "35", GROUP_POSITION + "36",
-                    GROUP_POSITION + "37", GROUP_POSITION + "38", GROUP_POSITION + "39", GROUP_POSITION + "40",
-                    GROUP_POSITION + "41", GROUP_POSITION + "42", GROUP_POSITION + "43", GROUP_POSITION + "44",
-                    GROUP_POSITION + "45", GROUP_POSITION + "46", GROUP_POSITION + "47", GROUP_POSITION + "48",
-                    GROUP_POSITION + "49", GROUP_POSITION + "50"));
+    public static final String CHANNEL_POSITION_LAST = GROUP_POSITION + "last";
 
     // Stayout Zones Channels ids
     public static final String GROUP_STAYOUTZONE = "stayoutzone#";
 
     public static final String CHANNEL_STAYOUTZONES_DIRTY = GROUP_STAYOUTZONE + "dirty";
-    public static final ArrayList<String> CHANNEL_STAYOUTZONES = new ArrayList<>(
-            List.of(GROUP_STAYOUTZONE + "01-id", GROUP_STAYOUTZONE + "01-name", GROUP_STAYOUTZONE + "01-enabled",
-                    GROUP_STAYOUTZONE + "02-id", GROUP_STAYOUTZONE + "02-name", GROUP_STAYOUTZONE + "02-enabled",
-                    GROUP_STAYOUTZONE + "03-id", GROUP_STAYOUTZONE + "03-name", GROUP_STAYOUTZONE + "03-enabled",
-                    GROUP_STAYOUTZONE + "04-id", GROUP_STAYOUTZONE + "04-name", GROUP_STAYOUTZONE + "04-enabled",
-                    GROUP_STAYOUTZONE + "05-id", GROUP_STAYOUTZONE + "05-name", GROUP_STAYOUTZONE + "05-enabled",
-                    GROUP_STAYOUTZONE + "06-id", GROUP_STAYOUTZONE + "06-name", GROUP_STAYOUTZONE + "06-enabled",
-                    GROUP_STAYOUTZONE + "07-id", GROUP_STAYOUTZONE + "07-name", GROUP_STAYOUTZONE + "07-enabled",
-                    GROUP_STAYOUTZONE + "08-id", GROUP_STAYOUTZONE + "08-name", GROUP_STAYOUTZONE + "08-enabled",
-                    GROUP_STAYOUTZONE + "09-id", GROUP_STAYOUTZONE + "09-name", GROUP_STAYOUTZONE + "09-enabled",
-                    GROUP_STAYOUTZONE + "10-id", GROUP_STAYOUTZONE + "10-name", GROUP_STAYOUTZONE + "10-enabled"));
+    public static final ArrayList<String> CHANNEL_STAYOUTZONE = new ArrayList<>(List.of("id", "name", "enabled"));
+
+    public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_STAYOUTZONE = new ArrayList<>(
+            List.of(new ChannelTypeUID(BINDING_ID, "zoneIdType"), new ChannelTypeUID(BINDING_ID, "zoneNameType"),
+                    new ChannelTypeUID(BINDING_ID, "zoneEnabledType")));
 
     // Work Areas Channels ids
     public static final String GROUP_WORKAREA = "workarea#";
 
-    public static final ArrayList<String> CHANNEL_WORKAREAS = new ArrayList<>(List.of(GROUP_WORKAREA + "01-id",
-            GROUP_WORKAREA + "01-name", GROUP_WORKAREA + "01-cutting-height", GROUP_WORKAREA + "01-enabled",
-            GROUP_WORKAREA + "01-progress", GROUP_WORKAREA + "01-last-time-completed",
+    public static final ArrayList<String> CHANNEL_WORKAREA = new ArrayList<>(
+            List.of("id", "name", "cutting-height", "enabled", "progress", "last-time-completed"));
 
-            GROUP_WORKAREA + "02-id", GROUP_WORKAREA + "02-name", GROUP_WORKAREA + "02-cutting-height",
-            GROUP_WORKAREA + "02-enabled", GROUP_WORKAREA + "02-progress", GROUP_WORKAREA + "02-last-time-completed",
-
-            GROUP_WORKAREA + "03-id", GROUP_WORKAREA + "03-name", GROUP_WORKAREA + "03-cutting-height",
-            GROUP_WORKAREA + "03-enabled", GROUP_WORKAREA + "03-progress", GROUP_WORKAREA + "03-last-time-completed",
-
-            GROUP_WORKAREA + "04-id", GROUP_WORKAREA + "04-name", GROUP_WORKAREA + "04-cutting-height",
-            GROUP_WORKAREA + "04-enabled", GROUP_WORKAREA + "04-progress", GROUP_WORKAREA + "04-last-time-completed",
-
-            GROUP_WORKAREA + "05-id", GROUP_WORKAREA + "05-name", GROUP_WORKAREA + "05-cutting-height",
-            GROUP_WORKAREA + "05-enabled", GROUP_WORKAREA + "05-progress", GROUP_WORKAREA + "05-last-time-completed",
-
-            GROUP_WORKAREA + "06-id", GROUP_WORKAREA + "06-name", GROUP_WORKAREA + "06-cutting-height",
-            GROUP_WORKAREA + "06-enabled", GROUP_WORKAREA + "06-progress", GROUP_WORKAREA + "06-last-time-completed",
-
-            GROUP_WORKAREA + "07-id", GROUP_WORKAREA + "07-name", GROUP_WORKAREA + "07-cutting-height",
-            GROUP_WORKAREA + "07-enabled", GROUP_WORKAREA + "07-progress", GROUP_WORKAREA + "07-last-time-completed",
-
-            GROUP_WORKAREA + "08-id", GROUP_WORKAREA + "08-name", GROUP_WORKAREA + "08-cutting-height",
-            GROUP_WORKAREA + "08-enabled", GROUP_WORKAREA + "08-progress", GROUP_WORKAREA + "08-last-time-completed",
-
-            GROUP_WORKAREA + "09-id", GROUP_WORKAREA + "09-name", GROUP_WORKAREA + "09-cutting-height",
-            GROUP_WORKAREA + "09-enabled", GROUP_WORKAREA + "09-progress", GROUP_WORKAREA + "09-last-time-completed",
-
-            GROUP_WORKAREA + "10-id", GROUP_WORKAREA + "10-name", GROUP_WORKAREA + "10-cutting-height",
-            GROUP_WORKAREA + "10-enabled", GROUP_WORKAREA + "10-progress", GROUP_WORKAREA + "10-last-time-completed"));
+    public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_WORKAREA = new ArrayList<>(List.of(
+            new ChannelTypeUID(BINDING_ID, "workareaIdType"), new ChannelTypeUID(BINDING_ID, "workareaNameType"),
+            new ChannelTypeUID(BINDING_ID, "workareaCuttingHeightType"),
+            new ChannelTypeUID(BINDING_ID, "workareaEnabledType"),
+            new ChannelTypeUID(BINDING_ID, "workareaProgressType"),
+            new ChannelTypeUID(BINDING_ID, "workareaLastTimeCompletedType")));
 
     // Command Channel ids
     public static final String GROUP_COMMAND = "command#";
@@ -212,6 +149,19 @@ public class AutomowerBindingConstants {
     public static final String AUTOMOWER_HAS_POSITION = "mowerHasPosition";
     public static final String AUTOMOWER_HAS_STAY_OUT_ZONES = "mowerHasStayOutZones";
     public static final String AUTOMOWER_HAS_WORK_AREAS = "mowerHasWorkAreas";
+
+    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA_ID = new ChannelTypeUID(BINDING_ID,
+            "workAreaIdType");
+    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA = new ChannelTypeUID(BINDING_ID, "workAreaType");
+    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_ERROR_CONFIRMABLE = new ChannelTypeUID(BINDING_ID,
+            "errorConfirmableType");
+    public static final ChannelTypeUID CHANNEL_TYPE_SETTING_HEADLIGHT_MODE = new ChannelTypeUID(BINDING_ID,
+            "settingHeadlightModeType");
+
+    public static final ChannelTypeUID CHANNEL_TYPE_POSITION_LAST = new ChannelTypeUID(BINDING_ID, "lastPositionType");
+    public static final ChannelTypeUID CHANNEL_TYPE_POSITION = new ChannelTypeUID(BINDING_ID, "positionType");
+    public static final ChannelTypeUID CHANNEL_TYPE_STAYOUTZONES_DIRTY = new ChannelTypeUID(BINDING_ID,
+            "zoneDirtyType");
 
     public static final Map<Integer, String> ERROR = new HashMap<>() {
         {

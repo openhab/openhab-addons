@@ -47,26 +47,26 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 | status#activity                       | String               | R   | The current activity (UNKNOWN, NOT_APPLICABLE, MOWING, GOING_HOME, CHARGING, LEAVING, PARKED_IN_CS, STOPPED_IN_GARDEN)                                                                                                                                                                    | false |
 | status#inactive-reason                | String               | R   | The current reason for being inactive (NONE, PLANNING, SEARCHING_FOR_SATELLITES)                               | false |
 | status#state                          | String               | R   | The current state (UNKNOWN, NOT_APPLICABLE, PAUSED, IN_OPERATION, WAIT_UPDATING, WAIT_POWER_UP, RESTRICTED_NONE, RESTRICTED_WEEK_SCHEDULE, RESTRICTED_PARK_OVERRIDE, RESTRICTED_SENSOR, RESTRICTED_DAILY_LIMIT, RESTRICTED_FOTA, RESTRICTED_FROST, RESTRICTED_ALL_WORK_AREAS_COMPLETED, RESTRICTED_EXTERNAL, OFF, STOPPED, ERROR, FATAL_ERROR, ERROR_AT_POWER_UP)                                                                                                                                       | false |
-| status#work-area-id                   | Number               | R   | Id of the active work area                                                                                     | true  |
-| status#work-area                      | String               | R   | Name of the active work area                                                                                   | false |
+| status#work-area-id<sup id="a1">[1](#f1)</sup> | Number      | R   | Id of the active work area                                                                                     | true  |
+| status#work-area<sup id="a1">[1](#f1)</sup>    | String      | R   | Name of the active work area                                                                                   | false |
 | status#last-update                    | DateTime             | R   | The time when the Automower® updated its states                                                                | false |
 | status#battery                        | Number:Dimensionless | R   | The battery state of charge in percent                                                                         | false |
 | status#error-code                     | Number               | R/W | The current error code. `sendCommand(0)` to confirm current non fatal error                                    | true  |
 | status#error-message                  | String               | R   | The current error message                                                                                      | false |
 | status#error-timestamp                | DateTime             | R   | The timestamp when the current error occurred                                                                  | false |
-| status#error-confirmable              | Switch               | R   | If the mower has an Error Code this attribute states if the error is confirmable                               | true  |
-| status#planner-next-start             | DateTime             | R   | The time for the next auto start. If the mower is charging then the value is the estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL                                                                                                               | false |
-| status#planner-override-action        | String               | R   | The action that overrides current planner operation                                                            | true  |
-| status#planner-restricted-reason      | String               | R   | A reason that restrics current planner operation (NONE, WEEK_SCHEDULE, PARK_OVERRIDE, SENSOR, DAILY_LIMIT, FOTA, FROST, ALL_WORK_AREAS_COMPLETED, EXTERNAL)                                                                                                                                                   | false |
-| status#planner-external-reason        | String               | R   | An external reason set by i.e. IFTTT, Google Assistant or Amazon Alexa that restrics current planner operation | true  |
+| status#error-confirmable<sup id="a1">[1](#f1)</sup> | Switch | R   | If the mower has an Error Code this attribute states if the error is confirmable                               | true  |
+| status#next-start                     | DateTime             | R   | The time for the next auto start. If the mower is charging then the value is the estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL                                                                                                               | false |
+| status#override-action                | String               | R   | The action that overrides current planner operation                                                            | true  |
+| status#restricted-reason              | String               | R   | A reason that restrics current planner operation (NONE, WEEK_SCHEDULE, PARK_OVERRIDE, SENSOR, DAILY_LIMIT, FOTA, FROST, ALL_WORK_AREAS_COMPLETED, EXTERNAL)                                                                                                                                                   | false |
+| status#external-reason                | String               | R   | An external reason set by i.e. IFTTT, Google Assistant or Amazon Alexa that restrics current planner operation | true  |
 
 
 ### Settings Channels
 
-| channel                | type   | access mode | description                                                             | advanced |
-|------------------------|--------|-------------|-------------------------------------------------------------------------|----------|
-| setting#cutting-height | Number | R/W         | Prescaled cutting height, Range: 1-9                                    | false    |
-| setting#headlight-mode | String | R/W         | Headlight Mode (ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT) | false    |
+| channel                                           | type   | access mode | description                                                             | advanced |
+|---------------------------------------------------|--------|-------------|-------------------------------------------------------------------------|----------|
+| setting#cutting-height                            | Number | R/W         | Prescaled cutting height, Range: 1-9                                    | false    |
+| setting#headlight-mode<sup id="a1">[1](#f1)</sup> | String | R/W         | Headlight Mode (ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT) | false    |
 
 ### Statistics Channels
 
@@ -87,23 +87,23 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 
 ### Calendar Tasks Channels
 
-These channels hold the different Calendar Task configurations. Right now a maximum of 10 Calendar Tasks are supported by the binding.
+These channels hold the different Calendar Task configurations.
 
-| channel                       | type        | access mode | description                                   | advanced |
-|-------------------------------|-------------|-------------|-----------------------------------------------|----------|
-| calendartask#\<x\>-start      | Number:Time | R/W         | Start time relative to midnight               | true     |
-| calendartask#\<x\>-duration   | Number:Time | R/W         | Duration time                                 | true     |
-| calendartask#\<x\>-monday     | Switch      | R/W         | Enabled on Mondays                            | true     |
-| calendartask#\<x\>-tuesday    | Switch      | R/W         | Enabled on Tuesdays                           | true     |
-| calendartask#\<x\>-wednesday  | Switch      | R/W         | Enabled on Wednesdays                         | true     |
-| calendartask#\<x\>-thursday   | Switch      | R/W         | Enabled on Thursdays                          | true     |
-| calendartask#\<x\>-friday     | Switch      | R/W         | Enabled on Fridays                            | true     |
-| calendartask#\<x\>-saturday   | Switch      | R/W         | Enabled on Saturdays                          | true     |
-| calendartask#\<x\>-sunday     | Switch      | R/W         | Enabled on Sundays                            | true     |
-| calendartask#\<x\>-workAreaId | Number      | R           | Work Area Id mapped to this calendar          | true     |
-| calendartask#\<x\>-workArea   | String      | R           | Name of the Work Area mapped to this calendar | true     |
+| channel                                                  | type        | access mode | description                                   | advanced |
+|----------------------------------------------------------|-------------|-------------|-----------------------------------------------|----------|
+| calendartask#\<x\>-start                                 | Number:Time | R/W         | Start time relative to midnight               | true     |
+| calendartask#\<x\>-duration                              | Number:Time | R/W         | Duration time                                 | true     |
+| calendartask#\<x\>-monday                                | Switch      | R/W         | Enabled on Mondays                            | true     |
+| calendartask#\<x\>-tuesday                               | Switch      | R/W         | Enabled on Tuesdays                           | true     |
+| calendartask#\<x\>-wednesday                             | Switch      | R/W         | Enabled on Wednesdays                         | true     |
+| calendartask#\<x\>-thursday                              | Switch      | R/W         | Enabled on Thursdays                          | true     |
+| calendartask#\<x\>-friday                                | Switch      | R/W         | Enabled on Fridays                            | true     |
+| calendartask#\<x\>-saturday                              | Switch      | R/W         | Enabled on Saturdays                          | true     |
+| calendartask#\<x\>-sunday                                | Switch      | R/W         | Enabled on Sundays                            | true     |
+| calendartask#\<x\>-workAreaId<sup id="a1">[1](#f1)</sup> | Number      | R           | Work Area Id mapped to this calendar          | true     |
+| calendartask#\<x\>-workArea<sup id="a1">[1](#f1)</sup>   | String      | R           | Name of the Work Area mapped to this calendar | true     |
 
-\<x\> ... 01-10
+\<x\> ... 01-#calendartasks
 
 ### Position Channels
 
@@ -111,47 +111,47 @@ These channels hold the last 50 GPS positions recorded by the Automower®, thus 
 Position 01 is the latest recorded position, the other positions are pushed back, thus removing the previous position 50 from the list because it is replaced by the previous position 49.
 Channel `last-position` is always identical with channel `position01` and thus provides more convenient access if only the latest GPS information is required by the user.
 
-| channel          | type     | access mode | description                                             | advanced |
-|------------------|----------|-------------|---------------------------------------------------------|----------|
-| position#last    | Location | R           | Last GPS Position (identical with positions#position01) | false    |
-| position#\<x\>   | Location | R           | GPS Position \<x\>                                      | true     |
+| channel                                   | type     | access mode | description                                             | advanced |
+|-------------------------------------------|----------|-------------|---------------------------------------------------------|----------|
+| position#last<sup id="a1">[1](#f1)</sup>  | Location | R           | Last GPS Position (identical with positions#position01) | false    |
+| position#\<x\><sup id="a1">[1](#f1)</sup> | Location | R           | GPS Position \<x\>                                      | true     |
 
 \<x\> ... 01-50
 
 ### Stayout Zones Channels
 
-These channels hold the different Stayout Zone configurations. Right now a maximum of 10 Stayout Zones are supported by the binding.
+These channels hold the different Stayout Zone configurations.
 
-| channel                   | type   | access mode | description                                                                                                                        | advanced |
-|---------------------------|--------|-------------|------------------------------------------------------------------------------------------------------------------------------------|----------|
-| stayoutzone#dirty         | Switch | R           | If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable or disable a stay-out zone | true     |
-| stayoutzone#\<x\>-id      | String | R           | Id of the Stayout zone                                                                                                             | true     |
-| stayoutzone#\<x\>-name    | String | R           | The name of the Stayout zone                                                                                                       | true     |
-| stayoutzone#\<x\>-enabled | Switch | R/W         | If the Stayout zone is enabled, the Automower® will not access the zone                                                            | true     |
+| channel                                              | type   | access mode | description                                                                                                                        | advanced |
+|------------------------------------------------------|--------|-------------|------------------------------------------------------------------------------------------------------------------------------------|----------|
+| stayoutzone#dirty<sup id="a1">[1](#f1)</sup>         | Switch | R           | If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable or disable a stay-out zone | true     |
+| stayoutzone#\<x\>-id<sup id="a1">[1](#f1)</sup>      | String | R           | Id of the Stayout zone                                                                                                             | true     |
+| stayoutzone#\<x\>-name<sup id="a1">[1](#f1)</sup>    | String | R           | The name of the Stayout zone                                                                                                       | true     |
+| stayoutzone#\<x\>-enabled<sup id="a1">[1](#f1)</sup> | Switch | R/W         | If the Stayout zone is enabled, the Automower® will not access the zone                                                            | true     |
 
-\<x\> ... 01-10
+\<x\> ... 01-#stayoutzones
 
 ### Work Area Channels
 
-These channels hold the different Work Area configurations. Right now a maximum of 10 Work Areas are supported by the binding.
+These channels hold the different Work Area configurations.
 
-| channel                            | type                  | access mode | description                                                                                        | advanced |
-|------------------------------------|-----------------------|-------------|----------------------------------------------------------------------------------------------------|----------|
-| workarea#\<x\>-id                  | Number                | R           | Id of the Work Area                                                                                | false    |
-| workarea#\<x\>-name                | String                | R           | Name of the work area                                                                              | false    |
-| workarea#\<x\>-cutting-height      | Number:Dimensionless  | R/W         | Cutting height in percent. 0-100                                                                   | false    |
-| workarea#\<x\>-enabled             | Switch                | R/W         | If the work area is enabled or disabled                                                            | false    |
-| workarea#\<x\>-progress            | Number                | R           | The progress on a work area. EPOS mowers and systematic mowing work areas only                     | true     |
-| workarea#\<x\>-last-time-completed | DateTime              | R           | Timestamp when the work area was last completed. EPOS mowers and systematic mowing work areas only | true     |
+| channel                                                                                              | type                  | access mode | description                                         | advanced |
+|------------------------------------------------------------------------------------------------------|-----------------------|-------------|-----------------------------------------------------|----------|
+| workarea#\<x\>-id<sup id="a1">[1](#f1)</sup>                                                         | Number                | R           | Id of the Work Area                                 | false    |
+| workarea#\<x\>-name<sup id="a1">[1](#f1)</sup>                                                       | String                | R           | Name of the work area                               | false    |
+| workarea#\<x\>-cutting-height<sup id="a1">[1](#f1)</sup>                                             | Number:Dimensionless  | R/W         | Cutting height in percent. 0-100                    | false    |
+| workarea#\<x\>-enabled<sup id="a1">[1](#f1)</sup>                                                    | Switch                | R/W         | If the work area is enabled or disabled             | false    |
+| workarea#\<x\>-progress<sup id="a1">[1](#f1)</sup><sup>,</sup><sup id="a2">[2](#f2)</sup>            | Number                | R           | The progress on a work area                         | true     |
+| workarea#\<x\>-last-time-completed<sup id="a1">[1](#f1)</sup><sup>,</sup><sup id="a2">[2](#f2)</sup> | DateTime              | R           | Timestamp when the work area was last completed     | true     |
 
-\<x\> ... 01-10
+\<x\> ... 01-#workareas
 
 ### Command Channels
 
 | channel                           | type     | access mode | description                              | advanced |
 |-----------------------------------|----------|-------------|------------------------------------------|----------|
-| command#start                     | Number   | W           | Starts the Automower® for a duration     | false    |
-| command#resume_schedule           | Switch   | W           | Resumes the Automower® schedule          | false    |
+| command#start                     | Number   | W           | Start the Automower® for a duration      | false    |
+| command#resume_schedule           | Switch   | W           | Resume the Automower® schedule           | false    |
 | command#pause                     | Switch   | W           | Pause the Automower®                     | false    |
 | command#park                      | Number   | W           | Park the Automower® for a duration       | false    |
 | command#park_until_next_schedule  | Switch   | W           | Park the Automower® until next schedule  | false    |
@@ -161,20 +161,20 @@ These channels hold the different Work Area configurations. Right now a maximum 
 
 The following actions are available for `automower` things:
 
-| action name                | arguments        | description                                                                                     |
-|----------------------------|------------------|-------------------------------------------------------------------------------------------------|
-| start                      | `duration (int)` | Starts the Automower® for the given duration (minutes), overriding the schedule                 |
-| pause                      | -                | Pauses the Automower® wherever it is currently located                                          |
-| parkUntilNextSchedule      | -                | Parks the Automower®, fully charges it and starts afterwards according to the schedule          |
-| parkUntilFurtherNotice     | -                | Parks the Automower® until it is started again by the start action or the schedule gets resumed |
-| park                       | `duration (int)` | Parks the Automower® for the given duration (minutes), overriding the schedule                  |
-| resumeSchedule             | -                | Resumes the schedule for the Automower®                                                         |
-| confirmError               | -                | Confirm current non fatal error                                                                 |
-| resetCuttingBladeUsageTime | -                | Reset the cutting blade usage time                                                              |
-| setSettings                | `byte cuttingHeight`<br/>`String headlightMode`                      | Update Automower® settings                  |
-| setWorkArea                | `long workAreaId`<br/>`boolean enable`<br/>`byte cuttingHeight`      | Update work area settings                   |
-| setStayOutZone             | `String zoneId`<br/>`boolean enable`                                 | Enable or disable stay-out zone             |
-| setCalendarTask            | `Long workAreaId` (optional, set to `null` if the mower doesn't support work areas)<br/>`short[] start`<br/>`short[] duration`<br/>`boolean[] monday`<br/>`boolean[] tuesday`<br/>`boolean[] wednesday`<br/>`boolean[] thursday`<br/>`boolean[] friday`<br/>`boolean[] saturday`<br/>`boolean[] sunday` | Update calendar task settings |
+| action name                | arguments        | description                                                                                    |
+|----------------------------|------------------|------------------------------------------------------------------------------------------------|
+| start                      | `duration (int)` | Start the Automower® for the given duration (minutes), overriding the schedule                 |
+| pause                      | -                | Pause the Automower® wherever it is currently located                                          |
+| parkUntilNextSchedule      | -                | Park the Automower®, fully charges it and starts afterwards according to the schedule          |
+| parkUntilFurtherNotice     | -                | Park the Automower® until it is started again by the start action or the schedule gets resumed |
+| park                       | `duration (int)` | Park the Automower® for the given duration (minutes), overriding the schedule                  |
+| resumeSchedule             | -                | Resume the schedule for the Automower®                                                         |
+| confirmError               | -                | Confirm current non fatal error                                                                |
+| resetCuttingBladeUsageTime | -                | Reset the cutting blade usage time                                                             |
+| setSettings                | `byte cuttingHeight`<br/>`String headlightMode`                      | Update Automower® settings                 |
+| setWorkArea                | `long workAreaId`<br/>`boolean enable`<br/>`byte cuttingHeight`      | Update work area settings                  |
+| setStayOutZone             | `String zoneId`<br/>`boolean enable`                                 | Enable or disable stay-out zone            |
+| setCalendarTask            | `Long workAreaId` (optional, set to `null` if the mower doesn't support work areas)<br/>`short[] start`<br/>`short[] duration`<br/>`boolean[] monday`<br/>`boolean[] tuesday`<br/>`boolean[] wednesday`<br/>`boolean[] thursday`<br/>`boolean[] friday`<br/>`boolean[] saturday`<br/>`boolean[] sunday` | Update calendar task settings. Parameter are an array for all calendar tasks (per work area) |
 
 ## Full Example
 
@@ -247,3 +247,8 @@ then
     mowerActions.parkUntilFurtherNotice()
 end
 ```
+
+## Footnotes
+
+- <b id="f1">1)</b> ... Channel availability depends on Automower® capabilities [↩](#a1)
+- <b id="f2">2)</b> ... Channel available for EPOS Automower® and systematic mowing work areas only [↩](#a2)

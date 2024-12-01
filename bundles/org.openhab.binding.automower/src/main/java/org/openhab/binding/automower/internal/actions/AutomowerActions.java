@@ -163,21 +163,25 @@ public class AutomowerActions implements ThingActions {
 
     @RuleAction(label = "@text/action-set-settings-label", description = "@text/action-set-settings-desc")
     public void setSettings(
-            @ActionInput(name = "cutting-height", label = "@text/action-input-cutting-height-label", description = "@text/action-input-cutting-height-desc") byte cuttingHeight,
-            @ActionInput(name = "headlight-mode", label = "@text/action-input-headlight-mode-label", description = "@text/action-input-headlight-mode-desc") String headlightMode) {
+            @ActionInput(name = "cutting-height", label = "@text/action-input-cutting-height-label", description = "@text/action-input-cutting-height-desc") @Nullable Byte cuttingHeight,
+            @ActionInput(name = "headlight-mode", label = "@text/action-input-headlight-mode-label", description = "@text/action-input-headlight-mode-desc") @Nullable String headlightMode) {
         AutomowerHandler automowerHandler = handler;
         if (automowerHandler == null) {
             logger.warn("Automower Action service ThingHandler is null!");
         } else {
             try {
-                automowerHandler.sendAutomowerSettings(cuttingHeight, HeadlightMode.valueOf(headlightMode));
+                if (headlightMode != null) {
+                    automowerHandler.sendAutomowerSettings(cuttingHeight, HeadlightMode.valueOf(headlightMode));
+                } else {
+                    automowerHandler.sendAutomowerSettings(cuttingHeight, null);
+                }
             } catch (IllegalArgumentException e) {
                 logger.warn("Invalid HeadlightMode: {}, Error: {}", headlightMode, e.getMessage());
             }
         }
     }
 
-    public static void setSettings(ThingActions actions, byte cuttingHeight, String headlightMode) {
+    public static void setSettings(ThingActions actions, @Nullable Byte cuttingHeight, @Nullable String headlightMode) {
         ((AutomowerActions) actions).setSettings(cuttingHeight, headlightMode);
     }
 
@@ -216,7 +220,7 @@ public class AutomowerActions implements ThingActions {
 
     @RuleAction(label = "@text/action-set-calendartask-label", description = "@text/action-set-calendartask-desc")
     public void setCalendarTask(
-            @ActionInput(name = "workarea-id", label = "@text/action-input-workarea-id-label", description = "@text/action-input-workarea-id-desc") Long workAreaId,
+            @ActionInput(name = "workarea-id", label = "@text/action-input-workarea-id-label", description = "@text/action-input-workarea-id-desc") @Nullable Long workAreaId,
             @ActionInput(name = "start", label = "@text/action-input-start-label", description = "@text/action-input-start-desc") short[] start,
             @ActionInput(name = "duration", label = "@text/action-input-duration-label", description = "@text/action-input-duration-desc") short[] duration,
             @ActionInput(name = "monday", label = "@text/action-input-monday-label", description = "@text/action-input-monday-desc") boolean[] monday,
@@ -235,7 +239,7 @@ public class AutomowerActions implements ThingActions {
         }
     }
 
-    public static void setCalendarTask(ThingActions actions, Long workAreaId, short[] start, short[] duration,
+    public static void setCalendarTask(ThingActions actions, @Nullable Long workAreaId, short[] start, short[] duration,
             boolean[] monday, boolean[] tuesday, boolean[] wednesday, boolean[] thursday, boolean[] friday,
             boolean[] saturday, boolean[] sunday) {
         ((AutomowerActions) actions).setCalendarTask(workAreaId, start, duration, monday, tuesday, wednesday, thursday,

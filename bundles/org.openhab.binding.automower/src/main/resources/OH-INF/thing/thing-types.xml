@@ -92,18 +92,22 @@
 			<channel id="activity" typeId="activityType"/>
 			<channel id="inactive-reason" typeId="inactiveReasonType"/>
 			<channel id="state" typeId="stateType"/>
-			<channel id="work-area-id" typeId="workAreaIdType"/>
-			<channel id="work-area" typeId="workAreaType"/>
+			<!-- channels created on demand
+				<channel id="work-area-id" typeId="workAreaIdType"/>
+				<channel id="work-area" typeId="workAreaType"/>
+			-->
 			<channel id="last-update" typeId="lastUpdateType"/>
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="error-code" typeId="errorCodeType"/>
 			<channel id="error-message" typeId="errorMessageType"/>
 			<channel id="error-timestamp" typeId="errorTimestampType"/>
-			<channel id="error-confirmable" typeId="errorConfirmableType"/>
-			<channel id="next-start" typeId="plannerNextStartTimestampType"/>
-			<channel id="override-action" typeId="plannerOverrideActionType"/>
-			<channel id="restricted-reason" typeId="plannerRestrictedReasonType"/>
-			<channel id="external-reason" typeId="plannerExternalReasonType"/>
+			<!-- channel created on demand
+				<channel id="error-confirmable" typeId="errorConfirmableType"/>
+			-->
+			<channel id="next-start" typeId="nextStartType"/>
+			<channel id="override-action" typeId="overrideActionType"/>
+			<channel id="restricted-reason" typeId="restrictedReasonType"/>
+			<channel id="external-reason" typeId="externalReasonType"/>
 		</channels>
 	</channel-group-type>
 
@@ -112,7 +116,9 @@
 		<label>Settings</label>
 		<channels>
 			<channel id="cutting-height" typeId="settingCuttingHeightType"/>
-			<channel id="headlight-mode" typeId="settingHeadlightModeType"/>
+			<!-- channel created on demand
+				<channel id="headlight-mode" typeId="settingHeadlightModeType"/>
+			-->
 		</channels>
 	</channel-group-type>
 
@@ -138,291 +144,64 @@
 	<!-- Calendar Tasks -->
 	<channel-group-type id="calendarTasksType">
 		<label>Calendar Tasks</label>
-		<channels>
-			<channel id="01-start" typeId="calendarTaskStartType"/>
-			<channel id="01-duration" typeId="calendarTaskDurationType"/>
-			<channel id="01-monday" typeId="calendarTaskMondayType"/>
-			<channel id="01-tuesday" typeId="calendarTaskTuesdayType"/>
-			<channel id="01-wednesday" typeId="calendarTaskWednesdayType"/>
-			<channel id="01-thursday" typeId="calendarTaskThursdayType"/>
-			<channel id="01-friday" typeId="calendarTaskFridayType"/>
-			<channel id="01-saturday" typeId="calendarTaskSaturdayType"/>
-			<channel id="01-sunday" typeId="calendarTaskSundayType"/>
-			<channel id="01-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
-			<channel id="01-workArea" typeId="workareaNameType"/>
-
-			<channel id="02-start" typeId="calendarTaskStartType"/>
-			<channel id="02-duration" typeId="calendarTaskDurationType"/>
-			<channel id="02-monday" typeId="calendarTaskMondayType"/>
-			<channel id="02-tuesday" typeId="calendarTaskTuesdayType"/>
-			<channel id="02-wednesday" typeId="calendarTaskWednesdayType"/>
-			<channel id="02-thursday" typeId="calendarTaskThursdayType"/>
-			<channel id="02-friday" typeId="calendarTaskFridayType"/>
-			<channel id="02-saturday" typeId="calendarTaskSaturdayType"/>
-			<channel id="02-sunday" typeId="calendarTaskSundayType"/>
-			<channel id="02-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
-			<channel id="02-workArea" typeId="workareaNameType"/>
-
-			<channel id="03-start" typeId="calendarTaskStartType"/>
-			<channel id="03-duration" typeId="calendarTaskDurationType"/>
-			<channel id="03-monday" typeId="calendarTaskMondayType"/>
-			<channel id="03-tuesday" typeId="calendarTaskTuesdayType"/>
-			<channel id="03-wednesday" typeId="calendarTaskWednesdayType"/>
-			<channel id="03-thursday" typeId="calendarTaskThursdayType"/>
-			<channel id="03-friday" typeId="calendarTaskFridayType"/>
-			<channel id="03-saturday" typeId="calendarTaskSaturdayType"/>
-			<channel id="03-sunday" typeId="calendarTaskSundayType"/>
-			<channel id="03-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
-			<channel id="03-workArea" typeId="workareaNameType"/>
-
-			<channel id="04-start" typeId="calendarTaskStartType"/>
-			<channel id="04-duration" typeId="calendarTaskDurationType"/>
-			<channel id="04-monday" typeId="calendarTaskMondayType"/>
-			<channel id="04-tuesday" typeId="calendarTaskTuesdayType"/>
-			<channel id="04-wednesday" typeId="calendarTaskWednesdayType"/>
-			<channel id="04-thursday" typeId="calendarTaskThursdayType"/>
-			<channel id="04-friday" typeId="calendarTaskFridayType"/>
-			<channel id="04-saturday" typeId="calendarTaskSaturdayType"/>
-			<channel id="04-sunday" typeId="calendarTaskSundayType"/>
-			<channel id="04-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
-			<channel id="04-workArea" typeId="workareaNameType"/>
-
-			<channel id="05-start" typeId="calendarTaskStartType"/>
-			<channel id="05-duration" typeId="calendarTaskDurationType"/>
-			<channel id="05-monday" typeId="calendarTaskMondayType"/>
-			<channel id="05-tuesday" typeId="calendarTaskTuesdayType"/>
-			<channel id="05-wednesday" typeId="calendarTaskWednesdayType"/>
-			<channel id="05-thursday" typeId="calendarTaskThursdayType"/>
-			<channel id="05-friday" typeId="calendarTaskFridayType"/>
-			<channel id="05-saturday" typeId="calendarTaskSaturdayType"/>
-			<channel id="05-sunday" typeId="calendarTaskSundayType"/>
-			<channel id="05-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
-			<channel id="05-workArea" typeId="workareaNameType"/>
-
-			<channel id="06-start" typeId="calendarTaskStartType"/>
-			<channel id="06-duration" typeId="calendarTaskDurationType"/>
-			<channel id="06-monday" typeId="calendarTaskMondayType"/>
-			<channel id="06-tuesday" typeId="calendarTaskTuesdayType"/>
-			<channel id="06-wednesday" typeId="calendarTaskWednesdayType"/>
-			<channel id="06-thursday" typeId="calendarTaskThursdayType"/>
-			<channel id="06-friday" typeId="calendarTaskFridayType"/>
-			<channel id="06-saturday" typeId="calendarTaskSaturdayType"/>
-			<channel id="06-sunday" typeId="calendarTaskSundayType"/>
-			<channel id="06-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
-			<channel id="06-workArea" typeId="workareaNameType"/>
-
-			<channel id="07-start" typeId="calendarTaskStartType"/>
-			<channel id="07-duration" typeId="calendarTaskDurationType"/>
-			<channel id="07-monday" typeId="calendarTaskMondayType"/>
-			<channel id="07-tuesday" typeId="calendarTaskTuesdayType"/>
-			<channel id="07-wednesday" typeId="calendarTaskWednesdayType"/>
-			<channel id="07-thursday" typeId="calendarTaskThursdayType"/>
-			<channel id="07-friday" typeId="calendarTaskFridayType"/>
-			<channel id="07-saturday" typeId="calendarTaskSaturdayType"/>
-			<channel id="07-sunday" typeId="calendarTaskSundayType"/>
-			<channel id="07-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
-			<channel id="07-workArea" typeId="workareaNameType"/>
-
-			<channel id="08-start" typeId="calendarTaskStartType"/>
-			<channel id="08-duration" typeId="calendarTaskDurationType"/>
-			<channel id="08-monday" typeId="calendarTaskMondayType"/>
-			<channel id="08-tuesday" typeId="calendarTaskTuesdayType"/>
-			<channel id="08-wednesday" typeId="calendarTaskWednesdayType"/>
-			<channel id="08-thursday" typeId="calendarTaskThursdayType"/>
-			<channel id="08-friday" typeId="calendarTaskFridayType"/>
-			<channel id="08-saturday" typeId="calendarTaskSaturdayType"/>
-			<channel id="08-sunday" typeId="calendarTaskSundayType"/>
-			<channel id="08-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
-			<channel id="08-workArea" typeId="workareaNameType"/>
-
-			<channel id="09-start" typeId="calendarTaskStartType"/>
-			<channel id="09-duration" typeId="calendarTaskDurationType"/>
-			<channel id="09-monday" typeId="calendarTaskMondayType"/>
-			<channel id="09-tuesday" typeId="calendarTaskTuesdayType"/>
-			<channel id="09-wednesday" typeId="calendarTaskWednesdayType"/>
-			<channel id="09-thursday" typeId="calendarTaskThursdayType"/>
-			<channel id="09-friday" typeId="calendarTaskFridayType"/>
-			<channel id="09-saturday" typeId="calendarTaskSaturdayType"/>
-			<channel id="09-sunday" typeId="calendarTaskSundayType"/>
-			<channel id="09-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
-			<channel id="09-workArea" typeId="workareaNameType"/>
-
-			<channel id="10-start" typeId="calendarTaskStartType"/>
-			<channel id="10-duration" typeId="calendarTaskDurationType"/>
-			<channel id="10-monday" typeId="calendarTaskMondayType"/>
-			<channel id="10-tuesday" typeId="calendarTaskTuesdayType"/>
-			<channel id="10-wednesday" typeId="calendarTaskWednesdayType"/>
-			<channel id="10-thursday" typeId="calendarTaskThursdayType"/>
-			<channel id="10-friday" typeId="calendarTaskFridayType"/>
-			<channel id="10-saturday" typeId="calendarTaskSaturdayType"/>
-			<channel id="10-sunday" typeId="calendarTaskSundayType"/>
-			<channel id="10-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
-			<channel id="10-workArea" typeId="workareaNameType"/>
-		</channels>
+		<!-- channels created on demand
+			<channels>
+			<channel id="<xx>-start" typeId="calendarTaskStartType"/>
+			<channel id="<xx>-duration" typeId="calendarTaskDurationType"/>
+			<channel id="<xx>-monday" typeId="calendarTaskMondayType"/>
+			<channel id="<xx>-tuesday" typeId="calendarTaskTuesdayType"/>
+			<channel id="<xx>-wednesday" typeId="calendarTaskWednesdayType"/>
+			<channel id="<xx>-thursday" typeId="calendarTaskThursdayType"/>
+			<channel id="<xx>-friday" typeId="calendarTaskFridayType"/>
+			<channel id="<xx>-saturday" typeId="calendarTaskSaturdayType"/>
+			<channel id="<xx>-sunday" typeId="calendarTaskSundayType"/>
+			<channel id="<xx>-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
+			<channel id="<xx>-workArea" typeId="workareaNameType"/>
+			...
+			</channels>
+		-->
 	</channel-group-type>
 
 	<!-- Positions -->
 	<channel-group-type id="positionsType">
 		<label>Positions</label>
-		<channels>
+		<!-- channels created on demand
+			<channels>
 			<channel id="last" typeId="lastPositionType"/>
-
-			<channel id="01" typeId="positionType"/>
-			<channel id="02" typeId="positionType"/>
-			<channel id="03" typeId="positionType"/>
-			<channel id="04" typeId="positionType"/>
-			<channel id="05" typeId="positionType"/>
-			<channel id="06" typeId="positionType"/>
-			<channel id="07" typeId="positionType"/>
-			<channel id="08" typeId="positionType"/>
-			<channel id="09" typeId="positionType"/>
-			<channel id="10" typeId="positionType"/>
-			<channel id="11" typeId="positionType"/>
-			<channel id="12" typeId="positionType"/>
-			<channel id="13" typeId="positionType"/>
-			<channel id="14" typeId="positionType"/>
-			<channel id="15" typeId="positionType"/>
-			<channel id="16" typeId="positionType"/>
-			<channel id="17" typeId="positionType"/>
-			<channel id="18" typeId="positionType"/>
-			<channel id="19" typeId="positionType"/>
-			<channel id="20" typeId="positionType"/>
-			<channel id="21" typeId="positionType"/>
-			<channel id="22" typeId="positionType"/>
-			<channel id="23" typeId="positionType"/>
-			<channel id="24" typeId="positionType"/>
-			<channel id="25" typeId="positionType"/>
-			<channel id="26" typeId="positionType"/>
-			<channel id="27" typeId="positionType"/>
-			<channel id="28" typeId="positionType"/>
-			<channel id="29" typeId="positionType"/>
-			<channel id="30" typeId="positionType"/>
-			<channel id="31" typeId="positionType"/>
-			<channel id="32" typeId="positionType"/>
-			<channel id="33" typeId="positionType"/>
-			<channel id="34" typeId="positionType"/>
-			<channel id="35" typeId="positionType"/>
-			<channel id="36" typeId="positionType"/>
-			<channel id="37" typeId="positionType"/>
-			<channel id="38" typeId="positionType"/>
-			<channel id="39" typeId="positionType"/>
-			<channel id="40" typeId="positionType"/>
-			<channel id="41" typeId="positionType"/>
-			<channel id="42" typeId="positionType"/>
-			<channel id="43" typeId="positionType"/>
-			<channel id="44" typeId="positionType"/>
-			<channel id="45" typeId="positionType"/>
-			<channel id="46" typeId="positionType"/>
-			<channel id="47" typeId="positionType"/>
-			<channel id="48" typeId="positionType"/>
-			<channel id="49" typeId="positionType"/>
-			<channel id="50" typeId="positionType"/>
-		</channels>
+			<channel id="<xx>" typeId="positionType"/>
+			...
+			</channels>
+		-->
 	</channel-group-type>
 
 	<!-- Stayout Zones -->
 	<channel-group-type id="stayoutZonesType">
 		<label>Stayout Zones</label>
-		<channels>
+		<!-- channels created on demand
+			<channels>
 			<channel id="dirty" typeId="zoneDirtyType"/>
-			<channel id="01-id" typeId="zoneIdType"/>
-			<channel id="01-name" typeId="zoneNameType"/>
-			<channel id="01-enabled" typeId="zoneEnabledType"/>
-			<channel id="02-id" typeId="zoneIdType"/>
-			<channel id="02-name" typeId="zoneNameType"/>
-			<channel id="02-enabled" typeId="zoneEnabledType"/>
-			<channel id="03-id" typeId="zoneIdType"/>
-			<channel id="03-name" typeId="zoneNameType"/>
-			<channel id="03-enabled" typeId="zoneEnabledType"/>
-			<channel id="04-id" typeId="zoneIdType"/>
-			<channel id="04-name" typeId="zoneNameType"/>
-			<channel id="04-enabled" typeId="zoneEnabledType"/>
-			<channel id="05-id" typeId="zoneIdType"/>
-			<channel id="05-name" typeId="zoneNameType"/>
-			<channel id="05-enabled" typeId="zoneEnabledType"/>
-			<channel id="06-id" typeId="zoneIdType"/>
-			<channel id="06-name" typeId="zoneNameType"/>
-			<channel id="06-enabled" typeId="zoneEnabledType"/>
-			<channel id="07-id" typeId="zoneIdType"/>
-			<channel id="07-name" typeId="zoneNameType"/>
-			<channel id="07-enabled" typeId="zoneEnabledType"/>
-			<channel id="08-id" typeId="zoneIdType"/>
-			<channel id="08-name" typeId="zoneNameType"/>
-			<channel id="08-enabled" typeId="zoneEnabledType"/>
-			<channel id="09-id" typeId="zoneIdType"/>
-			<channel id="09-name" typeId="zoneNameType"/>
-			<channel id="09-enabled" typeId="zoneEnabledType"/>
-			<channel id="10-id" typeId="zoneIdType"/>
-			<channel id="10-name" typeId="zoneNameType"/>
-			<channel id="10-enabled" typeId="zoneEnabledType"/>
-		</channels>
+			<channel id="<xx>-id" typeId="zoneIdType"/>
+			<channel id="<xx>-name" typeId="zoneNameType"/>
+			<channel id="<xx>-enabled" typeId="zoneEnabledType"/>
+			...
+			</channels>
+		-->
 	</channel-group-type>
 
 	<!-- Work Areas -->
 	<channel-group-type id="workAreasType">
 		<label>Work Areas</label>
-		<channels>
-			<channel id="01-id" typeId="workareaIdType"/>
-			<channel id="01-name" typeId="workareaNameType"/>
-			<channel id="01-cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="01-enabled" typeId="workareaEnabledType"/>
-			<channel id="01-progress" typeId="workareaProgressType"/>
-			<channel id="01-last-time-completed" typeId="workareaLastTimeCompletedType"/>
-			<channel id="02-id" typeId="workareaIdType"/>
-			<channel id="02-name" typeId="workareaNameType"/>
-			<channel id="02-cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="02-enabled" typeId="workareaEnabledType"/>
-			<channel id="02-progress" typeId="workareaProgressType"/>
-			<channel id="02-last-time-completed" typeId="workareaLastTimeCompletedType"/>
-			<channel id="03-id" typeId="workareaIdType"/>
-			<channel id="03-name" typeId="workareaNameType"/>
-			<channel id="03-cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="03-enabled" typeId="workareaEnabledType"/>
-			<channel id="03-progress" typeId="workareaProgressType"/>
-			<channel id="03-last-time-completed" typeId="workareaLastTimeCompletedType"/>
-			<channel id="04-id" typeId="workareaIdType"/>
-			<channel id="04-name" typeId="workareaNameType"/>
-			<channel id="04-cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="04-enabled" typeId="workareaEnabledType"/>
-			<channel id="04-progress" typeId="workareaProgressType"/>
-			<channel id="04-last-time-completed" typeId="workareaLastTimeCompletedType"/>
-			<channel id="05-id" typeId="workareaIdType"/>
-			<channel id="05-name" typeId="workareaNameType"/>
-			<channel id="05-cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="05-enabled" typeId="workareaEnabledType"/>
-			<channel id="05-progress" typeId="workareaProgressType"/>
-			<channel id="05-last-time-completed" typeId="workareaLastTimeCompletedType"/>
-			<channel id="06-id" typeId="workareaIdType"/>
-			<channel id="06-name" typeId="workareaNameType"/>
-			<channel id="06-cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="06-enabled" typeId="workareaEnabledType"/>
-			<channel id="06-progress" typeId="workareaProgressType"/>
-			<channel id="06-last-time-completed" typeId="workareaLastTimeCompletedType"/>
-			<channel id="07-id" typeId="workareaIdType"/>
-			<channel id="07-name" typeId="workareaNameType"/>
-			<channel id="07-cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="07-enabled" typeId="workareaEnabledType"/>
-			<channel id="07-progress" typeId="workareaProgressType"/>
-			<channel id="07-last-time-completed" typeId="workareaLastTimeCompletedType"/>
-			<channel id="08-id" typeId="workareaIdType"/>
-			<channel id="08-name" typeId="workareaNameType"/>
-			<channel id="08-cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="08-enabled" typeId="workareaEnabledType"/>
-			<channel id="08-progress" typeId="workareaProgressType"/>
-			<channel id="08-last-time-completed" typeId="workareaLastTimeCompletedType"/>
-			<channel id="09-id" typeId="workareaIdType"/>
-			<channel id="09-name" typeId="workareaNameType"/>
-			<channel id="09-cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="09-enabled" typeId="workareaEnabledType"/>
-			<channel id="09-progress" typeId="workareaProgressType"/>
-			<channel id="09-last-time-completed" typeId="workareaLastTimeCompletedType"/>
-			<channel id="10-id" typeId="workareaIdType"/>
-			<channel id="10-name" typeId="workareaNameType"/>
-			<channel id="10-cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="10-enabled" typeId="workareaEnabledType"/>
-			<channel id="10-progress" typeId="workareaProgressType"/>
-			<channel id="10-last-time-completed" typeId="workareaLastTimeCompletedType"/>
-		</channels>
+		<!-- channels created on demand
+			<channels>
+			<channel id="<xx>-id" typeId="workareaIdType"/>
+			<channel id="<xx>-name" typeId="workareaNameType"/>
+			<channel id="<xx>-cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="<xx>-enabled" typeId="workareaEnabledType"/>
+			<channel id="<xx>-progress" typeId="workareaProgressType"/>
+			<channel id="<xx>-last-time-completed" typeId="workareaLastTimeCompletedType"/>
+			...
+			</channels>
+		-->
 	</channel-group-type>
 
 	<!-- Commands -->
@@ -575,7 +354,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="plannerNextStartTimestampType">
+	<channel-type id="nextStartType">
 		<item-type>DateTime</item-type>
 		<label>Next Auto Start</label>
 		<description>The channel providing the time for the next auto start. If the mower is charging then the value is the
@@ -583,14 +362,14 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="plannerOverrideActionType">
+	<channel-type id="overrideActionType">
 		<item-type>String</item-type>
 		<label>Override Action</label>
 		<description>The channel providing an action that overrides current planner operation.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="plannerRestrictedReasonType" advanced="true">
+	<channel-type id="restrictedReasonType" advanced="true">
 		<item-type>String</item-type>
 		<label>Restricted Reason</label>
 		<description>The channel providing a reason that restrics current planner operation.</description>
@@ -609,7 +388,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="plannerExternalReasonType" advanced="true">
+	<channel-type id="externalReasonType" advanced="true">
 		<item-type>Number</item-type>
 		<label>External Reason</label>
 		<description>The channel providing an external reason that restrics current planner operation.</description>

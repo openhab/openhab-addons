@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.AutomowerConnectApi;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Calendar;
@@ -128,7 +129,7 @@ public class AutomowerBridge {
      *            as provided when reading the channel
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
-    public void sendAutomowerCalendarTask(String id, boolean hasWorkAreas, Long workAreaId,
+    public void sendAutomowerCalendarTask(String id, boolean hasWorkAreas, @Nullable Long workAreaId,
             List<CalendarTask> calendarTasks) throws AutomowerCommunicationException {
         Calendar calendar = new Calendar();
         calendar.setTasks(calendarTasks);

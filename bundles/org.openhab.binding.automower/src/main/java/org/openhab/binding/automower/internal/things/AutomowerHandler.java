@@ -167,6 +167,7 @@ public class AutomowerHandler extends BaseThingHandler {
 =======
             refreshChannels(channelUID);
 <<<<<<< HEAD
+<<<<<<< HEAD
             /*
              * } else if (CHANNEL_CALENDAR_TASKS.equals(channelUID.getId())) {
              * logger.debug("Sending calendar '{}'", command);
@@ -193,6 +194,11 @@ public class AutomowerHandler extends BaseThingHandler {
 >>>>>>> implemented sendAutomowerConfirmError()
 =======
         } else if (CHANNEL_STAYOUTZONES.contains(channelUID.getId())) {
+=======
+        } else if (CHANNEL_CALENDARTASK.contains(channelUID.getId())) {
+            sendAutomowerCalendarTask(command, channelUID.getId());
+        } else if (CHANNEL_STAYOUTZONE.contains(channelUID.getId())) {
+>>>>>>> dynamic channels, static channel groups
             String[] channelIDSplit = channelUID.getId().split("-");
             int index = Integer.parseInt(channelIDSplit[0].substring(GROUP_STAYOUTZONE.length())) - 1;
             if ("enabled".equals(channelIDSplit[0])) {
@@ -200,7 +206,7 @@ public class AutomowerHandler extends BaseThingHandler {
                     sendAutomowerStayOutZone(index, ((cmd == OnOffType.ON) ? true : false));
                 }
             }
-        } else if (CHANNEL_WORKAREAS.contains(channelUID.getId())) {
+        } else if (CHANNEL_WORKAREA.contains(channelUID.getId())) {
             String[] channelIDSplit = channelUID.getId().split("-");
             int index = Integer.parseInt(channelIDSplit[0].substring(GROUP_WORKAREA.length())) - 1;
             if ("enabled".equals(channelIDSplit[0])) {
@@ -931,6 +937,7 @@ public class AutomowerHandler extends BaseThingHandler {
         } catch (AutomowerCommunicationException e) {
             logger.warn("Unable to send ResetCuttingBladeUsageTime to automower: {}, Error: {}", id, e.getMessage());
         }
+<<<<<<< HEAD
         updateAutomowerState();
 =======
 =======
@@ -938,6 +945,16 @@ public class AutomowerHandler extends BaseThingHandler {
             boolean[] tuesday, boolean[] wednesday, boolean[] thursday, boolean[] friday, boolean[] saturday,
             boolean[] sunday) {
         if (isValidResult(mowerState)) {
+=======
+        return null;
+    }
+
+    private void updateChannelState(@Nullable Mower mower) {
+        if (isValidResult(mower)) {
+            Capabilities capabilities = mower.getAttributes().getCapabilities();
+
+            updateState(CHANNEL_STATUS_NAME, new StringType(mower.getAttributes().getSystem().getName()));
+>>>>>>> dynamic channels, static channel groups
 
             List<CalendarTask> calendarTaskArray = new ArrayList<>();
 
@@ -960,6 +977,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 calendarTaskArray.add(calendarTask);
             }
 
+<<<<<<< HEAD
             String id = automowerId.get();
             try {
                 AutomowerBridge automowerBridge = getAutomowerBridge();
@@ -972,6 +990,33 @@ public class AutomowerHandler extends BaseThingHandler {
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send CalendarTask to automower: {}, Error: {}", id, e.getMessage());
+=======
+            if (capabilities.hasWorkAreas()) {
+                Long workAreaId = mower.getAttributes().getMower().getWorkAreaId();
+                if (workAreaId != null) {
+                    createAndUpdateChannel(CHANNEL_STATUS_WORK_AREA_ID, CHANNEL_TYPE_STATUS_WORK_AREA_ID, "Number",
+                            new DecimalType(workAreaId));
+                    WorkArea workArea = getWorkAreaById(mower, workAreaId);
+                    if ((workArea != null) && (workArea.getName() != null)) {
+                        if ((workAreaId.equals(0L)) && workArea.getName().isBlank()) {
+                            createAndUpdateChannel(CHANNEL_STATUS_WORK_AREA, CHANNEL_TYPE_STATUS_WORK_AREA, "String",
+                                    new StringType("main area"));
+                        } else {
+                            createAndUpdateChannel(CHANNEL_STATUS_WORK_AREA, CHANNEL_TYPE_STATUS_WORK_AREA, "String",
+                                    new StringType(workArea.getName()));
+                        }
+                    } else {
+                        createAndUpdateChannel(CHANNEL_STATUS_WORK_AREA, CHANNEL_TYPE_STATUS_WORK_AREA, "String",
+                                UnDefType.NULL);
+                    }
+                } else {
+                    createAndUpdateChannel(CHANNEL_STATUS_WORK_AREA_ID, CHANNEL_TYPE_STATUS_WORK_AREA_ID, "Number",
+                            UnDefType.NULL);
+                }
+            } else {
+                removeChannel(CHANNEL_STATUS_WORK_AREA_ID);
+                removeChannel(CHANNEL_STATUS_WORK_AREA);
+>>>>>>> dynamic channels, static channel groups
             }
         }
     }
@@ -1014,6 +1059,7 @@ public class AutomowerHandler extends BaseThingHandler {
             }
 >>>>>>> added error message
 
+<<<<<<< HEAD
         if (isValidResult(mowerState)) {
             List<CalendarTask> calendarTasksFiltered;
             List<CalendarTask> calendarTasksAll = mowerState.getAttributes().getCalendar().getTasks();
@@ -1051,6 +1097,13 @@ public class AutomowerHandler extends BaseThingHandler {
             } else {
                 indexFiltered = index;
                 calendarTasksFiltered = calendarTasksAll;
+=======
+            if (capabilities.canConfirmError()) {
+                createAndUpdateChannel(CHANNEL_STATUS_ERROR_CONFIRMABLE, CHANNEL_TYPE_STATUS_ERROR_CONFIRMABLE,
+                        "Switch", OnOffType.from(mower.getAttributes().getMower().getIsErrorConfirmable()));
+            } else {
+                removeChannel(CHANNEL_STATUS_ERROR_CONFIRMABLE);
+>>>>>>> dynamic channels, static channel groups
             }
 
             CalendarTask calendarTask = calendarTasksFiltered.get(indexFiltered);
@@ -1079,6 +1132,7 @@ public class AutomowerHandler extends BaseThingHandler {
                     new DecimalType(mower.getAttributes().getSettings().getCuttingHeight()));
 >>>>>>> static channels + channel groups
 
+<<<<<<< HEAD
             if (command instanceof DecimalType cmd) {
                 if ("start".equals(param)) {
                     calendarTask.setStart(cmd.shortValue());
@@ -1096,6 +1150,39 @@ public class AutomowerHandler extends BaseThingHandler {
                 }
             } else if (command instanceof OnOffType cmd) {
                 boolean day = ((cmd == OnOffType.ON) ? true : false);
+=======
+            if (capabilities.hasHeadlights()) {
+                Headlight headlight = mower.getAttributes().getSettings().getHeadlight();
+                if (headlight != null) {
+                    createAndUpdateChannel(CHANNEL_SETTING_HEADLIGHT_MODE, CHANNEL_TYPE_SETTING_HEADLIGHT_MODE,
+                            "String", new StringType(headlight.getHeadlightMode().name()));
+                } else {
+                    createAndUpdateChannel(CHANNEL_SETTING_HEADLIGHT_MODE, CHANNEL_TYPE_SETTING_HEADLIGHT_MODE,
+                            "String", UnDefType.NULL);
+                }
+            } else {
+                removeChannel(CHANNEL_SETTING_HEADLIGHT_MODE);
+            }
+
+            updateState(CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME,
+                    new QuantityType<>(mower.getAttributes().getStatistics().getCuttingBladeUsageTime(), Units.SECOND));
+            updateState(CHANNEL_STATISTIC_DOWN_TIME,
+                    new QuantityType<>(mower.getAttributes().getStatistics().getDownTime(), Units.SECOND));
+            updateState(CHANNEL_STATISTIC_NUMBER_OF_CHARGING_CYCLES,
+                    new DecimalType(mower.getAttributes().getStatistics().getNumberOfChargingCycles()));
+            updateState(CHANNEL_STATISTIC_NUMBER_OF_COLLISIONS,
+                    new DecimalType(mower.getAttributes().getStatistics().getNumberOfCollisions()));
+            updateState(CHANNEL_STATISTIC_TOTAL_CHARGING_TIME,
+                    new QuantityType<>(mower.getAttributes().getStatistics().getTotalChargingTime(), Units.SECOND));
+            updateState(CHANNEL_STATISTIC_TOTAL_CUTTING_TIME,
+                    new QuantityType<>(mower.getAttributes().getStatistics().getTotalCuttingTime(), Units.SECOND));
+            updateState(CHANNEL_STATISTIC_TOTAL_DRIVE_DISTANCE,
+                    new QuantityType<>(mower.getAttributes().getStatistics().getTotalDriveDistance(), SIUnits.METRE));
+            updateState(CHANNEL_STATISTIC_TOTAL_RUNNING_TIME,
+                    new QuantityType<>(mower.getAttributes().getStatistics().getTotalRunningTime(), Units.SECOND));
+            updateState(CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME,
+                    new QuantityType<>(mower.getAttributes().getStatistics().getTotalSearchingTime(), Units.SECOND));
+>>>>>>> dynamic channels, static channel groups
 
                 if ("monday".equals(param)) {
                     calendarTask.setMonday(day);
@@ -1897,6 +1984,7 @@ public class AutomowerHandler extends BaseThingHandler {
         }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         if (mowerMessages != null) {
             List<Message> messages = mowerMessages.getAttributes().getMessages();
             if (messages != null) {
@@ -1946,108 +2034,169 @@ public class AutomowerHandler extends BaseThingHandler {
 =======
             if (mower.getAttributes().getLastPosition() != null) {
                 updateState(LAST_POSITION,
+=======
+            if (capabilities.hasPosition()) {
+                // if (mower.getAttributes().getLastPosition() != null) {
+                createAndUpdateChannel(CHANNEL_POSITION_LAST, CHANNEL_TYPE_POSITION_LAST, "Location",
+>>>>>>> dynamic channels, static channel groups
                         new PointType(new DecimalType(mower.getAttributes().getLastPosition().getLatitude()),
                                 new DecimalType(mower.getAttributes().getLastPosition().getLongitude())));
                 List<Position> positions = mower.getAttributes().getPositions();
                 for (int i = 0; i < positions.size(); i++) {
-                    updateState(CHANNEL_POSITIONS.get(i), new PointType(new DecimalType(positions.get(i).getLatitude()),
-                            new DecimalType(positions.get(i).getLongitude())));
+                    createAndUpdateIndexedChannel(GROUP_POSITION, i + 1, "", CHANNEL_TYPE_POSITION, "Location",
+                            new PointType(new DecimalType(positions.get(i).getLatitude()),
+                                    new DecimalType(positions.get(i).getLongitude())));
                 }
             } else {
+<<<<<<< HEAD
                 updateState(LAST_POSITION, UnDefType.NULL);
                 for (int i = 0; i < CHANNEL_POSITIONS.size(); i++) {
                     updateState(CHANNEL_POSITIONS.get(i), UnDefType.NULL);
                 }
 >>>>>>> robustness improvements
+=======
+                removeChannel(CHANNEL_POSITION_LAST);
+                removeConsecutiveIndexedChannels(GROUP_POSITION, 1, "");
+>>>>>>> dynamic channels, static channel groups
             }
 
-            updateState(CHANNEL_STAYOUTZONES_DIRTY, OnOffType.from(mower.getAttributes().getStayOutZones().isDirty()));
-
             List<CalendarTask> calendarTasks = mower.getAttributes().getCalendar().getTasks();
-            int j = 0;
-            for (int i = 0; i < calendarTasks.size() && j < CHANNEL_CALENDARTASKS.size(); i++) {
-                updateState(CHANNEL_CALENDARTASKS.get(j++),
+            int i;
+            for (i = 0; i < calendarTasks.size(); i++) {
+                int j = 0;
+                createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Number:Time",
                         new QuantityType<>(calendarTasks.get(i).getStart(), Units.MINUTE));
-                updateState(CHANNEL_CALENDARTASKS.get(j++),
+                createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Number:Time",
                         new QuantityType<>(calendarTasks.get(i).getDuration(), Units.MINUTE));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getMonday()));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getTuesday()));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getWednesday()));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getThursday()));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getFriday()));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getSaturday()));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getSunday()));
-                if (calendarTasks.get(i).getWorkAreaId() == null) {
-                    updateState(CHANNEL_CALENDARTASKS.get(j++), UnDefType.NULL);
-                    updateState(CHANNEL_CALENDARTASKS.get(j++), UnDefType.NULL);
-                } else {
-                    updateState(CHANNEL_CALENDARTASKS.get(j++), new DecimalType(calendarTasks.get(i).getWorkAreaId()));
+                createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", OnOffType.from(calendarTasks.get(i).getMonday()));
+                createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch",
+                        OnOffType.from(calendarTasks.get(i).getTuesday()));
+                createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch",
+                        OnOffType.from(calendarTasks.get(i).getWednesday()));
+                createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch",
+                        OnOffType.from(calendarTasks.get(i).getThursday()));
+                createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", OnOffType.from(calendarTasks.get(i).getFriday()));
+                createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch",
+                        OnOffType.from(calendarTasks.get(i).getSaturday()));
+                createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                        CHANNEL_TYPE_CALENDARTASK.get(j++), "Switch", OnOffType.from(calendarTasks.get(i).getSunday()));
+                if (capabilities.hasWorkAreas()) {
+                    createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                            CHANNEL_TYPE_CALENDARTASK.get(j++), "Number",
+                            new DecimalType(calendarTasks.get(i).getWorkAreaId()));
                     WorkArea workArea = getWorkAreaById(mower, calendarTasks.get(i).getWorkAreaId());
                     if (workArea != null) {
                         if ((calendarTasks.get(i).getWorkAreaId().equals(0L)) && workArea.getName().isBlank()) {
-                            updateState(CHANNEL_CALENDARTASKS.get(j++), new StringType("main area"));
+                            createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                                    CHANNEL_TYPE_CALENDARTASK.get(j++), "String", new StringType("main area"));
                         } else {
-                            updateState(CHANNEL_CALENDARTASKS.get(j++), new StringType(workArea.getName()));
+                            createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                                    CHANNEL_TYPE_CALENDARTASK.get(j++), "String", new StringType(workArea.getName()));
                         }
                     } else {
-                        updateState(CHANNEL_CALENDARTASKS.get(j++), UnDefType.NULL);
+                        createAndUpdateIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
+                                CHANNEL_TYPE_CALENDARTASK.get(j++), "String", UnDefType.NULL);
+                    }
+                } else {
+                    removeIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++));
+                    removeIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j++));
+                }
+            }
+
+            // remove all consecutive channels that are no longer required
+            for (int j = 0; j < CHANNEL_CALENDARTASK.size(); j++) {
+                removeConsecutiveIndexedChannels(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j));
+            }
+
+            i = 0;
+            if (capabilities.hasStayOutZones()) {
+                createAndUpdateChannel(CHANNEL_STAYOUTZONES_DIRTY, CHANNEL_TYPE_STAYOUTZONES_DIRTY, "Switch",
+                        OnOffType.from(mower.getAttributes().getStayOutZones().isDirty()));
+
+                if (mower.getAttributes().getStayOutZones() != null) {
+                    List<StayOutZone> stayOutZones = mower.getAttributes().getStayOutZones().getZones();
+                    if (stayOutZones != null) {
+                        for (; i < stayOutZones.size(); i++) {
+                            int j = 0;
+                            createAndUpdateIndexedChannel(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j),
+                                    CHANNEL_TYPE_STAYOUTZONE.get(j++), "String",
+                                    new StringType(stayOutZones.get(i).getId()));
+                            createAndUpdateIndexedChannel(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j),
+                                    CHANNEL_TYPE_STAYOUTZONE.get(j++), "String",
+                                    new StringType(stayOutZones.get(i).getName()));
+                            createAndUpdateIndexedChannel(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j),
+                                    CHANNEL_TYPE_STAYOUTZONE.get(j++), "Switch",
+                                    OnOffType.from(stayOutZones.get(i).isEnabled()));
+                        }
+                    }
+                }
+            } else {
+                removeChannel(CHANNEL_STAYOUTZONES_DIRTY);
+            }
+            // remove all consecutive channels that are no longer required
+            for (int j = 0; j < CHANNEL_STAYOUTZONE.size(); j++) {
+                removeConsecutiveIndexedChannels(GROUP_STAYOUTZONE, i + 1, CHANNEL_STAYOUTZONE.get(j));
+            }
+
+            i = 0;
+            if (capabilities.hasWorkAreas()) {
+                List<WorkArea> workAreas = mower.getAttributes().getWorkAreas();
+                if (workAreas != null) {
+                    for (; i < workAreas.size(); i++) {
+                        int j = 0;
+                        WorkArea workArea = workAreas.get(i);
+                        createAndUpdateIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j),
+                                CHANNEL_TYPE_WORKAREA.get(j++), "Number", new DecimalType(workArea.getWorkAreaId()));
+
+                        if ((workArea.getWorkAreaId() == 0L) && workArea.getName().isBlank()) {
+                            createAndUpdateIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j),
+                                    CHANNEL_TYPE_WORKAREA.get(j++), "String", new StringType("main area"));
+                        } else {
+                            createAndUpdateIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j),
+                                    CHANNEL_TYPE_WORKAREA.get(j++), "String", new StringType(workArea.getName()));
+                        }
+                        createAndUpdateIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j),
+                                CHANNEL_TYPE_WORKAREA.get(j++), "Number:Dimensionless",
+                                new QuantityType<>(workArea.getCuttingHeight(), Units.PERCENT));
+                        createAndUpdateIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j),
+                                CHANNEL_TYPE_WORKAREA.get(j++), "Switch", OnOffType.from(workArea.isEnabled()));
+                        if (workArea.getProgress() != null) {
+                            createAndUpdateIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j),
+                                    CHANNEL_TYPE_WORKAREA.get(j++), "Number:Dimensionless",
+                                    new QuantityType<>(workArea.getProgress(), Units.PERCENT));
+                        } else {
+                            createAndUpdateIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j),
+                                    CHANNEL_TYPE_WORKAREA.get(j++), "Number:Dimensionless", UnDefType.NULL);
+                        }
+                        if ((workArea.getLastTimeCompleted() != null) && (workArea.getLastTimeCompleted() != 0)) {
+                            createAndUpdateIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j),
+                                    CHANNEL_TYPE_WORKAREA.get(j++), "DateTime",
+                                    new DateTimeType(toZonedDateTime(workArea.getLastTimeCompleted(), mowerZoneId)));
+                        } else {
+                            createAndUpdateIndexedChannel(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j),
+                                    CHANNEL_TYPE_WORKAREA.get(j++), "DateTime", UnDefType.NULL);
+                        }
                     }
                 }
             }
-            // clear remaining channels
-            for (; j < CHANNEL_CALENDARTASKS.size(); j++) {
-                updateState(CHANNEL_CALENDARTASKS.get(j), UnDefType.NULL);
-            }
-
-            j = 0;
-            if (mower.getAttributes().getStayOutZones() != null) {
-                List<StayOutZone> stayOutZones = mower.getAttributes().getStayOutZones().getZones();
-                if (stayOutZones != null) {
-                    for (int i = 0; i < stayOutZones.size() && j < CHANNEL_STAYOUTZONES.size(); i++) {
-                        updateState(CHANNEL_STAYOUTZONES.get(j++), new StringType(stayOutZones.get(i).getId()));
-                        updateState(CHANNEL_STAYOUTZONES.get(j++), new StringType(stayOutZones.get(i).getName()));
-                        updateState(CHANNEL_STAYOUTZONES.get(j++), OnOffType.from(stayOutZones.get(i).isEnabled()));
-                    }
-                }
-            }
-            // clear remaining channels
-            for (; j < CHANNEL_STAYOUTZONES.size(); j++) {
-                updateState(CHANNEL_STAYOUTZONES.get(j), UnDefType.NULL);
-            }
-
-            j = 0;
-            List<WorkArea> workAreas = mower.getAttributes().getWorkAreas();
-            if (workAreas != null) {
-                for (int i = 0; i < workAreas.size() && j < CHANNEL_WORKAREAS.size(); i++) {
-                    WorkArea workArea = workAreas.get(i);
-                    updateState(CHANNEL_WORKAREAS.get(j++), new DecimalType(workArea.getWorkAreaId()));
-                    if ((workArea.getWorkAreaId() == 0L) && workArea.getName().isBlank()) {
-                        updateState(CHANNEL_WORKAREAS.get(j++), new StringType("main area"));
-                    } else {
-                        updateState(CHANNEL_WORKAREAS.get(j++), new StringType(workArea.getName()));
-                    }
-                    updateState(CHANNEL_WORKAREAS.get(j++),
-                            new QuantityType<>(workArea.getCuttingHeight(), Units.PERCENT));
-                    updateState(CHANNEL_WORKAREAS.get(j++), OnOffType.from(workArea.isEnabled()));
-                    if (workArea.getProgress() != null) {
-                        updateState(CHANNEL_WORKAREAS.get(j++),
-                                new QuantityType<>(workArea.getProgress(), Units.PERCENT));
-                    } else {
-                        updateState(CHANNEL_WORKAREAS.get(j++), UnDefType.NULL);
-                    }
-
-                    if ((workArea.getLastTimeCompleted() != null) && (workArea.getLastTimeCompleted() != 0)) {
-                        updateState(CHANNEL_WORKAREAS.get(j++),
-                                new DateTimeType(toZonedDateTime(workArea.getLastTimeCompleted(), mowerZoneId)));
-                    } else {
-                        updateState(CHANNEL_WORKAREAS.get(j++), UnDefType.NULL);
-                    }
-                }
-            }
+<<<<<<< HEAD
             // clear remaining channels
             for (; j < CHANNEL_WORKAREAS.size(); j++) {
                 updateState(CHANNEL_WORKAREAS.get(j), UnDefType.NULL);
 >>>>>>> WorkAreas and StayOutZones
+=======
+            // remove all consecutive channels that are no longer required
+            for (int j = 0; j < CHANNEL_WORKAREA.size(); j++) {
+                removeConsecutiveIndexedChannels(GROUP_WORKAREA, i + 1, CHANNEL_WORKAREA.get(j));
+>>>>>>> dynamic channels, static channel groups
             }
         }
     }
@@ -2277,5 +2426,55 @@ public class AutomowerHandler extends BaseThingHandler {
 =======
         return ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("UTC")).withZoneSameLocal(zoneId);
 >>>>>>> cleaned up time zone handling
+    }
+
+    private String getIndexedChannel(String ChannelGroup, int id, String channel) {
+        // 2 digits as default and all digits for the unrealistic case of more than 99 channels
+        String format = ((id >= 100) ? "%d" : "%02d");
+        return ChannelGroup + String.format(format, id) + (channel.isBlank() ? "" : "-" + channel);
+    }
+
+    private void createAndUpdateIndexedChannel(String ChannelGroup, int id, String channel,
+            ChannelTypeUID channelTypeUID, String itemType, org.openhab.core.types.State state) {
+        String indexedChannel = getIndexedChannel(ChannelGroup, id, channel);
+        createChannel(indexedChannel, channelTypeUID, itemType);
+        updateState(indexedChannel, state);
+    }
+
+    private void createAndUpdateChannel(String channel, ChannelTypeUID channelTypeUID, String itemType,
+            org.openhab.core.types.State state) {
+        createChannel(channel, channelTypeUID, itemType);
+        updateState(channel, state);
+    }
+
+    private void createChannel(String channel, ChannelTypeUID channelTypeUID, String itemType) {
+        ChannelUID channelUid = new ChannelUID(thing.getUID(), channel);
+        if (thing.getChannel(channelUid) == null) {
+            updateThing(editThing()
+                    .withChannel(ChannelBuilder.create(channelUid, itemType).withType(channelTypeUID).build()).build());
+        }
+    }
+
+    private void removeIndexedChannel(String ChannelGroup, int id, String channel) {
+        String indexedChannel = getIndexedChannel(ChannelGroup, id, channel);
+        removeChannel(indexedChannel);
+    }
+
+    private void removeConsecutiveIndexedChannels(String ChannelGroup, int id, String channel) {
+        String indexedChannel = getIndexedChannel(ChannelGroup, id, channel);
+        if (removeChannel(indexedChannel)) {
+            // remove next channel recursively
+            removeConsecutiveIndexedChannels(ChannelGroup, id + 1, channel);
+        }
+    }
+
+    private boolean removeChannel(String channel) {
+        ChannelUID channelUid = new ChannelUID(thing.getUID(), channel);
+        if (thing.getChannel(channelUid) != null) {
+            updateThing(editThing().withoutChannel(channelUid).build());
+            return true;
+        } else {
+            return false;
+        }
     }
 }

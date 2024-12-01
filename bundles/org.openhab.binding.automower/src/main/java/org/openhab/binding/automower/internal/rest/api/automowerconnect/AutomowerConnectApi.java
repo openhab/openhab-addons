@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -87,7 +88,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         checkForError(response, response.getStatus());
     }
 
-    public void sendCalendar(String appKey, String token, String id, boolean hasWorkAreas, Long workAreaId,
+    public void sendCalendar(String appKey, String token, String id, boolean hasWorkAreas, @Nullable Long workAreaId,
             MowerCalendardRequest calendar) throws AutomowerCommunicationException {
         String url;
         if (hasWorkAreas && (workAreaId != null)) {
