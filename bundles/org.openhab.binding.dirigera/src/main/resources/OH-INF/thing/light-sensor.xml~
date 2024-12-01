@@ -17,10 +17,6 @@
 				<label>Illuminance</label>
 				<description>Shows illuminance in Lux </description>
 			</channel>
-
-				<label>Device JSON</label>
-				<description>JSON structure and updates of this device</description>
-			</channel>
 		</channels>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
