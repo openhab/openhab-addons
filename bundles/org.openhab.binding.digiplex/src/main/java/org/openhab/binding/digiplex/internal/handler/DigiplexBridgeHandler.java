@@ -320,8 +320,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
                     if (messagesSent.get() - responsesReceived.get() > STALLED_MESSAGES_THRESHOLD) {
                         throw new IOException("PRT3 module is not responding!");
                     }
-
-                } catch (IOException e) {
+                } catch (Exception e) {
                     handleCommunicationError();
                     break;
                 }
@@ -369,10 +368,10 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
                     updateState(BRIDGE_MESSAGES_SENT, new DecimalType(messagesSent.incrementAndGet()));
                     logger.debug("message sent: '{}'", request.getSerialMessage().replace("\r", ""));
                     Thread.sleep(SLEEP_TIME); // do not flood PRT3 with messages as it creates unpredictable responses
-                } catch (IOException e) {
-                    handleCommunicationError();
-                    break;
                 } catch (InterruptedException e) {
+                    break;
+                } catch (Exception e) {
+                    handleCommunicationError();
                     break;
                 }
             }
