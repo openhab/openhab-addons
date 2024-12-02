@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="type-rssi">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Received Signal Strength Indicator</label>
 		<category>QualityOfService</category>
 		<state pattern="%d %unit%" readOnly="true">
