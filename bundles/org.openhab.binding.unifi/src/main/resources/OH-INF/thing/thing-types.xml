@@ -362,7 +362,7 @@
 	</channel-type>
 
 	<channel-type id="rssi">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Received Signal Strength Indicator</label>
 		<description>Received Signal Strength Indicator (RSSI) of the wireless client</description>
 		<category>QualityOfService</category>
