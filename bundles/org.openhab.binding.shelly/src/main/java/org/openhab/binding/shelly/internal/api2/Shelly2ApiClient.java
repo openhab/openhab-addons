@@ -338,9 +338,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (em.actPower != null) {
             sm.power = emeter.power = em.actPower;
         }
-        if (em.aptrPower != null) {
-            emeter.totalReturned = em.aptrPower;
-        }
         if (em.voltage != null) {
             emeter.voltage = em.voltage;
         }
@@ -369,9 +366,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (em.totalActPower != null) {
             status.totalPower = em.totalActPower;
         }
-        if (em.totalAprtPower != null) {
-            status.totalReturned = em.totalAprtPower;
-        }
 
         if (emData.totalKWH != null) {
             status.totalKWH = emData.totalKWH;
@@ -384,9 +378,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
         if (emData.aTotal != null) {
             emeter.total = emData.aTotal;
-        }
-        if (em.aAprtPower != null) {
-            emeter.totalReturned = em.aAprtPower;
         }
         if (em.aVoltage != null) {
             emeter.voltage = em.aVoltage;
@@ -410,9 +401,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             if (emData.bTotal != null) {
                 emeter.total = emData.bTotal;
             }
-            if (em.bAprtPower != null) {
-                emeter.totalReturned = em.bAprtPower;
-            }
             if (em.bVoltage != null) {
                 emeter.voltage = em.bVoltage;
             }
@@ -435,9 +423,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             }
             if (emData.cTotal != null) {
                 emeter.total = emData.cTotal;
-            }
-            if (em.cAprtPower != null) {
-                emeter.totalReturned = em.cAprtPower;
             }
             if (em.cVoltage != null) {
                 emeter.voltage = em.cVoltage;
