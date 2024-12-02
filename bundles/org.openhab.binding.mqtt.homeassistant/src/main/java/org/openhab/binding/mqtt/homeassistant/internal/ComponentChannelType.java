@@ -32,7 +32,6 @@ public enum ComponentChannelType {
     STRING("ha-string"),
     SWITCH("ha-switch"),
     TRIGGER("ha-trigger"),
-
     GPS_ACCURACY("ha-gps-accuracy");
 
     final ChannelTypeUID channelTypeUID;
