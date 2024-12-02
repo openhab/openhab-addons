@@ -69,7 +69,6 @@ public class DeviceTracker extends AbstractComponent<DeviceTracker.ChannelConfig
 
         @SerializedName("source_type")
         protected @Nullable String sourceType;
-
         @SerializedName("state_topic")
         protected @Nullable String stateTopic;
         @SerializedName("payload_home")
