@@ -14,6 +14,9 @@ package org.openhab.binding.growatt.internal;
 
 import java.util.AbstractMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.measure.Unit;
 
@@ -186,11 +189,178 @@ public class GrowattChannels {
             // reactive 'power' resp. 'energy'
             new AbstractMap.SimpleEntry<String, UoM>("rac", new UoM(Units.VAR, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("erac-today", new UoM(Units.KILOVAR_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("erac-total", new UoM(Units.KILOVAR_HOUR, 10))
+            new AbstractMap.SimpleEntry<String, UoM>("erac-total", new UoM(Units.KILOVAR_HOUR, 10)),
+
+            /*
+             * ============== CHANNELS ADDED IN PR #17795 ==============
+             */
+
+            // battery instantaneous measurements
+            new AbstractMap.SimpleEntry<String, UoM>("battery-voltage2", new UoM(Units.VOLT, 100)),
+            new AbstractMap.SimpleEntry<String, UoM>("charge-va", new UoM(Units.VOLT_AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("battery-discharge-va", new UoM(Units.VOLT_AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("battery-discharge-watt", new UoM(Units.WATT, 10)),
+
+            // battery energy
+            new AbstractMap.SimpleEntry<String, UoM>("battery-discharge-energy-today",
+                    new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("battery-discharge-energy-total",
+                    new UoM(Units.KILOWATT_HOUR, 10)),
+
+            // inverter
+            new AbstractMap.SimpleEntry<String, UoM>("inverter-current", new UoM(Units.AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("inverter-fan-speed", new UoM(Units.PERCENT, 1)),
+
+            /*
+             * ============== CHANNELS ADDED IN PR #17810 ==============
+             */
+
+            // DC electric data for strings #3 and #4
+            new AbstractMap.SimpleEntry<String, UoM>("pv3-voltage", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("pv3-current", new UoM(Units.AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("pv3-power", new UoM(Units.WATT, 10)),
+
+            new AbstractMap.SimpleEntry<String, UoM>("pv4-voltage", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("pv4-current", new UoM(Units.AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("pv4-power", new UoM(Units.WATT, 10)),
+
+            // solar DC pv energy
+            new AbstractMap.SimpleEntry<String, UoM>("pv3-energy-today", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("pv3-energy-total", new UoM(Units.KILOWATT_HOUR, 10)),
+
+            // power factor
+            new AbstractMap.SimpleEntry<String, UoM>("power-factor", new UoM(Units.PERCENT, 10)),
+
+            // emergency power supply (eps)
+            new AbstractMap.SimpleEntry<String, UoM>("eps-voltage-r", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("eps-voltage-s", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("eps-voltage-t", new UoM(Units.VOLT, 10)),
+
+            new AbstractMap.SimpleEntry<String, UoM>("eps-current-r", new UoM(Units.AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("eps-current-s", new UoM(Units.AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("eps-current-t", new UoM(Units.AMPERE, 10)),
+
+            new AbstractMap.SimpleEntry<String, UoM>("eps-power", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("eps-power-r", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("eps-power-s", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("eps-power-t", new UoM(Units.WATT, 10))
+
     //
     );
 
     public static Map<String, UoM> getMap() {
         return GrowattChannels.CHANNEL_ID_UOM_MAP;
     }
+
+    /**
+     * Map of Growatt JSON field names that are not used in the creation of device Channels.
+     */
+    @SuppressWarnings("unchecked")
+    public static final Map<String, Set<String>> UNUSED_FIELDS = Stream.of(new Object[][] {
+        // @formatter:off
+
+            // simple inverter
+            { "simple", Set.of(
+                    "datalogserial",
+                    "pvserial") },
+
+            // sph inverter
+            { "sph", Set.of(
+                    "datalogserial",
+                    "pvserial") },
+
+            // spf inverter
+            { "spf", Set.of(
+                    "datalogserial",
+                    "pvserial") },
+
+            // mid inverter
+            { "mid", Set.of(
+                    "datalogserial",
+                    "pvserial",
+                    "deratingmode",
+                    "iso",
+                    "dcir",
+                    "dcis",
+                    "dcit",
+                    "gfci",
+                    "ipf",
+                    "realoppercent",
+                    "opfullwatt",
+                    "standbyflag",
+                    "warningcode",
+                    "invstartdelaytime",
+                    "bdconoffstate",
+                    "drycontactstate",
+                    "priority",
+                    "epsfac",
+                    "dcv",
+                    "bdc1_sysstatemode",
+                    "bdc1_faultcode",
+                    "bdc1_warncode",
+                    "bdc1_vbat",
+                    "bdc1_ibat",
+                    "bdc1_soc",
+                    "bdc1_vbus1",
+                    "bdc1_vbus2",
+                    "bdc1_ibb",
+                    "bdc1_illc",
+                    "bdc1_tempb",
+                    "bdc1_edischrtotal",
+                    "bdc1_echrtotal",
+                    "bdc1_flag",
+                    "bdc2_sysstatemode",
+                    "bdc2_faultcode",
+                    "bdc2_warncode",
+                    "bdc2_vbat",
+                    "bdc2_ibat",
+                    "bdc2_soc",
+                    "bdc2_vbus1",
+                    "bdc2_vbus2",
+                    "bdc2_ibb",
+                    "bdc2_illc",
+                    "bdc2_tempa",
+                    "bdc2_tempb",
+                    "bdc2_pdischr",
+                    "bdc2_pchr",
+                    "bdc2_edischrtotal",
+                    "bdc2_echrtotal",
+                    "bdc2_flag",
+                    "bms_status",
+                    "bms_error",
+                    "bms_warninfo",
+                    "bms_batterycurr",
+                    "bms_batterytemp",
+                    "bms_maxcurr",
+                    "bms_deltavolt",
+                    "bms_cyclecnt",
+                    "bms_soh",
+                    "bms_constantvolt",
+                    "bms_bms_info",
+                    "bms_packinfo",
+                    "bms_usingcap",
+                    "bms_fw",
+                    "bms_mcuversion",
+                    "bms_commtype") },
+
+            // smart meter
+            { "meter", Set.of(
+                    "datalogserial",
+                    "pvserial",
+                    "pvstatus",
+                    "app_power_l1",
+                    "app_power_l2",
+                    "app_power_l3",
+                    "react_power_l1",
+                    "react_power_l2",
+                    "react_power_l3",
+                    "powerfactor_l1",
+                    "powerfactor_l2",
+                    "powerfactor_l3",
+                    "pos_act_power",
+                    "rev_act_power",
+                    "app_power") },
+
+        // @formatter:on
+    }).collect(Collectors.toMap(objects -> (String) objects[0], objects -> (Set<String>) objects[1]));
 }

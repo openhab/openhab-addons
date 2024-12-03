@@ -22,9 +22,23 @@
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
+	<channel-type id="ha-location">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
+	</channel-type>
+
 	<channel-type id="ha-number">
 		<item-type>Number</item-type>
 		<label>Number</label>
+		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
+	</channel-type>
+
+	<channel-type id="ha-gps-accuracy" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>GPS Accuracy</label>
+		<description>The accuracy of the GPS fix, in meters.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 

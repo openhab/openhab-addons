@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLSession;
@@ -105,6 +106,9 @@ public class GrowattTest {
     void testGrottValuesAccessibility() throws FileNotFoundException, IOException {
         testGrottValuesAccessibility("simple");
         testGrottValuesAccessibility("sph");
+        testGrottValuesAccessibility("spf");
+        testGrottValuesAccessibility("mid");
+        testGrottValuesAccessibility("meter");
     }
 
     /**
@@ -236,6 +240,9 @@ public class GrowattTest {
     void testJsonFieldsMappedToDto() throws FileNotFoundException, IOException {
         testJsonFieldsMappedToDto("simple");
         testJsonFieldsMappedToDto("sph");
+        testJsonFieldsMappedToDto("spf");
+        testJsonFieldsMappedToDto("meter");
+        testJsonFieldsMappedToDto("mid");
     }
 
     /**
@@ -251,7 +258,8 @@ public class GrowattTest {
         String json = load(fileName);
         JsonParser.parseString(json).getAsJsonObject().get("values").getAsJsonObject().entrySet().forEach(e -> {
             String key = e.getKey();
-            if (!"datalogserial".equals(key) && !"pvserial".equals(key)) {
+            assertTrue(GrowattChannels.UNUSED_FIELDS.containsKey(fileName));
+            if (!Objects.requireNonNull(GrowattChannels.UNUSED_FIELDS.get(fileName)).contains(key)) {
                 JsonObject testJsonObject = new JsonObject();
                 testJsonObject.add(key, e.getValue());
                 GrottValues testDto = gson.fromJson(testJsonObject, GrottValues.class);
@@ -353,12 +361,12 @@ public class GrowattTest {
     @Test
     void testThreePhaseGrottValuesContents() throws FileNotFoundException, IOException, NoSuchFieldException,
             SecurityException, IllegalAccessException, IllegalArgumentException {
-        GrottValues grottValues = loadGrottValues("3phase");
+        GrottValues grottValues = loadGrottValues("mid");
         assertNotNull(grottValues);
 
         Map<String, QuantityType<?>> channelStates = GrottValuesHelper.getChannelStates(grottValues);
         assertNotNull(channelStates);
-        assertEquals(64, channelStates.size());
+        assertEquals(85, channelStates.size());
 
         assertEquals(QuantityType.valueOf(-36.5, Units.WATT), channelStates.get("inverter-power"));
         assertEquals(QuantityType.valueOf(11, Units.PERCENT), channelStates.get("battery-soc"));
@@ -375,7 +383,7 @@ public class GrowattTest {
 
         Map<String, QuantityType<?>> channelStates = GrottValuesHelper.getChannelStates(grottValues);
         assertNotNull(channelStates);
-        assertEquals(16, channelStates.size());
+        assertEquals(18, channelStates.size());
 
         assertEquals(QuantityType.valueOf(809.8, Units.WATT), channelStates.get("import-power"));
         assertEquals(QuantityType.valueOf(171.0, Units.WATT), channelStates.get("import-power-s"));

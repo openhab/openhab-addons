@@ -22,7 +22,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author Leo Siepel - finish initial contribution
  */
 @XStreamAlias("point_log")
-public class Log extends PlugwiseBaseModel implements PlugwiseComparableDate<Log> {
+public class PointLog extends PlugwiseBaseModel implements PlugwiseComparableDate<PointLog> {
 
     private String type;
 
@@ -89,7 +89,7 @@ public class Log extends PlugwiseBaseModel implements PlugwiseComparableDate<Log
     }
 
     @Override
-    public int compareDateWith(Log compareTo) {
+    public int compareDateWith(PointLog compareTo) {
         if (compareTo == null) {
             return -1;
         }
@@ -105,12 +105,12 @@ public class Log extends PlugwiseBaseModel implements PlugwiseComparableDate<Log
     }
 
     @Override
-    public boolean isNewerThan(Log hasModifiedDate) {
+    public boolean isNewerThan(PointLog hasModifiedDate) {
         return compareDateWith(hasModifiedDate) > 0;
     }
 
     @Override
-    public boolean isOlderThan(Log hasModifiedDate) {
+    public boolean isOlderThan(PointLog hasModifiedDate) {
         return compareDateWith(hasModifiedDate) < 0;
     }
 }

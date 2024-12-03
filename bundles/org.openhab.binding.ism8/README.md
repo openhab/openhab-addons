@@ -81,6 +81,9 @@ For the moment, the following data types are implemented:
 
 Date and Time types used by for CWL Excellent and CWL2 are currently not supported by the ISM8 add-on.
 
+*Attention:* Due to a bug in the original implementation, the states for DPT 1.009 are inverted (i.e., `1` is mapped to `OPEN` instead of `CLOSE`).
+A change would break all existing installations and is therefore not implemented.
+
 ## Full Example
 
 ### ism8.things
@@ -172,10 +175,10 @@ Number:VolumetricFlowRate ISM_LueftungDurchsatzZuluft "CWL Luftdurchsatz Zuluft 
 Number:VolumetricFlowRate ISM_LueftungDurchsatzAbluft "CWL Luftdurchsatz Abluft [%.1f m³/h]"   { channel="ism8:device:heater:DpId167" }
 Switch ISM_LueftungFilterwarnung                      "CWL Filterwarnung"                      { channel="ism8:device:heater:DpId192" }
 
-Contact ISM_SolarStoerung                             "Solar Störung"                          { channel="ism8:device:heater:DpId135" }
+Switch ISM_SolarStoerung                              "Solar Störung"                          { channel="ism8:device:heater:DpId135" }
 Number:Temperature ISM_SolarWassertemperatur          "Solar Wassertemperatur [%.1f °C]"       { channel="ism8:device:heater:DpId136" }
 Number:Temperature ISM_SolarKollektortemperatur       "Solar Kollektortemperatur [%.1f °C]"    { channel="ism8:device:heater:DpId137" }
-Contact ISM_SolarStatusPumpe                          "Solar Status Pumpe"                     { channel="ism8:device:heater:DpId141" }
+Switch ISM_SolarStatusPumpe                           "Solar Status Pumpe"                     { channel="ism8:device:heater:DpId141" }
 
 Switch ISM_HeizungChaStoerung                         "CHA Störung"                            { channel="ism8:device:heater:DpId176" }
 Number ISM_HeizungChaBetriebsart                      "Betriebsart [MAP(HVACContrMode.map):%s]"{ channel="ism8:device:heater:DpId177" }

@@ -118,7 +118,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
             groupId = null;
             componentId = "";
         }
-        uniqueId = this.haID.getGroupId(channelConfiguration.getUniqueId(), false);
+        uniqueId = haID.component + "_" + haID.getGroupId(channelConfiguration.getUniqueId(), false);
 
         this.configSeen = false;
 
@@ -157,8 +157,10 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     protected void addJsonAttributesChannel() {
         if (channelConfiguration.getJsonAttributesTopic() != null) {
+            ChannelStateUpdateListener listener = (this instanceof ChannelStateUpdateListener localThis) ? localThis
+                    : componentConfiguration.getUpdateListener();
             buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
-                    componentConfiguration.getUpdateListener())
+                    listener)
                     .stateTopic(channelConfiguration.getJsonAttributesTopic(),
                             channelConfiguration.getJsonAttributesTemplate())
                     .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).isAdvanced(true).build();
@@ -182,8 +184,13 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     }
 
     public void resolveConflict() {
-        componentId = this.haID.getGroupId(channelConfiguration.getUniqueId(), newStyleChannels);
-        channels.values().forEach(c -> c.resetUID(buildChannelUID(c.getChannel().getUID().getIdWithoutGroup())));
+        if (newStyleChannels && channels.size() == 1) {
+            componentId = componentId + "_" + haID.component;
+            channels.values().forEach(c -> c.resetUID(buildChannelUID(componentId)));
+        } else {
+            groupId = componentId = componentId + "_" + haID.component;
+            channels.values().forEach(c -> c.resetUID(buildChannelUID(c.getChannel().getUID().getIdWithoutGroup())));
+        }
     }
 
     protected ComponentChannel.Builder buildChannel(String channelID, ComponentChannelType channelType,
