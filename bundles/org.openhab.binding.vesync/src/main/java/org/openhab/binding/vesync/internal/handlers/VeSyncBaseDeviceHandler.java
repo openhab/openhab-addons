@@ -16,7 +16,13 @@ import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.V2_BYPASS_ENDPOINT;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -555,7 +561,6 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
 
     public static VeSyncDeviceMetadata getDeviceFamilyMetadata(final @Nullable String deviceType,
             final String deviceProtocolPrefix, final List<VeSyncDeviceMetadata> metadata) {
-
         if (deviceType == null) {
             return UNKNOWN;
         }
