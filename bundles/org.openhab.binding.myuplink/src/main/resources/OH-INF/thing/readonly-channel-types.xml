@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="myuplink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="type-number-integer" advanced="true">
+		<item-type>Number</item-type>
+		<label>Generic Number</label>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-number-double" advanced="true">
+		<item-type>Number</item-type>
+		<label>Generic Number (0.1)</label>
+		<state pattern="%.1f" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Generic Temperature</label>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-flow">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Generic Flow</label>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-electric-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Generic Current</label>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-time">
+		<item-type>Number:Time</item-type>
+		<label>Generic Time</label>
+		<state pattern="%d %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>Generic Frequency</label>
+		<state pattern="%d %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Generic Energy</label>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-pressure" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>Generic Pressure</label>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-percent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Generic Percentage</label>
+		<state pattern="%d %%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-on-off">
+		<item-type>Number</item-type>
+		<label>Generic OnOff</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
