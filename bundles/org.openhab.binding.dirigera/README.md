@@ -716,16 +716,16 @@ You can call these actions via rules or get the results via openHAB Developer To
 ```java
 [
   {
-    "actionUid": "dirigera.dumpToken",
-    "label": "Dump Gateway Token",
-    "description": "Dumps the current token to get access towards DIRIGERA gateway",
+    "actionUid": "dirigera.getToken",
+    "label": "Get Gateway Token",
+    "description": "Gets the current token to get access towards DIRIGERA gateway",
     "inputs": [],
     "outputs": []
   },
   {
-    "actionUid": "dirigera.dumpJSON",
-    "label": "Dump Device JSON Data",
-    "description": "Dumps the current JSON data connected to this device",
+    "actionUid": "dirigera.getJSON",
+    "label": "Get Device JSON Data",
+    "description": "Gets the current JSON data connected to this device",
     "inputs": [],
     "outputs": []
   },
@@ -750,13 +750,13 @@ You can call these actions via rules or get the results via openHAB Developer To
 ]
 ```
 
-### `dumpToken`
+### `getToken`
 
 The token can be obtained from any thing connected to DIRIGERA gateway.
 
 ```java
     val dishwasherDebugActions = getActions("dirigera","dirigera:smart-plug:myhome:dishwasher")  
-    val token = dishwasherDebugActions.dumpToken
+    val token = dishwasherDebugActions.getToken
     logInfo("DIRIGERA","Token {}",token)
 ```
 
@@ -772,21 +772,23 @@ Replace content in curl command with following variables:
 - $DEVICE - bulb id you want to control, take it from configuration
 - $TOKEN - shortly stop / start DIRIGERA bridge and search for obtained token
 
-### `dumpJSON`
+### `getJSON`
 
 Dumps the current JSON with attributes and capabilities of one device.
 If thing UID from gateway is given dumo contains all devices connected to gateway.
 
 ```java
     val gatewayActions = getActions("dirigera","dirigera:gateway:myhome")  
-    // dumps your complete home
-    val json = gatewayActions.dumpJSON
+    // get JSON representation of all connected devices
+    val json = gatewayActions.getJSON
     logInfo("DIRIGERA","JSON {}",json)
 ```
 
 ### `setDebug`
 
-Enables logging for one specific device.
+Enables logging for one specific device or all devices.
+First boolean parameter: Enable debugging? 
+Second boolean parameter: debug flag valid for all devices?
 Setting to true you'll see
 
 - openhAB commands send to device handler
@@ -796,9 +798,10 @@ Setting to true you'll see
 
 ```java
     val dishwasherDebugActions = getActions("dirigera","dirigera:gateway:myhome")  
-    // dumps your complete home
-    dishwasherDebugActions.setDebug(true)
-    logInfo("DIRIGERA","JSON {}",json)
+    // enables debugging for dishwasher plug
+    dishwasherDebugActions.setDebug(true,false)
+    // after debugging one or several devices disable debugging for all devices
+    dishwasherDebugActions.setDebug(false,true)
 ```
 
 ## Full Example

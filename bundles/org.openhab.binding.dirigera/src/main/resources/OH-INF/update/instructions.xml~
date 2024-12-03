@@ -49,9 +49,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">
@@ -78,9 +82,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">
@@ -98,9 +106,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">
@@ -151,9 +163,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">
@@ -198,9 +214,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">
@@ -218,9 +238,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">
@@ -245,9 +269,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">
@@ -272,9 +300,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">
@@ -294,9 +326,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">
@@ -333,9 +369,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">
@@ -382,9 +422,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">
@@ -402,9 +446,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">
@@ -437,9 +485,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -450,9 +502,13 @@
 			</remove-channel>
 			<update-channel id="links">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Links</label>
+                <description>Linked controllers and sensors</description>
 			</update-channel>
 			<update-channel id="link-candidates">
 				<type>dirigera:text-veto-advanced</type>
+                <label>Link Candidates</label>
+                <description>Candidates which can be linked</description>
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="1">

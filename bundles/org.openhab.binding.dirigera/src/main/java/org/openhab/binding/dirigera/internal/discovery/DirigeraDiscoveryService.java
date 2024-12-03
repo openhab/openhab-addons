@@ -46,15 +46,12 @@ public class DirigeraDiscoveryService extends AbstractDiscoveryService {
         super(SUPPORTED_THING_TYPES_UIDS, 90, true);
         dirigeraDiscoveryManager = manager;
         dirigeraDiscoveryManager.setDiscoverService(this);
-        logger.info("DIRIGERA DISCOVERY constructor");
     }
 
     public synchronized void gatewayDiscovered(String ip, Map<String, Object> properties) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder
                 .create(new ThingUID(THING_TYPE_GATEWAY, ip.replace(".", "-"))).withLabel("DIRIGERA Gateway " + ip)
                 .withRepresentationProperty(PROPERTY_IP_ADDRESS).withProperties(properties).build();
-        logger.info("DIRIGERA DISCOVERY gateway type {} uid {} discovered - known {}",
-                discoveryResult.getThingTypeUID(), discoveryResult.getThingUID(), discoveryResult.getFlag());
         thingDiscovered(discoveryResult);
     }
 
@@ -68,7 +65,6 @@ public class DirigeraDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.info("DIRIGERA DISCOVERY searching manually for gateways");
         dirigeraDiscoveryManager.scanForHub();
     }
 }

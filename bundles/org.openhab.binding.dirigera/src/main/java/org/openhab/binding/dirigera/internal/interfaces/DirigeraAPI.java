@@ -23,7 +23,6 @@ import org.openhab.core.types.State;
  * Several times seen that gateway goes into a "quite mode" during monkey testing. It's still accepting commands but no
  * more updates were received.
  *
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault

@@ -102,7 +102,7 @@ public class Websocket {
             request.setHeader("Authorization", "Bearer " + gateway.getToken());
 
             String websocketURL = String.format(WS_URL, gateway.getIpAddress());
-            logger.trace("DIRIGERA Websocket start {}", websocketURL);
+            logger.trace("DIRIGERA WS start {}", websocketURL);
             websocketClient = Optional.of(client);
             client.start();
             client.connect(this, new URI(websocketURL), request);
@@ -165,7 +165,6 @@ public class Websocket {
     @OnWebSocketMessage
     public void onTextMessage(String message) {
         increase(MESSAGES);
-        // logger.info("DIRIGERA onMessage {}", message);
         gateway.websocketUpdate(message);
     }
 

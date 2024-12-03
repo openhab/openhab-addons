@@ -64,9 +64,6 @@ public class ColorLightHandler extends TemperatureLightHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        logger.trace("DIRIGERA COLOR_LIGHT {} handleCommand {} Command {} Device {}", thing.getLabel(), channelUID,
-                command, hsbDevice);
-
         String channel = channelUID.getIdWithoutGroup();
         if (CHANNEL_LIGHT_COLOR.equals(channel)) {
             if (command instanceof HSBType hsb) {
@@ -93,23 +90,23 @@ public class ColorLightHandler extends TemperatureLightHandler {
                     brightnessCommand(new HSBType("0,0," + requestedBrightness));
                     super.addOnOffCommand(true);
                 }
-            } else {
-                logger.trace("DIRIGERA COLOR_LIGHT type not known {}", command.getClass());
             }
         }
         if (CHANNEL_LIGHT_TEMPERATURE.equals(channel)) {
             if (command instanceof PercentType percent) {
+                // there are color lights which cannot handle temperature as stored in capabilities
+                // in this case calculate color which is fitting to temperature
+                // otherwise TemperatureLightHandler will do the command
                 if (!receiveCapabilities.contains(Model.COLOR_TEMPERATURE_CAPABILITY)) {
                     int kelvin = super.getKelvin(percent.intValue());
                     HSBType colorTemp = getHSBTemperature(kelvin);
                     HSBType colorTempAdaption = new HSBType(colorTemp.getHue(), colorTemp.getSaturation(),
                             hsbDevice.getBrightness());
-                    logger.trace("DIRIGERA COLOR_LIGHT {} handleCommand temperature adaption {}", thing.getLabel(),
-                            colorTempAdaption);
+                    if (customDebug) {
+                        logger.info("DIRIGERA COLOR_LIGHT {} handle temperature as color {}", thing.getLabel(),
+                                colorTempAdaption);
+                    }
                     colorCommand(colorTempAdaption);
-                } else {
-                    logger.trace("DIRIGERA COLOR_LIGHT {} handleCommand to be executed by temperature light {}",
-                            thing.getLabel(), command);
                 }
             }
         }
@@ -133,8 +130,6 @@ public class ColorLightHandler extends TemperatureLightHandler {
             colorAttributes.put("colorHue", hsb.getHue().intValue());
             colorAttributes.put("colorSaturation", hsb.getSaturation().intValue() / 100.0);
             super.changeProperty(LightCommand.Action.COLOR, colorAttributes);
-        } else {
-            logger.trace("DIRIGERA COLOR_LIGHT hsb too close Device {} Requested {}", hsbDevice, hsb);
         }
     }
 
@@ -152,8 +147,6 @@ public class ColorLightHandler extends TemperatureLightHandler {
                 brightnessattributes.put("lightLevel", hsb.getBrightness().intValue());
                 super.changeProperty(LightCommand.Action.BRIGHTNESS, brightnessattributes);
             }
-        } else {
-            logger.trace("DIRIGERA COLOR_LIGHT brightness too close Device {} Requested {}", hsbDevice, hsb);
         }
     }
 
@@ -203,8 +196,6 @@ public class ColorLightHandler extends TemperatureLightHandler {
                 }
             }
             if (deliverHSB) {
-                // logger.warn("DIRIGERA COLOR_LIGHT {} Device {} State {}", thing.getLabel(), hsbDevice,
-                // hsbStateReflection);
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_COLOR), hsbStateReflection);
             }
         }
