@@ -15,6 +15,7 @@
 			<channel id="speed" typeId="light-mode-speed"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 			<channel id="last-update" typeId="last-update"/>
+			<channel id="rssi" typeId="rssi"/>
 		</channels>
 		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
@@ -31,6 +32,7 @@
 			<channel id="speed" typeId="light-mode-speed"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 			<channel id="last-update" typeId="last-update"/>
+			<channel id="rssi" typeId="rssi"/>
 		</channels>
 		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
@@ -45,6 +47,7 @@
 			<channel id="speed" typeId="light-mode-speed"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 			<channel id="last-update" typeId="last-update"/>
+			<channel id="rssi" typeId="rssi"/>
 		</channels>
 		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
@@ -57,6 +60,7 @@
 			<channel id="state" typeId="system.power"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 			<channel id="last-update" typeId="last-update"/>
+			<channel id="rssi" typeId="rssi"/>
 		</channels>
 		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
@@ -72,6 +76,7 @@
 			<channel id="mode" typeId="fan-mode"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 			<channel id="last-update" typeId="last-update"/>
+			<channel id="rssi" typeId="rssi"/>
 		</channels>
 		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
@@ -171,11 +176,19 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="last-update">
+	<channel-type id="last-update" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>Timestamp of last status update</description>
 		<category>Time</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="rssi" advanced="true">
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
+		<label>RSSI</label>
+		<description>WiFi Received Signal Strength Indicator</description>
+		<category>QualityOfService</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -184,6 +197,7 @@
 		<channels>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 			<channel id="last-update" typeId="last-update"/>
+			<channel id="rssi" typeId="rssi"/>
 		</channels>
 	</channel-group-type>
 

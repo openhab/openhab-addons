@@ -57,6 +57,7 @@ public class WizBindingConstants {
     public static final String CHANNEL_LAST_UPDATE = "last-update";
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_REVERSE = "reverse";
+    public static final String CHANNEL_RSSI = "rssi";
     public static final String CHANNEL_SIGNAL_STRENGTH = "signal-strength";
     public static final String CHANNEL_SPEED = "speed";
     public static final String CHANNEL_STATE = "state";
