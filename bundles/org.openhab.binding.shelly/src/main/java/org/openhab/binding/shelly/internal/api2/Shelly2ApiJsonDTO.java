@@ -722,6 +722,19 @@ public class Shelly2ApiJsonDTO {
                 public String[] errors;
             }
 
+            public static class Shelly2StatusEm1 {
+                public Integer id;
+                public Double current;
+                public Double voltage;
+                @SerializedName("act_power")
+                public Double actPower;
+                @SerializedName("aprt_power")
+                public Double aptrPower;
+                public Double pf;
+                public String calibration;
+                public ArrayList<String> errors;
+            }
+
             public static class Shelly2DeviceStatusEm1Data {
                 public Integer id;
 
@@ -926,19 +939,6 @@ public class Shelly2ApiJsonDTO {
         public Shelly2Energy aenergy;
         public Shelly2DeviceStatusTemp temperature;
         public String[] errors;
-    }
-
-    public static class Shelly2StatusEm1 {
-        public Integer id;
-        public Double current;
-        public Double voltage;
-        @SerializedName("act_power")
-        public Double actPower;
-        @SerializedName("aprt_power")
-        public Double aptrPower;
-        public Double pf;
-        public String calibration;
-        public ArrayList<String> errors;
     }
 
     public static class Shelly2DeviceStatusTemp {
