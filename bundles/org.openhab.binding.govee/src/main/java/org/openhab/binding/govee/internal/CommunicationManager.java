@@ -15,14 +15,20 @@ package org.openhab.binding.govee.internal;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.MulticastSocket;
 import java.net.NetworkInterface;
+import java.net.StandardProtocolFamily;
+import java.net.StandardSocketOptions;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -138,24 +144,27 @@ public class CommunicationManager {
                     activeReceiver.setDiscoveryResultsReceiver(receiver);
                 }
 
-                final InetAddress broadcastAddress = InetAddress.getByName(DISCOVERY_MULTICAST_ADDRESS);
-                final InetSocketAddress socketAddress = new InetSocketAddress(broadcastAddress, RESPONSE_PORT);
-                final Instant discoveryStartTime = Instant.now();
-                final Instant discoveryEndTime = discoveryStartTime.plusSeconds(INTERFACE_TIMEOUT_SEC);
+                final Instant discoveryEndTime = Instant.now().plusSeconds(INTERFACE_TIMEOUT_SEC);
 
-                try (MulticastSocket sendSocket = new MulticastSocket(socketAddress)) {
-                    sendSocket.setSoTimeout(INTERFACE_TIMEOUT_SEC * 1000);
-                    sendSocket.setReuseAddress(true);
-                    sendSocket.setBroadcast(true);
-                    sendSocket.setTimeToLive(2);
-                    sendSocket.joinGroup(new InetSocketAddress(broadcastAddress, RESPONSE_PORT), intf);
-
-                    byte[] requestData = DISCOVER_REQUEST.getBytes();
-
-                    DatagramPacket request = new DatagramPacket(requestData, requestData.length, broadcastAddress,
-                            DISCOVERY_PORT);
-                    sendSocket.send(request);
-                }
+                Collections.list(intf.getInetAddresses()).stream().filter(address -> address instanceof Inet4Address)
+                        .map(address -> address.getHostAddress()).forEach(ipv4Address -> {
+                            try (DatagramChannel channel = (DatagramChannel) DatagramChannel
+                                    .open(StandardProtocolFamily.INET)
+                                    .setOption(StandardSocketOptions.SO_REUSEADDR, true)
+                                    .setOption(StandardSocketOptions.IP_MULTICAST_TTL, 64)
+                                    .setOption(StandardSocketOptions.IP_MULTICAST_IF, intf)
+                                    .bind(new InetSocketAddress(ipv4Address, DISCOVERY_PORT))
+                                    .configureBlocking(false)) {
+                                logger.trace("Datagram channel bound to {}:{} on {}", ipv4Address, DISCOVERY_PORT,
+                                        intf.getDisplayName());
+                                channel.send(ByteBuffer.wrap(DISCOVER_REQUEST.getBytes()),
+                                        new InetSocketAddress(DISCOVERY_MULTICAST_ADDRESS, DISCOVERY_PORT));
+                                logger.trace("Sent request to {}:{} with content = {}", DISCOVERY_MULTICAST_ADDRESS,
+                                        DISCOVERY_PORT, DISCOVER_REQUEST);
+                            } catch (IOException e) {
+                                logger.debug("Network error", e);
+                            }
+                        });
 
                 do {
                     try {
@@ -180,7 +189,7 @@ public class CommunicationManager {
         private boolean stopped = false;
         private @Nullable DiscoveryResultReceiver discoveryResultReceiver;
 
-        private @Nullable MulticastSocket socket;
+        private @Nullable DatagramSocket socket;
 
         StatusReceiver() {
             super("GoveeStatusReceiver");
@@ -208,13 +217,13 @@ public class CommunicationManager {
         public void run() {
             while (!stopped) {
                 try {
-                    socket = new MulticastSocket(RESPONSE_PORT);
+                    socket = new DatagramSocket(RESPONSE_PORT);
                     byte[] buffer = new byte[10240];
-                    socket.setReuseAddress(true);
+                    Objects.requireNonNull(socket).setReuseAddress(true);
                     while (!stopped) {
                         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                        if (!socket.isClosed()) {
-                            socket.receive(packet);
+                        if (!Objects.requireNonNull(socket).isClosed()) {
+                            Objects.requireNonNull(socket).receive(packet);
                         } else {
                             logger.warn("Socket was unexpectedly closed");
                             break;
@@ -262,12 +271,13 @@ public class CommunicationManager {
                         }
                     }
                 } catch (IOException e) {
-                    logger.warn("Exception when receiving status packet", e);
+                    logger.debug("Exception when receiving status packet {}", e.getMessage());
                     // as we haven't received a packet we also don't know where it should have come from
                     // hence, we don't know which thing put offline.
                     // a way to monitor this would be to keep track in a list, which device answers we expect
                     // and supervise an expected answer within a given time but that will make the whole
                     // mechanism much more complicated and may be added in the future
+                    // PS it also seems to be 'normal' to encounter errors when in device discovery mode
                 } finally {
                     if (socket != null) {
                         socket.close();
