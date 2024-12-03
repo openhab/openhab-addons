@@ -72,6 +72,17 @@ Base64 encoding is not supported
 | state           | String         | RO  | The current state of the cover, possibly including opening, closing, or stopped. |
 | json-attributes | String         | RO  | Additional attributes, as a serialized JSON string.                              |
 
+### [Device Tracker](https://www.home-assistant.io/integrations/device_tracker.mqtt/)
+
+| Channel ID      | Type          | R/W | Description                                                                                                                        |
+|-----------------|---------------|-----|------------------------------------------------------------------------------------------------------------------------------------|
+| home            | Switch        | RO  | If the tracker reports itself as home or not home.                                                                                 |
+| location-name   | String        | RO  | The arbitrary location the tracker reports itself as at (can often be "home" or "not_home").                                       |
+| location        | Location      | RO  | The GPS location, if the tracker can report it.                                                                                    |
+| gps-accuracy    | Number:Length | RO  | The accuracy of a GPS fix. Even if a tracker can provide GPS location, it may not be able to determine and/or report its accuracy. |
+| source-type     | String        | RO  | The source of the data, if the tracker reports it. May be "gps", "router", "bluetooth", or "bluetooth_le".                         |
+| json-attributes | String        | RO  | Additional attributes, as a serialized JSON string.                                                                                |
+
 ### [Device Trigger](https://www.home-assistant.io/integrations/device_trigger.mqtt/)
 
 If a device has multiple device triggers for the same subtype (the particular button), they will only show up as a single channel, and all events for that button will be delivered to that channel.
