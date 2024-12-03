@@ -10,12 +10,12 @@
 		</supported-bridge-type-refs>
 
 		<label>Light Sensor</label>
-		<description>Sensor to detect illuminance in your room</description>
+		<description>Sensor measuring illuminance in your room</description>
 
 		<channels>
 			<channel id="illuminance" typeId="illuminance">
 				<label>Illuminance</label>
-				<description>Shows illuminance in Lux </description>
+				<description>Illuminance in Lux </description>
 			</channel>
 		</channels>
 

@@ -34,8 +34,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SpeakerHandler} to control speaker devices
@@ -44,7 +42,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SpeakerHandler extends BaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(SpeakerHandler.class);
 
     public SpeakerHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
@@ -77,40 +74,27 @@ public class SpeakerHandler extends BaseHandler {
                                     : "playbackPaused");
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, playState);
-                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
                             super.sendAttributes(attributes);
                         } else if (command instanceof NextPreviousType nextPrevious) {
                             String playState = (NextPreviousType.NEXT.equals(nextPrevious) ? "playbackNext"
                                     : "playbackPrevious");
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, playState);
-                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
                             super.sendAttributes(attributes);
-                        } else {
-                            logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
-                                    channel);
                         }
                         break;
                     case CHANNEL_VOLUME:
                         if (command instanceof PercentType percent) {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, percent.intValue());
-                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
                             super.sendAttributes(attributes);
-                        } else {
-                            logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
-                                    channel);
                         }
                         break;
                     case CHANNEL_MUTE:
                         if (command instanceof OnOffType onOff) {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
                             super.sendAttributes(attributes);
-                        } else {
-                            logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
-                                    channel);
                         }
                         break;
                 }
@@ -123,11 +107,7 @@ public class SpeakerHandler extends BaseHandler {
                             mode.put("shuffle", onOff.equals(OnOffType.ON));
                             JSONObject attributes = new JSONObject();
                             attributes.put("playbackModes", mode);
-                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
                             super.sendAttributes(attributes);
-                        } else {
-                            logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
-                                    channel);
                         }
                         break;
                     case CHANNEL_CROSSFADE:
@@ -136,11 +116,7 @@ public class SpeakerHandler extends BaseHandler {
                             mode.put("crossfade", onOff.equals(OnOffType.ON));
                             JSONObject attributes = new JSONObject();
                             attributes.put("playbackModes", mode);
-                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
                             super.sendAttributes(attributes);
-                        } else {
-                            logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
-                                    channel);
                         }
                         break;
                     case CHANNEL_REPEAT:
@@ -163,7 +139,6 @@ public class SpeakerHandler extends BaseHandler {
                                 mode.put("repeat", repeatModeStr);
                                 JSONObject attributes = new JSONObject();
                                 attributes.put("playbackModes", mode);
-                                logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
                                 super.sendAttributes(attributes);
                             }
                         }
@@ -226,9 +201,6 @@ public class SpeakerHandler extends BaseHandler {
                             }
                             if (playMode != -1) {
                                 updateState(new ChannelUID(thing.getUID(), CHANNEL_REPEAT), new DecimalType(playMode));
-                            } else {
-                                logger.debug("DIRIGERA SPEAKER_DEVICE no repeat mode {} in {}", repeatMode,
-                                        playbackModes);
                             }
                         }
 

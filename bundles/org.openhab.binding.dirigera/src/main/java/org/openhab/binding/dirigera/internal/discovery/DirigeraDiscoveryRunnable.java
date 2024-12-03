@@ -49,7 +49,6 @@ public class DirigeraDiscoveryRunnable implements Runnable {
     @Override
     public void run() {
         String homeUrl = String.format(HOME_URL, ipAddress);
-        // logger.info("DIRIGERA DISCOVERY check {}", ipAddress);
         ContentResponse response;
         try {
             response = httpClient.newRequest(homeUrl).header(HttpHeader.WWW_AUTHENTICATE, "Basic")
@@ -59,7 +58,7 @@ public class DirigeraDiscoveryRunnable implements Runnable {
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(PROPERTY_IP_ADDRESS, ipAddress);
                 discovery.gatewayDiscovered(ipAddress, properties);
-                logger.info("DIRIGERA DISCOVERY possible candidate {}", ipAddress);
+                logger.trace("DIRIGERA DISCOVERY possible candidate {}", ipAddress);
                 return;
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {

@@ -77,9 +77,6 @@ public class BlindHandler extends BaseHandler {
                             } else {
                                 logger.info("DIRIGERA BLIND_DEVICE Blind state unknown {}", state.intValue());
                             }
-                        } else {
-                            logger.trace("DIRIGERA BLIND_DEVICE command {} doesn't fit to channel {}", command,
-                                    channel);
                         }
                         break;
                     case CHANNEL_BLIND_LEVEL:
@@ -87,9 +84,6 @@ public class BlindHandler extends BaseHandler {
                             JSONObject attributes = new JSONObject();
                             attributes.put("blindsTargetLevel", percent.intValue());
                             super.sendAttributes(attributes);
-                        } else {
-                            logger.trace("DIRIGERA BLIND_DEVICE command {} doesn't fit to channel {}", command,
-                                    channel);
                         }
                         break;
                 }

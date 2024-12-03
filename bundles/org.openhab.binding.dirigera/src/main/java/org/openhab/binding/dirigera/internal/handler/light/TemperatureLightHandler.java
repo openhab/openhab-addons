@@ -26,8 +26,6 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link TemperatureLightHandler} for lights with brightness and color temperature
@@ -36,9 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TemperatureLightHandler extends DimmableLightHandler {
-    private final Logger logger = LoggerFactory.getLogger(TemperatureLightHandler.class);
-
-    // default values of "standard IKEA lamps" from json
+    // default values of "standard IKEA lamps" from JSON
     private int colorTemperatureMax = 2202;
     private int colorTemperatureMin = 4000;
     private int range = colorTemperatureMin - colorTemperatureMax;
@@ -70,8 +66,6 @@ public class TemperatureLightHandler extends DimmableLightHandler {
             }
             updateProperties(properties);
             range = colorTemperatureMin - colorTemperatureMax;
-            logger.debug("DIRIGERA TEMPERATURE_LIGHT Temperature range from {} to {}", colorTemperatureMin,
-                    colorTemperatureMax);
             handleUpdate(values);
         }
     }
@@ -79,8 +73,6 @@ public class TemperatureLightHandler extends DimmableLightHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        logger.trace("DIRIGERA TEMPERATURE_LIGHT {} handleCommand {} {} {}", thing.getLabel(), channelUID, command,
-                command.getClass());
         String channel = channelUID.getIdWithoutGroup();
         String targetProperty = channel2PropertyMap.get(channel);
         if (targetProperty != null) {
@@ -100,9 +92,6 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                                 // fake event for power OFF
                                 updateState(channelUID, percent);
                             }
-                        } else {
-                            logger.trace("DIRIGERA TEMPERATURE_LIGHT {} doesn't have temperature capability {}",
-                                    thing.getLabel(), receiveCapabilities);
                         }
                     } else if (command instanceof OnOffType onOff) {
                         super.addOnOffCommand(OnOffType.ON.equals(onOff));

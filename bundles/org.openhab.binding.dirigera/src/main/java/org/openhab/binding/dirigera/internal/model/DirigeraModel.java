@@ -45,8 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Model} is representing the structural data of the gateway. Concrete values of devices shall not be
- * accessed.
+ * The {@link DirigeraModel} is representing the structural data of the devices connected to gateway. Concrete values of
+ * devices shall not be accessed.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -86,14 +86,13 @@ public class DirigeraModel implements Model {
             model = home;
             detection();
         }
-        logger.info("DIRIGERA MODEL full update {} ms", Duration.between(startTime, Instant.now()).toMillis());
+        logger.trace("DIRIGERA MODEL full update {} ms", Duration.between(startTime, Instant.now()).toMillis());
         return 200;
     }
 
     @Override
     public synchronized void detection() {
         if (gateway.discoveryEnabled()) {
-            logger.debug("DIRIGERA MODEL detection started");
             List<String> previousDevices = new ArrayList<>();
             previousDevices.addAll(devices);
 
@@ -106,7 +105,6 @@ public class DirigeraModel implements Model {
             previousDevices.forEach(deviceId -> {
                 boolean known = gateway.isKnownDevice(deviceId);
                 boolean removed = !foundDevices.contains(deviceId);
-                // logger.debug("DIRIGERA MODEL Device {} known {} removed {}", deviceId, known, removed);
                 if (removed) {
                     removedDeviceScene(deviceId);
                 } else {
@@ -122,8 +120,6 @@ public class DirigeraModel implements Model {
                     addedDeviceScene(deviceId);
                 }
             });
-        } else {
-            logger.debug("DIRIGERA MODEL discovery disabled");
         }
     }
 
@@ -426,10 +422,10 @@ public class DirigeraModel implements Model {
                         } else if (capabilityList.contains("isOn")) {
                             return THING_TYPE_SWITCH_LIGHT;
                         } else {
-                            logger.warn("DIRIGERA MODEL cannot identify light {}", data);
+                            logger.info("DIRIGERA MODEL cannot identify light {}", data);
                         }
                     } else {
-                        logger.warn("DIRIGERA MODEL cannot identify light {}", data);
+                        logger.info("DIRIGERA MODEL cannot identify light {}", data);
                     }
                     break;
                 case DEVICE_TYPE_MOTION_SENSOR:

@@ -101,9 +101,6 @@ public class MotionSensorHandler extends BaseHandler {
                             break;
                         case 2:
                             String template = gateway().model().getTemplate(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
-                            logger.trace("MOTION_SENSOR schedule on {}", template);
-                            logger.trace("MOTION_SENSOR schedule on {}", String.format(template, startTime, endTime));
-
                             gateway().api().sendPatch(config.id,
                                     new JSONObject(String.format(template, startTime, endTime)));
                             break;
@@ -111,7 +108,6 @@ public class MotionSensorHandler extends BaseHandler {
                 }
                 break;
             case CHANNEL_SCHEDULE_START:
-                logger.trace("MOTION_SENSOR schedule start {} {}", command, (command instanceof StringType));
                 String startSchedule = gateway().model().getTemplate(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
                 if (command instanceof StringType string) {
                     // take string as it is, no consistency check
@@ -122,7 +118,6 @@ public class MotionSensorHandler extends BaseHandler {
                 gateway().api().sendPatch(config.id, new JSONObject(String.format(startSchedule, startTime, endTime)));
                 break;
             case CHANNEL_SCHEDULE_END:
-                logger.trace("MOTION_SENSOR schedule end {} {}", command, (command instanceof StringType));
                 String endSchedule = gateway().model().getTemplate(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
                 if (command instanceof StringType string) {
                     endTime = string.toFullString();
@@ -230,7 +225,7 @@ public class MotionSensorHandler extends BaseHandler {
                                                         updateState(
                                                                 new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
                                                                 UnDefType.UNDEF);
-                                                        logger.warn(
+                                                        logger.info(
                                                                 "MOTION_SENSOR Location not activated in IKEA App - cannot follow sun");
                                                     }
                                                     ZonedDateTime sunriseDateTime = gateway().getSunriseDateTime();
@@ -242,7 +237,7 @@ public class MotionSensorHandler extends BaseHandler {
                                                         updateState(
                                                                 new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END),
                                                                 UnDefType.UNDEF);
-                                                        logger.warn(
+                                                        logger.info(
                                                                 "MOTION_SENSOR Location not activated in IKEA App - cannot follow sun");
                                                     }
                                                 } else {
