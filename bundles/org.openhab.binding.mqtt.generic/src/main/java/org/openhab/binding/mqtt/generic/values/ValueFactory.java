@@ -54,7 +54,7 @@ public class ValueFactory {
                 value = new NumberValue(config.min, config.max, config.step, UnitUtils.parseUnit(config.unit));
                 break;
             case MqttBindingConstants.DIMMER:
-                value = new PercentageValue(config.min, config.max, config.step, config.on, config.off);
+                value = new PercentageValue(config.min, config.max, config.step, config.on, config.off, null);
                 break;
             case MqttBindingConstants.COLOR_HSB:
                 value = new ColorValue(ColorMode.HSB, config.on, config.off, config.onBrightness);

@@ -84,7 +84,7 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
         }
 
         onOffValue = new OnOffValue("on", "off");
-        brightnessValue = new PercentageValue(null, new BigDecimal(255), null, null, null);
+        brightnessValue = new PercentageValue(null, new BigDecimal(255), null, null, null, FORMAT_INTEGER);
 
         if (channelConfiguration.redTemplate != null && channelConfiguration.greenTemplate != null
                 && channelConfiguration.blueTemplate != null) {

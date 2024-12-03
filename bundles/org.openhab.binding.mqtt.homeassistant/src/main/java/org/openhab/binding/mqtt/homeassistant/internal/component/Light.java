@@ -73,6 +73,8 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
     protected static final String ON_COMMAND_TYPE_BRIGHTNESS = "brightness";
     protected static final String ON_COMMAND_TYPE_LAST = "last";
 
+    protected static final String FORMAT_INTEGER = "%.0f";
+
     /**
      * Configuration class for MQTT component
      */
@@ -276,7 +278,7 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
 
         onOffValue = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
         brightnessValue = new PercentageValue(null, new BigDecimal(channelConfiguration.brightnessScale), null, null,
-                null);
+                null, FORMAT_INTEGER);
         @Nullable
         List<String> effectList = channelConfiguration.effectList;
         if (effectList != null) {

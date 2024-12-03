@@ -61,6 +61,8 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
     private static final String POSITION_KEY = "position";
     private static final String STATE_KEY = "state";
 
+    private static final String FORMAT_INTEGER = "%.0f";
+
     private final Logger logger = LoggerFactory.getLogger(Valve.class);
 
     /**
@@ -121,7 +123,7 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
         onOffValue = new OnOffValue(channelConfiguration.stateOpen, channelConfiguration.stateClosed,
                 channelConfiguration.payloadOpen, channelConfiguration.payloadClose);
         positionValue = new PercentageValue(BigDecimal.valueOf(channelConfiguration.positionClosed),
-                BigDecimal.valueOf(channelConfiguration.positionOpen), null, null, null);
+                BigDecimal.valueOf(channelConfiguration.positionOpen), null, null, null, FORMAT_INTEGER);
 
         if (channelConfiguration.reportsPosition) {
             buildChannel(VALVE_CHANNEL_ID, ComponentChannelType.DIMMER, positionValue, getName(), this)

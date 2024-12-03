@@ -54,9 +54,10 @@ public class PercentageValue extends Value {
     private final BigDecimal stepPercent;
     private final @Nullable String onValue;
     private final @Nullable String offValue;
+    private final @Nullable String formatOverride;
 
     public PercentageValue(@Nullable BigDecimal min, @Nullable BigDecimal max, @Nullable BigDecimal step,
-            @Nullable String onValue, @Nullable String offValue) {
+            @Nullable String onValue, @Nullable String offValue, @Nullable String formatOverride) {
         super(CoreItemFactory.DIMMER, List.of(DecimalType.class, QuantityType.class, IncreaseDecreaseType.class,
                 OnOffType.class, UpDownType.class, StringType.class));
         this.onValue = onValue;
@@ -69,6 +70,7 @@ public class PercentageValue extends Value {
         this.span = this.max.subtract(this.min);
         this.step = step == null ? BigDecimal.ONE : step;
         this.stepPercent = this.step.multiply(HUNDRED).divide(this.span, MathContext.DECIMAL128);
+        this.formatOverride = formatOverride;
     }
 
     @Override
@@ -135,7 +137,10 @@ public class PercentageValue extends Value {
 
     @Override
     public String getMQTTpublishValue(Command command, @Nullable String pattern) {
-        String formatPattern = pattern;
+        String formatPattern = this.formatOverride;
+        if (formatPattern == null) {
+            formatPattern = pattern;
+        }
         if (formatPattern == null) {
             formatPattern = "%s";
         }
@@ -170,7 +175,7 @@ public class PercentageValue extends Value {
 
     @Override
     public StateDescriptionFragmentBuilder createStateDescription(boolean readOnly) {
-        return super.createStateDescription(readOnly).withMaximum(HUNDRED).withMinimum(BigDecimal.ZERO).withStep(step)
-                .withPattern("%.0f %%");
+        return super.createStateDescription(readOnly).withMaximum(HUNDRED).withMinimum(BigDecimal.ZERO)
+                .withStep(stepPercent).withPattern("%.0f %%");
     }
 }
