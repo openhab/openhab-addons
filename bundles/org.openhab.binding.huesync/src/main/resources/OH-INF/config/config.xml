@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:box:thing">
+		<parameter-group name="connection">
+			<label>Connection</label>
+		</parameter-group>
+
+		<parameter name="host" type="text" groupName="connection">
+			<context>network-address</context>
+			<label>Address</label>
+			<description>Network address of the HDMI Sync Box.</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65535" groupName="connection">
+			<context></context>
+			<label>Port</label>
+			<description>Port of the HDMI Sync Box.</description>
+			<advanced>true</advanced>
+			<default>443</default>
+			<required>true</required>
+		</parameter>
+		<parameter name="registrationId" type="text" groupName="connection">
+			<context></context>
+			<label>Registration Id</label>
+			<description>The id of the API registration.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="apiAccessToken" type="text" groupName="connection">
+			<context>password</context>
+			<label>Access Token</label>
+			<description>To enable the binding to communicate with the device, a registration is required. Once the registration
+				process is completed, the acquired token will authorize the binding to interact with the device. After initial
+				discovery and thing creation the device will stay offline. Press the registration button on the sync box for 3
+				seconds to grant the binding the required permissions.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="statusUpdateInterval" type="integer" min="1" step="1" unit="s" groupName="connection">
+			<label>Update Interval</label>
+			<description>Seconds between fetching values from the Hue Sync Box.</description>
+			<advanced>true</advanced>
+			<required>true</required>
+			<default>10</default>
+			<unitLabel>Seconds</unitLabel>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
