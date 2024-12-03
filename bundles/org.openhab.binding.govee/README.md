@@ -46,8 +46,8 @@ Here is a list of the supported devices (the ones marked with * have been tested
 - H608B String Downlights 3M
 - H608C String Downlights 2M
 - H608D String Downlights 10M
-- H60A0 Ceiling Light (*)
-- H60A1 Smart Ceiling Light
+- H60A0 Ceiling Light
+- H60A1 Smart Ceiling Light (*)
 - H610A Glide Lively Wall Lights
 - H610B Music Wall Lights
 - H6110 2x5M Multicolor with Alexa
