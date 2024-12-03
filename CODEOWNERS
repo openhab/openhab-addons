@@ -246,6 +246,7 @@
 /bundles/org.openhab.binding.mybmw/ @ntruchsess @mherwege @martingrassl
 /bundles/org.openhab.binding.mynice/ @clinique
 /bundles/org.openhab.binding.mystrom/ @pail23
+/bundles/org.openhab.binding.myuplink/ @alexf2015
 /bundles/org.openhab.binding.nanoleaf/ @stefan-hoehn
 /bundles/org.openhab.binding.neato/ @jjlauterbach
 /bundles/org.openhab.binding.neeo/ @morph166955
