@@ -63,7 +63,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         if (!gateway.getToken().isBlank()) {
             return sourceRequest.header(HttpHeader.AUTHORIZATION, "Bearer " + gateway.getToken());
         } else {
-            logger.warn("DIRIGERA Cannot operate with token {}", gateway.getToken());
+            logger.warn("DIRIGERA API Cannot operate with token {}", gateway.getToken());
             return sourceRequest;
         }
     }
@@ -108,7 +108,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             }
             return statusObject;
         } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
-            logger.warn("DIRIGERA Exception calling  {}", url);
+            logger.warn("DIRIGERA API Exception calling  {}", url);
             statusObject = getErrorJson(500, e.getMessage());
             return statusObject;
         } finally {
@@ -125,10 +125,10 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
             int responseStatus = response.getStatus();
             if (responseStatus != 200 && responseStatus != 202) {
-                logger.warn("DIRIGERA Scene trigger failed with {}", responseStatus);
+                logger.warn("DIRIGERA API Scene trigger failed with {}", responseStatus);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("DIRIGERA Exception calling {}", url);
+            logger.warn("DIRIGERA API Exception calling {}", url);
         } finally {
             endCalling();
         }
@@ -211,7 +211,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             }
             return statusObject;
         } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
-            logger.warn("DIRIGERA Exception calling  {}", url);
+            logger.warn("DIRIGERA API Exception calling  {}", url);
             statusObject = getErrorJson(-1, e.getMessage());
             return statusObject;
         } finally {

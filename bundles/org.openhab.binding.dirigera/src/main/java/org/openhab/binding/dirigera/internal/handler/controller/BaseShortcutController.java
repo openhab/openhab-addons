@@ -60,7 +60,6 @@ public class BaseShortcutController extends BaseHandler {
         CLICK_PATTERNS.forEach(pattern -> {
             String patternKey = deviceId + ":" + channel + ":" + pattern;
             if (!sceneMapping.containsKey(patternKey)) {
-                logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER {} pattern not found in storage", patternKey);
                 String patternSceneId = storage.get(patternKey);
                 if (patternSceneId != null) {
                     sceneMapping.put(patternKey, patternSceneId);
@@ -68,11 +67,10 @@ public class BaseShortcutController extends BaseHandler {
                     String uuid = getUID();
                     String createdUUID = gateway().api().createScene(uuid, pattern, deviceId);
                     if (uuid.equals(createdUUID)) {
-                        logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER scene created for {}", patternKey);
                         storage.put(patternKey, createdUUID);
                         sceneMapping.put(patternKey, createdUUID);
                     } else {
-                        logger.warn("DIRIGERA BASE_SHORTCUT_CONTROLLER scene create failed for {}", patternKey);
+                        logger.info("DIRIGERA BASE_SHORTCUT_CONTROLLER scene create failed for {}", patternKey);
                     }
                 }
             }
@@ -125,9 +123,7 @@ public class BaseShortcutController extends BaseHandler {
 
     @Override
     public void handleUpdate(JSONObject update) {
-        // logger.info("Stored trigger times {}", triggerTimes);
         super.handleUpdate(update);
-        // logger.warn("DIRIGERA BASE_SHORTCUT_CONTROLLER update {}", update);
         if (update.has(PROPERTY_DEVICE_ID) && update.has("triggers")) {
             // first check if trigger happened
             String sceneId = update.getString(PROPERTY_DEVICE_ID);
@@ -139,8 +135,6 @@ public class BaseShortcutController extends BaseHandler {
                     String triggerTimeString = triggerObject.getString("triggeredAt");
                     Instant triggerTime = Instant.parse(triggerTimeString);
                     Instant lastTriggered = triggerTimes.get(sceneId);
-                    // logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Trigger time {}, last triggered {}", triggerTime,
-                    // lastTriggered);
                     if (lastTriggered != null) {
                         if (triggerTime.isAfter(lastTriggered)) {
                             triggerTimes.put(sceneId, triggerTime);
@@ -170,7 +164,6 @@ public class BaseShortcutController extends BaseHandler {
                                 pattern = "LONG_PRESSED";
                                 break;
                         }
-                        logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Deliver {} to {}", pattern, channelPattern[1]);
                         if (!pattern.isBlank()) {
                             triggerChannel(new ChannelUID(thing.getUID(), channelPattern[1]), pattern);
                         }

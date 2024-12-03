@@ -35,33 +35,33 @@ public class DebugActions implements ThingActions {
     private Optional<DebugHandler> thingHandler = Optional.empty();
 
     /**
-     * Dump handler device JSON for debug purposes.
+     * Get handler device JSON for debug purposes.
      */
-    @RuleAction(label = "@text/actionDumpJsonLabel", description = "@text/actionDumpJsonDescription")
-    public @ActionOutput(name = "result", label = "Device JSON", type = "java.lang.String") String dumpJSON() {
+    @RuleAction(label = "@text/actionGetJsonLabel", description = "@text/actionGetJsonDescription")
+    public @ActionOutput(name = "result", label = "Device JSON", type = "java.lang.String") String getJSON() {
         if (thingHandler.isPresent()) {
-            return thingHandler.get().dumpJSON();
+            return thingHandler.get().getJSON();
         }
         return "{}";
     }
 
-    public static String dumpJSON(ThingActions actions) {
-        return ((DebugActions) actions).dumpJSON();
+    public static String getJSON(ThingActions actions) {
+        return ((DebugActions) actions).getJSON();
     }
 
     /**
-     * Dump gateway token from everywhere. No need to call it directly from gateway.
+     * Get gateway token from everywhere. No need to call it directly from gateway.
      */
-    @RuleAction(label = "@text/actionDumpTokenLabel", description = "@text/actionDumpTokenDescription")
-    public @ActionOutput(name = "result", label = "Token", type = "java.lang.String") String dumpToken() {
+    @RuleAction(label = "@text/actionGetTokenLabel", description = "@text/actionGetTokenDescription")
+    public @ActionOutput(name = "result", label = "Token", type = "java.lang.String") String getToken() {
         if (thingHandler.isPresent()) {
-            return thingHandler.get().dumpToken();
+            return thingHandler.get().getToken();
         }
         return "no token available";
     }
 
-    public static String dumpToken(ThingActions actions) {
-        return ((DebugActions) actions).dumpToken();
+    public static String getToken(ThingActions actions) {
+        return ((DebugActions) actions).getToken();
     }
 
     /**
@@ -69,20 +69,21 @@ public class DebugActions implements ThingActions {
      */
     @RuleAction(label = "@text/actionSetDebugLabel", description = "@text/actionSetDebugDescription")
     public void setDebug(
-            @ActionInput(name = "debug", label = "@text/debugFlagLabel", description = "@text/debugFlagDescription") boolean debug) {
+            @ActionInput(name = "debug", label = "@text/actionDebugFlagLabel", description = "@text/actionDebugFlagDescription") boolean debug,
+            @ActionInput(name = "all", label = "@text/actionDebugFlagForAllLabel", description = "@text/actionDebugFlagForAllDescription") boolean all) {
         if (thingHandler.isPresent()) {
-            thingHandler.get().setDebug(debug);
+            thingHandler.get().setDebug(debug, all);
         }
     }
 
-    public static void setDebug(ThingActions actions, boolean debug) {
-        ((DebugActions) actions).setDebug(debug);
+    public static void setDebug(ThingActions actions, boolean debug, boolean all) {
+        ((DebugActions) actions).setDebug(debug, all);
     }
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof DebugHandler dumpHandler) {
-            thingHandler = Optional.of(dumpHandler);
+        if (handler instanceof DebugHandler debugHandler) {
+            thingHandler = Optional.of(debugHandler);
         }
     }
 

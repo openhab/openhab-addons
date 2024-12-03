@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.dirigera.internal.discovery;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,17 +41,15 @@ public class DirigeraDiscoveryManager {
 
     @Activate
     public DirigeraDiscoveryManager() {
-        logger.info("DIRIGERA Manager constructor");
     }
 
     public void initialize(HttpClient httpClient, String ip) {
-        logger.info("DIRIGERA Manager received {}", ip);
+        logger.trace("DIRIGERA DISCOVERY IP address {}", ip);
         insecureClient = httpClient;
         ipAddress = ip;
     }
 
     public void setDiscoverService(DirigeraDiscoveryService discoveryService) {
-        logger.info("DIRIGERA DiscoveryService registered");
         this.discoveryService = discoveryService;
     }
 
@@ -63,7 +59,6 @@ public class DirigeraDiscoveryManager {
         String proxyIpAddress = ipAddress;
 
         if (currentDiscoveryService != null && currentInsecureClient != null && proxyIpAddress != null) {
-            Instant startTime = Instant.now();
             String ipAddress = proxyIpAddress;
             ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("dirigera-discovery");
             if (!ipAddress.isBlank()) {
@@ -75,13 +70,11 @@ public class DirigeraDiscoveryManager {
                             investigateIp, currentInsecureClient);
                     scheduler.execute(investigator);
                 }
-                logger.info("DIRIGERA DISCOVERY scan finished in {} seconds",
-                        Duration.between(startTime, Instant.now()).getSeconds());
             } else {
-                logger.info("DIRIGERA DISCOVERY cannot obtain IP address");
+                logger.debug("DIRIGERA DISCOVERY cannot obtain IP address");
             }
         } else {
-            logger.info("DIRIGERA DISCOVERY not ready yet");
+            logger.debug("DIRIGERA DISCOVERY not ready yet");
         }
     }
 

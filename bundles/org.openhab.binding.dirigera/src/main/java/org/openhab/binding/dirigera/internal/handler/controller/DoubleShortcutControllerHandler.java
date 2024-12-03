@@ -22,8 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Thing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DoubleShortcutControllerHandler} for triggering scenes
@@ -32,7 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DoubleShortcutControllerHandler extends BaseShortcutController {
-    private final Logger logger = LoggerFactory.getLogger(DoubleShortcutControllerHandler.class);
     public TreeMap<String, String> relations = new TreeMap<>();
 
     public DoubleShortcutControllerHandler(Thing thing, Map<String, String> mapping, Storage<String> bindingStorage) {
@@ -50,7 +47,6 @@ public class DoubleShortcutControllerHandler extends BaseShortcutController {
             // now register at gateway all device and scene ids
             String relationId = gateway().model().getRelationId(config.id);
             relations = gateway().model().getRelations(relationId);
-            logger.debug("Relations {}", relations);
             Entry<String, String> firstEntry = relations.firstEntry();
             String firstDeviceId = firstEntry.getKey();
             super.initializeScenes(firstDeviceId, CHANNEL_BUTTON_1);

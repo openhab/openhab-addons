@@ -94,12 +94,12 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             insecureClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
         } catch (Exception e) {
             // catching exception is necessary due to the signature of HttpClient.start()
-            logger.warn("Failed to start http client: {}", e.getMessage());
+            logger.warn("DIRIGERA FACTORY Failed to start http client: {}", e.getMessage());
             throw new IllegalStateException("Could not create HttpClient", e);
         }
         String ip = networkService.getPrimaryIpv4HostAddress();
         if (ip == null) {
-            logger.warn("Cannot find host IP");
+            logger.info("DIRIGERA FACTORY Cannot find host IP");
             ip = "";
         } else {
             manager.initialize(insecureClient, ip);
@@ -109,9 +109,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        boolean isSupported = SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-        // logger.warn("Request for {} is supported {}", thingTypeUID, isSupported);
-        return isSupported;
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
@@ -167,7 +165,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
         } else if (THING_TYPE_AIR_PURIFIER.equals(thingTypeUID)) {
             return new AirPurifierHandler(thing, AIR_PURIFIER_MAP);
         } else {
-            logger.info("Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
+            logger.debug("DIRIGERA FACTORY Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
             return null;
         }
     }
