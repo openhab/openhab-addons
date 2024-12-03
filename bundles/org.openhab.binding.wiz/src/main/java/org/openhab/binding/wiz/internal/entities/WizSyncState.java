@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.wiz.internal.entities;
 
-import static org.openhab.binding.wiz.internal.WizBindingConstants.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.wiz.internal.enums.WizColorMode;
 import org.openhab.binding.wiz.internal.utils.WizColorConverter;

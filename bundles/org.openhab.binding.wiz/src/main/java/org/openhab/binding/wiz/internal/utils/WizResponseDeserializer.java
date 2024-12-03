@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.wiz.internal.utils;
 
-import static org.openhab.binding.wiz.internal.WizBindingConstants.*;
-
 import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;

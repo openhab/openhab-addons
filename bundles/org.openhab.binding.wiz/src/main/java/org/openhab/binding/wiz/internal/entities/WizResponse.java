@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.wiz.internal.entities;
 
-import static org.openhab.binding.wiz.internal.WizBindingConstants.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wiz.internal.enums.WizMethodType;
