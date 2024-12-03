@@ -18,11 +18,11 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.vesync.internal.api.IHttpClientProvider;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -30,6 +30,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -41,12 +42,23 @@ import org.osgi.service.component.annotations.Reference;
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.vesync", service = ThingHandlerFactory.class)
-public class VeSyncHandlerFactory extends BaseThingHandlerFactory implements IHttpClientProvider {
+public class VeSyncHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
             THING_TYPE_AIR_PURIFIER, THING_TYPE_AIR_HUMIDIFIER);
 
-    private @Nullable HttpClient httpClientRef = null;
+    private final HttpClientFactory httpClientFactory;
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+
+    @Activate
+    public VeSyncHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
+        super();
+        this.httpClientFactory = httpClientFactory;
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -58,23 +70,13 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory implements IHt
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (VeSyncDeviceAirPurifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new VeSyncDeviceAirPurifierHandler(thing);
+            return new VeSyncDeviceAirPurifierHandler(thing, translationProvider, localeProvider);
         } else if (VeSyncDeviceAirHumidifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new VeSyncDeviceAirHumidifierHandler(thing);
+            return new VeSyncDeviceAirHumidifierHandler(thing, translationProvider, localeProvider);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new VeSyncBridgeHandler((Bridge) thing, this);
+            return new VeSyncBridgeHandler((Bridge) thing, httpClientFactory, translationProvider, localeProvider);
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        httpClientRef = httpClientFactory.getCommonHttpClient();
-    }
-
-    @Override
-    public @Nullable HttpClient getHttpClient() {
-        return httpClientRef;
     }
 }

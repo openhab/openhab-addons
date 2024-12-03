@@ -34,6 +34,9 @@ public class VeSyncRequestManagedDeviceBypassV2 extends VeSyncAuthenticatedReque
     @SerializedName("configModule")
     public String configModule = "";
 
+    @SerializedName("configModel")
+    public String configModel = "";
+
     @SerializedName("payload")
     public VesyncManagedDeviceBase payload = new VesyncManagedDeviceBase();
 
@@ -53,6 +56,75 @@ public class VeSyncRequestManagedDeviceBypassV2 extends VeSyncAuthenticatedReque
     }
 
     public static class EmptyPayload {
+    }
+
+    public static class SetLightDetectionPayload extends EmptyPayload {
+
+        public SetLightDetectionPayload(final boolean enabled) {
+            lightDetectionSwitch = enabled ? 1 : 0;
+        }
+
+        @SerializedName("lightDetectionSwitch")
+        public int lightDetectionSwitch = -1;
+    }
+
+    public static class SetPowerPayload extends EmptyPayload {
+
+        public SetPowerPayload(final boolean enabled, final int switchIdx) {
+            this.powerSwitch = enabled ? 1 : 0;
+            this.switchIdx = switchIdx;
+        }
+
+        @SerializedName("switchIdx")
+        public int switchIdx = -1;
+
+        @SerializedName("powerSwitch")
+        public int powerSwitch = -1;
+    }
+
+    public static class SetChildLockPayload extends EmptyPayload {
+
+        public SetChildLockPayload(final boolean enabled) {
+            this.childLockSwitch = enabled ? 1 : 0;
+        }
+
+        @SerializedName("childLockSwitch")
+        public int childLockSwitch = -1;
+    }
+
+    public static class SetScreenSwitchPayload extends EmptyPayload {
+
+        public SetScreenSwitchPayload(final boolean enabled) {
+            this.screenSwitch = enabled ? 1 : 0;
+        }
+
+        @SerializedName("screenSwitch")
+        public int screenSwitch = -1;
+    }
+
+    public static class SetManualSpeedLevelPayload extends EmptyPayload {
+
+        public SetManualSpeedLevelPayload(final int manualSpeedLevel) {
+            this.manualSpeedLevel = manualSpeedLevel;
+        }
+
+        @SerializedName("levelIdx")
+        public int levelIdx = 0;
+
+        @SerializedName("levelType")
+        public String levelType = "wind";
+
+        @SerializedName("manualSpeedLevel")
+        public int manualSpeedLevel = -1;
+    }
+
+    public static class SetWorkModePayload extends EmptyPayload {
+        public SetWorkModePayload(final String workMode) {
+            this.workMode = workMode;
+        }
+
+        @SerializedName("workMode")
+        public String workMode = "";
     }
 
     public static class SetSwitchPayload extends EmptyPayload {

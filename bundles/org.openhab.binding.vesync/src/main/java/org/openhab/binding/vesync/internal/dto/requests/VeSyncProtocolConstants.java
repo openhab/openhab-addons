@@ -23,6 +23,8 @@ public interface VeSyncProtocolConstants {
     String MODE_AUTO = "auto";
     String MODE_MANUAL = "manual";
     String MODE_SLEEP = "sleep";
+    String MODE_PET = "pet";
+    String MODE_AUTO_HUMIDITY = "humidity";
 
     String MODE_ON = "on";
     String MODE_DIM = "dim";
@@ -42,6 +44,7 @@ public interface VeSyncProtocolConstants {
     String DEVICE_GET_HUMIDIFIER_STATUS = "getHumidifierStatus";
 
     String DEVICE_LEVEL_TYPE_MIST = "mist";
+    String DEVICE_LEVEL_TYPE_WARM_MIST = "warm";
 
     // Air Purifier Commands
     String DEVICE_SET_PURIFIER_MODE = "setPurifierMode";
@@ -49,12 +52,16 @@ public interface VeSyncProtocolConstants {
     String DEVICE_SET_NIGHT_LIGHT = "setNightLight";
     String DEVICE_GET_PURIFIER_STATUS = "getPurifierStatus";
     String DEVICE_LEVEL_TYPE_WIND = "wind";
+    String DEVICE_SET_LIGHT_DETECTION = "setLightDetection";
 
     /**
      * Base URL for AUTHENTICATION REQUESTS
      */
     String PROTOCOL = "https";
-    String HOST_ENDPOINT = PROTOCOL + "://smartapi.vesync.com/cloud";
+    String SERVER_ADDRESS = "smartapi.vesync.com";
+    String SERVER_ENDPOINT = PROTOCOL + "://" + SERVER_ADDRESS;
+
+    String HOST_ENDPOINT = SERVER_ENDPOINT + "/cloud";
     String V1_LOGIN_ENDPOINT = HOST_ENDPOINT + "/v1/user/login";
     String V1_MANAGED_DEVICES_ENDPOINT = HOST_ENDPOINT + "/v1/deviceManaged/devices";
     String V2_BYPASS_ENDPOINT = HOST_ENDPOINT + "/v2/deviceManaged/bypassV2";

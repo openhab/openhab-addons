@@ -53,6 +53,29 @@ public class VeSyncV1AirPurifierDeviceDetailsResponse extends VeSyncResponse {
         return mode;
     }
 
+    @SerializedName("activeTime")
+    public int activeTime;
+
+    public int getActiveTime() {
+        return activeTime;
+    }
+
+    @SerializedName("filterLife")
+    public FilterLife filter;
+
+    public int getFilterPercent() {
+        return filter.getPercent();
+    }
+
+    public class FilterLife {
+        @SerializedName("percent")
+        public int percent;
+
+        public int getPercent() {
+            return percent;
+        }
+    }
+
     @SerializedName("deviceName")
     public String deviceName;
 
