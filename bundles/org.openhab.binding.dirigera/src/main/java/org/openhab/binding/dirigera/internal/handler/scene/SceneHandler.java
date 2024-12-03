@@ -32,8 +32,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SceneHandler} for triggering defined scenes
@@ -42,8 +40,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SceneHandler extends BaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(SceneHandler.class);
-
     private TimeZoneProvider timeZoneProvider;
     private Instant lastTrigger = Instant.MAX;
     private int undoDuration = 30;
@@ -79,7 +75,6 @@ public class SceneHandler extends BaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("DIRIGERA SCENE handleCommand {} {}", channelUID, command);
         super.handleCommand(channelUID, command);
         if (CHANNEL_TRIGGER.equals(channelUID.getIdWithoutGroup())) {
             if (command instanceof DecimalType decimal) {

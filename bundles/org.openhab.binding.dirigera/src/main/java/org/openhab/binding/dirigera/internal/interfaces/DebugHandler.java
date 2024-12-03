@@ -16,16 +16,38 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.binding.ThingHandler;
 
 /**
- * {@link DebugHandler} interface for handling json dumps
+ * {@link DebugHandler} interface to control debugging via rule actions
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public interface DebugHandler extends ThingHandler {
 
-    String dumpToken();
+    /**
+     * Returns the token associated with the DIRIGERA gateway. Regardless on which device this action is called the
+     * token from gateway (bridge) is returned.
+     *
+     * @return token as String
+     */
+    String getToken();
 
-    String dumpJSON();
+    /**
+     * Returns the JSON representation at this time for a specific device. If action is called on gateway a snapshot
+     * from all connected devices is returned.
+     *
+     * @return device JSON at this time
+     */
+    String getJSON();
 
-    void setDebug(boolean debug);
+    /**
+     * Enables / disables debug for one specific device. If enabled messages are logged on info level regarding
+     * - commands send via openHAB
+     * - state updates of openHAB
+     * - API requests with payload towards gateway
+     * - push notifications from gateway
+     * - API responses from gateway
+     *
+     * @param debug boolean flag enabling or disabling debug messages
+     */
+    void setDebug(boolean debug, boolean all);
 }

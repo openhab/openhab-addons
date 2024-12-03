@@ -95,6 +95,12 @@
 		<label>On Off Switch</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="alarm">
+		<item-type>Switch</item-type>
+		<label>Alarm Switch</label>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="illuminance">
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
@@ -103,6 +109,7 @@
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
+		<category>Contact</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="dimmer">
