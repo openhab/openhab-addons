@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.wiz.internal.WizBindingConstants;
 import org.openhab.binding.wiz.internal.discovery.WizDiscoveryService;
 import org.openhab.binding.wiz.internal.entities.RegistrationRequestParam;
 import org.openhab.binding.wiz.internal.entities.WizResponse;
@@ -175,10 +176,10 @@ public class WizMediatorImpl implements WizMediator {
             try {
                 logger.trace("Receiver thread is either null, interrupted, or dead.");
                 WizUpdateReceiverRunnable newReceiver = new WizUpdateReceiverRunnable(this, DEFAULT_LISTENER_UDP_PORT);
-                Thread newThread = new Thread(newReceiver);
+                Thread newThread = new Thread(newReceiver,
+                        "OH-binding-" + WizBindingConstants.BINDING_ID + "-ReceiverThread");
                 newThread.setDaemon(true);
                 newThread.start();
-                newThread.setName("wizReceiverThread");
                 this.receiver = newReceiver;
                 this.receiverThread = newThread;
             } catch (SocketException e) {
@@ -197,37 +198,22 @@ public class WizMediatorImpl implements WizMediator {
         return this.handlersRegisteredByThing.keySet();
     }
 
-    private String getMyIpAddress() {
-        String myIpAddress = networkAddressService.getPrimaryIpv4HostAddress();
-        if (myIpAddress == null) {
-            logger.warn("Network interface did not return an IP address!");
-            return "OHIPAddress";
-        }
-        return myIpAddress;
-    }
-
-    private String getMyMacAddress() {
-        String myMacAddress;
-        try {
-            myMacAddress = NetworkUtils.getMyMacAddress(getMyIpAddress());
-            if (myMacAddress == null) {
-                logger.warn("No network interface could be found.  MAC of openHAB device is unknown.");
-                return "OHMACAddress";
-            }
-        } catch (Exception e) {
-            logger.warn("MAC Address of openHAB device is invalid.");
-            return "OHMACAddress";
-        }
-        return myMacAddress;
-    }
-
     /**
      * Returns a {@link RegistrationRequestParam} based on the current openHAB
      * connection.
-     *
+     * 
+     * @throws IllegalStateException
      */
-    public RegistrationRequestParam getRegistrationParams() {
-        return new RegistrationRequestParam(getMyIpAddress(), true, 0, getMyMacAddress());
+    public RegistrationRequestParam getRegistrationParams() throws IllegalStateException {
+        String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
+        String macAddress = null;
+        if (ipAddress != null) {
+            macAddress = NetworkUtils.getMacAddress(ipAddress);
+        }
+        if (ipAddress == null || macAddress == null) {
+            throw new IllegalStateException("Unable to determine openHAB's IP and/or MAC address");
+        }
+        return new RegistrationRequestParam(ipAddress, true, 0, macAddress);
     }
 
     @Override

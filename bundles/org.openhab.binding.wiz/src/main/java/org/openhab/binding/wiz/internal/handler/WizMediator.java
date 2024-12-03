@@ -45,7 +45,7 @@ public interface WizMediator {
      * connection.
      *
      */
-    RegistrationRequestParam getRegistrationParams();
+    RegistrationRequestParam getRegistrationParams() throws IllegalStateException;
 
     /**
      * Registers a new {@link Thing} and the corresponding

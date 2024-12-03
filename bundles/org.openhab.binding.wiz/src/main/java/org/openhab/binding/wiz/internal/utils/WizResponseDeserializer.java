@@ -73,10 +73,10 @@ public class WizResponseDeserializer implements JsonDeserializer<WizResponse> {
                         ErrorResponseResult.class);
                 deserializedResponse.setError(error);
                 if (jobject.has("method")) {
-                    logger.warn("Bulb returned an error on method {}:  {}, {}", jobject.get("method"), error.code,
+                    logger.debug("Bulb returned an error on method {}:  {}, {}", jobject.get("method"), error.code,
                             error.message);
                 } else {
-                    logger.warn("Bulb returned an error:  {}", error.code);
+                    logger.debug("Bulb returned an error:  {}", error.code);
                 }
                 return deserializedResponse;
             }
@@ -91,7 +91,7 @@ public class WizResponseDeserializer implements JsonDeserializer<WizResponse> {
                     method = WizMethodType.valueOf(properCaseMethod);
                     deserializedResponse.setMethod(method);
                 } catch (IllegalArgumentException e) {
-                    logger.warn("Bulb returned an invalid method: {}", jobject.get("method"));
+                    logger.debug("Bulb returned an invalid method: {}", jobject.get("method"));
                     return deserializedResponse;
                 }
             } else {

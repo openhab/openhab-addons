@@ -125,7 +125,7 @@ public class WizUpdateReceiverRunnable implements Runnable {
                 this.datagramSocket = dsocket;
                 logger.trace("Datagram Socket reconnected.");
             } catch (SocketException exception) {
-                logger.warn("Problem creating one new socket on port {}. Error: {}", listeningPort,
+                logger.debug("Problem creating one new socket on port {}. Error: {}", listeningPort,
                         exception.getLocalizedMessage());
             }
         }

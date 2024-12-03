@@ -24,7 +24,7 @@ Local control must also be enabled with-in the WiZ app in the app settings.
 - WiZ Smart Plugs
 - Smart fans (with or without a dimmable light)
 
-_Note_ This binding was created for and tested on the full color with tunable white bulbs, however, users have reported success with other bulb types and plugs.
+**NOTE:** This binding was created for and tested on the full color with tunable white bulbs, however, users have reported success with other bulb types and plugs.
 
 ## Discovery
 
@@ -72,19 +72,25 @@ Thing wiz:bulb:lamp "My Lamp" @ "Living Room" [ macAddress="accf23343cxx", ipAdd
 
 ## Channels
 
-The binding supports the following channels:
+The binding supports the following channels. If a device is only a light or only a fan, the channels will
+not be in a group.
 
-| Channel ID      | Item Type          | Description                                           | Access |
-|-----------------|--------------------|-------------------------------------------------------|--------|
-| color           | Color              | State, intensity, and color of the LEDs               | R/W    |
-| temperature     | Dimmer             | Color temperature of the bulb                         | R/W    |
-| temperature-abs | Number:Temperature | Color temperature of the bulb in Kelvin               | R/W    |
-| brightness      | Dimmer             | The brightness of the bulb                            | R/W    |
-| state           | Switch             | Whether the bulb is on or off                         | R/W    |
-| light-mode      | Number             | Preset light mode name to run                         | R/W    |
-| speed           | Dimmer             | Speed of the color changes in dynamic light modes     | R/W    |
-| signal-strength | Number             | Quality of the bulb's WiFi connection                 | R      |
-| last-update     | Time               | The last time an an update was received from the bulb | R      |
+| Channel ID             | Item Type            | Description                                           | Access |
+|------------------------|----------------------|-------------------------------------------------------|--------|
+| light#color            | Color                | State, intensity, and color of the LEDs               | R/W    |
+| light#temperature      | Dimmer               | Color temperature of the bulb                         | R/W    |
+| light#temperature-abs  | Number:Temperature   | Color temperature of the bulb in Kelvin               | R/W    |
+| light#brightness       | Dimmer               | The brightness of the bulb                            | R/W    |
+| light#state            | Switch               | Whether the bulb is on or off                         | R/W    |
+| light#light-mode       | Number               | Preset light mode name to run                         | R/W    |
+| light#speed            | Dimmer               | Speed of the color changes in dynamic light modes     | R/W    |
+| fan#state              | Switch               | Whether the fan is on or off                          | R/W    |
+| fan#speed              | Number               | Speed of the fan, in arbitrary steps                  | R/W    |
+| fan#reverse            | Switch               | Whether the fan direction is reversed                 | R/W    |
+| fan#mode               | Number               | Special fan modes (Breeze)                            | R/W    |
+| device#last-update     | Time                 | The last time an an update was received from the bulb | R      |
+| device#signal-strength | Number               | Quality of the bulb's WiFi connection                 | R      |
+| device#rssi            | Number:Dimensionless | WiFi Received Signal Strength Indicator (in dB)       | R      |
 
 ## Light Modes
 
@@ -137,7 +143,7 @@ Sending a command on the color channel or the temperature channel will cause the
 - Fade in/out times are configured in the app.
 - Sending too many commands to the bulbs too quickly can cause them to stop responding for a period of time.
 
-## Example item linked to a channel
+## Example Item Linked To a Channel
 
 ```java
 Color LivingRoom_Light_Color "Living Room Lamp" (gLivingroom) {channel="wiz:color-bulb:accf23343cxx:color"}

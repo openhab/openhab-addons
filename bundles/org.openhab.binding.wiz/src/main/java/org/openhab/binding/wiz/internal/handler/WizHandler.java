@@ -93,7 +93,7 @@ public class WizHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(WizHandler.class);
 
     private @NonNullByDefault({}) WizDeviceConfiguration config;
-    private RegistrationRequestParam registrationInfo;
+    private @Nullable RegistrationRequestParam registrationRequestParam;
     private int homeId;
 
     private WizSyncState mostRecentState;
@@ -120,10 +120,14 @@ public class WizHandler extends BaseThingHandler {
      * @param thing the thing of the handler.
      * @param stateDescriptionProvider A state description provider
      */
-    public WizHandler(final Thing thing, final RegistrationRequestParam registrationPacket,
+    public WizHandler(final Thing thing, final WizMediator mediator,
             WizStateDescriptionProvider stateDescriptionProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
-        this.registrationInfo = registrationPacket;
+        try {
+            registrationRequestParam = mediator.getRegistrationParams();
+        } catch (IllegalStateException e) {
+            registrationRequestParam = null;
+        }
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.timeZoneProvider = timeZoneProvider;
         this.mostRecentState = new WizSyncState();
@@ -334,7 +338,7 @@ public class WizHandler extends BaseThingHandler {
 
     private void handleIncreaseDecreaseCommand(boolean isIncrease) {
         int oldDimming = mostRecentState.dimming;
-        int newDimming = 50;
+        int newDimming;
         if (isIncrease) {
             newDimming = Math.min(100, oldDimming + 5);
         } else {
@@ -351,7 +355,7 @@ public class WizHandler extends BaseThingHandler {
 
     private void handleIncreaseDecreaseTemperatureCommand(boolean isIncrease) {
         float oldTempPct = colorTempToPercent(mostRecentState.getTemperature()).floatValue();
-        float newTempPct = 50;
+        float newTempPct;
         if (isIncrease) {
             newTempPct = Math.min(100, oldTempPct + 5);
         } else {
@@ -370,7 +374,7 @@ public class WizHandler extends BaseThingHandler {
 
     private void handleIncreaseDecreaseSpeedCommand(boolean isIncrease) {
         int oldSpeed = mostRecentState.speed;
-        int newSpeed = 50;
+        int newSpeed;
         if (isIncrease) {
             newSpeed = Math.min(100, oldSpeed + 5);
         } else {
@@ -452,11 +456,18 @@ public class WizHandler extends BaseThingHandler {
         fullyInitialized = false;
         disposed = false;
 
+        if (registrationRequestParam == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Unable to determine openHAB's IP or MAC address");
+            return;
+        }
+        if (!ValidationUtils.isMacValid(config.macAddress)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MAC address is not valid");
+            return;
+        }
+
         // set the thing status to UNKNOWN temporarily
         updateStatus(ThingStatus.UNKNOWN);
-        if (ValidationUtils.isMacNotValid(config.macAddress)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MAC address is not valid");
-        }
         updateDeviceProperties();
         initGetStatusAndKeepAliveThread();
         fullyInitialized = true;
@@ -792,7 +803,8 @@ public class WizHandler extends BaseThingHandler {
      * heart-beats the registration must be re-sent after 30s.
      */
     private synchronized void registerWithDevice() {
-        WizResponse registrationResponse = sendRequestPacket(WizMethodType.Registration, this.registrationInfo);
+        WizResponse registrationResponse = sendRequestPacket(WizMethodType.Registration,
+                Objects.requireNonNull(registrationRequestParam));
         if (registrationResponse != null) {
             if (registrationResponse.getResultSuccess()) {
                 updateTimestamps();

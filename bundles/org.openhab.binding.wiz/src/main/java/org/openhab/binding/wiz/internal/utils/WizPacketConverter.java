@@ -47,7 +47,6 @@ public class WizPacketConverter {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(WizResponse.class, new WizResponseDeserializer());
         gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        // gsonBuilder.setLenient();
         Gson gson = gsonBuilder.create();
         this.wizGsonBuilder = gson;
     }
@@ -85,7 +84,7 @@ public class WizPacketConverter {
             response = this.wizGsonBuilder.fromJson(responseJson, WizResponse.class);
             response.setWizResponseIpAddress(packet.getAddress().getHostAddress());
         } catch (JsonParseException e) {
-            logger.error("Error parsing json! {}", e.getMessage());
+            logger.debug("Error parsing json! {}", e.getMessage());
         }
         return response;
     }

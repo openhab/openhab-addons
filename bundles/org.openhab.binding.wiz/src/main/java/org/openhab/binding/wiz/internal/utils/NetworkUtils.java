@@ -15,7 +15,6 @@ package org.openhab.binding.wiz.internal.utils;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.rmi.UnknownHostException;
 import java.util.Enumeration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,25 +33,24 @@ public final class NetworkUtils {
      * Returns the MAC address of the openHAB first network device.
      *
      * @return The MAC address of the openHAB network device.
-     * @throws UnknownHostException
-     * @throws SocketException
      */
-    public static @Nullable String getMyMacAddress(String matchIP) throws UnknownHostException, SocketException {
-        String macAddress = null;
-        Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
-        while (networks.hasMoreElements()) {
-            NetworkInterface network = networks.nextElement();
+    public static @Nullable String getMacAddress(String matchIP) {
+        try {
+            Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
+            while (networks.hasMoreElements()) {
+                NetworkInterface network = networks.nextElement();
 
-            if (networkMatchesIP(network, matchIP)) {
-                byte[] hardwareAddress = network.getHardwareAddress();
-                if (hardwareAddress == null) {
-                    continue;
+                if (networkMatchesIP(network, matchIP)) {
+                    byte[] hardwareAddress = network.getHardwareAddress();
+                    if (hardwareAddress == null) {
+                        continue;
+                    }
+                    return convertBytesToMACString(hardwareAddress);
                 }
-                macAddress = convertBytesToMACString(hardwareAddress);
-                break; // Short circuit if we found it
             }
+        } catch (SocketException e) {
         }
-        return macAddress;
+        return null;
     }
 
     private static boolean networkMatchesIP(NetworkInterface network, String ip) {

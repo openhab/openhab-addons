@@ -16,11 +16,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.util.ColorUtil;
 
 /**
- * Utilities for converting colors and color temperures
+ * Utilities for converting colors and color temperatures
  *
  * The full color WiZ bulbs can produce colors and various temperatures of
  * "whites" by mixing any of the available LEDs: RGBWwarm = RGBWWCwarm = Red,
@@ -35,9 +34,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class WizColorConverter {
-
-    private final Logger logger = LoggerFactory.getLogger(WizColorConverter.class);
-
     /**
      * Converts an {@link DecimalType} hue and a {@link PercentType} saturation to
      * red, green, blue, and white (RGBW) components. Because the WiZ bulbs keep
@@ -52,65 +48,20 @@ public class WizColorConverter {
      * @return an interger array of the color components
      */
     public int[] hsbToRgbw(HSBType hsb) {
-        double redD = 255.;
-        double greenD = 255.;
-        double blueD = 255.;
-        int red = 255;
-        int green = 255;
-        int blue = 255;
-        int white = 255;
-
         // Since we're going to use the white lights to control saturation, recalculate what
         // the HSBvalue would be if the color was at full brightness and saturation
-        Double hue = hsb.getHue().doubleValue();
-        Double sat255 = ((hsb.getSaturation().doubleValue()) / 100) * 255;
+        HSBType hsbFullBrightness = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
+        PercentType[] rgbPercent = ColorUtil.hsbToRgbPercent(hsbFullBrightness);
+        double redD = rgbPercent[0].doubleValue();
+        double greenD = rgbPercent[1].doubleValue();
+        double blueD = rgbPercent[2].doubleValue();
 
-        if (sat255 > 0) {
-            int i = (int) (hue / 60); // color quadrant 0..2555
-            double f = hue % 60; // 0..59
-            double q = 255 - ((f / 60) * sat255);
+        double saturationPercent = hsb.getSaturation().doubleValue() / 100;
 
-            double p = 0;
-            double t = 255 - (((60 - f) / 60) * 255);
-
-            switch (i) {
-                case 0:
-                    // redD = 255;
-                    greenD = t;
-                    blueD = p;
-                    break;
-                case 1:
-                    redD = q;
-                    // greenD = 255;
-                    blueD = p;
-                    break;
-                case 2:
-                    redD = p;
-                    // greenD = 255;
-                    blueD = t;
-                    break;
-                case 3:
-                    redD = p;
-                    greenD = q;
-                    // blueD = 255;
-                    break;
-                case 4:
-                    redD = t;
-                    greenD = p;
-                    // blueD = 255;
-                    break;
-                default:
-                    // redD = 255;
-                    greenD = p;
-                    blueD = q;
-                    break;
-            }
-        }
-
-        logger.debug("Colors from hue, assuming full brightness R: {} G: {} B: {}", redD, greenD, blueD);
-
-        // Convert the "PercentType" to a percent
-        double saturationPercent = (hsb.getSaturation().doubleValue() / 100);
+        int red;
+        int green;
+        int blue;
+        int white;
 
         // Calculate the white intensity from saturation and adjust down the other colors
         // This is approximately what the WiZ app does. Personally, I think it undersaturates everything

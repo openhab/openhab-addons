@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.wiz.internal.entities.RegistrationRequestParam;
 import org.openhab.binding.wiz.internal.entities.SystemConfigResult;
 import org.openhab.binding.wiz.internal.entities.WizRequest;
 import org.openhab.binding.wiz.internal.entities.WizResponse;
@@ -116,7 +117,8 @@ public class WizDiscoveryService extends AbstractDiscoveryService {
             String broadcastIp = this.mediator.getNetworkAddressService().getConfiguredBroadcastAddress();
             if (broadcastIp != null) {
                 InetAddress address = InetAddress.getByName(broadcastIp);
-                WizRequest request = new WizRequest(WizMethodType.Registration, this.mediator.getRegistrationParams());
+                RegistrationRequestParam registrationRequestParam = mediator.getRegistrationParams();
+                WizRequest request = new WizRequest(WizMethodType.Registration, registrationRequestParam);
                 request.setId(0);
 
                 byte[] message = this.converter.transformToByteMessage(request);
@@ -133,6 +135,8 @@ public class WizDiscoveryService extends AbstractDiscoveryService {
             } else {
                 logger.warn("No broadcast address was configured or discovered! No broadcast sent.");
             }
+        } catch (IllegalStateException e) {
+            logger.debug("Unable to start background scan: {}", e.getMessage());
         } catch (IOException exception) {
             logger.debug("Something wrong happened when broadcasting the packet to port {}... msg: {}",
                     DEFAULT_UDP_PORT, exception.getMessage());

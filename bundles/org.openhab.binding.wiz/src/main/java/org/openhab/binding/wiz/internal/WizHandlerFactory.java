@@ -66,8 +66,7 @@ public class WizHandlerFactory extends BaseThingHandlerFactory {
         if (supportsThingType(thing.getThingTypeUID())) {
             WizHandler handler;
 
-            handler = new WizHandler(thing, this.mediator.getRegistrationParams(), stateDescriptionProvider,
-                    timeZoneProvider);
+            handler = new WizHandler(thing, mediator, stateDescriptionProvider, timeZoneProvider);
 
             mediator.registerThingAndWizBulbHandler(thing, handler);
             return handler;

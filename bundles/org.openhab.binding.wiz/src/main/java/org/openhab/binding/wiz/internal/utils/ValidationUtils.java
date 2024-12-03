@@ -43,14 +43,4 @@ public final class ValidationUtils {
         Matcher matcher = VALID_PATTERN.matcher(mac);
         return matcher.matches();
     }
-
-    /**
-     * Validates if one Mac address is not valid.
-     *
-     * @param mac the mac, with or without :
-     * @return true if is not valid.
-     */
-    public static boolean isMacNotValid(final String macAddress) {
-        return !isMacValid(macAddress);
-    }
 }
