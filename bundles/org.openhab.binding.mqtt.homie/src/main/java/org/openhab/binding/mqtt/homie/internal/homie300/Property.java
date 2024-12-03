@@ -191,7 +191,7 @@ public class Property implements AttributeChanged {
                     step = new BigDecimal(1);
                 }
                 if (attributes.unit.contains("%") && attributes.settable) {
-                    value = new PercentageValue(min, max, step, null, null);
+                    value = new PercentageValue(min, max, step, null, null, null);
                 } else {
                     value = new NumberValue(min, max, step, unit);
                 }
