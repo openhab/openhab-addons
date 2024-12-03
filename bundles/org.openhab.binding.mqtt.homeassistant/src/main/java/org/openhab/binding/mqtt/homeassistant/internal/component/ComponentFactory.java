@@ -65,6 +65,8 @@ public class ComponentFactory {
                 return new Cover(componentConfiguration, newStyleChannels);
             case "device_automation":
                 return new DeviceTrigger(componentConfiguration, newStyleChannels);
+            case "device_tracker":
+                return new DeviceTracker(componentConfiguration, newStyleChannels);
             case "event":
                 return new Event(componentConfiguration, newStyleChannels);
             case "fan":
