@@ -36,10 +36,10 @@ import org.mapdb.DBMaker;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.items.Item;
+import org.openhab.core.items.ManagedItemProvider.PersistedItem;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
-import org.openhab.core.persistence.PersistedItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
@@ -165,7 +165,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
         return map.values().stream().map(this::deserialize).flatMap(MapDbPersistenceService::streamOptional)
-                .collect(Collectors.<PersistenceItemInfo> toUnmodifiableSet());
+                .collect(Collectors.<PersistenceItemInfo>toUnmodifiableSet());
     }
 
     @Override
@@ -217,7 +217,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
             return null;
         }
         Optional<MapDbItem> item = deserialize(json);
-        return item.isPresent() ? item.get() : null;
+        return item.orElse(null);
     }
 
     private String serialize(MapDbItem item) {
