@@ -159,6 +159,7 @@
 /bundles/org.openhab.binding.hpprinter/ @cossey
 /bundles/org.openhab.binding.http/ @J-N-K
 /bundles/org.openhab.binding.hue/ @cweitkamp @andrewfg
+/bundles/org.openhab.binding.huesync/ @pgfeller
 /bundles/org.openhab.binding.hydrawise/ @digitaldan
 /bundles/org.openhab.binding.hyperion/ @tavalin
 /bundles/org.openhab.binding.iammeter/ @lewei50
@@ -246,6 +247,7 @@
 /bundles/org.openhab.binding.mybmw/ @ntruchsess @mherwege @martingrassl
 /bundles/org.openhab.binding.mynice/ @clinique
 /bundles/org.openhab.binding.mystrom/ @pail23
+/bundles/org.openhab.binding.myuplink/ @alexf2015
 /bundles/org.openhab.binding.nanoleaf/ @stefan-hoehn
 /bundles/org.openhab.binding.neato/ @jjlauterbach
 /bundles/org.openhab.binding.neeo/ @morph166955

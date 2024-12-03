@@ -10,17 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.api;
+package org.openhab.binding.huesync.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 
 /**
- * @author David Goodyear - Initial contribution
+ * Binding configuration parameters,
+ * 
+ * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public interface IHttpClientProvider {
-    @Nullable
-    HttpClient getHttpClient();
+public class HueSyncConfiguration {
+    public String registrationId = "";
+    public String apiAccessToken = "";
+    public String host = "";
+    public Integer port = 443;
+    public Integer statusUpdateInterval = 10;
 }
