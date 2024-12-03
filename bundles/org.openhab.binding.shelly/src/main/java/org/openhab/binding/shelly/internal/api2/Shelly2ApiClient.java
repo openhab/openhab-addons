@@ -62,6 +62,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm1Data;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusHumidity;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusIlluminance;
@@ -194,8 +195,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         updated |= updateRelayStatus(status, result.switch100, channelUpdate);
         updated |= updateRelayStatus(status, result.pm10, channelUpdate);
         updated |= updateEmStatus(status, result.em0, result.emdata0, channelUpdate);
-        updated |= updateEmStatus(status, result.em10, channelUpdate);
-        updated |= updateEmStatus(status, result.em11, channelUpdate);
+        updated |= updateEmStatus(status, result.em10, result.em1data0, channelUpdate);
+        updated |= updateEmStatus(status, result.em11, result.em1data1, channelUpdate);
         updated |= updateRollerStatus(status, result.cover0, channelUpdate);
         updated |= updateDimmerStatus(status, result.light0, channelUpdate);
         updated |= updateRGBWStatus(status, result.rgbw0, channelUpdate);
@@ -327,9 +328,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         relayStatus.meters.set(id, sm);
     }
 
-    private boolean updateEmStatus(ShellySettingsStatus status, @Nullable Shelly2StatusEm1 em, boolean channelUpdate)
-            throws ShellyApiException {
-        if (em == null) {
+    private boolean updateEmStatus(ShellySettingsStatus status, @Nullable Shelly2StatusEm1 em,
+            @Nullable Shelly2DeviceStatusEm1Data em1Data, boolean channelUpdate) throws ShellyApiException {
+        if (em == null || em1Data == null) {
             return false;
         }
 
