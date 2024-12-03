@@ -276,7 +276,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
         if (!isConnect) {
             openSocket();
 
-            Thread thread = new Thread(socketReceiverRunnable, "OH-binding-" + getBridge().getUID() + "-SocketThread");
+            Thread thread = new Thread(socketReceiverRunnable, "OH-binding-" + getThing().getUID() + "-SocketThread");
             thread.start();
         }
     }

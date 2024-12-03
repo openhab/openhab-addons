@@ -341,7 +341,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         }
         if (queueConsumerThread == null || !queueConsumerThread.isAlive()) {
             queueConsumerThread = new Thread(new QueueConsumer(commandQueue),
-                    "OH-binding-" + getBridge().getBridgeUID() + "-max-queue-consumer");
+                    "OH-binding-" + getThing().getUID() + "-max-queue-consumer");
             queueConsumerThread.setDaemon(true);
             queueConsumerThread.start();
         }
