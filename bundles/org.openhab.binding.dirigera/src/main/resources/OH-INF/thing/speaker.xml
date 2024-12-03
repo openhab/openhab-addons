@@ -53,7 +53,7 @@
 				<label>Links</label>
 				<description>Linked controllers and sensors</description>
 			</channel>
-			<channel id="link-candidates" typeId="text-vet-advancedo">
+			<channel id="link-candidates" typeId="text-veto-advanced">
 				<label>Link Candidates</label>
 				<description>Candidates which can be linked</description>
 			</channel>

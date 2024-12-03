@@ -25,8 +25,6 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link DimmableLightHandler} for lights with brightness
@@ -35,8 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DimmableLightHandler extends BaseLight {
-    private final Logger logger = LoggerFactory.getLogger(DimmableLightHandler.class);
-
     protected int currentBrightness = 0;
 
     public DimmableLightHandler(Thing thing, Map<String, String> mapping) {
@@ -56,7 +52,6 @@ public class DimmableLightHandler extends BaseLight {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        logger.trace("DIRIGERA DIMMABLE_LIGHT {} handleCommand {} {}", thing.getLabel(), channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         String targetProperty = channel2PropertyMap.get(channel);
         if (targetProperty != null) {
@@ -90,7 +85,6 @@ public class DimmableLightHandler extends BaseLight {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        logger.trace("DIRIGERA DIMMABLE_LIGHT {} handleUpdate {}", thing.getLabel(), update);
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();

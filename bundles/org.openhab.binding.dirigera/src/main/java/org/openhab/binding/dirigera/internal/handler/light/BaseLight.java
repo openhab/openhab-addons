@@ -63,15 +63,12 @@ public class BaseLight extends BaseHandler implements LightListener {
         super.initialize();
         lightConfig = getConfigAs(ColorLightConfiguration.class);
         super.addPowerListener(this);
-        logger.debug("DIRIGERA BASE_LIGHT {} config timing {} and sequence {}", thing.getLabel(), lightConfig.fadeTime,
-                lightConfig.fadeSequence);
     }
 
     @Override
     public void dispose() {
         super.removePowerListener(this);
         super.dispose();
-        logger.debug("DIRIGERA BASE_LIGHT {} dispose", thing.getLabel());
     }
 
     @Override
@@ -87,10 +84,6 @@ public class BaseLight extends BaseHandler implements LightListener {
 
     protected void addOnOffCommand(boolean on) {
         LightCommand command;
-        // StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-        // for (int i = 0; i < stack.length; i++) {
-        // logger.trace("{}", stack[i]);
-        // }
         if (on) {
             command = new LightCommand(placeHolder, LightCommand.Action.ON);
         } else {
@@ -98,7 +91,9 @@ public class BaseLight extends BaseHandler implements LightListener {
         }
         synchronized (lightRequestQueue) {
             lightRequestQueue.add(command);
-            logger.debug("DIRIGERA BASE_LIGHT {} add command {}", thing.getLabel(), command.toString());
+            if (customDebug) {
+                logger.info("DIRIGERA BASE_LIGHT {} add command {}", thing.getLabel(), command.toString());
+            }
         }
         scheduler.execute(this::executeCommand);
     }
@@ -109,7 +104,9 @@ public class BaseLight extends BaseHandler implements LightListener {
         }
         synchronized (lightRequestQueue) {
             lightRequestQueue.add(command);
-            logger.debug("DIRIGERA BASE_LIGHT {} add command {}", thing.getLabel(), command.toString());
+            if (customDebug) {
+                logger.info("DIRIGERA BASE_LIGHT {} add command {}", thing.getLabel(), command.toString());
+            }
         }
         scheduler.execute(this::executeCommand);
     }
@@ -127,11 +124,7 @@ public class BaseLight extends BaseHandler implements LightListener {
             // wait for next time window and previous command is fully executed
             while (readyForNextCommand.isAfter(Instant.now()) || executingCommand) {
                 try {
-                    // logger.debug("DIRIGERA BASE_LIGHT {} wait", thing.getLabel());
                     lightRequestQueue.wait(50);
-                    // logger.debug("DIRIGERA BASE_LIGHT {} next execution in {} ms. Command running? {}",
-                    // thing.getLabel(), Duration.between(Instant.now(), readyForNextCommand).toMillis(),
-                    // executingCommand);
                 } catch (InterruptedException e) {
                     lightRequestQueue.clear();
                     Thread.interrupted();
@@ -151,15 +144,15 @@ public class BaseLight extends BaseHandler implements LightListener {
                 return;
             }
             if (lightRequestQueue.contains(request)) {
-                logger.debug("DIRIGERA BASE_LIGHT {} dismiss light request and wait for next one {}", thing.getLabel(),
-                        lightRequestQueue.size());
                 lightRequestQueue.notifyAll();
                 return;
             }
             // now execute command
             executingCommand = true;
         }
-        logger.debug("DIRIGERA BASE_LIGHT {} execute {}", thing.getLabel(), request);
+        if (customDebug) {
+            logger.info("DIRIGERA BASE_LIGHT {} execute {}", thing.getLabel(), request);
+        }
         int addonMillis = 0;
         switch (request.action) {
             case ON:
@@ -207,18 +200,20 @@ public class BaseLight extends BaseHandler implements LightListener {
                 default:
                     break;
             }
+            logger.trace("DIRIGERA BASE_LIGHT {} last user mode settings {}", thing.getLabel(), lastUserMode);
         }
-        logger.debug("DIRIGERA BASE_LIGHT {} last user mode settings {}", thing.getLabel(), lastUserMode);
     }
 
     @Override
     public void powerChanged(OnOffType power, boolean requested) {
-        // apply lum settings according to config in the right sequence if power changed to ON
+        // apply lum settings according to configuration in the right sequence if power changed to ON
         if (OnOffType.ON.equals(power)) {
             if (!requested) {
                 addOnOffCommand(true);
             }
-            logger.debug("DIRIGERA BASE_LIGHT {} last user mode restore {}", thing.getLabel(), lastUserMode);
+            if (customDebug) {
+                logger.info("DIRIGERA BASE_LIGHT {} last user mode restore {}", thing.getLabel(), lastUserMode);
+            }
             LightCommand brightnessCommand = lastUserMode.remove(LightCommand.Action.BRIGHTNESS);
             LightCommand colorCommand = lastUserMode.remove(LightCommand.Action.COLOR);
             LightCommand temperatureCommand = lastUserMode.remove(LightCommand.Action.TEMPERARTURE);

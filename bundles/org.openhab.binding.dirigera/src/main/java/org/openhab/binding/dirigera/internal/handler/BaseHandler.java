@@ -58,7 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link BaseHandler} basic DeviceHandler for all devices
+ * {@link BaseHandler} for all devices
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -225,17 +225,20 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                         break;
                     case CHANNEL_POWER_STATE:
                         if (command instanceof OnOffType onOff) {
-                            logger.debug("DIRIGERA BASE_HANDLER {} OnOff command: Current / Wanted {} {}",
-                                    thing.getLabel(), currentPowerState, onOff);
+                            if (customDebug) {
+                                logger.info("DIRIGERA BASE_HANDLER {} OnOff command: Current {} / Wanted {}",
+                                        thing.getLabel(), currentPowerState, onOff);
+                            }
                             requestedPowerState = onOff;
                             if (!currentPowerState.equals(onOff)) {
                                 JSONObject attributes = new JSONObject();
                                 attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                                logger.trace("DIRIGERA BASE_HANDLER {} send to API {}", thing.getLabel(), attributes);
                                 sendAttributes(attributes);
                             } else {
                                 requestedPowerState = UnDefType.UNDEF;
-                                logger.trace("DIRIGERA BASE_HANDLER Dismiss {} {}", thing.getLabel(), onOff);
+                                if (customDebug) {
+                                    logger.info("DIRIGERA BASE_HANDLER Dismiss {} {}", thing.getLabel(), onOff);
+                                }
                             }
                         }
                         break;
@@ -243,19 +246,23 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                         if (command instanceof StringType string) {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, string.toString());
-                            logger.trace("DIRIGERA BASE_HANDLER {} send to API {}", thing.getLabel(), attributes);
                             sendAttributes(attributes);
                         }
                         break;
                     case CHANNEL_LINKS:
-                        logger.debug("DIRIGERA BASE_HANDLER {} remove connection {}", thing.getLabel(),
-                                command.toFullString());
+                        if (customDebug) {
+                            logger.info("DIRIGERA BASE_HANDLER {} remove connection {}", thing.getLabel(),
+                                    command.toFullString());
+                        }
                         if (command instanceof StringType string) {
                             linkUpdate(string.toFullString(), false);
                         }
                         break;
                     case CHANNEL_LINK_CANDIDATES:
-                        logger.debug("DIRIGERA BASE_HANDLER {} add link {}", thing.getLabel(), command.toFullString());
+                        if (customDebug) {
+                            logger.info("DIRIGERA BASE_HANDLER {} add link {}", thing.getLabel(),
+                                    command.toFullString());
+                        }
                         if (command instanceof StringType string) {
                             linkUpdate(string.toFullString(), true);
                         }
@@ -401,19 +408,6 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME), StringType.valueOf(customName));
             }
         }
-
-        // store data for development and analysis purposes
-        // if (deviceData.isEmpty()) {
-        // deviceData = new JSONObject(update.toString());
-        // } else {
-        // updates.add(new JSONObject(update.toString()));
-        // // keep last 10 updates for debugging
-        // if (updates.size() > 10) {
-        // updates.remove(0);
-        // }
-        // }
-        // deviceData.put("updates", new JSONArray(updates));
-        // updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(deviceData.toString()));
     }
 
     protected boolean isPowered() {
@@ -427,6 +421,9 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
     protected void updateState(ChannelUID channelUID, State state) {
         channelStateMap.put(channelUID.getIdWithoutGroup(), state);
         if (!disposed) {
+            if (customDebug) {
+                logger.info("DIRIGERA {} updateState {} {}", thing.getUID(), channelUID, state);
+            }
             super.updateState(channelUID, state);
         }
     }
@@ -537,26 +534,34 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                 jsonLinks.forEach(link -> {
                     linksToSend.add(link.toString());
                 });
-                logger.trace("DIRIGERA BASE_HANDLER {} links for {} {}", thing.getLabel(),
-                        gateway().model().getCustonNameFor(targetDevice), linksToSend);
+                if (customDebug) {
+                    logger.info("DIRIGERA BASE_HANDLER {} links for {} {}", thing.getLabel(),
+                            gateway().model().getCustonNameFor(targetDevice), linksToSend);
+                }
                 // this is sensor branch so add link of sensor
                 if (add) {
                     if (!linksToSend.contains(triggerDevice)) {
                         linksToSend.add(triggerDevice);
                     } else {
-                        logger.trace("DIRIGERA BASE_HANDLER {} already linked {}", thing.getLabel(),
-                                gateway().model().getCustonNameFor(triggerDevice));
+                        if (customDebug) {
+                            logger.info("DIRIGERA BASE_HANDLER {} already linked {}", thing.getLabel(),
+                                    gateway().model().getCustonNameFor(triggerDevice));
+                        }
                     }
                 } else {
                     if (linksToSend.contains(triggerDevice)) {
                         linksToSend.remove(triggerDevice);
                     } else {
-                        logger.trace("DIRIGERA BASE_HANDLER {} no link to remove {}", thing.getLabel(),
-                                gateway().model().getCustonNameFor(triggerDevice));
+                        if (customDebug) {
+                            logger.info("DIRIGERA BASE_HANDLER {} no link to remove {}", thing.getLabel(),
+                                    gateway().model().getCustonNameFor(triggerDevice));
+                        }
                     }
                 }
             } else {
-                logger.trace("DIRIGERA BASE_HANDLER {} has no remoteLinks", thing.getLabel());
+                if (customDebug) {
+                    logger.info("DIRIGERA BASE_HANDLER {} has no remoteLinks", thing.getLabel());
+                }
             }
         } else {
             // send update to this device
@@ -584,11 +589,6 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
     public void addSoftlink(String id) {
         if (!softLinks.contains(id) && !config.id.equals(id)) {
             softLinks.add(id);
-            logger.trace("DIRIGERA BASE_HANDLER {} softlink added for {}", thing.getLabel(),
-                    gateway().model().getCustonNameFor(id));
-        } else {
-            logger.trace("DIRIGERA BASE_HANDLER {} softlink already established to {}", thing.getLabel(),
-                    gateway().model().getCustonNameFor(id));
         }
     }
 
@@ -691,7 +691,7 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
     }
 
     @Override
-    public String dumpJSON() {
+    public String getJSON() {
         if (THING_TYPE_SCENE.equals(thing.getThingTypeUID())) {
             return gateway().api().readScene(config.id).toString();
         } else {
@@ -700,13 +700,17 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
     }
 
     @Override
-    public String dumpToken() {
+    public String getToken() {
         return gateway().getToken();
     }
 
     @Override
-    public void setDebug(boolean debug) {
-        customDebug = debug;
+    public void setDebug(boolean debug, boolean all) {
+        if (all) {
+            ((DebugHandler) gateway()).setDebug(debug, all);
+        } else {
+            customDebug = debug;
+        }
     }
 
     /**

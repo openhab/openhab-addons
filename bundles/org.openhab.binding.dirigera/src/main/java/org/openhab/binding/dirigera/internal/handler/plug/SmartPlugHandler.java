@@ -28,8 +28,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SmartPlugHandler} basic DeviceHandler for all devices
@@ -38,8 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SmartPlugHandler extends PowerPlugHandler {
-    private final Logger logger = LoggerFactory.getLogger(SmartPlugHandler.class);
-
     private double totalEnergy = -1;
     private double resetEnergy = -1;
 
@@ -56,7 +52,6 @@ public class SmartPlugHandler extends PowerPlugHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("SMART_PLUG {} : {} {}", channelUID, command, command.getClass());
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         switch (channel) {
