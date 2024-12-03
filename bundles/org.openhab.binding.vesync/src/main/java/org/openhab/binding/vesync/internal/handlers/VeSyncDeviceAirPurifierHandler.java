@@ -97,7 +97,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
             NIGHT_LIGHTS);
 
     public static final VeSyncDevicePurifierMetadata CORE300S = new VeSyncDevicePurifierMetadata(1,
-            DEV_FAMILY_CORE_300S, List.of("C301S", "C302S"), List.of("Core300S"), FAN_MODES_MAN_SLEEP, 1, 3,
+            DEV_FAMILY_CORE_300S, List.of("C301S", "C302S"), List.of("Core300S"), FAN_MODES_NO_PET, 1, 5,
             NIGHT_LIGHTS);
 
     public static final VeSyncDevicePurifierMetadata CORE400S = new VeSyncDevicePurifierMetadata(1,
