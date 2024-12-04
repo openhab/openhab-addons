@@ -54,16 +54,16 @@
 		<description>An Outlet uplinking to VeSync</description>
 
 		<channels>
-			<channel id="enabled" typeId="deviceEnabledType"></channel>
-			<channel id="current" typeId="currentType"></channel>
-			<channel id="energy" typeId="energyType"></channel>
-			<channel id="power" typeId="powerType"></channel>
-			<channel id="voltage" typeId="voltageType"></channel>
-			<channel id="highestVoltage" typeId="highestVoltageType"></channel>
-			<channel id="voltagePTStatus" typeId="voltagePTStatusType"></channel>
-			<channel id="energyWeek" typeId="energyWeekType"></channel>
-			<channel id="energyMonth" typeId="energyMonthType"></channel>
-			<channel id="energyYear" typeId="energyYearType"></channel>
+			<channel id="enabled" typeId="deviceEnabledType"/>
+			<channel id="current" typeId="currentType"/>
+			<channel id="energy" typeId="energyType"/>
+			<channel id="power" typeId="powerType"/>
+			<channel id="voltage" typeId="voltageType"/>
+			<channel id="highestVoltage" typeId="highestVoltageType"/>
+			<channel id="voltagePTStatus" typeId="voltagePTStatusType"/>
+			<channel id="energyWeek" typeId="energyWeekType"/>
+			<channel id="energyMonth" typeId="energyMonthType"/>
+			<channel id="energyYear" typeId="energyYearType"/>
 		</channels>
 
 		<properties>
@@ -185,35 +185,35 @@
 	</thing-type>
 
 	<channel-type id="currentType">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>Actual current in A</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="energyType">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Energy</label>
 		<description>Today's energy in kWh</description>
 		<state readOnly="true" pattern="%.2f kWh"/>
 	</channel-type>
 
 	<channel-type id="powerType">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Power</label>
 		<description>Current power in W</description>
 		<state readOnly="true" pattern="%.2f W"/>
 	</channel-type>
 
 	<channel-type id="voltageType">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Current Voltage</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="highestVoltageType">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Highest Voltage</label>
 		<description>Highest Voltage ever measured by the outlet</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -226,21 +226,21 @@
 	</channel-type>
 
 	<channel-type id="energyWeekType">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Energy Week</label>
 		<description>Total energy of week in kWh</description>
 		<state readOnly="true" pattern="%.2f kWh"/>
 	</channel-type>
 
 	<channel-type id="energyMonthType">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Energy Month</label>
 		<description>Total energy of month in kWh</description>
 		<state readOnly="true" pattern="%.2f kWh"/>
 	</channel-type>
 
 	<channel-type id="energyYearType">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Energy Year</label>
 		<description>Total energy of year in kWh</description>
 		<state readOnly="true" pattern="%.2f kWh"/>
