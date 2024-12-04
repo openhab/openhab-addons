@@ -13,22 +13,22 @@
 package org.openhab.binding.modbus.lambda.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.modbus.lambda.internal.dto.Buffer1MtBlock;
+import org.openhab.binding.modbus.lambda.internal.dto.BufferReg50Block;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
- * Parses lambda modbus data into an Buffer1Mt Block -
+ * Parses lambda modbus data into an BufferReg50 Block -
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  *
  */
 @NonNullByDefault
-public class Buffer1MtBlockParser extends AbstractBaseParser {
+public class BufferReg50BlockParser extends AbstractBaseParser {
 
-    public Buffer1MtBlock parse(ModbusRegisterArray raw) {
-        Buffer1MtBlock block = new Buffer1MtBlock();
-        block.buffer1MaximumBufferTemperature = extractUInt16(raw, 0, (short) 0);
+    public BufferReg50Block parse(ModbusRegisterArray raw) {
+        BufferReg50Block block = new BufferReg50Block();
+        block.bufferMaximumBufferTemperature = extractUInt16(raw, 0, (short) 0);
         return block;
     }
 }

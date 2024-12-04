@@ -13,22 +13,24 @@
 package org.openhab.binding.modbus.lambda.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.modbus.lambda.internal.dto.Boiler1MtBlock;
+import org.openhab.binding.modbus.lambda.internal.dto.HeatingCircuitReg50Block;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
- * Parses inv modbus data into an Boiler1Mt Block -
+ * Parses lambda modbus data into a HeatingCircuitReg50 Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  *
  */
 @NonNullByDefault
-public class Boiler1MtBlockParser extends AbstractBaseParser {
+public class HeatingCircuitReg50BlockParser extends AbstractBaseParser {
 
-    public Boiler1MtBlock parse(ModbusRegisterArray raw) {
-        Boiler1MtBlock block = new Boiler1MtBlock();
-        block.boiler1MaximumBoilerTemperature = extractUInt16(raw, 0, (short) 0);
+    public HeatingCircuitReg50Block parse(ModbusRegisterArray raw) {
+        HeatingCircuitReg50Block block = new HeatingCircuitReg50Block();
+        block.heatingcircuitOffsetFlowLineTemperature = extractInt16(raw, 0, (short) 0);
+        block.heatingcircuitRoomHeatingTemperature = extractInt16(raw, 1, (short) 0);
+        block.heatingcircuitRoomCoolingTemperature = extractInt16(raw, 2, (short) 0);
         return block;
     }
 }

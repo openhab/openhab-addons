@@ -27,21 +27,31 @@ import org.openhab.core.thing.ThingTypeUID;
 public class LambdaBindingConstants {
 
     private static final String BINDING_ID = ModbusBindingConstants.BINDING_ID;
+    private static final String LAMBDAGENERAL = "lambda-general";
+    private static final String LAMBDABOILER = "lambda-boiler";
+    private static final String LAMBDABUFFER = "lambda-buffer";
+    private static final String LAMBDAHEATPUMP = "lambda-heatpump";
+    private static final String LAMBDAHEATINGCIRCUIT = "lambda-heatingcircuit";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_LAMBDAHP = new ThingTypeUID(BINDING_ID, "lambdahp");
+    public static final ThingTypeUID THING_TYPE_LAMBDAGENERAL = new ThingTypeUID(BINDING_ID, LAMBDAGENERAL);
+    public static final ThingTypeUID THING_TYPE_LAMBDABOILER = new ThingTypeUID(BINDING_ID, LAMBDABOILER);
+    public static final ThingTypeUID THING_TYPE_LAMBDABUFFER = new ThingTypeUID(BINDING_ID, LAMBDABUFFER);
+    public static final ThingTypeUID THING_TYPE_LAMBDAHEATPUMP = new ThingTypeUID(BINDING_ID, LAMBDAHEATPUMP);
+    public static final ThingTypeUID THING_TYPE_LAMBDAHEATINGCIRCUIT = new ThingTypeUID(BINDING_ID,
+            LAMBDAHEATINGCIRCUIT);
 
     // Channel group ids
-    public static final String GROUP_GENERAL_AMBIENT = "generalAmbient";
-    public static final String GROUP_GENERAL_EMANAGER = "generalEManager";
-    public static final String GROUP_HEATPUMP1 = "Heatpump1";
-    public static final String GROUP_HEATPUMP1SET = "Heatpump1Set";
-    public static final String GROUP_BOILER1 = "Boiler1";
-    public static final String GROUP_BOILER1MT = "Boiler1Mt";
-    public static final String GROUP_BUFFER1 = "Buffer1";
-    public static final String GROUP_BUFFER1MT = "Buffer1Mt";
-    public static final String GROUP_HEATINGCIRCUIT1 = "HeatingCircuit1";
-    public static final String GROUP_HEATINGCIRCUIT1SETTING = "HeatingCircuit1Setting";
+    public static final String GROUP_GENERAL_AMBIENT = "ambient-group";
+    public static final String GROUP_GENERAL_EMANAGER = "emanager-group";
+    public static final String GROUP_HEATPUMP = "heatpump-group";
+    public static final String GROUP_HEATPUMP_REG50 = "heatpump-reg50-group";
+    public static final String GROUP_BOILER = "boiler-group";
+    public static final String GROUP_BOILER_REG50 = "boiler-reg50-group";
+    public static final String GROUP_BUFFER = "buffer-group";
+    public static final String GROUP_BUFFER_REG50 = "buffer-reg50-group";
+    public static final String GROUP_HEATINGCIRCUIT = "heatingcircuit-group";
+    public static final String GROUP_HEATINGCIRCUIT_REG50 = "heatingcircuit-reg50-group";
 
     // List of all Channel ids in device information group
     // General Ambient
@@ -58,47 +68,49 @@ public class LambdaBindingConstants {
     public static final String CHANNEL_ACTUAL_POWER_CONSUMPTION = "actual-power-consumption";
     public static final String CHANNEL_POWER_CONSUMPTION_SETPOINT = "power-consumption-setpoint";
 
-    // Heatpump 1
-    public static final String CHANNEL_HEATPUMP1_ERROR_STATE = "heatpump1-error-state";
-    public static final String CHANNEL_HEATPUMP1_ERROR_NUMBER = "heatpump1-error-number";
-    public static final String CHANNEL_HEATPUMP1_STATE = "heatpump1-state";
-    public static final String CHANNEL_HEATPUMP1_OPERATING_STATE = "heatpump1-operating-state";
-    public static final String CHANNEL_HEATPUMP1_T_FLOW = "heatpump1-t-flow";
-    public static final String CHANNEL_HEATPUMP1_T_RETURN = "heatpump1-t-return";
-    public static final String CHANNEL_HEATPUMP1_VOL_SINK = "heatpump1-vol-sink";
-    public static final String CHANNEL_HEATPUMP1_T_EQIN = "heatpump1-t-eqin";
-    public static final String CHANNEL_HEATPUMP1_T_EQOUT = "heatpump1-t-eqout";
-    public static final String CHANNEL_HEATPUMP1_VOL_SOURCE = "heatpump1-vol-source";
-    public static final String CHANNEL_HEATPUMP1_COMPRESSOR_RATING = "heatpump1-compressor-rating";
-    public static final String CHANNEL_HEATPUMP1_QP_HEATING = "heatpump1-qp-heating";
-    public static final String CHANNEL_HEATPUMP1_FI_POWER_CONSUMPTION = "heatpump1-fi-power-consumption";
-    public static final String CHANNEL_HEATPUMP1_COP = "heatpump1-cop";
-    public static final String CHANNEL_HEATPUMP1_SET_ERROR_QUIT = "heatpump1-set-error-quit";
+    // Heatpump
+    public static final String CHANNEL_HEATPUMP_ERROR_STATE = "heatpump-error-state";
+    public static final String CHANNEL_HEATPUMP_ERROR_NUMBER = "heatpump-error-number";
+    public static final String CHANNEL_HEATPUMP_STATE = "heatpump-state";
+    public static final String CHANNEL_HEATPUMP_OPERATING_STATE = "heatpump-operating-state";
+    public static final String CHANNEL_HEATPUMP_T_FLOW = "heatpump-t-flow";
+    public static final String CHANNEL_HEATPUMP_T_RETURN = "heatpump-t-return";
+    public static final String CHANNEL_HEATPUMP_VOL_SINK = "heatpump-vol-sink";
+    public static final String CHANNEL_HEATPUMP_T_EQIN = "heatpump-t-eqin";
+    public static final String CHANNEL_HEATPUMP_T_EQOUT = "heatpump-t-eqout";
+    public static final String CHANNEL_HEATPUMP_VOL_SOURCE = "heatpump-vol-source";
+    public static final String CHANNEL_HEATPUMP_COMPRESSOR_RATING = "heatpump-compressor-rating";
+    public static final String CHANNEL_HEATPUMP_QP_HEATING = "heatpump-qp-heating";
+    public static final String CHANNEL_HEATPUMP_FI_POWER_CONSUMPTION = "heatpump-fi-power-consumption";
+    public static final String CHANNEL_HEATPUMP_COP = "heatpump-cop";
+    public static final String CHANNEL_HEATPUMP_VDAE = "heatpump-vdae";
+    public static final String CHANNEL_HEATPUMP_VDAQ = "heatpump-vdaq";
+    public static final String CHANNEL_HEATPUMP_SET_ERROR_QUIT = "heatpump-set-error-quit";
 
-    // Boiler 1
-    public static final String CHANNEL_BOILER1_ERROR_NUMBER = "boiler1-error-number";
-    public static final String CHANNEL_BOILER1_OPERATING_STATE = "boiler1-operating-state";
-    public static final String CHANNEL_BOILER1_ACTUAL_HIGH_TEMPERATURE = "boiler1-actual-high-temperature";
-    public static final String CHANNEL_BOILER1_ACTUAL_LOW_TEMPERATURE = "boiler1-actual-low-temperature";
-    public static final String CHANNEL_BOILER1_MAXIMUM_BOILER_TEMPERATURE = "boiler1-maximum-boiler-temperature";
+    // Boiler
+    public static final String CHANNEL_BOILER_ERROR_NUMBER = "boiler-error-number";
+    public static final String CHANNEL_BOILER_OPERATING_STATE = "boiler-operating-state";
+    public static final String CHANNEL_BOILER_ACTUAL_HIGH_TEMPERATURE = "boiler-actual-high-temperature";
+    public static final String CHANNEL_BOILER_ACTUAL_LOW_TEMPERATURE = "boiler-actual-low-temperature";
+    public static final String CHANNEL_BOILER_MAXIMUM_BOILER_TEMPERATURE = "boiler-maximum-boiler-temperature";
 
-    // Buffer 1
-    public static final String CHANNEL_BUFFER1_ERROR_NUMBER = "buffer1-error-number";
-    public static final String CHANNEL_BUFFER1_OPERATING_STATE = "buffer1-operating-state";
-    public static final String CHANNEL_BUFFER1_ACTUAL_HIGH_TEMPERATURE = "buffer1-actual-high-temperature";
-    public static final String CHANNEL_BUFFER1_ACTUAL_LOW_TEMPERATURE = "buffer1-actual-low-temperature";
-    public static final String CHANNEL_BUFFER1_MAXIMUM_BOILER_TEMPERATURE = "buffer1-maximum-boiler-temperature";
+    // Buffer
+    public static final String CHANNEL_BUFFER_ERROR_NUMBER = "buffer-error-number";
+    public static final String CHANNEL_BUFFER_OPERATING_STATE = "buffer-operating-state";
+    public static final String CHANNEL_BUFFER_ACTUAL_HIGH_TEMPERATURE = "buffer-actual-high-temperature";
+    public static final String CHANNEL_BUFFER_ACTUAL_LOW_TEMPERATURE = "buffer-actual-low-temperature";
+    public static final String CHANNEL_BUFFER_MAXIMUM_BUFFER_TEMPERATURE = "buffer-maximum-buffer-temperature";
 
-    // Heating Circuit 1
-    public static final String CHANNEL_HEATINGCIRCUIT1_ERROR_NUMBER = "heatingcircuit1-error-number";
-    public static final String CHANNEL_HEATINGCIRCUIT1_OPERATING_STATE = "heatingcircuit1-operating-state";
-    public static final String CHANNEL_HEATINGCIRCUIT1_FLOW_LINE_TEMPERATURE = "heatingcircuit1-flow-line-temperature";
-    public static final String CHANNEL_HEATINGCIRCUIT1_RETURN_LINE_TEMPERATURE = "heatingcircuit1-return-line-temperature";
-    public static final String CHANNEL_HEATINGCIRCUIT1_ROOM_DEVICE_TEMPERATURE = "heatingcircuit1-room-device-temperature";
-    public static final String CHANNEL_HEATINGCIRCUIT1_SETPOINT_FLOW_LINE_TEMPERATURE = "heatingcircuit1-setpoint-flow-line-temperature";
-    public static final String CHANNEL_HEATINGCIRCUIT1_OPERATING_MODE = "heatingcircuit1-operating-mode";
-    // Heating Cirucuit 1 Set
-    public static final String CHANNEL_HEATINGCIRCUIT1_OFFSET_FLOW_LINE_TEMPERATURE = "heatingcircuit1-offset-flow-line-temperature";
-    public static final String CHANNEL_HEATINGCIRCUIT1_ROOM_HEATING_TEMPERATURE = "heatingcircuit1-room-heating-temperature";
-    public static final String CHANNEL_HEATINGCIRCUIT1_ROOM_COOLING_TEMPERATURE = "heatingcircuit1-room-cooling-temperature";
+    // Heating Circuit
+    public static final String CHANNEL_HEATINGCIRCUIT_ERROR_NUMBER = "heatingcircuit-error-number";
+    public static final String CHANNEL_HEATINGCIRCUIT_OPERATING_STATE = "heatingcircuit-operating-state";
+    public static final String CHANNEL_HEATINGCIRCUIT_FLOW_LINE_TEMPERATURE = "heatingcircuit-flow-line-temperature";
+    public static final String CHANNEL_HEATINGCIRCUIT_RETURN_LINE_TEMPERATURE = "heatingcircuit-return-line-temperature";
+    public static final String CHANNEL_HEATINGCIRCUIT_ROOM_DEVICE_TEMPERATURE = "heatingcircuit-room-device-temperature";
+    public static final String CHANNEL_HEATINGCIRCUIT_SETPOINT_FLOW_LINE_TEMPERATURE = "heatingcircuit-setpoint-flow-line-temperature";
+    public static final String CHANNEL_HEATINGCIRCUIT_OPERATING_MODE = "heatingcircuit-operating-mode";
+    // Heating Circuit Set
+    public static final String CHANNEL_HEATINGCIRCUIT_OFFSET_FLOW_LINE_TEMPERATURE = "heatingcircuit-offset-flow-line-temperature";
+    public static final String CHANNEL_HEATINGCIRCUIT_ROOM_HEATING_TEMPERATURE = "heatingcircuit-room-heating-temperature";
+    public static final String CHANNEL_HEATINGCIRCUIT_ROOM_COOLING_TEMPERATURE = "heatingcircuit-room-cooling-temperature";
 }

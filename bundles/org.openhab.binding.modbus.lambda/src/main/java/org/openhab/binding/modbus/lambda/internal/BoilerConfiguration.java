@@ -15,20 +15,27 @@ package org.openhab.binding.modbus.lambda.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link LambdaConfiguration} class contains fields mapping
+ * The {@link BoilerConfiguration} class contains fields mapping
  * thing configuration parameters.
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  */
 @NonNullByDefault
-public class LambdaConfiguration {
+public class BoilerConfiguration {
+
     /**
      * Refresh interval in seconds
      */
     private int refresh = 30;
 
-    private int maxTries = 3;// backwards compatibility and tests
+    private int maxTries = 3;
+    // backwards compatibility and tests
+
+    /**
+     * Subindex to calculate the base adress of the modbus registers
+     */
+    private int subindex = 0;
 
     /**
      * Gets refresh period in milliseconds
@@ -43,5 +50,13 @@ public class LambdaConfiguration {
 
     public void setMaxTries(int maxTries) {
         this.maxTries = maxTries;
+    }
+
+    public int getSubindex() {
+        return subindex;
+    }
+
+    public void setSubindex(int subindex) {
+        this.subindex = subindex;
     }
 }

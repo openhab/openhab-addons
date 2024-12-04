@@ -10,24 +10,38 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.modbus.lambda.internal.handler;
+package org.openhab.binding.modbus.lambda.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Thrown when the lambda-heatpump handler sees an error.
+ * The {@link GeneralConfiguration} class contains fields mapping
+ * thing configuration parameters.
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  */
-@SuppressWarnings("serial")
 @NonNullByDefault
-public class LambdaException extends Exception {
+public class GeneralConfiguration {
+    /**
+     * Refresh interval in seconds
+     */
+    private int refresh = 30;
 
-    public LambdaException() {
+    private int maxTries = 3;// backwards compatibility and tests
+
+    /**
+     * Gets refresh period in milliseconds
+     */
+    public long getRefreshMillis() {
+        return refresh * 1000;
     }
 
-    public LambdaException(String message) {
-        super(message);
+    public int getMaxTries() {
+        return maxTries;
+    }
+
+    public void setMaxTries(int maxTries) {
+        this.maxTries = maxTries;
     }
 }

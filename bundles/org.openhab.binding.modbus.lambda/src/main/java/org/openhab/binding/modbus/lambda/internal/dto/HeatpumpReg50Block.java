@@ -1,4 +1,3 @@
-package org.openhab.binding.modbus.lambda.internal.dto;
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
@@ -11,15 +10,16 @@ package org.openhab.binding.modbus.lambda.internal.dto;
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+package org.openhab.binding.modbus.lambda.internal.dto;
 
 /**
- * Dto class for the Heatpump1 Block
+ * Dto class for the HeatpumpReg50 Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  *
  */
-public class Heatpump1SetBlock {
+public class HeatpumpReg50Block {
 
-    public int heatpump1seterrorquit;
+    public int heatpumpSetErrorQuit;
 }

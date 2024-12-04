@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="heatingcircuit-type">
+		<label>Heating Circuit</label>
+		<channels>
+			<channel id="heatingcircuit-error-number" typeId="heatingcircuit-error-number-type"/>
+			<channel id="heatingcircuit-operating-state" typeId="heatingcircuit-operating-state-type"/>
+			<channel id="heatingcircuit-flow-line-temperature" typeId="heatingcircuit-flow-line-temperature-type"/>
+			<channel id="heatingcircuit-return-line-temperature" typeId="heatingcircuit-return-line-temperature-type"/>
+			<channel id="heatingcircuit-room-device-temperature" typeId="heatingcircuit-room-device-temperature-type"/>
+			<channel id="heatingcircuit-setpoint-flow-line-temperature"
+				typeId="heatingcircuit-setpoint-flow-line-temperature-type"/>
+			<channel id="heatingcircuit-operating-mode" typeId="heatingcircuit-operating-mode-type"/>
+			<channel id="heatingcircuit-offset-flow-line-temperature"
+				typeId="heatingcircuit-offset-flow-line-temperature-type"/>
+			<channel id="heatingcircuit-room-heating-temperature" typeId="heatingcircuit-room-heating-temperature-type"/>
+			<channel id="heatingcircuit-room-cooling-temperature" typeId="heatingcircuit-room-cooling-temperature-type"/>
+		</channels>
+	</channel-group-type>
+
+
+</thing:thing-descriptions>

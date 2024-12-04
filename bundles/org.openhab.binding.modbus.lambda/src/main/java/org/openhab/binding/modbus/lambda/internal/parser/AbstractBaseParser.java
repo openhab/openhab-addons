@@ -114,6 +114,11 @@ public class AbstractBaseParser {
                 .filter(value -> value != 0);
     }
 
+    protected Optional<Long> extractOptionalInt32(ModbusRegisterArray raw, int index) {
+        return ModbusBitUtilities.extractStateFromRegisters(raw, index, ValueType.INT32).map(DecimalType::longValue)
+                .filter(value -> value != 0);
+    }
+
     /**
      * Extract a mandatory acc32 value
      *
@@ -122,7 +127,11 @@ public class AbstractBaseParser {
      * @param def the default value
      * @return the parsed value or default if the field is not implemented
      */
-    protected Long extractUnit32(ModbusRegisterArray raw, int index, long def) {
+    protected Long extractUInt32(ModbusRegisterArray raw, int index, long def) {
         return Objects.requireNonNull(extractOptionalUInt32(raw, index).orElse(def));
+    }
+
+    protected Long extractInt32(ModbusRegisterArray raw, int index, long def) {
+        return Objects.requireNonNull(extractOptionalInt32(raw, index).orElse(def));
     }
 }

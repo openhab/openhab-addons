@@ -13,7 +13,7 @@
 package org.openhab.binding.modbus.lambda.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.modbus.lambda.internal.dto.Buffer1Block;
+import org.openhab.binding.modbus.lambda.internal.dto.BufferBlock;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
@@ -24,14 +24,14 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
  *
  */
 @NonNullByDefault
-public class Buffer1BlockParser extends AbstractBaseParser {
+public class BufferBlockParser extends AbstractBaseParser {
 
-    public Buffer1Block parse(ModbusRegisterArray raw) {
-        Buffer1Block block = new Buffer1Block();
-        block.buffer1ErrorNumber = extractUInt16(raw, 0, (short) 0);
-        block.buffer1OperatingState = extractUInt16(raw, 1, (short) 0);
-        block.buffer1ActualHighTemperature = extractUInt16(raw, 2, (short) 0);
-        block.buffer1ActualLowTemperature = extractUInt16(raw, 3, (short) 0);
+    public BufferBlock parse(ModbusRegisterArray raw) {
+        BufferBlock block = new BufferBlock();
+        block.bufferErrorNumber = extractInt16(raw, 0, (short) 0);
+        block.bufferOperatingState = extractUInt16(raw, 1, (short) 0);
+        block.bufferActualHighTemperature = extractInt16(raw, 2, (short) 0);
+        block.bufferActualLowTemperature = extractInt16(raw, 3, (short) 0);
         return block;
     }
 }

@@ -13,13 +13,19 @@
 package org.openhab.binding.modbus.lambda.internal.dto;
 
 /**
- * Dto class for the Buffer1Mt Block
+ * Dto class for the HeatingCircuit Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  *
  */
-public class Buffer1MtBlock {
+public class HeatingCircuitBlock {
 
-    public int buffer1MaximumBufferTemperature;
+    public int heatingcircuitErrorNumber;
+    public int heatingcircuitOperatingState;
+    public int heatingcircuitFlowLineTemperature;
+    public int heatingcircuitReturnLineTemperature;
+    public int heatingcircuitRoomDeviceTemperature;
+    public int heatingcircuitSetpointFlowLineTemperature;
+    public int heatingcircuitOperatingMode;
 }

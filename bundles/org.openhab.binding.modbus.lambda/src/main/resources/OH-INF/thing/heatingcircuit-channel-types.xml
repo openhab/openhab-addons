@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<channel-type id="heatingcircuit-error-number-type">
+		<item-type>Number</item-type>
+		<label>Heating Circuit Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+
+	<channel-type id="heatingcircuit-operating-state-type">
+		<item-type>Number</item-type>
+		<label>Heating Circuit Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">HEATING</option>
+				<option value="1">ECO</option>
+				<option value="2">COOLING</option>
+				<option value="3">FLOORDRY</option>
+				<option value="4">FROST</option>
+				<option value="5">MAX-TEMP</option>
+				<option value="6">ERROR</option>
+				<option value="7">SERVICE</option>
+				<option value="8">HOLIDAY</option>
+				<option value="9">CH-SUMMER</option>
+				<option value="10">CC-WINTER</option>
+				<option value="11">PRIO-STOP</option>
+				<option value="12">OFF</option>
+				<option value="13">RELEASE-OFF</option>
+				<option value="14">TIME-OFF</option>
+				<option value="15">STBY</option>
+				<option value="16">STBY-HEATING</option>
+				<option value="17">STBY-ECHO</option>
+				<option value="18">STBY-COOLING</option>
+				<option value="19">STBY-FROST</option>
+				<option value="20">STB-FLOORDRY</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatingcircuit-flow-line-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Circuit Flow Line Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit-return-line-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Circuit Return Line Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit-room-device-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating circuit 1 Room Device Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit-setpoint-flow-line-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Circuit Setpoint Flow Line Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit-operating-mode-type">
+		<item-type>Number</item-type>
+		<label>Heating Circuit Operating Mode</label>
+		<state readOnly="false">
+			<options>
+				<option value="0">OFF(RW)</option>
+				<option value="1">MANUAL(R)</option>
+				<option value="2">AUTOMATIK(RW)</option>
+				<option value="3">AUTO-HEATING(RW)</option>
+				<option value="4">AUTO-COOLING(RW)</option>
+				<option value="5">FROST(RW)</option>
+				<option value="6">SUMMER(RW)</option>
+				<option value="7">FLOOR-DRY(R)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatingcircuit-offset-flow-line-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Circuit Set Offset Flow Line Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit-room-heating-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Circuit Set Room Heating Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit-room-cooling-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Circuit Set Room Cooling Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+
+</thing:thing-descriptions>
