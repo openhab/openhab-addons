@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,9 +19,9 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link VeSyncV2BypassEnergyHistory} is a Java class used as a DTO to hold the Vesync's API's common response
- * data, in regards to an outlet device.
+ * data, in regard to an outlet device.
  *
- * @author Marcel Goerentz - Add outlets to the supported devices
+ * @author Marcel Goerentz - Initial contribution
  */
 public class VeSyncV2BypassEnergyHistory extends VeSyncResponse {
 

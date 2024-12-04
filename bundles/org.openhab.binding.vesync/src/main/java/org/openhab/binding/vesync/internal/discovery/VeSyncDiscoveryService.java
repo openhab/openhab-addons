@@ -13,6 +13,7 @@
 package org.openhab.binding.vesync.internal.discovery;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,8 +31,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
-
-import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
@@ -39,6 +38,7 @@ import org.osgi.service.component.annotations.ServiceScope;
  * read by the bridge, and the discovery data updated via a callback implemented by the DeviceMetaDataUpdatedHandler.
  *
  * @author David Godyear - Initial contribution
+ * @author Marcel Goerentz - Add support for outlets
  */
 @NonNullByDefault
 @Component(scope = ServiceScope.PROTOTYPE, service = VeSyncDiscoveryService.class, configurationPid = "discovery.vesync")

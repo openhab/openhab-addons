@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,6 +44,8 @@ import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassEnergyHis
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassEnergyHistory.EnergyHistory.Result.EnergyInfo;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassOutletStatus;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -55,6 +57,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * The {@link VeSyncDeviceOutletHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Marcel Goerentz - Add outlets to the supported devices
+ * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
 public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
@@ -84,8 +87,9 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
 
     private final Object pollLock = new Object();
 
-    public VeSyncDeviceOutletHandler(Thing thing) {
-        super(thing);
+    public VeSyncDeviceOutletHandler(Thing thing, @Reference TranslationProvider translationProvider,
+            @Reference LocaleProvider localeProvider) {
+        super(thing, translationProvider, localeProvider);
     }
 
     @Override
@@ -108,12 +112,9 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
 
         scheduler.submit(() -> {
             if (command instanceof OnOffType) {
-                switch (channelUID.getId()) {
-                    case DEVICE_CHANNEL_ENABLED:
-                        sendV2BypassControlCommand(DEVICE_SET_SWITCH,
-                                new VeSyncRequestManagedDeviceBypassV2.SetSwitchPayload(command.equals(OnOffType.ON),
-                                        0));
-                        break;
+                if (channelUID.getId().equals(DEVICE_CHANNEL_ENABLED)) {
+                    sendV2BypassControlCommand(DEVICE_SET_SWITCH,
+                            new VeSyncRequestManagedDeviceBypassV2.SetSwitchPayload(command.equals(OnOffType.ON), 0));
                 }
             } else if (command instanceof RefreshType) {
                 pollForUpdate();
@@ -165,7 +166,7 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
                 }
             } else {
                 logger.trace("Using cached response {}", responses);
-                String[] responseStrings = responses.split("?");
+                String[] responseStrings = responses.split("/?");
                 responseStatus = responseStrings[0];
                 responseEnergyHistory = responseStrings[1];
             }
@@ -180,7 +181,6 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
             if (outletStatus == null || energyHistory == null) {
                 return;
             }
-
             if (!cachedDataUsed) {
                 cachedResponse.putValue(responseStatus + "?" + responseEnergyHistory);
             }

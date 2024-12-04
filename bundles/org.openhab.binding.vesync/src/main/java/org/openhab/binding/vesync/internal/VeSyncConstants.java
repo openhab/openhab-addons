@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder;
  * used across the whole binding.
  *
  * @author David Goodyear - Initial contribution
+ * @author Marcel Goerentz - Add constants for outlets
  */
 @NonNullByDefault
 public class VeSyncConstants {
@@ -68,17 +69,6 @@ public class VeSyncConstants {
     public static final String DEVICE_CHANNEL_AF_NIGHT_LIGHT = "nightLightMode";
     public static final String DEVICE_CHANNEL_AF_LIGHT_DETECTION = "lightDetection";
     public static final String DEVICE_CHANNEL_AF_LIGHT_DETECTED = "lightDetected";
-
-    // Energy Related Channel Names
-    public static final String DEVICE_CHANNEL_CURRENT = "current";
-    public static final String DEVICE_CHANNEL_ENERGY = "energy";
-    public static final String DEVICE_CHANNEL_POWER = "power";
-    public static final String DEVICE_CHANNEL_VOLTAGE = "voltage";
-    public static final String DEVICE_CHANNEL_VOLTAGE_PT_STATUS = "voltagePTStatus";
-    public static final String DEVICE_CHANNEL_HIGHEST_VOLTAGE = "highestVoltage";
-    public static final String DEVICE_CHANNEL_ENERGY_WEEK = "energyWeek";
-    public static final String DEVICE_CHANNEL_ENERGY_MONTH = "energyMonth";
-    public static final String DEVICE_CHANNEL_ENERGY_YEAR = "energyYear";
 
     // Energy Related Channel Names
     public static final String DEVICE_CHANNEL_CURRENT = "current";
