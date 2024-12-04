@@ -31,7 +31,7 @@ public class GoveeBindingConstants {
     public static final String PRODUCT_NAME = "productName";
     public static final String HW_VERSION = "wifiHardwareVersion";
     public static final String SW_VERSION = "wifiSoftwareVersion";
-    private static final String BINDING_ID = "govee";
+    public static final String BINDING_ID = "govee";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "govee-light");

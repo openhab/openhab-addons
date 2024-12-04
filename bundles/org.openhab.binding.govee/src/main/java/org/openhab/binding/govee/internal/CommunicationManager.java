@@ -192,7 +192,7 @@ public class CommunicationManager {
         private @Nullable DatagramSocket socket;
 
         StatusReceiver() {
-            super("GoveeStatusReceiver");
+            super("OH-binding-" + GoveeBindingConstants.BINDING_ID + "-StatusReceiver");
         }
 
         synchronized void setDiscoveryResultsReceiver(@Nullable DiscoveryResultReceiver receiver) {
