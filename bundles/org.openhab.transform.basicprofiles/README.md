@@ -213,6 +213,7 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
 - A number with a unit to represent a `QuantityType`, for example `1.2 kW`, or `24 °C`.
 - One of the special functions supported by State Filter:
   - `$DELTA` to represent the absolute difference between the incoming value and the previously accepted value.
+  - `$DELTA_PERCENT` to represent the difference in percentage.
   - `$AVERAGE`, or `$AVG` to represent the average of the previous unfiltered incoming values.
   - `$STDDEV` to represent the _population_ standard deviation of the previous unfiltered incoming values.
   - `$MEDIAN` to represent the median value of the previous unfiltered incoming values.

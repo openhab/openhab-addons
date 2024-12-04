@@ -494,6 +494,7 @@ public class StateFilterProfile implements StateProfile {
     class FunctionType implements State {
         enum Function {
             DELTA,
+            DELTA_PERCENT,
             AVERAGE,
             AVG,
             MEDIAN,
@@ -517,6 +518,7 @@ public class StateFilterProfile implements StateProfile {
             List<State> states = start <= 0 ? previousStates : previousStates.subList(start, size);
             return switch (type) {
                 case DELTA -> calculateDelta();
+                case DELTA_PERCENT -> calculateDeltaPercent();
                 case AVG, AVERAGE -> calculateAverage(states);
                 case MEDIAN -> calculateMedian(states);
                 case STDDEV -> calculateStdDev(states);
@@ -534,7 +536,7 @@ public class StateFilterProfile implements StateProfile {
         }
 
         public int getWindowSize() {
-            if (type == Function.DELTA) {
+            if (type == Function.DELTA || type == Function.DELTA_PERCENT) {
                 // We don't need to keep previous states list to calculate the delta,
                 // the previous state is kept in the deltaState variable
                 return 0;
@@ -663,6 +665,26 @@ public class StateFilterProfile implements StateProfile {
             BigDecimal result = ((DecimalType) newState).toBigDecimal()
                     .subtract(((DecimalType) deltaState).toBigDecimal());
             return result.compareTo(BigDecimal.ZERO) < 0 ? new DecimalType(result.negate()) : new DecimalType(result);
+        }
+
+        private @Nullable State calculateDeltaPercent() {
+            State stateDelta = calculateDelta();
+            if (stateDelta == null) {
+                return null;
+            }
+
+            BigDecimal bdDelta;
+            BigDecimal bdBase;
+            if (deltaState instanceof QuantityType deltaStateQuantity) {
+                // Assume that delta and base are in the same unit
+                bdDelta = ((QuantityType) stateDelta).toBigDecimal();
+                bdBase = ((QuantityType) deltaState).toBigDecimal();
+            } else {
+                bdDelta = ((DecimalType) stateDelta).toBigDecimal();
+                bdBase = ((DecimalType) deltaState).toBigDecimal();
+            }
+            BigDecimal percent = bdDelta.multiply(BigDecimal.valueOf(100)).divide(bdBase, 2, RoundingMode.HALF_EVEN);
+            return new DecimalType(percent);
         }
     }
 }
