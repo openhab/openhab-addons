@@ -54,7 +54,7 @@ bluetooth:beacon:hci0:b1  "BLE Beacon" (bluetooth:bluez:hci0) [ address="68:64:4
 demo.items:
 
 ```java
-Number Beacon_RSSI "My Beacon [%.0f]" { channel="bluetooth:beacon:hci0:b1:rssi" }
+Number:Power Beacon_RSSI "My Beacon [%.0f %unit%]" { unit="dBm", channel="bluetooth:beacon:hci0:b1:rssi" }
 ```
 
 demo.sitemap:
