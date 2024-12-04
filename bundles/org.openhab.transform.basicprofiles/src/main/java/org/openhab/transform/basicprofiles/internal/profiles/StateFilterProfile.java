@@ -300,8 +300,16 @@ public class StateFilterProfile implements StateProfile {
 
         public StateCondition(String lhs, ComparisonType comparisonType, String rhs) {
             this.comparisonType = comparisonType;
-            this.lhsString = lhs;
-            this.rhsString = rhs;
+
+            if (lhs.isEmpty() && rhs.endsWith("%")) {
+                // Allow comparing percentages without a left hand side,
+                // e.g. `> 50%` -> translate this to `$DELTA_PERCENT > 50`
+                lhsString = "$DELTA_PERCENT";
+                rhsString = rhs.substring(0, rhs.length() - 1).trim();
+            } else {
+                lhsString = lhs;
+                rhsString = rhs;
+            }
             // Convert quoted strings to StringType, and UnDefTypes to UnDefType
             // UnDefType gets special treatment because we don't want `UNDEF` to be parsed as a string
             // Anything else, defer parsing until we're checking the condition
