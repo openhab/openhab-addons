@@ -256,7 +256,8 @@ public class HeatpumpHandler extends BaseThingHandler {
                 }
             }
         } else {
-            // logger.trace("Heatpump: handleCommand: Es wird geschrieben, GroupID: {}, command {}", channelUID.getGroupId(), command);
+            // logger.trace("Heatpump: handleCommand: Es wird geschrieben, GroupID: {}, command {}",
+            // channelUID.getGroupId(), command);
             try {
 
                 if (GROUP_HEATPUMP_REG50.equals(channelUID.getGroupId())) {

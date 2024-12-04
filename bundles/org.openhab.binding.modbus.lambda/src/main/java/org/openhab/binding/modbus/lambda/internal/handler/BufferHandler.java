@@ -255,7 +255,8 @@ public class BufferHandler extends BaseThingHandler {
                 }
             }
         } else {
-            // logger.trace("Buffer: handleCommand: Es wird geschrieben, GroupID: {}, command {}", channelUID.getGroupId(), command);
+            // logger.trace("Buffer: handleCommand: Es wird geschrieben, GroupID: {}, command {}",
+            // channelUID.getGroupId(), command);
             try {
 
                 if (GROUP_BUFFER_REG50.equals(channelUID.getGroupId())) {
