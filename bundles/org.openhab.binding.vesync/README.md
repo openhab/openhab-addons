@@ -120,6 +120,13 @@ Channel names in **bold** are read/write, everything else is read-only
 | **enabled**                | Switch               | Whether the hardware device is enabled (Switched on)          | WHOGPLUG | [ON, OFF]
 
 
+### Outlet Thing
+
+| Channel                    | Type                 | Description                                                   | Model's Supported                     | Controllable Values |
+|----------------------------|----------------------|---------------------------------------------------------------|---------------------------------------|---------------------|
+| **enabled**                | Switch               | Whether the hardware device is enabled (Switched on)          | WHOGPLUG | [ON, OFF]
+
+
 ## Full Example
 
 ### Configuration (*.things)

@@ -22,6 +22,7 @@ import org.openhab.binding.vesync.internal.handlers.VeSyncBaseDeviceHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
+import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceOutletHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
