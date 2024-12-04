@@ -82,6 +82,9 @@ public class WizPacketConverter {
         WizResponse response = null;
         try {
             response = this.wizGsonBuilder.fromJson(responseJson, WizResponse.class);
+            if (response == null) {
+                throw new JsonParseException("JSON is empty");
+            }
             response.setWizResponseIpAddress(packet.getAddress().getHostAddress());
         } catch (JsonParseException e) {
             logger.debug("Error parsing json! {}", e.getMessage());
