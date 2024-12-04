@@ -421,6 +421,7 @@
 /bundles/org.openhab.binding.wemo/ @hmerk @jlaur
 /bundles/org.openhab.binding.wifiled/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.windcentrale/ @marcelrv @wborn
+/bundles/org.openhab.binding.wiz/ @ccutrer @frejos
 /bundles/org.openhab.binding.wlanthermo/ @CSchlipp
 /bundles/org.openhab.binding.wled/ @Skinah
 /bundles/org.openhab.binding.wolfsmartset/ @BoBiene
