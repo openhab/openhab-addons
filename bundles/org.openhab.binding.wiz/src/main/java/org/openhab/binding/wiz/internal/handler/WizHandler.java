@@ -238,7 +238,11 @@ public class WizHandler extends BaseThingHandler {
                 break;
             case CHANNEL_SPEED:
                 if (command instanceof DecimalType numberCommand) {
-                    handleFanSpeedCommand(numberCommand);
+                    if (numberCommand.equals(DecimalType.ZERO)) {
+                        handleFanOnOffCommand(OnOffType.OFF);
+                    } else {
+                        handleFanSpeedCommand(numberCommand);
+                    }
                 }
                 break;
             case CHANNEL_REVERSE:
