@@ -65,7 +65,8 @@ public class LambdaHandlerFactory extends BaseThingHandlerFactory {
         // logger.trace("LambdaHandlerFactory ThingHandler searching of {}", thingTypeUID.toString());
 
         if (THING_TYPE_LAMBDAGENERAL.equals(thingTypeUID)) {
-            // logger.debug("LambdaHandlerFactory ThingHandler LAMBDAGENERAL found first place {}", thingTypeUID.toString());
+            // logger.debug("LambdaHandlerFactory ThingHandler LAMBDAGENERAL found first place {}",
+            // thingTypeUID.toString());
             return new GeneralHandler(thing);
         } else if (THING_TYPE_LAMBDAHEATPUMP.equals(thingTypeUID)) {
 

@@ -255,7 +255,8 @@ public class HeatingCircuitHandler extends BaseThingHandler {
                 }
             }
         } else {
-            // logger.trace("HeatingCircuit: handleCommand: Es wird geschrieben, GroupID: {}, command {}", channelUID.getGroupId(), command);
+            // logger.trace("HeatingCircuit: handleCommand: Es wird geschrieben, GroupID: {}, command {}",
+            // channelUID.getGroupId(), command);
             try {
 
                 if (GROUP_HEATINGCIRCUIT.equals(channelUID.getGroupId())) {
@@ -280,7 +281,8 @@ public class HeatingCircuitHandler extends BaseThingHandler {
                 }
 
                 if (GROUP_HEATINGCIRCUIT_REG50.equals(channelUID.getGroupId())) {
-                    // logger.trace("HeatingCircuit: im HEATINGCIRCUIT1 channelUID {} ", channelUID.getIdWithoutGroup());
+                    // logger.trace("HeatingCircuit: im HEATINGCIRCUIT1 channelUID {} ",
+                    // channelUID.getIdWithoutGroup());
 
                     switch (channelUID.getIdWithoutGroup()) {
 

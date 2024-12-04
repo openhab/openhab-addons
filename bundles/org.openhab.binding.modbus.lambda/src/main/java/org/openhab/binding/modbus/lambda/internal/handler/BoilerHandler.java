@@ -257,7 +257,8 @@ public class BoilerHandler extends BaseThingHandler {
                 }
             }
         } else {
-            // logger.trace("Boiler: handleCommand: Es wird geschrieben, GroupID: {}, command {}", channelUID.getGroupId(), command);
+            // logger.trace("Boiler: handleCommand: Es wird geschrieben, GroupID: {}, command {}",
+            // channelUID.getGroupId(), command);
             try {
 
                 if (GROUP_BOILER_REG50.equals(channelUID.getGroupId())) {
