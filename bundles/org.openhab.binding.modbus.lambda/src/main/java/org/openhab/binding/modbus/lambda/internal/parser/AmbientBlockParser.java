@@ -28,11 +28,11 @@ public class AmbientBlockParser extends AbstractBaseParser {
 
     public AmbientBlock parse(ModbusRegisterArray raw) {
         AmbientBlock block = new AmbientBlock();
-        block.ambientErrorNumber = extractUInt16(raw, 0, (short) 0);
+        block.ambientErrorNumber = extractInt16(raw, 0, (short) 0);
         block.ambientOperatingState = extractUInt16(raw, 1, (short) 0);
-        block.actualAmbientTemperature = extractUInt16(raw, 2, (short) 0);
-        block.averageAmbientTemperature = extractUInt16(raw, 3, (short) 0);
-        block.calculatedAmbientTemperature = extractUInt16(raw, 4, (short) 0);
+        block.actualAmbientTemperature = extractInt16(raw, 2, (short) 0);
+        block.averageAmbientTemperature = extractInt16(raw, 3, (short) 0);
+        block.calculatedAmbientTemperature = extractInt16(raw, 4, (short) 0);
         return block;
     }
 }

@@ -4,23 +4,20 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="lambdahp">
+	<thing-type id="lambda-heatpump">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="tcp"/>
 		</supported-bridge-type-refs>
-		<label>Lambda Heat Pump</label>
+		<label>Lambda Heat Pump Group</label>
 		<description>Lambda Heat Pump connected through modbus</description>
 
 		<channel-groups>
-			<channel-group id="generalAmbient" typeId="general-ambient"/>
-			<channel-group id="generalEManager" typeId="general-emanager"/>
-			<channel-group id="Heatpump1" typeId="heatpump1"/>
-			<channel-group id="Boiler1" typeId="boiler1"/>
-			<channel-group id="Buffer1" typeId="buffer1"/>
-			<channel-group id="HeatingCircuit1" typeId="heatingcircuit1"/>
+
+			<channel-group id="heatpump-group" typeId="heatpump-type"/>
+
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:lambda:modbusconfig"/>
+		<config-description-ref uri="thing-type:lambda-heatpump:modbusconfig"/>
 
 	</thing-type>
 

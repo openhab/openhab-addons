@@ -1,5 +1,3 @@
-package org.openhab.binding.modbus.lambda.internal.dto;
-
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
@@ -12,17 +10,18 @@ package org.openhab.binding.modbus.lambda.internal.dto;
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+package org.openhab.binding.modbus.lambda.internal.dto;
 
 /**
- * Dto class for the HeatingCircuit1Setting Block
+ * Dto class for the HeatingCircuitReg50 Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  *
  */
 
-public class HeatingCircuit1SettingBlock {
-    public int heatingcircuit1OffsetFlowLineTemperature;
-    public int heatingcircuit1RoomHeatingTemperature;
-    public int heatingcircuit1RoomCoolingTemperature;
+public class HeatingCircuitReg50Block {
+    public int heatingcircuitOffsetFlowLineTemperature;
+    public int heatingcircuitRoomHeatingTemperature;
+    public int heatingcircuitRoomCoolingTemperature;
 }

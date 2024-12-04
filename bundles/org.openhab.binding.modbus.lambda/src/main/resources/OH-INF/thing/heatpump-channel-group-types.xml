@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="heatpump-type">
+		<label>Heat Pump</label>
+		<channels>
+			<channel id="heatpump-error-state" typeId="heatpump-error-state-type"/>
+			<channel id="heatpump-error-number" typeId="heatpump-error-number-type"/>
+			<channel id="heatpump-state" typeId="heatpump-state-type"/>
+			<channel id="heatpump-operating-state" typeId="heatpump-operating-state-type"/>
+			<channel id="heatpump-t-flow" typeId="heatpump-t-flow-type"/>
+			<channel id="heatpump-t-return" typeId="heatpump-t-return-type"/>
+			<channel id="heatpump-vol-sink" typeId="heatpump-vol-sink-type"/>
+			<channel id="heatpump-t-eqin" typeId="heatpump-t-eqin-type"/>
+			<channel id="heatpump-t-eqout" typeId="heatpump-t-eqout-type"/>
+			<channel id="heatpump-vol-source" typeId="heatpump-vol-source-type"/>
+			<channel id="heatpump-compressor-rating" typeId="heatpump-compressor-rating-type"/>
+			<channel id="heatpump-qp-heating" typeId="heatpump-qp-heating-type"/>
+			<channel id="heatpump-fi-power-consumption" typeId="heatpump-fi-power-consumption-type"/>
+			<channel id="heatpump-cop" typeId="heatpump-cop-type"/>
+			<channel id="heatpump-vdae" typeId="heatpump-vdae-type"/>
+			<channel id="heatpump-vdaq" typeId="heatpump-vdaq-type"/>
+			<channel id="heatpump-set-error-quit" typeId="heatpump-set-error-quit-type"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

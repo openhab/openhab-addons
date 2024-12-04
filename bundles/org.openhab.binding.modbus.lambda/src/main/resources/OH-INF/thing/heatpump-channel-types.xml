@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="heatpump-error-state-type">
+		<item-type>Number</item-type>
+		<label>Heatpump Error State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">NONE</option>
+				<option value="1">MESSAGE</option>
+				<option value="2">WARNING</option>
+				<option value="3">ALARM</option>
+				<option value="4">FAULT</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatpump-error-number-type">
+		<item-type>Number</item-type>
+		<label>Heatpump Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatpump-state-type">
+		<item-type>Number</item-type>
+		<label>Heatpump State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">INIT</option>
+				<option value="1">REFERENCE</option>
+				<option value="2">RESTART-BLOCK</option>
+				<option value="3">READY</option>
+				<option value="4">START PUMPS</option>
+				<option value="5">START COMPRESSOR</option>
+				<option value="6">PRE-REGULATION</option>
+				<option value="7">REGULATION</option>
+				<option value="8">Not used</option>
+				<option value="9">COOLING</option>
+				<option value="10">DEFROSTING</option>
+				<option value="20">STOPPING</option>
+				<option value="30">FAULT-LOCK</option>
+				<option value="31">ALARM-BLOCK</option>
+				<option value="40">ERROR-RESET</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatpump-operating-state-type">
+		<item-type>Number</item-type>
+		<label>Heatpump Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">STBY</option>
+				<option value="1">CH</option>
+				<option value="2">DHW</option>
+				<option value="3">CC</option>
+				<option value="4">CIRCULATE</option>
+				<option value="5">DEFROST</option>
+				<option value="6">OFF</option>
+				<option value="7">FROST</option>
+				<option value="8">STBY-FROST</option>
+				<option value="9">Not used</option>
+				<option value="10">SUMMER</option>
+				<option value="11">HOLIDAY</option>
+				<option value="12">ERROR</option>
+				<option value="13">WARNING</option>
+				<option value="14">INFO-MESSAGE</option>
+				<option value="15">TIME-BLOCK</option>
+				<option value="16">RELEASE-BLOCK</option>
+				<option value="17">MINTEMP-BLOCK</option>
+				<option value="18">FIRMWARE-DOWNLOAD</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatpump-t-flow-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heatpump T-Flow</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump-t-return-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heatpump T-Return</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump-vol-sink-type">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Heatpump Volume flow heat sink</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump-t-eqin-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heatpump Energy source inlet temperature</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump-t-eqout-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heatpump Energy source outlet temperature</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump-vol-source-type">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Heatpump Volume flow energy source</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump-compressor-rating-type">
+		<item-type>Number</item-type>
+		<label>Heatpump Compressor unit rating</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatpump-qp-heating-type">
+		<item-type>Number:Power</item-type>
+		<label>Heatpump Actual heating capacity</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatpump-fi-power-consumption-type">
+		<item-type>Number:Power</item-type>
+		<label>Heatpump Frequency inverter actual power consumption</label>
+		<state readOnly="true" pattern="%.1f kW"/>
+	</channel-type>
+
+	<channel-type id="heatpump-cop-type">
+		<item-type>Number</item-type>
+		<label>Heatpump COP</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatpump-vdae-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heatpump VdA E since last reset</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatpump-vdaq-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heatpump VdA Q since last reset</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatpump-set-error-quit-type">
+		<item-type>Number</item-type>
+		<label>Heatpump Set Error Quit</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

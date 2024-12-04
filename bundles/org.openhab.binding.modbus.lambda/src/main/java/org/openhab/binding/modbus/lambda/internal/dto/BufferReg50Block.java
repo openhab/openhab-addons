@@ -13,15 +13,13 @@
 package org.openhab.binding.modbus.lambda.internal.dto;
 
 /**
- * Dto class for the Boiler1 Block
+ * Dto class for the BufferReg50 Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  *
  */
-public class Boiler1Block {
-    public int boiler1ErrorNumber;
-    public int boiler1OperatingState;
-    public int boiler1ActualHighTemperature;
-    public int boiler1ActualLowTemperature;
+public class BufferReg50Block {
+
+    public int bufferMaximumBufferTemperature;
 }

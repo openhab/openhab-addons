@@ -4,20 +4,117 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:lambda:modbusconfig">
+	<config-description uri="thing-type:lambda-general:modbusconfig">
 
-		<parameter name="refresh" type="integer" min="1" unit="s">
-			<label>Polling Interval</label>
-			<description>Poll interval in seconds. Use zero to disable automatic polling.</description>
-			<default>20</default>
+		<parameter name="refresh" type="integer" min="0" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval in seconds. Use zero to disable automatic polling.</description>
+			<default>30</default>
 			<unitLabel>s</unitLabel>
 		</parameter>
 
 		<parameter name="maxTries" type="integer" min="1">
-			<label>Maximum Tries When Reading</label>
+			<label>Maximum Tries</label>
 			<default>3</default>
 			<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
 			<advanced>true</advanced>
+		</parameter>
+
+	</config-description>
+
+	<config-description uri="thing-type:lambda-heatpump:modbusconfig">
+
+		<parameter name="refresh" type="integer" min="0" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval in seconds. Use zero to disable automatic polling.</description>
+			<default>30</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+
+		<parameter name="maxTries" type="integer" min="1">
+			<label>Maximum Tries</label>
+			<default>3</default>
+			<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="subindex" type="integer" required="true" min="0" max="2">
+			<label>Subindex of Heatpump Thing (0..2)</label>
+			<description>See Lambda Modbus description</description>
+			<default>0</default>
+		</parameter>
+
+	</config-description>
+
+
+	<config-description uri="thing-type:lambda-boiler:modbusconfig">
+
+		<parameter name="refresh" type="integer" min="0" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval in seconds. Use zero to disable automatic polling.</description>
+			<default>30</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+
+		<parameter name="maxTries" type="integer" min="1">
+			<label>Maximum Tries</label>
+			<default>3</default>
+			<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="subindex" type="integer" required="true" min="0" max="4">
+			<label>Subindex of Boiler (0..4)</label>
+			<description>See Lambda Modbus description</description>
+			<default>0</default>
+		</parameter>
+
+	</config-description>
+
+	<config-description uri="thing-type:lambda-buffer:modbusconfig">
+
+		<parameter name="refresh" type="integer" min="0" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval in seconds. Use zero to disable automatic polling.</description>
+			<default>30</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+
+		<parameter name="maxTries" type="integer" min="1">
+			<label>Maximum Tries</label>
+			<default>3</default>
+			<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="subindex" type="integer" required="true" min="0" max="4">
+			<label>Subindex of Buffer (0..4)</label>
+			<description>See Lambda Modbus description</description>
+			<default>0</default>
+		</parameter>
+
+	</config-description>
+
+	<config-description uri="thing-type:lambda-heatingcircuit:modbusconfig">
+
+		<parameter name="refresh" type="integer" min="0" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval in seconds. Use zero to disable automatic polling.</description>
+			<default>30</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+
+		<parameter name="maxTries" type="integer" min="1">
+			<label>Maximum Tries</label>
+			<default>3</default>
+			<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="subindex" type="integer" required="true" min="0" max="11">
+			<label>Subindex of Heating Circuit (0..11)</label>
+			<description>See Lambda Modbus description</description>
+			<default>0</default>
 		</parameter>
 
 	</config-description>

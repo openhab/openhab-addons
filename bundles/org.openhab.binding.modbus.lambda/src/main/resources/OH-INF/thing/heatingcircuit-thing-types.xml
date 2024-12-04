@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="lambda-heatingcircuit">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+		<label>Lambda Heating Circuit</label>
+		<description>Lambda Heating Circuit connected through modbus</description>
+
+		<channel-groups>
+
+			<channel-group id="heatingcircuit-group" typeId="heatingcircuit-type"/>
+
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:lambda-heatingcircuit:modbusconfig"/>
+
+	</thing-type>
+
+</thing:thing-descriptions>
