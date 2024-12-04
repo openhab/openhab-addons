@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.broadlink.internal.discovery;
 
+import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.BINDING_ID;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeoutException;
@@ -37,6 +39,7 @@ public class DiscoveryProtocol {
 
         AsyncDiscoveryThread(BroadlinkSocketListener listener, long timeoutMillis,
                 DiscoveryFinishedListener finishedListener, Logger logger) {
+            super("OH-binding-" + BINDING_ID + "-AsyncDiscoveryThread");
             this.listener = listener;
             this.timeoutMillis = timeoutMillis;
             this.finishedListener = finishedListener;

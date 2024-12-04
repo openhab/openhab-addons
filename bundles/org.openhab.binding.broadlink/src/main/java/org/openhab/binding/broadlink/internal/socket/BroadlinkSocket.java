@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.broadlink.internal.socket;
 
+import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.BINDING_ID;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -99,6 +101,7 @@ public class BroadlinkSocket {
         }
 
         private ReceiverThread(Logger logger) {
+            super("OH-binding-" + BINDING_ID + "-ReceiverThread");
             this.logger = logger;
         }
     }
