@@ -39,9 +39,9 @@ Other configuration parameters may be required depending on the bluetooth thing 
 
 Every Bluetooth thing has the following channel:
 
-| Channel ID | Item Type | Description                                                                                         |
-|------------|-----------|-----------------------------------------------------------------------------------------------------|
-| rssi       | Number    | The "Received Signal Strength Indicator", the [RSSI](https://blog.bluetooth.com/proximity-and-rssi) |
+| Channel ID | Item Type    | Description                                                                                         |
+|------------|--------------|-----------------------------------------------------------------------------------------------------|
+| rssi       | Number:Power | The "Received Signal Strength Indicator", the [RSSI](https://blog.bluetooth.com/proximity-and-rssi) |
 
 ## Full Example
 

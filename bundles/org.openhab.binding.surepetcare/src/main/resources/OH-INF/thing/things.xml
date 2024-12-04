@@ -553,14 +553,14 @@
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal Strength Device (RSSI)</label>
 		<description>The received device signal strength (RSSI).</description>
-		<state readOnly="true" pattern="%.2f dBm"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rssiHubType" advanced="true">
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal Strength Hub (RSSI)</label>
 		<description>The received hub signal strength (RSSI).</description>
-		<state readOnly="true" pattern="%.2f dBm"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="bowlsFoodType">
