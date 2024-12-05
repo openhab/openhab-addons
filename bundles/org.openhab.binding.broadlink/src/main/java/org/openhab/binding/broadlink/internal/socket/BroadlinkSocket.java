@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.broadlink.internal.socket;
 
-import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.BINDING_ID;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -26,7 +24,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlink.internal.ModelMapper;
-import org.slf4j.Logger;
 
 /**
  * Threaded socket implementation

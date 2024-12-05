@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.globalcache.internal.GlobalCacheBindingConstants;
 import org.openhab.binding.globalcache.internal.GlobalCacheBindingConstants.CommandType;
 import org.openhab.binding.globalcache.internal.command.CommandGetstate;
 import org.openhab.binding.globalcache.internal.command.CommandGetversion;
@@ -452,7 +453,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         private ConnectionManager connectionManager;
 
         public CommandProcessor() {
-            super("GlobalCache Command Processor");
+            super(String.format("OH-binding-%s-%s", GlobalCacheBindingConstants.BINDING_ID, "CommandProcessor"));
             sendQueue = new LinkedBlockingQueue<>(SEND_QUEUE_MAX_DEPTH);
             logger.debug("Processor for thing {} created request queue, depth={}", thingID(), SEND_QUEUE_MAX_DEPTH);
         }

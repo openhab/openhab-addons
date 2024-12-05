@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Arrays;
 
+import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpBindingConstants;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.binding.nibeheatpump.internal.config.NibeHeatPumpConfiguration;
 import org.openhab.binding.nibeheatpump.internal.message.ModbusReadRequestMessage;
@@ -123,6 +124,10 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
 
     private class Reader extends Thread {
         boolean interrupted = false;
+
+        public Reader() {
+            super(String.format("OH-binding-%s-%s", NibeHeatPumpBindingConstants.BINDING_ID, "UDPReader"));
+        }
 
         @Override
         public void interrupt() {
