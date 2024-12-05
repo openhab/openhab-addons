@@ -164,6 +164,12 @@ If a device has multiple device triggers for the same subtype (the particular bu
 | switch          | Switch | R/W | If the device is on or off.                         |
 | json-attributes | String | RO  | Additional attributes, as a serialized JSON string. |
 
+### [Tag Scanner](https://www.home-assistant.io/integrations/tag.mqtt/)
+
+| Channel ID      | Type    | R/W | Description                     |
+|-----------------|---------|-----|---------------------------------|
+| tag             | Trigger | N/A | The value of the "scanned" tag. |
+
 ### [Text](https://www.home-assistant.io/integrations/text.mqtt/)
 
 | Channel ID      | Type   | R/W | Description                                         |
