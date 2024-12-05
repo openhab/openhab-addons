@@ -213,6 +213,12 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
 - A number with a unit to represent a `QuantityType`, for example `1.2 kW`, or `24 °C`.
 - One of the special functions supported by State Filter:
   - `$DELTA` to represent the absolute difference between the incoming value and the previously accepted value.
+    The calculated delta value is absolute, i.e. it is always positive.
+    For example, with an initial data of `10`, a new data of `12` or `8` would both result in a $DELTA of `2`.
+  - `$DELTA_PERCENT` to represent the difference in percentage.
+    It is calculated as `($DELTA / current_data) * 100`.
+    Note that this can also be done by omitting the `LHS_OPERAND` and using a number followed with a percent sign `%` as the `RHS_OPERAND`.
+    See the example below.
   - `$AVERAGE`, or `$AVG` to represent the average of the previous unfiltered incoming values.
   - `$STDDEV` to represent the _population_ standard deviation of the previous unfiltered incoming values.
   - `$MEDIAN` to represent the median value of the previous unfiltered incoming values.
@@ -268,6 +274,19 @@ Filter out incoming data with very small difference from the previous one:
 ```java
 Number:Power PowerUsage {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="$DELTA > 10 W" ]
+}
+```
+
+Accept new data only if it's 10% higher or 10% lower than the previously accepted data:
+
+```java
+Number:Temperature BoilerTemperature {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="$DELTA_PERCENT > 10" ]
+}
+
+// Or more succinctly:
+Number:Temperature BoilerTemperature {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="> 10%" ]
 }
 ```
 
