@@ -74,6 +74,7 @@ public class HubCommunicationThread extends Thread {
     private HubCommunicationThreadState currentState = HubCommunicationThreadState.STARTING;
 
     public HubCommunicationThread(HubConnection hubConnection, NoboHubBridgeHandler hubHandler, Duration timeout) {
+        super("OH-binding-" + hubHandler.getThing().getUID());
         this.hubConnection = hubConnection;
         this.hubHandler = hubHandler;
         this.timeout = timeout;

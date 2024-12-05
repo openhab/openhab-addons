@@ -29,7 +29,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class PlayStationBindingConstants {
 
-    private static final String BINDING_ID = "playstation";
+    public static final String BINDING_ID = "playstation";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PS3 = new ThingTypeUID(BINDING_ID, "PS3");
