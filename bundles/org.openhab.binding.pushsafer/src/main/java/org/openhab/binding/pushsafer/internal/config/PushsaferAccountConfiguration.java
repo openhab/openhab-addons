@@ -35,6 +35,8 @@ public class PushsaferAccountConfiguration {
     public String url = DEFAULT_URL;
     public String urlTitle = DEFAULT_URLTITLE;
     public boolean answer = DEFAULT_ANSWER;
+    public String answeroptions = DEFAULT_ANSWEROPTIONS;
+    public boolean answerforce = DEFAULT_ANSWERFORCE;
     public int confirm = DEFAULT_CONFIRM;
     public int time2live = DEFAULT_TIME2LIVE;
     public String vibration = DEFAULT_VIBRATION;
