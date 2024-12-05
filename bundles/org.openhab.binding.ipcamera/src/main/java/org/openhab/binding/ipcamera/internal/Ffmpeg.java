@@ -103,6 +103,7 @@ public class Ffmpeg {
         public int countOfMotions;
 
         IpCameraFfmpegThread() {
+            super(String.format("OH-binding-%s-%s", IpCameraBindingConstants.BINDING_ID, "Ffmpeg"));
             setDaemon(true);
         }
 

@@ -22,7 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class MyNiceBindingConstants {
-    private static final String BINDING_ID = "mynice";
+    public static final String BINDING_ID = "mynice";
 
     // List of all Channel ids
     public static final String CHANNEL_STATUS = "status";

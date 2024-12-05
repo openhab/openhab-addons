@@ -25,7 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class SMSModemBindingConstants {
 
-    private static final String BINDING_ID = "smsmodem";
+    public static final String BINDING_ID = "smsmodem";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID SMSCONVERSATION_THING_TYPE = new ThingTypeUID(BINDING_ID, "smsconversation");

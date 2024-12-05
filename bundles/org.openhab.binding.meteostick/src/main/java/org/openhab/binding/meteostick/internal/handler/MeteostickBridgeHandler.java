@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.openhab.binding.meteostick.internal.MeteostickBindingConstants;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
@@ -221,6 +222,10 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
 
     private class ReceiveThread extends Thread implements SerialPortEventListener {
         private final Logger logger = LoggerFactory.getLogger(ReceiveThread.class);
+
+        public ReceiveThread() {
+            super(String.format("OH-binding-%s-%s", MeteostickBindingConstants.BINDING_ID, "Receiver"));
+        }
 
         @Override
         public void serialEvent(SerialPortEvent arg0) {

@@ -243,7 +243,7 @@ public class X10Interface extends Thread implements SerialPortEventListener {
      *
      */
     public X10Interface(String serialPort, Cm11aBridgeHandler bridgeHandler) throws NoSuchPortException {
-        super();
+        super("OH-binding-" + bridgeHandler.getThing().getUID());
         logger.trace("**** Constructing X10Interface for serial port: {} *******", serialPort);
         portId = CommPortIdentifier.getPortIdentifier(serialPort);
         this.bridgeHandler = bridgeHandler;

@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mpd.internal.MPDBindingConstants;
 import org.openhab.binding.mpd.internal.MPDException;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -58,6 +59,7 @@ public class MPDConnectionThread extends Thread {
     private AtomicBoolean disposed = new AtomicBoolean(false);
 
     public MPDConnectionThread(MPDResponseListener listener, String address, Integer port, String password) {
+        super(String.format("OH-binding-%s-%s", MPDBindingConstants.BINDING_ID, "Connection"));
         this.listener = listener;
         this.address = address;
         this.port = port;

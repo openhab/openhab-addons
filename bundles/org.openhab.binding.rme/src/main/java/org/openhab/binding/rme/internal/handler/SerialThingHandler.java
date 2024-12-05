@@ -244,8 +244,8 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss,SSS");
 
         public SerialPortReader(InputStream in) {
+            super("OH-binding-" + getThing().getUID());
             this.inputStream = in;
-            this.setName("SerialPortReader-" + getThing().getUID());
         }
 
         @Override

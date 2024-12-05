@@ -31,7 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class DigiplexBindingConstants {
 
-    private static final String BINDING_ID = "digiplex";
+    public static final String BINDING_ID = "digiplex";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");

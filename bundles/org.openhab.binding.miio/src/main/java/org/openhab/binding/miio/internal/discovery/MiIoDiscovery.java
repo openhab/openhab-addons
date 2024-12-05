@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.Message;
+import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.MiIoDevices;
 import org.openhab.binding.miio.internal.Utils;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
@@ -352,6 +353,11 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
      *
      */
     private class ReceiverThread extends Thread {
+
+        public ReceiverThread() {
+            super(String.format("OH-binding-%s-%s", MiIoBindingConstants.BINDING_ID, "Receiver"));
+        }
+
         @Override
         public void run() {
             DatagramSocket socket = getSocket();

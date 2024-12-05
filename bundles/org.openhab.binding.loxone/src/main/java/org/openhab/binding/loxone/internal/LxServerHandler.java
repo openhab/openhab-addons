@@ -663,6 +663,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         private Instant lastKeepAlive;
 
         LxServerThread(int id) {
+            super(String.format("OH-binding-%s-%s", LxBindingConstants.BINDING_ID, "Server"));
             debugId = id;
         }
 
