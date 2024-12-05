@@ -85,6 +85,8 @@ public class ComponentFactory {
                 return new Sensor(componentConfiguration, newStyleChannels);
             case "switch":
                 return new Switch(componentConfiguration, newStyleChannels);
+            case "tag":
+                return new Tag(componentConfiguration, newStyleChannels);
             case "text":
                 return new Text(componentConfiguration, newStyleChannels);
             case "update":
