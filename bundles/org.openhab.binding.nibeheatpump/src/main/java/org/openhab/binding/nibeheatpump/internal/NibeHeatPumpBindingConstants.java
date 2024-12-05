@@ -26,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 public class NibeHeatPumpBindingConstants {
 
-    private static final String BINDING_ID = "nibeheatpump";
+    public static final String BINDING_ID = "nibeheatpump";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_F1X45_UDP = new ThingTypeUID(BINDING_ID, "f1x45-udp");

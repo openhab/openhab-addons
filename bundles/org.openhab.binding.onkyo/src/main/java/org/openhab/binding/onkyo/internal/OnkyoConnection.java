@@ -276,6 +276,7 @@ public class OnkyoConnection {
         private boolean interrupted = false;
 
         DataListener() {
+            super(String.format("OH-binding-%s-%s", OnkyoBindingConstants.BINDING_ID, "DataListener"));
         }
 
         public void setInterrupted(boolean interrupted) {

@@ -22,6 +22,7 @@ import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.doorbird.internal.DoorbirdBindingConstants;
 import org.openhab.binding.doorbird.internal.api.DoorbirdSession;
 import org.openhab.binding.doorbird.internal.handler.DoorbellHandler;
 import org.slf4j.Logger;
@@ -58,6 +59,7 @@ public class DoorbirdUdpListener extends Thread {
     private long lastDataTime;
 
     public DoorbirdUdpListener(DoorbellHandler thingHandler) {
+        super(String.format("OH-binding-%s-%s", DoorbirdBindingConstants.BINDING_ID, "UdpListener"));
         this.thingHandler = thingHandler;
     }
 

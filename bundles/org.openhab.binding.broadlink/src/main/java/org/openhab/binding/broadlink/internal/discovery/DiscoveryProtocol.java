@@ -17,6 +17,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.openhab.binding.broadlink.internal.socket.BroadlinkSocket;
@@ -37,6 +38,7 @@ public class DiscoveryProtocol {
 
         AsyncDiscoveryThread(BroadlinkSocketListener listener, long timeoutMillis,
                 DiscoveryFinishedListener finishedListener, Logger logger) {
+            super(String.format("OH-binding-%s-%s", BroadlinkBindingConstants.BINDING_ID, "Discovery"));
             this.listener = listener;
             this.timeoutMillis = timeoutMillis;
             this.finishedListener = finishedListener;

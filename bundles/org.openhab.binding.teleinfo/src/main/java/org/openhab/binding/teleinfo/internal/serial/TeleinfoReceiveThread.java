@@ -41,7 +41,7 @@ public class TeleinfoReceiveThread extends Thread {
 
     public TeleinfoReceiveThread(SerialPort serialPort, final TeleinfoSerialControllerHandler listener,
             boolean autoRepairInvalidADPSgroupLine, TeleinfoTicMode ticMode, boolean verifyChecksum) {
-        super("OH-binding-TeleinfoReceiveThread-" + listener.getThing().getUID().getId());
+        super("OH-binding-" + listener.getThing().getUID());
         setDaemon(true);
         this.serialPort = serialPort;
         this.listener = listener;

@@ -390,6 +390,7 @@ public class PS4Handler extends BaseThingHandler {
         private SocketChannel socketChannel;
 
         public SocketChannelHandler() throws IOException {
+            super(String.format("OH-binding-%s-%s", PlayStationBindingConstants.BINDING_ID, "SocketChannelHandler"));
             socketChannel = setupChannel();
             loggedIn = false;
             oskOpen = false;
