@@ -23,7 +23,9 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.ModelMapper;
+import org.slf4j.Logger;
 
 /**
  * Threaded socket implementation
@@ -98,7 +100,7 @@ public class BroadlinkSocket {
         }
 
         private ReceiverThread(Logger logger) {
-            super("OH-binding-" + BINDING_ID + "-ReceiverThread");
+            super(String.format("OH-binding-%s-%s", BroadlinkBindingConstants.BINDING_ID, "Receiver"));
             this.logger = logger;
         }
     }
