@@ -138,6 +138,26 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
                 "Connection " + haConnection.getClientId() + " not retrieving all topics");
     }
 
+    private static class ComponentDiscoveredProxy implements ComponentDiscovered {
+        private final Map<String, AbstractComponent<?>> haComponents;
+        private final CountDownLatch latch;
+
+        public ComponentDiscoveredProxy(Map<String, AbstractComponent<?>> haComponents, CountDownLatch latch) {
+            this.haComponents = haComponents;
+            this.latch = latch;
+        }
+
+        @Override
+        public void componentDiscovered(HaID homeAssistantTopicID, AbstractComponent<?> component) {
+            haComponents.put(component.getComponentId(), component);
+            latch.countDown();
+        }
+
+        @Override
+        public void componentRemoved(HaID homeAssistantTopicID) {
+        }
+    }
+
     @Test
     public void parseHATree() throws Exception {
         MqttChannelTypeProvider channelTypeProvider = mock(MqttChannelTypeProvider.class);
@@ -154,10 +174,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         // In the following implementation we add the found component to the `haComponents` map
         // and add the types to the channelTypeProvider, like in the real Thing handler.
         final CountDownLatch latch = new CountDownLatch(1);
-        ComponentDiscovered cd = (haID, c) -> {
-            haComponents.put(c.getComponentId(), c);
-            latch.countDown();
-        };
+        ComponentDiscovered cd = new ComponentDiscoveredProxy(haComponents, latch);
 
         // Start the discovery for 2000ms. Forced timeout after 4000ms.
         HaID haID = new HaID(testObjectTopic + "/config");

@@ -69,6 +69,8 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      */
     public static interface ComponentDiscovered {
         void componentDiscovered(HaID homeAssistantTopicID, AbstractComponent<?> component);
+
+        void componentRemoved(HaID homeAssistantTopicID);
     }
 
     /**
@@ -121,7 +123,9 @@ public class DiscoverComponents implements MqttMessageSubscriber {
                 logger.warn("HomeAssistant discover error: {}", e.getMessage());
             }
         } else {
-            logger.warn("Configuration of HomeAssistant thing {} is empty", haID.objectID);
+            if (discoveredListener != null) {
+                discoveredListener.componentRemoved(haID);
+            }
         }
     }
 
