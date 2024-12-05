@@ -16,6 +16,12 @@
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
+	<channel-type id="ha-humidity">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
+	</channel-type>
+
 	<channel-type id="ha-image">
 		<item-type>Image</item-type>
 		<label>Image</label>
