@@ -674,6 +674,32 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "$DELTA >= 1", decimals, DecimalType.valueOf("10"), true), //
                 Arguments.of(decimalItem, "$DELTA >= 1", decimals, DecimalType.valueOf("5.5"), false), //
 
+                Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("4.6"), false), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("4.5"), true), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("5.4"), false), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("5.5"), true), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("6"), true), //
+
+                Arguments.of(decimalItem, ">= 10 %", decimals, DecimalType.valueOf("4.6"), false), //
+                Arguments.of(decimalItem, ">= 10%", decimals, DecimalType.valueOf("4.6"), false), //
+                Arguments.of(decimalItem, ">= 10%", decimals, DecimalType.valueOf("4.5"), true), //
+                Arguments.of(decimalItem, ">= 10%", decimals, DecimalType.valueOf("5.4"), false), //
+                Arguments.of(decimalItem, ">= 10%", decimals, DecimalType.valueOf("5.5"), true), //
+                Arguments.of(decimalItem, ">= 10%", decimals, DecimalType.valueOf("6"), true), //
+
+                // The following will only accept new data if it is within 10% of the previously accepted data.
+                // so the second and subsequent initial data (i.e.: 2, 3, 4, 5) will be rejected.
+                // The new data is compared against the first (1)
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("1.09"), true), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("1.11"), false), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.91"), true), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.89"), false), //
+
+                Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.09"), true), //
+                Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.11"), false), //
+                Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("0.91"), true), //
+                Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("0.89"), false), //
+
                 Arguments.of(decimalItem, "1 == $MIN", decimals, DecimalType.valueOf("20"), true), //
                 Arguments.of(decimalItem, "0 < $MIN", decimals, DecimalType.valueOf("20"), true), //
                 Arguments.of(decimalItem, "$MIN > 0", decimals, DecimalType.valueOf("20"), true), //
