@@ -196,7 +196,7 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
         }
 
         if (!"0".equals(outletStatus.getCode())) {
-            logger.warn("Check Thing type has been set - API gave a unexpected response for an Outlet");
+            logger.warn("{}", getLocalizedText("warning.device.unexpected-resp-for-wifi-outlet"));
             return;
         }
 
