@@ -103,7 +103,7 @@ public class StateFilterProfile implements StateProfile {
     private @Nullable Item linkedItem = null;
 
     private State newState = UnDefType.UNDEF;
-    private State deltaState = UnDefType.UNDEF;
+    private State acceptedState = UnDefType.UNDEF;
     private LinkedList<State> previousStates = new LinkedList<>();
 
     private final int windowSize;
@@ -300,8 +300,16 @@ public class StateFilterProfile implements StateProfile {
 
         public StateCondition(String lhs, ComparisonType comparisonType, String rhs) {
             this.comparisonType = comparisonType;
-            this.lhsString = lhs;
-            this.rhsString = rhs;
+
+            if (lhs.isEmpty() && rhs.endsWith("%")) {
+                // Allow comparing percentages without a left hand side,
+                // e.g. `> 50%` -> translate this to `$DELTA_PERCENT > 50`
+                lhsString = "$DELTA_PERCENT";
+                rhsString = rhs.substring(0, rhs.length() - 1).trim();
+            } else {
+                lhsString = lhs;
+                rhsString = rhs;
+            }
             // Convert quoted strings to StringType, and UnDefTypes to UnDefType
             // UnDefType gets special treatment because we don't want `UNDEF` to be parsed as a string
             // Anything else, defer parsing until we're checking the condition
@@ -422,7 +430,7 @@ public class StateFilterProfile implements StateProfile {
                 };
 
                 if (result) {
-                    deltaState = input;
+                    acceptedState = input;
                 }
 
                 return result;
@@ -494,6 +502,7 @@ public class StateFilterProfile implements StateProfile {
     class FunctionType implements State {
         enum Function {
             DELTA,
+            DELTA_PERCENT,
             AVERAGE,
             AVG,
             MEDIAN,
@@ -517,6 +526,7 @@ public class StateFilterProfile implements StateProfile {
             List<State> states = start <= 0 ? previousStates : previousStates.subList(start, size);
             return switch (type) {
                 case DELTA -> calculateDelta();
+                case DELTA_PERCENT -> calculateDeltaPercent();
                 case AVG, AVERAGE -> calculateAverage(states);
                 case MEDIAN -> calculateMedian(states);
                 case STDDEV -> calculateStdDev(states);
@@ -534,9 +544,9 @@ public class StateFilterProfile implements StateProfile {
         }
 
         public int getWindowSize() {
-            if (type == Function.DELTA) {
+            if (type == Function.DELTA || type == Function.DELTA_PERCENT) {
                 // We don't need to keep previous states list to calculate the delta,
-                // the previous state is kept in the deltaState variable
+                // the previous state is kept in the acceptedState variable
                 return 0;
             }
             return windowSize.orElse(DEFAULT_WINDOW_SIZE);
@@ -650,19 +660,39 @@ public class StateFilterProfile implements StateProfile {
         }
 
         private @Nullable State calculateDelta() {
-            if (deltaState == UnDefType.UNDEF) {
+            if (acceptedState == UnDefType.UNDEF) {
                 logger.debug("No previous data to calculate delta");
-                deltaState = newState;
+                acceptedState = newState;
                 return null;
             }
 
             if (newState instanceof QuantityType newStateQuantity) {
-                QuantityType result = newStateQuantity.subtract((QuantityType) deltaState);
+                QuantityType result = newStateQuantity.subtract((QuantityType) acceptedState);
                 return result.toBigDecimal().compareTo(BigDecimal.ZERO) < 0 ? result.negate() : result;
             }
             BigDecimal result = ((DecimalType) newState).toBigDecimal()
-                    .subtract(((DecimalType) deltaState).toBigDecimal());
+                    .subtract(((DecimalType) acceptedState).toBigDecimal());
             return result.compareTo(BigDecimal.ZERO) < 0 ? new DecimalType(result.negate()) : new DecimalType(result);
+        }
+
+        private @Nullable State calculateDeltaPercent() {
+            State calculatedDelta = calculateDelta();
+            if (calculatedDelta == null) {
+                return null;
+            }
+
+            BigDecimal bdDelta;
+            BigDecimal bdBase;
+            if (acceptedState instanceof QuantityType acceptedStateQuantity) {
+                // Assume that delta and base are in the same unit
+                bdDelta = ((QuantityType) calculatedDelta).toBigDecimal();
+                bdBase = acceptedStateQuantity.toBigDecimal();
+            } else {
+                bdDelta = ((DecimalType) calculatedDelta).toBigDecimal();
+                bdBase = ((DecimalType) acceptedState).toBigDecimal();
+            }
+            BigDecimal percent = bdDelta.multiply(BigDecimal.valueOf(100)).divide(bdBase, 2, RoundingMode.HALF_EVEN);
+            return new DecimalType(percent);
         }
     }
 }
