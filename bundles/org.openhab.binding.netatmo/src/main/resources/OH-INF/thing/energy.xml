@@ -51,7 +51,7 @@
 			<channel id="mode" typeId="energy-mode"/>
 			<channel id="end" typeId="timestamp">
 				<label>Mode End</label>
-				<description>End time of the currently applied setpoint.</description>
+				<description>End time of the currently applied thermostat mode.</description>
 			</channel>
 		</channels>
 	</channel-group-type>

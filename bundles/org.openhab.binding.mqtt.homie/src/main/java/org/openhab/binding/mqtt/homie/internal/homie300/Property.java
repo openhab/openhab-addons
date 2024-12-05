@@ -191,7 +191,7 @@ public class Property implements AttributeChanged {
                     step = new BigDecimal(1);
                 }
                 if (attributes.unit.contains("%") && attributes.settable) {
-                    value = new PercentageValue(min, max, step, null, null);
+                    value = new PercentageValue(min, max, step, null, null, null);
                 } else {
                     value = new NumberValue(min, max, step, unit);
                 }
@@ -267,7 +267,8 @@ public class Property implements AttributeChanged {
             if (attributes.datatype.equals(DataTypeEnum.unknown)) {
                 channelTypeId = MqttBindingConstants.CHANNEL_TYPE_HOMIE_STRING;
             } else if (dimension != null) {
-                channelTypeId = MqttBindingConstants.CHANNEL_TYPE_HOMIE_PREFIX + "number-" + dimension.toLowerCase();
+                channelTypeId = MqttBindingConstants.CHANNEL_TYPE_HOMIE_PREFIX + "number-"
+                        + UIDUtils.encode(unit.toString().toLowerCase());
                 channelProperties.put(MqttBindingConstants.CHANNEL_PROPERTY_DATATYPE, attributes.datatype.toString());
             } else {
                 channelTypeId = MqttBindingConstants.CHANNEL_TYPE_HOMIE_PREFIX + attributes.datatype.toString();
@@ -275,8 +276,9 @@ public class Property implements AttributeChanged {
             }
             this.channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID, channelTypeId);
             if (dimension != null) {
-                this.channelType = ChannelTypeBuilder.state(channelTypeUID, dimension + " Value", "Number:" + dimension)
-                        .build();
+                this.channelType = ChannelTypeBuilder
+                        .state(channelTypeUID, dimension + " Value (" + unit.toString() + ")", "Number:" + dimension)
+                        .withUnitHint(unit.toString()).build();
             }
 
             if (attributes.retained) {

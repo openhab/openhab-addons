@@ -27,6 +27,7 @@ import org.openhab.binding.deconz.internal.dto.NewSceneResponse;
 import org.openhab.binding.deconz.internal.handler.GroupThingHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
+import org.openhab.core.automation.annotation.ActionOutputs;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -59,8 +60,9 @@ public class GroupActions implements ThingActions {
     private @Nullable GroupThingHandler handler;
 
     @RuleAction(label = "@text/action.create-scene.label", description = "@text/action.create-scene.description")
-    public @ActionOutput(name = NEW_SCENE_ID_OUTPUT, type = "java.lang.Integer") Map<String, Object> createScene(
-            @ActionInput(name = "name", label = "@text/action.create-scene.name.label", description = "@text/action.create-scene.name.description") @Nullable String name) {
+    public @ActionOutputs({
+            @ActionOutput(name = NEW_SCENE_ID_OUTPUT, label = "Scene Id", type = "java.lang.Integer") }) Map<String, Object> createScene(
+                    @ActionInput(name = "name", label = "@text/action.create-scene.name.label", description = "@text/action.create-scene.name.description") @Nullable String name) {
         GroupThingHandler handler = this.handler;
 
         if (handler == null) {

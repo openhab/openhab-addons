@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="homewizard:p1_wifi_meter">
+
+		<instruction-set targetVersion="1">
+			<add-channel id="active_voltage">
+				<type>system:electric-voltage</type>
+			</add-channel>
+			<add-channel id="active_voltage_l1">
+				<type>system:electric-voltage</type>
+			</add-channel>
+			<add-channel id="active_voltage_l2">
+				<type>system:electric-voltage</type>
+			</add-channel>
+			<add-channel id="active_voltage_l3">
+				<type>system:electric-voltage</type>
+			</add-channel>
+			<add-channel id="active_current">
+				<type>system:electric-current</type>
+			</add-channel>
+			<add-channel id="active_current_l1">
+				<type>system:electric-current</type>
+			</add-channel>
+			<add-channel id="active_current_l2">
+				<type>system:electric-current</type>
+			</add-channel>
+			<add-channel id="active_current_l3">
+				<type>system:electric-current</type>
+			</add-channel>
+			<add-channel id="power_failures">
+				<type>homewizard:power_failures</type>
+			</add-channel>
+			<add-channel id="long_power_failures">
+				<type>homewizard:power_failures</type>
+				<label>Long Power Failures</label>
+				<description>This channel provides the count of long power failures.</description>
+			</add-channel>
+			<add-channel id="total_energy_import_t1">
+				<type>homewizard:total_energy_import_t1</type>
+			</add-channel>
+			<add-channel id="total_energy_import_t2">
+				<type>homewizard:total_energy_import_t2</type>
+			</add-channel>
+			<add-channel id="total_energy_export_t1">
+				<type>homewizard:total_energy_export_t1</type>
+			</add-channel>
+			<add-channel id="total_energy_export_t2">
+				<type>homewizard:total_energy_export_t2</type>
+			</add-channel>
+		</instruction-set>
+
+	</thing-type>
+
+</update:update-descriptions>

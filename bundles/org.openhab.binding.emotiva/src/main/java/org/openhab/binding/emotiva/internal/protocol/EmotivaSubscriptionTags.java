@@ -84,7 +84,7 @@ public enum EmotivaSubscriptionTags {
     menu_update("menu-update", STRING, CHANNEL_MENU_DISPLAY_PREFIX),
 
     /* Protocol V3 notify tags */
-    keepAlive("keepAlive", NUMBER_TIME, LAST_SEEN_STATE_NAME),
+    keepAlive("keepAlive", NUMBER_TIME, ""),
     goodBye("goodBye", GOODBYE, ""),
     bar_update("bar-update", STRING, CHANNEL_BAR),
     width("width", DIMENSIONLESS_DECIBEL, CHANNEL_WIDTH),
@@ -132,12 +132,17 @@ public enum EmotivaSubscriptionTags {
         return EmotivaSubscriptionTags.unknown;
     }
 
-    public static List<EmotivaSubscriptionTags> channels(String zonePrefix) {
+    public static List<EmotivaSubscriptionTags> channels(String prefix) {
         List<EmotivaSubscriptionTags> tags = new ArrayList<>();
         for (EmotivaSubscriptionTags value : values()) {
-            if (value.channel.startsWith(zonePrefix)) {
+            if (value.channel.startsWith(prefix)) {
                 tags.add(value);
             }
+        }
+
+        // Always add keepAlive tag to the general prefix
+        if ("general".equals(prefix)) {
+            tags.add(EmotivaSubscriptionTags.keepAlive);
         }
         return tags;
     }

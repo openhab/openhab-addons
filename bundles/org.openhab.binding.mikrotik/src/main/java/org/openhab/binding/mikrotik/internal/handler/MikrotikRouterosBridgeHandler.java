@@ -281,6 +281,8 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                 case MikrotikBindingConstants.CHANNEL_CPU_LOAD:
                     newState = StateUtil.qtyPercentOrNull(rbRes.getCpuLoad());
                     break;
+                default:
+                    logger.warn("Unimplemented channel:{}", channelID);
             }
         }
 

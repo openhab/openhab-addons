@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -85,7 +86,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
      * Helper class to carry information which can be used by the
      * command line extension (openHAB console).
      */
-    public record CommandExtensionData(Map<String, Long> unknownGA) {
+    public record CommandExtensionData(SortedMap<String, Long> unknownGA) {
     }
 
     private final ScheduledExecutorService knxScheduler = ThreadPoolManager.getScheduledPool("knx");

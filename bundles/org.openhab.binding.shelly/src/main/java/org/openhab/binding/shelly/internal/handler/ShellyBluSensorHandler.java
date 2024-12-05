@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyBluSensorHandler extends ShellyBaseHandler {
-    private static final Logger logger = LoggerFactory.getLogger(ShellyBluSensorHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShellyBluSensorHandler.class);
 
     public ShellyBluSensorHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, final ShellyThingTable thingTable,
@@ -50,7 +50,7 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Thing is using  {}", this.getClass());
+        LOGGER.debug("Thing is using  {}", this.getClass());
         super.initialize();
     }
 
@@ -58,7 +58,7 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
         String model = substringBefore(getString(e.data.name), "-").toUpperCase();
         String mac = e.data.addr.replaceAll(":", "");
         String ttype = "";
-        logger.debug("{}: Create thing for new BLU device {}: {} / {}", gateway, e.data.name, model, mac);
+        LOGGER.debug("{}: Create thing for new BLU device {}: {} / {}", gateway, e.data.name, model, mac);
         ThingTypeUID tuid;
         switch (model) {
             case SHELLYDT_BLUBUTTON:
@@ -78,7 +78,7 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
                 tuid = THING_TYPE_SHELLYBLUHT;
                 break;
             default:
-                logger.debug("{}: Unsupported BLU device model {}, MAC={}", gateway, model, mac);
+                LOGGER.debug("{}: Unsupported BLU device model {}, MAC={}", gateway, model, mac);
                 return;
         }
         String serviceName = ShellyDeviceProfile.buildBluServiceName(getString(e.data.name), mac);

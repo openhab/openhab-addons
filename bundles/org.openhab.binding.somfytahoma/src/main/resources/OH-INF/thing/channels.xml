@@ -885,4 +885,11 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="tilt">
+		<item-type>Number</item-type>
+		<label>Tilt</label>
+		<description>Venetian blind tilt (-5..5)</description>
+		<state min="-5" max="5" step="1" pattern="%d" readOnly="false"/>
+	</channel-type>
+
 </thing:thing-descriptions>
