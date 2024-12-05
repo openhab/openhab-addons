@@ -50,10 +50,11 @@ import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.freeathome.internal.FreeAtHomeDiscoveryService;
-import org.openhab.binding.freeathome.internal.configuration.FreeAtHomeBridgeHandlerConfiguration;
-import org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDeviceDescription;
-import org.openhab.binding.freeathome.internal.util.FreeAtHomeHttpCommunicationException;
+import org.openhab.binding.freeathomesystem.internal.FreeAtHomeBindingConstants;
+import org.openhab.binding.freeathomesystem.internal.FreeAtHomeDiscoveryService;
+import org.openhab.binding.freeathomesystem.internal.configuration.FreeAtHomeBridgeHandlerConfiguration;
+import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
+import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeHttpCommunicationException;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -723,6 +724,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
         private AtomicInteger reconnectDelay = new AtomicInteger();
 
         public FreeAtHomeWebsocketMonitorThread() {
+            super(String.format("OH-binding-%s-%s", FreeAtHomeBindingConstants.BINDING_ID, "WebsocketMonitor"));
         }
 
         @Override
@@ -803,7 +805,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
     /**
      * Get socket alive state
-     * 
+     *
      * @throws InterruptedException
      */
     public boolean isSocketConnectionAlive() throws InterruptedException {
