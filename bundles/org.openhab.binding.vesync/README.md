@@ -71,8 +71,8 @@ Channel names in **bold** are read/write, everything else is read-only
 | **enabled**          | Switch               | Whether the hardware device is enabled (Switched on)       | 131S, 600S, 400S, 300S, Vital 100S, Vital 200S | [ON, OFF]                  |       |
 | **childLock**        | Switch               | Whether the child lock (display lock is enabled)           | 600S, 400S, 300S, Vital 100S, Vital 200S       | [ON, OFF]                  |       |
 | **display**          | Switch               | Whether the display is enabled (display is shown)          | 131S, 600S, 400S, 300S, Vital 100S, Vital 200S | [ON, OFF]                  |       |
-| **fanMode**          | String               | The operation mode of the fan                              | 131S, 600S, 400S, Vital 100S                   | [auto, manual, sleep]      |       |
-| **fanMode**          | String               | The operation mode of the fan                              | 200S, 300S,                                    | [manual, sleep]            |       |
+| **fanMode**          | String               | The operation mode of the fan                              | 131S, 600S, 400S, 300S, Vital 100S             | [auto, manual, sleep]      |       |
+| **fanMode**          | String               | The operation mode of the fan                              | 200S,                                          | [manual, sleep]            |       |
 | **fanMode**          | String               | The operation mode of the fan                              | Vital 200S                                     | [auto, manual, sleep, pet] |       |
 | **manualFanSpeed**   | Number:Dimensionless | The speed of the fan when in manual mode                   | 600S, 400S                                     | [1...4]                    |       |
 | **manualFanSpeed**   | Number:Dimensionless | The speed of the fan when in manual mode                   | 131S, 300S                                     | [1...3]                    |       |
