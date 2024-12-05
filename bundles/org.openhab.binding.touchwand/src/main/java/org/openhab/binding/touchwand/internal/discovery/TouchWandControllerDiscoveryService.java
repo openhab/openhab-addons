@@ -122,6 +122,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
         private DatagramSocket mySocket;
 
         public ReceiverThread(DatagramSocket socket) {
+            super(String.format("OH-binding-%s-%s", TouchWandBindingConstants.BINDING_ID, "Receiver"));
             mySocket = socket;
         }
 

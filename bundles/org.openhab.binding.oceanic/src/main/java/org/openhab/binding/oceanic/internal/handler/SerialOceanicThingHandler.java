@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.TooManyListenersException;
 import java.util.stream.Collectors;
 
+import org.openhab.binding.oceanic.internal.OceanicBindingConstants;
 import org.openhab.binding.oceanic.internal.SerialOceanicBindingConfiguration;
 import org.openhab.binding.oceanic.internal.Throttler;
 import org.openhab.core.io.transport.serial.PortInUseException;
@@ -208,6 +209,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss,SSS");
 
         public SerialPortReader(InputStream in) {
+            super(String.format("OH-binding-%s-%s", OceanicBindingConstants.BINDING_ID, "SerialPortReader"));
             this.inputStream = in;
             this.setName("SerialPortReader-" + getThing().getUID());
         }
