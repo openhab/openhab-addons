@@ -79,7 +79,7 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
     class CleanerThread extends Thread {
 
         public CleanerThread() {
-            super(String.format("OH-binding-%s-%s", ShellyBindingConstants.BINDING_ID, "CleanerThread"));
+            super(String.format("OH-binding-%s-%s", ShellyBindingConstants.BINDING_ID, "Cleaner"));
         }
 
         @Override
