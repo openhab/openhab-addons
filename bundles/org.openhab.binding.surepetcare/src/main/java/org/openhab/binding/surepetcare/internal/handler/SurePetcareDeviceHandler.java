@@ -31,6 +31,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -138,8 +139,10 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                         (batVol - BATTERY_EMPTY_VOLTAGE) / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100.0f,
                         100.0f)));
                 updateState(DEVICE_CHANNEL_LOW_BATTERY, OnOffType.from(batVol < LOW_BATTERY_THRESHOLD));
-                updateState(DEVICE_CHANNEL_DEVICE_RSSI, new DecimalType(device.status.signal.deviceRssi));
-                updateState(DEVICE_CHANNEL_HUB_RSSI, new DecimalType(device.status.signal.hubRssi));
+                updateState(DEVICE_CHANNEL_DEVICE_RSSI,
+                        QuantityType.valueOf(device.status.signal.deviceRssi, Units.DECIBEL_MILLIWATTS));
+                updateState(DEVICE_CHANNEL_HUB_RSSI,
+                        QuantityType.valueOf(device.status.signal.hubRssi, Units.DECIBEL_MILLIWATTS));
 
                 if (thing.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE)) {
                     updateThingCurfews(device);
