@@ -42,6 +42,8 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+
 /**
  * @author Bob Raker - Initial contribution
  */
@@ -92,21 +94,34 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
             SmartthingsConverter converter = converters.get(channelUID);
 
             String path;
-            String jsonMsg;
+            String jsonMsg = "";
             if (command instanceof RefreshType) {
-                path = "/state";
-                // Go to ST hub and ask for current state
-                jsonMsg = String.format(
-                        "{\"capabilityKey\": \"%s\", " + "\"deviceDisplayName\": \"%s\", "
-                                + "\"capabilityAttribute\": \"%s\", \"openHabStartTime\": %d}",
-                        thingTypeId, smartthingsName, smartthingsType, System.currentTimeMillis());
-            } else {
-                // Send update to ST hub
-                path = "/update";
-                jsonMsg = converter.convertToSmartthings(channelUID, command);
+                SmartthingsCloudBridgeHandler cloudBridge = (SmartthingsCloudBridgeHandler) bridge.getHandler();
+                SmartthingsApi api = cloudBridge.getSmartthingsApi();
+                Map<String, String> properties = this.getThing().getProperties();
+                String deviceId = properties.get("deviceId");
 
-                // The smartthings hub won't (can't) return a response to this call. But, it will send a separate
-                // message back to the SmartthingBridgeHandler.receivedPushMessage handler
+                if (deviceId != null) {
+                    JsonObject res = api.SendStatus(deviceId, jsonMsg);
+                    if (res != null) {
+                        JsonObject cp = res.get("components").getAsJsonObject();
+                        JsonObject main = cp.get("main").getAsJsonObject();
+                        JsonObject sw = main.get("switch").getAsJsonObject();
+                        JsonObject sw2 = sw.get("switch").getAsJsonObject();
+                        String value = sw2.get("value").getAsString();
+                        if (value.equals("on")) {
+                            updateState(channelUID, OnOffType.ON);
+                        } else {
+                            updateState(channelUID, OnOffType.OFF);
+                        }
+
+                        logger.trace("");
+                    }
+                }
+
+            } else {
+                // @todo : review this
+                jsonMsg = converter.convertToSmartthings(channelUID, command);
             }
 
             // try {
