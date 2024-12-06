@@ -34,12 +34,14 @@ import org.openhab.binding.dirigera.internal.interfaces.DebugHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.interfaces.LightListener;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -49,6 +51,9 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
@@ -77,10 +82,6 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
 
     // cache to handle each refresh command properly
     protected Map<String, State> channelStateMap;
-
-    // JSONObject for all device data for debug purposes. Maybe deleted in release version
-    protected JSONObject deviceData = new JSONObject();
-    protected List<JSONObject> updates = new ArrayList<>();
 
     /*
      * hardlinks initialized with invalid links because the first update shall trigger a link update. If it's declared
@@ -348,6 +349,7 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             // check OTA for each device
             if (attributes.has(PROPERTY_OTA_STATUS)) {
+                createChannelIfNecessary(CHANNEL_OTA_STATUS, "ota-status", CoreItemFactory.NUMBER);
                 String otaStatusString = attributes.getString(PROPERTY_OTA_STATUS);
                 Integer otaStatus = OTA_STATUS_MAP.get(otaStatusString);
                 if (otaStatus != null) {
@@ -358,6 +360,7 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                 }
             }
             if (attributes.has(PROPERTY_OTA_STATE)) {
+                createChannelIfNecessary(CHANNEL_OTA_STATE, "ota-state", CoreItemFactory.NUMBER);
                 String otaStateString = attributes.getString(PROPERTY_OTA_STATE);
                 Integer otaState = OTA_STATE_MAP.get(otaStateString);
                 if (otaState != null) {
@@ -370,6 +373,7 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                 }
             }
             if (attributes.has(PROPERTY_OTA_PROGRESS)) {
+                createChannelIfNecessary(CHANNEL_OTA_PROGRESS, "pota-ercent", CoreItemFactory.NUMBER);
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS),
                         QuantityType.valueOf(attributes.getInt(PROPERTY_OTA_PROGRESS), Units.PERCENT));
             }
@@ -391,7 +395,6 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
             }
             if (attributes.has(PROPERTY_POWER_STATE)) {
                 currentPowerState = OnOffType.from(attributes.getBoolean(PROPERTY_POWER_STATE));
-                logger.debug("DIRIGERA BASE_HANDLER {} OnOff update {}", thing.getLabel(), currentPowerState);
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), currentPowerState);
                 synchronized (powerListeners) {
                     if (online) {
@@ -407,6 +410,19 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                 customName = attributes.getString(PROPERTY_CUSTOM_NAME);
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME), StringType.valueOf(customName));
             }
+        }
+    }
+
+    protected void createChannelIfNecessary(String channelId, String channelTypeUID, String itemType) {
+        if (thing.getChannel(channelId) == null) {
+            logger.info("Create new channel {} {} {}", channelId, channelTypeUID, itemType);
+            // https://www.openhab.org/docs/developer/bindings/#updating-the-thing-structure
+            ThingBuilder thingBuilder = editThing();
+            // channel type UID needs to be defined in channel-types.xml
+            Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), itemType)
+                    .withType(new ChannelTypeUID(BINDING_ID, channelTypeUID)).build();
+            thingBuilder.withChannel(channel);
+            updateThing(thingBuilder.build());
         }
     }
 
