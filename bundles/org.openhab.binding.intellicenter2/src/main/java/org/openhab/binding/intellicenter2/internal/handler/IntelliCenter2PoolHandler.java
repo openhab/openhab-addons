@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
  *
  * @see Body
  */
-@SuppressWarnings("UnstableApiUsage")
 @NonNullByDefault
 public class IntelliCenter2PoolHandler extends IntelliCenter2ThingHandler<Body> {
 
@@ -84,7 +83,7 @@ public class IntelliCenter2PoolHandler extends IntelliCenter2ThingHandler<Body> 
                 updateState(channelUID, OnOffType.from(pool.isHeating()));
                 break;
             default:
-                logger.error("Unable to update state for {}", channelUID);
+                logger.warn("Unable to update state for {}", channelUID);
         }
     }
 

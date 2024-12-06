@@ -16,16 +16,11 @@ import static com.google.common.util.concurrent.Futures.getUnchecked;
 import static org.openhab.binding.intellicenter2.internal.IntelliCenter2BindingConstants.CHANNEL_SENSOR_CALIB;
 import static org.openhab.binding.intellicenter2.internal.IntelliCenter2BindingConstants.CHANNEL_SENSOR_PROBE;
 import static org.openhab.binding.intellicenter2.internal.IntelliCenter2BindingConstants.CHANNEL_SENSOR_SOURCE;
-import static org.openhab.binding.intellicenter2.internal.protocol.Attribute.CALIB;
-import static org.openhab.binding.intellicenter2.internal.protocol.Attribute.PROBE;
-import static org.openhab.binding.intellicenter2.internal.protocol.Attribute.SOURCE;
 
 import java.util.concurrent.Future;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.intellicenter2.internal.model.IntelliBrite;
 import org.openhab.binding.intellicenter2.internal.model.Sensor;
 import org.openhab.binding.intellicenter2.internal.protocol.Attribute;
 import org.openhab.binding.intellicenter2.internal.protocol.ICProtocol;
@@ -36,8 +31,6 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handler for an IntelliCenter2 IntelliBrite light.
@@ -46,11 +39,8 @@ import org.slf4j.LoggerFactory;
  *
  * @see IntelliBrite
  */
-@SuppressWarnings("UnstableApiUsage")
 @NonNullByDefault
 public class IntelliCenter2SensorHandler extends IntelliCenter2ThingHandler<Sensor> {
-
-    private final Logger logger = LoggerFactory.getLogger(IntelliCenter2SensorHandler.class);
 
     public IntelliCenter2SensorHandler(Thing thing) {
         super(thing);
@@ -77,7 +67,7 @@ public class IntelliCenter2SensorHandler extends IntelliCenter2ThingHandler<Sens
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
     }
 

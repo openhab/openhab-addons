@@ -25,6 +25,7 @@ import org.openhab.binding.intellicenter2.internal.model.SystemInfo;
 import org.openhab.binding.intellicenter2.internal.protocol.ICProtocol;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -42,7 +43,6 @@ import com.google.common.util.concurrent.SettableFuture;
  *
  * @author Valdis Rigdon - Initial contribution
  */
-@SuppressWarnings("UnstableApiUsage")
 @NonNullByDefault
 public class IntelliCenter2BridgeHandler extends BaseBridgeHandler {
 
@@ -73,31 +73,30 @@ public class IntelliCenter2BridgeHandler extends BaseBridgeHandler {
                 final ICProtocol protocol = new ICProtocol(config);
                 protocolFuture.set(protocol);
                 systemInfo = protocol.getSystemInfo();
-                logger.info("Connected to IntelliCenter2 {}", systemInfo);
-                if (systemInfo != null) {
-                    updateStatus(ThingStatus.ONLINE);
-                    updateProperty("model", "IntelliCenter");
-                    updateProperty("mode", systemInfo.getMode());
-                    updateProperty("propertyName", systemInfo.getPropertyName());
-                    updateProperty("version", systemInfo.getVersion());
-                    logger.info("Bridge is ONLINE.");
-                    if (!systemInfo.getIntellicenterVersion().equals("1.064")) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                                "Running a non-supported version of IntelliCenter");
+                logger.debug("Connected to IntelliCenter2 {}", systemInfo);
+                SystemInfo si = systemInfo;
+                if (si != null) {
+                    updateProperty(Thing.PROPERTY_MODEL_ID, "IntelliCenter");
+                    updateProperty("mode", si.getMode());
+                    updateProperty("propertyName", si.getPropertyName());
+                    updateProperty("version", si.getVersion());
+                    updateProperty("intellicenterVersion", si.getIntellicenterVersion());
+                    if (!si.getIntellicenterVersion().equals("1.064")) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, String.format(
+                                "Running a non-supported version of IntelliCenter: %s", si.getIntellicenterVersion()));
+                        return;
                     }
+                    updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Unable to get system info from IntelliCenter2.");
                 }
             } catch (UnknownHostException e) {
-                String msg = String.format("unknown host name: %s", config.hostname);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format("unknown host name: %s", config.hostname));
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Unable to connect to host " + config.hostname);
-            } catch (Exception e) {
-                logger.error("Error initializing.", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+                updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format("Unable to connect to host %s", config.hostname));
             }
         });
     }

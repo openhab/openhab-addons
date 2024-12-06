@@ -25,7 +25,6 @@
  */
 package org.openhab.binding.intellicenter2.internal;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -34,7 +33,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Valdis Rigdon - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("PMD.ForbiddenPackageUsageCheck")
 public class IntelliCenter2Configuration {
 
     public String hostname = "";
@@ -42,6 +40,6 @@ public class IntelliCenter2Configuration {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("hostname", this.hostname).append("port", this.port).toString();
+        return getClass().getSimpleName() + "{hostname=" + hostname + ", port=" + port + "}";
     }
 }

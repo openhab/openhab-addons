@@ -47,7 +47,7 @@ public class IntelliCenter2DiscoveryServiceTest {
         bridgeHandler.getProtocol();
         discovery.startScan();
 
-        // 2 pools and 4 features, 1 light, 2 pump (that are the same)
-        assertEquals(9, listener.discoveredResults.size());
+        // 2 pools and 4 features, 1 light, 2 pumps, 3 sensors (that are the same)
+        assertEquals(12, listener.discoveredResults.size());
     }
 }

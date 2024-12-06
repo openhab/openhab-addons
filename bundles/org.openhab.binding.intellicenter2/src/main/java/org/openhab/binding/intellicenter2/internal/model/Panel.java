@@ -51,21 +51,25 @@ public class Panel extends ResponseModel {
         super(REQUEST_ATTRIBUTES, response);
     }
 
+    @SuppressWarnings("null")
     public List<Body> getBodies() {
         return getModuleCircuits().filter(r -> BODY.toString().equals(r.getValueAsString(OBJTYP))).map(Body::new)
                 .collect(toList());
     }
 
+    @SuppressWarnings("null")
     public List<Circuit> getCircuits() {
         return getModuleCircuits().filter(r -> CIRCUIT.toString().equals(r.getValueAsString(OBJTYP))).map(Circuit::new)
                 .collect(toList());
     }
 
+    @SuppressWarnings("null")
     public List<Pump> getPumps() {
         return getValueAsResponseObjects(OBJLIST).stream()
                 .filter(r -> PUMP.toString().equals(r.getValueAsString(OBJTYP))).map(Pump::new).collect(toList());
     }
 
+    @SuppressWarnings("null")
     public List<Sensor> getSensors() {
         return getValueAsResponseObjects(OBJLIST).stream()
                 .filter(r -> SENSE.toString().equals(r.getValueAsString(OBJTYP))).map(Sensor::new).collect(toList());

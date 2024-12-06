@@ -16,7 +16,6 @@ import static org.openhab.binding.intellicenter2.internal.protocol.Attribute.OBJ
 
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.intellicenter2.internal.model.ResponseModel;
@@ -24,6 +23,7 @@ import org.openhab.binding.intellicenter2.internal.protocol.Attribute;
 import org.openhab.binding.intellicenter2.internal.protocol.ICProtocol;
 import org.openhab.binding.intellicenter2.internal.protocol.NotifyListListener;
 import org.openhab.binding.intellicenter2.internal.protocol.ResponseObject;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -57,11 +57,11 @@ public abstract class IntelliCenter2ThingHandler<T extends ResponseModel> extend
                 // get an updated model from IC
                 final ICProtocol protocol = getProtocol();
                 if (protocol == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                     return;
                 }
                 final T model = queryModel(protocol);
-                getProtocol().subscribe(this, model.asRequestObject());
+                protocol.subscribe(this, model.asRequestObject());
                 updateStatus(ThingStatus.ONLINE);
                 updateState(model);
             } catch (Exception e) {
@@ -75,35 +75,37 @@ public abstract class IntelliCenter2ThingHandler<T extends ResponseModel> extend
     public void dispose() {
         super.dispose();
         scheduler.execute(() -> {
-            if (getProtocol() != null) {
-                getProtocol().unsubscribe(this);
+            final ICProtocol protocol = getProtocol();
+            if (protocol != null) {
+                protocol.unsubscribe(this);
             }
-            updateStatus(ThingStatus.OFFLINE);
         });
     }
 
     @Nullable
     protected ICProtocol getProtocol() {
-        if (getBridgeHandler() != null) {
-            return getBridgeHandler().getProtocol();
+        final IntelliCenter2BridgeHandler bh = getBridgeHandler();
+        if (bh != null) {
+            return bh.getProtocol();
         }
         return null;
     }
 
     @Nullable
     protected IntelliCenter2BridgeHandler getBridgeHandler() {
-        if (getBridge() == null) {
+        final Bridge b = getBridge();
+        if (b == null) {
             return null;
         }
-        return (IntelliCenter2BridgeHandler) getBridge().getHandler();
+        return (IntelliCenter2BridgeHandler) b.getHandler();
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handling {} for {}", channelUID, command);
         final ICProtocol protocol = getProtocol();
         if (protocol == null) {
-            logger.error("handleCommand had a null protocol for {} {}", channelUID, command);
+            logger.warn("handleCommand had a null protocol for {} {}", channelUID, command);
             return;
         }
         if (command instanceof RefreshType) {
@@ -136,7 +138,7 @@ public abstract class IntelliCenter2ThingHandler<T extends ResponseModel> extend
                 }
             });
         } catch (Exception e) {
-            logger.error("Error handling onNotifyList", e);
+            logger.debug("Error handling onNotifyList", e);
         }
     }
 

@@ -47,8 +47,6 @@ public class GetHardwareDefinitionTest {
 
         assertTrue(names.contains("B1101"));
         assertTrue(names.contains("B1202"));
-
-        System.err.println(bodies);
     }
 
     @Test

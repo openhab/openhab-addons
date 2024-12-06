@@ -51,7 +51,6 @@ import com.google.gson.GsonBuilder;
  *
  * @author Valdis Rigdon - Initial contribution
  */
-@SuppressWarnings("UnstableApiUsage")
 @NonNullByDefault
 public class ICProtocol implements AutoCloseable {
 
@@ -69,12 +68,12 @@ public class ICProtocol implements AutoCloseable {
     @Nullable
     private ICRead readRunnable;
 
-    private final AtomicReference<Socket> clientSocket = new AtomicReference<>();
-    private final AtomicReference<BufferedOutputStream> out = new AtomicReference<>();
-    private final AtomicReference<BufferedReader> in = new AtomicReference<>();
+    private final AtomicReference<@Nullable Socket> clientSocket = new AtomicReference<>();
+    private final AtomicReference<@Nullable BufferedOutputStream> out = new AtomicReference<>();
+    private final AtomicReference<@Nullable BufferedReader> in = new AtomicReference<>();
 
     private final ConcurrentMap<String, ICRequest> requests = new ConcurrentHashMap<>(2);
-    private final ConcurrentMap<String, SettableFuture<ICResponse>> responses = new ConcurrentHashMap<>(2);
+    private final ConcurrentMap<String, @Nullable SettableFuture<ICResponse>> responses = new ConcurrentHashMap<>(2);
     private final ConcurrentHashMap<String, List<NotifyListListener>> subscriptions = new ConcurrentHashMap<>();
     private final ExecutorService listenersNotifier;
 
@@ -87,17 +86,19 @@ public class ICProtocol implements AutoCloseable {
     }
 
     private void connect() throws IOException {
-        this.clientSocket.set(new Socket(config.hostname, config.port));
-        this.clientSocket.get().setKeepAlive(true);
-        this.out.set(new BufferedOutputStream(new DataOutputStream(clientSocket.get().getOutputStream())));
-        this.in.set(new BufferedReader(new InputStreamReader(clientSocket.get().getInputStream())));
+        final Socket socket = new Socket(config.hostname, config.port);
+        socket.setKeepAlive(true);
+        this.clientSocket.set(socket);
+        this.out.set(new BufferedOutputStream(new DataOutputStream(socket.getOutputStream())));
+        this.in.set(new BufferedReader(new InputStreamReader(socket.getInputStream())));
         this.writerService = newSingleThreadExecutor(
                 new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ic-protocol-writer-%s").build());
-        this.readerService = newSingleThreadExecutor(
+        var rs = newSingleThreadExecutor(
                 new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ic-protocol-reader-%s").build());
+        this.readerService = rs;
 
         this.readRunnable = new ICRead();
-        this.readerService.submit(readRunnable);
+        rs.submit(readRunnable);
     }
 
     private void reconnect() throws IOException {
@@ -107,18 +108,21 @@ public class ICProtocol implements AutoCloseable {
 
     @Override
     public void close() throws IOException {
-        if (readRunnable != null) {
-            readRunnable.stop = true;
+        var rr = readRunnable;
+        if (rr != null) {
+            rr.stop = true;
         }
         safeClose(out.get());
         safeClose(in.get());
         safeClose(clientSocket.get());
         try {
-            if (writerService != null) {
-                writerService.shutdownNow();
+            final var ws = writerService;
+            if (ws != null) {
+                ws.shutdownNow();
             }
-            if (readerService != null) {
-                readerService.shutdownNow();
+            final var rs = readerService;
+            if (rs != null) {
+                rs.shutdownNow();
             }
         } catch (Exception ignored) {
         }
@@ -137,16 +141,18 @@ public class ICProtocol implements AutoCloseable {
         return systemInfo;
     }
 
+    @SuppressWarnings("null")
     private SystemInfo querySystemInfo() {
         return new SystemInfo(getUnchecked(submit(SystemInfo.REQUEST)).getObjectList().get(0));
     }
 
+    @SuppressWarnings("null")
     public synchronized void subscribe(NotifyListListener listener, RequestObject request) {
         subscriptions.putIfAbsent(request.getObjectName(), new CopyOnWriteArrayList<>());
         subscriptions.get(request.getObjectName()).add(listener);
         String response = getUnchecked(submit(ICRequest.requestParamList(request))).getResponse();
         if (!"200".equals(response)) {
-            logger.error("Error subscribing listener {} for request {}", listener, request);
+            logger.warn("Error subscribing listener {} for request {}", listener, request);
         }
     }
 
@@ -162,6 +168,7 @@ public class ICProtocol implements AutoCloseable {
         keysToRemove.forEach(subscriptions::remove);
     }
 
+    @SuppressWarnings("null")
     private void notifyListeners(final ICResponse response) {
         final var runnable = new Runnable() {
 
@@ -190,10 +197,11 @@ public class ICProtocol implements AutoCloseable {
         requests.put(messageID, request);
         final SettableFuture<ICResponse> future = SettableFuture.create();
         responses.put(messageID, future);
-        if (writerService == null) {
+        var ws = writerService;
+        if (ws == null) {
             throw new IllegalStateException("Null writerService.");
         }
-        writerService.submit(new ICWrite(request));
+        ws.submit(new ICWrite(request));
         return future;
     }
 
@@ -211,8 +219,7 @@ public class ICProtocol implements AutoCloseable {
             try {
                 logger.trace("Sending request {}", jsonRequest);
                 write(jsonRequest);
-            } catch (Exception e) {
-                logger.error("Error writing request {}", jsonRequest);
+            } catch (IOException e) {
                 throw new RuntimeException("Error writing request", e);
             }
         }
@@ -233,6 +240,7 @@ public class ICProtocol implements AutoCloseable {
             }
         }
 
+        @SuppressWarnings("null")
         private void writeBytes(byte[] bytes) throws IOException {
             out.get().write(bytes);
             out.get().flush();
@@ -261,7 +269,8 @@ public class ICProtocol implements AutoCloseable {
                         if (NOTIFY_LIST.toString().equals(response.getCommand())) {
                             notifyListeners(response);
                         } else {
-                            logger.error("Got a non-NotifyList response w/o a corresponding messageID {}", response);
+                            logger.debug("Got a non-NotifyList response without a corresponding messageID {}",
+                                    response);
                         }
                     } else {
                         future.set(response);
@@ -269,15 +278,18 @@ public class ICProtocol implements AutoCloseable {
                 }
             } catch (Exception e) {
                 if (!stop) {
-                    logger.error("Error reading from socket", e);
+                    logger.warn("Error reading from socket", e);
                 }
             }
-            logger.info("Stopped socket read.");
         }
 
         @Nullable
         private ICResponse readNext() throws IOException {
-            var jsonResponse = in.get().readLine();
+            var reader = in.get();
+            if (reader == null) {
+                return null;
+            }
+            var jsonResponse = reader.readLine();
             logger.trace("Received response {}", jsonResponse);
             if (jsonResponse == null) {
                 return null;

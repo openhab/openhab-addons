@@ -28,7 +28,9 @@ public class ICRequest {
     private final String command;
     private @Nullable final String condition;
 
+    @SuppressWarnings("unused")
     private @Nullable final String queryName;
+    @SuppressWarnings("unused")
     private @Nullable final String arguments;
 
     private @Nullable List<RequestObject> objectList;

@@ -18,9 +18,8 @@
 				<description>Hostname or IP address of the device</description>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
-				<context>host</context>
 				<label>Port</label>
-				<description>Port of the device, default to 6681</description>
+				<description>Port of the device, defaults to 6681</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -34,16 +33,16 @@
 		<description>Pool for IntelliCenter2 Binding</description>
 
 		<channels>
-			<channel id="current-temperature" typeId="temperature">
-				<label>Current temperature</label>
+			<channel id="current-temperature" typeId="temperature-current">
+				<label>Current Temperature</label>
 				<description>The current pool temperature.</description>
 			</channel>
-			<channel id="target-temperature" typeId="temperature">
-				<label>Target temperature</label>
+			<channel id="target-temperature" typeId="temperature-target">
+				<label>Target Temperature</label>
 				<description>The target pool temperature.</description>
 			</channel>
 			<channel id="heater-status" typeId="heater-status">
-				<label>Heater status</label>
+				<label>Heater Status</label>
 				<description>On if the heater is running, off otherwise.</description>
 			</channel>
 		</channels>
@@ -131,6 +130,20 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="temperature-current">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The current temperature value.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature-target">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The target temperature value.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="heater-status">
 		<item-type>Switch</item-type>
 		<label>Pool Heater</label>
@@ -159,10 +172,10 @@
 	</channel-type>
 
 	<channel-type id="pump-power">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power Usage</label>
 		<description>Pump Power Usage in Watts</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="sensor-calib">

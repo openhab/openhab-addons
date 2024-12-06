@@ -31,8 +31,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handler for an IntelliCenter2 feature. Features are exposed as On/Off, and represent a Circuit.
@@ -41,11 +39,8 @@ import org.slf4j.LoggerFactory;
  *
  * @see Circuit
  */
-@SuppressWarnings("UnstableApiUsage")
 @NonNullByDefault
 public class IntelliCenter2FeatureHandler extends IntelliCenter2ThingHandler<Circuit> {
-
-    private final Logger logger = LoggerFactory.getLogger(IntelliCenter2FeatureHandler.class);
 
     public IntelliCenter2FeatureHandler(Thing thing) {
         super(thing);
@@ -72,14 +67,17 @@ public class IntelliCenter2FeatureHandler extends IntelliCenter2ThingHandler<Cir
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        switch (channelUID.getId()) {
-            case CHANNEL_FEATURE_ON_OFF:
-                if (command instanceof OnOffType) {
-                    var request = ICRequest.setParamList(
-                            new RequestObject(getObjectName(), Map.of(Attribute.STATUS, command.toString())));
-                    getProtocol().submit(request);
-                }
-                break;
+        final ICProtocol p = getProtocol();
+        if (p != null) {
+            switch (channelUID.getId()) {
+                case CHANNEL_FEATURE_ON_OFF:
+                    if (command instanceof OnOffType) {
+                        var request = ICRequest.setParamList(
+                                new RequestObject(getObjectName(), Map.of(Attribute.STATUS, command.toString())));
+                        p.submit(request);
+                    }
+                    break;
+            }
         }
     }
 

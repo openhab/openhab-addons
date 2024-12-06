@@ -43,8 +43,6 @@ public class FeatureTest {
 
         assertEquals(4, features.size());
 
-        System.err.println(features);
-
         var array = features.toArray(new Circuit[0]);
         assertEquals("Jets", array[0].getSname());
         assertEquals("Air Blower", array[1].getSname());

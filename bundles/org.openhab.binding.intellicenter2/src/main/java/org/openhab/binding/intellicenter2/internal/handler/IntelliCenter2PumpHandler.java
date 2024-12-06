@@ -19,10 +19,8 @@ import static org.openhab.binding.intellicenter2.internal.IntelliCenter2BindingC
 
 import java.util.concurrent.Future;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.intellicenter2.internal.model.IntelliBrite;
 import org.openhab.binding.intellicenter2.internal.model.Pump;
 import org.openhab.binding.intellicenter2.internal.protocol.Attribute;
 import org.openhab.binding.intellicenter2.internal.protocol.ICProtocol;
@@ -30,11 +28,10 @@ import org.openhab.binding.intellicenter2.internal.protocol.ICRequest;
 import org.openhab.binding.intellicenter2.internal.protocol.ICResponse;
 import org.openhab.binding.intellicenter2.internal.protocol.ResponseObject;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handler for an IntelliCenter2 IntelliBrite light.
@@ -43,11 +40,8 @@ import org.slf4j.LoggerFactory;
  *
  * @see IntelliBrite
  */
-@SuppressWarnings("UnstableApiUsage")
 @NonNullByDefault
 public class IntelliCenter2PumpHandler extends IntelliCenter2ThingHandler<Pump> {
-
-    private final Logger logger = LoggerFactory.getLogger(IntelliCenter2PumpHandler.class);
 
     public IntelliCenter2PumpHandler(Thing thing) {
         super(thing);
@@ -65,26 +59,12 @@ public class IntelliCenter2PumpHandler extends IntelliCenter2ThingHandler<Pump> 
     protected void updateState(Pump model) {
         updateState(CHANNEL_PUMP_GPM, new DecimalType(model.getGPM()));
         updateState(CHANNEL_PUMP_RPM, new DecimalType(model.getRPM()));
-        updateState(CHANNEL_PUMP_POWER, new DecimalType(model.getPowerConsumption()));
+        updateState(CHANNEL_PUMP_POWER, new QuantityType<>(model.getPowerConsumption(), Units.WATT));
     }
 
     @Override
     protected Pump createFromResponse(ResponseObject response) {
         return new Pump(response);
-    }
-
-    @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
-        super.handleCommand(channelUID, command);
-        switch (channelUID.getId()) {
-            case CHANNEL_PUMP_GPM:
-                if (command instanceof DecimalType) {
-                    // var request = ICRequest.setParamList(
-                    // new RequestObject(getObjectName(), Map.of(Attribute.GPM, command.toString())));
-                    // getProtocol().submit(request);
-                }
-                break;
-        }
     }
 
     @Override
@@ -97,7 +77,7 @@ public class IntelliCenter2PumpHandler extends IntelliCenter2ThingHandler<Pump> 
                 updateState(channelUID, new DecimalType(model.getRPM()));
                 break;
             case CHANNEL_PUMP_POWER:
-                updateState(channelUID, new DecimalType(model.getPowerConsumption()));
+                updateState(channelUID, new QuantityType<>(model.getPowerConsumption(), Units.WATT));
                 break;
             default:
                 break;

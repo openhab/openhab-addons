@@ -15,7 +15,6 @@ package org.openhab.binding.intellicenter2.internal.protocol;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -36,7 +35,6 @@ public class ICResponse {
     public ICResponse() {
     }
 
-    @NonNull
     public String getMessageID() {
         return messageID;
     }

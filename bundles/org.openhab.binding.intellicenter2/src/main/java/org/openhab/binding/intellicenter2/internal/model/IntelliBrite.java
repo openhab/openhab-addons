@@ -21,7 +21,6 @@ import static org.openhab.binding.intellicenter2.internal.protocol.Attribute.USE
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.intellicenter2.internal.protocol.Attribute;
 import org.openhab.binding.intellicenter2.internal.protocol.RequestObject;
@@ -51,7 +50,6 @@ public class IntelliBrite extends Circuit {
 
     // borrowed from
     // https://github.com/dustindclark/homebridge-pentair-intellicenter/blob/676b7dab2fbf5107443678c3ef5bc271108941f8/src/types.ts
-    @NonNullByDefault
     public enum Color {
 
         @SerializedName("WHITER")
@@ -91,7 +89,6 @@ public class IntelliBrite extends Circuit {
         }
     }
 
-    @NonNull
     public Color getColor() {
         return getValueAsEnum(USE, Color.class);
     }

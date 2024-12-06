@@ -57,6 +57,7 @@ public class GetHardwareDefinition {
         this.response = response;
     }
 
+    @SuppressWarnings("null")
     public List<Panel> getPanels() {
         return response.getAnswer().stream().filter(r -> r.getValueAsString(OBJTYP).equals("PANEL")).map(Panel::new)
                 .collect(toList());

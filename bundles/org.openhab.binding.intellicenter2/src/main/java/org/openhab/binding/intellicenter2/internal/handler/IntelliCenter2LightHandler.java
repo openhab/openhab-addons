@@ -19,7 +19,6 @@ import static org.openhab.binding.intellicenter2.internal.IntelliCenter2BindingC
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.intellicenter2.internal.model.IntelliBrite;
@@ -36,8 +35,6 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handler for an IntelliCenter2 IntelliBrite light.
@@ -46,11 +43,8 @@ import org.slf4j.LoggerFactory;
  *
  * @see IntelliBrite
  */
-@SuppressWarnings("UnstableApiUsage")
 @NonNullByDefault
 public class IntelliCenter2LightHandler extends IntelliCenter2ThingHandler<IntelliBrite> {
-
-    private final Logger logger = LoggerFactory.getLogger(IntelliCenter2LightHandler.class);
 
     public IntelliCenter2LightHandler(Thing thing) {
         super(thing);
@@ -76,24 +70,27 @@ public class IntelliCenter2LightHandler extends IntelliCenter2ThingHandler<Intel
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        switch (channelUID.getId()) {
-            case CHANNEL_LIGHT_POWER:
-                if (command instanceof OnOffType) {
-                    var request = ICRequest.setParamList(
-                            new RequestObject(getObjectName(), Map.of(Attribute.STATUS, command.toString())));
-                    getProtocol().submit(request);
-                }
-                break;
-            case CHANNEL_LIGHT_COLOR:
-                if (command instanceof HSBType) {
-                    // ACT is the value to set, but USE is returned
-                    var params = Map.of(Attribute.ACT, toColor(((HSBType) command)).intellicenterCode);
-                    var request = ICRequest.setParamList(new RequestObject(getObjectName(), params));
-                    getProtocol().submit(request);
-                }
-                break;
+        final ICProtocol p = getProtocol();
+        if (p != null) {
+            switch (channelUID.getId()) {
+                case CHANNEL_LIGHT_POWER:
+                    if (command instanceof OnOffType) {
+                        var request = ICRequest.setParamList(
+                                new RequestObject(getObjectName(), Map.of(Attribute.STATUS, command.toString())));
+                        p.submit(request);
+                    }
+                    break;
+                case CHANNEL_LIGHT_COLOR:
+                    if (command instanceof HSBType) {
+                        // ACT is the value to set, but USE is returned
+                        var params = Map.of(Attribute.ACT, toColor(((HSBType) command)).intellicenterCode);
+                        var request = ICRequest.setParamList(new RequestObject(getObjectName(), params));
+                        p.submit(request);
+                    }
+                    break;
+            }
         }
     }
 

@@ -38,6 +38,7 @@ public class GetConfiguration {
         this.response = Objects.requireNonNull(response);
     }
 
+    @SuppressWarnings("null")
     public List<Circuit> getFeatureCircuits() {
         return response.getAnswer().stream()
                 .filter(r -> CIRCUIT.toString().equals(r.getOptionalValueAsString(OBJTYP).orElse("")))
@@ -46,6 +47,6 @@ public class GetConfiguration {
 
     @Override
     public String toString() {
-        return "GetConfiguration{" + "response=" + response + '}';
+        return getClass().getSimpleName() + "{" + "response=" + response + '}';
     }
 }

@@ -33,8 +33,10 @@ public class RequestObject {
 
     @SerializedName("objnam")
     private final String objectName;
+    @SuppressWarnings("unused")
     @Nullable
     private final Collection<Attribute> keys;
+    @SuppressWarnings("unused")
     @Nullable
     private final Map<Attribute, String> params;
 

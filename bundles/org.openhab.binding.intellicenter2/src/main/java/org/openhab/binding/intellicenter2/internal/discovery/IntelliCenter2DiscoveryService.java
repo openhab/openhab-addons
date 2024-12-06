@@ -43,6 +43,7 @@ import org.openhab.binding.intellicenter2.internal.protocol.ICResponse;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -59,7 +60,6 @@ import com.google.common.annotations.VisibleForTesting;
  *
  * @see GetHardwareDefinition
  */
-@SuppressWarnings({ "UnstableApiUsage", "PMD.ForbiddenPackageUsageCheck" })
 @NonNullByDefault
 public class IntelliCenter2DiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
@@ -96,15 +96,18 @@ public class IntelliCenter2DiscoveryService extends AbstractDiscoveryService imp
     @Override
     @VisibleForTesting
     public void startScan() {
-        if (bridgeHandler == null || !bridgeHandler.getProtocolFuture().isDone()) {
-            return;
+        IntelliCenter2BridgeHandler h = bridgeHandler;
+        if (h != null) {
+            if (!h.getProtocolFuture().isDone()) {
+                return;
+            }
+            startScan(h.getProtocol());
         }
-        startScan(bridgeHandler.getProtocol());
     }
 
     private void startScan(final ICProtocol protocol) {
         for (Argument discoveryArg : Argument.values()) {
-            logger.info("Looking for devices with argument {}", discoveryArg);
+            logger.trace("Looking for devices with argument {}", discoveryArg);
             final Future<ICResponse> future = protocol.submit(discoveryArg.getRequest());
             try {
                 final GetHardwareDefinition hardware = new GetHardwareDefinition(future.get());
@@ -143,7 +146,7 @@ public class IntelliCenter2DiscoveryService extends AbstractDiscoveryService imp
                     }
                 }
             } catch (Exception e) {
-                logger.error("Unable to discover IntelliCenter2 hardware for {}", discoveryArg, e);
+                logger.warn("Unable to discover IntelliCenter2 hardware for {}", discoveryArg, e);
             }
         }
         try {
@@ -157,7 +160,7 @@ public class IntelliCenter2DiscoveryService extends AbstractDiscoveryService imp
                 }
             }
         } catch (Exception e) {
-            logger.error("Unable to discover IntelliCenter2 hardware via GetConfiguration", e);
+            logger.warn("Unable to discover IntelliCenter2 hardware via GetConfiguration", e);
         }
     }
 
@@ -189,15 +192,16 @@ public class IntelliCenter2DiscoveryService extends AbstractDiscoveryService imp
 
     private void discoveryResult(ThingTypeUID bindingId, ResponseModel model, final Map<String, Object> properties) {
         logger.debug("Discovered object {}", model);
-        if (bridgeHandler == null) {
+        final IntelliCenter2BridgeHandler bh = bridgeHandler;
+        if (bh == null) {
             logger.error("discovered result with a null bridgeHandler {} {}", bindingId, model);
             return;
         }
-        final ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        final ThingUID bridgeUID = bh.getThing().getUID();
         final ThingUID uid = new ThingUID(bindingId, bridgeUID, model.getObjectName());
 
-        properties.put("vendor", "Pentair");
-        properties.put("model", "IntelliCenter");
+        properties.put(Thing.PROPERTY_VENDOR, "Pentair");
+        properties.put(Thing.PROPERTY_MODEL_ID, "IntelliCenter");
         properties.put(Attribute.OBJNAM.name(), model.getObjectName());
         properties.put(Attribute.SUBTYP.name(), model.getSubType());
         properties.put(Attribute.SNAME.name(), model.getSname());
