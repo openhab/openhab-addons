@@ -155,13 +155,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             locationOptions.add(new CommandOption(location.toFullString(), "Home location"));
         }
         commandProvider.setCommandOptions(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), locationOptions);
-
-        /**
-         * structural changes like adding, removing devices and update links needs to be done in a sequential way.
-         * Pressure during startup is causing java.util.ConcurrentModificationException
-         */
-        // sequentialScheduler = ThreadPoolManager
-        // .getPoolBasedSequentialScheduledExecutorService(this.getClass().getName(), BINDING_ID);
     }
 
     @Override
@@ -314,8 +307,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     @Override
     public void handleRemoval() {
         super.handleRemoval();
-        // sequentialScheduler.shutdownNow();
-        // todo clear storage
     }
 
     private void updateProperties() {
@@ -369,15 +360,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             String gatewayStorageObject = storage.get(config.ipAddress);
             if (gatewayStorageObject != null) {
                 JSONObject gatewayStorageJson = new JSONObject(gatewayStorageObject.toString());
-                return gatewayStorageJson;
-            }
-        }
-        // [TODO] remove for release version: copy storage from ID to IP as fallback after v0.1-alpha
-        if (!config.id.isBlank()) {
-            String gatewayStorageObject = storage.get(config.id);
-            if (gatewayStorageObject != null) {
-                JSONObject gatewayStorageJson = new JSONObject(gatewayStorageObject.toString());
-                storage.put(config.ipAddress, gatewayStorageJson.toString());
                 return gatewayStorageJson;
             }
         }
