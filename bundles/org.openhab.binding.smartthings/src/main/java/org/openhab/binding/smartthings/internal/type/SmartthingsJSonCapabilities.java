@@ -71,5 +71,4 @@ public class SmartthingsJSonCapabilities {
     public void setCommands(List<SmartthingsJSonCommands> value) {
         commands = value;
     }
-
 }

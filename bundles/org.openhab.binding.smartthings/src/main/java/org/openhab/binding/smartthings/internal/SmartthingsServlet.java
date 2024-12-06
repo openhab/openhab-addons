@@ -34,8 +34,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
@@ -64,7 +62,7 @@ public class SmartthingsServlet extends HttpServlet {
         this.httpService = httpService;
     }
 
-	@Activate
+    @Activate
     public void activate() {
         if (httpService == null) {
             logger.info("SmartthingsServlet.activate: httpService is unexpectedly null");
@@ -97,7 +95,6 @@ public class SmartthingsServlet extends HttpServlet {
         logger.info("SmartthingsServlet:init");
         ServletContext context = servletConfig.getServletContext();
         BundleContext bundleContext = (BundleContext) context.getAttribute("osgi-bundlecontext");
-
     }
 
     @Reference

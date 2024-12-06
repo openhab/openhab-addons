@@ -309,5 +309,4 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
      * return gsonWithAdpter;
      * }
      */
-
 }

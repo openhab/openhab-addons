@@ -5,21 +5,21 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- The Bridge Type -->
-    <bridge-type id="smartthingscloud">
-        <label>Smartthings Cloud Hub</label>
-        <description>Smartthings Cloud Hub</description>
+	<bridge-type id="smartthingscloud">
+		<label>Smartthings Cloud Hub</label>
+		<description>Smartthings Cloud Hub</description>
 
-        <config-description>
-            <parameter name="clientId" type="text" required="true">
-                <label>Client ID</label>
-                <description>The apps oauth client Id</description>
-            </parameter>
-            <parameter name="clientSecret" type="text" required="true">
-                <label>Client Secret</label>
-                <description>The apps oauth client Secret</description>
-            </parameter>
-        </config-description>
-    </bridge-type>
+		<config-description>
+			<parameter name="clientId" type="text" required="true">
+				<label>Client ID</label>
+				<description>The apps oauth client Id</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="true">
+				<label>Client Secret</label>
+				<description>The apps oauth client Secret</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
 	<bridge-type id="smartthings">
 		<label>Smartthings Hub</label>
 		<description>Smartthings Hub V2 that is attached to the same network</description>
@@ -38,6 +38,6 @@
 		</config-description>
 	</bridge-type>
 
-    
+
 
 </thing:thing-descriptions>

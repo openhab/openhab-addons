@@ -58,5 +58,4 @@ public class SmartthingsThingTypeProviderImpl implements SmartthingsThingTypePro
     public @Nullable ThingType getThingType(ThingTypeUID thingTypeUID, @Nullable Locale locale) {
         return thingTypesByUID.get(thingTypeUID);
     }
-
 }

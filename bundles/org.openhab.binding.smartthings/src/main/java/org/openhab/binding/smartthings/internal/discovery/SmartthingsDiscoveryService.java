@@ -204,9 +204,9 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
                 enabled = true;
             }
 
-            //if (!enabled) {
-            //    continue;
-            //}
+            // if (!enabled) {
+            // continue;
+            // }
 
             JsonArray componentsArray = (JsonArray) components;
 
@@ -383,5 +383,4 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
             createDevice(Objects.requireNonNull(deviceData));
         }
     }
-
 }

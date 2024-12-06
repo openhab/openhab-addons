@@ -104,5 +104,4 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
 
         return configStatusMessages;
     }
-
 }

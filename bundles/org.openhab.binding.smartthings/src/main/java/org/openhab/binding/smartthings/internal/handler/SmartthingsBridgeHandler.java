@@ -118,7 +118,6 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
 
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
-
     }
 
     public SmartthingsApi getSmartthingsApi() {
@@ -156,7 +155,6 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
 
         return accessTokenResponse != null && accessTokenResponse.getAccessToken() != null
                 && accessTokenResponse.getRefreshToken() != null;
-
     }
 
     private @Nullable AccessTokenResponse getAccessTokenResponse() {
