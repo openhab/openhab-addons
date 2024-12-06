@@ -109,6 +109,18 @@ If a device has multiple device triggers for the same subtype (the particular bu
 | direction       | String  | R/W | `forward` or `backward`                                   |
 | json-attributes | String  | RO  | Additional attributes, as a serialized JSON string.       |
 
+### [Humidifier](https://www.home-assistant.io/integrations/humidifier.mqtt/)
+
+| Channel ID       | Type                 | R/W | Description                                                                              |
+|------------------|----------------------|-----|------------------------------------------------------------------------------------------|
+| state            | Switch               | R/W | If the humidifier should be on or off.                                                   |
+| action           | String               | RO  | What the humidifier is actively doing. One of `off`, `humidifying`, `drying`, or `idle`. |
+| mode             | String               | R/W | Inspect the state description for valid values.                                          |
+| current-humidity | Number:Dimensionless | RO  | The current detected relative humidity, in %.                                            |
+| target-humidity  | Number:Dimensionless | R/W | The desired relative humidity, in %.                                                     |
+| device-class     | String               | RO  | `humidifier` or `dehumidifier`                                                           |
+| json-attributes  | String               | RO  | Additional attributes, as a serialized JSON string.                                      |
+
 ### [Light](https://www.home-assistant.io/integrations/light.mqtt/)
 
 | Channel ID      | Type    | R/W | Description                                                     |

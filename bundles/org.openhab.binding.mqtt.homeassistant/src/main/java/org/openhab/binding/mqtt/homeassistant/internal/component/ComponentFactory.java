@@ -71,6 +71,8 @@ public class ComponentFactory {
                 return new Event(componentConfiguration, newStyleChannels);
             case "fan":
                 return new Fan(componentConfiguration, newStyleChannels);
+            case "humidifier":
+                return new Humidifier(componentConfiguration, newStyleChannels);
             case "light":
                 return Light.create(componentConfiguration, newStyleChannels);
             case "lock":
