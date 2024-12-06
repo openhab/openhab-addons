@@ -51,6 +51,7 @@
 			<channel-group id="stayoutzone" typeId="stayoutZonesType"/>
 			<channel-group id="workarea" typeId="workAreasType"/>
 			<channel-group id="command" typeId="commandsType"/>
+			<channel-group id="message" typeId="messagesType"/>
 		</channel-groups>
 
 		<properties>
@@ -97,6 +98,8 @@
 				<channel id="work-area" typeId="workAreaType"/>
 			-->
 			<channel id="last-update" typeId="lastUpdateType"/>
+			<channel id="last-poll-update" typeId="lastPollUpdateType"/>
+			<channel id="poll-update" typeId="pollUpdateType"/>
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="error-code" typeId="errorCodeType"/>
 			<channel id="error-message" typeId="errorMessageType"/>
@@ -199,6 +202,21 @@
 			<channel id="<xx>-enabled" typeId="workareaEnabledType"/>
 			<channel id="<xx>-progress" typeId="workareaProgressType"/>
 			<channel id="<xx>-last-time-completed" typeId="workareaLastTimeCompletedType"/>
+			...
+			</channels>
+		-->
+	</channel-group-type>
+
+	<!-- Messages -->
+	<channel-group-type id="messagesType">
+		<label>Messages</label>
+		<!-- channels created dynamically (1...50)
+			<channels>
+			<channel id="<xx>-time" typeId="messageTimeType"/>
+			<channel id="<xx>-code" typeId="messageCodeType"/>
+			<channel id="<xx>-text" typeId="messageType"/>
+			<channel id="<xx>-severity" typeId="messageSeverityType"/>
+			<channel id="<xx>-position" typeId="messagePositionType"/>
 			...
 			</channels>
 		-->
@@ -319,6 +337,19 @@
 		<label>Last Update</label>
 		<description>The time when the mower sent the last update</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastPollUpdateType" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Poll Update</label>
+		<description>The time when the binding polled the last update from the cloud</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pollUpdateType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Poll Update</label>
+		<description>Poll mower status update from the cloud</description>
 	</channel-type>
 
 	<channel-type id="batteryType">
@@ -631,6 +662,43 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<!-- Messages -->
+	<channel-type id="messageTimeType" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Timestamp when the event occurred</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="messageCodeType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Code</label>
+		<description>(Error) code of the event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="messageType" advanced="true">
+		<item-type>String</item-type>
+		<label>Message</label>
+		<description>The Message</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="messageSeverityType" advanced="true">
+		<item-type>String</item-type>
+		<label>Severity</label>
+		<description>The severity of the event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="messagePositionType" advanced="true">
+		<item-type>Location</item-type>
+		<label>GPS Position</label>
+		<description>GPS Position of the event (if available)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Commands -->
 	<channel-type id="start">
 		<item-type>Number</item-type>
 		<label>Start with Duration</label>

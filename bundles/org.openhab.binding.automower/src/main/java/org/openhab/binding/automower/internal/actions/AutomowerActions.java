@@ -245,4 +245,18 @@ public class AutomowerActions implements ThingActions {
         ((AutomowerActions) actions).setCalendarTask(workAreaId, start, duration, monday, tuesday, wednesday, thursday,
                 friday, saturday, sunday);
     }
+
+    @RuleAction(label = "@text/action-poll-label", description = "@text/action-poll-desc")
+    public void poll() {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            automowerHandler.poll();
+        }
+    }
+
+    public static void poll(ThingActions actions) {
+        ((AutomowerActions) actions).poll();
+    }
 }

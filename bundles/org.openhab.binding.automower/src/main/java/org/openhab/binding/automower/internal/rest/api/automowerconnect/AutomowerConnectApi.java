@@ -28,6 +28,7 @@ import org.openhab.binding.automower.internal.rest.api.HusqvarnaApi;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCalendardRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommandRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerMessagesResult;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerResult;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettingsRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneRequest;
@@ -72,7 +73,18 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.GET);
 
         ContentResponse response = executeRequest(appKey, token, request);
+        // logger.trace("getMower: {}", response.getContentAsString());
         return parseResponse(response, MowerResult.class);
+    }
+
+    public MowerMessagesResult getMowerMessages(String appKey, String token, String mowerId)
+            throws AutomowerCommunicationException {
+        final Request request = getHttpClient().newRequest(getBaseUrl() + "/mowers/" + mowerId + "/messages");
+        request.method(HttpMethod.GET);
+
+        ContentResponse response = executeRequest(appKey, token, request);
+        // logger.trace("getMowerMessages: {}", response.getContentAsString());
+        return parseResponse(response, MowerMessagesResult.class);
     }
 
     public void sendCommand(String appKey, String token, String id, MowerCommandRequest command)

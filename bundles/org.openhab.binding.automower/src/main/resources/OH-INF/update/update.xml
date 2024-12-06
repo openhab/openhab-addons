@@ -32,6 +32,12 @@
 			<update-channel id="last-update" groupIds="status">
 				<type>automower:lastUpdateType</type>
 			</update-channel>
+			<add-channel id="last-poll-update" groupIds="status">
+				<type>automower:lastPollUpdateType</type>
+			</add-channel>
+			<add-channel id="poll-update" groupIds="status">
+				<type>automower:pollUpdateType</type>
+			</add-channel>
 			<update-channel id="battery" groupIds="status">
 				<type>system:battery-level</type>
 			</update-channel>
@@ -251,6 +257,11 @@
 				<add-channel id="<xx>-last-time-completed" groupIds="workarea">
 				<type>automower:workareaLastTimeCompletedType</type>
 				</add-channel>
+			-->
+
+			<!-- Messages -->
+			<!-- dynamic channels
+				...
 			-->
 
 			<!-- Commands -->

@@ -50,6 +50,8 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 | status#work-area-id<sup id="a1">[1](#f1)</sup> | Number      | R   | Id of the active work area                                                                                     | true  |
 | status#work-area<sup id="a1">[1](#f1)</sup>    | String      | R   | Name of the active work area                                                                                   | false |
 | status#last-update                    | DateTime             | R   | The time when the Automower® updated its states                                                                | false |
+| status#last-poll-update               | DateTime             | R   | The time when the binding polled the last update from the cloud                                                | true  |
+| status#poll-update                    | Switch               | R   | Poll Automower® status update from the cloud                                                                   | true  |
 | status#battery                        | Number:Dimensionless | R   | The battery state of charge in percent                                                                         | false |
 | status#error-code                     | Number               | R/W | The current error code. `sendCommand(0)` to confirm current non fatal error                                    | true  |
 | status#error-message                  | String               | R   | The current error message                                                                                      | false |
@@ -89,19 +91,19 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 
 These channels hold the different Calendar Task configurations.
 
-| channel                                                  | type        | access mode | description                                   | advanced |
-|----------------------------------------------------------|-------------|-------------|-----------------------------------------------|----------|
-| calendartask#\<x\>-start                                 | Number:Time | R/W         | Start time relative to midnight               | true     |
-| calendartask#\<x\>-duration                              | Number:Time | R/W         | Duration time                                 | true     |
-| calendartask#\<x\>-monday                                | Switch      | R/W         | Enabled on Mondays                            | true     |
-| calendartask#\<x\>-tuesday                               | Switch      | R/W         | Enabled on Tuesdays                           | true     |
-| calendartask#\<x\>-wednesday                             | Switch      | R/W         | Enabled on Wednesdays                         | true     |
-| calendartask#\<x\>-thursday                              | Switch      | R/W         | Enabled on Thursdays                          | true     |
-| calendartask#\<x\>-friday                                | Switch      | R/W         | Enabled on Fridays                            | true     |
-| calendartask#\<x\>-saturday                              | Switch      | R/W         | Enabled on Saturdays                          | true     |
-| calendartask#\<x\>-sunday                                | Switch      | R/W         | Enabled on Sundays                            | true     |
-| calendartask#\<x\>-workAreaId<sup id="a1">[1](#f1)</sup> | Number      | R           | Work Area Id mapped to this calendar          | true     |
-| calendartask#\<x\>-workArea<sup id="a1">[1](#f1)</sup>   | String      | R           | Name of the Work Area mapped to this calendar | true     |
+| channel                                                       | type        | access mode | description                                   | advanced |
+|---------------------------------------------------------------|-------------|-------------|-----------------------------------------------|----------|
+| calendartask#\<x\>-task-start                                 | Number:Time | R/W         | Start time relative to midnight               | true     |
+| calendartask#\<x\>-task-duration                              | Number:Time | R/W         | Duration time                                 | true     |
+| calendartask#\<x\>-task-monday                                | Switch      | R/W         | Enabled on Mondays                            | true     |
+| calendartask#\<x\>-task-tuesday                               | Switch      | R/W         | Enabled on Tuesdays                           | true     |
+| calendartask#\<x\>-task-wednesday                             | Switch      | R/W         | Enabled on Wednesdays                         | true     |
+| calendartask#\<x\>-task-thursday                              | Switch      | R/W         | Enabled on Thursdays                          | true     |
+| calendartask#\<x\>-task-friday                                | Switch      | R/W         | Enabled on Fridays                            | true     |
+| calendartask#\<x\>-task-saturday                              | Switch      | R/W         | Enabled on Saturdays                          | true     |
+| calendartask#\<x\>-task-sunday                                | Switch      | R/W         | Enabled on Sundays                            | true     |
+| calendartask#\<x\>-task-workAreaId<sup id="a1">[1](#f1)</sup> | Number      | R           | Work Area Id mapped to this calendar          | true     |
+| calendartask#\<x\>-task-workArea<sup id="a1">[1](#f1)</sup>   | String      | R           | Name of the Work Area mapped to this calendar | true     |
 
 \<x\> ... 01-#calendartasks
 
@@ -111,10 +113,10 @@ These channels hold the last 50 GPS positions recorded by the Automower®, thus 
 Position 01 is the latest recorded position, the other positions are pushed back, thus removing the previous position 50 from the list because it is replaced by the previous position 49.
 Channel `last-position` is always identical with channel `position01` and thus provides more convenient access if only the latest GPS information is required by the user.
 
-| channel                                   | type     | access mode | description                                             | advanced |
-|-------------------------------------------|----------|-------------|---------------------------------------------------------|----------|
-| position#last<sup id="a1">[1](#f1)</sup>  | Location | R           | Last GPS Position (identical with positions#position01) | false    |
-| position#\<x\><sup id="a1">[1](#f1)</sup> | Location | R           | GPS Position \<x\>                                      | true     |
+| channel                                       | type     | access mode | description                                             | advanced |
+|-----------------------------------------------|----------|-------------|---------------------------------------------------------|----------|
+| position#last<sup id="a1">[1](#f1)</sup>      | Location | R           | Last GPS Position (identical with positions#position01) | false    |
+| position#\<x\>-pos<sup id="a1">[1](#f1)</sup> | Location | R           | GPS Position \<x\>                                      | true     |
 
 \<x\> ... 01-50
 
@@ -122,12 +124,12 @@ Channel `last-position` is always identical with channel `position01` and thus p
 
 These channels hold the different Stayout Zone configurations.
 
-| channel                                              | type   | access mode | description                                                                                                                        | advanced |
-|------------------------------------------------------|--------|-------------|------------------------------------------------------------------------------------------------------------------------------------|----------|
-| stayoutzone#dirty<sup id="a1">[1](#f1)</sup>         | Switch | R           | If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable or disable a stay-out zone | true     |
-| stayoutzone#\<x\>-id<sup id="a1">[1](#f1)</sup>      | String | R           | Id of the Stayout zone                                                                                                             | true     |
-| stayoutzone#\<x\>-name<sup id="a1">[1](#f1)</sup>    | String | R           | The name of the Stayout zone                                                                                                       | true     |
-| stayoutzone#\<x\>-enabled<sup id="a1">[1](#f1)</sup> | Switch | R/W         | If the Stayout zone is enabled, the Automower® will not access the zone                                                            | true     |
+| channel                                                   | type   | access mode | description                                                                                                                        | advanced |
+|-----------------------------------------------------------|--------|-------------|------------------------------------------------------------------------------------------------------------------------------------|----------|
+| stayoutzone#dirty<sup id="a1">[1](#f1)</sup>              | Switch | R           | If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable or disable a stay-out zone | true     |
+| stayoutzone#\<x\>-zone-id<sup id="a1">[1](#f1)</sup>      | String | R           | Id of the Stayout zone                                                                                                             | true     |
+| stayoutzone#\<x\>-zone-name<sup id="a1">[1](#f1)</sup>    | String | R           | The name of the Stayout zone                                                                                                       | true     |
+| stayoutzone#\<x\>-zone-enabled<sup id="a1">[1](#f1)</sup> | Switch | R/W         | If the Stayout zone is enabled, the Automower® will not access the zone                                                            | true     |
 
 \<x\> ... 01-#stayoutzones
 
@@ -135,18 +137,35 @@ These channels hold the different Stayout Zone configurations.
 
 These channels hold the different Work Area configurations.
 
-| channel                                                                                              | type                  | access mode | description                                         | advanced |
-|------------------------------------------------------------------------------------------------------|-----------------------|-------------|-----------------------------------------------------|----------|
-| workarea#\<x\>-id<sup id="a1">[1](#f1)</sup>                                                         | Number                | R           | Id of the Work Area                                 | false    |
-| workarea#\<x\>-name<sup id="a1">[1](#f1)</sup>                                                       | String                | R           | Name of the work area                               | false    |
-| workarea#\<x\>-cutting-height<sup id="a1">[1](#f1)</sup>                                             | Number:Dimensionless  | R/W         | Cutting height in percent. 0-100                    | false    |
-| workarea#\<x\>-enabled<sup id="a1">[1](#f1)</sup>                                                    | Switch                | R/W         | If the work area is enabled or disabled             | false    |
-| workarea#\<x\>-progress<sup id="a1">[1](#f1)</sup><sup>,</sup><sup id="a2">[2](#f2)</sup>            | Number                | R           | The progress on a work area                         | true     |
-| workarea#\<x\>-last-time-completed<sup id="a1">[1](#f1)</sup><sup>,</sup><sup id="a2">[2](#f2)</sup> | DateTime              | R           | Timestamp when the work area was last completed     | true     |
+| channel                                                                                                   | type                  | access mode | description                                         | advanced |
+|-----------------------------------------------------------------------------------------------------------|-----------------------|-------------|-----------------------------------------------------|----------|
+| workarea#\<x\>-area-id<sup id="a1">[1](#f1)</sup>                                                         | Number                | R           | Id of the Work Area                                 | false    |
+| workarea#\<x\>-area-name<sup id="a1">[1](#f1)</sup>                                                       | String                | R           | Name of the work area                               | false    |
+| workarea#\<x\>-area-cutting-height<sup id="a1">[1](#f1)</sup>                                             | Number:Dimensionless  | R/W         | Cutting height in percent. 0-100                    | false    |
+| workarea#\<x\>-area-enabled<sup id="a1">[1](#f1)</sup>                                                    | Switch                | R/W         | If the work area is enabled or disabled             | false    |
+| workarea#\<x\>-area-progress<sup id="a1">[1](#f1)</sup><sup>,</sup><sup id="a2">[2](#f2)</sup>            | Number                | R           | The progress on a work area                         | true     |
+| workarea#\<x\>-area-last-time-completed<sup id="a1">[1](#f1)</sup><sup>,</sup><sup id="a2">[2](#f2)</sup> | DateTime              | R           | Timestamp when the work area was last completed     | true     |
 
 \<x\> ... 01-#workareas
 
+### Messages
+
+These channels hold the last 50 messages recorded by the Automower®.
+Message 01 is the latest recorded message, the other messages are pushed back, thus removing the previous message 50 from the list because it is replaced by the previous message 49.
+
+| channel                 | type     | access mode | description                              | advanced |
+|-------------------------|----------|-------------|------------------------------------------|----------|
+| message#\<x\>-time      | DateTime | R           | Timestamp when the event occurred        | true     |
+| message#\<x\>-code      | Number   | R           | (Error) code of the event                | true     |
+| message#\<x\>-text      | String   | R           | The message                              | true     |
+| message#\<x\>-severity  | String   | R           | The severity of the event                | true     |
+| message#\<x\>-position  | Location | R           | GPS Position of the event (if available) | true     |
+
+\<x\> ... 01-50
+
 ### Command Channels
+
+Command channels that trigger actions.
 
 | channel                           | type     | access mode | description                              | advanced |
 |-----------------------------------|----------|-------------|------------------------------------------|----------|
@@ -175,6 +194,7 @@ The following actions are available for `automower` things:
 | setWorkArea                | `long workAreaId`<br/>`boolean enable`<br/>`byte cuttingHeight`      | Update work area settings                  |
 | setStayOutZone             | `String zoneId`<br/>`boolean enable`                                 | Enable or disable stay-out zone            |
 | setCalendarTask            | `Long workAreaId` (optional, set to `null` if the mower doesn't support work areas)<br/>`short[] start`<br/>`short[] duration`<br/>`boolean[] monday`<br/>`boolean[] tuesday`<br/>`boolean[] wednesday`<br/>`boolean[] thursday`<br/>`boolean[] friday`<br/>`boolean[] saturday`<br/>`boolean[] sunday` | Update calendar task settings. Parameter are an array for all calendar tasks (per work area) |
+| poll                       | -                | Poll Automower® status update from the cloud                                                   |
 
 ## Full Example
 
@@ -197,8 +217,8 @@ DateTime    Automower_Last_Update                   "Last Update"               
 Number      Automower_Battery                       "Battery [%d %%]"                       { channel="automower:automower:mybridge:myAutomower:status#battery" }
 Number      Automower_Error_Code                    "Error Code [%d]"                       { channel="automower:automower:mybridge:myAutomower:status#error-code" }
 DateTime    Automower_Error_Time                    "Error Time"                            { channel="automower:automower:mybridge:myAutomower:status#error-timestamp" }
-String      Automower_Override_Action               "Override Action [%s]"                  { channel="automower:automower:mybridge:myAutomower:status#planner-override-action" }
-DateTime    Automower_Next_Start_Time               "Next Start Time"                       { channel="automower:automower:mybridge:myAutomower:status#planner-next-start" }
+String      Automower_Override_Action               "Override Action [%s]"                  { channel="automower:automower:mybridge:myAutomower:status#override-action" }
+DateTime    Automower_Next_Start_Time               "Next Start Time"                       { channel="automower:automower:mybridge:myAutomower:status#next-start" }
 
 Number      Automower_Command_Start                 "Start mowing for duration [%d min]"    { channel="automower:automower:mybridge:myAutomower:command#start" }
 Switch      Automower_Command_Resume                "Resume the schedule"                   { channel="automower:automower:mybridge:myAutomower:command#resume_schedule" }

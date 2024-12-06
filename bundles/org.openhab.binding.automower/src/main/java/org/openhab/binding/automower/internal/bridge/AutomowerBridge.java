@@ -30,6 +30,7 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommandAttributes;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommandRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerMessages;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettings;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettingsRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZone;
@@ -94,6 +95,15 @@ public class AutomowerBridge {
      */
     public Mower getAutomowerStatus(String id) throws AutomowerCommunicationException {
         return automowerApi.getMower(appKey, authenticate().getAccessToken(), id).getData();
+    }
+
+    /**
+     * @param id The id of the mower to query
+     * @return A detailed status of the mower with the specified id
+     * @throws AutomowerCommunicationException In case the query cannot be executed successfully
+     */
+    public MowerMessages getAutomowerMessages(String id) throws AutomowerCommunicationException {
+        return automowerApi.getMowerMessages(appKey, authenticate().getAccessToken(), id).getData();
     }
 
     /**
