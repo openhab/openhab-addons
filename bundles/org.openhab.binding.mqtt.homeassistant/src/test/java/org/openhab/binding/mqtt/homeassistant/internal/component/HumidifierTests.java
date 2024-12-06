@@ -72,7 +72,6 @@ public class HumidifierTests extends AbstractComponentTests {
                 }
                 """);
 
-        System.out.println(component.channels.toString());
         assertThat(component.channels.size(), is(6));
         assertThat(component.getName(), is("Bedroom humidifier"));
 
