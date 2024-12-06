@@ -70,7 +70,6 @@ import org.eclipse.jetty.http2.frames.ResetFrame;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.Promise.Completable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.api.dto.clip1.CreateUserRequest;
 import org.openhab.binding.hue.internal.api.dto.clip1.SuccessResponse;
 import org.openhab.binding.hue.internal.api.dto.clip2.BridgeConfig;
@@ -399,7 +398,7 @@ public class Clip2Bridge implements Closeable {
             Objects.requireNonNull(session);
             if (session.equals(http2Session)) {
                 Thread recreateThread = new Thread(() -> recreateSession(),
-                        "OH-binding-" + HueBindingConstants.BINDING_ID + "-Clip2Bridge");
+                        "OH-binding-" + bridgeHandler.getThing().getUID() + "-Clip2Bridge");
                 Clip2Bridge.this.recreateThread = recreateThread;
                 recreateThread.start();
             }
