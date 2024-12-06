@@ -34,6 +34,7 @@ import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
  *
  * @author Christoph Weitkamp - Initial contribution
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
+ * @author Fabian Girgert - Fixed incorrect state of dimmable bulb when switched off
  */
 @NonNullByDefault
 public class AVMFritzDeviceListModelTest {
@@ -111,7 +112,24 @@ public class AVMFritzDeviceListModelTest {
                         <interfaces>512,514,513</interfaces>
                     </etsiunitinfo>
                 </device>\
-                </devicelist>\
+                <device identifier="Z001788011D4B55D30B" id="2038" functionbitmask="106500" fwversion="0.0" manufacturer="0x100b" productname="Signify Netherlands B.V. LWG004">
+                    <present>1</present>
+                    <txbusy>0</txbusy>
+                    <name>Zigbee dimmable bulb</name>
+                    <simpleonoff>
+                        <state>0</state>
+                    </simpleonoff>
+                    <levelcontrol>
+                        <level>255</level>
+                        <levelpercentage>100</levelpercentage>
+                    </levelcontrol>
+                    <etsiunitinfo>
+                        <etsideviceid>20029</etsideviceid>
+                        <unittype>265</unittype>
+                        <interfaces>512,513</interfaces>
+                    </etsiunitinfo>
+                </device>\
+            </devicelist>\
                 """;
         //@formatter:on
         XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(xml));
@@ -122,7 +140,7 @@ public class AVMFritzDeviceListModelTest {
     @Test
     public void validateDeviceListModel() {
         assertNotNull(devices);
-        assertEquals(17, devices.getDevicelist().size());
+        assertEquals(18, devices.getDevicelist().size());
         assertEquals("1", devices.getXmlApiVersion());
     }
 
@@ -730,6 +748,57 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(0, colorModel.unmappedHue);
         assertEquals(0, colorModel.unmappedSaturation);
         assertEquals(2700, colorModel.temperature);
+    }
+
+    @Test
+    public void validateHANFUNDimmableLightModel() {
+        Optional<AVMFritzBaseModel> optionalDevice = findModelByIdentifier("Z001788011D4B55D30B");
+        assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
+
+        DeviceModel device = (DeviceModel) optionalDevice.get();
+        assertEquals("Signify Netherlands B.V. LWG004", device.getProductName());
+        assertEquals("Z001788011D4B55D30B", device.getIdentifier());
+        assertEquals("2038", device.getDeviceId());
+        assertEquals("0.0", device.getFirmwareVersion());
+        assertEquals("0x100b", device.getManufacturer());
+
+        assertEquals(1, device.getPresent());
+        assertEquals("Zigbee dimmable bulb", device.getName());
+
+        assertFalse(device.isHANFUNDevice());
+        assertFalse(device.isHANFUNButton());
+        assertFalse(device.isHANFUNAlarmSensor());
+        assertFalse(device.isButton());
+        assertFalse(device.isSwitchableOutlet());
+        assertFalse(device.isTemperatureSensor());
+        assertFalse(device.isHumiditySensor());
+        assertFalse(device.isPowermeter());
+        assertFalse(device.isDectRepeater());
+        assertFalse(device.isHeatingThermostat());
+        assertFalse(device.hasMicrophone());
+        assertTrue(device.isHANFUNUnit());
+        assertTrue(device.isHANFUNOnOff());
+        assertTrue(device.isDimmableLight());
+        assertFalse(device.isColorLight());
+        assertFalse(device.isHANFUNBlinds());
+
+        assertTrue(device.getButtons().isEmpty());
+
+        assertNull(device.getAlert());
+
+        assertNull(device.getSwitch());
+
+        assertNull(device.getTemperature());
+
+        assertNull(device.getPowermeter());
+
+        assertNull(device.getHkr());
+
+        LevelControlModel levelcontrol = device.getLevelControlModel();
+        assertNotNull(levelcontrol);
+        assertEquals(BigDecimal.valueOf(255L), levelcontrol.getLevel());
+        assertEquals(BigDecimal.valueOf(100L), levelcontrol.getLevelPercentage());
     }
 
     @Test

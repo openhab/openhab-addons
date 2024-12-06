@@ -35,10 +35,13 @@ import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Aggregate;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Consumption;
+import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
+import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -157,9 +160,13 @@ public class LinkyHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
 
                     if (thing.getProperties().isEmpty()) {
-                        PrmInfo prmInfo = api.getPrmInfo();
-                        updateProperties(Map.of(USER_ID, api.getUserInfo().userProperties.internId, PUISSANCE,
-                                prmInfo.puissanceSouscrite + " kVA", PRM_ID, prmInfo.prmId));
+                        UserInfo userInfo = api.getUserInfo();
+                        PrmInfo prmInfo = api.getPrmInfo(userInfo.userProperties.internId);
+                        PrmDetail details = api.getPrmDetails(userInfo.userProperties.internId, prmInfo.idPrm);
+                        updateProperties(Map.of(USER_ID, userInfo.userProperties.internId, PUISSANCE,
+                                details.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite().valeur()
+                                        + " kVA",
+                                PRM_ID, prmInfo.idPrm));
                     }
 
                     prmId = thing.getProperties().get(PRM_ID);
@@ -204,13 +211,26 @@ public class LinkyHandler extends BaseThingHandler {
         if (isLinked(PEAK_POWER) || isLinked(PEAK_TIMESTAMP)) {
             cachedPowerData.getValue().ifPresentOrElse(values -> {
                 Aggregate days = values.aggregats.days;
-                updateVAChannel(PEAK_POWER, days.datas.get(days.datas.size() - 1));
+                updatekVAChannel(PEAK_POWER, days.datas.get(days.datas.size() - 1));
                 updateState(PEAK_TIMESTAMP, new DateTimeType(days.periodes.get(days.datas.size() - 1).dateDebut));
             }, () -> {
                 updateKwhChannel(PEAK_POWER, Double.NaN);
                 updateState(PEAK_TIMESTAMP, UnDefType.UNDEF);
             });
         }
+    }
+
+    private void setCurrentAndPrevious(Aggregate periods, String currentChannel, String previousChannel) {
+        double currentValue = 0.0;
+        double previousValue = 0.0;
+        if (!periods.datas.isEmpty()) {
+            currentValue = periods.datas.get(periods.datas.size() - 1);
+            if (periods.datas.size() > 1) {
+                previousValue = periods.datas.get(periods.datas.size() - 2);
+            }
+        }
+        updateKwhChannel(currentChannel, currentValue);
+        updateKwhChannel(previousChannel, previousValue);
     }
 
     /**
@@ -221,17 +241,7 @@ public class LinkyHandler extends BaseThingHandler {
             cachedDailyData.getValue().ifPresentOrElse(values -> {
                 Aggregate days = values.aggregats.days;
                 updateKwhChannel(YESTERDAY, days.datas.get(days.datas.size() - 1));
-                int idxLast = days.periodes.get(days.periodes.size() - 1).dateDebut.get(weekFields.dayOfWeek()) == 7 ? 2
-                        : 1;
-                Aggregate weeks = values.aggregats.weeks;
-                if (weeks.datas.size() > idxLast) {
-                    updateKwhChannel(LAST_WEEK, weeks.datas.get(idxLast));
-                }
-                if (weeks.datas.size() > (idxLast + 1)) {
-                    updateKwhChannel(THIS_WEEK, weeks.datas.get(idxLast + 1));
-                } else {
-                    updateKwhChannel(THIS_WEEK, 0.0);
-                }
+                setCurrentAndPrevious(values.aggregats.weeks, THIS_WEEK, LAST_WEEK);
             }, () -> {
                 updateKwhChannel(YESTERDAY, Double.NaN);
                 if (ZonedDateTime.now().get(weekFields.dayOfWeek()) == 1) {
@@ -249,22 +259,15 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateMonthlyData() {
         if (isLinked(LAST_MONTH) || isLinked(THIS_MONTH)) {
-            cachedMonthlyData.getValue().ifPresentOrElse(values -> {
-                Aggregate months = values.aggregats.months;
-                updateKwhChannel(LAST_MONTH, months.datas.get(0));
-                if (months.datas.size() > 1) {
-                    updateKwhChannel(THIS_MONTH, months.datas.get(1));
-                } else {
-                    updateKwhChannel(THIS_MONTH, 0.0);
-                }
-            }, () -> {
-                if (ZonedDateTime.now().getDayOfMonth() == 1) {
-                    updateKwhChannel(THIS_MONTH, 0.0);
-                    updateKwhChannel(LAST_MONTH, Double.NaN);
-                } else {
-                    updateKwhChannel(THIS_MONTH, Double.NaN);
-                }
-            });
+            cachedMonthlyData.getValue().ifPresentOrElse(
+                    values -> setCurrentAndPrevious(values.aggregats.months, THIS_MONTH, LAST_MONTH), () -> {
+                        if (ZonedDateTime.now().getDayOfMonth() == 1) {
+                            updateKwhChannel(THIS_MONTH, 0.0);
+                            updateKwhChannel(LAST_MONTH, Double.NaN);
+                        } else {
+                            updateKwhChannel(THIS_MONTH, Double.NaN);
+                        }
+                    });
         }
     }
 
@@ -273,22 +276,15 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateYearlyData() {
         if (isLinked(LAST_YEAR) || isLinked(THIS_YEAR)) {
-            cachedYearlyData.getValue().ifPresentOrElse(values -> {
-                Aggregate years = values.aggregats.years;
-                updateKwhChannel(LAST_YEAR, years.datas.get(0));
-                if (years.datas.size() > 1) {
-                    updateKwhChannel(THIS_YEAR, years.datas.get(1));
-                } else {
-                    updateKwhChannel(THIS_YEAR, 0.0);
-                }
-            }, () -> {
-                if (ZonedDateTime.now().getDayOfYear() == 1) {
-                    updateKwhChannel(THIS_YEAR, 0.0);
-                    updateKwhChannel(LAST_YEAR, Double.NaN);
-                } else {
-                    updateKwhChannel(THIS_YEAR, Double.NaN);
-                }
-            });
+            cachedYearlyData.getValue().ifPresentOrElse(
+                    values -> setCurrentAndPrevious(values.aggregats.years, THIS_YEAR, LAST_YEAR), () -> {
+                        if (ZonedDateTime.now().getDayOfYear() == 1) {
+                            updateKwhChannel(THIS_YEAR, 0.0);
+                            updateKwhChannel(LAST_YEAR, Double.NaN);
+                        } else {
+                            updateKwhChannel(THIS_YEAR, Double.NaN);
+                        }
+                    });
         }
     }
 
@@ -298,9 +294,10 @@ public class LinkyHandler extends BaseThingHandler {
                 Double.isNaN(consumption) ? UnDefType.UNDEF : new QuantityType<>(consumption, Units.KILOWATT_HOUR));
     }
 
-    private void updateVAChannel(String channelId, double power) {
+    private void updatekVAChannel(String channelId, double power) {
         logger.debug("Update channel {} with {}", channelId, power);
-        updateState(channelId, Double.isNaN(power) ? UnDefType.UNDEF : new QuantityType<>(power, Units.VOLT_AMPERE));
+        updateState(channelId, Double.isNaN(power) ? UnDefType.UNDEF
+                : new QuantityType<>(power, MetricPrefix.KILO(Units.VOLT_AMPERE)));
     }
 
     /**
@@ -329,6 +326,11 @@ public class LinkyHandler extends BaseThingHandler {
                         : (days.datas.size() <= days.periodes.size() ? days.datas.size() : days.periodes.size());
                 for (int i = 0; i < size; i++) {
                     double consumption = days.datas.get(i);
+                    LocalDate day = days.periodes.get(i).dateDebut.toLocalDate();
+                    // Filter data in case it contains data from dates outside the requested period
+                    if (day.isBefore(startDay) || day.isAfter(endDay)) {
+                        continue;
+                    }
                     String line = days.periodes.get(i).dateDebut.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator;
                     if (consumption >= 0) {
                         line += String.valueOf(consumption);

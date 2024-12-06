@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NotificationAction {
 
-    private static final Logger logger = LoggerFactory.getLogger(NotificationAction.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationAction.class);
 
     public static @Nullable CloudService cloudService;
 
@@ -81,7 +81,7 @@ public class NotificationAction {
             @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
             @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
             @Nullable String actionButton3) {
-        logger.debug("sending notification '{}' to user {}", message, userId);
+        LOGGER.debug("sending notification '{}' to user {}", message, userId);
         if (cloudService != null) {
             cloudService.sendNotification(userId, message, icon, tag, title, referenceId, onClickAction,
                     mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
@@ -111,7 +111,7 @@ public class NotificationAction {
      */
     @ActionDoc(text = "Sends a log notification which is shown in notifications log to all account users")
     public static void sendLogNotification(String message, @Nullable String icon, @Nullable String tag) {
-        logger.debug("sending log notification '{}'", message);
+        LOGGER.debug("sending log notification '{}'", message);
         if (cloudService != null) {
             cloudService.sendLogNotification(message, icon, tag);
         }
@@ -164,7 +164,7 @@ public class NotificationAction {
             @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
             @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
             @Nullable String actionButton3) {
-        logger.debug("sending broadcast notification '{}' to all users", message);
+        LOGGER.debug("sending broadcast notification '{}' to all users", message);
         if (cloudService != null) {
             cloudService.sendBroadcastNotification(message, icon, tag, title, referenceId, onClickAction,
                     mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);

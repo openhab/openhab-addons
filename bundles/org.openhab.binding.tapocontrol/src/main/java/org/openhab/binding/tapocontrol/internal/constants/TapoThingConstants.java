@@ -122,6 +122,7 @@ public class TapoThingConstants {
     public static final String CHILD_REPRESENTATION_PROPERTY = "serialNumber";
 
     /*** DEVICE SETTINGS ***/
+    public static final Integer BULB_MIN_COLORTEMP_EXT = 2200;
     public static final Integer BULB_MIN_COLORTEMP = 2500;
     public static final Integer BULB_MAX_COLORTEMP = 6500;
 

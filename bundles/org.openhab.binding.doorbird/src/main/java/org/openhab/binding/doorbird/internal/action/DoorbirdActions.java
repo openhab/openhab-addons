@@ -85,7 +85,7 @@ public class DoorbirdActions implements ThingActions {
     }
 
     @RuleAction(label = "get the ring time limit", description = "Get the value of RING_TIME_LIMIT.")
-    public @ActionOutput(name = "getRingTimeLimit", type = "java.lang.String") String getRingTimeLimit() {
+    public @ActionOutput(name = "result", label = "Ring Time Limit", type = "java.lang.String") String getRingTimeLimit() {
         logger.debug("Doorbird action 'getRingTimeLimit' called");
         DoorbellHandler handler = this.handler;
         if (handler != null) {
@@ -101,7 +101,7 @@ public class DoorbirdActions implements ThingActions {
     }
 
     @RuleAction(label = "get the call time limit", description = "Get the value of CALL_TIME_LIMIT.")
-    public @ActionOutput(name = "getCallTimeLimit", type = "java.lang.String") String getCallTimeLimit() {
+    public @ActionOutput(name = "result", label = "Call Time Limit", type = "java.lang.String") String getCallTimeLimit() {
         logger.debug("Doorbird action 'getCallTimeLimit' called");
         DoorbellHandler handler = this.handler;
         if (handler != null) {
@@ -117,7 +117,7 @@ public class DoorbirdActions implements ThingActions {
     }
 
     @RuleAction(label = "get the last error code", description = "Get the value of LASTERRORCODE.")
-    public @ActionOutput(name = "getLastErrorCode", type = "java.lang.String") String getLastErrorCode() {
+    public @ActionOutput(name = "result", label = "Last Error Code", type = "java.lang.String") String getLastErrorCode() {
         logger.debug("Doorbird action 'getLastErrorCode' called");
         DoorbellHandler handler = this.handler;
         if (handler != null) {
@@ -133,7 +133,7 @@ public class DoorbirdActions implements ThingActions {
     }
 
     @RuleAction(label = "get the last error text", description = "Get the value of LASTERRORTEXT.")
-    public @ActionOutput(name = "getLastErrorText", type = "java.lang.String") String getLastErrorText() {
+    public @ActionOutput(name = "result", label = "Last Error Text", type = "java.lang.String") String getLastErrorText() {
         logger.debug("Doorbird action 'getLastErrorText' called");
         DoorbellHandler handler = this.handler;
         if (handler != null) {

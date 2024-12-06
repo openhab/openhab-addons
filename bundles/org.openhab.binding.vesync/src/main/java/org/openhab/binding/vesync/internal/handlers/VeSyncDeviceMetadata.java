@@ -50,14 +50,8 @@ public class VeSyncDeviceMetadata {
      */
     public final List<String> nonStandardIds;
 
-    public boolean deviceTypeIdMatches(final String deviceType, final String[] deviceTypeSegments) {
-        if (nonStandardIds.contains(deviceType)) {
-            return true;
-        }
-        if (deviceTypeSegments.length == 3) {
-            return deviceGenerations.contains(deviceTypeSegments[1]);
-        }
-        return false;
+    public boolean deviceTypeIdMatches(final String[] deviceTypeSegments) {
+        return (deviceTypeSegments.length == 3 && deviceGenerations.contains(deviceTypeSegments[1]));
     }
 
     public String getDeviceFamilyName() {

@@ -24,7 +24,6 @@ This binding discovers the Ruuvi Tags via the MQTT bridge; the discovered things
 
 ## Thing Configuration
 
-
 There is only thing type supported by this binding, `ruuvitag_beacon`.
 No manual configuration is needed, and discovery function can be used instead.
 
@@ -49,7 +48,7 @@ For users that prefer manual configuration, we list here the configurable parame
 | dataFormat                | Number                   | Data format version                                                      |
 | measurementSequenceNumber | Number:Dimensionless     | Measurement sequence number                                              |
 | movementCounter           | Number:Dimensionless     | Movement counter                                                         |
-| rssi                      | Number                   | Received signal (between the Gateway and the sensor) strength indicator  |
+| rssi                      | Number:Power             | Received signal (between the Gateway and the sensor) strength indicator  |
 | ts                        | DateTime                 | Timestamp when the message from Bluetooth-sensor was received by Gateway |
 | gwts                      | DateTime                 | Timestamp when the message from Bluetooth-sensor was relayed by Gateway  |
 | gwmac                     | String                   | MAC-address of Ruuvi Gateway                                             |

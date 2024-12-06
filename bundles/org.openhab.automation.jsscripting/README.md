@@ -513,6 +513,7 @@ The `PersistedState` object contains the following properties, representing Item
 The `PersistedItem` object extends `PersistedState` with the following properties, representing Item state and the respective timestamp:
 
 - `timestamp`: Timestamp as [`time.ZonedDateTime`](#time)
+- `instant`: Timestamp as [`time.Instant`](#time)
 
 ```javascript
 var midnight = time.toZDT('00:00');
@@ -805,28 +806,29 @@ See [openhab-js : actions.NotificationBuilder](https://openhab.github.io/openhab
 
 ### Cache
 
-The cache namespace provides both a private and a shared cache that can be used to set and retrieve objects that will be persisted between subsequent runs of the same or between scripts.
+The cache namespace provides both a private and a shared cache that can be used to set and retrieve data that will be persisted between subsequent runs of the same or between scripts.
 
 The private cache can only be accessed by the same script and is cleared when the script is unloaded.
-You can use it to e.g. store timers or counters between subsequent runs of that script.
+You can use it to store both primitives and objects, e.g. store timers or counters between subsequent runs of that script.
 When a script is unloaded and its cache is cleared, all timers (see [`createTimer`](#createtimer)) stored in its private cache are automatically cancelled.
 
 The shared cache is shared across all rules and scripts, it can therefore be accessed from any automation language.
 The access to every key is tracked and the key is removed when all scripts that ever accessed that key are unloaded.
 If that key stored a timer, the timer will be cancelled.
+You can use it to store **only primitives**, as storing objects is not thread-safe and can cause script execution failures.
 
 See [openhab-js : cache](https://openhab.github.io/openhab-js/cache.html) for full API documentation.
 
 - cache : <code>object</code>
   - .private
-    - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
-    - .put(key, value) ⇒ <code>Previous Object | null</code>
-    - .remove(key) ⇒ <code>Previous Object | null</code>
+    - .get(key, defaultSupplier) ⇒ <code>* | null</code>
+    - .put(key, value) ⇒ <code>Previous * | null</code>
+    - .remove(key) ⇒ <code>Previous * | null</code>
     - .exists(key) ⇒ <code>boolean</code>
   - .shared
-    - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
-    - .put(key, value) ⇒ <code>Previous Object | null</code>
-    - .remove(key) ⇒ <code>Previous Object | null</code>
+    - .get(key, defaultSupplier) ⇒ <code>* | null</code>
+    - .put(key, value) ⇒ <code>Previous * | null</code>
+    - .remove(key) ⇒ <code>Previous * | null</code>
     - .exists(key) ⇒ <code>boolean</code>
 
 The `defaultSupplier` provided function will return a default value if a specified key is not already associated with a value.
@@ -834,19 +836,17 @@ The `defaultSupplier` provided function will return a default value if a specifi
 **Example** *(Get a previously set value with a default value (times = 0))*
 
 ```js
-var counter = cache.private.get('counter', () => ({ 'times': 0 }));
-console.log('Count', counter.times++);
+var counter = cache.shared.get('counter', () => 0);
+console.log('Counter: ' + counter);
 ```
 
-**Example** *(Get a previously set object)*
+**Example** *(Get a previously set value, modify and store it)*
 
 ```js
 var counter = cache.private.get('counter');
-if (counter === null) {
-  counter = { times: 0 };
-  cache.private.put('counter', counter);
-}
-console.log('Count', counter.times++);
+counter++;
+console.log('Counter: ' + counter);
+cache.private.put('counter', counter);
 ```
 
 ### Time
@@ -1240,7 +1240,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-    console.log(event);
+  console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 

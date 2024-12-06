@@ -14,6 +14,10 @@
 
   <name>openHAB Add-ons :: Bundles :: Linky Binding</name>
 
+  <properties>
+    <bnd.importpackage>javax.annotation.meta;resolution:=optional</bnd.importpackage>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.jsoup</groupId>

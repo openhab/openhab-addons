@@ -84,7 +84,7 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
         }
 
         onOffValue = new OnOffValue("on", "off");
-        brightnessValue = new PercentageValue(null, new BigDecimal(255), null, null, null);
+        brightnessValue = new PercentageValue(null, new BigDecimal(255), null, null, null, FORMAT_INTEGER);
 
         if (channelConfiguration.redTemplate != null && channelConfiguration.greenTemplate != null
                 && channelConfiguration.blueTemplate != null) {
@@ -96,13 +96,14 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
                     "Brightness", this).commandTopic(DUMMY_TOPIC, true, 1)
                     .commandFilter(command -> handleCommand(command)).withAutoUpdatePolicy(autoUpdatePolicy).build();
         } else {
-            onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
-                    this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command))
-                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
+            onOffChannel = buildChannel(newStyleChannels ? SWITCH_CHANNEL_ID : SWITCH_CHANNEL_ID_DEPRECATED,
+                    ComponentChannelType.SWITCH, onOffValue, "On/Off State", this).commandTopic(DUMMY_TOPIC, true, 1)
+                    .commandFilter(command -> handleCommand(command)).withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
 
         if (channelConfiguration.colorTempTemplate != null) {
-            buildChannel(COLOR_TEMP_CHANNEL_ID, ComponentChannelType.NUMBER, colorTempValue, "Color Temperature", this)
+            buildChannel(newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED,
+                    ComponentChannelType.NUMBER, colorTempValue, "Color Temperature", this)
                     .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleColorTempCommand(command))
                     .withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
@@ -284,7 +285,9 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
             } else {
                 colorTempValue.update(new QuantityType(mireds, Units.MIRED));
             }
-            listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID), colorTempValue.getChannelState());
+            listener.updateChannelState(
+                    buildChannelUID(newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED),
+                    colorTempValue.getChannelState());
         }
     }
 

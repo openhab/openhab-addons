@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="huesync"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="box">
+		<label>HDMI Sync Box</label>
+
+		<description>Sync your smart lights to your on-screen TV content with the Philips Hue Play HDMI Sync Box. Four HDMI
+			inputs allow you to connect your media devices to your Hue setup, resulting in a fast, seamless display of colorful
+			smart light that responds to and reflects the content you watch or listen to.
+		</description>
+
+		<category>receiver</category>
+
+		<channel-groups>
+			<channel-group id="device-firmware" typeId="device-firmware"></channel-group>
+
+			<channel-group id="device-hdmi-in-1" typeId="device-hdmi-connection-in"></channel-group>
+			<channel-group id="device-hdmi-in-2" typeId="device-hdmi-connection-in"></channel-group>
+			<channel-group id="device-hdmi-in-3" typeId="device-hdmi-connection-in"></channel-group>
+			<channel-group id="device-hdmi-in-4" typeId="device-hdmi-connection-in"></channel-group>
+
+			<channel-group id="device-hdmi-out" typeId="device-hdmi-connection-out"></channel-group>
+
+			<channel-group id="device-commands" typeId="device-commands"></channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">Philips</property>
+		</properties>
+
+		<representation-property>host</representation-property>
+
+		<config-description-ref uri="thing-type:box:thing"/>
+	</thing-type>
+
+	<channel-group-type id="device-firmware">
+		<label>Firmware</label>
+		<description>Information about the installed device firmware and available updates.</description>
+		<category>text</category>
+		<channels>
+			<channel id="firmware" typeId="device-info-firmware"></channel>
+			<channel id="available-firmware" typeId="device-info-firmware-available"></channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="device-hdmi-connection-in">
+		<label>HDMI Input</label>
+		<description>HDMI connection</description>
+		<category>settings</category>
+		<channels>
+			<channel id="name" typeId="connection-name"></channel>
+			<channel id="type" typeId="connection-type"></channel>
+			<channel id="status" typeId="connection-status"></channel>
+			<channel id="mode" typeId="connection-last-sync-mode"></channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="device-hdmi-connection-out">
+		<label>HDMI Output</label>
+		<description>HDMI connection</description>
+		<category>settings</category>
+		<channels>
+			<channel id="name" typeId="connection-name"></channel>
+			<channel id="type" typeId="connection-type"></channel>
+			<channel id="status" typeId="connection-status"></channel>
+			<channel id="mode" typeId="connection-last-sync-mode"></channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="device-commands">
+		<label>Commands</label>
+		<description>Commands are used to control the real-time behavior of the hue sync box. These
+			commands allow you to
+			influence how the lights react to your entertainment.</description>
+		<category>settings</category>
+		<channels>
+			<channel id="mode" typeId="execution-mode"></channel>
+			<channel id="sync-active" typeId="execution-sync-active"></channel>
+			<channel id="hdmi-active" typeId="execution-hdmi-active"></channel>
+			<channel id="hdmi-source" typeId="execution-hdmi-source"></channel>
+			<channel id="brightness" typeId="execution-brightness"></channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

@@ -63,9 +63,12 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(TapoControlHandlerFactory.class);
     private final Set<TapoBridgeHandler> accountHandlers = new HashSet<>();
     private final HttpClient httpClient;
+    private final TapoStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
-    public TapoControlHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+    public TapoControlHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference TapoStateDescriptionProvider tapoStateDescriptionProvider) {
+        this.stateDescriptionProvider = tapoStateDescriptionProvider;
         // create new httpClient
         httpClient = httpClientFactory.createHttpClient(BINDING_ID, new SslContextFactory.Client());
         httpClient.setFollowRedirects(false);
@@ -118,9 +121,9 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
         } else if (SUPPORTED_SOCKET_STRIP_UIDS.contains(thingTypeUID)) {
             return new TapoSocketStripHandler(thing);
         } else if (SUPPORTED_WHITE_BULB_UIDS.contains(thingTypeUID)) {
-            return new TapoBulbHandler(thing);
+            return new TapoBulbHandler(thing, stateDescriptionProvider);
         } else if (SUPPORTED_COLOR_BULB_UIDS.contains(thingTypeUID)) {
-            return new TapoBulbHandler(thing);
+            return new TapoBulbHandler(thing, stateDescriptionProvider);
         } else if (SUPPORTED_LIGHT_STRIP_UIDS.contains(thingTypeUID)) {
             return new TapoLightStripHandler(thing);
         } else if (SUPPORTED_SMART_CONTACTS.contains(thingTypeUID)) {

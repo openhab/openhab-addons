@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.unifi.internal.api.dto;
 
+import java.time.Instant;
+
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.util.UniFiTidyLowerCaseStringDeserializer;
+import org.openhab.binding.unifi.internal.api.util.UniFiTimestampDeserializer;
 
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.JsonAdapter;
@@ -36,6 +39,8 @@ public class UniFiDevice implements HasId {
     @JsonAdapter(UniFiTidyLowerCaseStringDeserializer.class)
     private String mac;
 
+    private String ip;
+
     private String model;
 
     private String version;
@@ -46,13 +51,25 @@ public class UniFiDevice implements HasId {
 
     private String name;
 
+    private Integer state;
+
+    private Integer uptime;
+
+    @JsonAdapter(UniFiTimestampDeserializer.class)
+    private Instant lastSeen;
+
     private String siteId;
+
+    @SerializedName("satisfaction")
+    private Integer experience;
 
     private UniFiPortTable[] portTable;
 
     private JsonObject[] portOverrides;
 
-    private boolean disabled;
+    private Boolean disabled;
+
+    private String ledOverride;
 
     public UniFiDevice(final UniFiControllerCache cache) {
         this.cache = cache;
@@ -79,12 +96,32 @@ public class UniFiDevice implements HasId {
         return serial;
     }
 
+    public Integer getExperience() {
+        return experience;
+    }
+
     public String getName() {
         return name == null || name.isBlank() ? mac : name;
     }
 
+    public Integer getState() {
+        return state;
+    }
+
+    public Integer getUptime() {
+        return uptime;
+    }
+
+    public Instant getLastSeen() {
+        return lastSeen;
+    }
+
     public String getMac() {
         return mac;
+    }
+
+    public String getIp() {
+        return ip;
     }
 
     public UniFiSite getSite() {
@@ -99,13 +136,18 @@ public class UniFiDevice implements HasId {
         return portOverrides;
     }
 
-    public boolean isDisabled() {
+    public Boolean isDisabled() {
         return disabled;
+    }
+
+    public String getLedOverride() {
+        return ledOverride;
     }
 
     @Override
     public String toString() {
-        return String.format("UniFiDevice{mac: '%s', name: '%s', type: %s, model: '%s', disabled: %b, site: %s}", mac,
-                name, type, model, disabled, getSite());
+        return String.format(
+                "UniFiDevice{mac: '%s', name: '%s', type: '%s', model: '%s', version: '%s', experience: %d, disabled: %b, led: %s, uptime: %d, site: %s}",
+                mac, name, type, model, version, experience, disabled, ledOverride, uptime, getSite());
     }
 }

@@ -63,8 +63,9 @@ public class DefaultSchemaLight extends Light {
     protected void buildChannels() {
         AutoUpdatePolicy autoUpdatePolicy = optimistic ? AutoUpdatePolicy.RECOMMEND : null;
         ComponentChannel localOnOffChannel;
-        localOnOffChannel = onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue,
-                "On/Off State", this)
+        localOnOffChannel = onOffChannel = buildChannel(
+                newStyleChannels ? SWITCH_CHANNEL_ID : SWITCH_CHANNEL_ID_DEPRECATED, ComponentChannelType.SWITCH,
+                onOffValue, "On/Off State", this)
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.stateValueTemplate)
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
@@ -91,14 +92,15 @@ public class DefaultSchemaLight extends Light {
         }
 
         if (channelConfiguration.colorModeStateTopic != null) {
-            buildChannel(COLOR_MODE_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "Current color mode",
-                    this)
+            buildChannel(newStyleChannels ? COLOR_MODE_CHANNEL_ID : COLOR_MODE_CHANNEL_ID_DEPRECATED,
+                    ComponentChannelType.STRING, new TextValue(), "Current color mode", this)
                     .stateTopic(channelConfiguration.colorModeStateTopic, channelConfiguration.colorModeValueTemplate)
                     .inferOptimistic(channelConfiguration.optimistic).build();
         }
 
         if (channelConfiguration.colorTempStateTopic != null || channelConfiguration.colorTempCommandTopic != null) {
-            buildChannel(COLOR_TEMP_CHANNEL_ID, ComponentChannelType.NUMBER, colorTempValue, "Color Temperature", this)
+            buildChannel(newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED,
+                    ComponentChannelType.NUMBER, colorTempValue, "Color Temperature", this)
                     .stateTopic(channelConfiguration.colorTempStateTopic, channelConfiguration.colorTempValueTemplate)
                     .commandTopic(channelConfiguration.colorTempCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
@@ -178,7 +180,7 @@ public class DefaultSchemaLight extends Light {
             hiddenChannels.add(localOnOffChannel);
             channels.put(BRIGHTNESS_CHANNEL_ID, localBrightnessChannel);
         } else {
-            channels.put(ON_OFF_CHANNEL_ID, localOnOffChannel);
+            channels.put(newStyleChannels ? SWITCH_CHANNEL_ID : SWITCH_CHANNEL_ID_DEPRECATED, localOnOffChannel);
         }
     }
 
@@ -327,7 +329,8 @@ public class DefaultSchemaLight extends Light {
             } else {
                 listener.updateChannelState(primaryChannelUID, state);
             }
-        } else if (id.equals(COLOR_TEMP_CHANNEL_ID) || channel.getIdWithoutGroup().equals(EFFECT_CHANNEL_ID)) {
+        } else if (id.equals(newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED)
+                || channel.getIdWithoutGroup().equals(EFFECT_CHANNEL_ID)) {
             // Real channels; pass through
             listener.updateChannelState(channel, state);
         } else if (id.equals(HS_CHANNEL_ID) || id.equals(XY_CHANNEL_ID)) {

@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
+import org.openhab.binding.ihc.internal.IhcBindingConstants;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSControllerState;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSFile;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSLoginResult;
@@ -455,6 +456,10 @@ public class IhcClient {
      */
     private class IhcResourceValueNotificationListener extends Thread {
         private volatile boolean interrupted = false;
+
+        public IhcResourceValueNotificationListener() {
+            super(String.format("OH-binding-%s-%s", IhcBindingConstants.BINDING_ID, "NotificationListener"));
+        }
 
         public void setInterrupted(boolean interrupted) {
             this.interrupted = interrupted;

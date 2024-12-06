@@ -18,6 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Defines the data types that can be used in the fields of a message.
@@ -29,8 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum DataType {
     BYTE("byte", 1),
-    ADDRESS("address", 3),
-    INVALID("invalid", -1);
+    ADDRESS("address", 3);
 
     private static final Map<String, DataType> NAME_MAP = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(type -> type.name, Function.identity()));
@@ -55,9 +55,9 @@ public enum DataType {
      * Factory method for getting a DataType from the data type name
      *
      * @param name the data type name
-     * @return the data type
+     * @return the data type if defined, otherwise null
      */
-    public static DataType get(String name) {
-        return NAME_MAP.getOrDefault(name, DataType.INVALID);
+    public static @Nullable DataType get(String name) {
+        return NAME_MAP.get(name);
     }
 }

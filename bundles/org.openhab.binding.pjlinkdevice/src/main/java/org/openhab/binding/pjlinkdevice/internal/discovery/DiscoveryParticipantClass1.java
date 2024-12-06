@@ -13,15 +13,11 @@
 package org.openhab.binding.pjlinkdevice.internal.discovery;
 
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.PJLinkDeviceBindingConstants;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
@@ -41,31 +37,9 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
     public DiscoveryParticipantClass1() throws IllegalArgumentException {
-        super(Set.of(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK), 60, true);
+        super(Collections.singleton(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK), 60, true);
 
         logger.trace("PJLinkProjectorDiscoveryParticipant constructor");
-    }
-
-    @Override
-    protected void collectAddressesToScan(Set<InetAddress> addressesToScan, InterfaceAddress i) {
-        // only scan IPv4
-        if (!(i.getAddress() instanceof Inet4Address)) {
-            return;
-        }
-        // only scan Class C networks
-        if (i.getNetworkPrefixLength() < 24) {
-            return;
-        }
-
-        SubnetUtils utils = new SubnetUtils(i.getAddress().getHostAddress() + "/" + i.getNetworkPrefixLength());
-        for (String addressToScan : utils.getInfo().getAllAddresses()) {
-            try {
-                logger.debug("Add address to scan: {}", addressToScan);
-                addressesToScan.add(InetAddress.getByName(addressToScan));
-            } catch (UnknownHostException e) {
-                logger.debug("Unknown Host", e);
-            }
-        }
     }
 
     @Override

@@ -13,9 +13,11 @@
 package org.openhab.binding.mqtt.homeassistant.internal.handler;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,6 +41,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory;
+import org.openhab.binding.mqtt.homeassistant.internal.component.DeviceTrigger;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Update;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
@@ -79,7 +82,7 @@ import com.hubspot.jinjava.Jinjava;
  */
 @NonNullByDefault
 public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
-        implements ComponentDiscovered, Consumer<List<AbstractComponent<?>>> {
+        implements ComponentDiscovered, Consumer<List<Object>> {
     public static final String AVAILABILITY_CHANNEL = "availability";
     private static final Comparator<AbstractComponent<?>> COMPONENT_COMPARATOR = Comparator
             .comparing((AbstractComponent<?> component) -> component.hasGroup())
@@ -93,12 +96,13 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     protected final ChannelTypeRegistry channelTypeRegistry;
     protected final Jinjava jinjava;
     public final int attributeReceiveTimeout;
-    protected final DelayedBatchProcessing<AbstractComponent<?>> delayedProcessing;
+    protected final DelayedBatchProcessing<Object> delayedProcessing;
     protected final DiscoverComponents discoverComponents;
 
     private final Gson gson;
     protected final Map<@Nullable String, AbstractComponent<?>> haComponents = new HashMap<>();
     protected final Map<@Nullable String, AbstractComponent<?>> haComponentsByUniqueId = new HashMap<>();
+    protected final Map<HaID, AbstractComponent<?>> haComponentsByHaId = new HashMap<>();
     protected final Map<ChannelUID, ChannelState> channelStates = new HashMap<>();
 
     protected HandlerConfiguration config = new HandlerConfiguration();
@@ -156,35 +160,39 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                     continue;
                 }
             }
-            Configuration channelConfig = channel.getConfiguration();
-            if (!channelConfig.containsKey("component")
-                    || !channelConfig.containsKey("objectid") | !channelConfig.containsKey("config")) {
+            Configuration multiComponentChannelConfig = channel.getConfiguration();
+            if (!multiComponentChannelConfig.containsKey("component")
+                    || !multiComponentChannelConfig.containsKey("objectid")
+                    || !multiComponentChannelConfig.containsKey("config")) {
                 // Must be a secondary channel
                 continue;
             }
 
-            HaID haID = HaID.fromConfig(config.basetopic, channelConfig);
+            List<Configuration> flattenedConfig = flattenChannelConfiguration(multiComponentChannelConfig,
+                    channel.getUID());
+            for (Configuration channelConfig : flattenedConfig) {
+                HaID haID = HaID.fromConfig(config.basetopic, channelConfig);
 
-            if (!config.topics.contains(haID.getTopic())) {
-                // don't add a component for this channel that isn't configured on the thing
-                // anymore
-                // It will disappear from the thing when the thing type is updated below
-                continue;
-            }
-
-            discoveryHomeAssistantIDs.add(haID);
-            ThingUID thingUID = channel.getUID().getThingUID();
-            String channelConfigurationJSON = (String) channelConfig.get("config");
-            try {
-                AbstractComponent<?> component = ComponentFactory.createComponent(thingUID, haID,
-                        channelConfigurationJSON, this, this, scheduler, gson, jinjava, newStyleChannels);
-                if (typeID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
-                    typeID = calculateThingTypeUID(component);
+                if (!config.topics.contains(haID.getTopic())) {
+                    // don't add a component for this channel that isn't configured on the thing
+                    // anymore. It will disappear from the thing when the thing type is updated below
+                    continue;
                 }
 
-                addComponent(component);
-            } catch (ConfigurationException e) {
-                logger.warn("Cannot restore component {}: {}", thing, e.getMessage());
+                discoveryHomeAssistantIDs.add(haID);
+                ThingUID thingUID = channel.getUID().getThingUID();
+                String channelConfigurationJSON = (String) channelConfig.get("config");
+                try {
+                    AbstractComponent<?> component = ComponentFactory.createComponent(thingUID, haID,
+                            channelConfigurationJSON, this, this, scheduler, gson, jinjava, newStyleChannels);
+                    if (typeID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
+                        typeID = calculateThingTypeUID(component);
+                    }
+
+                    addComponent(component);
+                } catch (ConfigurationException e) {
+                    logger.warn("Cannot restore component {}: {}", thing, e.getMessage());
+                }
             }
         }
         if (updateThingType(typeID)) {
@@ -260,12 +268,38 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         delayedProcessing.accept(component);
     }
 
+    @Override
+    public void componentRemoved(HaID haID) {
+        delayedProcessing.accept(haID);
+    }
+
     /**
      * Callback of {@link DelayedBatchProcessing}.
-     * Add all newly discovered components to the Thing and start the components.
+     * Add all newly discovered and removed components to the Thing and start the components.
      */
     @Override
-    public void accept(List<AbstractComponent<?>> discoveredComponentsList) {
+    public void accept(List<Object> actions) {
+        List<AbstractComponent<?>> discoveredComponents = new ArrayList<>();
+        List<HaID> removedComponents = new ArrayList<>();
+        for (Object item : actions) {
+            if (item instanceof AbstractComponent<?> component) {
+                discoveredComponents.add(component);
+            } else if (item instanceof HaID removedComponent) {
+                removedComponents.add(removedComponent);
+            }
+        }
+        if (!discoveredComponents.isEmpty()) {
+            addComponents(discoveredComponents);
+        }
+        if (!removedComponents.isEmpty()) {
+            removeComponents(removedComponents);
+        }
+    }
+
+    /**
+     * Add all newly discovered components to the Thing and start the components.
+     */
+    private void addComponents(List<AbstractComponent<?>> discoveredComponentsList) {
         MqttBrokerConnection connection = this.connection;
         if (connection == null) {
             return;
@@ -280,11 +314,13 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 AbstractComponent<?> known = haComponentsByUniqueId.get(discovered.getUniqueId());
                 // Is component already known?
                 if (known != null) {
-                    if (discovered.getConfigHash() != known.getConfigHash()) {
+                    if (discovered.getConfigHash() != known.getConfigHash()
+                            && discovered.getUniqueId().equals(known.getUniqueId())) {
                         // Don't wait for the future to complete. We are also not interested in failures.
                         // The component will be replaced in a moment.
                         known.stop();
                         haComponentsByUniqueId.remove(discovered.getUniqueId());
+                        haComponentsByHaId.remove(known.getHaID());
                         haComponents.remove(known.getComponentId());
                         if (!known.getComponentId().equals(discovered.getComponentId())) {
                             discovered.resolveConflict();
@@ -296,12 +332,13 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 }
 
                 // Add component to the component map
-                addComponent(discovered);
-                // Start component / Subscribe to channel topics
-                discovered.start(connection, scheduler, 0).exceptionally(e -> {
-                    logger.warn("Failed to start component {}", discovered.getHaID(), e);
-                    return null;
-                });
+                if (addComponent(discovered)) {
+                    // Start component / Subscribe to channel topics
+                    discovered.start(connection, scheduler, 0).exceptionally(e -> {
+                        logger.warn("Failed to start component {}", discovered.getHaID(), e);
+                        return null;
+                    });
+                }
 
                 if (discovered instanceof Update) {
                     updateComponent = (Update) discovered;
@@ -309,6 +346,29 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 }
             }
             updateThingType(typeID);
+        }
+    }
+
+    /**
+     * Remove all matching deleted components.
+     */
+    private void removeComponents(List<HaID> removedComponentsList) {
+        synchronized (haComponents) {
+            boolean componentActuallyRemoved = false;
+            for (HaID removed : removedComponentsList) {
+                AbstractComponent<?> known = haComponentsByHaId.get(removed);
+                if (known != null) {
+                    // Don't wait for the future to complete. We are also not interested in failures.
+                    known.stop();
+                    haComponentsByUniqueId.remove(known.getUniqueId());
+                    haComponents.remove(known.getComponentId());
+                    haComponentsByHaId.remove(removed);
+                    componentActuallyRemoved = true;
+                }
+            }
+            if (componentActuallyRemoved) {
+                updateThingType(getThing().getThingTypeUID());
+            }
         }
     }
 
@@ -393,7 +453,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         return true;
     }
 
-    private ThingTypeUID calculateThingTypeUID(AbstractComponent component) {
+    private ThingTypeUID calculateThingTypeUID(AbstractComponent<?> component) {
         return new ThingTypeUID(MqttBindingConstants.BINDING_ID, MqttBindingConstants.HOMEASSISTANT_MQTT_THING.getId()
                 + "_" + component.getChannelConfiguration().getThingId(component.getHaID().objectID));
     }
@@ -419,9 +479,38 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     }
 
     // should only be called when it's safe to access haComponents
-    private void addComponent(AbstractComponent component) {
-        AbstractComponent existing = haComponents.get(component.getComponentId());
+    private boolean addComponent(AbstractComponent<?> component) {
+        AbstractComponent<?> existing = haComponents.get(component.getComponentId());
         if (existing != null) {
+            // DeviceTriggers that are for the same subtype, topic, and value template
+            // can be coalesced together
+            if (component instanceof DeviceTrigger newTrigger && existing instanceof DeviceTrigger oldTrigger
+                    && newTrigger.getChannelConfiguration().getSubtype()
+                            .equals(oldTrigger.getChannelConfiguration().getSubtype())
+                    && newTrigger.getChannelConfiguration().getTopic()
+                            .equals(oldTrigger.getChannelConfiguration().getTopic())
+                    && oldTrigger.getHaID().nodeID.equals(newTrigger.getHaID().nodeID)) {
+                String newTriggerValueTemplate = newTrigger.getChannelConfiguration().getValueTemplate();
+                String oldTriggerValueTemplate = oldTrigger.getChannelConfiguration().getValueTemplate();
+                if ((newTriggerValueTemplate == null && oldTriggerValueTemplate == null)
+                        || (newTriggerValueTemplate != null & oldTriggerValueTemplate != null
+                                && newTriggerValueTemplate.equals(oldTriggerValueTemplate))) {
+                    // Adjust the set of valid values
+                    MqttBrokerConnection connection = this.connection;
+
+                    if (oldTrigger.merge(newTrigger) && connection != null) {
+                        // Make sure to re-start if this did something, and it was stopped
+                        oldTrigger.start(connection, scheduler, 0).exceptionally(e -> {
+                            logger.warn("Failed to start component {}", oldTrigger.getHaID(), e);
+                            return null;
+                        });
+                    }
+                    haComponentsByUniqueId.put(component.getUniqueId(), component);
+                    haComponentsByHaId.put(component.getHaID(), component);
+                    return false;
+                }
+            }
+
             // rename the conflict
             haComponents.remove(existing.getComponentId());
             existing.resolveConflict();
@@ -430,5 +519,44 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         }
         haComponents.put(component.getComponentId(), component);
         haComponentsByUniqueId.put(component.getUniqueId(), component);
+        haComponentsByHaId.put(component.getHaID(), component);
+        return true;
+    }
+
+    /**
+     * Takes a Configuration where objectid and config are a list, and generates
+     * multiple Configurations where there are single objects
+     */
+    private List<Configuration> flattenChannelConfiguration(Configuration multiComponentChannelConfig,
+            ChannelUID channelUID) {
+        Object component = multiComponentChannelConfig.get("component");
+        Object nodeid = multiComponentChannelConfig.get("nodeid");
+        if ((multiComponentChannelConfig.get("objectid") instanceof List<?> objectIds)
+                && (multiComponentChannelConfig.get("config") instanceof List<?> configurations)) {
+            if (objectIds.size() != configurations.size()) {
+                logger.warn("objectid and config for channel {} do not have the same number of items; ignoring",
+                        channelUID);
+                return List.of();
+            }
+            List<Configuration> result = new ArrayList<>();
+            Iterator<?> objectIdIterator = objectIds.iterator();
+            Iterator<?> configIterator = configurations.iterator();
+            while (objectIdIterator.hasNext()) {
+                Configuration componentConfiguration = new Configuration();
+                componentConfiguration.put("component", component);
+                componentConfiguration.put("nodeid", nodeid);
+                componentConfiguration.put("objectid", objectIdIterator.next());
+                componentConfiguration.put("config", configIterator.next());
+                result.add(componentConfiguration);
+            }
+            return result;
+        } else {
+            return List.of(multiComponentChannelConfig);
+        }
+    }
+
+    // For testing
+    Map<@Nullable String, AbstractComponent<?>> getComponents() {
+        return haComponents;
     }
 }

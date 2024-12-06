@@ -159,6 +159,7 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
                     }
                     return true;
                 }).withAutoUpdatePolicy(optimistic ? AutoUpdatePolicy.RECOMMEND : null).build();
+
         finalizeChannels();
     }
 }

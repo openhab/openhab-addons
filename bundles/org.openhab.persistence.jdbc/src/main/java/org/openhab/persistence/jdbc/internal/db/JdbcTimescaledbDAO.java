@@ -12,12 +12,14 @@
  */
 package org.openhab.persistence.jdbc.internal.db;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.knowm.yank.Yank;
 import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.persistence.jdbc.internal.dto.ItemVO;
+import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
 import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
 import org.openhab.persistence.jdbc.internal.utils.StringUtilsExt;
 import org.slf4j.Logger;
@@ -34,7 +36,8 @@ import org.slf4j.LoggerFactory;
 public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcTimescaledbDAO.class);
 
-    private final String sqlCreateHypertable = "SELECT created from create_hypertable('#tableName#', 'time')";
+    private final String sqlCreateHypertable = "SELECT created FROM create_hypertable('#tableName#', 'time')";
+    private final String sqlGetItemTables = "SELECT hypertable_name AS table_name FROM timescaledb_information.hypertables WHERE hypertable_name != '#itemsManageTable#'";
 
     @Override
     public Properties getConnectionProperties() {
@@ -46,14 +49,30 @@ public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
         return properties;
     }
 
+    /*************
+     * ITEM DAOs *
+     *************/
+
     @Override
     public void doCreateItemTable(ItemVO vo) throws JdbcSQLException {
         super.doCreateItemTable(vo);
         String sql = StringUtilsExt.replaceArrayMerge(this.sqlCreateHypertable, new String[] { "#tableName#" },
-                new String[] { vo.getTableName() });
+                new String[] { formattedIdentifier(vo.getTableName()) });
         this.logger.debug("JDBC::doCreateItemTable sql={}", sql);
         try {
             Yank.queryScalar(sql, Boolean.class, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
+    @Override
+    public List<ItemsVO> doGetItemTables(ItemsVO vo) throws JdbcSQLException {
+        String sql = StringUtilsExt.replaceArrayMerge(sqlGetItemTables, new String[] { "#itemsManageTable#" },
+                new String[] { vo.getItemsManageTable() });
+        this.logger.debug("JDBC::doGetItemTables sql={}", sql);
+        try {
+            return Yank.queryBeanList(sql, ItemsVO.class, null);
         } catch (YankSQLException e) {
             throw new JdbcSQLException(e);
         }

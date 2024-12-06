@@ -241,7 +241,6 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                 return false;
             }
 
-            boolean changeModeSuccess = false;
             updateState(DaikinBindingConstants.CHANNEL_AC_POWER, OnOffType.from(power));
 
             String newMode = switch (mode) {

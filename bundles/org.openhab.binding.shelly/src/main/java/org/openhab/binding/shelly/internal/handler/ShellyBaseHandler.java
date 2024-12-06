@@ -120,7 +120,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private String lastWakeupReason = "";
 
     // Scheduler
-    private long watchdog = now();
+    private double watchdog = now();
     protected int scheduledUpdates = 0;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
@@ -724,9 +724,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private boolean isWatchdogExpired() {
-        long delta = now() - watchdog;
+        double delta = now() - watchdog;
         if ((watchdog > 0) && (delta > profile.updatePeriod)) {
-            stats.remainingWatchdog = delta;
+            stats.remainingWatchdog = (long) delta;
             return true;
         }
         return false;
@@ -761,7 +761,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             stats.timeoutErrors = api.getTimeoutErrors();
             stats.timeoutsRecorvered = api.getTimeoutsRecovered();
         }
-        stats.remainingWatchdog = watchdog > 0 ? now() - watchdog : 0;
+        stats.remainingWatchdog = watchdog > 0 ? (long) (now() - watchdog) : 0;
 
         // Check various device indicators like overheating
         if (checkRestarted(status)) {
@@ -855,7 +855,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     triggerChannel(channelId, event);
                     cache.updateChannel(channelId, getStringType(event.toUpperCase()));
                     stats.lastAlarm = event;
-                    stats.lastAlarmTs = now();
+                    stats.lastAlarmTs = (long) now();
                     stats.alarms++;
             }
         }

@@ -97,8 +97,7 @@ public class MsgFactory {
             logger.trace("got pure nack!");
             removeFromBuffer(1);
             try {
-                msg = Msg.makeMessage("PureNACK");
-                return msg;
+                return Msg.makeMessage("PureNACK");
             } catch (InvalidMessageTypeException e) {
                 return null;
             }
@@ -112,39 +111,23 @@ public class MsgFactory {
         // If not, we return null, and expect this method to be called again
         // when more data has come in.
         if (end > 1) {
-            // we have some data, but do we have enough to read the entire header?
-            int headerLength = Msg.getHeaderLength(buf[1]);
-            boolean isExtended = Msg.isExtended(buf, end, headerLength);
-            logger.trace("header length expected: {} extended: {}", headerLength, isExtended);
-            if (headerLength < 0) {
+            try {
+                int headerLength = Msg.getHeaderLength(buf[1]);
+                logger.trace("header length expected: {}", headerLength);
+                if (end >= headerLength) {
+                    boolean isExtended = Msg.isExtended(buf, headerLength);
+                    int msgLen = Msg.getMessageLength(buf[1], isExtended);
+                    logger.trace("msgLen expected: {} extended: {}", msgLen, isExtended);
+                    if (end >= msgLen) {
+                        msg = Msg.createMessage(buf, msgLen, isExtended);
+                        removeFromBuffer(msgLen);
+                    }
+                }
+            } catch (InvalidMessageTypeException e) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("got unknown command code: {}", HexUtils.getHexString(buf[1]));
                 }
-                removeFromBuffer(1); // get rid of the leading 0x02 so draining works
                 bail();
-            } else if (headerLength >= 2) {
-                if (end >= headerLength) {
-                    // only when the header is complete do we know that isExtended is correct!
-                    int msgLen = Msg.getMessageLength(buf[1], isExtended);
-                    logger.trace("msgLen expected: {}", msgLen);
-                    if (msgLen < 0) {
-                        // Cannot make sense out of the combined command code & isExtended flag.
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("got unknown command code/ext flag: {}", HexUtils.getHexString(buf[1]));
-                        }
-                        removeFromBuffer(1);
-                        bail();
-                    } else if (msgLen > 0) {
-                        if (end >= msgLen) {
-                            msg = Msg.createMessage(buf, msgLen, isExtended);
-                            removeFromBuffer(msgLen);
-                        }
-                    } else { // should never happen
-                        logger.warn("invalid message length, internal error!");
-                    }
-                }
-            } else { // should never happen
-                logger.warn("invalid header length, internal error!");
             }
         }
         // indicate no more messages available in buffer if empty or undefined message
@@ -159,14 +142,11 @@ public class MsgFactory {
     }
 
     private void bail() throws IOException {
-        drainBuffer(); // this will drain until end or it finds the next message start
-        throw new IOException("bad data received");
-    }
-
-    private void drainBuffer() {
-        while (end > 0 && buf[0] != 0x02) {
+        // drain buffer until end or the next message start
+        do {
             removeFromBuffer(1);
-        }
+        } while (end > 0 && buf[0] != 0x02);
+        throw new IOException("bad data received");
     }
 
     private void removeFromBuffer(int len) {
@@ -174,7 +154,9 @@ public class MsgFactory {
         if (l > end) {
             l = end;
         }
-        System.arraycopy(buf, l, buf, 0, end + 1 - l);
-        end -= l;
+        if (l > 0) {
+            System.arraycopy(buf, l, buf, 0, end + 1 - l);
+            end -= l;
+        }
     }
 }

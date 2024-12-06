@@ -79,7 +79,7 @@ All item- and event-related configuration is done in the file `persistence/jdbc.
 
 To configure this service as the default persistence service for openHAB, add or change the line
 
-```
+```ini
 org.openhab.core.persistence:default=jdbc
 ```
 
@@ -89,7 +89,7 @@ in the file `services/runtime.cfg`.
 
 services/jdbc.cfg
 
-```
+```ini
 url=jdbc:postgresql://192.168.0.1:5432/testPostgresql
 ```
 
@@ -102,7 +102,7 @@ To connect to an Oracle Autonomous Database, use the instructions at https://www
 
 Your services/jdbc.cfg should contain the following minimal configuration for connecting to an Oracle Autonomous Database:
 
-```
+```ini
 url=jdbc:oracle:thin:@dbname?TNS_ADMIN=./dbname_tns_admin_folder
 user=openhab
 password=openhab_password
@@ -111,7 +111,7 @@ password=openhab_password
 The `TNS_ADMIN` parameter points to the directory where the the `tnsnames.ora`file, `ojdbc.properties` file and key files (from the ADB wallet download) are located.
 Other Oracle DB setups may require different connection parameters.
 
-It is advised to create a specific user with sufficient permissions and space for OpenHAB persistence.
+It is advised to create a specific user with sufficient permissions and space for openHAB persistence.
 This is the user that should be in `jdbc.cfg`.
 The user default schema will be used.
 
@@ -147,7 +147,7 @@ Here is an example of a configuration for a MySQL database named `testMysql` wit
 
 services/jdbc.cfg
 
-```
+```ini
 url=jdbc:mysql://192.168.0.1:3306/testMysql
 user=test
 password=test

@@ -58,7 +58,7 @@ scrape_configs:
       - 'openhab.local:8080'
 ````
 
-Replace `openhab.local` by the openhab host.
+Replace `openhab.local` by the openHAB host.
 
 #### Available configuration parameters
 
@@ -73,7 +73,7 @@ The InfluxDB exporter service will start as soon as the _influxMetricsEnabled_ c
 | Config param                  | Description                                                                       | Default value         |
 |-------------------------------|-----------------------------------------------------------------------------------|-----------------------|
 | influxURL                     | The URL of the InfluxDB instance. Defaults to http://localhost:8086               | http://localhost:8086 |
-| influxDB                      | The name of the database to use. Defaults to "openhab".                           | openhab               |
+| influxDB                      | The name of the database to use. Defaults to "openhab".                           | openHAB               |
 | influxUsername                | InfluxDB user name                                                                | n/a                   |
 | influxPassword                | The InfluxDB password (no default).                                               | n/a                   |
 | influxUpdateIntervalInSeconds | Controls how often metrics are exported to InfluxDB (in seconds). Defaults to 300 | 300                   |
@@ -112,7 +112,7 @@ It should be possible to add any of these, especially the ones using a pull mech
 
 You can now visualize the results in Grafana. Micrometer provides a public [Grafana dashboard here](https://grafana.com/grafana/dashboards/4701).
 I adapted it a little bit to include the openHAB metrics.
-You can download it here [Dashboard](doc/dashboard.json).
+You can download it here [Dashboard](./doc/dashboard.json).
 This has been tested with Prometheus - for other monitoring systems adaptions to the dashboard might be necessary.
 
 Here are some screenshots:

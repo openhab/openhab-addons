@@ -55,10 +55,13 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
     protected static final String TEMPLATE_SCHEMA = "template";
 
     protected static final String STATE_CHANNEL_ID = "state";
-    protected static final String ON_OFF_CHANNEL_ID = "on_off";
+    protected static final String SWITCH_CHANNEL_ID = "switch";
+    protected static final String SWITCH_CHANNEL_ID_DEPRECATED = "on_off";
     protected static final String BRIGHTNESS_CHANNEL_ID = "brightness";
-    protected static final String COLOR_MODE_CHANNEL_ID = "color_mode";
-    protected static final String COLOR_TEMP_CHANNEL_ID = "color_temp";
+    protected static final String COLOR_MODE_CHANNEL_ID = "color-mode";
+    protected static final String COLOR_MODE_CHANNEL_ID_DEPRECATED = "color_mode";
+    protected static final String COLOR_TEMP_CHANNEL_ID = "color-temp";
+    protected static final String COLOR_TEMP_CHANNEL_ID_DEPRECATED = "color_temp";
     protected static final String EFFECT_CHANNEL_ID = "effect";
     // This channel is a synthetic channel that may send to other channels
     // underneath
@@ -69,6 +72,8 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
     protected static final String ON_COMMAND_TYPE_FIRST = "first";
     protected static final String ON_COMMAND_TYPE_BRIGHTNESS = "brightness";
     protected static final String ON_COMMAND_TYPE_LAST = "last";
+
+    protected static final String FORMAT_INTEGER = "%.0f";
 
     /**
      * Configuration class for MQTT component
@@ -273,7 +278,7 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
 
         onOffValue = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
         brightnessValue = new PercentageValue(null, new BigDecimal(channelConfiguration.brightnessScale), null, null,
-                null);
+                null, FORMAT_INTEGER);
         @Nullable
         List<String> effectList = channelConfiguration.effectList;
         if (effectList != null) {

@@ -36,9 +36,14 @@ public class Appliances extends PlugwiseHACollection<Appliance> {
                 }
 
                 if (originalAppliance != null && originalApplianceIsOlder) {
-                    Logs updatedPointLogs = applianceToMerge.getPointLogs();
+                    PointLogs updatedPointLogs = applianceToMerge.getPointLogs();
                     if (updatedPointLogs != null) {
                         updatedPointLogs.merge(originalAppliance.getPointLogs());
+                    }
+
+                    CumulativeLogs updatedCumulativeLogs = applianceToMerge.getCumulativeLogs();
+                    if (updatedCumulativeLogs != null) {
+                        updatedCumulativeLogs.merge(originalAppliance.getCumulativeLogs());
                     }
 
                     ActuatorFunctionalities updatedActuatorFunctionalities = applianceToMerge

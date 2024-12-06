@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.chatgpt.internal;
 
-import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +27,10 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.chatgpt.internal.dto.ChatMessage;
+import org.openhab.binding.chatgpt.internal.dto.ChatRequestBody;
 import org.openhab.binding.chatgpt.internal.dto.ChatResponse;
+import org.openhab.binding.chatgpt.internal.hli.ChatGPTHLIService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -40,20 +41,20 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The {@link ChatGPTHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Kai Kreuzer - Initial contribution
+ * @author Artur Fedjukevits - Replaced gson with jackson
  */
 @NonNullByDefault
 public class ChatGPTHandler extends BaseThingHandler {
@@ -62,14 +63,11 @@ public class ChatGPTHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(ChatGPTHandler.class);
 
     private HttpClient httpClient;
-    private Gson gson = new Gson();
-
+    private @Nullable ChatGPTConfiguration config;
     private String apiKey = "";
     private String apiUrl = "";
     private String modelUrl = "";
-
     private String lastPrompt = "";
-
     private List<String> models = List.of();
 
     public ChatGPTHandler(Thing thing, HttpClientFactory httpClientFactory) {
@@ -79,55 +77,101 @@ public class ChatGPTHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType && !"".equals(lastPrompt)) {
-            String response = sendPrompt(channelUID, lastPrompt);
-            processChatResponse(channelUID, response);
-        }
 
         if (command instanceof StringType stringCommand) {
             lastPrompt = stringCommand.toFullString();
-            String response = sendPrompt(channelUID, lastPrompt);
-            processChatResponse(channelUID, response);
+
+            String queryJson = prepareRequestBody(channelUID);
+
+            if (queryJson != null) {
+                String response = sendPrompt(queryJson);
+                processChatResponse(channelUID, response);
+            }
         }
     }
 
     private void processChatResponse(ChannelUID channelUID, @Nullable String response) {
         if (response != null) {
-            ChatResponse chatResponse = gson.fromJson(response, ChatResponse.class);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            ChatResponse chatResponse;
+            try {
+                chatResponse = objectMapper.readValue(response, ChatResponse.class);
+            } catch (JsonProcessingException e) {
+                logger.error("Failed to parse ChatGPT response: {}", e.getMessage(), e);
+                return;
+            }
+
             if (chatResponse != null) {
-                String msg = chatResponse.getChoices().get(0).getMessage().getContent();
-                updateState(channelUID, new StringType(msg));
+
+                String finishReason = chatResponse.getChoices().get(0).getFinishReason();
+
+                if ("length".equals(finishReason)) {
+                    logger.warn("Token length exceeded. Increase maximum token limit to avoid the issue.");
+                    return;
+                }
+
+                @Nullable
+                ChatMessage chatResponseMessage = chatResponse.getChoices().get(0).getChatMessage();
+
+                if (chatResponseMessage == null) {
+                    logger.error("ChatGPT response does not contain a message.");
+                    return;
+                }
+
+                @Nullable
+                String msg = chatResponseMessage.getContent();
+                if (msg != null) {
+                    updateState(channelUID, new StringType(msg));
+                }
+
             } else {
                 logger.warn("Didn't receive any response from ChatGPT - this is unexpected.");
             }
         }
     }
 
-    private @Nullable String sendPrompt(ChannelUID channelUID, String prompt) {
+    private @Nullable String prepareRequestBody(ChannelUID channelUID) {
         Channel channel = getThing().getChannel(channelUID);
         if (channel == null) {
             logger.error("Channel with UID '{}' cannot be found on Thing '{}'.", channelUID, getThing().getUID());
             return null;
         }
+
         ChatGPTChannelConfiguration channelConfig = channel.getConfiguration().as(ChatGPTChannelConfiguration.class);
 
-        JsonObject root = new JsonObject();
-        root.addProperty("temperature", channelConfig.temperature);
-        root.addProperty("model", channelConfig.model);
-        root.addProperty("max_tokens", channelConfig.maxTokens);
+        List<ChatMessage> messages = new ArrayList<>();
 
-        JsonObject systemMessage = new JsonObject();
-        systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", channelConfig.systemMessage);
-        JsonObject userMessage = new JsonObject();
-        userMessage.addProperty("role", "user");
-        userMessage.addProperty("content", prompt);
-        JsonArray messages = new JsonArray(2);
+        ChatMessage systemMessage = new ChatMessage();
+        systemMessage.setRole(ChatMessage.Role.SYSTEM.value());
+        systemMessage.setContent(channelConfig.systemMessage);
         messages.add(systemMessage);
-        messages.add(userMessage);
-        root.add("messages", messages);
 
-        String queryJson = gson.toJson(root);
+        ChatMessage userMessage = new ChatMessage();
+        userMessage.setRole(ChatMessage.Role.USER.value());
+        userMessage.setContent(lastPrompt);
+        messages.add(userMessage);
+
+        ChatRequestBody chatRequestBody = new ChatRequestBody();
+
+        chatRequestBody.setModel(channelConfig.model);
+        chatRequestBody.setTemperature(channelConfig.temperature);
+        chatRequestBody.setMaxTokens(channelConfig.maxTokens);
+        chatRequestBody.setTopP(channelConfig.topP);
+        chatRequestBody.setMessages(messages);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(Include.NON_NULL);
+
+        try {
+            return objectMapper.writeValueAsString(chatRequestBody);
+        } catch (JsonProcessingException e) {
+            logger.error("Failed to serialize ChatGPT request: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public @Nullable String sendPrompt(String queryJson) {
         Request request = httpClient.newRequest(apiUrl).method(HttpMethod.POST)
                 .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + apiKey).content(new StringContentProvider(queryJson));
@@ -150,9 +194,13 @@ public class ChatGPTHandler extends BaseThingHandler {
         }
     }
 
+    public @Nullable ChatGPTConfiguration getConfigAs() {
+        return this.config;
+    }
+
     @Override
     public void initialize() {
-        ChatGPTConfiguration config = getConfigAs(ChatGPTConfiguration.class);
+        this.config = getConfigAs(ChatGPTConfiguration.class);
 
         String apiKey = config.apiKey;
 
@@ -175,19 +223,28 @@ public class ChatGPTHandler extends BaseThingHandler {
                 ContentResponse response = request.send();
                 if (response.getStatus() == 200) {
                     updateStatus(ThingStatus.ONLINE);
-                    JsonObject jsonObject = gson.fromJson(response.getContentAsString(), JsonObject.class);
-                    if (jsonObject != null) {
-                        JsonArray data = jsonObject.getAsJsonArray("data");
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    try {
+                        JsonNode models = objectMapper.readTree(response.getContentAsString());
+                        JsonNode data = models.get("data");
 
-                        List<String> modelIds = new ArrayList<>();
-                        for (JsonElement element : data) {
-                            JsonObject model = element.getAsJsonObject();
-                            String id = model.get("id").getAsString();
-                            modelIds.add(id);
+                        if (data != null) {
+                            logger.debug("Models: {}", data.toString());
+                            List<String> modelList = new ArrayList<>();
+                            data.forEach(model -> {
+                                JsonNode id = model.get("id");
+                                if (id != null) {
+                                    modelList.add(id.asText());
+                                }
+                            });
+
+                            this.models = List.copyOf(modelList);
+                        } else {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "@text/offline.communication-error");
                         }
-                        this.models = List.copyOf(modelIds);
-                    } else {
-                        logger.warn("Did not receive a valid JSON response from the models endpoint.");
+                    } catch (JsonProcessingException e) {
+                        logger.warn("Failed to parse models: {}", e.getMessage(), e);
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -205,6 +262,6 @@ public class ChatGPTHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(ChatGPTModelOptionProvider.class);
+        return List.of(ChatGPTModelOptionProvider.class, ChatGPTHLIService.class);
     }
 }

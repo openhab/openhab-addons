@@ -43,11 +43,15 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements ChannelStateUpdateListener {
-    public static final String SWITCH_CHANNEL_ID = "fan";
+    public static final String SWITCH_CHANNEL_ID = "switch";
+    public static final String SWITCH_CHANNEL_ID_DEPRECATED = "fan";
     public static final String SPEED_CHANNEL_ID = "speed";
-    public static final String PRESET_MODE_CHANNEL_ID = "preset_mode";
+    public static final String PRESET_MODE_CHANNEL_ID = "preset-mode";
     public static final String OSCILLATION_CHANNEL_ID = "oscillation";
     public static final String DIRECTION_CHANNEL_ID = "direction";
+
+    private static final BigDecimal BIG_DECIMAL_HUNDRED = new BigDecimal(100);
+    private static final String FORMAT_INTEGER = "%.0f";
 
     /**
      * Configuration class for MQTT component
@@ -59,6 +63,8 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
 
         protected @Nullable Boolean optimistic;
 
+        @SerializedName("state_value_template")
+        protected @Nullable String stateValueTemplate;
         @SerializedName("state_topic")
         protected @Nullable String stateTopic;
         @SerializedName("command_template")
@@ -133,9 +139,9 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
         ChannelStateUpdateListener onOffListener = channelConfiguration.percentageCommandTopic == null
                 ? componentConfiguration.getUpdateListener()
                 : this;
-        onOffChannel = buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
-                onOffListener)
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+        onOffChannel = buildChannel(newStyleChannels ? SWITCH_CHANNEL_ID : SWITCH_CHANNEL_ID_DEPRECATED,
+                ComponentChannelType.SWITCH, onOffValue, "On/Off State", onOffListener)
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.stateValueTemplate)
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)
                 .inferOptimistic(channelConfiguration.optimistic)
@@ -143,10 +149,9 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
 
         rawSpeedState = UnDefType.NULL;
 
-        int speeds = Math.min(channelConfiguration.speedRangeMax, 100) - Math.max(channelConfiguration.speedRangeMin, 1)
-                + 1;
-        speedValue = new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.valueOf(100.0d / speeds),
-                channelConfiguration.payloadOn, channelConfiguration.payloadOff);
+        speedValue = new PercentageValue(BigDecimal.valueOf(channelConfiguration.speedRangeMin - 1),
+                BigDecimal.valueOf(channelConfiguration.speedRangeMax), null, channelConfiguration.payloadOn,
+                channelConfiguration.payloadOff, FORMAT_INTEGER);
 
         if (channelConfiguration.percentageCommandTopic != null) {
             hiddenChannels.add(onOffChannel);
@@ -195,6 +200,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                             channelConfiguration.getQos(), channelConfiguration.directionCommandTemplate)
                     .inferOptimistic(channelConfiguration.optimistic).build();
         }
+
         finalizeChannels();
     }
 

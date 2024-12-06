@@ -8,7 +8,6 @@ Hubs of Generation 1 or 2 are handled commonly and their generation specific fea
 Gateways of Generation 3 have generation specific features which are identified with the *'Generation 3 only'* annotation and/or via the <sup>[3]</sup> mark.
 Features that are common to all generations are not annotated or marked.
 
-
 ![PowerView](doc/hdpowerview.png)
 
 PowerView shades have motorization control for their vertical position, and some also have vane controls to change the angle of their slats.

@@ -27,6 +27,7 @@ import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
+import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
@@ -42,6 +43,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.generic.ChannelTransformation;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -62,6 +64,7 @@ import com.hubspot.jinjava.Jinjava;
  */
 @NonNullByDefault
 public abstract class AbstractComponent<C extends AbstractChannelConfiguration> {
+    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     // Component location fields
     protected final ComponentConfiguration componentConfiguration;
@@ -115,7 +118,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
             groupId = null;
             componentId = "";
         }
-        uniqueId = this.haID.getGroupId(channelConfiguration.getUniqueId(), false);
+        uniqueId = haID.component + "_" + haID.getGroupId(channelConfiguration.getUniqueId(), false);
 
         this.configSeen = false;
 
@@ -152,7 +155,20 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         }
     }
 
+    protected void addJsonAttributesChannel() {
+        if (channelConfiguration.getJsonAttributesTopic() != null) {
+            ChannelStateUpdateListener listener = (this instanceof ChannelStateUpdateListener localThis) ? localThis
+                    : componentConfiguration.getUpdateListener();
+            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
+                    listener)
+                    .stateTopic(channelConfiguration.getJsonAttributesTopic(),
+                            channelConfiguration.getJsonAttributesTemplate())
+                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).isAdvanced(true).build();
+        }
+    }
+
     protected void finalizeChannels() {
+        addJsonAttributesChannel();
         if (!newStyleChannels) {
             return;
         }
@@ -168,8 +184,13 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     }
 
     public void resolveConflict() {
-        componentId = this.haID.getGroupId(channelConfiguration.getUniqueId(), newStyleChannels);
-        channels.values().forEach(c -> c.resetUID(buildChannelUID(c.getChannel().getUID().getIdWithoutGroup())));
+        if (newStyleChannels && channels.size() == 1) {
+            componentId = componentId + "_" + haID.component;
+            channels.values().forEach(c -> c.resetUID(buildChannelUID(componentId)));
+        } else {
+            groupId = componentId = componentId + "_" + haID.component;
+            channels.values().forEach(c -> c.resetUID(buildChannelUID(c.getChannel().getUID().getIdWithoutGroup())));
+        }
     }
 
     protected ComponentChannel.Builder buildChannel(String channelID, ComponentChannelType channelType,
