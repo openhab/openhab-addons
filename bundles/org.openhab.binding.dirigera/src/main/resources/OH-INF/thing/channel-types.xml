@@ -13,6 +13,11 @@
 		<label>Simple Text</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
+	<channel-type id="text-veto-advanced" advanced="true">
+		<item-type>String</item-type>
+		<label>Simple Text</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
 	<channel-type id="light-preset">
 		<item-type>String</item-type>
 		<label>Light Preset</label>
@@ -262,6 +267,7 @@
 	<channel-type id="ota-status">
 		<item-type>Number</item-type>
 		<label>OTA Status</label>
+		<description>Over-the-air overall status</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Up to date</option>
@@ -272,6 +278,7 @@
 	<channel-type id="ota-state" advanced="true">
 		<item-type>Number</item-type>
 		<label>OTA State</label>
+		<description>Over-the-air current state</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Ready to check</option>
@@ -290,12 +297,8 @@
 	</channel-type>
 	<channel-type id="ota-percent" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Percent Number</label>
+		<label>OTA Progress</label>
+		<description>Over-the-air update progress</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="text-veto-advanced" advanced="true">
-		<item-type>String</item-type>
-		<label>Simple Text</label>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
