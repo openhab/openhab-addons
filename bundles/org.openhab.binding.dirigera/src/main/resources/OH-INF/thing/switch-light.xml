@@ -33,18 +33,6 @@
 				<label>Custom Name</label>
 				<description>Name given from IKEA home smart</description>
 			</channel>
-			<channel id="ota-status" typeId="ota-status">
-				<label>OTA Status</label>
-				<description>Over-the-air overall status</description>
-			</channel>
-			<channel id="ota-state" typeId="ota-state">
-				<label>OTA State</label>
-				<description>Over-the-air current state</description>
-			</channel>
-			<channel id="ota-progress" typeId="ota-percent">
-				<label>OTA Progress</label>
-				<description>Over-the-air update progress</description>
-			</channel>
 		</channels>
 
 		<properties>

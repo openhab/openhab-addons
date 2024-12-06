@@ -38,7 +38,6 @@ import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.HSBType;
-import org.openhab.core.util.ColorUtil;
 
 /**
  * {@link TestGeneric} some basic tests
@@ -90,14 +89,17 @@ class TestGeneric {
 
     @Test
     void testKelvinToHSB() {
-        for (int i = 1000; i < 6000; i += 100) {
-            HSBType color = ColorLightHandler.getHSBTemperature(i);
-            int[] rgb = ColorUtil.hsbToRgb(color);
-            // System.out.println(i + ": " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
-            // int hue = color.getHue().intValue();
-            // int sat = color.getSaturation().intValue();
-            // System.out.println(i + ": " + hue + "," + sat + "," + color.getBrightness().intValue());
-        }
+        HSBType hsb = ColorLightHandler.getHSBTemperature(1000);
+        assertEquals(16, hsb.getHue().intValue(), "HSB Color Hue");
+        assertEquals(100, hsb.getSaturation().intValue(), "HSB Saturation");
+
+        hsb = ColorLightHandler.getHSBTemperature(3000);
+        assertEquals(27, hsb.getHue().intValue(), "HSB Color Hue");
+        assertEquals(56, hsb.getSaturation().intValue(), "HSB Saturation");
+
+        hsb = ColorLightHandler.getHSBTemperature(5000);
+        assertEquals(26, hsb.getHue().intValue(), "HSB Color Hue");
+        assertEquals(19, hsb.getSaturation().intValue(), "HSB Saturation");
     }
 
     @Test
@@ -137,17 +139,16 @@ class TestGeneric {
     void testThreadpoolExcpetion() {
         ScheduledExecutorService ses = ThreadPoolManager.getScheduledPool("test");
         ScheduledFuture<?> sf = ses.scheduleWithFixedDelay(this::printOutput, 0, 50, TimeUnit.MILLISECONDS);
-        System.out.println("Done? " + sf.isDone());
         sleep();
-        System.out.println("Done? " + sf.isDone());
+        assertFalse(sf.isDone());
         output = "throw";
         sleep();
-        System.out.println("Done? " + sf.isDone());
+        assertTrue(sf.isDone());
     }
 
     void printOutput() {
         if ("throw".equals(output)) {
-            throw new RuntimeException("thats it!");
+            throw new RuntimeException("crash");
         }
     }
 
@@ -155,6 +156,7 @@ class TestGeneric {
         try {
             Thread.sleep(250);
         } catch (InterruptedException e) {
+            fail();
         }
     }
 }
