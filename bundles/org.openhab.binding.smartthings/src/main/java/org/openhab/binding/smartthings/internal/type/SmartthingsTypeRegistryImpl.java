@@ -323,11 +323,11 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
     @Override
     public void Register(SmartthingsDeviceData deviceData, JsonObject devObj) {
-        generateThingsType(deviceData.id, deviceData.deviceType, deviceData.description, devObj);
+        generateThingsType(deviceData.id, deviceData.label, deviceData.deviceType, deviceData.description, devObj);
 
     }
 
-    private void generateThingsType(String deviceLabel, String deviceType, String deviceDescription,
+    private void generateThingsType(String deviceId, String deviceLabel, String deviceType, String deviceDescription,
             JsonObject devObj) {
 
         SmartthingsThingTypeProvider lcThingTypeProvider = thingTypeProvider;
@@ -371,7 +371,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
                             SmartthingsJSonCapabilities capa = capabilitiesDict.get(capId);
 
-                            addChannel(groupTypes, channelDefinitions, capId + "channel", capId);
+                            addChannel(deviceType, groupTypes, channelDefinitions, capId + "channel", capId);
 
                             logger.info("");
                         }
@@ -379,14 +379,14 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
                 }
 
-                tt = createThingType(deviceType, deviceLabel, deviceDescription, groupTypes);
+                tt = createThingType(deviceType, deviceId, deviceDescription, groupTypes);
                 lcThingTypeProvider.addThingType(tt);
             }
         }
     }
 
-    private void addChannel(List<ChannelGroupType> groupTypes, List<ChannelDefinition> channelDefinitions,
-            String channelTp, String channel) {
+    private void addChannel(String deviceType, List<ChannelGroupType> groupTypes,
+            List<ChannelDefinition> channelDefinitions, String channelTp, String channel) {
         SmartthingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         SmartthingsChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
 
@@ -409,16 +409,18 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
         }
 
         // generate group
-        ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID("default");
+        String groupdId = deviceType + "_default";
+        ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(groupdId);
         ChannelGroupType groupType = null;
 
         if (lcChannelGroupTypeProvider != null) {
             groupType = lcChannelGroupTypeProvider.getInternalChannelGroupType(groupTypeUID);
 
             if (groupType == null) {
-                String groupLabel = "default";
+                String groupLabel = groupdId + "Label";
                 groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
-                        .withChannelDefinitions(channelDefinitions).withCategory("").withDescription("default").build();
+                        .withChannelDefinitions(channelDefinitions).withCategory("").withDescription(groupdId + "Desc")
+                        .build();
                 lcChannelGroupTypeProvider.addChannelGroupType(groupType);
                 groupTypes.add(groupType);
             }

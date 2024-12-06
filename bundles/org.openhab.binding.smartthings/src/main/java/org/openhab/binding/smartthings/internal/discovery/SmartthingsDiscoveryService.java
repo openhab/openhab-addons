@@ -195,9 +195,18 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
             if (components == null || !components.isJsonArray()) {
                 return;
             }
-            if (label.indexOf("Bureau") < 0) {
-                continue;
+
+            Boolean enabled = false;
+            if (label.equals("Four")) {
+                enabled = true;
             }
+            if (label.equals("Petrole")) {
+                enabled = true;
+            }
+
+            //if (!enabled) {
+            //    continue;
+            //}
 
             JsonArray componentsArray = (JsonArray) components;
 
