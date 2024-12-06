@@ -228,7 +228,7 @@ sitemap oppo label="Oppo Blu-ray" {
 }
 ```
 
-### Appendix A - 'remote_button' codes:
+### Appendix A - 'remote_button' codes
 
 | Command | Function                                                                    |
 |---------|-----------------------------------------------------------------------------|
@@ -296,7 +296,7 @@ sitemap oppo label="Oppo Blu-ray" {
 | SEH     | Display the Picture Adjustment menu                                         |
 | DRB     | Display the Darbee Adjustment menu                                          |
 
-#### Extra buttons on UDP models:
+#### Extra buttons on UDP models
 
 | Command | Function                                                                            |
 |---------|-------------------------------------------------------------------------------------|

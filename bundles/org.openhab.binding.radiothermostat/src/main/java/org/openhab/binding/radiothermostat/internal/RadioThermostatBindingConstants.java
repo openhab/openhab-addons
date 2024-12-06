@@ -77,12 +77,15 @@ public class RadioThermostatBindingConstants {
     public static final String YESTERDAY_COOL_RUNTIME = "yesterday_cool_runtime";
     public static final String REMOTE_TEMP = "remote_temp";
     public static final String MESSAGE = "message";
+    public static final String NEXT_TEMP = "next_temp";
+    public static final String NEXT_TIME = "next_time";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_RTHERM);
 
     public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(TEMPERATURE, HUMIDITY, MODE, FAN_MODE, PROGRAM_MODE,
             SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP, TODAY_HEAT_RUNTIME,
-            TODAY_COOL_RUNTIME, YESTERDAY_HEAT_RUNTIME, YESTERDAY_COOL_RUNTIME, REMOTE_TEMP, MESSAGE);
+            TODAY_COOL_RUNTIME, YESTERDAY_HEAT_RUNTIME, YESTERDAY_COOL_RUNTIME, REMOTE_TEMP, MESSAGE, NEXT_TEMP,
+            NEXT_TIME);
 
     public static final Set<String> NO_UPDATE_CHANNEL_IDS = Set.of(REMOTE_TEMP, MESSAGE);
 

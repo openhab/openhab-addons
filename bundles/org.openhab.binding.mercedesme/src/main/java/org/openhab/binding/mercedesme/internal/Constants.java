@@ -115,6 +115,7 @@ public class Constants {
     public static final String MB_KEY_DOORSTATUSFRONTLEFT = "doorstatusfrontleft";
     public static final String MB_KEY_DOORSTATUSFRONTRIGHT = "doorstatusfrontright";
     public static final String MB_KEY_TANKLEVELPERCENT = "tanklevelpercent";
+    public static final String MB_KEY_ADBLUELEVELPERCENT = "tankLevelAdBlue";
     public static final String MB_KEY_SOC = "soc";
     public static final String MB_KEY_TIRE_PRESS_MEAS_TIMESTAMP = "tirePressMeasTimestamp";
     public static final String MB_KEY_ENDOFCHARGETIME = "endofchargetime";
@@ -201,6 +202,7 @@ public class Constants {
     public static final String OH_CHANNEL_COUPLER_AC = "coupler-ac";
     public static final String OH_CHANNEL_CHARGE_FLAP = "charge-flap";
     public static final String OH_CHANNEL_FUEL_LEVEL = "fuel-level";
+    public static final String OH_CHANNEL_ADBLUE_LEVEL = "adblue-level";
     public static final String OH_CHANNEL_RANGE_HYBRID = "range-hybrid";
     public static final String OH_CHANNEL_RANGE_FUEL = "range-fuel";
     public static final String OH_CHANNEL_RANGE_ELECTRIC = "range-electric";
@@ -312,10 +314,10 @@ public class Constants {
     public static final String REST_API_BASE_CN = "https://bff.cn-prod.mobilesdk.mercedes-benz.com";
     public static final String REST_API_BASE_NA = "https://bff.amap-prod.mobilesdk.mercedes-benz.com";
     public static final String REST_API_BASE_PA = "https://bff.amap-prod.mobilesdk.mercedes-benz.com";
-    public static final String WEBSOCKET_API_BASE = "wss://websocket.emea-prod.mobilesdk.mercedes-benz.com/ws";
-    public static final String WEBSOCKET_API_BASE_NA = "wss://websocket.amap-prod.mobilesdk.mercedes-benz.com/ws";
-    public static final String WEBSOCKET_API_BASE_PA = "wss://websocket.amap-prod.mobilesdk.mercedes-benz.com/ws";
-    public static final String WEBSOCKET_API_BASE_CN = "wss://websocket.cn-prod.mobilesdk.mercedes-benz.com/ws";
+    public static final String WEBSOCKET_API_BASE = "wss://websocket.emea-prod.mobilesdk.mercedes-benz.com/v2/ws";
+    public static final String WEBSOCKET_API_BASE_NA = "wss://websocket.amap-prod.mobilesdk.mercedes-benz.com/v2/ws";
+    public static final String WEBSOCKET_API_BASE_PA = "wss://websocket.amap-prod.mobilesdk.mercedes-benz.com/v2/ws";
+    public static final String WEBSOCKET_API_BASE_CN = "wss://websocket.cn-prod.mobilesdk.mercedes-benz.com/v2/ws";
     public static final String WEBSOCKET_USER_AGENT = "MyCar/1.30.1 (com.daimler.ris.mercedesme.ece.ios; build:1819; iOS 16.5.0) Alamofire/5.4.0";
     public static final String WEBSOCKET_USER_AGENT_CN = "MyStarCN/1.27.0 (com.daimler.ris.mercedesme.cn.ios; build:1758; iOS 16.3.1) Alamofire/5.4.0";
     public static final String WEBSOCKET_USER_AGENT_PA = "mycar-store-ap v1.27.0, android 8.0.0, SDK 2.84.3";

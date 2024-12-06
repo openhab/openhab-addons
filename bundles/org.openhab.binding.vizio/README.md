@@ -25,7 +25,7 @@ The thing has a few configuration parameters:
 | authToken   | The token that is used to authenticate all commands sent to the TV. See below for instructions to obtain via the openHAB console.    |
 | appListJson | A JSON string that defines the apps that are available in the `activeApp` channel drop down. See below for instructions for editing. |
 
-### Console Commands for Pairing:
+### Console Commands for Pairing
 
 To obtain an authorization token that enables openHAB to authenticate with the TV, the following console commands must be used while the TV is turned on.
 The first command will send a pairing start request to the TV. This triggers the TV to display a 4-digit pairing code on screen that must be sent with the second command.
@@ -69,41 +69,41 @@ The following channels are available:
 | control     | Player    | Control Playback e.g. Play/Pause/Next/Previous/FForward/Rewind                                                                                                                              |
 | button      | String    | Sends a remote control command the TV. See list of available commands below. (WriteOnly)                                                                                                    |
 
-### List of available button commands for Vizio TVs:
+### List of available button commands for Vizio TVs
 
-PowerOn
-PowerOff
-PowerToggle
-VolumeUp
-VolumeDown
-MuteOn **(may only work as a toggle)**
-MuteOff **(may only work as a toggle)**
-MuteToggle
-ChannelUp
-ChannelDown
-PreviousCh
-InputToggle
-SeekFwd
-SeekBack
-Play
-Pause
-Up
-Down
-Left
-Right
-Ok
-Back
-Info
-Menu
-Home
-Exit
-Smartcast
-ccToggle
-PictureMode
-WideMode
-WideToggle
+- PowerOn
+- PowerOff
+- PowerToggle
+- VolumeUp
+- VolumeDown
+- MuteOn **(may only work as a toggle)**
+- MuteOff **(may only work as a toggle)**
+- MuteToggle
+- ChannelUp
+- ChannelDown
+- PreviousCh
+- InputToggle
+- SeekFwd
+- SeekBack
+- Play
+- Pause
+- Up
+- Down
+- Left
+- Right
+- Ok
+- Back
+- Info
+- Menu
+- Home
+- Exit
+- Smartcast
+- ccToggle
+- PictureMode
+- WideMode
+- WideToggle
 
-### App List Configuration:
+### App List Configuration
 
 The Vizio API to launch and identify currently running apps on the TV is very complex.
 To handle this, the binding maintains a JSON database of applications and their associated metadata in order to populate the `activeApp` dropdown with available apps.

@@ -132,22 +132,8 @@ The controller thing has the following parameters:
 **Important note on the topic of IPV6 ip addresses:**
 
 With firmware version 8.5.2 or newer, panels may change between being OFFLINE and ONLINE.
-This is due to the fact that if they are discovered with IPv6 addresses, the binding is not able to correctly send API requests to the devices.
-It is therefore recommended to disable IPv6 on the openHAB server.
-
-This can e.g. be achieved on openHABian the following way:
-
-```shell
-sudo nano /etc/sysctl.conf`
-```
-
-Add the following at the bottom of the file:
-
-```ini
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
-```
+This is because if they are discovered with IPv6 addresses, the binding is not able to correctly send API requests to the devices which leads to an unstable behaviour.
+To avoid this, the binding will only discover devices based on their IPv4 address.
 
 Reboot your server after the change.
 
@@ -189,7 +175,7 @@ The color channels support full color control with hue, saturation and brightnes
 For example, brightness of _all_ panels at once can be controlled by defining a dimmer item for the color channel of the _controller thing_.
 The same applies to the color channel of an individual lightpanel.
 
-### Limitations assigning specific colors on individual panels:
+### Limitations Assigning Specific Colors on Individual Panels
 
 - Due to the way the API of the nanoleaf is designed, each time a color is assigned to a panel, it will be directly sent to that panel. The result is that if you send colors to several panels more or less at the same time, they will not be set at the same time but one after the other and rather appear like a sequence but as a one shot.
 - Another important limitation is that individual panels cannot be set while a dynamic effect is running on the panel which means that as soon as you set an individual panel the "static effect" is set, which disables the chosen dynamic effect. The nanoleaf app shows that a static effect is now running, too.

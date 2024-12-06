@@ -39,8 +39,8 @@ public enum EmotivaDataType {
     }
 
     public static EmotivaDataType fromName(String name) {
-        EmotivaDataType result = EmotivaDataType.UNKNOWN;
-        for (EmotivaDataType m : EmotivaDataType.values()) {
+        var result = EmotivaDataType.UNKNOWN;
+        for (var m : EmotivaDataType.values()) {
             if (m.name.equals(name)) {
                 result = m;
                 break;

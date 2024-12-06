@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -40,8 +41,10 @@ import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.util.HttpCookieStore;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -92,8 +95,10 @@ public class VerisureSession {
     private static final int REQUEST_TIMEOUT_MS = 10_000;
     private static final String USER_NAME = "username";
     private static final String VID = "vid";
+    private static final String JSESSIONID = "JSESSIONID";
     private static final String VS_STEPUP = "vs-stepup";
     private static final String VS_ACCESS = "vs-access";
+    private static final String VS_RESFRESH = "vs-refresh";
     private String apiServerInUse = APISERVERLIST.get(apiServerInUseIndex);
     private String authstring = "";
     private @Nullable String csrf;
@@ -103,7 +108,9 @@ public class VerisureSession {
     private String password = "";
     private String vid = "";
     private String vsAccess = "";
+    private String vsRefresh = "";
     private String vsStepup = "";
+    private String jsessionId = "";
 
     public VerisureSession(HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -115,7 +122,7 @@ public class VerisureSession {
             this.pinCode = pinCode;
             this.userName = userName;
             this.password = password;
-            // Try to login to Verisure
+
             if (logIn()) {
                 return getInstallations();
             } else {
@@ -137,9 +144,9 @@ public class VerisureSession {
     public int sendCommand(String url, String data, BigDecimal installationId) {
         logger.debug("Sending command with URL {} and data {}", url, data);
         try {
-            configureInstallationInstance(installationId);
             int httpResultCode = setSessionCookieAuthLogin();
             if (httpResultCode == HttpStatus.OK_200) {
+                configureInstallationInstance(installationId);
                 return postVerisureAPI(url, data);
             } else {
                 return httpResultCode;
@@ -226,21 +233,27 @@ public class VerisureSession {
 
     public void configureInstallationInstance(BigDecimal installationId)
             throws ExecutionException, InterruptedException, TimeoutException {
-        csrf = getCsrfToken(installationId);
-        logger.debug("Got CSRF: {}", csrf);
-        // Set installation
         String url = SET_INSTALLATION + installationId;
         httpClient.GET(url);
     }
 
-    public @Nullable String getCsrfToken(BigDecimal installationId)
-            throws ExecutionException, InterruptedException, TimeoutException {
+    public @Nullable String getCsrfToken() throws ExecutionException, InterruptedException, TimeoutException {
         String html = null;
-        String url = SETTINGS + installationId;
+        CookieStore originalCookieStore = httpClient.getCookieStore();
+        httpClient.setCookieStore(new HttpCookieStore.Empty());
 
-        ContentResponse resp = httpClient.GET(url);
-        html = resp.getContentAsString();
-        logger.trace("url: {} html: {}", url, html);
+        ContentResponse response = httpClient.newRequest(LOGIN).method(HttpMethod.GET).send();
+        html = response.getContentAsString();
+        logger.trace("url: {} html: {}", LOGIN, html);
+
+        try {
+            URI authUri = new URI(apiServerInUse);
+            addRequiredCookies(httpClient.getCookieStore(), originalCookieStore, authUri);
+        } catch (URISyntaxException e) {
+            Throwable cause = e.getCause();
+            logger.debug("Invalid URI: {}", cause != null ? cause.getMessage() : e.getMessage());
+        }
+        httpClient.setCookieStore(originalCookieStore);
 
         Document htmlDocument = Jsoup.parse(html);
         Element nameInput = htmlDocument.select("input[name=_csrf]").first();
@@ -273,11 +286,42 @@ public class VerisureSession {
             } else if (VS_ACCESS.equals(cookie.getName())) {
                 vsAccess = cookie.getValue();
                 logger.debug("Fetching vs-access {} from cookie", vsAccess);
+            } else if (VS_RESFRESH.equals(cookie.getName())) {
+                vsRefresh = cookie.getValue();
+                logger.debug("Fetching vs-refresh {} from cookie", vsRefresh);
             } else if (VS_STEPUP.equals(cookie.getName())) {
                 vsStepup = cookie.getValue();
                 logger.debug("Fetching vs-stepup {} from cookie", vsStepup);
+            } else if (JSESSIONID.equals(cookie.getName())) {
+                jsessionId = cookie.getValue();
+                logger.debug("Fetching JESSIONID {} from cookie", jsessionId);
             }
         });
+    }
+
+    private void addCookieIfPresent(Request request, String name, String value) {
+        if (!value.isEmpty()) {
+            request.cookie(new HttpCookie(name, value));
+            logger.debug("Setting cookie with {} = {}", name, value);
+        }
+    }
+
+    private boolean addRequiredCookies(CookieStore from, CookieStore to, URI authUri) {
+        boolean hasAllRequired = true;
+        String[] requiredCookies = { VID, USER_NAME, JSESSIONID };
+
+        for (String cookieName : requiredCookies) {
+            Optional<HttpCookie> cookie = from.getCookies().stream().filter(c -> c.getName().equals(cookieName))
+                    .findFirst();
+            if (cookie.isPresent()) {
+                logger.debug("Adding cookie: {}", cookieName);
+                to.add(authUri, cookie.get());
+            } else {
+                logger.debug("Missing required cookie: {}", cookieName);
+                hasAllRequired = false;
+            }
+        }
+        return hasAllRequired;
     }
 
     private void logTraceWithPattern(int responseStatus, String content) {
@@ -289,34 +333,83 @@ public class VerisureSession {
     }
 
     private boolean areWeLoggedIn() throws ExecutionException, InterruptedException, TimeoutException {
-        logger.debug("Checking if we are logged in");
-        String url = STATUS;
+        logger.debug("Checking if session is valid");
 
-        ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).send();
-        String content = response.getContentAsString();
-        logTraceWithPattern(response.getStatus(), content);
+        int statusCode = checkSessionStatus();
+        if (statusCode == HttpStatus.OK_200) {
+            logger.debug("Session is valid");
+            return true;
+        } else if (statusCode == HttpStatus.UNAUTHORIZED_401 && !vsRefresh.isEmpty()) {
+            logger.debug("Session expired, attempting token refresh");
+            if (refreshTokens()) {
+                statusCode = checkSessionStatus();
+                return statusCode == HttpStatus.OK_200;
+            } else {
+                logger.debug("Token refresh failed, will need to perform full login");
+                vsRefresh = "";
+                return false;
+            }
+        } else {
+            logger.debug("Session invalid (status code: {}), need to login", statusCode);
+            return false;
+        }
+    }
 
-        switch (response.getStatus()) {
+    private int checkSessionStatus() throws ExecutionException, InterruptedException, TimeoutException {
+        String url = START_GRAPHQL;
+        String queryQLAccountInstallations = """
+                [{
+                    "operationName": "AccountInstallations",
+                    "variables": {
+                        "email": "%s"
+                    },
+                    "query": "query AccountInstallations($email: String!) {\\n  account(email: $email) {\\n    owainstallations {\\n      giid\\n      alias\\n      type\\n      subsidiary\\n      dealerId\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n"
+                }]
+                """
+                .formatted(userName);
+        return postVerisureAPI(url, queryQLAccountInstallations);
+    }
+
+    private boolean refreshTokens() {
+        CookieStore originalCookieStore = httpClient.getCookieStore();
+
+        if (vsRefresh.isEmpty()) {
+            logger.debug("No refresh token available, need full login");
+            return false;
+        }
+
+        try {
+            CookieStore tempCookieStore = new HttpCookieStore();
+            URI authUri = new URI(apiServerInUse);
+            if (!addRequiredCookies(originalCookieStore, tempCookieStore, authUri)) {
+                logger.debug("Missing required Incapsula cookies, might fail");
+            }
+            HttpCookie vsRefreshCookie = new HttpCookie("vs-refresh", vsRefresh);
+            tempCookieStore.add(authUri, vsRefreshCookie);
+            httpClient.setCookieStore(tempCookieStore);
+        } catch (URISyntaxException e) {
+            Throwable cause = e.getCause();
+            logger.debug("Invalid URI: {}", cause != null ? cause.getMessage() : e.getMessage());
+        }
+
+        int httpStatusCode = postVerisureAPI(AUTH_TOKEN, "empty");
+        switch (httpStatusCode) {
             case HttpStatus.OK_200:
-                if (content.contains("<link href=\"/newapp")) {
+                try {
+                    analyzeCookies();
                     return true;
-                } else {
-                    logger.debug("We need to login again!");
+                } catch (Exception e) {
+                    logger.warn("Failed to parse token response: {}", e.getMessage());
                     return false;
                 }
-            case HttpStatus.MOVED_TEMPORARILY_302:
-                // Redirection
-                logger.debug("Status code 302. Redirected. Probably not logged in");
+            case HttpStatus.UNAUTHORIZED_401:
+                logger.debug("Refresh token expired or invalid, need full login");
+                vsRefresh = "";
                 return false;
-            case HttpStatus.INTERNAL_SERVER_ERROR_500:
-            case HttpStatus.SERVICE_UNAVAILABLE_503:
-                throw new HttpResponseException(
-                        "Status code " + response.getStatus() + ". Verisure service temporarily down", response);
             default:
-                logger.debug("Status code {} body {}", response.getStatus(), content);
-                break;
+                logger.debug("Unexpected status code during token refresh: {}", httpStatusCode);
+                return false;
         }
-        return false;
     }
 
     private <T> @Nullable T getJSONVerisureAPI(String url, Class<T> jsonClass)
@@ -337,29 +430,29 @@ public class VerisureSession {
         Request request = httpClient.newRequest(url).method(HttpMethod.POST);
         request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (isJSON) {
-            request.header("content-type", "application/json");
+            request.header(HttpHeader.CONTENT_TYPE, "application/json");
         } else {
             if (csrf != null) {
                 request.header("X-CSRF-TOKEN", csrf);
             }
         }
-        request.header("Accept", "application/json");
+        request.header(HttpHeader.ACCEPT, "application/json").header(HttpHeader.ORIGIN, "https://mypages.verisure.com");
 
-        if (url.contains(AUTH_LOGIN)) {
-            request.header("APPLICATION_ID", "OpenHAB Verisure");
-            String basicAuhentication = Base64.getEncoder().encodeToString((userName + ":" + password).getBytes());
-            request.header("authorization", "Basic " + basicAuhentication);
+        if (url.contains(AUTH_LOGIN) || url.contains(AUTH_TOKEN)) {
+            request.header("APPLICATION_ID", "MyPages_Login");
+            if (url.contains(AUTH_LOGIN)) {
+                String basicAuhentication = Base64.getEncoder().encodeToString((userName + ":" + password).getBytes());
+                request.header("authorization", "Basic " + basicAuhentication);
+            }
         } else {
-            if (!vid.isEmpty()) {
-                request.cookie(new HttpCookie(VID, vid));
-                logger.debug("Setting cookie with vid {}", vid);
+            if (url.contains(LOGON_SUF)) {
+                request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
+                        .header(HttpHeader.REFERER, "https://mypages.verisure.com/login")
+                        .header("x-vs-refresh", vsRefresh);
             }
-            if (!vsAccess.isEmpty()) {
-                request.cookie(new HttpCookie(VS_ACCESS, vsAccess));
-                logger.debug("Setting cookie with vs-access {}", vsAccess);
-            }
-            logger.debug("Setting cookie with username {}", userName);
-            request.cookie(new HttpCookie(USER_NAME, userName));
+            addCookieIfPresent(request, VID, vid);
+            addCookieIfPresent(request, VS_ACCESS, vsAccess);
+            addCookieIfPresent(request, USER_NAME, userName);
         }
 
         if (!"empty".equals(data)) {
@@ -432,87 +525,75 @@ public class VerisureSession {
                     logger.debug("Failed to send POST, Http status code: {}", response.getStatus());
                 }
             } catch (ExecutionException | InterruptedException | TimeoutException e) {
-                logger.warn("Failed to send a POST to the API {}", e.getMessage());
+                logger.debug("Failed to send a POST to the API {}", e.getMessage());
+                return HttpStatus.UNAUTHORIZED_401;
             }
         }
         return HttpStatus.SERVICE_UNAVAILABLE_503;
     }
 
     private int setSessionCookieAuthLogin() throws ExecutionException, InterruptedException, TimeoutException {
-        // URL to set status which will give us 2 cookies with username and password used for the session
-        String url = STATUS;
-        ContentResponse response = httpClient.GET(url);
-        logTraceWithPattern(response.getStatus(), response.getContentAsString());
-
-        url = AUTH_LOGIN;
+        String url = AUTH_LOGIN;
         int httpStatusCode = postVerisureAPI(url, "empty");
         analyzeCookies();
-
-        // return response.getStatus();
         return httpStatusCode;
     }
 
     private boolean getInstallations() {
-        int httpResultCode = 0;
-
+        String url = START_GRAPHQL;
+        String queryQLAccountInstallations = """
+                [{
+                    "operationName": "AccountInstallations",
+                    "variables": {
+                        "email": "%s"
+                    },
+                    "query": "query AccountInstallations($email: String!) {\\n  account(email: $email) {\\n    owainstallations {\\n      giid\\n      alias\\n      type\\n      subsidiary\\n      dealerId\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n"
+                }]
+                """
+                .formatted(userName);
         try {
-            httpResultCode = setSessionCookieAuthLogin();
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            logger.warn("Failed to set session cookie {}", e.getMessage());
-            return false;
-        }
-
-        if (httpResultCode == HttpStatus.OK_200) {
-            String url = START_GRAPHQL;
-
-            String queryQLAccountInstallations = "[{\"operationName\":\"AccountInstallations\",\"variables\":{\"email\":\""
-                    + userName
-                    + "\"},\"query\":\"query AccountInstallations($email: String!) {\\n  account(email: $email) {\\n    owainstallations {\\n      giid\\n      alias\\n      type\\n      subsidiary\\n      dealerId\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}]";
-            try {
-                VerisureInstallationsDTO installations = postJSONVerisureAPI(url, queryQLAccountInstallations,
-                        VerisureInstallationsDTO.class);
-                logger.debug("Installation: {}", installations.toString());
-                List<Owainstallation> owaInstList = installations.getData().getAccount().getOwainstallations();
-                boolean pinCodesMatchInstallations = true;
-                List<String> pinCodes = null;
-                String pinCode = this.pinCode;
-                if (pinCode != null) {
-                    pinCodes = Arrays.asList(pinCode.split(","));
-                    if (owaInstList.size() != pinCodes.size()) {
-                        logger.debug("Number of installations {} does not match number of pin codes configured {}",
-                                owaInstList.size(), pinCodes.size());
-                        pinCodesMatchInstallations = false;
-                    }
-                } else {
-                    logger.debug("No pin-code defined for user {}", userName);
+            VerisureInstallationsDTO installations = postJSONVerisureAPI(url, queryQLAccountInstallations,
+                    VerisureInstallationsDTO.class);
+            logger.debug("Installation: {}", installations.toString());
+            List<Owainstallation> owaInstList = installations.getData().getAccount().getOwainstallations();
+            boolean pinCodesMatchInstallations = true;
+            List<String> pinCodes = null;
+            String pinCode = this.pinCode;
+            if (pinCode != null) {
+                pinCodes = Arrays.asList(pinCode.split(","));
+                if (owaInstList.size() != pinCodes.size()) {
+                    logger.debug("Number of installations {} does not match number of pin codes configured {}",
+                            owaInstList.size(), pinCodes.size());
+                    pinCodesMatchInstallations = false;
                 }
-
-                for (int i = 0; i < owaInstList.size(); i++) {
-                    VerisureInstallation vInst = new VerisureInstallation();
-                    Owainstallation owaInstallation = owaInstList.get(i);
-                    String installationId = owaInstallation.getGiid();
-                    if (owaInstallation.getAlias() != null && installationId != null) {
-                        vInst.setInstallationId(new BigDecimal(installationId));
-                        vInst.setInstallationName(owaInstallation.getAlias());
-                        if (pinCode != null && pinCodes != null) {
-                            int pinCodeIndex = pinCodesMatchInstallations ? i : 0;
-                            vInst.setPinCode(pinCodes.get(pinCodeIndex));
-                            logger.debug("Setting configured pincode index[{}] to installation ID {}", pinCodeIndex,
-                                    installationId);
-                        }
-                        verisureInstallations.put(new BigDecimal(installationId), vInst);
-                    } else {
-                        logger.warn("Failed to get alias and/or giid");
-                        return false;
-                    }
-                }
-            } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
-                    | PostToAPIException e) {
-                logger.warn("Failed to send a POST to the API {}", e.getMessage());
+            } else {
+                logger.debug("No pin-code defined for user {}", userName);
             }
-        } else {
-            logger.warn("Failed to set session cookie and auth login, HTTP result code: {}", httpResultCode);
-            return false;
+
+            for (int i = 0; i < owaInstList.size(); i++) {
+                VerisureInstallation vInst = new VerisureInstallation();
+                Owainstallation owaInstallation = owaInstList.get(i);
+                String installationId = owaInstallation.getGiid();
+                if (owaInstallation.getAlias() != null && installationId != null) {
+                    vInst.setInstallationId(new BigDecimal(installationId));
+                    vInst.setInstallationName(owaInstallation.getAlias());
+                    if (pinCode != null && pinCodes != null) {
+                        int pinCodeIndex = pinCodesMatchInstallations ? i : 0;
+                        vInst.setPinCode(pinCodes.get(pinCodeIndex));
+                        logger.debug("Setting configured pincode index[{}] to installation ID {}", pinCodeIndex,
+                                installationId);
+                    }
+                    verisureInstallations.put(new BigDecimal(installationId), vInst);
+                } else {
+                    logger.warn("Failed to get alias and/or giid");
+                    return false;
+                }
+            }
+            csrf = getCsrfToken();
+            logger.debug("Got CSRF: {}", csrf);
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
         return true;
     }
@@ -544,6 +625,16 @@ public class VerisureSession {
                     logger.debug("Failed to login, HTTP status code: {}", httpStatusCode);
                     return false;
                 }
+
+                url = STATUS;
+                Request request = httpClient.newRequest(url).method(HttpMethod.GET).header(HttpHeader.ACCEPT,
+                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
+                        .header(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7")
+                        .header(HttpHeader.REFERER, "https://mypages.verisure.com/login").followRedirects(false);
+
+                ContentResponse response = request.send();
+                String content = response.getContentAsString();
+                logTraceWithPattern(response.getStatus(), content);
                 return true;
             } else {
                 return true;
@@ -583,22 +674,16 @@ public class VerisureSession {
             VerisureInstallation installation = verisureInstallations.getValue();
             try {
                 configureInstallationInstance(installation.getInstallationId());
-                int httpResultCode = setSessionCookieAuthLogin();
-                if (httpResultCode == HttpStatus.OK_200) {
-                    updateAlarmStatus(installation);
-                    updateSmartLockStatus(installation);
-                    updateMiceDetectionStatus(installation);
-                    updateClimateStatus(installation);
-                    updateDoorWindowStatus(installation);
-                    updateUserPresenceStatus(installation);
-                    updateSmartPlugStatus(installation);
-                    updateBroadbandConnectionStatus(installation);
-                    updateEventLogStatus(installation);
-                    updateGatewayStatus(installation);
-                } else {
-                    logger.debug("Failed to set session cookie and auth login, HTTP result code: {}", httpResultCode);
-                    return false;
-                }
+                updateAlarmStatus(installation);
+                updateSmartLockStatus(installation);
+                updateMiceDetectionStatus(installation);
+                updateClimateStatus(installation);
+                updateDoorWindowStatus(installation);
+                updateUserPresenceStatus(installation);
+                updateSmartPlugStatus(installation);
+                updateBroadbandConnectionStatus(installation);
+                updateEventLogStatus(installation);
+                updateGatewayStatus(installation);
             } catch (ExecutionException | InterruptedException | TimeoutException | PostToAPIException e) {
                 logger.debug("Failed to update status {}", e.getMessage());
                 return false;
@@ -1063,7 +1148,6 @@ public class VerisureSession {
     }
 
     private static class OperationDTO {
-
         @SuppressWarnings("unused")
         private @Nullable String operationName;
         @SuppressWarnings("unused")
@@ -1084,8 +1168,7 @@ public class VerisureSession {
         }
     }
 
-    public static class VariablesDTO {
-
+    private static class VariablesDTO {
         @SuppressWarnings("unused")
         private boolean hideNotifications;
         @SuppressWarnings("unused")
@@ -1119,7 +1202,6 @@ public class VerisureSession {
     }
 
     private class PostToAPIException extends Exception {
-
         private static final long serialVersionUID = 1L;
 
         public PostToAPIException(String message) {

@@ -121,6 +121,8 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
                     }
                     return true;
                 }).build();
+
+        finalizeChannels();
     }
 
     private void autoUpdate(boolean locking) {

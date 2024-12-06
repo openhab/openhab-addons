@@ -214,6 +214,13 @@
 				<label>Status Positioning</label>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="3">
+			<add-channel id="adblue-level" groupIds="range">
+				<type>mercedesme:adblue-level</type>
+				<label>AdBlue Level</label>
+				<description>AdBlue tank level in percent </description>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

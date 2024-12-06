@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteon"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="hub2">
+		<label>Insteon Hub 2</label>
+		<description>An Insteon Hub 2 that communicates with Insteon devices.</description>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the hub.</description>
+			</parameter>
+
+			<parameter name="port" type="integer" min="0" max="65535">
+				<label>Network Port</label>
+				<description>Network port of the hub.</description>
+				<default>25105</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="username" type="text" required="true">
+				<label>Hub Username</label>
+				<description>Username to access the hub.</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Hub Password</label>
+				<description>Password to access the hub.</description>
+			</parameter>
+
+			<parameter name="hubPollIntervalInMilliseconds" type="integer" min="500" max="5000">
+				<label>Hub Poll Interval</label>
+				<description>Hub poll interval in milliseconds.</description>
+				<default>1000</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="devicePollIntervalInSeconds" type="integer" min="5" max="3600">
+				<label>Device Poll Interval</label>
+				<description>Device poll interval in seconds.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="deviceDiscoveryEnabled" type="boolean">
+				<label>Discover Devices</label>
+				<description>Discover Insteon devices found in the modem database.</description>
+				<default>true</default>
+			</parameter>
+
+			<parameter name="sceneDiscoveryEnabled" type="boolean">
+				<label>Discover Scenes</label>
+				<description>Discover Insteon scenes found in the modem database.</description>
+				<default>false</default>
+			</parameter>
+
+			<parameter name="deviceSyncEnabled" type="boolean">
+				<label>Synchronize Related Devices</label>
+				<description>Synchronize related devices based on their all-link database.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

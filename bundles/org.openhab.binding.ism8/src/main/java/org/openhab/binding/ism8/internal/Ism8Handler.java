@@ -29,6 +29,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -86,6 +87,14 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
         if (command == RefreshType.REFRESH) {
             updateChannel(dataPoint);
         } else {
+            ChannelTypeUID channelType = channel.getChannelTypeUID();
+            if (channelType != null) {
+                if (channelType.getId().endsWith("-r")) {
+                    logger.warn("Ism8: channel {} of type {} is read-only, cannot send command", channelUID.getId(),
+                            channelType.toString());
+                    return;
+                }
+            }
             setDataPoint(dataPoint, command);
         }
     }
@@ -177,7 +186,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                     return true;
                 }
             } else {
-                logger.debug("Ism8 channel: {} and DataPoint do not have a matching Id: {} vs {}", channel.getUID(), id,
+                logger.trace("Ism8 channel: {} and DataPoint do not have a matching Id: {} vs {}", channel.getUID(), id,
                         dataPoint.getId());
             }
         } catch (NumberFormatException e) {
@@ -193,7 +202,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
         for (Channel channel : getThing().getChannels()) {
             if (channel.getConfiguration().containsKey(CHANNEL_CONFIG_ID)) {
                 if (updateChannel(channel, dataPoint)) {
-                    break;
+                    return;
                 }
             }
         }

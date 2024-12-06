@@ -66,7 +66,7 @@ public class AstroActions implements ThingActions {
     }
 
     @RuleAction(label = "get the azimuth", description = "Get the azimuth for a given time.")
-    public @Nullable @ActionOutput(name = "getAzimuth", label = "Azimuth", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getAzimuth(
+    public @Nullable @ActionOutput(name = "result", label = "Azimuth", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getAzimuth(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getAzimuth' called");
         AstroThingHandler theHandler = this.handler;
@@ -79,7 +79,7 @@ public class AstroActions implements ThingActions {
     }
 
     @RuleAction(label = "get the elevation", description = "Get the elevation for a given time.")
-    public @Nullable @ActionOutput(name = "getElevation", label = "Elevation", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getElevation(
+    public @Nullable @ActionOutput(name = "result", label = "Elevation", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getElevation(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getElevation' called");
         AstroThingHandler theHandler = this.handler;
@@ -92,7 +92,7 @@ public class AstroActions implements ThingActions {
     }
 
     @RuleAction(label = "get the total sun radiation", description = "Get the total sun radiation for a given time.")
-    public @Nullable @ActionOutput(name = "getTotalRadiation", label = "Total Radiation", type = "org.openhab.core.library.types.QuantityType<org.openhab.core.library.dimension.Intensity>") QuantityType<Intensity> getTotalRadiation(
+    public @Nullable @ActionOutput(name = "result", label = "Total Radiation", type = "org.openhab.core.library.types.QuantityType<org.openhab.core.library.dimension.Intensity>") QuantityType<Intensity> getTotalRadiation(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getTotalRadiation' called");
         AstroThingHandler theHandler = this.handler;
@@ -110,7 +110,7 @@ public class AstroActions implements ThingActions {
     }
 
     @RuleAction(label = "get the date time of a sun event", description = "Get the date time of a sun event.")
-    public @Nullable @ActionOutput(name = "getEventTime", type = "java.time.ZonedDateTime") ZonedDateTime getEventTime(
+    public @Nullable @ActionOutput(name = "result", label = "Event Time", type = "java.time.ZonedDateTime") ZonedDateTime getEventTime(
             @ActionInput(name = "phaseName", label = "Phase", required = true, description = "Requested phase") String phaseName,
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date,
             @ActionInput(name = "moment", label = "Moment", required = false, defaultValue = "START", description = "Either START or END") @Nullable String moment) {

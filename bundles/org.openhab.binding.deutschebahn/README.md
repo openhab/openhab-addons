@@ -162,7 +162,6 @@ String Zug1_Trip_FilterFlags "Filter" (zug1Fahrt) {channel="deutschebahn:train:t
 String Zug1_Trip_TripType "Fahrttyp" (zug1Fahrt) {channel="deutschebahn:train:timetableLehrte:lehrteZug1:trip#trip-type"}
 String Zug1_Trip_Owner "Unternehmen" (zug1Fahrt) {channel="deutschebahn:train:timetableLehrte:lehrteZug1:trip#owner"}
 
-
 // Arrival Information
 DateTime Zug1_Arrival_Plannedtime "Geplante Zeit" (zug1Ankunft) {channel="deutschebahn:train:timetableLehrte:lehrteZug1:arrival#planned-time"}
 DateTime Zug1_Arrival_Changedtime "Geänderte Zeit" (zug1Ankunft) {channel="deutschebahn:train:timetableLehrte:lehrteZug1:arrival#changed-time"}

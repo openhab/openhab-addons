@@ -58,7 +58,7 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "pv2watt", alternate = { "ppv2" }) Integer pv2_power;
 
     // AC mains electric data (1-phase resp. 3-phase)
-    public @Nullable @SerializedName(value = "pvfrequentie", alternate = { "line_freq", "outputfreq" }) Integer grid_frequency;
+    public @Nullable @SerializedName(value = "pvfrequentie", alternate = { "line_freq", "outputfreq", "frequency" }) Integer grid_frequency;
     public @Nullable @SerializedName(value = "pvgridvoltage", alternate = { "grid_volt", "outputvolt", "voltage_l1" }) Integer grid_voltage_r;
     public @Nullable @SerializedName(value = "pvgridvoltage2", alternate = { "voltage_l2" }) Integer grid_voltage_s;
     public @Nullable @SerializedName(value = "pvgridvoltage3", alternate = { "voltage_l3" }) Integer grid_voltage_t;
@@ -67,24 +67,24 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "Vac_TR", alternate = { "vactr", "L3-1_voltage" }) Integer grid_voltage_tr;
 
     // solar AC mains power
-    public @Nullable @SerializedName(value = "pvgridcurrent", alternate = { "OP_Curr", "Inv_Curr", "Current_l1" }) Integer inverter_current_r;
+    public @Nullable @SerializedName(value = "pvgridcurrent", alternate = { "OP_Curr", "Current_l1" }) Integer inverter_current_r;
     public @Nullable @SerializedName(value = "pvgridcurrent2", alternate = { "Current_l2" }) Integer inverter_current_s;
     public @Nullable @SerializedName(value = "pvgridcurrent3", alternate = { "Current_l3" }) Integer inverter_current_t;
 
-    public @Nullable @SerializedName(value = "pvgridpower", alternate = { "op_watt", "AC_InWatt" }) Integer inverter_power_r;
+    public @Nullable @SerializedName(value = "pvgridpower", alternate = { "op_watt" }) Integer inverter_power_r;
     public @Nullable @SerializedName(value = "pvgridpower2") Integer inverter_power_s;
     public @Nullable @SerializedName(value = "pvgridpower3") Integer inverter_power_t;
 
     // apparent power VA
-    public @Nullable @SerializedName(value = "op_va", alternate = { "AC_InVA" }) Integer inverter_va;
+    public @Nullable @SerializedName(value = "op_va") Integer inverter_va;
 
     // battery discharge / charge power
-    public @Nullable @SerializedName(value = "p1charge1", alternate = { "acchr_watt", "BatWatt", "bdc1_pchr" }) Integer charge_power;
-    public @Nullable @SerializedName(value = "pdischarge1", alternate = { "ACDischarWatt", "BatDischarWatt", "bdc1_pdischr" }) Integer discharge_power;
+    public @Nullable @SerializedName(value = "p1charge1", alternate = { "acchr_watt", "bdc1_pchr" }) Integer charge_power;
+    public @Nullable @SerializedName(value = "pdischarge1", alternate = { "ACDischarWatt", "bdc1_pdischr" }) Integer discharge_power;
 
     // miscellaneous battery
     public @Nullable @SerializedName(value = "ACCharCurr") Integer charge_current;
-    public @Nullable @SerializedName(value = "ACDischarVA", alternate = { "BatDischarVA", "acchar_VA" }) Integer discharge_va;
+    public @Nullable @SerializedName(value = "ACDischarVA") Integer discharge_va;
 
     // power exported to utility company
     public @Nullable @SerializedName(value = "pactogridtot", alternate = { "ptogridtotal" }) Integer export_power;
@@ -93,7 +93,7 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "pactogridt") Integer export_power_t;
 
     // power imported from utility company
-    public @Nullable @SerializedName(value = "pactousertot", alternate = { "ptousertotal", "pos_rev_act_power" }) Integer import_power;
+    public @Nullable @SerializedName(value = "pactousertot", alternate = { "ptousertotal", "AC_InWatt", "pos_rev_act_power" }) Integer import_power;
     public @Nullable @SerializedName(value = "pactouserr", alternate = { "act_power_l1" }) Integer import_power_r;
     public @Nullable @SerializedName(value = "pactousers", alternate = { "act_power_l2" }) Integer import_power_s;
     public @Nullable @SerializedName(value = "pactousert", alternate = { "act_power_l3" }) Integer import_power_t;
@@ -110,10 +110,10 @@ public class GrottValues {
 
     // solar DC pv energy
     public @Nullable @SerializedName(value = "epvtoday") Integer pv_energy_today;
-    public @Nullable @SerializedName(value = "epv1today", alternate = { "epv1tod" }) Integer pv1_energy_today;
+    public @Nullable @SerializedName(value = "epv1today", alternate = { "epv1tod", "epv1today " }) Integer pv1_energy_today; // alternate intentionally has trailing space
     public @Nullable @SerializedName(value = "epv2today", alternate = { "epv2tod" }) Integer pv2_energy_today;
 
-    public @Nullable @SerializedName(value = "epvtotal") Integer pv_energy_total;
+    public @Nullable @SerializedName(value = "epvtotal", alternate = { "epvtotal " }) Integer pv_energy_total; // alternate intentionally has trailing space
     public @Nullable @SerializedName(value = "epv1total", alternate = { "epv1tot" }) Integer pv1_energy_total;
     public @Nullable @SerializedName(value = "epv2total", alternate = { "epv2tot" }) Integer pv2_energy_total;
 
@@ -138,8 +138,8 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "eharge1_tot", alternate = { "echrtotal" }) Integer inverter_charge_energy_total;
 
     // discharging energy
-    public @Nullable @SerializedName(value = "edischarge1_tod", alternate = { "eacDischarToday", "ebatDischarToday", "edischrtoday" }) Integer discharge_energy_today;
-    public @Nullable @SerializedName(value = "edischarge1_tot", alternate = { "eacDischarTotal", "ebatDischarTotal", "edischrtotal" }) Integer discharge_energy_total;
+    public @Nullable @SerializedName(value = "edischarge1_tod", alternate = { "eacDischarToday", "edischrtoday" }) Integer discharge_energy_today;
+    public @Nullable @SerializedName(value = "edischarge1_tot", alternate = { "eacDischarTotal", "edischrtotal" }) Integer discharge_energy_total;
 
     // inverter up time
     public @Nullable @SerializedName(value = "totworktime") Integer total_work_time;
@@ -159,9 +159,9 @@ public class GrottValues {
     // battery data
     public @Nullable @SerializedName(value = "batterytype") Integer battery_type;
     public @Nullable @SerializedName(value = "batttemp", alternate = { "bdc1_tempa" }) Integer battery_temperature;
-    public @Nullable @SerializedName(value = "vbat", alternate = { "uwBatVolt_DSP", "bat_Volt", "bms_batteryvolt" }) Integer battery_voltage;
+    public @Nullable @SerializedName(value = "vbat", alternate = { "uwBatVolt_DSP", "bms_batteryvolt" }) Integer battery_voltage;
     public @Nullable @SerializedName(value = "bat_dsp") Integer battery_display;
-    public @Nullable @SerializedName(value = "SOC", alternate = { "batterySOC", "bms_soc" }) Integer battery_soc;
+    public @Nullable @SerializedName(value = "SOC", alternate = { "batterySOC", "batterySoc", "bms_soc" }) Integer battery_soc;
 
     // fault codes
     public @Nullable @SerializedName(value = "systemfaultword0", alternate = { "isof", "faultBit" }) Integer system_fault_0;
@@ -180,9 +180,61 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "loadpercent") Integer load_percent;
 
     // reactive 'power' resp. 'energy'
-    public @Nullable @SerializedName(value = "rac", alternate = { "react_power" }) Integer rac;
+    public @Nullable @SerializedName(value = "rac", alternate = { "react_power", "AC_InVA" }) Integer rac;
     public @Nullable @SerializedName(value = "eractoday", alternate = { "react_energy_kvar" }) Integer erac_today;
     public @Nullable @SerializedName(value = "eractotal") Integer erac_total;
+
+    /*
+     * ============== CHANNELS ADDED IN PR #17795 ==============
+     */
+
+    // battery instantaneous measurements
+    public @Nullable @SerializedName(value = "bat_Volt") Integer battery_voltage2;
+    public @Nullable @SerializedName(value = "acchr_VA") Integer charge_va;
+    public @Nullable @SerializedName(value = "BatDischarVA") Integer battery_discharge_va;
+    public @Nullable @SerializedName(value = "BatDischarWatt", alternate = { "BatWatt" }) Integer battery_discharge_watt;
+
+    // battery energy
+    public @Nullable @SerializedName(value = "ebatDischarToday") Integer battery_discharge_energy_today;
+    public @Nullable @SerializedName(value = "ebatDischarTotal") Integer battery_discharge_energy_total;
+
+    // inverter
+    public @Nullable @SerializedName(value = "Inv_Curr") Integer inverter_current;
+    public @Nullable @SerializedName(value = "invfanspeed") Integer inverter_fan_speed;
+
+    /*
+     * ============== CHANNELS ADDED IN PR #17810 ==============
+     */
+
+    // DC electric data for strings #3 and #4
+    public @Nullable @SerializedName(value = "pv3voltage") Integer pv3_voltage;
+    public @Nullable @SerializedName(value = "pv3current") Integer pv3_current;
+    public @Nullable @SerializedName(value = "pv3watt") Integer pv3_power;
+
+    public @Nullable @SerializedName(value = "pv4voltage") Integer pv4_voltage;
+    public @Nullable @SerializedName(value = "pv4current") Integer pv4_current;
+    public @Nullable @SerializedName(value = "pv4watt") Integer pv4_power;
+
+    // solar DC pv energy
+    public @Nullable @SerializedName(value = "epv3today") Integer pv3_energy_today;
+    public @Nullable @SerializedName(value = "epv3total") Integer pv3_energy_total;
+
+    // power factor
+    public @Nullable @SerializedName(value = "pf", alternate = { "powerfactor" }) Integer power_factor;
+
+    // emergency power supply (eps)
+    public @Nullable @SerializedName(value = "epsvac1") Integer eps_voltage_r;
+    public @Nullable @SerializedName(value = "epsvac2") Integer eps_voltage_s;
+    public @Nullable @SerializedName(value = "epsvac3") Integer eps_voltage_t;
+
+    public @Nullable @SerializedName(value = "epsiac1") Integer eps_current_r;
+    public @Nullable @SerializedName(value = "epsiac2") Integer eps_current_s;
+    public @Nullable @SerializedName(value = "epsiac3") Integer eps_current_t;
+
+    public @Nullable @SerializedName(value = "epspac") Integer eps_power;
+    public @Nullable @SerializedName(value = "epspac1") Integer eps_power_r;
+    public @Nullable @SerializedName(value = "epspac2") Integer eps_power_s;
+    public @Nullable @SerializedName(value = "epspac3") Integer eps_power_t;
 
     // @formatter:on
 }

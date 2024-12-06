@@ -13,6 +13,7 @@
 package org.openhab.persistence.jpa.internal.model;
 
 import java.text.DateFormat;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -86,6 +87,11 @@ public class JpaPersistentItem implements HistoricItem {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    @Override
+    public Instant getInstant() {
+        return timestamp.toInstant();
     }
 
     public String getValue() {

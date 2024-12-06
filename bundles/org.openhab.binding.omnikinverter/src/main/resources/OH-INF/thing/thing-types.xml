@@ -103,6 +103,12 @@
 				<label>Serial</label>
 				<description>The serial of the Omnik inverter's Wifi module. This the number part only.</description>
 			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="5">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in seconds.</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 

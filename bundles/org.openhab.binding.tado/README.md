@@ -79,7 +79,8 @@ Name | Type | Description | Read/Write | Zone type
 `verticalSwing`<sup>2)</sup> | String | Vertical swing state, one of <sup>3)</sup> `OFF`, `ON`, `UP`, `MID_UP`, `MID`, `MID_DOWN`, `DOWN`, `AUTO` | RW | `AC`
 `horizontalSwing`<sup>2)</sup> | String | Horizontal swing state, one of <sup>3)</sup> `OFF`, `ON`, `LEFT`, `MID_LEFT`, `MID`, `MID_RIGHT`, `RIGHT`, `AUTO` | RW | `AC`
 `batteryLowAlarm` | Switch | A control device in the Zone has a low battery | R | Any Zone
-`openWindowDetected` | Switch | An open window has been detected in the Zone | R | Any Zone
+`openWindowDetected` | Switch | An open window has been detected in the Zone | R | `HEATING`, `AC`
+`openWindowRemainingTime` | Number:Time | The remaining Open Window heating/cooling Override time in the Zone | R | `HEATING`, `AC`
 `light` | Switch | State (`ON`, `OFF`) of the control panel light | RW | `AC`
 
 You will see some of the above mentioned Channels only if your tado° device supports the respective function.
