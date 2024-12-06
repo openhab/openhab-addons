@@ -127,21 +127,21 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The temperature value.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="temperature-current">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The current temperature value.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="temperature-target">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The target temperature value.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="heater-status">

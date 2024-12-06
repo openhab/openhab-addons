@@ -27,8 +27,8 @@ import org.openhab.binding.intellicenter2.internal.protocol.ICProtocol;
 import org.openhab.binding.intellicenter2.internal.protocol.ICRequest;
 import org.openhab.binding.intellicenter2.internal.protocol.ICResponse;
 import org.openhab.binding.intellicenter2.internal.protocol.ResponseObject;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
@@ -52,9 +52,15 @@ public class IntelliCenter2PoolHandler extends IntelliCenter2ThingHandler<Body> 
 
     @Override
     protected void updateState(Body pool) {
+        final IntelliCenter2BridgeHandler bh = getBridgeHandler();
+        if (bh == null) {
+            return;
+        }
         updateState(CHANNEL_HEATER_STATUS, OnOffType.from(pool.isHeating()));
-        updateState(CHANNEL_CURRENT_TEMPERATURE, new DecimalType(pool.getCurrentTemperature()));
-        updateState(CHANNEL_TARGET_TEMPERATURE, new DecimalType(pool.getTargetTemperature()));
+        updateState(CHANNEL_CURRENT_TEMPERATURE,
+                new QuantityType<>(pool.getCurrentTemperature(), bh.getTemperatureUnits()));
+        updateState(CHANNEL_TARGET_TEMPERATURE,
+                new QuantityType<>(pool.getTargetTemperature(), bh.getTemperatureUnits()));
     }
 
     @Override
@@ -72,12 +78,16 @@ public class IntelliCenter2PoolHandler extends IntelliCenter2ThingHandler<Body> 
 
     @Override
     protected void updateState(ChannelUID channelUID, Body pool) {
+        final IntelliCenter2BridgeHandler bh = getBridgeHandler();
+        if (bh == null) {
+            return;
+        }
         switch (channelUID.getId()) {
             case CHANNEL_CURRENT_TEMPERATURE:
-                updateState(channelUID, new DecimalType(pool.getCurrentTemperature()));
+                updateState(channelUID, new QuantityType<>(pool.getCurrentTemperature(), bh.getTemperatureUnits()));
                 break;
             case CHANNEL_TARGET_TEMPERATURE:
-                updateState(channelUID, new DecimalType(pool.getTargetTemperature()));
+                updateState(channelUID, new QuantityType<>(pool.getTargetTemperature(), bh.getTemperatureUnits()));
                 break;
             case CHANNEL_HEATER_STATUS:
                 updateState(channelUID, OnOffType.from(pool.isHeating()));

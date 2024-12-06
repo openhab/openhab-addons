@@ -17,12 +17,17 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.intellicenter2.internal.IntelliCenter2Configuration;
 import org.openhab.binding.intellicenter2.internal.discovery.IntelliCenter2DiscoveryService;
 import org.openhab.binding.intellicenter2.internal.model.SystemInfo;
 import org.openhab.binding.intellicenter2.internal.protocol.ICProtocol;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -111,6 +116,13 @@ public class IntelliCenter2BridgeHandler extends BaseBridgeHandler {
 
     public ICProtocol getProtocol() {
         return Futures.getUnchecked(protocolFuture);
+    }
+
+    public Unit<Temperature> getTemperatureUnits() {
+        if (systemInfo != null) {
+            return systemInfo.isMetricSystem() ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
+        }
+        throw new IllegalStateException("systemInfo was not set yet.");
     }
 
     @Override

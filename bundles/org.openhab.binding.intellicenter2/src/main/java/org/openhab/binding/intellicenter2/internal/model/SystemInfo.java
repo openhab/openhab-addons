@@ -51,6 +51,10 @@ public class SystemInfo extends ResponseModel {
         return getValueAsString(MODE);
     }
 
+    public boolean isMetricSystem() {
+        return "METRIC".equals(getMode());
+    }
+
     public String getVersion() {
         return getValueAsString(VER);
     }
