@@ -75,7 +75,7 @@ The configuration for the `tcpBridge` consists of the following parameters:
 | port              | The number of the TCP port to connect to                                                                                                                                                                  |
 | timeout           | Socket timeout in seconds (0 = no timeout)                                                                                                                                                                |
 | keepAlive         | Enable socket keep-alive                                                                                                                                                                                  |
-| reconnectInterval | Interval in seconds for automatic reconnect after connection failure                                                                                                                                      |
+| reconnectInterval | Interval in seconds for automatic reconnect after connection failure (defaults to 10 seconds)                                                                                                             |
 | charset           | The charset to use for converting between bytes and string (e.g. UTF-8,ISO-8859-1). Enter 'HEX' to convert binary data into hexadecimal strings separated by space.                                       |
 | eolPattern        | In charset=HEX mode, a regular expression is required to match the binaries equivalent of an 'End of line' character. For example, '\bFF' would match a byte value of 255 as end of the current response. |
 
@@ -118,20 +118,20 @@ The channels supported by the `serialDevice` are:
 
 The configuration for the `serialDevice` channels consists of the following parameters:
 
-| Parameter               | Description                                                                                                                      | Supported Channels                            |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| `stateTransformation`   | One or more transformation (concatenated with `∩`) used to convert device data to channel state, e.g. `REGEX(.*?STATE=(.*?);.*)` | string, number, dimmer, switch, rollershutter |
-| `commandTransformation` | One or more transformation (concatenated with `∩`) used to convert command to device data, e.g. `JS(device.js)`                  | string, number, dimmer, switch, rollershutter |
-| `commandFormat`         | Format string applied to the command before transform, e.g. `ID=671;COMMAND=%s`                                                  | string, number, dimmer, rollershutter         |
-| `onValue`               | Send this value when receiving an ON command                                                                                     | switch, dimmer                                |
-| `offValue`              | Send this value when receiving an OFF command                                                                                    | switch, dimmer                                |
-| `increaseValue`         | Send this value when receiving an INCREASE command                                                                               | dimmer                                        |
-| `decreaseValue`         | Send this value when receiving a DECREASE command                                                                                | dimmer                                        |
-| `upValue`               | Send this value when receiving an UP command                                                                                     | rollershutter                                 |
-| `downValue`             | Send this value when receiving a DOWN command                                                                                    | rollershutter                                 |
-| `stopValue`             | Send this value when receiving a STOP command                                                                                    | rollershutter                                 |
-| `refreshCommand`        | Command that should be issued to receive the current channel state                                                               | string, number, dimmer, switch, rollershutter |
-| `refreshInterval`       | If configured, this defines an interval that will schedule automatic channel refresh                                             | string, number, dimmer, switch, rollershutter |
+| Parameter               | Description                                                                                                                                                | Supported Channels                            |
+| ----------------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------| --------------------------------------------- |
+| `stateTransformation`   | One or more transformation (concatenated with `∩`) used to convert device data to channel state, e.g. `REGEX(.*?STATE=(.*?);.*)`                           | string, number, dimmer, switch, rollershutter |
+| `commandTransformation` | One or more transformation (concatenated with `∩`) used to convert command to device data, e.g. `JS(device.js)`                                            | string, number, dimmer, switch, rollershutter |
+| `commandFormat`         | Format string applied to the command before transform, e.g. `ID=671;COMMAND=%s`                                                                            | string, number, dimmer, rollershutter         |
+| `onValue`               | Send this value when receiving an ON command                                                                                                               | switch, dimmer                                |
+| `offValue`              | Send this value when receiving an OFF command                                                                                                              | switch, dimmer                                |
+| `increaseValue`         | Send this value when receiving an INCREASE command                                                                                                         | dimmer                                        |
+| `decreaseValue`         | Send this value when receiving a DECREASE command                                                                                                          | dimmer                                        |
+| `upValue`               | Send this value when receiving an UP command                                                                                                               | rollershutter                                 |
+| `downValue`             | Send this value when receiving a DOWN command                                                                                                              | rollershutter                                 |
+| `stopValue`             | Send this value when receiving a STOP command                                                                                                              | rollershutter                                 |
+| `refreshCommand`        | Command that should be issued to receive the current channel state                                                                                         | string, number, dimmer, switch, rollershutter |
+| `refreshInterval`       | A value greater than the default of 0 will trigger a periodical "Refresh Command" for services that do not automatically push changed values to the client | string, number, dimmer, switch, rollershutter |
 
 Transformations can be chained in the UI by listing each transformation on a separate line, or by separating them with the mathematical intersection character "∩".
 Transformations are defined using this syntax: `TYPE(FUNCTION)`, e.g.: `JSONPATH($.path)`.

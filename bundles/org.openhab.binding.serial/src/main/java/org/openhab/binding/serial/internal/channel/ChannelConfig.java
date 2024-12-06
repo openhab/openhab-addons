@@ -81,7 +81,12 @@ public class ChannelConfig {
     public @Nullable String refreshValue;
 
     /**
-     * Automatic refresh interval
+     * Automatic refresh interval.
+     *
+     * This value is only required if the peer has to send the “Refresh Value”
+     * command regularly in order to return the current properties. It is not
+     * required if the peer automatically forwards changed values to its
+     * clients.
      */
     public int refreshInterval = 0;
 }
