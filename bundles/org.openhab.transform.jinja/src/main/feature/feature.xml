@@ -5,7 +5,7 @@
 	<feature name="openhab-transformation-jinja" description="Jinja Transformation" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature dependency="true">openhab.tp-commons-net</feature>
-		<bundle dependency="true">mvn:org.openhab.osgiify/com.hubspot.jinjava.jinjava/2.7.3</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/com.hubspot.jinjava.jinjava/2.7.4</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/com.google.re2j.re2j/1.2</bundle>
 		<bundle dependency="true">mvn:ch.obermuhlner/big-math/2.3.2</bundle>
 		<bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jdk8/${jackson.version}</bundle>
