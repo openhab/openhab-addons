@@ -120,7 +120,8 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
             bridgeHandler = new SmartthingsHubBridgeHandler((Bridge) thing, this, bundleContext, httpService,
                     oAuthFactory, httpClientFactory);
 
-            authService.setSmartthingsAccountHandler(bridgeHandler);
+            SmartthingsAccountHandler accountHandler = bridgeHandler;
+            authService.setSmartthingsAccountHandler(accountHandler);
 
             bridgeUID = thing.getUID();
             logger.debug("SmartthingsHandlerFactory created BridgeHandler for {}", thingTypeUID.getAsString());
@@ -138,7 +139,8 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
             bridgeHandler = new SmartthingsCloudBridgeHandler((Bridge) thing, this, bundleContext, httpService,
                     oAuthFactory, httpClientFactory);
 
-            authService.setSmartthingsAccountHandler(bridgeHandler);
+            SmartthingsAccountHandler accountHandler = bridgeHandler;
+            authService.setSmartthingsAccountHandler(accountHandler);
 
             bridgeUID = thing.getUID();
             logger.debug("SmartthingsHandlerFactory created CloudBridgeHandler for {}", thingTypeUID.getAsString());
