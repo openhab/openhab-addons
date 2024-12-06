@@ -141,6 +141,50 @@
 		<config-description-ref uri="thing-type:unifi:poePort"/>
 	</thing-type>
 
+	<thing-type id="accessPoint">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+
+		<label>UniFi Access Point</label>
+		<description>An access point managed by a UniFi controller</description>
+
+		<channels>
+			<channel id="online" typeId="online">
+				<description>Online status of the device</description>
+			</channel>
+			<channel id="enable" typeId="apEnable"/>
+			<channel id="state" typeId="devState"/>
+			<channel id="name" typeId="name">
+				<description>Name of the device</description>
+			</channel>
+			<channel id="site" typeId="site"/>
+			<channel id="ipAddress" typeId="ipAddress">
+				<description>IP address of the device</description>
+			</channel>
+			<channel id="uptime" typeId="uptime">
+				<description>Uptime of the device (in seconds)</description>
+			</channel>
+			<channel id="lastSeen" typeId="lastSeen">
+				<description>Timestamp of when the device was last seen</description>
+			</channel>
+			<channel id="experience" typeId="experience">
+				<description>The average experience of the connected clients</description>
+			</channel>
+			<channel id="led" typeId="system.power">
+				<label>LED</label>
+				<description>Switches the LED on or off</description>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="vendor">Ubiquiti Networks</property>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:unifi:accessPoint"/>
+	</thing-type>
+
 	<!-- Channels -->
 
 	<channel-type id="totalClients">
@@ -318,7 +362,7 @@
 	</channel-type>
 
 	<channel-type id="rssi">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Received Signal Strength Indicator</label>
 		<description>Received Signal Strength Indicator (RSSI) of the wireless client</description>
 		<category>QualityOfService</category>
@@ -419,6 +463,32 @@
 		<label>Port PoE Current</label>
 		<description>Current usage of the PoE port</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="apEnable" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Enabled</label>
+		<description>If the access point is enabled</description>
+	</channel-type>
+
+	<channel-type id="devState">
+		<item-type>String</item-type>
+		<label>Device State</label>
+		<description>The state of the device</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Offline</option>
+				<option value="1">Connected</option>
+				<option value="2">Pending Adoption</option>
+				<option value="4">Updating</option>
+				<option value="5">Provisioning</option>
+				<option value="6">Unreachable</option>
+				<option value="7">Adopting</option>
+				<option value="9">Adoption Error</option>
+				<option value="10">Adoption Failed</option>
+				<option value="11">Isolated</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

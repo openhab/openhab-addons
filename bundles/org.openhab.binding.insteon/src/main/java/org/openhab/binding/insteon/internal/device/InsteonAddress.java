@@ -14,88 +14,53 @@ package org.openhab.binding.insteon.internal.device;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
 
 /**
- * This class wraps an Insteon Address 'xx.xx.xx'
+ * The {@link InsteonAddress} represents an Insteon address
  *
  * @author Daniel Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-public class InsteonAddress {
-    private byte highByte;
-    private byte middleByte;
-    private byte lowByte;
-    private boolean x10;
+public class InsteonAddress implements DeviceAddress {
+    public static final InsteonAddress UNKNOWN = new InsteonAddress("00.00.00");
 
-    public InsteonAddress() {
-        highByte = 0x00;
-        middleByte = 0x00;
-        lowByte = 0x00;
-        x10 = false;
+    private final byte highByte;
+    private final byte middleByte;
+    private final byte lowByte;
+
+    public InsteonAddress(InsteonAddress address) {
+        this.highByte = address.highByte;
+        this.middleByte = address.middleByte;
+        this.lowByte = address.lowByte;
     }
 
-    public InsteonAddress(InsteonAddress a) {
-        highByte = a.highByte;
-        middleByte = a.middleByte;
-        lowByte = a.lowByte;
-        x10 = a.x10;
+    public InsteonAddress(byte highByte, byte middleByte, byte lowByte) {
+        this.highByte = highByte;
+        this.middleByte = middleByte;
+        this.lowByte = lowByte;
     }
 
-    public InsteonAddress(byte high, byte middle, byte low) {
-        highByte = high;
-        middleByte = middle;
-        lowByte = low;
-        x10 = false;
+    public InsteonAddress(byte[] b) throws ArrayIndexOutOfBoundsException {
+        this.highByte = b[0];
+        this.middleByte = b[1];
+        this.lowByte = b[2];
     }
 
-    /**
-     * Constructor
-     *
-     * @param address string must have format of e.g. '2a.3c.40' or (for X10) 'H.UU'
-     */
     public InsteonAddress(String address) throws IllegalArgumentException {
-        if (X10.isValidAddress(address)) {
-            highByte = 0;
-            middleByte = 0;
-            lowByte = X10.addressToByte(address);
-            x10 = true;
-        } else {
-            String[] parts = address.split("\\.");
-            if (parts.length != 3) {
-                throw new IllegalArgumentException("Address string must have 3 bytes, has: " + parts.length);
-            }
-            highByte = (byte) Utils.fromHexString(parts[0]);
-            middleByte = (byte) Utils.fromHexString(parts[1]);
-            lowByte = (byte) Utils.fromHexString(parts[2]);
-            x10 = false;
+        String[] parts = address.split("\\.");
+        if (parts.length != 3) {
+            throw new IllegalArgumentException("Address string must have 3 bytes, has: " + parts.length);
         }
-    }
-
-    /**
-     * Constructor for an InsteonAddress that wraps an X10 address.
-     * Simply stuff the X10 address into the lowest byte.
-     *
-     * @param aX10HouseUnit the house and unit number as encoded by the X10 protocol
-     */
-    public InsteonAddress(byte aX10HouseUnit) {
-        highByte = 0;
-        middleByte = 0;
-        lowByte = aX10HouseUnit;
-        x10 = true;
-    }
-
-    public void setHighByte(byte h) {
-        highByte = h;
-    }
-
-    public void setMiddleByte(byte m) {
-        middleByte = m;
-    }
-
-    public void setLowByte(byte l) {
-        lowByte = l;
+        try {
+            this.highByte = (byte) HexUtils.toInteger(parts[0]);
+            this.middleByte = (byte) HexUtils.toInteger(parts[1]);
+            this.lowByte = (byte) HexUtils.toInteger(parts[2]);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Address string must have hexadecimal bytes");
+        }
     }
 
     public byte getHighByte() {
@@ -110,45 +75,15 @@ public class InsteonAddress {
         return lowByte;
     }
 
-    public byte getX10HouseCode() {
-        return (byte) ((lowByte & 0xf0) >> 4);
-    }
-
-    public byte getX10UnitCode() {
-        return (byte) ((lowByte & 0x0f));
-    }
-
-    public boolean isX10() {
-        return x10;
-    }
-
-    public void storeBytes(byte[] bytes, int offset) {
-        bytes[offset] = getHighByte();
-        bytes[offset + 1] = getMiddleByte();
-        bytes[offset + 2] = getLowByte();
-    }
-
-    public void loadBytes(byte[] bytes, int offset) {
-        setHighByte(bytes[offset]);
-        setMiddleByte(bytes[offset + 1]);
-        setLowByte(bytes[offset + 2]);
+    public byte[] getBytes() {
+        return new byte[] { highByte, middleByte, lowByte };
     }
 
     @Override
     public String toString() {
-        String s = null;
-        if (isX10()) {
-            byte house = (byte) (((getLowByte() & 0xf0) >> 4) & 0xff);
-            byte unit = (byte) ((getLowByte() & 0x0f) & 0xff);
-            s = X10.houseToString(house) + "." + X10.unitToInt(unit);
-            // s = Utils.getHexString(lowByte);
-        } else {
-            s = Utils.getHexString(highByte) + "." + Utils.getHexString(middleByte) + "." + Utils.getHexString(lowByte);
-        }
-        return s;
+        return String.format("%02X.%02X.%02X", highByte, middleByte, lowByte);
     }
 
-    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {
@@ -161,19 +96,7 @@ public class InsteonAddress {
             return false;
         }
         InsteonAddress other = (InsteonAddress) obj;
-        if (highByte != other.highByte) {
-            return false;
-        }
-        if (lowByte != other.lowByte) {
-            return false;
-        }
-        if (middleByte != other.middleByte) {
-            return false;
-        }
-        if (x10 != other.x10) {
-            return false;
-        }
-        return true;
+        return highByte == other.highByte && middleByte == other.middleByte && lowByte == other.lowByte;
     }
 
     @Override
@@ -181,46 +104,25 @@ public class InsteonAddress {
         final int prime = 31;
         int result = 1;
         result = prime * result + highByte;
-        result = prime * result + lowByte;
         result = prime * result + middleByte;
-        result = prime * result + (x10 ? 1231 : 1237);
+        result = prime * result + lowByte;
         return result;
     }
 
     /**
-     * Test if Insteon address is valid
+     * Returns if Insteon address is valid
      *
-     * @return true if address is in valid AB.CD.EF or (for X10) H.UU format
+     * @return true if address is valid
      */
-    public static boolean isValid(@Nullable String addr) {
-        if (addr == null) {
-            return false;
-        }
-        if (X10.isValidAddress(addr)) {
-            return true;
-        }
-        String[] fields = addr.split("\\.");
-        if (fields.length != 3) {
+    public static boolean isValid(@Nullable String address) {
+        if (address == null) {
             return false;
         }
         try {
-            // convert the insteon xx.xx.xx address to integer to test
-            @SuppressWarnings("unused")
-            int test = Integer.parseInt(fields[2], 16) * 65536 + Integer.parseInt(fields[1], 16) * 256
-                    + +Integer.parseInt(fields[0], 16);
-        } catch (NumberFormatException e) {
+            new InsteonAddress(address);
+            return true;
+        } catch (IllegalArgumentException e) {
             return false;
         }
-        return true;
-    }
-
-    /**
-     * Turn string into address
-     *
-     * @param val the string to convert
-     * @return the corresponding insteon address
-     */
-    public static InsteonAddress parseAddress(String val) {
-        return new InsteonAddress(val);
     }
 }

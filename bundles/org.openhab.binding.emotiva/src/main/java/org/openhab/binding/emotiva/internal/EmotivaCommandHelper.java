@@ -14,8 +14,6 @@ package org.openhab.binding.emotiva.internal;
 
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlRequest;
@@ -69,11 +67,11 @@ public class EmotivaCommandHelper {
         return Math.min(Math.max(Double.valueOf(volumeInPercentage).intValue(), min), max);
     }
 
-    public static EmotivaControlRequest channelToControlRequest(String id,
-            Map<String, Map<EmotivaControlCommands, String>> commandMaps, EmotivaProtocolVersion protocolVersion) {
+    public static EmotivaControlRequest channelToControlRequest(String id, EmotivaProcessorState state,
+            EmotivaProtocolVersion protocolVersion) {
         EmotivaSubscriptionTags channelSubscription = EmotivaSubscriptionTags.fromChannelUID(id);
         EmotivaControlCommands channelFromCommand = OHChannelToEmotivaCommand.fromChannelUID(id);
-        return new EmotivaControlRequest(id, channelSubscription, channelFromCommand, commandMaps, protocolVersion);
+        return new EmotivaControlRequest(id, channelSubscription, channelFromCommand, state, protocolVersion);
     }
 
     public static String getMenuPanelRowLabel(int row) {
@@ -96,7 +94,7 @@ public class EmotivaCommandHelper {
 
     public static String updateProgress(double progressPercentage) {
         final int width = 30;
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         sb.append("[");
         int i = 0;

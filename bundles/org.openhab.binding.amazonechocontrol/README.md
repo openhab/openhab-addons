@@ -442,8 +442,9 @@ The channels of the smarthome devices will be generated at runtime. Check in the
 |--------------------------|----------------------|-------------|-------------------------------|------------------------------------------------------------------------------------------
 | powerState               | Switch               | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the state (ON/OFF) of your device
 | brightness               | Dimmer               | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the brightness of your lamp
-| color                    | Color                | R           | smartHomeDevice, smartHomeDeviceGroup | Shows the color of your light
+| color                    | Color                | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows the color of your light
 | colorName                | String               | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the color name of your light (groups are not able to show their color)
+| colorTemperatureInKelvin | Number:Temperature   | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows the color temperature of your light
 | colorTemperatureName     | String               | R/W         | smartHomeDevice, smartHomeDeviceGroup | White temperatures name of your lights (groups are not able to show their color)
 | armState                 | String               | R/W         | smartHomeDevice, smartHomeDeviceGroup | State of your alarm guard. Options: ARMED_AWAY, ARMED_STAY, ARMED_NIGHT, DISARMED (groups are not able to show their state)
 | burglaryAlarm            | Contact              | R           | smartHomeDevice | Burglary alarm
@@ -537,7 +538,7 @@ E.g. to read out the history call from an installation on openhab:8080 with an a
 
 1) Create a rule with a trigger of your choice
 
-```php
+```java
 rule "Say welcome if the door opens"
 when
     Item Door_Contact changed to OPEN
@@ -548,7 +549,7 @@ end
 
 You can also use [SSML](https://docs.aws.amazon.com/polly/latest/dg/supported-ssml.html) to provide a better voice experience
 
-```php
+```java
 rule "Say welcome if the door opens"
 when
     Item Door_Contact changed to OPEN
@@ -563,7 +564,7 @@ end
 
 Simple:
 
-```php
+```java
 rule "Say welcome if the door opens"
 when
     Item Door_Contact changed to OPEN
@@ -576,7 +577,7 @@ Expert:
 
 You can use a json formatted string to control title, sound and volume:
 
-```php
+```json
 {"sound": true, "speak":"<Speak>", "title": "<Title>", "body": "<Body Text>", "volume": 20}
 ```
 

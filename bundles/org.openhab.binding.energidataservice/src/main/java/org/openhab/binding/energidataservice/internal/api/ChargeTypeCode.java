@@ -13,6 +13,7 @@
 package org.openhab.binding.energidataservice.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Charge type code for DatahubPricelist dataset.
@@ -41,6 +42,16 @@ public class ChargeTypeCode {
     @Override
     public String toString() {
         return code;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        return o == this || (o instanceof ChargeTypeCode other && code.equals(other.code));
+    }
+
+    @Override
+    public int hashCode() {
+        return code.hashCode();
     }
 
     public static ChargeTypeCode of(String code) {

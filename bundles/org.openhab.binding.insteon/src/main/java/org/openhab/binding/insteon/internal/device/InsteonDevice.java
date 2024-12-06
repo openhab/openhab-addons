@@ -12,644 +12,980 @@
  */
 package org.openhab.binding.insteon.internal.device;
 
+import static org.openhab.binding.insteon.internal.InsteonBindingConstants.*;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
-import org.openhab.binding.insteon.internal.device.DeviceType.FeatureGroup;
-import org.openhab.binding.insteon.internal.device.GroupMessageStateMachine.GroupMessage;
-import org.openhab.binding.insteon.internal.driver.Driver;
-import org.openhab.binding.insteon.internal.message.FieldException;
-import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
-import org.openhab.binding.insteon.internal.message.Msg;
+import org.openhab.binding.insteon.internal.device.DeviceFeature.QueryStatus;
+import org.openhab.binding.insteon.internal.device.database.LinkDB;
+import org.openhab.binding.insteon.internal.device.database.LinkDBChange;
+import org.openhab.binding.insteon.internal.device.database.LinkDBRecord;
+import org.openhab.binding.insteon.internal.device.database.ModemDB;
+import org.openhab.binding.insteon.internal.device.database.ModemDBChange;
+import org.openhab.binding.insteon.internal.device.database.ModemDBEntry;
+import org.openhab.binding.insteon.internal.device.database.ModemDBRecord;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.DeviceTypeRenamer;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonToggleMode;
+import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
+import org.openhab.binding.insteon.internal.transport.message.FieldException;
+import org.openhab.binding.insteon.internal.transport.message.GroupMessageStateMachine;
+import org.openhab.binding.insteon.internal.transport.message.Msg;
+import org.openhab.binding.insteon.internal.utils.BinaryUtils;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
- * The InsteonDevice class holds known per-device state of a single Insteon device,
- * including the address, what port(modem) to reach it on etc.
- * Note that some Insteon devices de facto consist of two devices (let's say
- * a relay and a sensor), but operate under the same address. Such devices will
- * be represented just by a single InsteonDevice. Their different personalities
- * will then be represented by DeviceFeatures.
+ * The {@link InsteonDevice} represents an Insteon device
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-public class InsteonDevice {
-    private final Logger logger = LoggerFactory.getLogger(InsteonDevice.class);
+public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandler> {
+    private static final int BCAST_STATE_TIMEOUT = 2000; // in milliseconds
+    private static final int DEFAULT_HEARTBEAT_TIMEOUT = 1440; // in minutes
+    private static final int FAILED_MSG_COUNT_THRESHOLD = 5;
 
-    public enum DeviceStatus {
-        INITIALIZED,
-        POLLING
-    }
-
-    /** need to wait after query to avoid misinterpretation of duplicate replies */
-    private static final int QUIET_TIME_DIRECT_MESSAGE = 2000;
-    /** how far to space out poll messages */
-    private static final int TIME_BETWEEN_POLL_MESSAGES = 1500;
-
-    private InsteonAddress address = new InsteonAddress();
-    private long pollInterval = -1L; // in milliseconds
-    private @Nullable Driver driver = null;
-    private Map<String, DeviceFeature> features = new HashMap<>();
-    private @Nullable String productKey = null;
-    private volatile long lastTimePolled = 0L;
-    private volatile long lastMsgReceived = 0L;
-    private boolean isModem = false;
-    private PriorityQueue<@Nullable QEntry> mrequestQueue = new PriorityQueue<>();
-    private @Nullable DeviceFeature featureQueried = null;
-    private long lastQueryTime = 0L;
-    private boolean hasModemDBEntry = false;
-    private DeviceStatus status = DeviceStatus.INITIALIZED;
+    private InsteonEngine engine = InsteonEngine.UNKNOWN;
+    private LinkDB linkDB;
+    private Map<String, DefaultLink> defaultLinks = new LinkedHashMap<>();
+    private List<Msg> storedMessages = new LinkedList<>();
+    private Queue<DeviceRequest> deferredQueue = new PriorityQueue<>();
+    private Map<Msg, DeviceRequest> deferredQueueHash = new HashMap<>();
+    private Map<Byte, Long> lastBroadcastReceived = new HashMap<>();
     private Map<Integer, GroupMessageStateMachine> groupState = new HashMap<>();
-    private Map<String, Object> deviceConfigMap = new HashMap<>();
+    private volatile int failedMsgCount = 0;
+    private volatile long lastMsgReceived = 0L;
 
-    /**
-     * Constructor
-     */
     public InsteonDevice() {
-        lastMsgReceived = System.currentTimeMillis();
+        super(InsteonAddress.UNKNOWN);
+        this.linkDB = new LinkDB(this);
     }
 
-    // --------------------- simple getters -----------------------------
-
-    public boolean hasProductKey() {
-        return productKey != null;
+    public InsteonEngine getInsteonEngine() {
+        return engine;
     }
 
-    public @Nullable String getProductKey() {
-        return productKey;
+    public LinkDB getLinkDB() {
+        return linkDB;
+    }
+
+    public @Nullable DefaultLink getDefaultLink(String name) {
+        synchronized (defaultLinks) {
+            return defaultLinks.get(name);
+        }
+    }
+
+    public List<DefaultLink> getDefaultLinks() {
+        synchronized (defaultLinks) {
+            return defaultLinks.values().stream().toList();
+        }
+    }
+
+    public List<Msg> getStoredMessages() {
+        synchronized (storedMessages) {
+            return storedMessages;
+        }
+    }
+
+    public List<DeviceFeature> getControllerFeatures() {
+        return getFeatures().stream().filter(DeviceFeature::isControllerFeature).toList();
+    }
+
+    public List<DeviceFeature> getResponderFeatures() {
+        return getFeatures().stream().filter(DeviceFeature::isResponderFeature).toList();
+    }
+
+    public List<DeviceFeature> getControllerOrResponderFeatures() {
+        return getFeatures().stream().filter(DeviceFeature::isControllerOrResponderFeature).toList();
+    }
+
+    public List<DeviceFeature> getFeatures(String type) {
+        return getFeatures().stream().filter(feature -> feature.getType().equals(type)).toList();
+    }
+
+    public @Nullable DeviceFeature getFeature(String type, int group) {
+        return getFeatures().stream().filter(feature -> feature.getType().equals(type) && feature.getGroup() == group)
+                .findFirst().orElse(null);
+    }
+
+    public double getLastMsgValueAsDouble(String type, int group, double defaultValue) {
+        return Optional.ofNullable(getFeature(type, group)).map(DeviceFeature::getLastMsgValue).map(Double::doubleValue)
+                .orElse(defaultValue);
+    }
+
+    public int getLastMsgValueAsInteger(String type, int group, int defaultValue) {
+        return Optional.ofNullable(getFeature(type, group)).map(DeviceFeature::getLastMsgValue).map(Double::intValue)
+                .orElse(defaultValue);
+    }
+
+    public @Nullable State getFeatureState(String type, int group) {
+        return Optional.ofNullable(getFeature(type, group)).map(DeviceFeature::getState).orElse(null);
+    }
+
+    public boolean isResponding() {
+        return failedMsgCount < FAILED_MSG_COUNT_THRESHOLD;
+    }
+
+    public boolean isBatteryPowered() {
+        return getFlag("batteryPowered", false);
+    }
+
+    public boolean isDeviceSyncEnabled() {
+        return getFlag("deviceSyncEnabled", false);
     }
 
     public boolean hasModemDBEntry() {
-        return hasModemDBEntry;
+        return getFlag("modemDBEntry", false);
     }
 
-    public DeviceStatus getStatus() {
-        return status;
+    public void setInsteonEngine(InsteonEngine engine) {
+        logger.trace("setting insteon engine for {} to {}", address, engine);
+        this.engine = engine;
+        // notify properties changed
+        propertiesChanged(false);
     }
 
-    public InsteonAddress getAddress() {
-        return (address);
+    public void setHasModemDBEntry(boolean value) {
+        setFlag("modemDBEntry", value);
+        // notify status changed
+        statusChanged();
     }
 
-    public @Nullable Driver getDriver() {
-        return driver;
+    public void setIsDeviceSyncEnabled(boolean value) {
+        setFlag("deviceSyncEnabled", value);
     }
 
-    public long getPollInterval() {
-        return pollInterval;
+    /**
+     * Returns this device heartbeat timeout
+     *
+     * @return heartbeat timeout in minutes
+     */
+    public int getHeartbeatTimeout() {
+        DeviceFeature feature = getFeature(FEATURE_HEARTBEAT_INTERVAL);
+        if (feature != null) {
+            if (feature.getState() instanceof QuantityType<?> interval) {
+                return Objects.requireNonNullElse(interval.toInvertibleUnit(Units.MINUTE), interval).intValue();
+            }
+            return 0;
+        }
+        return DEFAULT_HEARTBEAT_TIMEOUT;
     }
 
-    public boolean isModem() {
-        return isModem;
+    /**
+     * Returns if this device has heartbeat
+     *
+     * @return true if has heartbeat feature and heartbeat on/off feature state on when available, otherise false
+     */
+    public boolean hasHeartbeat() {
+        return hasFeature(FEATURE_HEARTBEAT) && (!hasFeature(FEATURE_HEARTBEAT_ON_OFF)
+                || OnOffType.ON.equals(getFeatureState(FEATURE_HEARTBEAT_ON_OFF)));
     }
 
-    public @Nullable DeviceFeature getFeature(String f) {
-        return features.get(f);
+    /**
+     * Returns if this device is awake
+     *
+     * @return true if device not battery powered or within awake time
+     */
+    public boolean isAwake() {
+        if (isBatteryPowered()) {
+            // define awake time based on the stay awake feature state (ON => 4 minutes; OFF => 3 seconds)
+            State state = getFeatureState(FEATURE_STAY_AWAKE);
+            int awakeTime = OnOffType.ON.equals(state) ? 240000 : 3000; // in msec
+            return System.currentTimeMillis() - lastMsgReceived <= awakeTime;
+        }
+        return true;
     }
 
-    public Map<String, DeviceFeature> getFeatures() {
-        return features;
-    }
-
-    public byte getX10HouseCode() {
-        return (address.getX10HouseCode());
-    }
-
-    public byte getX10UnitCode() {
-        return (address.getX10UnitCode());
-    }
-
-    public boolean hasProductKey(String key) {
-        String productKey = this.productKey;
-        return productKey != null && productKey.equals(key);
-    }
-
-    public boolean hasValidPollingInterval() {
-        return (pollInterval > 0);
-    }
-
-    public long getPollOverDueTime() {
-        return (lastTimePolled - lastMsgReceived);
-    }
-
-    public boolean hasAnyListeners() {
-        synchronized (features) {
-            for (DeviceFeature f : features.values()) {
-                if (f.hasListeners()) {
-                    return true;
+    /**
+     * Returns if an incoming message is duplicate
+     *
+     * @param msg the message received
+     * @return true if group or broadcast message is duplicate
+     */
+    public boolean isDuplicateMsg(Msg msg) {
+        try {
+            if (msg.isAllLinkBroadcastOrCleanup()) {
+                synchronized (groupState) {
+                    int group = msg.getGroup();
+                    GroupMessageStateMachine stateMachine = groupState.computeIfAbsent(group,
+                            k -> new GroupMessageStateMachine());
+                    return stateMachine != null && stateMachine.isDuplicate(msg);
+                }
+            } else if (msg.isBroadcast()) {
+                synchronized (lastBroadcastReceived) {
+                    byte cmd1 = msg.getByte("command1");
+                    long timestamp = msg.getTimestamp();
+                    Long lastTimestamp = lastBroadcastReceived.put(cmd1, timestamp);
+                    return lastTimestamp != null && Math.abs(timestamp - lastTimestamp) <= BCAST_STATE_TIMEOUT;
                 }
             }
+        } catch (FieldException e) {
+            logger.warn("error parsing msg: {}", msg, e);
         }
         return false;
     }
-    // --------------------- simple setters -----------------------------
-
-    public void setStatus(DeviceStatus aI) {
-        status = aI;
-    }
-
-    public void setHasModemDBEntry(boolean b) {
-        hasModemDBEntry = b;
-    }
-
-    public void setAddress(InsteonAddress ia) {
-        address = ia;
-    }
-
-    public void setDriver(Driver d) {
-        driver = d;
-    }
-
-    public void setIsModem(boolean f) {
-        isModem = f;
-    }
-
-    public void setProductKey(String pk) {
-        productKey = pk;
-    }
-
-    public void setPollInterval(long pi) {
-        logger.trace("setting poll interval for {} to {} ", address, pi);
-        if (pi > 0) {
-            pollInterval = pi;
-        }
-    }
-
-    public void setFeatureQueried(@Nullable DeviceFeature f) {
-        synchronized (mrequestQueue) {
-            featureQueried = f;
-        }
-    }
-
-    public void setDeviceConfigMap(Map<String, Object> deviceConfigMap) {
-        this.deviceConfigMap = deviceConfigMap;
-    }
-
-    public Map<String, Object> getDeviceConfigMap() {
-        return deviceConfigMap;
-    }
-
-    public @Nullable DeviceFeature getFeatureQueried() {
-        synchronized (mrequestQueue) {
-            return (featureQueried);
-        }
-    }
 
     /**
-     * Removes feature listener from this device
+     * Returns if device is pollable
      *
-     * @param aItemName name of the feature listener to remove
-     * @return true if a feature listener was successfully removed
+     * @return true if parent pollable and not battery powered
      */
-    public boolean removeFeatureListener(String aItemName) {
-        boolean removedListener = false;
-        synchronized (features) {
-            for (Iterator<Entry<String, DeviceFeature>> it = features.entrySet().iterator(); it.hasNext();) {
-                DeviceFeature f = it.next().getValue();
-                if (f.removeListener(aItemName)) {
-                    removedListener = true;
-                }
-            }
-        }
-        return removedListener;
+    @Override
+    public boolean isPollable() {
+        return super.isPollable() && !isBatteryPowered();
     }
 
     /**
-     * Invoked to process an openHAB command
-     *
-     * @param driver The driver to use
-     * @param c The item configuration
-     * @param command The actual command to execute
-     */
-    public void processCommand(Driver driver, InsteonChannelConfiguration c, Command command) {
-        logger.debug("processing command {} features: {}", command, features.size());
-        synchronized (features) {
-            for (DeviceFeature i : features.values()) {
-                if (i.isReferencedByItem(c.getChannelName())) {
-                    i.handleCommand(c, command);
-                }
-            }
-        }
-    }
-
-    /**
-     * Execute poll on this device: create an array of messages,
-     * add them to the request queue, and schedule the queue
-     * for processing.
+     * Polls this device
      *
      * @param delay scheduling delay (in milliseconds)
      */
+    @Override
     public void doPoll(long delay) {
-        long now = System.currentTimeMillis();
-        List<QEntry> l = new ArrayList<>();
-        synchronized (features) {
-            int spacing = 0;
-            for (DeviceFeature i : features.values()) {
-                if (i.hasListeners()) {
-                    Msg m = i.makePollMsg();
-                    if (m != null) {
-                        l.add(new QEntry(i, m, now + delay + spacing));
-                        spacing += TIME_BETWEEN_POLL_MESSAGES;
-                    }
-                }
-            }
+        // process deferred queue
+        processDeferredQueue(delay);
+        // poll insteon engine if unknown or its feature never queried
+        DeviceFeature engineFeature = getFeature(FEATURE_INSTEON_ENGINE);
+        if (engineFeature != null
+                && (engine == InsteonEngine.UNKNOWN || engineFeature.getQueryStatus() == QueryStatus.NEVER_QUERIED)) {
+            engineFeature.doPoll(delay);
+            return; // insteon engine needs to be known before enqueueing more messages
         }
-        if (l.isEmpty()) {
-            return;
+        // load this device link db if not complete or should be reloaded
+        if (!linkDB.isComplete() || linkDB.shouldReload()) {
+            linkDB.load(delay);
+            return; // link db needs to be complete before enqueueing more messages
         }
-        synchronized (mrequestQueue) {
-            for (QEntry e : l) {
-                mrequestQueue.add(e);
-            }
-        }
-        RequestQueueManager instance = RequestQueueManager.instance();
-        if (instance != null) {
-            instance.addQueue(this, now + delay);
-        } else {
-            logger.warn("request queue manager is null");
+        // update this device link db if needed
+        if (linkDB.shouldUpdate()) {
+            linkDB.update(delay);
         }
 
-        if (!l.isEmpty()) {
-            lastTimePolled = now;
+        super.doPoll(delay);
+    }
+
+    /**
+     * Schedules polling for this device
+     *
+     * @param delay scheduling delay (in milliseconds)
+     * @param featureFilter feature filter to apply
+     * @return delay spacing
+     */
+    @Override
+    protected long schedulePoll(long delay, Predicate<DeviceFeature> featureFilter) {
+        long spacing = super.schedulePoll(delay, featureFilter);
+        // ping non-battery powered device if no other feature scheduled poll
+        if (!isBatteryPowered() && spacing == 0) {
+            Msg msg = pollFeature(FEATURE_PING, delay);
+            if (msg != null) {
+                spacing += msg.getQuietTime();
+            }
+        }
+        return spacing;
+    }
+
+    /**
+     * Polls all responder features for this device
+     *
+     * @param delay scheduling delay (in milliseconds)
+     */
+    public void pollResponders(long delay) {
+        schedulePoll(delay, DeviceFeature::hasResponderFeatures);
+    }
+
+    /**
+     * Polls responder features for a controller address and group
+     *
+     * @param address the controller address
+     * @param group the controller group
+     * @param delay scheduling delay (in milliseconds)
+     */
+    public void pollResponders(InsteonAddress address, int group, long delay) {
+        // poll all responder features if link db not complete
+        if (!linkDB.isComplete()) {
+            getResponderFeatures().forEach(feature -> feature.triggerPoll(delay));
+            return;
+        }
+        // poll responder features matching record component id (data 3)
+        linkDB.getResponderRecords(address, group)
+                .forEach(record -> getResponderFeatures().stream()
+                        .filter(feature -> feature.getComponentId() == record.getComponentId()).findFirst()
+                        .ifPresent(feature -> feature.triggerPoll(delay)));
+    }
+
+    /**
+     * Polls related devices to a controller group
+     *
+     * @param group the controller group
+     * @param delay scheduling delay (in milliseconds)
+     */
+    public void pollRelatedDevices(int group, long delay) {
+        InsteonModem modem = getModem();
+        if (modem != null) {
+            linkDB.getRelatedDevices(group).stream().map(modem::getInsteonDevice).filter(Objects::nonNull)
+                    .map(Objects::requireNonNull).forEach(device -> {
+                        logger.debug("polling related device {} to controller {} group {}", device.getAddress(),
+                                address, group);
+                        device.pollResponders(address, group, delay);
+                    });
         }
     }
 
     /**
-     * Handle incoming message for this device by forwarding
+     * Adjusts responder features for a controller address and group
+     *
+     * @param address the controller address
+     * @param group the controller group
+     * @param onLevel the controller channel config
+     * @param cmd the cmd to adjust to
+     */
+    public void adjustResponders(InsteonAddress address, int group, InsteonChannelConfiguration config, Command cmd) {
+        // handle command for responder feature with group matching record component id (data 3)
+        linkDB.getResponderRecords(address, group)
+                .forEach(record -> getResponderFeatures().stream()
+                        .filter(feature -> feature.getComponentId() == record.getComponentId()).findFirst()
+                        .ifPresent(feature -> {
+                            InsteonChannelConfiguration adjustConfig = InsteonChannelConfiguration.copyOf(config,
+                                    record.getOnLevel(), record.getRampRate());
+                            feature.handleCommand(adjustConfig, cmd);
+                        }));
+    }
+
+    /**
+     * Adjusts related devices to a controller group
+     *
+     * @param group the controller group
+     * @param config the controller channel config
+     * @param cmd the cmd to adjust to
+     */
+    public void adjustRelatedDevices(int group, InsteonChannelConfiguration config, Command cmd) {
+        InsteonModem modem = getModem();
+        if (modem != null) {
+            linkDB.getRelatedDevices(group).stream().map(modem::getInsteonDevice).filter(Objects::nonNull)
+                    .map(Objects::requireNonNull).forEach(device -> {
+                        logger.debug("adjusting related device {} to controller {} group {}", device.getAddress(),
+                                address, group);
+                        device.adjustResponders(address, group, config, cmd);
+                    });
+        }
+    }
+
+    /**
+     * Returns broadcast group for a controller feature
+     *
+     * @param feature the device feature
+     * @return the brodcast group if found, otherwise -1
+     */
+    public int getBroadcastGroup(DeviceFeature feature) {
+        InsteonModem modem = getModem();
+        if (modem != null) {
+            List<InsteonAddress> relatedDevices = linkDB.getRelatedDevices(feature.getGroup());
+            // return broadcast group with matching link and modem db related devices
+            return linkDB.getBroadcastGroups(feature.getComponentId()).stream()
+                    .filter(group -> modem.getDB().getRelatedDevices(group).stream()
+                            .allMatch(address -> getAddress().equals(address) || relatedDevices.contains(address)))
+                    .findFirst().orElse(-1);
+        }
+        return -1;
+    }
+
+    /**
+     * Replays a list of messages
+     */
+    public void replayMessages(List<Msg> messages) {
+        for (Msg msg : messages) {
+            logger.trace("replaying msg: {}", msg);
+            msg.setIsReplayed(true);
+            handleMessage(msg);
+        }
+    }
+
+    /**
+     * Handles incoming message for this device by forwarding
      * it to all features that this device supports
      *
      * @param msg the incoming message
      */
-    public void handleMessage(Msg msg) {
-        lastMsgReceived = System.currentTimeMillis();
-        synchronized (features) {
-            // first update all features that are
-            // not status features
-            for (DeviceFeature f : features.values()) {
-                if (!f.isStatusFeature()) {
-                    logger.debug("----- applying message to feature: {}", f.getName());
-                    if (f.handleMessage(msg)) {
-                        // handled a reply to a query,
-                        // mark it as processed
-                        logger.trace("handled reply of direct: {}", f);
-                        setFeatureQueried(null);
-                        break;
-                    }
-                }
-            }
-            // then update all the status features,
-            // e.g. when the device was last updated
-            for (DeviceFeature f : features.values()) {
-                if (f.isStatusFeature()) {
-                    f.handleMessage(msg);
-                }
-            }
-        }
-    }
-
-    /**
-     * Helper method to make standard message
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @return standard message
-     * @throws FieldException
-     * @throws InvalidMessageTypeException
-     */
-    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2)
-            throws FieldException, InvalidMessageTypeException {
-        return (makeStandardMessage(flags, cmd1, cmd2, -1));
-    }
-
-    /**
-     * Helper method to make standard message, possibly with group
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @param group (-1 if not a group message)
-     * @return standard message
-     * @throws FieldException
-     * @throws InvalidMessageTypeException
-     */
-    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2, int group)
-            throws FieldException, InvalidMessageTypeException {
-        Msg m = Msg.makeMessage("SendStandardMessage");
-        InsteonAddress addr = null;
-        byte f = flags;
-        if (group != -1) {
-            f |= 0xc0; // mark message as group message
-            // and stash the group number into the address
-            addr = new InsteonAddress((byte) 0, (byte) 0, (byte) (group & 0xff));
-        } else {
-            addr = getAddress();
-        }
-        m.setAddress("toAddress", addr);
-        m.setByte("messageFlags", f);
-        m.setByte("command1", cmd1);
-        m.setByte("command2", cmd2);
-        return m;
-    }
-
-    public Msg makeX10Message(byte rawX10, byte X10Flag) throws FieldException, InvalidMessageTypeException {
-        Msg m = Msg.makeMessage("SendX10Message");
-        m.setByte("rawX10", rawX10);
-        m.setByte("X10Flag", X10Flag);
-        m.setQuietTime(300L);
-        return m;
-    }
-
-    /**
-     * Helper method to make extended message
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @return extended message
-     * @throws FieldException
-     * @throws InvalidMessageTypeException
-     */
-    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2)
-            throws FieldException, InvalidMessageTypeException {
-        return makeExtendedMessage(flags, cmd1, cmd2, new byte[] {});
-    }
-
-    /**
-     * Helper method to make extended message
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @param data array with userdata
-     * @return extended message
-     * @throws FieldException
-     * @throws InvalidMessageTypeException
-     */
-    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2, byte[] data)
-            throws FieldException, InvalidMessageTypeException {
-        Msg m = Msg.makeMessage("SendExtendedMessage");
-        m.setAddress("toAddress", getAddress());
-        m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));
-        m.setByte("command1", cmd1);
-        m.setByte("command2", cmd2);
-        m.setUserData(data);
-        m.setCRC();
-        return m;
-    }
-
-    /**
-     * Helper method to make extended message, but with different CRC calculation
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @param data array with user data
-     * @return extended message
-     * @throws FieldException
-     * @throws InvalidMessageTypeException
-     */
-    public Msg makeExtendedMessageCRC2(byte flags, byte cmd1, byte cmd2, byte[] data)
-            throws FieldException, InvalidMessageTypeException {
-        Msg m = Msg.makeMessage("SendExtendedMessage");
-        m.setAddress("toAddress", getAddress());
-        m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));
-        m.setByte("command1", cmd1);
-        m.setByte("command2", cmd2);
-        m.setUserData(data);
-        m.setCRC2();
-        return m;
-    }
-
-    /**
-     * Called by the RequestQueueManager when the queue has expired
-     *
-     * @param timeNow
-     * @return time when to schedule the next message (timeNow + quietTime)
-     */
-    public long processRequestQueue(long timeNow) {
-        synchronized (mrequestQueue) {
-            if (mrequestQueue.isEmpty()) {
-                return 0L;
-            }
-            DeviceFeature featureQueried = this.featureQueried;
-            if (featureQueried != null) {
-                // A feature has been queried, but
-                // the response has not been digested yet.
-                // Must wait for the query to be processed.
-                long dt = timeNow - (lastQueryTime + featureQueried.getDirectAckTimeout());
-                if (dt < 0) {
-                    logger.debug("still waiting for query reply from {} for another {} usec", address, -dt);
-                    return (timeNow + 2000L); // retry soon
-                } else {
-                    logger.debug("gave up waiting for query reply from device {}", address);
-                }
-            }
-            QEntry qe = mrequestQueue.poll(); // take it off the queue!
-            if (qe == null) {
-                return 0L;
-            }
-            if (!qe.getMsg().isBroadcast()) {
-                logger.debug("qe taken off direct: {} {}", qe.getFeature(), qe.getMsg());
-                lastQueryTime = timeNow;
-                // mark feature as pending
-                qe.getFeature().setQueryStatus(DeviceFeature.QueryStatus.QUERY_PENDING);
-                // also mark this queue as pending so there is no doubt
-                this.featureQueried = qe.getFeature();
-            } else {
-                logger.debug("qe taken off bcast: {} {}", qe.getFeature(), qe.getMsg());
-            }
-            long quietTime = qe.getMsg().getQuietTime();
-            qe.getMsg().setQuietTime(500L); // rate limiting downstream!
-            try {
-                writeMessage(qe.getMsg());
-            } catch (IOException e) {
-                logger.warn("message write failed for msg {}", qe.getMsg(), e);
-            }
-            // figure out when the request queue should be checked next
-            QEntry qnext = mrequestQueue.peek();
-            long nextExpTime = (qnext == null ? 0L : qnext.getExpirationTime());
-            long nextTime = Math.max(timeNow + quietTime, nextExpTime);
-            logger.debug("next request queue processed in {} msec, quiettime = {}", nextTime - timeNow, quietTime);
-            return (nextTime);
-        }
-    }
-
-    /**
-     * Enqueues message to be sent at the next possible time
-     *
-     * @param m message to be sent
-     * @param f device feature that sent this message (so we can associate the response message with it)
-     */
-    public void enqueueMessage(Msg m, DeviceFeature f) {
-        enqueueDelayedMessage(m, f, 0);
-    }
-
-    /**
-     * Enqueues message to be sent after a delay
-     *
-     * @param m message to be sent
-     * @param f device feature that sent this message (so we can associate the response message with it)
-     * @param delay time (in milliseconds) to delay before enqueuing message
-     */
-    public void enqueueDelayedMessage(Msg m, DeviceFeature f, long delay) {
-        long now = System.currentTimeMillis();
-        synchronized (mrequestQueue) {
-            mrequestQueue.add(new QEntry(f, m, now + delay));
-        }
-        if (!m.isBroadcast()) {
-            m.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
-        }
-        logger.trace("enqueing direct message with delay {}", delay);
-        RequestQueueManager instance = RequestQueueManager.instance();
-        if (instance != null) {
-            instance.addQueue(this, now + delay);
-        } else {
-            logger.warn("request queue manger instance is null");
-        }
-    }
-
-    private void writeMessage(Msg m) throws IOException {
-        Driver driver = this.driver;
-        if (driver != null) {
-            driver.writeMessage(m);
-        }
-    }
-
-    private void instantiateFeatures(DeviceType dt) {
-        for (Entry<String, String> fe : dt.getFeatures().entrySet()) {
-            DeviceFeature f = DeviceFeature.makeDeviceFeature(fe.getValue());
-            if (f == null) {
-                logger.warn("device type {} references unknown feature: {}", dt, fe.getValue());
-            } else {
-                addFeature(fe.getKey(), f);
-            }
-        }
-        for (Entry<String, FeatureGroup> fe : dt.getFeatureGroups().entrySet()) {
-            FeatureGroup fg = fe.getValue();
-            @Nullable
-            DeviceFeature f = DeviceFeature.makeDeviceFeature(fg.getType());
-            if (f == null) {
-                logger.warn("device type {} references unknown feature group: {}", dt, fg.getType());
-            } else {
-                addFeature(fe.getKey(), f);
-                connectFeatures(fe.getKey(), f, fg.getFeatures());
-            }
-        }
-    }
-
-    private void connectFeatures(String gn, DeviceFeature fg, ArrayList<String> fgFeatures) {
-        for (String fs : fgFeatures) {
-            @Nullable
-            DeviceFeature f = features.get(fs);
-            if (f == null) {
-                logger.warn("feature group {} references unknown feature {}", gn, fs);
-            } else {
-                logger.debug("{} connected feature: {}", gn, f);
-                fg.addConnectedFeature(f);
-            }
-        }
-    }
-
-    private void addFeature(String name, DeviceFeature f) {
-        f.setDevice(this);
-        synchronized (features) {
-            features.put(name, f);
-        }
-    }
-
-    /**
-     * Get the state of the state machine that suppresses duplicates for group messages.
-     * The state machine is advance the first time it is called for a message,
-     * otherwise return the current state.
-     *
-     * @param group the insteon group of the broadcast message
-     * @param a the type of group message came in (action etc)
-     * @param cmd1 cmd1 from the message received
-     * @return true if this is message is NOT a duplicate
-     */
-    public boolean getGroupState(int group, GroupMessage a, byte cmd1) {
-        GroupMessageStateMachine m = groupState.get(group);
-        if (m == null) {
-            m = new GroupMessageStateMachine();
-            groupState.put(group, m);
-            logger.trace("{} created group {} state", address, group);
-        } else {
-            if (lastMsgReceived <= m.getLastUpdated()) {
-                logger.trace("{} using previous group {} state for {}", address, group, a);
-                return m.getPublish();
-            }
-        }
-
-        logger.trace("{} updating group {} state to {}", address, group, a);
-        return (m.action(a, address, group, cmd1));
-    }
-
     @Override
-    public String toString() {
-        String s = address.toString();
-        for (Entry<String, DeviceFeature> f : features.entrySet()) {
-            s += "|" + f.getKey() + "->" + f.getValue().toString();
+    public void handleMessage(Msg msg) {
+        // update last msg received if not failure report and more recent msg timestamp
+        if (!msg.isFailureReport() && msg.getTimestamp() > lastMsgReceived) {
+            lastMsgReceived = msg.getTimestamp();
         }
-        return s;
+        // store message if no feature defined
+        if (!hasFeatures()) {
+            logger.debug("storing message for unknown device {}", address);
+
+            synchronized (storedMessages) {
+                storedMessages.add(msg);
+            }
+            return;
+        }
+        // store current responding state
+        boolean isPrevResponding = isResponding();
+        // handle message depending if failure report or not
+        if (msg.isFailureReport()) {
+            getFeatures().stream().filter(feature -> feature.isMyDirectAckOrNack(msg)).findFirst()
+                    .ifPresent(feature -> {
+                        logger.debug("got a failure report reply of direct for {}", feature.getName());
+                        // increase failed message counter
+                        failedMsgCount++;
+                        // mark feature queried as processed and never queried
+                        setFeatureQueried(null);
+                        feature.setQueryMessage(null);
+                        feature.setQueryStatus(QueryStatus.NEVER_QUERIED);
+                        // poll feature again if device is responding
+                        if (isResponding()) {
+                            feature.doPoll(0L);
+                        }
+                    });
+        } else {
+            // update non-status features
+            getFeatures().stream().filter(feature -> !feature.isStatusFeature() && feature.handleMessage(msg))
+                    .findFirst().ifPresent(feature -> {
+                        logger.trace("handled reply of direct for {}", feature.getName());
+                        // reset failed message counter
+                        failedMsgCount = 0;
+                        // mark feature queried as processed and answered
+                        setFeatureQueried(null);
+                        feature.setQueryMessage(null);
+                        feature.setQueryStatus(QueryStatus.QUERY_ANSWERED);
+                    });
+            // update all status features (e.g. device last update time)
+            getFeatures().stream().filter(DeviceFeature::isStatusFeature)
+                    .forEach(feature -> feature.handleMessage(msg));
+        }
+        // poll battery powered device while awake if non-duplicate all link or broadcast message
+        if ((msg.isAllLinkBroadcastOrCleanup() || msg.isBroadcast()) && isBatteryPowered() && isAwake()
+                && !isDuplicateMsg(msg)) {
+            // add poll delay for non-replayed all link broadcast allowing cleanup msg to be be processed beforehand
+            long delay = msg.isAllLinkBroadcast() && !msg.isAllLinkSuccessReport() && !msg.isReplayed() ? 1500L : 0L;
+            doPoll(delay);
+        }
+        // notify if responding state changed
+        if (isPrevResponding != isResponding()) {
+            statusChanged();
+        }
     }
 
     /**
-     * Factory method
+     * Sends a message after a delay to this device
      *
-     * @param dt device type after which to model the device
-     * @return newly created device
+     * @param msg the message to be sent
+     * @param feature device feature associated to the message
+     * @param delay time (in milliseconds) to delay before sending message
      */
-    public static InsteonDevice makeDevice(DeviceType dt) {
-        InsteonDevice dev = new InsteonDevice();
-        dev.instantiateFeatures(dt);
-        return dev;
+    @Override
+    public void sendMessage(Msg msg, DeviceFeature feature, long delay) {
+        if (isAwake()) {
+            addDeviceRequest(msg, feature, delay);
+        } else {
+            addDeferredRequest(msg, feature);
+        }
+        // mark feature query status as scheduled for non-broadcast request message
+        if (!msg.isAllLinkBroadcast()) {
+            feature.setQueryStatus(QueryStatus.QUERY_SCHEDULED);
+        }
     }
 
     /**
-     * Queue entry helper class
+     * Processes deferred queue
      *
-     * @author Bernd Pfrommer - Initial contribution
+     * @param delay time (in milliseconds) to delay before sending message
      */
-    public static class QEntry implements Comparable<QEntry> {
-        private DeviceFeature feature;
-        private Msg msg;
-        private long expirationTime;
+    private void processDeferredQueue(long delay) {
+        synchronized (deferredQueue) {
+            while (!deferredQueue.isEmpty()) {
+                DeviceRequest request = deferredQueue.poll();
+                if (request != null) {
+                    Msg msg = request.getMessage();
+                    DeviceFeature feature = request.getFeature();
+                    deferredQueueHash.remove(msg);
+                    request.setExpirationTime(delay);
+                    logger.trace("enqueuing deferred request for {}", feature.getName());
+                    addDeviceRequest(msg, feature, delay);
+                }
+            }
+        }
+    }
 
-        public DeviceFeature getFeature() {
-            return feature;
+    /**
+     * Adds deferred request
+     *
+     * @param request device request to add
+     */
+    private void addDeferredRequest(Msg msg, DeviceFeature feature) {
+        logger.trace("deferring request for sleeping device {}", address);
+
+        synchronized (deferredQueue) {
+            DeviceRequest request = new DeviceRequest(feature, msg, 0L);
+            DeviceRequest prevRequest = deferredQueueHash.get(msg);
+            if (prevRequest != null) {
+                logger.trace("overwriting existing deferred request for {}: {}", feature.getName(), msg);
+                deferredQueue.remove(prevRequest);
+                deferredQueueHash.remove(msg);
+            }
+            deferredQueue.add(request);
+            deferredQueueHash.put(msg, request);
+        }
+    }
+
+    /**
+     * Clears request queue
+     */
+    @Override
+    protected void clearRequestQueue() {
+        super.clearRequestQueue();
+
+        synchronized (deferredQueue) {
+            deferredQueue.clear();
+            deferredQueueHash.clear();
+        }
+    }
+
+    /**
+     * Updates product data for this device
+     *
+     * @param newData the new product data to use
+     */
+    public void updateProductData(ProductData newData) {
+        ProductData productData = getProductData();
+        if (productData == null) {
+            setProductData(newData);
+            propertiesChanged(true);
+        } else {
+            logger.trace("updating product data for {} to {}", address, newData);
+            if (productData.update(newData)) {
+                propertiesChanged(true);
+            } else {
+                propertiesChanged(false);
+                resetFeaturesQueryStatus();
+            }
+        }
+    }
+
+    /**
+     * Updates this device type
+     *
+     * @param renamer the device type renamer
+     */
+    public void updateType(DeviceTypeRenamer renamer) {
+        Optional.ofNullable(getType()).map(DeviceType::getName).map(renamer::getNewDeviceType)
+                .map(name -> DeviceTypeRegistry.getInstance().getDeviceType(name)).ifPresent(this::updateType);
+    }
+
+    /**
+     * Updates this device type
+     *
+     * @param newType the new device type to use
+     */
+    public void updateType(DeviceType newType) {
+        ProductData productData = getProductData();
+        DeviceType currentType = getType();
+        if (productData != null && !newType.equals(currentType)) {
+            logger.trace("updating device type from {} to {} for {}",
+                    currentType != null ? currentType.getName() : "undefined", newType.getName(), address);
+            productData.setDeviceType(newType);
+            propertiesChanged(true);
+        }
+    }
+
+    /**
+     * Updates the default links
+     */
+    public void updateDefaultLinks() {
+        InsteonModem modem = getModem();
+        ProductData productData = getProductData();
+        DeviceType deviceType = getType();
+        State linkFFGroup = getFeatureState(FEATURE_LINK_FF_GROUP);
+        State twoGroups = getFeatureState(FEATURE_TWO_GROUPS);
+        if (modem == null || productData == null || deviceType == null || linkFFGroup == UnDefType.NULL
+                || twoGroups == UnDefType.NULL || InsteonAddress.UNKNOWN.equals(modem.getAddress())) {
+            return;
+        }
+        // clear default links
+        synchronized (defaultLinks) {
+            defaultLinks.clear();
+        }
+        // iterate over device type default links
+        deviceType.getDefaultLinks().forEach((name, link) -> {
+            // skip default link if 2Groups feature is off and its group is 2
+            if (OnOffType.OFF.equals(twoGroups) && link.getGroup() == 2) {
+                return;
+            }
+            // create link db record based on FFGroup feature state
+            LinkDBRecord linkDBRecord = LinkDBRecord.create(0, modem.getAddress(),
+                    OnOffType.ON.equals(linkFFGroup) ? 0xFF : link.getGroup(), link.isController(), link.getData());
+            // create modem db record
+            ModemDBRecord modemDBRecord = ModemDBRecord.create(address, link.getGroup(), !link.isController(),
+                    !link.isController() ? productData.getRecordData() : new byte[3]);
+            // create default link commands
+            List<Msg> commands = link.getCommands().stream().map(command -> command.getMessage(this))
+                    .filter(Objects::nonNull).map(Objects::requireNonNull).toList();
+            // add default link
+            addDefaultLink(new DefaultLink(name, linkDBRecord, modemDBRecord, commands));
+        });
+    }
+
+    /**
+     * Adds a default link for this device
+     *
+     * @param link the default link to add
+     */
+    private void addDefaultLink(DefaultLink link) {
+        logger.trace("adding default link {} for {}", link.getName(), address);
+
+        synchronized (defaultLinks) {
+            defaultLinks.put(link.getName(), link);
+        }
+    }
+
+    /**
+     * Returns a map of missing device links for this device
+     *
+     * @return map of missing link db records based on default links
+     */
+    public Map<String, LinkDBChange> getMissingDeviceLinks() {
+        Map<String, LinkDBChange> links = new LinkedHashMap<>();
+        if (linkDB.isComplete() && hasModemDBEntry()) {
+            for (DefaultLink link : getDefaultLinks()) {
+                LinkDBRecord record = link.getLinkDBRecord();
+                if ((record.getComponentId() > 0 && !linkDB.hasComponentIdRecord(record.getComponentId(), true))
+                        || !linkDB.hasGroupRecord(record.getGroup(), true)) {
+                    links.put(link.getName(), LinkDBChange.forAdd(record));
+                }
+            }
+        }
+        return links;
+    }
+
+    /**
+     * Returns a map of missing modem links for this device
+     *
+     * @return map of missing modem db records based on default links
+     */
+    public Map<String, ModemDBChange> getMissingModemLinks() {
+        Map<String, ModemDBChange> links = new LinkedHashMap<>();
+        InsteonModem modem = getModem();
+        if (modem != null && modem.getDB().isComplete() && hasModemDBEntry()) {
+            for (DefaultLink link : getDefaultLinks()) {
+                ModemDBRecord record = link.getModemDBRecord();
+                if (!modem.getDB().hasRecord(record.getAddress(), record.getGroup(), record.isController())) {
+                    links.put(link.getName(), ModemDBChange.forAdd(record));
+                }
+            }
+        }
+        return links;
+    }
+
+    /**
+     * Returns a set of missing links for this device
+     *
+     * @return a set of missing link names
+     */
+    public Set<String> getMissingLinks() {
+        return Stream.of(getMissingDeviceLinks().keySet(), getMissingModemLinks().keySet()).flatMap(Set::stream)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Logs missing links for this device
+     */
+    public void logMissingLinks() {
+        Set<String> links = getMissingLinks();
+        if (!links.isEmpty()) {
+            logger.warn(
+                    "device {} has missing default links {}, "
+                            + "run 'insteon device addMissingLinks' command via openhab console to fix.",
+                    address, links);
+        }
+    }
+
+    /**
+     * Adds missing links to link db for this device
+     */
+    public void addMissingDeviceLinks() {
+        if (getDefaultLinks().isEmpty()) {
+            return;
+        }
+        List<LinkDBChange> changes = getMissingDeviceLinks().values().stream().distinct().toList();
+        if (changes.isEmpty()) {
+            logger.debug("no missing default links from link db to add for {}", address);
+        } else {
+            logger.trace("adding missing default links to link db for {}", address);
+            linkDB.clearChanges();
+            changes.forEach(linkDB::addChange);
+            linkDB.update();
         }
 
-        public Msg getMsg() {
-            return msg;
+        InsteonModem modem = getModem();
+        if (modem != null) {
+            getMissingDeviceLinks().keySet().stream().map(this::getDefaultLink).filter(Objects::nonNull)
+                    .map(Objects::requireNonNull).flatMap(link -> link.getCommands().stream()).forEach(msg -> {
+                        try {
+                            modem.writeMessage(msg);
+                        } catch (IOException e) {
+                            logger.warn("message write failed for msg: {}", msg, e);
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Adds missing links to modem db for this device
+     */
+    public void addMissingModemLinks() {
+        InsteonModem modem = getModem();
+        if (modem == null || getDefaultLinks().isEmpty()) {
+            return;
+        }
+        List<ModemDBChange> changes = getMissingModemLinks().values().stream().distinct().toList();
+        if (changes.isEmpty()) {
+            logger.debug("no missing default links from modem db to add for {}", address);
+        } else {
+            logger.trace("adding missing default links to modem db for {}", address);
+            ModemDB modemDB = modem.getDB();
+            modemDB.clearChanges();
+            changes.forEach(modemDB::addChange);
+            modemDB.update();
+        }
+    }
+
+    /**
+     * Sets a keypad button radio group
+     *
+     * @param buttons list of button groups to set
+     */
+    public void setButtonRadioGroup(List<Integer> buttons) {
+        // set each radio button to turn off each others when turned on if should set
+        for (int buttonGroup : buttons) {
+            DeviceFeature onMaskFeature = getFeature(FEATURE_TYPE_KEYPAD_BUTTON_ON_MASK, buttonGroup);
+            DeviceFeature offMaskFeature = getFeature(FEATURE_TYPE_KEYPAD_BUTTON_OFF_MASK, buttonGroup);
+
+            if (onMaskFeature != null && offMaskFeature != null) {
+                int onMask = onMaskFeature.getLastMsgValueAsInteger(0);
+                int offMask = offMaskFeature.getLastMsgValueAsInteger(0);
+
+                for (int group : buttons) {
+                    int bit = group - 1;
+                    onMask = BinaryUtils.clearBit(onMask, bit);
+                    offMask = BinaryUtils.updateBit(offMask, bit, buttonGroup != group);
+                }
+                onMaskFeature.handleCommand(new DecimalType(onMask));
+                offMaskFeature.handleCommand(new DecimalType(offMask));
+            }
+        }
+    }
+
+    /**
+     * Clears a keypad button radion group
+     *
+     * @param buttons list of button groups to clear
+     */
+    public void clearButtonRadioGroup(List<Integer> buttons) {
+        List<Integer> allButtons = getFeatures(FEATURE_TYPE_KEYPAD_BUTTON).stream().map(DeviceFeature::getGroup)
+                .toList();
+        // clear each radio button and decouple from others
+        for (int buttonGroup : allButtons) {
+            DeviceFeature onMaskFeature = getFeature(FEATURE_TYPE_KEYPAD_BUTTON_ON_MASK, buttonGroup);
+            DeviceFeature offMaskFeature = getFeature(FEATURE_TYPE_KEYPAD_BUTTON_OFF_MASK, buttonGroup);
+
+            if (onMaskFeature != null && offMaskFeature != null) {
+                int onMask = onMaskFeature.getLastMsgValueAsInteger(0);
+                int offMask = offMaskFeature.getLastMsgValueAsInteger(0);
+
+                for (int group : buttons.contains(buttonGroup) ? allButtons : buttons) {
+                    int bit = group - 1;
+                    onMask = BinaryUtils.clearBit(onMask, bit);
+                    offMask = BinaryUtils.clearBit(offMask, bit);
+                }
+                onMaskFeature.handleCommand(new DecimalType(onMask));
+                offMaskFeature.handleCommand(new DecimalType(offMask));
+            }
+        }
+    }
+
+    /**
+     * Sets keypad button toggle mode
+     *
+     * @param buttons list of button groups to use
+     * @param mode toggle mode to set
+     */
+    public void setButtonToggleMode(List<Integer> buttons, KeypadButtonToggleMode mode) {
+        // use the first button group if available to set toggle mode
+        int buttonGroup = !buttons.isEmpty() ? buttons.get(0) : -1;
+        DeviceFeature toggleModeFeature = getFeature(FEATURE_TYPE_KEYPAD_BUTTON_TOGGLE_MODE, buttonGroup);
+
+        if (toggleModeFeature != null) {
+            int nonToggleMask = toggleModeFeature.getLastMsgValueAsInteger(0) >> 8;
+            int alwaysOnOffMask = toggleModeFeature.getLastMsgValueAsInteger(0) & 0xFF;
+
+            for (int group : buttons) {
+                int bit = group - 1;
+                nonToggleMask = BinaryUtils.updateBit(nonToggleMask, bit, mode != KeypadButtonToggleMode.TOGGLE);
+                alwaysOnOffMask = BinaryUtils.updateBit(alwaysOnOffMask, bit, mode == KeypadButtonToggleMode.ALWAYS_ON);
+            }
+            toggleModeFeature.handleCommand(new DecimalType(nonToggleMask << 8 | alwaysOnOffMask));
+        }
+    }
+
+    /**
+     * Initializes this device
+     */
+    public void initialize() {
+        InsteonModem modem = getModem();
+        if (modem == null || !modem.getDB().isComplete()) {
+            return;
         }
 
-        public long getExpirationTime() {
-            return expirationTime;
+        ModemDBEntry dbe = modem.getDB().getEntry(address);
+        if (dbe == null) {
+            logger.warn("device {} not found in the modem database. Did you forget to link?", address);
+            setHasModemDBEntry(false);
+            stopPolling();
+            return;
         }
 
-        QEntry(DeviceFeature f, Msg m, long t) {
-            feature = f;
-            msg = m;
-            expirationTime = t;
+        ProductData productData = dbe.getProductData();
+        if (productData != null) {
+            updateProductData(productData);
         }
 
-        @Override
-        public int compareTo(QEntry a) {
-            return (int) (expirationTime - a.expirationTime);
+        if (!hasModemDBEntry()) {
+            logger.debug("device {} found in the modem database.", address);
+            setHasModemDBEntry(true);
         }
+
+        if (isPollable()) {
+            startPolling();
+        }
+
+        updateDefaultLinks();
+    }
+
+    /**
+     * Refreshes this device
+     */
+    @Override
+    public void refresh() {
+        initialize();
+
+        super.refresh();
+    }
+
+    /**
+     * Resets heartbeat monitor
+     */
+    public void resetHeartbeatMonitor() {
+        InsteonDeviceHandler handler = getHandler();
+        if (handler != null) {
+            handler.resetHeartbeatMonitor();
+        }
+    }
+
+    /**
+     * Notifies that the link db has been updated for this device
+     */
+    public void linkDBUpdated() {
+        logger.trace("link db for {} has been updated", address);
+
+        if (linkDB.isComplete()) {
+            if (isBatteryPowered() && isAwake() || getStatus() == DeviceStatus.POLLING) {
+                // poll database delta feature
+                pollFeature(FEATURE_DATABASE_DELTA, 0L);
+                // poll remaining features for this device
+                doPoll(0L);
+            }
+            // log missing links
+            logMissingLinks();
+        }
+        // notify device handler if defined
+        InsteonDeviceHandler handler = getHandler();
+        if (handler != null) {
+            handler.deviceLinkDBUpdated(this);
+        }
+    }
+
+    /**
+     * Notifies that the properties have changed for this device
+     *
+     * @param reset if the device should be reset
+     */
+    public void propertiesChanged(boolean reset) {
+        logger.trace("properties for {} has changed", address);
+
+        InsteonDeviceHandler handler = getHandler();
+        if (handler != null) {
+            if (reset) {
+                handler.reset(this);
+            } else {
+                handler.updateProperties(this);
+            }
+        }
+    }
+
+    /**
+     * Notifies that the status has changed for this device
+     */
+    public void statusChanged() {
+        logger.trace("status for {} has changed", address);
+
+        InsteonDeviceHandler handler = getHandler();
+        if (handler != null) {
+            handler.updateStatus();
+        }
+    }
+
+    /**
+     * Factory method for creating a InsteonDevice from a device address, modem and cache
+     *
+     * @param address the device address
+     * @param modem the device modem
+     * @param productData the device product data
+     * @return the newly created InsteonDevice
+     */
+    public static InsteonDevice makeDevice(InsteonAddress address, @Nullable InsteonModem modem,
+            @Nullable ProductData productData) {
+        InsteonDevice device = new InsteonDevice();
+        device.setAddress(address);
+        device.setModem(modem);
+
+        if (productData != null) {
+            DeviceType deviceType = productData.getDeviceType();
+            if (deviceType != null) {
+                device.instantiateFeatures(deviceType);
+                device.setFlags(deviceType.getFlags());
+            }
+            int location = productData.getFirstRecordLocation();
+            if (location != LinkDBRecord.LOCATION_ZERO) {
+                device.getLinkDB().setFirstRecordLocation(location);
+            }
+            device.setProductData(productData);
+        }
+
+        return device;
     }
 }

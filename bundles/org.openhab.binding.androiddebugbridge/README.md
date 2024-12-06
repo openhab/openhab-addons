@@ -8,7 +8,7 @@ If you are not familiar with adb I suggest you to search "How to enable adb over
 
 ## Supported Things
 
-This binding was tested on :
+This binding was tested on:
 
 | Device                 | Android version | Comments                           |
 |------------------------|-----------------|------------------------------------|
@@ -152,7 +152,7 @@ This is a sample:
 
 Not all the [arguments](https://developer.android.com/studio/command-line/adb#IntentSpec) are supported. Please open an issue or pull request if you need more.
 
-### Available key-event values:
+### Available key-event values
 
 - KEYCODE_0
 - KEYCODE_1

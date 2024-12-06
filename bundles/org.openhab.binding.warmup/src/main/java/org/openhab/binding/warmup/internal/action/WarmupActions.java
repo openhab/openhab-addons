@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.warmup.internal.action;
 
+import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.warmup.internal.handler.RoomHandler;
@@ -53,8 +56,8 @@ public class WarmupActions implements ThingActions {
 
     @RuleAction(label = "override", description = "Overrides the thermostat state for a specified time")
     public void setOverride(
-            @ActionInput(name = "temperature", label = "Temperature") @Nullable QuantityType<?> temperature,
-            @ActionInput(name = "duration", label = "Duration") @Nullable QuantityType<?> duration) {
+            @ActionInput(name = "temperature", label = "Temperature", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> temperature,
+            @ActionInput(name = "duration", label = "Duration", type = "QuantityType<Time>") @Nullable QuantityType<Time> duration) {
         logger.debug("setOverride action called");
         RoomHandler handler = this.handler;
         if (handler != null && temperature != null && duration != null) {
@@ -64,8 +67,8 @@ public class WarmupActions implements ThingActions {
         }
     }
 
-    public static void setOverride(@Nullable ThingActions actions, @Nullable QuantityType<?> temperature,
-            @Nullable QuantityType<?> duration) {
+    public static void setOverride(@Nullable ThingActions actions, @Nullable QuantityType<Temperature> temperature,
+            @Nullable QuantityType<Time> duration) {
         if (actions instanceof WarmupActions warmupActions) {
             warmupActions.setOverride(temperature, duration);
         } else {

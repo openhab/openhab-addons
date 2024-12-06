@@ -27,6 +27,11 @@
 			<channel id="waterPressure" typeId="waterPressure"/>
 			<channel id="coolingState" typeId="coolingState"/>
 			<channel id="flameState" typeId="flameState"/>
+			<channel id="burnerStartsFailed" typeId="burnerStartsFailed"/>
+			<channel id="burnerStarts" typeId="burnerStarts"/>
+			<channel id="burnerIgnitionsFailed" typeId="burnerIgnitionsFailed"/>
+			<channel id="burnerOpTime" typeId="burnerOpTime"/>
+			<channel id="burnerDHWOpTime" typeId="burnerDHWOpTime"/>
 			<channel id="intendedHeatingState" typeId="intendedHeatingState"/>
 			<channel id="dhwComfortMode" typeId="dhwComfortMode"/>
 			<channel id="intendedBoilerTemp" typeId="intendedBoilerTemp"/>
@@ -39,6 +44,10 @@
 			<channel id="maxBoilerTemperature" typeId="maxBoilerTemperature"/>
 			<channel id="returnWaterTemperature" typeId="returnWaterTemperature"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
@@ -82,6 +91,10 @@
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="valvePosition" typeId="valvePosition"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 

@@ -193,6 +193,13 @@ public class RuuviGatewayTest extends MqttOSGiTest {
             thingBuilder.withChannel(ChannelBuilder.create(new ChannelUID(thingUID, channelId)).build());
         });
 
+        /*
+         * Since we now have an 'upgrade/instructions.xml' file the {@link ManagedThingProvider} is now obliged to apply
+         * those instructions to this test thing. And if the test thing is undergoing such an upgrade, the tests beyond
+         * this line will fail. So we add a 'thingTypeVersion' property to prevent such update process.
+         */
+        thingBuilder.withProperty("thingTypeVersion", "1");
+
         Thing thing = thingBuilder.build();
         thingProvider.add(thing);
         waitForAssert(() -> assertNotNull(thing.getHandler()));

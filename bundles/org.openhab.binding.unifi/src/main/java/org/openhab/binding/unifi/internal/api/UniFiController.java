@@ -215,6 +215,26 @@ public class UniFiController {
         refresh();
     }
 
+    public void disableAccessPoint(final UniFiDevice device, final boolean disable) throws UniFiException {
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, gson);
+        req.setAPIPath(String.format("/api/s/%s/rest/device/%s", device.getSite().getName(), device.getId()));
+        req.setBodyParameter("_id", device.getId());
+        req.setBodyParameter("disabled", disable ? "true" : "false");
+        executeRequest(req);
+        refresh();
+    }
+
+    public void setLedOverride(final UniFiDevice device, final String override) throws UniFiException {
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, gson);
+        req.setAPIPath(String.format("/api/s/%s/rest/device/%s", device.getSite().getName(), device.getId()));
+        req.setBodyParameter("_id", device.getId());
+        if (!override.isEmpty()) {
+            req.setBodyParameter("led_override", override);
+        }
+        executeRequest(req);
+        refresh();
+    }
+
     public void generateVouchers(final UniFiSite site, final int count, final int expiration, final int users,
             @Nullable Integer upLimit, @Nullable Integer downLimit, @Nullable Integer dataQuota) throws UniFiException {
         final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.POST, gson);

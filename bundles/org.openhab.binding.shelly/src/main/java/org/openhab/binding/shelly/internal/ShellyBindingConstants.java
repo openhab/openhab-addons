@@ -82,6 +82,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPLUSPLUGS, //
             THING_TYPE_SHELLYPLUSPLUGUS, //
             THING_TYPE_SHELLYPLUSDIMMERUS, //
+            THING_TYPE_SHELLYPLUSRGBWPM, //
 
             // Shelly Wall Display
             THING_TYPE_SHELLYPLUSWALLDISPLAY, //
@@ -271,6 +272,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_ACCUWATTS = "accumulatedWatts";
     public static final String CHANNEL_DEVST_ACCUTOTAL = "accumulatedWTotal";
     public static final String CHANNEL_DEVST_ACCURETURNED = "accumulatedReturned";
+    public static final String CHANNEL_DEVST_TOTALKWH = "totalKWH";
     public static final String CHANNEL_DEVST_RESETTOTAL = CHANNEL_EMETER_RESETTOTAL;
 
     public static final String CHANNEL_DEVST_CHARGER = "charger";

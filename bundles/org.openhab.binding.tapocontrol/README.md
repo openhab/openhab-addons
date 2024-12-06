@@ -46,12 +46,12 @@ But therefore it set's device-ip and protocol automaticly.
 If you have problems with udp-discovery, try to set the advanced setting 'broadcastAddress' to your local subnet ('e.g. 192.168.0.255').
 Default is '255.255.255.255'
 
-You can combine both discovery methods to get any informations from local devices.  
+You can combine both discovery methods to get any informations from local devices.
 If you enable setting 'onlyLocalOnlineDevices' results will only generated for local online devices but with the combined data of cloud discovery.
 RF-Devices will be discovered by the hub they are connected to.
-You can discover them manually or use ´backgroundDiscovery´ 
+You can discover them manually or use ´backgroundDiscovery´
 
-RF-Devices will be discovered by the hub they are connected to. You can discover them manually or use ´backgroundDiscovery´ 
+RF-Devices will be discovered by the hub they are connected to. You can discover them manually or use ´backgroundDiscovery´
 
 ## Bridge Configuration
 
@@ -60,16 +60,15 @@ This is used for device discovery and to create a handshake (cookie) to act with
 
 The thing has the following configuration parameters:
 
-| Parameter              | Description                                                                                                    |
-|------------------------|----------------------------------------------------------------------------------------------------------------|
-| username               | Username (eMail) of your Tapo-Cloud                                                                            |
-| password               | Password of your Tapo-Cloud                                                                                    |
-| cloudDiscovery         | Use Cloud Discovery-Service to get all in Tapo-App registered devices. Includes DeviceName. IP-Address and Encryption has to set manually             |
-| udpDiscovery           | Use UDP Discovery-Service to discover online devices in the local network. Includes Encryption and IP-Address. Results will be merged with cloud discovery      |
-| onlyLocalOnlineDevices | [advanced] Uses Cloud and UPD-Discovery to get more informations but will only discover online devices via UDP |
-| broadcastAddress       | [advanced] Set broadcast address to your local subnet  if you have problems with default address               |
-| discoveryInterval      | [advanced] Interval in minutes when a background device scan should be executed. Default is 60                 |
-
+| Parameter              | Description                                                                                                                                                |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| username               | Username (eMail) of your Tapo-Cloud                                                                                                                        |
+| password               | Password of your Tapo-Cloud                                                                                                                                |
+| cloudDiscovery         | Use Cloud Discovery-Service to get all in Tapo-App registered devices. Includes DeviceName. IP-Address and Encryption has to set manually                  |
+| udpDiscovery           | Use UDP Discovery-Service to discover online devices in the local network. Includes Encryption and IP-Address. Results will be merged with cloud discovery |
+| onlyLocalOnlineDevices | [advanced] Uses Cloud and UPD-Discovery to get more informations but will only discover online devices via UDP                                             |
+| broadcastAddress       | [advanced] Set broadcast address to your local subnet  if you have problems with default address                                                           |
+| discoveryInterval      | [advanced] Interval in minutes when a background device scan should be executed. Default is 60                                                             |
 
 ## Thing Configuration
 
@@ -86,7 +85,6 @@ The things has the following configuration parameters:
 | protocol           | [optional] Used Communication Protocol (AES/KLAP/'') Default 'AES'    | Any Wi-Fi-Device            |
 | backgroundDiscovery| [optional] RF-Devices will be discovered after every polling request  | SmartHub                    |
 
-
 ## Channels
 
 All devices support some of the following channels:
@@ -98,7 +96,7 @@ All devices support some of the following channels:
 |           | output2          | Switch                 | Power socket 2 on or off            | P300                                                             |
 |           | output3          | Switch                 | Power socket 3 on or off            | P300                                                             |
 |           | brightness       | Dimmer                 | Brightness 0-100%                   | L510, L530, L610, L630, L900, L920                               |
-|           | colorTemperature | Number                 | White-Color-Temp 2500-6500K         | L510, L530, L610, L630, L900, L920                               |
+|           | colorTemperature | Number:Temperature     | Color Temperature in Kelvin         | L530 (2500 K .. 6500 K), L630 (2200 K .. 6500 K)                 |
 |           | color            | Color                  | Color                               | L530, L630, L900, L920                                           |
 | sensor    | isOpen           | Switch                 | Contact (Door/Window) is Open       | T110                                                             |
 |           | currentTemp      | Number:Temperature     | Current Temperature                 | T310, T315                                                       |
@@ -122,7 +120,7 @@ To minimize network traffic the default refresh-rate is set to 30 seconds. This 
 
 ## Full Example
 
-### tapocontrol.things:
+### `tapocontrol.things` Example
 
 ```java
 tapocontrol:bridge:myTapoBridge                 "Cloud-Login"               [ username="you@yourpovider.com", password="verysecret" ]
@@ -136,7 +134,7 @@ Bridge tapocontrol:bridge:secondBridgeExample            "Cloud-Login"        [ 
 }
 ```
 
-### tapocontrol.items:
+### `tapocontrol.items` Example
 
 ```java
 Switch       TAPO_SOCKET      "socket"                { channel="tapocontrol:P100:myTapoBridge:mySocket:actuator#output" }

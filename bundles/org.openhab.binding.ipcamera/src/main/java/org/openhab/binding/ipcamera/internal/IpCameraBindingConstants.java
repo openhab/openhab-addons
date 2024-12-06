@@ -28,13 +28,14 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class IpCameraBindingConstants {
-    private static final String BINDING_ID = "ipcamera";
+    public static final String BINDING_ID = "ipcamera";
     public static final String AUTH_HANDLER = "authorizationHandler";
     public static final String AMCREST_HANDLER = "amcrestHandler";
     public static final String COMMON_HANDLER = "commonHandler";
     public static final String INSTAR_HANDLER = "instarHandler";
     public static final String REOLINK_HANDLER = "reolinkHandler";
     public static final String HIKVISION_HANDLER = "hikvisionHandler";
+    public static final String ONVIF_CODEC = "onvifCodec";
 
     public enum FFmpegFormat {
         HLS,
@@ -148,4 +149,13 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_ENABLE_EMAIL = "enableEmail";
     public static final String CHANNEL_ENABLE_PUSH = "enablePush";
     public static final String CHANNEL_ENABLE_RECORDINGS = "enableRecordings";
+    public static final String CHANNEL_AUTO_TRACKING = "autoTracking";
+    public static final String CHANNEL_ACCEPTED_CARD_NUMBER = "acceptedCardNumber";
+    public static final String CHANNEL_UNACCEPTED_CARD_NUMBER = "unacceptedCardNumber";
+    public static final String CHANNEL_DOOR_UNLOCK = "doorUnlock";
+    public static final String CHANNEL_DOOR_CONTACT = "doorContact";
+    public static final String CHANNEL_EXIT_BUTTON = "exitButton";
+    public static final String CHANNEL_MOTION_DETECTION_LEVEL = "motionDetectionLevel";
+    public static final String CHANNEL_EXIT_BUTTON_ENABLED = "exitButtonEnabled";
+    public static final String CHANNEL_MAGNETIC_LOCK_WARNING = "magneticLockWarning";
 }

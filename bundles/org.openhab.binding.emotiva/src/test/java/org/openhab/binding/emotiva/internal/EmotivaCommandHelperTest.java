@@ -32,8 +32,6 @@ import static org.openhab.binding.emotiva.internal.protocol.EmotivaDataType.ON_O
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion.PROTOCOL_V2;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion.PROTOCOL_V3;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -90,9 +88,9 @@ class EmotivaCommandHelperTest {
     void testChannelToControlRequest(String channel, String name, EmotivaDataType emotivaDataType,
             EmotivaControlCommands defaultCommand, EmotivaControlCommands onCommand, EmotivaControlCommands offCommand,
             EmotivaControlCommands setCommand, EmotivaProtocolVersion version, double min, double max) {
-        final Map<String, Map<EmotivaControlCommands, String>> commandMaps = new ConcurrentHashMap<>();
+        var state = new EmotivaProcessorState();
+        EmotivaControlRequest surround = EmotivaCommandHelper.channelToControlRequest(channel, state, version);
 
-        EmotivaControlRequest surround = EmotivaCommandHelper.channelToControlRequest(channel, commandMaps, version);
         assertThat(surround.getName(), is(name));
         assertThat(surround.getChannel(), is(channel));
         assertThat(surround.getDataType(), is(emotivaDataType));

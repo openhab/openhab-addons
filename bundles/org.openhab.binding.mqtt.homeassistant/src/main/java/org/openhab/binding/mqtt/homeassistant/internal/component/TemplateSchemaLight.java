@@ -23,6 +23,7 @@ import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelTransformation;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
@@ -34,6 +35,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -75,37 +77,41 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
 
     @Override
     protected void buildChannels() {
+        AutoUpdatePolicy autoUpdatePolicy = optimistic ? AutoUpdatePolicy.RECOMMEND : null;
         if (channelConfiguration.commandOnTemplate == null || channelConfiguration.commandOffTemplate == null) {
             throw new UnsupportedComponentException("Template schema light component '" + getHaID()
                     + "' does not define command_on_template or command_off_template!");
         }
 
         onOffValue = new OnOffValue("on", "off");
-        brightnessValue = new PercentageValue(null, new BigDecimal(255), null, null, null);
+        brightnessValue = new PercentageValue(null, new BigDecimal(255), null, null, null, FORMAT_INTEGER);
 
         if (channelConfiguration.redTemplate != null && channelConfiguration.greenTemplate != null
                 && channelConfiguration.blueTemplate != null) {
-            hasColorChannel = true;
-            buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
-                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command)).build();
+            colorChannel = buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
+                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command))
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         } else if (channelConfiguration.brightnessTemplate != null) {
             brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, ComponentChannelType.DIMMER, brightnessValue,
                     "Brightness", this).commandTopic(DUMMY_TOPIC, true, 1)
-                    .commandFilter(command -> handleCommand(command)).build();
+                    .commandFilter(command -> handleCommand(command)).withAutoUpdatePolicy(autoUpdatePolicy).build();
         } else {
-            onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
-                    this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command)).build();
+            onOffChannel = buildChannel(newStyleChannels ? SWITCH_CHANNEL_ID : SWITCH_CHANNEL_ID_DEPRECATED,
+                    ComponentChannelType.SWITCH, onOffValue, "On/Off State", this).commandTopic(DUMMY_TOPIC, true, 1)
+                    .commandFilter(command -> handleCommand(command)).withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
 
         if (channelConfiguration.colorTempTemplate != null) {
-            buildChannel(COLOR_TEMP_CHANNEL_ID, ComponentChannelType.NUMBER, colorTempValue, "Color Temperature", this)
+            buildChannel(newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED,
+                    ComponentChannelType.NUMBER, colorTempValue, "Color Temperature", this)
                     .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleColorTempCommand(command))
-                    .build();
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
         TextValue localEffectValue = effectValue;
         if (channelConfiguration.effectTemplate != null && localEffectValue != null) {
             buildChannel(EFFECT_CHANNEL_ID, ComponentChannelType.STRING, localEffectValue, "Effect", this)
-                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleEffectCommand(command)).build();
+                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleEffectCommand(command))
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
     }
 
@@ -127,7 +133,7 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
                 binding.put(TemplateVariables.BRIGHTNESS,
                         state.getBrightness().toBigDecimal().multiply(factor).intValue());
             }
-            if (hasColorChannel) {
+            if (colorChannel != null) {
                 int[] rgb = ColorUtil.hsbToRgb(state);
                 binding.put(TemplateVariables.RED, rgb[0]);
                 binding.put(TemplateVariables.GREEN, rgb[1]);
@@ -249,13 +255,15 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
                 colorValue.update(HSBType.fromRGB(red, green, blue));
             }
         }
-
-        if (hasColorChannel) {
-            listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
-        } else if (brightnessChannel != null) {
-            listener.updateChannelState(buildChannelUID(BRIGHTNESS_CHANNEL_ID), brightnessValue.getChannelState());
+        ComponentChannel localBrightnessChannel = brightnessChannel;
+        ComponentChannel localColorChannel = colorChannel;
+        if (localColorChannel != null) {
+            listener.updateChannelState(localColorChannel.getChannel().getUID(), colorValue.getChannelState());
+        } else if (localBrightnessChannel != null) {
+            listener.updateChannelState(localBrightnessChannel.getChannel().getUID(),
+                    brightnessValue.getChannelState());
         } else {
-            listener.updateChannelState(buildChannelUID(ON_OFF_CHANNEL_ID), onOffValue.getChannelState());
+            listener.updateChannelState(onOffChannel.getChannel().getUID(), onOffValue.getChannelState());
         }
 
         template = channelConfiguration.effectTemplate;
@@ -277,7 +285,9 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
             } else {
                 colorTempValue.update(new QuantityType(mireds, Units.MIRED));
             }
-            listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID), colorTempValue.getChannelState());
+            listener.updateChannelState(
+                    buildChannelUID(newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED),
+                    colorTempValue.getChannelState());
         }
     }
 

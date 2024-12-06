@@ -60,6 +60,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
@@ -265,13 +266,13 @@ public class StateFilterProfileTest {
     }
 
     public static Stream<Arguments> testComparingItemWithValue() {
-        NumberItem powerItem = new NumberItem("Number:Power", "ItemName", UNIT_PROVIDER);
-        NumberItem decimalItem = new NumberItem("ItemName");
-        StringItem stringItem = new StringItem("ItemName");
-        SwitchItem switchItem = new SwitchItem("ItemName");
-        DimmerItem dimmerItem = new DimmerItem("ItemName");
-        ContactItem contactItem = new ContactItem("ItemName");
-        RollershutterItem rollershutterItem = new RollershutterItem("ItemName");
+        NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
+        NumberItem decimalItem = new NumberItem("decimalItem");
+        StringItem stringItem = new StringItem("stringItem");
+        SwitchItem switchItem = new SwitchItem("switchItem");
+        DimmerItem dimmerItem = new DimmerItem("dimmerItem");
+        ContactItem contactItem = new ContactItem("contactItem");
+        RollershutterItem rollershutterItem = new RollershutterItem("rollershutterItem");
 
         QuantityType q_1500W = QuantityType.valueOf("1500 W");
         DecimalType d_1500 = DecimalType.valueOf("1500");
@@ -281,176 +282,185 @@ public class StateFilterProfileTest {
         // StringType s_OPEN = StringType.valueOf("OPEN");
 
         return Stream.of( //
+                // Test various spacing combinations
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem==OPEN", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem ==OPEN", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem== OPEN", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem == OPEN", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem  ==   OPEN", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "  contactItem==OPEN", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem==OPEN  ", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contact Item==OPEN  ", false), //
+
+                // Test swapping lhs and rhs
+                Arguments.of(contactItem, OpenClosedType.OPEN, "OPEN==contactItem", true), //
+                Arguments.of(decimalItem, d_1500, "10 < decimalItem", true), //
+                Arguments.of(decimalItem, d_1500, "1501 > decimalItem", true), //
+                Arguments.of(dimmerItem, PercentType.ZERO, "1 > dimmerItem", true), //
+                Arguments.of(dimmerItem, PercentType.ZERO, "0 < dimmerItem", false), //
+                Arguments.of(powerItem, q_1500W, "2 kW > powerItem", true), //
+
                 // We should be able to check item state is/isn't UNDEF/NULL
 
                 // First, when the item state is actually an UnDefType
                 // An unquoted value UNDEF/NULL should be treated as an UnDefType
                 // Only equality comparisons against the matching UnDefType will return true
                 // Any other comparisons should return false
-                Arguments.of(stringItem, UnDefType.UNDEF, "==", "UNDEF", true), //
-                Arguments.of(dimmerItem, UnDefType.UNDEF, "==", "UNDEF", true), //
-                Arguments.of(dimmerItem, UnDefType.NULL, "==", "NULL", true), //
-                Arguments.of(dimmerItem, UnDefType.NULL, "==", "UNDEF", false), //
-                Arguments.of(decimalItem, UnDefType.NULL, ">", "10", false), //
-                Arguments.of(decimalItem, UnDefType.NULL, "<", "10", false), //
-                Arguments.of(decimalItem, UnDefType.NULL, "==", "10", false), //
-                Arguments.of(decimalItem, UnDefType.NULL, ">=", "10", false), //
-                Arguments.of(decimalItem, UnDefType.NULL, "<=", "10", false), //
+                Arguments.of(stringItem, UnDefType.UNDEF, "stringItem == UNDEF", true), //
+                Arguments.of(dimmerItem, UnDefType.UNDEF, "dimmerItem == UNDEF", true), //
+                Arguments.of(dimmerItem, UnDefType.NULL, "dimmerItem == NULL", true), //
+                Arguments.of(dimmerItem, UnDefType.NULL, "dimmerItem == UNDEF", false), //
+                Arguments.of(decimalItem, UnDefType.NULL, "decimalItem > 10", false), //
+                Arguments.of(decimalItem, UnDefType.NULL, "decimalItem < 10", false), //
+                Arguments.of(decimalItem, UnDefType.NULL, "decimalItem == 10", false), //
+                Arguments.of(decimalItem, UnDefType.NULL, "decimalItem >= 10", false), //
+                Arguments.of(decimalItem, UnDefType.NULL, "decimalItem <= 10", false), //
 
                 // A quoted value (String) isn't UnDefType
-                Arguments.of(stringItem, UnDefType.UNDEF, "==", "'UNDEF'", false), //
-                Arguments.of(stringItem, UnDefType.UNDEF, "!=", "'UNDEF'", true), //
-                Arguments.of(stringItem, UnDefType.NULL, "==", "'NULL'", false), //
-                Arguments.of(stringItem, UnDefType.NULL, "!=", "'NULL'", true), //
+                Arguments.of(stringItem, UnDefType.UNDEF, "stringItem == 'UNDEF'", false), //
+                Arguments.of(stringItem, UnDefType.UNDEF, "stringItem != 'UNDEF'", true), //
+                Arguments.of(stringItem, UnDefType.NULL, "stringItem == 'NULL'", false), //
+                Arguments.of(stringItem, UnDefType.NULL, "stringItem != 'NULL'", true), //
 
                 // When the item state is not an UnDefType
                 // UnDefType is special. When unquoted and comparing against a StringItem,
                 // don't treat it as a string
-                Arguments.of(stringItem, s_NULL, "==", "'NULL'", true), // Comparing String to String
-                Arguments.of(stringItem, s_NULL, "==", "NULL", false), // String state != UnDefType
-                Arguments.of(stringItem, s_NULL, "!=", "NULL", true), //
-                Arguments.of(stringItem, s_UNDEF, "==", "'UNDEF'", true), // Comparing String to String
-                Arguments.of(stringItem, s_UNDEF, "==", "UNDEF", false), // String state != UnDefType
-                Arguments.of(stringItem, s_UNDEF, "!=", "UNDEF", true), //
+                Arguments.of(stringItem, s_NULL, "stringItem == 'NULL'", true), // Comparing String to String
+                Arguments.of(stringItem, s_NULL, "stringItem == NULL", false), // String state != UnDefType
+                Arguments.of(stringItem, s_NULL, "stringItem != NULL", true), //
+                Arguments.of(stringItem, s_UNDEF, "stringItem == 'UNDEF'", true), // Comparing String to String
+                Arguments.of(stringItem, s_UNDEF, "stringItem == UNDEF", false), // String state != UnDefType
+                Arguments.of(stringItem, s_UNDEF, "stringItem != UNDEF", true), //
 
-                Arguments.of(dimmerItem, PercentType.HUNDRED, "==", "UNDEF", false), //
-                Arguments.of(dimmerItem, PercentType.HUNDRED, "!=", "UNDEF", true), //
-                Arguments.of(dimmerItem, PercentType.HUNDRED, "==", "NULL", false), //
-                Arguments.of(dimmerItem, PercentType.HUNDRED, "!=", "NULL", true), //
+                Arguments.of(dimmerItem, PercentType.HUNDRED, "dimmerItem == UNDEF", false), //
+                Arguments.of(dimmerItem, PercentType.HUNDRED, "dimmerItem != UNDEF", true), //
+                Arguments.of(dimmerItem, PercentType.HUNDRED, "dimmerItem == NULL", false), //
+                Arguments.of(dimmerItem, PercentType.HUNDRED, "dimmerItem != NULL", true), //
 
                 // Check for OPEN/CLOSED
-                Arguments.of(contactItem, OpenClosedType.OPEN, "==", "OPEN", true), //
-                Arguments.of(contactItem, OpenClosedType.OPEN, "!=", "'OPEN'", true), // String != Enum
-                Arguments.of(contactItem, OpenClosedType.OPEN, "!=", "CLOSED", true), //
-                Arguments.of(contactItem, OpenClosedType.OPEN, "==", "CLOSED", false), //
-                Arguments.of(contactItem, OpenClosedType.CLOSED, "==", "CLOSED", true), //
-                Arguments.of(contactItem, OpenClosedType.CLOSED, "!=", "OPEN", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem == OPEN", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem != 'OPEN'", true), // String != Enum
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem != CLOSED", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem == CLOSED", false), //
+                Arguments.of(contactItem, OpenClosedType.CLOSED, "contactItem == CLOSED", true), //
+                Arguments.of(contactItem, OpenClosedType.CLOSED, "contactItem != OPEN", true), //
 
                 // ON/OFF
-                Arguments.of(switchItem, OnOffType.ON, "==", "ON", true), //
-                Arguments.of(switchItem, OnOffType.ON, "!=", "ON", false), //
-                Arguments.of(switchItem, OnOffType.ON, "!=", "OFF", true), //
-                Arguments.of(switchItem, OnOffType.ON, "!=", "UNDEF", true), //
-                Arguments.of(switchItem, UnDefType.UNDEF, "==", "UNDEF", true), //
-                Arguments.of(switchItem, OnOffType.ON, "==", "'ON'", false), // it's not a string
-                Arguments.of(switchItem, OnOffType.ON, "!=", "'ON'", true), // incompatible types
+                Arguments.of(switchItem, OnOffType.ON, "switchItem == ON", true), //
+                Arguments.of(switchItem, OnOffType.ON, "switchItem != ON", false), //
+                Arguments.of(switchItem, OnOffType.ON, "switchItem != OFF", true), //
+                Arguments.of(switchItem, OnOffType.ON, "switchItem != UNDEF", true), //
+                Arguments.of(switchItem, UnDefType.UNDEF, "switchItem == UNDEF", true), //
+                Arguments.of(switchItem, OnOffType.ON, "switchItem == 'ON'", false), // it's not a string
+                Arguments.of(switchItem, OnOffType.ON, "switchItem != 'ON'", true), // incompatible types
 
                 // Enum types != String
-                Arguments.of(contactItem, OpenClosedType.OPEN, "==", "'OPEN'", false), //
-                Arguments.of(contactItem, OpenClosedType.OPEN, "!=", "'CLOSED'", true), //
-                Arguments.of(contactItem, OpenClosedType.OPEN, "!=", "'OPEN'", true), //
-                Arguments.of(contactItem, OpenClosedType.OPEN, "==", "'CLOSED'", false), //
-                Arguments.of(contactItem, OpenClosedType.CLOSED, "==", "'CLOSED'", false), //
-                Arguments.of(contactItem, OpenClosedType.CLOSED, "!=", "'CLOSED'", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem == 'OPEN'", false), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem != 'CLOSED'", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem != 'OPEN'", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "contactItem == 'CLOSED'", false), //
+                Arguments.of(contactItem, OpenClosedType.CLOSED, "contactItem == 'CLOSED'", false), //
+                Arguments.of(contactItem, OpenClosedType.CLOSED, "contactItem != 'CLOSED'", true), //
 
                 // non UnDefType checks
                 // String constants must be quoted
-                Arguments.of(stringItem, s_foo, "==", "'foo'", true), //
-                Arguments.of(stringItem, s_foo, "==", "foo", false), //
-                Arguments.of(stringItem, s_foo, "!=", "foo", true), // not quoted -> not a string
-                Arguments.of(stringItem, s_foo, "<>", "foo", true), //
-                Arguments.of(stringItem, s_foo, " <>", "foo", true), //
-                Arguments.of(stringItem, s_foo, "<> ", "foo", true), //
-                Arguments.of(stringItem, s_foo, " <> ", "foo", true), //
-                Arguments.of(stringItem, s_foo, "!=", "'foo'", false), //
-                Arguments.of(stringItem, s_foo, "<>", "'foo'", false), //
-                Arguments.of(stringItem, s_foo, " <>", "'foo'", false), //
+                Arguments.of(stringItem, s_foo, "stringItem == 'foo'", true), //
+                Arguments.of(stringItem, s_foo, "stringItem == foo", false), //
+                Arguments.of(stringItem, s_foo, "stringItem != foo", true), // not quoted -> not a string
+                Arguments.of(stringItem, s_foo, "stringItem <> foo", true), //
+                Arguments.of(stringItem, s_foo, "stringItem != 'foo'", false), //
+                Arguments.of(stringItem, s_foo, "stringItem <> 'foo'", false), //
 
-                Arguments.of(dimmerItem, PercentType.HUNDRED, "==", "100", true), //
-                Arguments.of(dimmerItem, PercentType.HUNDRED, ">=", "100", true), //
-                Arguments.of(dimmerItem, PercentType.HUNDRED, ">", "50", true), //
-                Arguments.of(dimmerItem, PercentType.HUNDRED, ">=", "50", true), //
-                Arguments.of(dimmerItem, PercentType.ZERO, "<", "50", true), //
-                Arguments.of(dimmerItem, PercentType.ZERO, ">=", "50", false), //
-                Arguments.of(dimmerItem, PercentType.ZERO, ">=", "0", true), //
-                Arguments.of(dimmerItem, PercentType.ZERO, "<", "0", false), //
-                Arguments.of(dimmerItem, PercentType.ZERO, "<=", "0", true), //
+                Arguments.of(dimmerItem, PercentType.HUNDRED, "dimmerItem == 100", true), //
+                Arguments.of(dimmerItem, PercentType.HUNDRED, "dimmerItem >= 100", true), //
+                Arguments.of(dimmerItem, PercentType.HUNDRED, "dimmerItem > 50", true), //
+                Arguments.of(dimmerItem, PercentType.HUNDRED, "dimmerItem >= 50", true), //
+                Arguments.of(dimmerItem, PercentType.ZERO, "dimmerItem < 50", true), //
+                Arguments.of(dimmerItem, PercentType.ZERO, "dimmerItem >= 50", false), //
+                Arguments.of(dimmerItem, PercentType.ZERO, "dimmerItem >= 0", true), //
+                Arguments.of(dimmerItem, PercentType.ZERO, "dimmerItem < 0", false), //
+                Arguments.of(dimmerItem, PercentType.ZERO, "dimmerItem <= 0", true), //
 
                 // Numeric vs Strings aren't comparable
-                Arguments.of(rollershutterItem, PercentType.HUNDRED, "==", "'100'", false), //
-                Arguments.of(rollershutterItem, PercentType.HUNDRED, "!=", "'100'", true), //
-                Arguments.of(rollershutterItem, PercentType.HUNDRED, ">", "'10'", false), //
-                Arguments.of(powerItem, q_1500W, "==", "'1500 W'", false), // QuantityType vs String => fail
-                Arguments.of(decimalItem, d_1500, "==", "'1500'", false), //
+                Arguments.of(rollershutterItem, PercentType.HUNDRED, "rollershutterItem == '100'", false), //
+                Arguments.of(rollershutterItem, PercentType.HUNDRED, "rollershutterItem != '100'", true), //
+                Arguments.of(rollershutterItem, PercentType.HUNDRED, "rollershutterItem > '10'", false), //
+                Arguments.of(powerItem, q_1500W, "powerItem == '1500 W'", false), // QuantityType vs String => fail
+                Arguments.of(decimalItem, d_1500, "decimalItem == '1500'", false), //
 
                 // Compatible type castings are supported
-                Arguments.of(dimmerItem, PercentType.ZERO, "==", "OFF", true), //
-                Arguments.of(dimmerItem, PercentType.ZERO, "==", "ON", false), //
-                Arguments.of(dimmerItem, PercentType.ZERO, "!=", "ON", true), //
-                Arguments.of(dimmerItem, PercentType.ZERO, "!=", "OFF", false), //
-                Arguments.of(dimmerItem, PercentType.HUNDRED, "==", "ON", true), //
-                Arguments.of(dimmerItem, PercentType.HUNDRED, "==", "OFF", false), //
-                Arguments.of(dimmerItem, PercentType.HUNDRED, "!=", "ON", false), //
-                Arguments.of(dimmerItem, PercentType.HUNDRED, "!=", "OFF", true), //
+                Arguments.of(dimmerItem, PercentType.ZERO, "dimmerItem == OFF", true), //
+                Arguments.of(dimmerItem, PercentType.ZERO, "dimmerItem == ON", false), //
+                Arguments.of(dimmerItem, PercentType.ZERO, "dimmerItem != ON", true), //
+                Arguments.of(dimmerItem, PercentType.ZERO, "dimmerItem != OFF", false), //
+                Arguments.of(dimmerItem, PercentType.HUNDRED, "dimmerItem == ON", true), //
+                Arguments.of(dimmerItem, PercentType.HUNDRED, "dimmerItem == OFF", false), //
+                Arguments.of(dimmerItem, PercentType.HUNDRED, "dimmerItem != ON", false), //
+                Arguments.of(dimmerItem, PercentType.HUNDRED, "dimmerItem != OFF", true), //
 
                 // UpDownType gets converted to PercentType for comparison
-                Arguments.of(rollershutterItem, PercentType.HUNDRED, "==", "DOWN", true), //
-                Arguments.of(rollershutterItem, PercentType.HUNDRED, "==", "UP", false), //
-                Arguments.of(rollershutterItem, PercentType.HUNDRED, "!=", "UP", true), //
-                Arguments.of(rollershutterItem, PercentType.ZERO, "==", "UP", true), //
-                Arguments.of(rollershutterItem, PercentType.ZERO, "!=", "DOWN", true), //
+                Arguments.of(rollershutterItem, PercentType.HUNDRED, "rollershutterItem == DOWN", true), //
+                Arguments.of(rollershutterItem, PercentType.HUNDRED, "rollershutterItem == UP", false), //
+                Arguments.of(rollershutterItem, PercentType.HUNDRED, "rollershutterItem != UP", true), //
+                Arguments.of(rollershutterItem, PercentType.ZERO, "rollershutterItem == UP", true), //
+                Arguments.of(rollershutterItem, PercentType.ZERO, "rollershutterItem != DOWN", true), //
 
-                Arguments.of(decimalItem, d_1500, " eq ", "1500", true), //
-                Arguments.of(decimalItem, d_1500, " eq ", "1500", true), //
-                Arguments.of(decimalItem, d_1500, "==", "1500", true), //
-                Arguments.of(decimalItem, d_1500, " ==", "1500", true), //
-                Arguments.of(decimalItem, d_1500, "== ", "1500", true), //
-                Arguments.of(decimalItem, d_1500, " == ", "1500", true), //
+                Arguments.of(decimalItem, d_1500, "decimalItem eq 1500", true), //
+                Arguments.of(decimalItem, d_1500, "decimalItem == 1500", true), //
 
-                Arguments.of(powerItem, q_1500W, " eq ", "1500", false), // no unit => fail
-                Arguments.of(powerItem, q_1500W, "==", "1500", false), // no unit => fail
-                Arguments.of(powerItem, q_1500W, " eq ", "1500 cm", false), // wrong unit
-                Arguments.of(powerItem, q_1500W, "==", "1500 cm", false), // wrong unit
+                Arguments.of(powerItem, q_1500W, "powerItem eq 1500", false), // no unit => fail
+                Arguments.of(powerItem, q_1500W, "powerItem == 1500", false), // no unit => fail
+                Arguments.of(powerItem, q_1500W, "powerItem eq 1500 cm", false), // wrong unit
+                Arguments.of(powerItem, q_1500W, "powerItem == 1500 cm", false), // wrong unit
 
-                Arguments.of(powerItem, q_1500W, " eq ", "1500 W", true), //
-                Arguments.of(powerItem, q_1500W, " eq ", "1.5 kW", true), //
-                Arguments.of(powerItem, q_1500W, " eq ", "2 kW", false), //
-                Arguments.of(powerItem, q_1500W, "==", "1500 W", true), //
-                Arguments.of(powerItem, q_1500W, "==", "1.5 kW", true), //
-                Arguments.of(powerItem, q_1500W, "==", "2 kW", false), //
+                Arguments.of(powerItem, q_1500W, "powerItem eq 1500 W", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem eq 1.5 kW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem eq 2 kW", false), //
+                Arguments.of(powerItem, q_1500W, "powerItem == 1500 W", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem == 1.5 kW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem == 2 kW", false), //
 
-                Arguments.of(powerItem, q_1500W, " neq ", "500 W", true), //
-                Arguments.of(powerItem, q_1500W, " neq ", "1500", true), // Not the same type, so not equal
-                Arguments.of(powerItem, q_1500W, " neq ", "1500 W", false), //
-                Arguments.of(powerItem, q_1500W, " neq ", "1.5 kW", false), //
-                Arguments.of(powerItem, q_1500W, "!=", "500 W", true), //
-                Arguments.of(powerItem, q_1500W, "!=", "1500", true), // not the same type
-                Arguments.of(powerItem, q_1500W, "!=", "1500 W", false), //
-                Arguments.of(powerItem, q_1500W, "!=", "1.5 kW", false), //
+                Arguments.of(powerItem, q_1500W, "powerItem neq 500 W", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem neq 1500", true), // Not the same type, so not equal
+                Arguments.of(powerItem, q_1500W, "powerItem neq 1500 W", false), //
+                Arguments.of(powerItem, q_1500W, "powerItem neq 1.5 kW", false), //
+                Arguments.of(powerItem, q_1500W, "powerItem != 500 W", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem != 1500", true), // not the same type
+                Arguments.of(powerItem, q_1500W, "powerItem != 1500 W", false), //
+                Arguments.of(powerItem, q_1500W, "powerItem != 1.5 kW", false), //
 
-                Arguments.of(powerItem, q_1500W, " GT ", "100 W", true), //
-                Arguments.of(powerItem, q_1500W, " GT ", "1 kW", true), //
-                Arguments.of(powerItem, q_1500W, " GT ", "2 kW", false), //
-                Arguments.of(powerItem, q_1500W, ">", "100 W", true), //
-                Arguments.of(powerItem, q_1500W, ">", "1 kW", true), //
-                Arguments.of(powerItem, q_1500W, ">", "2 kW", false), //
-                Arguments.of(powerItem, q_1500W, " GTE ", "1500 W", true), //
-                Arguments.of(powerItem, q_1500W, " GTE ", "1 kW", true), //
-                Arguments.of(powerItem, q_1500W, " GTE ", "1.5 kW", true), //
-                Arguments.of(powerItem, q_1500W, " GTE ", "2 kW", false), //
-                Arguments.of(powerItem, q_1500W, " GTE ", "2000 mW", true), //
-                Arguments.of(powerItem, q_1500W, " GTE ", "20", false), // no unit
-                Arguments.of(powerItem, q_1500W, ">=", "1.5 kW", true), //
-                Arguments.of(powerItem, q_1500W, ">=", "2 kW", false), //
-                Arguments.of(powerItem, q_1500W, " LT ", "2 kW", true), //
-                Arguments.of(powerItem, q_1500W, "<", "2 kW", true), //
-                Arguments.of(powerItem, q_1500W, " LTE ", "2 kW", true), //
-                Arguments.of(powerItem, q_1500W, "<=", "2 kW", true), //
-                Arguments.of(powerItem, q_1500W, "<=", "1 kW", false), //
-                Arguments.of(powerItem, q_1500W, " LTE ", "1.5 kW", true), //
-                Arguments.of(powerItem, q_1500W, "<=", "1.5 kW", true) //
+                Arguments.of(powerItem, q_1500W, "powerItem GT 100 W", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem GT 1 kW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem GT 2 kW", false), //
+                Arguments.of(powerItem, q_1500W, "powerItem > 100 W", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem > 1 kW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem > 2 kW", false), //
+                Arguments.of(powerItem, q_1500W, "powerItem GTE 1500 W", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem GTE 1 kW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem GTE 1.5 kW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem GTE 2 kW", false), //
+                Arguments.of(powerItem, q_1500W, "powerItem GTE 2000 mW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem GTE 20", false), // no unit
+                Arguments.of(powerItem, q_1500W, "powerItem >= 1.5 kW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem >= 2 kW", false), //
+                Arguments.of(powerItem, q_1500W, "powerItem LT 2 kW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem < 2 kW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem LTE 2 kW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem <= 2 kW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem <= 1 kW", false), //
+                Arguments.of(powerItem, q_1500W, "powerItem LTE 1.5 kW", true), //
+                Arguments.of(powerItem, q_1500W, "powerItem <= 1.5 kW", true) //
         );
     }
 
     @ParameterizedTest
     @MethodSource
-    public void testComparingItemWithValue(GenericItem item, State state, String operator, String value,
-            boolean expected) throws ItemNotFoundException {
+    public void testComparingItemWithValue(GenericItem item, State state, String condition, boolean expected)
+            throws ItemNotFoundException {
         String itemName = item.getName();
         item.setState(state);
 
-        when(mockContext.getConfiguration())
-                .thenReturn(new Configuration(Map.of("conditions", itemName + operator + value)));
+        when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", condition)));
         when(mockItemRegistry.getItem(itemName)).thenReturn(item);
 
         StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
@@ -642,5 +652,114 @@ public class StateFilterProfileTest {
         item.setState(state);
         profile.onStateUpdateFromHandler(inputState);
         verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(eq(inputState));
+    }
+
+    public static Stream<Arguments> testFunctions() {
+        NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
+        NumberItem decimalItem = new NumberItem("decimalItem");
+        List<Number> numbers = List.of(1, 2, 3, 4, 5);
+        List<QuantityType> quantities = numbers.stream().map(n -> new QuantityType(n, Units.WATT)).toList();
+        List<DecimalType> decimals = numbers.stream().map(DecimalType::new).toList();
+
+        return Stream.of( //
+                // test custom window size
+                Arguments.of(decimalItem, "$AVERAGE(3) == 4", decimals, DecimalType.valueOf("5"), true), //
+                Arguments.of(decimalItem, "$AVERAGE(4) == 3.5", decimals, DecimalType.valueOf("5"), true), //
+
+                // default window size is 5
+                Arguments.of(decimalItem, "10 <= $DELTA", decimals, DecimalType.valueOf("10"), false), //
+                Arguments.of(decimalItem, "10 <= $DELTA", decimals, DecimalType.valueOf("11"), true), //
+                Arguments.of(decimalItem, "1 <= $DELTA", decimals, DecimalType.valueOf("5.5"), false), //
+                Arguments.of(decimalItem, "1 <= $DELTA", decimals, DecimalType.valueOf("6"), true), //
+                Arguments.of(decimalItem, "$DELTA >= 1", decimals, DecimalType.valueOf("10"), true), //
+                Arguments.of(decimalItem, "$DELTA >= 1", decimals, DecimalType.valueOf("5.5"), false), //
+
+                Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("4.6"), false), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("4.5"), true), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("5.4"), false), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("5.5"), true), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("6"), true), //
+
+                Arguments.of(decimalItem, ">= 10 %", decimals, DecimalType.valueOf("4.6"), false), //
+                Arguments.of(decimalItem, ">= 10%", decimals, DecimalType.valueOf("4.6"), false), //
+                Arguments.of(decimalItem, ">= 10%", decimals, DecimalType.valueOf("4.5"), true), //
+                Arguments.of(decimalItem, ">= 10%", decimals, DecimalType.valueOf("5.4"), false), //
+                Arguments.of(decimalItem, ">= 10%", decimals, DecimalType.valueOf("5.5"), true), //
+                Arguments.of(decimalItem, ">= 10%", decimals, DecimalType.valueOf("6"), true), //
+
+                // The following will only accept new data if it is within 10% of the previously accepted data.
+                // so the second and subsequent initial data (i.e.: 2, 3, 4, 5) will be rejected.
+                // The new data is compared against the first (1)
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("1.09"), true), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("1.11"), false), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.91"), true), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.89"), false), //
+
+                Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.09"), true), //
+                Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.11"), false), //
+                Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("0.91"), true), //
+                Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("0.89"), false), //
+
+                Arguments.of(decimalItem, "1 == $MIN", decimals, DecimalType.valueOf("20"), true), //
+                Arguments.of(decimalItem, "0 < $MIN", decimals, DecimalType.valueOf("20"), true), //
+                Arguments.of(decimalItem, "$MIN > 0", decimals, DecimalType.valueOf("20"), true), //
+
+                Arguments.of(decimalItem, "< $MIN", decimals, DecimalType.valueOf("20"), false), //
+                Arguments.of(decimalItem, "< $MIN", decimals, DecimalType.valueOf("-1"), true), //
+                Arguments.of(decimalItem, "> $MIN", decimals, DecimalType.valueOf("-1"), false), //
+                Arguments.of(decimalItem, "> $MIN", decimals, DecimalType.valueOf("2"), true), //
+
+                Arguments.of(decimalItem, "1 == $MAX", decimals, DecimalType.valueOf("20"), false), //
+                Arguments.of(decimalItem, "0 < $MAX", decimals, DecimalType.valueOf("20"), true), //
+                Arguments.of(decimalItem, "6 < $MAX", decimals, DecimalType.valueOf("20"), false), //
+                Arguments.of(decimalItem, "6 > $MAX", decimals, DecimalType.valueOf("1"), true), //
+
+                Arguments.of(decimalItem, "< $MAX", decimals, DecimalType.valueOf("20"), false), //
+                Arguments.of(decimalItem, "< $MAX", decimals, DecimalType.valueOf("-1"), true), //
+                Arguments.of(decimalItem, "> $MAX", decimals, DecimalType.valueOf("-1"), false), //
+                Arguments.of(decimalItem, "> $MAX", decimals, DecimalType.valueOf("20"), true), //
+
+                Arguments.of(decimalItem, "$MEDIAN < 4", decimals, DecimalType.valueOf("2"), true), //
+                Arguments.of(decimalItem, "$MEDIAN(3) < 4", decimals, DecimalType.valueOf("2"), false), //
+
+                Arguments.of(decimalItem, "$STDDEV(3) > 0.8", decimals, DecimalType.valueOf("2"), true), //
+                Arguments.of(decimalItem, "$STDDEV > 1.4", decimals, DecimalType.valueOf("2"), true), //
+                Arguments.of(decimalItem, "$STDDEV < 1.5", decimals, DecimalType.valueOf("2"), true), //
+                // Make sure STDDEV's unit is correct
+                Arguments.of(powerItem, "$STDDEV < 1.5 W", quantities, QuantityType.valueOf("2 W"), true), //
+                Arguments.of(powerItem, "$STDDEV < 1.5 W²", quantities, QuantityType.valueOf("2 W"), false), //
+
+                Arguments.of(decimalItem, "< $AVERAGE", decimals, DecimalType.valueOf("2"), true), //
+                Arguments.of(powerItem, "== $AVERAGE", quantities, QuantityType.valueOf("3 W"), true), //
+                Arguments.of(powerItem, "== $AVERAGE", quantities, DecimalType.valueOf("3"), false), //
+                Arguments.of(powerItem, "> $AVERAGE", quantities, QuantityType.valueOf("2 W"), false), //
+                Arguments.of(powerItem, "> $AVERAGE", quantities, QuantityType.valueOf("4 W"), true), //
+
+                Arguments.of(decimalItem, "2 < $AVERAGE", decimals, DecimalType.valueOf("10"), true), //
+                Arguments.of(decimalItem, "$AVERAGE > 2", decimals, DecimalType.valueOf("10"), true), //
+                Arguments.of(powerItem, "3 W == $AVERAGE", quantities, QuantityType.valueOf("100 W"), true), //
+                Arguments.of(powerItem, "3 == $AVERAGE", quantities, QuantityType.valueOf("100 W"), false) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testFunctions(Item item, String condition, List<State> states, State input, boolean expected)
+            throws ItemNotFoundException {
+        when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", condition)));
+        when(mockItemRegistry.getItem(item.getName())).thenReturn(item);
+        when(mockItemChannelLink.getItemName()).thenReturn(item.getName());
+
+        StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
+
+        for (State state : states) {
+            profile.onStateUpdateFromHandler(state);
+        }
+
+        reset(mockCallback);
+        when(mockCallback.getItemChannelLink()).thenReturn(mockItemChannelLink);
+
+        profile.onStateUpdateFromHandler(input);
+        verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(input);
     }
 }

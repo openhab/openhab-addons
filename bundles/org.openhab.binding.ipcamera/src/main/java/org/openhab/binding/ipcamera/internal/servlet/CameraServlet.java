@@ -79,7 +79,9 @@ public class CameraServlet extends IpCameraServlet {
                 snapshotData.close();
                 break;
             case "/OnvifEvent":
-                handler.onvifCamera.eventRecieved(req.getReader().toString());
+                ServletInputStream inputStream = req.getInputStream();
+                String xmlData = new String(inputStream.readAllBytes(), "UTF-8");
+                handler.onvifCamera.eventRecieved(xmlData);
                 break;
             default:
                 logger.debug("Recieved unknown request \tPOST:{}", pathInfo);
@@ -184,12 +186,12 @@ public class CameraServlet extends IpCameraServlet {
                 if (openStreams.isEmpty()) {
                     logger.debug("First stream requested, opening up stream from camera");
                     handler.openCamerasStream();
-                    if (handler.mjpegUri.isEmpty() || "ffmpeg".equals(handler.mjpegUri)) {
+                    if (handler.usingRtspForMjpeg()) {
                         output = new StreamOutput(resp);
                     } else {
                         output = new StreamOutput(resp, handler.mjpegContentType);
                     }
-                } else if (handler.mjpegUri.isEmpty() || "ffmpeg".equals(handler.mjpegUri)) {
+                } else if (handler.usingRtspForMjpeg()) {
                     output = new StreamOutput(resp);
                 } else {
                     ChannelTracking tracker = handler.channelTrackingMap.get(handler.getTinyUrl(handler.mjpegUri));

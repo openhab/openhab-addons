@@ -10,19 +10,20 @@ See [Kaleidescape-System-Control-Protocol-Reference-Manual.pdf](https://support.
 ## Supported Things
 
 All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
-It is important to choose the correct thing type to ensure the available channels are correct for the component being used.  
+It is important to choose the correct thing type to ensure the available channels are correct for the component being used.
 
-The supported thing types are:  
-`player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player  
-`cinemaone` Cinema One (2nd Gen)  
-`alto`  
-`strato` Includes Strato, Strato S, Strato C or Strato V  
+The supported thing types are:
 
-The binding supports either a TCP/IP connection or direct serial port connection (19200-8-N-1) to the Kaleidescape component.  
+- `player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player
+- `cinemaone` Cinema One (2nd Gen)
+- `alto`
+- `strato` Includes Strato, Strato S, Strato C or Strato V
+
+The binding supports either a TCP/IP connection or direct serial port connection (19200-8-N-1) to the Kaleidescape component.
 
 ## Discovery
 
-Auto-discovery is supported for Alto and Strato components if the device can be located on the local network using UPnP.
+Auto-discovery is supported for Alto and Strato components if the device can be located on the local network using SDDP.
 Manually initiated discovery will locate all legacy Premiere line components if they are on the same IP subnet of the openHAB server.
 In the Inbox, select Search For Things and then choose the Kaleidescape Binding to initiate a discovery scan.
 
@@ -71,6 +72,7 @@ The following channels are available:
 | ui#title_num               | Number      | The current movie title number that is playing                                                                                  |
 | ui#title_length            | Number:Time | The total running time of the currently playing movie (seconds)                                                                 |
 | ui#title_loc               | Number:Time | The running time elapsed of the currently playing movie (seconds)                                                               |
+| ui#endtime                 | DateTime    | The date/time when the currently playing movie will end (timestamp)                                                             |
 | ui#chapter_num             | Number      | The current chapter number of the movie that is playing                                                                         |
 | ui#chapter_length          | Number:Time | The total running time of the current chapter (seconds)                                                                         |
 | ui#chapter_loc             | Number:Time | The running time elapsed of the current chapter                                                                                 |
@@ -105,6 +107,7 @@ The following channels are available:
 | music#track                | String      | The name of the currently playing track                                                                                         |
 | music#artist               | String      | The name of the currently playing artist                                                                                        |
 | music#album                | String      | The name of the currently playing album                                                                                         |
+| music#title                | String      | The raw output from the MUSIC_TITLE api response for use in rules that require track, artist and album changes in one update    |
 | music#play_mode            | String      | The current playback mode of the music                                                                                          |
 | music#play_speed           | String      | The speed of playback scanning                                                                                                  |
 | music#track_length         | Number:Time | The total running time of the current playing track (seconds)                                                                   |
@@ -162,6 +165,7 @@ String z1_Ui_PlaySpeed "Play Speed: [%s]" { channel="kaleidescape:player:myzone1
 Number z1_Ui_TitleNum "Title Number: [%s]" { channel="kaleidescape:player:myzone1:ui#title_num" }
 Number:Time z1_Ui_TitleLength "Title Length: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#title_length" }
 Number:Time z1_Ui_TitleLoc "Title Location: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#title_loc" }
+DateTime z1_Ui_TitleEndTime "Title End Time: [%s]" { channel="kaleidescape:player:myzone1:ui#endtime" }
 Number z1_Ui_ChapterNum "Chapter Number: [%s]" { channel="kaleidescape:player:myzone1:ui#chapter_num" }
 Number:Time z1_Ui_ChapterLength "Chapter Length: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#chapter_length" }
 Number:Time z1_Ui_ChapterLoc "Chapter Location: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#chapter_loc" }
@@ -203,6 +207,7 @@ String z1_Music_PlaySpeed "Play Speed: [%s]" { channel="kaleidescape:player:myzo
 Number:Time z1_Music_TrackLength "Track Length: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:music#track_length" }
 Number:Time z1_Music_TrackPosition "Track Position: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:music#track_position" }
 Number z1_Music_TrackProgress "Track Progress: [%s %%]" { channel="kaleidescape:player:myzone1:music#track_progress" }
+String z1_Music_Title "Music Title Raw: [%s]" { channel="kaleidescape:player:myzone1:music#title" }
 String z1_Music_TrackHandle "Track Handle: [%s]" { channel="kaleidescape:player:myzone1:music#track_handle" }
 String z1_Music_AlbumHandle "Album Handle: [%s]" { channel="kaleidescape:player:myzone1:music#album_handle" }
 String z1_Music_NowplayHandle "Now Playing Handle: [%s]" { channel="kaleidescape:player:myzone1:music#nowplay_handle" }
@@ -291,6 +296,7 @@ sitemap kaleidescape label="Kaleidescape" {
             Text item=z1_Ui_TitleNum icon="video"
             Text item=z1_Ui_TitleLength icon="time"
             Text item=z1_Ui_TitleLoc icon="time"
+            Text item=z1_Ui_TitleEndTime icon="time"
             Text item=z1_Ui_MovieMediaType icon="colorwheel"
             Text item=z1_Ui_ChapterNum icon="video"
             Text item=z1_Ui_ChapterLength icon="time"
@@ -334,6 +340,7 @@ sitemap kaleidescape label="Kaleidescape" {
             Text item=z1_Music_TrackLength icon="time"
             Text item=z1_Music_TrackPosition icon="time"
             Text item=z1_Music_TrackProgress icon="time"
+            Text item=z1_Music_Title icon="zoom"
             Text item=z1_Music_TrackHandle icon="zoom"
             Text item=z1_Music_AlbumHandle icon="zoom"
             Text item=z1_Music_NowplayHandle icon="zoom"
@@ -404,13 +411,13 @@ rule "Bring up Lights when movie is over"
 when
     Item z1_Ui_MovieLocation changed from "Main content" to "End Credits"
 then
-    // fade the lights up slowly while the credits are rolling 
+    // fade the lights up slowly while the credits are rolling
     lightPercent = 0
     while (lightPercent < 100) {
         lightPercent = lightPercent + 5
         logInfo("k rules", "lights at " + lightPercent.toString + " percent")
         // myLightItem.sendCommand(lightPercent)
-        Thread::sleep(5000) 
+        Thread::sleep(5000)
     }
 end
 

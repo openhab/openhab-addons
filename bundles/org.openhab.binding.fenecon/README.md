@@ -29,7 +29,7 @@ The FENECON Thing only needs to be configured with the `hostname`, all other par
 
 ## Channels
 
-The FENECON binding currently only provides access to read out the values from the energy storage system. 
+The FENECON binding currently only provides access to read out the values from the energy storage system.
 
 | Channel                       | Type                 | Read/Write | Description                                                                 |
 |-------------------------------|----------------------|------------|-----------------------------------------------------------------------------|
@@ -93,7 +93,6 @@ Number:Energy        TotalBuyEnergy                 <energy>       (GF_UtilityRo
 // Examples of items for calculating the energy purchased and sold. Look at the demo.rules section.
 Number:Currency      SoldEnergy "Total sold energy [%.2f €]"           <price> (GF_UtilityRoomSolar)
 Number:Currency      PurchasedEnergy "Total purchased energy [%.2f €]" <price> (GF_UtilityRoomSolar)
-
 ```
 
 ### demo.sitemap
@@ -117,7 +116,7 @@ rule "Blackout detection"
 when
   Item EmergencyPowerMode changed to ON
 then
-    val msg = "🚨 Power blackout detected, emergency power mode running." 
+    val msg = "🚨 Power blackout detected, emergency power mode running."
     logInfo("PowerBlackout", msg)
     sendBroadcastNotification(msg)
 end

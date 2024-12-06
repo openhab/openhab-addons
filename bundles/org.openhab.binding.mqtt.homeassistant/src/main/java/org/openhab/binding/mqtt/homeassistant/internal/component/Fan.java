@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,11 +43,15 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements ChannelStateUpdateListener {
-    public static final String SWITCH_CHANNEL_ID = "fan";
+    public static final String SWITCH_CHANNEL_ID = "switch";
+    public static final String SWITCH_CHANNEL_ID_DEPRECATED = "fan";
     public static final String SPEED_CHANNEL_ID = "speed";
-    public static final String PRESET_MODE_CHANNEL_ID = "preset_mode";
+    public static final String PRESET_MODE_CHANNEL_ID = "preset-mode";
     public static final String OSCILLATION_CHANNEL_ID = "oscillation";
     public static final String DIRECTION_CHANNEL_ID = "direction";
+
+    private static final BigDecimal BIG_DECIMAL_HUNDRED = new BigDecimal(100);
+    private static final String FORMAT_INTEGER = "%.0f";
 
     /**
      * Configuration class for MQTT component
@@ -56,6 +61,10 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
             super("MQTT Fan");
         }
 
+        protected @Nullable Boolean optimistic;
+
+        @SerializedName("state_value_template")
+        protected @Nullable String stateValueTemplate;
         @SerializedName("state_topic")
         protected @Nullable String stateTopic;
         @SerializedName("command_template")
@@ -118,6 +127,8 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
     private final PercentageValue speedValue;
     private State rawSpeedState;
     private final ComponentChannel onOffChannel;
+    private final @Nullable ComponentChannel speedChannel;
+    private final ComponentChannel primaryChannel;
     private final ChannelStateUpdateListener channelStateUpdateListener;
 
     public Fan(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
@@ -128,27 +139,32 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
         ChannelStateUpdateListener onOffListener = channelConfiguration.percentageCommandTopic == null
                 ? componentConfiguration.getUpdateListener()
                 : this;
-        onOffChannel = buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
-                onOffListener)
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+        onOffChannel = buildChannel(newStyleChannels ? SWITCH_CHANNEL_ID : SWITCH_CHANNEL_ID_DEPRECATED,
+                ComponentChannelType.SWITCH, onOffValue, "On/Off State", onOffListener)
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.stateValueTemplate)
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)
+                .inferOptimistic(channelConfiguration.optimistic)
                 .build(channelConfiguration.percentageCommandTopic == null);
 
         rawSpeedState = UnDefType.NULL;
 
-        int speeds = Math.min(channelConfiguration.speedRangeMax, 100) - Math.max(channelConfiguration.speedRangeMin, 1)
-                + 1;
-        speedValue = new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.valueOf(100.0d / speeds),
-                channelConfiguration.payloadOn, channelConfiguration.payloadOff);
+        speedValue = new PercentageValue(BigDecimal.valueOf(channelConfiguration.speedRangeMin - 1),
+                BigDecimal.valueOf(channelConfiguration.speedRangeMax), null, channelConfiguration.payloadOn,
+                channelConfiguration.payloadOff, FORMAT_INTEGER);
 
         if (channelConfiguration.percentageCommandTopic != null) {
             hiddenChannels.add(onOffChannel);
-            buildChannel(SPEED_CHANNEL_ID, ComponentChannelType.DIMMER, speedValue, "Speed", this)
+            primaryChannel = speedChannel = buildChannel(SPEED_CHANNEL_ID, ComponentChannelType.DIMMER, speedValue,
+                    "Speed", this)
                     .stateTopic(channelConfiguration.percentageStateTopic, channelConfiguration.percentageValueTemplate)
                     .commandTopic(channelConfiguration.percentageCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos(), channelConfiguration.percentageCommandTemplate)
-                    .commandFilter(this::handlePercentageCommand).build();
+                    .inferOptimistic(channelConfiguration.optimistic).commandFilter(this::handlePercentageCommand)
+                    .build();
+        } else {
+            primaryChannel = onOffChannel;
+            speedChannel = null;
         }
 
         List<String> presetModes = channelConfiguration.presetModes;
@@ -160,7 +176,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                     .stateTopic(channelConfiguration.presetModeStateTopic, channelConfiguration.presetModeValueTemplate)
                     .commandTopic(channelConfiguration.presetModeCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos(), channelConfiguration.presetModeCommandTemplate)
-                    .build();
+                    .inferOptimistic(channelConfiguration.optimistic).build();
         }
 
         if (channelConfiguration.oscillationCommandTopic != null) {
@@ -172,7 +188,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                             channelConfiguration.oscillationValueTemplate)
                     .commandTopic(channelConfiguration.oscillationCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos(), channelConfiguration.oscillationCommandTemplate)
-                    .build();
+                    .inferOptimistic(channelConfiguration.optimistic).build();
         }
 
         if (channelConfiguration.directionCommandTopic != null) {
@@ -182,8 +198,10 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                     .stateTopic(channelConfiguration.directionStateTopic, channelConfiguration.directionValueTemplate)
                     .commandTopic(channelConfiguration.directionCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos(), channelConfiguration.directionCommandTemplate)
-                    .build();
+                    .inferOptimistic(channelConfiguration.optimistic).build();
         }
+
+        finalizeChannels();
     }
 
     private boolean handlePercentageCommand(Command command) {
@@ -197,7 +215,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
 
     @Override
     public void updateChannelState(ChannelUID channel, State state) {
-        if (channel.getIdWithoutGroup().equals(SWITCH_CHANNEL_ID)) {
+        if (onOffChannel.getChannel().getUID().equals(channel)) {
             if (rawSpeedState instanceof UnDefType && state.equals(OnOffType.ON)) {
                 // Assume full on if we don't yet know the actual speed
                 state = PercentType.HUNDRED;
@@ -206,7 +224,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
             } else {
                 state = rawSpeedState;
             }
-        } else if (channel.getIdWithoutGroup().equals(SPEED_CHANNEL_ID)) {
+        } else if (Objects.requireNonNull(speedChannel).getChannel().getUID().equals(channel)) {
             rawSpeedState = state;
             if (onOffValue.getChannelState().equals(OnOffType.OFF)) {
                 // Don't pass on percentage values while the fan is off
@@ -214,7 +232,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
             }
         }
         speedValue.update(state);
-        channelStateUpdateListener.updateChannelState(buildChannelUID(SPEED_CHANNEL_ID), state);
+        channelStateUpdateListener.updateChannelState(primaryChannel.getChannel().getUID(), state);
     }
 
     @Override

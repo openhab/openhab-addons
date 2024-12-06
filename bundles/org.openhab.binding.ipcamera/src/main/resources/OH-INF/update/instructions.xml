@@ -18,6 +18,11 @@
 				<type>ipcamera:enablePush</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="autoTracking">
+				<type>ipcamera:autoTracking</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="ipcamera:dahua">
@@ -27,6 +32,32 @@
 			</add-channel>
 			<add-channel id="autoWhiteLED">
 				<type>ipcamera:autoWhiteLED</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="acceptedCardNumber">
+				<type>ipcamera:acceptedCardNumber</type>
+			</add-channel>
+			<add-channel id="unacceptedCardNumber">
+				<type>ipcamera:unacceptedCardNumber</type>
+			</add-channel>
+			<add-channel id="doorUnlock">
+				<type>ipcamera:doorUnlock</type>
+			</add-channel>
+			<add-channel id="doorContact">
+				<type>ipcamera:doorContact</type>
+			</add-channel>
+			<add-channel id="exitButton">
+				<type>ipcamera:exitButton</type>
+			</add-channel>
+			<add-channel id="exitButtonEnabled">
+				<type>ipcamera:exitButtonEnabled</type>
+			</add-channel>
+			<add-channel id="motionDetectionLevel">
+				<type>ipcamera:motionDetectionLevel</type>
+			</add-channel>
+			<add-channel id="magneticLockWarning">
+				<type>ipcamera:magneticLockWarning</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>

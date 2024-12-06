@@ -127,6 +127,7 @@ Dimmer          PhilipsSomneo_Alarm1Volume              "Volume"                
 ```
 
 transform/somneorepeatday.js
+
 ```javascript
 (function(i) {
     if (i == 254) {
@@ -226,7 +227,7 @@ sitemap somneo label="Philips Somneo" {
             Default item=PhilipsSomneo_Alarm15Configured
             Default item=PhilipsSomneo_Alarm16Configured
         }
-    }    
+    }
     Frame label="Alarm [1]" {
         Default         item=PhilipsSomneo_Alarm1Switch
         Default         item=PhilipsSomneo_Alarm1Time
@@ -235,7 +236,7 @@ sitemap somneo label="Philips Somneo" {
         Slider          item=PhilipsSomneo_Alarm1RepeatDay minValue=0 maxValue=254 step=2
         Text label="Settings" icon="settings" {
             Default         item=PhilipsSomneo_Alarm1SunriseDuration
-            Slider          item=PhilipsSomneo_Alarm1SunriseBrightness 
+            Slider          item=PhilipsSomneo_Alarm1SunriseBrightness
             Selection       item=PhilipsSomneo_Alarm1SunriseSchema
             Default         item=PhilipsSomneo_Alarm1Sound
             Default         item=PhilipsSomneo_Alarm1Volume
@@ -292,4 +293,4 @@ Thanks to:
 
 - [homebridge-somneo](https://github.com/zackwag/homebridge-somneo) - For creating a similar plugin in another platform and exposing endpoints for control.
 - [somneo-client](https://github.com/DonkerNet/somneo-client) - For creating a similar plugin in another platform and exposing endpoints for control.
-- HTTP Binding and other OpenHAB addons - Which was used as examples.
+- HTTP Binding and other openHAB addons - Which was used as examples.

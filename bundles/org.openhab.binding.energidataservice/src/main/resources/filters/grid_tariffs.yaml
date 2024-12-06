@@ -1,0 +1,197 @@
+# All Elnet
+- gln: "5790001095451"
+  chargeTypeCodes:
+    - "AAL-NT-05"
+    - "AAL-NTR05"
+  notes:
+    - "Nettarif C time"
+  start: "StartOfDay"
+# Cerius
+- gln: "5790000705184"
+  chargeTypeCodes:
+    - "30TR_C_ET"
+  notes:
+    - "Nettarif C time"
+# Dinel
+- gln: "5790000610099"
+  chargeTypeCodes:
+    - "TCL>100_02"
+    - "TCL<100_52"
+  notes:
+    - "Nettarif C time"
+# Elektrus
+- gln: "5790000836239"
+  chargeTypeCodes:
+    - "6000091"
+  notes:
+    - "Nettarif C time"
+  start: "StartOfDay"
+# Elinord
+- gln: "5790001095277"
+  chargeTypeCodes:
+    - "43300"
+  notes:
+    - "Transportbetaling, eget net C"
+# Elnet Midt
+- gln: "5790001100520"
+  chargeTypeCodes:
+    - "T3001"
+  notes:
+    - "Nettarif C"
+  start: "StartOfDay"
+# El-net Kongerslev
+- gln: "5790002502699"
+  chargeTypeCodes:
+    - "K_22100"
+  notes:
+    - "Nettarif C"
+# FLOW Elnet
+- gln: "5790000392551"
+  chargeTypeCodes:
+    - "FE2 NT-01"
+  notes:
+    - "Nettarif C time"
+  start: "StartOfDay"
+# Hammel Elforsyning Net
+- gln: "5790001090166"
+  chargeTypeCodes:
+    - "50001"
+  notes:
+    - "Overliggende net"
+  start: "StartOfDay"
+# Hurup Elværk Net
+- gln: "5790000610839"
+  chargeTypeCodes:
+    - "HEV-NT-01"
+  notes:
+    - "Nettarif"
+# Ikast El Net
+- gln: "5790000682102"
+  chargeTypeCodes:
+    - "IEV-NT-01"
+  notes:
+    - "Nettarif C time"
+  start: "2022-10-01"
+# Konstant
+- gln: "5790000704842"
+  chargeTypeCodes:
+    - "151-NT01T"
+    - "151-NRA04T"
+  start: "2023-02-01"
+# L-Net
+- gln: "5790001090111"
+  chargeTypeCodes:
+    - "4010"
+  notes:
+    - "Nettarif C time"
+# Midtfyns Elforsyning
+- gln: "5790001089023"
+  chargeTypeCodes:
+    - "TNT15000"
+  notes:
+    - "Nettarif C Flex"
+  start: "StartOfDay"
+# N1
+- gln: "5790001089030"
+  chargeTypeCodes:
+    - "CD"
+    - "CD R"
+  start: "2023-01-01"
+# Netselskabet Elværk
+- gln: "5790000681075"
+  chargeTypeCodes:
+    - "0NCFF"
+  notes:
+    - "Nettarif C Flex"
+  start: "StartOfDay"
+# NKE-Elnet
+- gln: "5790001088231"
+  chargeTypeCodes:
+    - "94TR_C_ET"
+  notes:
+    - "Nettarif C time"
+  start: "StartOfDay"
+# Nord Energi Net
+- gln: "5790000610877"
+  chargeTypeCodes:
+    - "TAC"
+  notes:
+    - "Nettarif C"
+  start: "StartOfDay"
+# Nordvestjysk Elforsyning (NOE Net)
+- gln: "5790000395620"
+  chargeTypeCodes:
+    - "30030"
+  notes:
+    - "Nettarif C"
+  start: "StartOfDay"
+# Radius
+- gln: "5790000705689"
+  chargeTypeCodes:
+    - "DT_C_01"
+  notes:
+    - "Nettarif C"
+  start: "2024-04-01"
+# RAH
+- gln: "5790000681327"
+  chargeTypeCodes:
+    - "RAH-C"
+  notes:
+    - "Nettarif C time"
+  start: "StartOfDay"
+# Ravdex
+- gln: "5790000836727"
+  chargeTypeCodes:
+    - "NT-C"
+  notes:
+    - "Nettarif C time"
+  start: "StartOfDay"
+# Sunds Net
+- gln: "5790001095444"
+  chargeTypeCodes:
+    - "SEF-NT-05"
+    - "SEF-NT-05R"
+  notes:
+    - "Nettarif C Flex - time"
+  start: "StartOfDay"
+# Tarm Elværk Net
+- gln: "5790000706419"
+  chargeTypeCodes:
+    - "TEV-NT-01"
+    - "TEV-NT-01R"
+  notes:
+    - "Nettarif C"
+# TREFOR El-net  
+- gln: "5790000392261"
+  chargeTypeCodes:
+    - "C"
+  notes:
+    - "Nettarif C time"
+  start: "StartOfDay"
+# TREFOR El-net Øst
+- gln: "5790000706686"
+  chargeTypeCodes:
+    - "46"
+  notes:
+    - "Nettarif C time"
+  start: "StartOfDay"
+# Veksel
+- gln: "5790001088217"
+  chargeTypeCodes:
+    - "NT-10"
+  notes:
+    - "Nettarif C time  NT-10"
+# Vores Elnet
+- gln: "5790000610976"
+  chargeTypeCodes:
+    - "TNT1009"
+  notes:
+    - "Nettarif C time"
+  start: "StartOfDay"
+# Zeanet
+- gln: "5790001089375"
+  chargeTypeCodes:
+    - "43110"
+  notes:
+    - "Nettarif C time"
+  start: "StartOfDay"

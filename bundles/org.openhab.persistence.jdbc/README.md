@@ -79,7 +79,7 @@ All item- and event-related configuration is done in the file `persistence/jdbc.
 
 To configure this service as the default persistence service for openHAB, add or change the line
 
-```
+```ini
 org.openhab.core.persistence:default=jdbc
 ```
 
@@ -89,7 +89,7 @@ in the file `services/runtime.cfg`.
 
 services/jdbc.cfg
 
-```
+```ini
 url=jdbc:postgresql://192.168.0.1:5432/testPostgresql
 ```
 
@@ -102,7 +102,7 @@ To connect to an Oracle Autonomous Database, use the instructions at https://www
 
 Your services/jdbc.cfg should contain the following minimal configuration for connecting to an Oracle Autonomous Database:
 
-```
+```ini
 url=jdbc:oracle:thin:@dbname?TNS_ADMIN=./dbname_tns_admin_folder
 user=openhab
 password=openhab_password
@@ -111,7 +111,7 @@ password=openhab_password
 The `TNS_ADMIN` parameter points to the directory where the the `tnsnames.ora`file, `ojdbc.properties` file and key files (from the ADB wallet download) are located.
 Other Oracle DB setups may require different connection parameters.
 
-It is advised to create a specific user with sufficient permissions and space for OpenHAB persistence.
+It is advised to create a specific user with sufficient permissions and space for openHAB persistence.
 This is the user that should be in `jdbc.cfg`.
 The user default schema will be used.
 
@@ -147,7 +147,7 @@ Here is an example of a configuration for a MySQL database named `testMysql` wit
 
 services/jdbc.cfg
 
-```
+```ini
 url=jdbc:mysql://192.168.0.1:3306/testMysql
 user=test
 password=test
@@ -265,9 +265,9 @@ Issues than can be identified and possibly fixed:
 
 ### For Developers
 
-* Clearly separated source files for the database-specific part of openHAB logic.
-* Code duplication by similar services is prevented.
-* Integrating a new SQL and JDBC enabled database is fairly simple.
+- Clearly separated source files for the database-specific part of openHAB logic.
+- Code duplication by similar services is prevented.
+- Integrating a new SQL and JDBC enabled database is fairly simple.
 
 ### Performance Tests
 
@@ -282,28 +282,28 @@ Not necessarily representative of the performance you may experience.
 | postgresql |     8.147 |   7.072 |   6.895 |          - | ext. Server VM |
 | sqlite     |     2.406 |   1.249 |   1.137 |    0.28 MB | local embedded |
 
-* Each test ran about 20 Times every 30 seconds.
-* openHAB 1.x has ready started for about a Minute.
-* the data in seconds for the evaluation are from the console output.
+- Each test ran about 20 Times every 30 seconds.
+- openHAB 1.x has ready started for about a Minute.
+- the data in seconds for the evaluation are from the console output.
 
 Used a script like this:
 
-```
+```java
 var count = 0;
 rule "DB STRESS TEST"
 when
-	Time cron "30 * * * * ?"
+    Time cron "30 * * * * ?"
 then
-	if( count = 24) count = 0
-	count = count+1
-	if( count > 3 && count < 23){
-		for( var i=500; i>1; i=i-1){
-			postUpdate( NUMBERITEM, i)
-			SWITCHITEM.previousState().state
-			postUpdate( DIMMERITEM, OFF)
-			NUMBERITEM.changedSince( now().minusMinutes(1))
-			postUpdate( DIMMERITEM, ON)
-		}
-	}
+    if( count = 24) count = 0
+    count = count+1
+    if( count > 3 && count < 23){
+        for( var i=500; i>1; i=i-1){
+            postUpdate( NUMBERITEM, i)
+            SWITCHITEM.previousState().state
+            postUpdate( DIMMERITEM, OFF)
+            NUMBERITEM.changedSince( now().minusMinutes(1))
+            postUpdate( DIMMERITEM, ON)
+        }
+    }
 end
 ```

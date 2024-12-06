@@ -30,6 +30,10 @@
 			<channel id="txPower" typeId="ruuvitag_txPower"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="topic" type="text">
 				<label>MQTT Topic</label>
@@ -40,11 +44,11 @@
 	</thing-type>
 
 	<channel-type id="ruuvitag_rssi">
-		<item-type>Number</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>RSSI</label>
 		<description>Received signal strength indicator</description>
 		<category>QualityOfService</category>
-		<state readOnly="true" pattern="%d dBm"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_ts">
 		<item-type>DateTime</item-type>
