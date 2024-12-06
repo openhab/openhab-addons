@@ -60,7 +60,6 @@ public class SmartthingsApi {
         JsonElement res1 = ((JsonObject) result).get("items");
         JsonArray devices = res1.getAsJsonArray();
         return devices;
-
     }
 
     public void SendCommand(String deviceId, String jsonMsg) {
@@ -82,7 +81,6 @@ public class SmartthingsApi {
         } catch (OAuthException | OAuthResponseException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
     }
 
     public @Nullable JsonObject SendStatus(String deviceId, String jsonMsg) {
@@ -105,7 +103,6 @@ public class SmartthingsApi {
         } catch (OAuthException | OAuthResponseException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
     }
 
     private @Nullable JsonElement DoRequest(String uri) {
@@ -126,7 +123,6 @@ public class SmartthingsApi {
         } catch (OAuthException | OAuthResponseException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
     }
 
     /**
@@ -162,5 +158,4 @@ public class SmartthingsApi {
      * }
      * }
      */
-
 }

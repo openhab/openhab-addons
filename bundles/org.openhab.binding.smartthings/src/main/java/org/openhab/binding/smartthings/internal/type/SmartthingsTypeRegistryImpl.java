@@ -111,7 +111,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
         loadCapabilitiesDefs();
         logger.info("pa");
-
     }
 
     class SmartthingsAttributesDeserializer implements JsonDeserializer<List<SmartthingsJSonAttributes>> {
@@ -251,7 +250,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
             logger.info("error loading capa:" + path + " <> " + ex);
             logger.info("");
         }
-
     }
 
     public Gson getGson() {
@@ -261,7 +259,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     @Override
     public void initialize() {
         // TODO Auto-generated method stub
-
     }
 
     @Reference
@@ -324,7 +321,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     @Override
     public void Register(SmartthingsDeviceData deviceData, JsonObject devObj) {
         generateThingsType(deviceData.id, deviceData.label, deviceData.deviceType, deviceData.description, devObj);
-
     }
 
     private void generateThingsType(String deviceId, String deviceLabel, String deviceType, String deviceDescription,
@@ -440,7 +436,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                 .build();
 
         return channelType;
-
     }
 
     /**
@@ -492,5 +487,4 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                     .withParameters(parms).withParameterGroups(groups).build());
         }
     }
-
 }

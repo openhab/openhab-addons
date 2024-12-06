@@ -35,5 +35,4 @@ public interface SmartthingsNetworkConnector {
     public void onComplete(Request request);
 
     public void onError(Request request, SmartthingsNetworkCallback cb) throws Exception;
-
 }

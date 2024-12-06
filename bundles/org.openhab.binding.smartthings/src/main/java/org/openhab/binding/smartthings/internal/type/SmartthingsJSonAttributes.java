@@ -32,5 +32,4 @@ public class SmartthingsJSonAttributes {
     public void setSchema(SmartthingsJSonSchema value) {
         schema = value;
     }
-
 }

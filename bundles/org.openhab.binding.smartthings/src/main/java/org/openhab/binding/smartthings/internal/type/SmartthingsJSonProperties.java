@@ -32,5 +32,4 @@ public class SmartthingsJSonProperties {
     public String getTitle() {
         return title;
     }
-
 }

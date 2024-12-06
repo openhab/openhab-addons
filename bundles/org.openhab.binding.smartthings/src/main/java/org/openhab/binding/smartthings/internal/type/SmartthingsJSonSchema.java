@@ -43,5 +43,4 @@ public class SmartthingsJSonSchema {
     public void setTitle(String value) {
         title = value;
     }
-
 }
