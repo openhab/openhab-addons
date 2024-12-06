@@ -272,7 +272,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.awayModeCommandTopic, channelConfiguration.awayModeStateTemplate,
                 channelConfiguration.awayModeStateTopic, commandFilter);
 
-        buildOptionalChannel(CURRENT_HUMIDITY_CH_ID, ComponentChannelType.NUMBER,
+        buildOptionalChannel(CURRENT_HUMIDITY_CH_ID, ComponentChannelType.HUMIDITY,
                 new NumberValue(new BigDecimal(0), new BigDecimal(100), null, Units.PERCENT), updateListener, null,
                 null, channelConfiguration.currentHumidityTemplate, channelConfiguration.currentHumidityTopic, null);
 
@@ -310,7 +310,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.swingCommandTemplate, channelConfiguration.swingCommandTopic,
                 channelConfiguration.swingStateTemplate, channelConfiguration.swingStateTopic, commandFilter);
 
-        buildOptionalChannel(TARGET_HUMIDITY_CH_ID, ComponentChannelType.NUMBER,
+        buildOptionalChannel(TARGET_HUMIDITY_CH_ID, ComponentChannelType.HUMIDITY,
                 new NumberValue(channelConfiguration.minHumidity, channelConfiguration.maxHumidity, null,
                         Units.PERCENT),
                 updateListener, channelConfiguration.targetHumidityCommandTemplate,
