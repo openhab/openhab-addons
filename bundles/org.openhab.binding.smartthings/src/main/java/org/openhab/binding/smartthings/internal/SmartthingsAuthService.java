@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
+import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -132,14 +133,14 @@ public class SmartthingsAuthService {
     /**
      * @param listener Adds the given handler
      */
-    public void setSmartthingsAccountHandler(SmartthingsAccountHandler accountHandler) {
+    public void setSmartthingsAccountHandler(@NotNull SmartthingsAccountHandler accountHandler) {
         this.accountHandler = accountHandler;
     }
 
     /**
      * @param handler Removes the given handler
      */
-    public void unsetSmartthingsAccountHandler(SmartthingsAccountHandler accountHandler) {
+    public void unsetSmartthingsAccountHandler(@NotNull SmartthingsAccountHandler accountHandler) {
         this.accountHandler = null;
     }
 
