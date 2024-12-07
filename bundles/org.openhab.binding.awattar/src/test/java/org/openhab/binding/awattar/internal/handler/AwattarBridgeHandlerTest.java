@@ -30,6 +30,7 @@ import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANN
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
@@ -206,8 +207,8 @@ public class AwattarBridgeHandlerTest extends JavaTest {
                 return ZonedDateTime.of(2024, 6, 15, 12, 0, 0, 0, zoneId);
             }
 
-            protected ZonedDateTime getNow(ZoneId zoneId) {
-                return ZonedDateTime.of(2024, 6, 15, 12, 0, 0, 0, zoneId);
+            protected Instant getNow() {
+                return ZonedDateTime.of(2024, 6, 15, 12, 0, 0, 0, ZoneId.of("GMT+2")).toInstant();
             }
         };
 
@@ -262,8 +263,8 @@ public class AwattarBridgeHandlerTest extends JavaTest {
                 return ZonedDateTime.of(2024, 6, 15, 0, 0, 0, 0, zoneId);
             }
 
-            protected ZonedDateTime getNow(ZoneId zoneId) {
-                return ZonedDateTime.of(2024, 6, 15, currentHour, currentMinute, 0, 0, zoneId);
+            protected Instant getNow() {
+                return ZonedDateTime.of(2024, 6, 15, currentHour, currentMinute, 0, 0, ZoneId.of("GMT+2")).toInstant();
             }
         };
 
