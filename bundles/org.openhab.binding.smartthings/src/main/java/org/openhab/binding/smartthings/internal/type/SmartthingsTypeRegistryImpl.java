@@ -240,14 +240,14 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
     public void loadCapabilityDef(String path) {
         try {
-            logger.info(String.format("loading capa: %s", path));
+            logger.info("loading capa: {}", path);
             String template = readTemplate(path);
 
             SmartthingsJSonCapabilities resultObj = getGson().fromJson(template, SmartthingsJSonCapabilities.class);
             capabilitiesDict.put(resultObj.id, resultObj);
 
         } catch (Exception ex) {
-            logger.info(String.format("error loading capa: %s <> %s", path, ex));
+            logger.info("error loading capa: {} <> {}", path, ex);
             logger.info("");
         }
     }
