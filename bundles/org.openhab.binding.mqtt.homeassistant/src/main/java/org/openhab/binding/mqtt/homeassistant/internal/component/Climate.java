@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +31,6 @@ import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -68,29 +66,6 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public static final String TEMPERATURE_LOW_CH_ID = "temperature-low";
     public static final String TEMPERATURE_LOW_CH_ID_DEPRECATED = "temperatureLow";
     public static final String POWER_CH_ID = "power";
-
-    public enum TemperatureUnit {
-        @SerializedName("C")
-        CELSIUS(SIUnits.CELSIUS, new BigDecimal("0.1")),
-        @SerializedName("F")
-        FAHRENHEIT(ImperialUnits.FAHRENHEIT, BigDecimal.ONE);
-
-        private final Unit<Temperature> unit;
-        private final BigDecimal defaultPrecision;
-
-        TemperatureUnit(Unit<Temperature> unit, BigDecimal defaultPrecision) {
-            this.unit = unit;
-            this.defaultPrecision = defaultPrecision;
-        }
-
-        public Unit<Temperature> getUnit() {
-            return unit;
-        }
-
-        public BigDecimal getDefaultPrecision() {
-            return defaultPrecision;
-        }
-    }
 
     private static final String ACTION_OFF = "off";
     private static final State ACTION_OFF_STATE = new StringType(ACTION_OFF);
@@ -241,7 +216,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
         @SerializedName("min_temp")
         protected @Nullable BigDecimal minTemp;
         @SerializedName("temperature_unit")
-        protected TemperatureUnit temperatureUnit = TemperatureUnit.CELSIUS; // System unit by default
+        protected @Nullable TemperatureUnit temperatureUnit;
         @SerializedName("temp_step")
         protected BigDecimal tempStep = BigDecimal.ONE;
         protected @Nullable BigDecimal precision;
@@ -252,8 +227,16 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public Climate(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
         super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
+        TemperatureUnit temperatureUnit = channelConfiguration.temperatureUnit;
+        if (channelConfiguration.temperatureUnit == null) {
+            if (ImperialUnits.FAHRENHEIT.equals(componentConfiguration.getUnitProvider().getUnit(Temperature.class))) {
+                temperatureUnit = TemperatureUnit.FAHRENHEIT;
+            } else {
+                temperatureUnit = TemperatureUnit.CELSIUS;
+            }
+        }
         BigDecimal precision = channelConfiguration.precision != null ? channelConfiguration.precision
-                : channelConfiguration.temperatureUnit.getDefaultPrecision();
+                : temperatureUnit.getDefaultPrecision();
         final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
         ComponentChannel actionChannel = buildOptionalChannel(ACTION_CH_ID, ComponentChannelType.STRING,
@@ -277,9 +260,8 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 null, channelConfiguration.currentHumidityTemplate, channelConfiguration.currentHumidityTopic, null);
 
         buildOptionalChannel(newStyleChannels ? CURRENT_TEMPERATURE_CH_ID : CURRENT_TEMPERATURE_CH_ID_DEPRECATED,
-                ComponentChannelType.NUMBER,
-                new NumberValue(null, null, precision, channelConfiguration.temperatureUnit.getUnit()), updateListener,
-                null, null, channelConfiguration.currentTemperatureTemplate,
+                ComponentChannelType.TEMPERATURE, new NumberValue(null, null, precision, temperatureUnit.getUnit()),
+                updateListener, null, null, channelConfiguration.currentTemperatureTemplate,
                 channelConfiguration.currentTemperatureTopic, commandFilter);
 
         buildOptionalChannel(newStyleChannels ? FAN_MODE_CH_ID : FAN_MODE_CH_ID_DEPRECATED, ComponentChannelType.STRING,
@@ -317,25 +299,25 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.targetHumidityCommandTopic, channelConfiguration.targetHumidityStateTemplate,
                 channelConfiguration.targetHumidityStateTopic, commandFilter);
 
-        buildOptionalChannel(TEMPERATURE_CH_ID, ComponentChannelType.NUMBER,
+        buildOptionalChannel(TEMPERATURE_CH_ID, ComponentChannelType.TEMPERATURE,
                 new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
-                        channelConfiguration.tempStep, channelConfiguration.temperatureUnit.getUnit()),
+                        channelConfiguration.tempStep, temperatureUnit.getUnit()),
                 updateListener, channelConfiguration.temperatureCommandTemplate,
                 channelConfiguration.temperatureCommandTopic, channelConfiguration.temperatureStateTemplate,
                 channelConfiguration.temperatureStateTopic, commandFilter);
 
         buildOptionalChannel(newStyleChannels ? TEMPERATURE_HIGH_CH_ID : TEMPERATURE_HIGH_CH_ID_DEPRECATED,
-                ComponentChannelType.NUMBER,
+                ComponentChannelType.TEMPERATURE,
                 new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
-                        channelConfiguration.tempStep, channelConfiguration.temperatureUnit.getUnit()),
+                        channelConfiguration.tempStep, temperatureUnit.getUnit()),
                 updateListener, channelConfiguration.temperatureHighCommandTemplate,
                 channelConfiguration.temperatureHighCommandTopic, channelConfiguration.temperatureHighStateTemplate,
                 channelConfiguration.temperatureHighStateTopic, commandFilter);
 
         buildOptionalChannel(newStyleChannels ? TEMPERATURE_LOW_CH_ID : TEMPERATURE_LOW_CH_ID_DEPRECATED,
-                ComponentChannelType.NUMBER,
+                ComponentChannelType.TEMPERATURE,
                 new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
-                        channelConfiguration.tempStep, channelConfiguration.temperatureUnit.getUnit()),
+                        channelConfiguration.tempStep, temperatureUnit.getUnit()),
                 updateListener, channelConfiguration.temperatureLowCommandTemplate,
                 channelConfiguration.temperatureLowCommandTopic, channelConfiguration.temperatureLowStateTemplate,
                 channelConfiguration.temperatureLowStateTopic, commandFilter);
