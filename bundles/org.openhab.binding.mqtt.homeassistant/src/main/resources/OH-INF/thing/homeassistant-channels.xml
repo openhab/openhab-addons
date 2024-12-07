@@ -67,7 +67,7 @@
 	</channel-type>
 
 	<channel-type id="ha-temperature">
-		<item-type unitHint="%">Number:Temperature</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
