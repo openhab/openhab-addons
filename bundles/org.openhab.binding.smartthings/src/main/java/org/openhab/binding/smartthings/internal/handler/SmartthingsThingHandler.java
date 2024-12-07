@@ -286,7 +286,6 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         }
 
         long start = System.currentTimeMillis();
-
     }
 
     private @Nullable SmartthingsConverter getConverter(String converterName) {
