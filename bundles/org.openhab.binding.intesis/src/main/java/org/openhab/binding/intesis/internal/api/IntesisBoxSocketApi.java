@@ -52,10 +52,10 @@ public class IntesisBoxSocketApi {
 
     private boolean connected = false;
 
-    public IntesisBoxSocketApi(final String ipAddress, final int port, final String thingUID) {
+    public IntesisBoxSocketApi(final String ipAddress, final int port, final String threadName) {
         this.ipAddress = ipAddress;
         this.port = port;
-        this.readerThreadName = "OH-binding-" + thingUID;
+        this.readerThreadName = threadName;
     }
 
     private class IntesisSocket {

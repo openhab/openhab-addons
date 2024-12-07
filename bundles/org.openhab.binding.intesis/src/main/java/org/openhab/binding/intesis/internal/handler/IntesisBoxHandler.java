@@ -94,7 +94,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
             updateStatus(ThingStatus.UNKNOWN);
             scheduler.submit(() -> {
                 IntesisBoxSocketApi intesisLocalApi = intesisBoxSocketApi = new IntesisBoxSocketApi(config.ipAddress,
-                        config.port, getThing().getUID().getAsString());
+                        config.port, "OH-binding-" + getThing().getUID());
                 intesisLocalApi.addIntesisBoxChangeListener(this);
                 try {
                     intesisLocalApi.openConnection();

@@ -85,7 +85,7 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
 
                 EkeyUdpPacketReceiver localReceiver = receiver = new EkeyUdpPacketReceiver(
                         Objects.requireNonNullElse(config.natIp, config.ipAddress), config.port,
-                        getThing().getUID().getAsString());
+                        "OH-binding-" + getThing().getUID());
                 localReceiver.addEkeyPacketListener(this);
                 try {
                     localReceiver.openConnection();
