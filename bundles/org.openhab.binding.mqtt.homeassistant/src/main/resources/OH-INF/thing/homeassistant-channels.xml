@@ -16,6 +16,12 @@
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
+	<channel-type id="ha-humidity">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
+	</channel-type>
+
 	<channel-type id="ha-image">
 		<item-type>Image</item-type>
 		<label>Image</label>
@@ -57,6 +63,12 @@
 	<channel-type id="ha-switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
+		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
+	</channel-type>
+
+	<channel-type id="ha-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
 		<config-description-ref uri="channel-type:mqtt:ha-channel"/>
 	</channel-type>
 
