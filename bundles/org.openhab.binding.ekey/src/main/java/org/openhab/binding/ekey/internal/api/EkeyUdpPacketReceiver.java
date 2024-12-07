@@ -48,10 +48,10 @@ public class EkeyUdpPacketReceiver {
 
     private boolean connected = false;
 
-    public EkeyUdpPacketReceiver(final String ipAddress, final int port, final String threadName) {
+    public EkeyUdpPacketReceiver(final String ipAddress, final int port, final String readerThreadName) {
         this.ipAddress = ipAddress;
         this.port = port;
-        this.readerThreadName = threadName;
+        this.readerThreadName = readerThreadName;
     }
 
     public void openConnection() throws IOException {
