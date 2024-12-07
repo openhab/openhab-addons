@@ -172,6 +172,10 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
                 logger.warn("Possible bug because a new serial port value was set during opening new port.");
                 errorStatus = DSMRErrorStatus.PORT_INTERNAL_ERROR;
             }
+        } catch (final IllegalStateException ise) {
+            logger.debug("Failed communicating, probably time out", ise);
+
+            errorStatus = DSMRErrorStatus.PORT_PORT_TIMEOUT;
         } catch (final IOException ioe) {
             logger.debug("Failed to get inputstream for serialPort", ioe);
 
