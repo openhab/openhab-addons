@@ -51,7 +51,15 @@ public class GroovyScriptEngineFactory extends AbstractScriptEngineFactory {
         ImportCustomizer importCustomizer = new ImportCustomizer();
         for (Map.Entry<String, Object> entry : scopeValues.entrySet()) {
             if (entry.getValue() instanceof Class<?> clazz) {
-                importCustomizer.addImport(entry.getKey(), clazz.getCanonicalName());
+                String canonicalName = clazz.getCanonicalName();
+                try {
+                    // Only add imports for classes that are available to the classloader
+                    getClass().getClassLoader().loadClass(canonicalName);
+                    importCustomizer.addImport(entry.getKey(), canonicalName);
+                    logger.debug("Added import for {} as {}", entry.getKey(), canonicalName);
+                } catch (ClassNotFoundException e) {
+                    logger.debug("Unable to add import for {} as {}", entry.getKey(), canonicalName, e);
+                }
             } else {
                 scriptEngine.put(entry.getKey(), entry.getValue());
             }
