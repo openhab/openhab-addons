@@ -32,7 +32,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult {
     private final List<AwattarPrice> members;
     private final ZoneId zoneId;
-    private boolean sorted = true;
 
     public AwattarNonConsecutiveBestPriceResult(List<AwattarPrice> prices, int length, boolean inverted,
             ZoneId zoneId) {
@@ -57,7 +56,6 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
     }
 
     private void addMember(AwattarPrice member) {
-        sorted = false;
         members.add(member);
         updateStart(member.timerange().start());
         updateEnd(member.timerange().end());
