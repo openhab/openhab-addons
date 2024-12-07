@@ -202,7 +202,7 @@ public class AwattarBridgeHandlerTest extends JavaTest {
         when(bestpriceMock.getConfiguration()).thenReturn(new Configuration(config));
 
         AwattarBestPriceHandler handler = new AwattarBestPriceHandler(bestpriceMock, timeZoneProviderMock) {
-            protected ZonedDateTime getStarTime(int start, ZoneId zoneId) {
+            protected ZonedDateTime getStartTime(int start, ZoneId zoneId) {
                 return ZonedDateTime.of(2024, 6, 15, 12, 0, 0, 0, zoneId);
             }
 
@@ -218,7 +218,7 @@ public class AwattarBridgeHandlerTest extends JavaTest {
         verify(bestPriceCallbackMock).stateUpdated(channelUID, expectedState);
     }
 
-    public static Stream<Arguments> testBestpriceHandler_channels() {
+    public static Stream<Arguments> testBestpriceHandlerChannels() {
         return Stream.of( //
                 Arguments.of(12, 0, 24, 1, true, CHANNEL_HOURS, new StringType("14")),
                 Arguments.of(12, 0, 24, 1, true, CHANNEL_ACTIVE, OnOffType.from(false)),
@@ -250,7 +250,7 @@ public class AwattarBridgeHandlerTest extends JavaTest {
 
     @ParameterizedTest
     @MethodSource
-    void testBestpriceHandler_channels(int currentHour, int currentMinute, int rangeDuration, int length,
+    void testBestpriceHandlerChannels(int currentHour, int currentMinute, int rangeDuration, int length,
             boolean consecutive, String channelId, State expectedState) {
         ThingUID bestPriceUid = new ThingUID(AwattarBindingConstants.THING_TYPE_BESTPRICE, "foo");
         Map<String, Object> config = Map.of("rangeDuration", rangeDuration, "length", length, "consecutive",
@@ -258,7 +258,7 @@ public class AwattarBridgeHandlerTest extends JavaTest {
         when(bestpriceMock.getConfiguration()).thenReturn(new Configuration(config));
 
         AwattarBestPriceHandler handler = new AwattarBestPriceHandler(bestpriceMock, timeZoneProviderMock) {
-            protected ZonedDateTime getStarTime(int start, ZoneId zoneId) {
+            protected ZonedDateTime getStartTime(int start, ZoneId zoneId) {
                 return ZonedDateTime.of(2024, 6, 15, 0, 0, 0, 0, zoneId);
             }
 

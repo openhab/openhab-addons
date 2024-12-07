@@ -224,7 +224,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
      * @return the range
      */
     protected TimeRange getRange(int start, int duration, ZoneId zoneId) {
-        ZonedDateTime startTime = getStarTime(start, zoneId);
+        ZonedDateTime startTime = getStartTime(start, zoneId);
         ZonedDateTime endTime = startTime.plusHours(duration);
         ZonedDateTime now = getNow(zoneId);
         if (now.getHour() < start) {
@@ -232,7 +232,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
             startTime = startTime.minusDays(1);
             endTime = endTime.minusDays(1);
         }
-        if (endTime.toInstant().toEpochMilli() < now.toInstant().toEpochMilli()) {
+        if (endTime.isBefore(now)) {
             // span is in the past, add one day
             startTime = startTime.plusDays(1);
             endTime = endTime.plusDays(1);
@@ -247,7 +247,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
      * @param zoneId the time zone
      * @return the start time
      */
-    protected ZonedDateTime getStarTime(int start, ZoneId zoneId) {
+    protected ZonedDateTime getStartTime(int start, ZoneId zoneId) {
         return getCalendarForHour(start, zoneId);
     }
 
