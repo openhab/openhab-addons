@@ -102,6 +102,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
      * protected void setSmartthingsDiscoveryService(SmartthingsDiscoveryService disco) {
      * logger.info("disco");
      * }
+     *
      */
 
     @Override
