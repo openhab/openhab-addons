@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,6 +36,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ConfigStatusThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -59,6 +62,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
     private Map<ChannelUID, SmartthingsConverter> converters = new HashMap<>();
 
     private final String smartthingsConverterName = "smartthings-converter";
+    private @Nullable ScheduledFuture<?> pollingJob = null;
 
     public SmartthingsThingHandler(Thing thing, SmartthingsHandlerFactory smartthingsHandlerFactory) {
         super(thing);
@@ -246,7 +250,43 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
             }
         }
 
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 5, TimeUnit.SECONDS);
+
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> lcPollingJob = pollingJob;
+        if (lcPollingJob != null) {
+            lcPollingJob.cancel(true);
+            pollingJob = null;
+        }
+    }
+
+    private void pollingCode() {
+        Bridge lcBridge = getBridge();
+
+        if (lcBridge == null) {
+            return;
+        }
+
+        if (lcBridge.getStatus() == ThingStatus.OFFLINE) {
+            if (!ThingStatusDetail.COMMUNICATION_ERROR.equals(lcBridge.getStatusInfo().getStatusDetail())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                return;
+            }
+        }
+
+        if (lcBridge.getStatus() != ThingStatus.ONLINE) {
+            if (!ThingStatusDetail.COMMUNICATION_ERROR.equals(lcBridge.getStatusInfo().getStatusDetail())) {
+                logger.debug("Bridge is not ready, don't enter polling for now!");
+                return;
+            }
+        }
+
+        long start = System.currentTimeMillis();
+
     }
 
     private @Nullable SmartthingsConverter getConverter(String converterName) {
