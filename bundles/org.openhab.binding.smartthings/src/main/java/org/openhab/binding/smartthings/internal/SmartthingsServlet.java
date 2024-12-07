@@ -220,7 +220,6 @@ public class SmartthingsServlet extends HttpServlet {
 
         logger.trace("Smartthings servlet returning.");
         return;
-
     }
 
     private void publishEvent(String topic, String name, String data) {

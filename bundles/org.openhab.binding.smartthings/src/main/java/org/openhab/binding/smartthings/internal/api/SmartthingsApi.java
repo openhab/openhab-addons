@@ -124,5 +124,4 @@ public class SmartthingsApi {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
-
 }
