@@ -121,7 +121,7 @@ public class WifiConnection implements ConnectionBase {
                 mDevice.setConnectionState(ConnectState.DISCONNECTED);
                 mSocket = null;
             }
-        }, "OH-binding-" + YeelightBindingConstants.BINDING_ID + "-WIFIConnection");
+        }, "OH-binding-" + YeelightBindingConstants.BINDING_ID + "-WifiConnection");
         mConnectThread.start();
         return false;
     }
