@@ -21,6 +21,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.thing.ThingUID;
 
 import com.google.gson.Gson;
@@ -47,9 +48,10 @@ public class ComponentFactory {
      */
     public static AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String channelConfigurationJSON,
             ChannelStateUpdateListener updateListener, AvailabilityTracker tracker, ScheduledExecutorService scheduler,
-            Gson gson, Jinjava jinjava, boolean newStyleChannels) throws ConfigurationException {
+            Gson gson, Jinjava jinjava, UnitProvider unitProvider, boolean newStyleChannels)
+            throws ConfigurationException {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
-                channelConfigurationJSON, gson, jinjava, updateListener, tracker, scheduler);
+                channelConfigurationJSON, gson, jinjava, updateListener, tracker, scheduler, unitProvider);
         switch (haID.component) {
             case "alarm_control_panel":
                 return new AlarmControlPanel(componentConfiguration, newStyleChannels);
@@ -97,6 +99,8 @@ public class ComponentFactory {
                 return new Vacuum(componentConfiguration, newStyleChannels);
             case "valve":
                 return new Valve(componentConfiguration, newStyleChannels);
+            case "water_heater":
+                return new WaterHeater(componentConfiguration, newStyleChannels);
             default:
                 throw new UnsupportedComponentException("Component '" + haID + "' is unsupported!");
         }
@@ -111,6 +115,7 @@ public class ComponentFactory {
         private final Gson gson;
         private final Jinjava jinjava;
         private final ScheduledExecutorService scheduler;
+        private final UnitProvider unitProvider;
 
         /**
          * Provide a thingUID and HomeAssistant topic ID to determine the channel group UID and type.
@@ -122,7 +127,7 @@ public class ComponentFactory {
          */
         protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson, Jinjava jinjava,
                 ChannelStateUpdateListener updateListener, AvailabilityTracker tracker,
-                ScheduledExecutorService scheduler) {
+                ScheduledExecutorService scheduler, UnitProvider unitProvider) {
             this.thingUID = thingUID;
             this.haID = haID;
             this.configJSON = configJSON;
@@ -131,6 +136,7 @@ public class ComponentFactory {
             this.updateListener = updateListener;
             this.tracker = tracker;
             this.scheduler = scheduler;
+            this.unitProvider = unitProvider;
         }
 
         public ThingUID getThingUID() {
@@ -155,6 +161,10 @@ public class ComponentFactory {
 
         public Jinjava getJinjava() {
             return jinjava;
+        }
+
+        public UnitProvider getUnitProvider() {
+            return unitProvider;
         }
 
         public AvailabilityTracker getTracker() {
