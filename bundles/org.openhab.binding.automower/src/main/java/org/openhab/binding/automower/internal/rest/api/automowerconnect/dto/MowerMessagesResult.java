@@ -13,16 +13,16 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
- * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - Initial contribution
  */
-public class Battery {
-    private byte batteryPercent;
+public class MowerMessagesResult {
+    private MowerMessages data;
 
-    public byte getBatteryPercent() {
-        return batteryPercent;
+    public MowerMessages getData() {
+        return data;
     }
 
-    public void setBatteryPercent(byte batteryPercent) {
-        this.batteryPercent = batteryPercent;
+    public void setData(MowerMessages data) {
+        this.data = data;
     }
 }
