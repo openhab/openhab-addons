@@ -12,14 +12,10 @@
  */
 package org.openhab.binding.smartthings.internal;
 
-import static org.openhab.binding.smartthings.internal.SmartthingsBindingConstants.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletConfig;
@@ -43,6 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  * Receives all Http data from the Smartthings Hub
@@ -144,45 +142,85 @@ public class SmartthingsServlet extends HttpServlet {
 
         BufferedReader rdr = new BufferedReader(req.getReader());
         String s = rdr.lines().collect(Collectors.joining());
-        switch (pathParts[0]) {
-            case "state":
-                // This is device state info returned from Smartthings
-                logger.debug("Smartthing servlet processing \"state\" request. data: {}", s);
-                publishEvent(STATE_EVENT_TOPIC, "data", s);
-                break;
-            case "discovery":
-                // This is discovery data returned from Smartthings
-                logger.trace("Smartthing servlet processing \"discovery\" request. data: {}", s);
-                publishEvent(DISCOVERY_EVENT_TOPIC, "data", s);
-                break;
-            case "error":
-                // This is an error message from smartthings
-                Map<String, String> map = new HashMap<String, String>();
-                map = gson.fromJson(s, map.getClass());
-                logger.warn("Error message from Smartthings: {}", map.get("message"));
-                break;
-            default:
-                logger.warn("Smartthings servlet received a path that is not supported {}", pathParts[0]);
+
+        JsonObject resultObj = gson.fromJson(s, JsonObject.class);
+        String lifeCycle = resultObj.get("lifecycle").getAsString();
+
+        if (lifeCycle.equals("EVENT")) {
+            JsonObject eventData = resultObj.get("eventData").getAsJsonObject();
+            JsonArray events = eventData.get("events").getAsJsonArray();
+            JsonObject event = events.get(0).getAsJsonObject();
+            String eventType = event.get("eventType").getAsString();
+            JsonObject deviceEvent = event.get("deviceEvent").getAsJsonObject();
+            String value = deviceEvent.get("value").getAsString();
+            String locationId = deviceEvent.get("locationId").getAsString();
+            String deviceId = deviceEvent.get("deviceId").getAsString();
+        } else if (lifeCycle.equals("CONFIGURATION")) {
+            resp.getWriter().print("");
+            resp.getWriter().print("{");
+            resp.getWriter().print("\"configurationData\": {");
+            resp.getWriter().print("\"initialize\": {");
+            resp.getWriter().print("\"name\": \"Openhab2\",");
+            resp.getWriter().print("\"description\": \"Openhab2 Desc\",");
+            resp.getWriter().print("    \"id\": \"6756ca2f-ba54-470b-bcd9-dbe3c564c9d0\",");
+            resp.getWriter().print("    \"permissions\": [\"r:devices\"],");
+            resp.getWriter().print("    \"firstPageId\": \"1\"");
+            resp.getWriter().print("  }");
+            resp.getWriter().print(" }");
+            resp.getWriter().print("}");
+        } else if (lifeCycle.equals("PAGE")) {
+            resp.getWriter().print("{");
+            resp.getWriter().print("\"configurationData\": {");
+            resp.getWriter().print("\"page\": {");
+            resp.getWriter().print("      \"pageId\": \"1\",");
+            resp.getWriter().print("      \"name\": \"aaa\",");
+            resp.getWriter().print("      \"nextPageId\": null,");
+            resp.getWriter().print("      \"previousPageId\": null,");
+            resp.getWriter().print("      \"complete\": true,");
+            resp.getWriter().print("      \"sections\": [");
+            resp.getWriter().print("          {");
+            resp.getWriter().print("              \"name\": \"When this opens closes...\",");
+            resp.getWriter().print("              \"settings\": [");
+            resp.getWriter().print("              {");
+            resp.getWriter().print("                  \"id\": \"contactSensor2\",");
+            resp.getWriter().print("                  \"name\": \"Which contact sensor\",");
+            resp.getWriter().print("                  \"description\": \"Tap to set\",");
+            resp.getWriter().print("                  \"type\": \"TEXT\",");
+            resp.getWriter().print("                  \"required\": true,");
+            resp.getWriter().print("                  \"multiple\": false,");
+            resp.getWriter().print("                  \"defaultValue\": \"Some default value\"");
+            resp.getWriter().print("              }");
+            resp.getWriter().print("              ]");
+            resp.getWriter().print("          },");
+            resp.getWriter().print("          {");
+            resp.getWriter().print("            \"name\": \"Turn on off this light...\",");
+            resp.getWriter().print("            \"settings\": [");
+            resp.getWriter().print("              {");
+            resp.getWriter().print("                \"id\": \"lightSwitch\",");
+            resp.getWriter().print("                \"name\": \"Which switch?\",");
+            resp.getWriter().print("                \"description\": \"Tap to set\",");
+            resp.getWriter().print("                \"type\": \"DEVICE\",");
+            resp.getWriter().print("                \"required\": true,");
+            resp.getWriter().print("                \"multiple\": false,");
+            resp.getWriter().print("                \"capabilities\": [");
+            resp.getWriter().print("                  \"switch\"");
+            resp.getWriter().print("                ],");
+            resp.getWriter().print("                \"permissions\": [");
+            resp.getWriter().print("                  \"r\",");
+            resp.getWriter().print("                  \"x\"");
+            resp.getWriter().print("                ]");
+            resp.getWriter().print("              }");
+            resp.getWriter().print("            ]");
+            resp.getWriter().print("          }");
+            resp.getWriter().print("      ]");
+            resp.getWriter().print("  }");
+            resp.getWriter().print("}");
+            resp.getWriter().print("}");
         }
 
-        // A user @fx submitted a pull request stating:
-        // It appears that the HubAction queue will choke for a timeout of 6-8s~ if a http action doesn't return a body
-        // (or possibly on the 204 http code, I didn't test them separately.)
-        // I tested the following scenarios:
-        // 1. Return status 204 with a response of OK
-        // 2. Return status 202 with no response
-        // 3. No response.
-        // In all cases the time was about the same - 3.5 sec/request
-        // Both the 202 and 204 responses resulted in the hub logging an error: received a request with an unknown path:
-        // HTTP/1.1 200 OK, content-Length: 0
-        // Therefore I am opting to return nothing since no error message occurs.
-        // resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        // resp.setStatus(HttpServletResponse.SC_OK);
-        // resp.getWriter().write("OK");
-        // resp.getWriter().flush();
-        // resp.getWriter().close();
         logger.trace("Smartthings servlet returning.");
         return;
+
     }
 
     private void publishEvent(String topic, String name, String data) {

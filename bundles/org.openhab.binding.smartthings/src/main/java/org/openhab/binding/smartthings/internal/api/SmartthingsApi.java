@@ -125,37 +125,4 @@ public class SmartthingsApi {
         }
     }
 
-    /**
-     * Calls the Spotify Web Api with the given method and given url as parameters of the call to Spotify.
-     *
-     * @param method Http method to perform
-     * @param url url path to call to Spotify
-     * @param requestData data to pass along with the call as content
-     * @param clazz data type of return data, if null no data is expected to be returned.
-     * @return the response give by Spotify
-     */
-    /*
-     * private <T> @Nullable T request(HttpMethod method, String url, String requestData, Class<T> clazz) {
-     * logger.debug("Request: ({}) {} - {}", method, url, requestData);
-     * final Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method)
-     * .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
-     * try {
-     * final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-     * final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
-     *
-     * if (accessToken == null || accessToken.isEmpty()) {
-     * throw new SpotifyAuthorizationException(
-     * "No Spotify accesstoken. Did you authorize Spotify via /connectspotify ?");
-     * } else {
-     * final String response = requestWithRetry(call, accessToken).getContentAsString();
-     *
-     * return clazz == String.class ? (@Nullable T) response : fromJson(response, clazz);
-     * }
-     * } catch (final IOException e) {
-     * throw new SpotifyException(e.getMessage(), e);
-     * } catch (OAuthException | OAuthResponseException e) {
-     * throw new SpotifyAuthorizationException(e.getMessage(), e);
-     * }
-     * }
-     */
 }
