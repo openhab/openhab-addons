@@ -49,7 +49,7 @@ public class QueuedSend implements Runnable, Closeable {
      */
     public void start() {
         willbeclosed = false;
-        thread = new Thread(this, "OH-binding-" + MilightBindingConstants.BINDING_ID + "-QueueSend");
+        thread = new Thread(this, "OH-binding-" + MilightBindingConstants.BINDING_ID + "-QueuedSend");
         thread.start();
     }
 
