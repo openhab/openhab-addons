@@ -32,6 +32,7 @@ import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttThingHandlerFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ThingTypeRegistry;
@@ -44,6 +45,7 @@ import org.openhab.core.thing.type.ThingTypeRegistry;
 @NonNullByDefault
 public class HomeAssistantChannelTransformationTests {
     protected @Mock @NonNullByDefault({}) ThingTypeRegistry thingTypeRegistry;
+    protected @Mock @NonNullByDefault({}) UnitProvider unitProvider;
 
     protected @NonNullByDefault({}) HomeAssistantChannelTransformation transformation;
 
@@ -54,7 +56,7 @@ public class HomeAssistantChannelTransformationTests {
         MqttChannelStateDescriptionProvider stateDescriptionProvider = new MqttChannelStateDescriptionProvider();
         ChannelTypeRegistry channelTypeRegistry = new ChannelTypeRegistry();
         MqttThingHandlerFactory thingHandlerFactory = new MqttThingHandlerFactory(channelTypeProvider,
-                stateDescriptionProvider, channelTypeRegistry);
+                stateDescriptionProvider, channelTypeRegistry, unitProvider);
 
         AbstractComponent component = Mockito.mock(AbstractComponent.class);
         HaID haID = new HaID("homeassistant/light/pool/light/config");
