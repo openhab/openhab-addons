@@ -45,6 +45,10 @@ public enum DSMRErrorStatus {
      */
     PORT_NOT_COMPATIBLE(true),
     /**
+     * Serial port time out or illegal state.
+     */
+    PORT_PORT_TIMEOUT(false),
+    /**
      * Reading data from the serial port failed.
      */
     SERIAL_DATA_READ_ERROR(false),
