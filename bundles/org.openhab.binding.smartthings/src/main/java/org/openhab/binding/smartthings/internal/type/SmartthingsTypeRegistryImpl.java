@@ -247,7 +247,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
             capabilitiesDict.put(resultObj.id, resultObj);
 
         } catch (Exception ex) {
-            logger.info("error loading capa: {} <> {}", path, ex);
+            logger.info("error loading capa: {} <> {}", path, ex.toString());
             logger.info("");
         }
     }
