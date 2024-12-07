@@ -21,6 +21,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.validation.constraints.NotNull;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -121,7 +123,9 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
             bridgeHandler = new SmartthingsHubBridgeHandler((Bridge) thing, this, bundleContext, httpService,
                     oAuthFactory, httpClientFactory);
 
+            @NotNull
             SmartthingsAccountHandler accountHandler = bridgeHandler;
+
             authService.setSmartthingsAccountHandler(accountHandler);
 
             bridgeUID = thing.getUID();
@@ -140,7 +144,9 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
             bridgeHandler = new SmartthingsCloudBridgeHandler((Bridge) thing, this, bundleContext, httpService,
                     oAuthFactory, httpClientFactory);
 
+            @NotNull
             SmartthingsAccountHandler accountHandler = bridgeHandler;
+
             authService.setSmartthingsAccountHandler(accountHandler);
 
             bridgeUID = thing.getUID();
