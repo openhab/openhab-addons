@@ -28,8 +28,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ScheduledFuture;
@@ -128,11 +126,13 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
     public void refreshChannel(ChannelUID channelUID) {
         State state = UnDefType.UNDEF;
         Bridge bridge = getBridge();
+
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
             updateState(channelUID, state);
             return;
         }
+
         AwattarBridgeHandler bridgeHandler = (AwattarBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null || bridgeHandler.getPrices() == null) {
             logger.debug("No prices available, so can't refresh channel.");
@@ -140,9 +140,12 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
             updateState(channelUID, state);
             return;
         }
+
+        ZoneId zoneId = bridgeHandler.getTimeZone();
+
         AwattarBestPriceConfiguration config = getConfigAs(AwattarBestPriceConfiguration.class);
-        TimeRange timerange = getRange(config.rangeStart, config.rangeDuration, bridgeHandler.getTimeZone());
-        if (!(bridgeHandler.containsPriceFor(timerange.start()) && bridgeHandler.containsPriceFor(timerange.end()))) {
+        TimeRange timerange = getRange(config.rangeStart, config.rangeDuration, zoneId);
+        if (!(bridgeHandler.containsPriceFor(timerange))) {
             updateState(channelUID, state);
             return;
         }
@@ -151,36 +154,11 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         List<AwattarPrice> range = getPriceRange(bridgeHandler, timerange);
 
         if (config.consecutive) {
-            range.sort(Comparator.comparing(AwattarPrice::timerange));
-            AwattarConsecutiveBestPriceResult res = new AwattarConsecutiveBestPriceResult(
-                    range.subList(0, config.length), bridgeHandler.getTimeZone());
-
-            for (int i = 1; i <= range.size() - config.length; i++) {
-                AwattarConsecutiveBestPriceResult res2 = new AwattarConsecutiveBestPriceResult(
-                        range.subList(i, i + config.length), bridgeHandler.getTimeZone());
-                if (res2.getPriceSum() < res.getPriceSum()) {
-                    res = res2;
-                }
-            }
-            result = res;
+            result = new AwattarConsecutiveBestPriceResult(range, config.length, zoneId);
         } else {
-            range.sort(Comparator.naturalOrder());
-
-            // sort in descending order when inverted
-            if (config.inverted) {
-                Collections.reverse(range);
-            }
-
-            AwattarNonConsecutiveBestPriceResult res = new AwattarNonConsecutiveBestPriceResult(
-                    bridgeHandler.getTimeZone());
-
-            // take up to config.length prices
-            for (int i = 0; i < Math.min(config.length, range.size()); i++) {
-                res.addMember(range.get(i));
-            }
-
-            result = res;
+            result = new AwattarNonConsecutiveBestPriceResult(range, config.length, config.inverted, zoneId);
         }
+
         String channelId = channelUID.getIdWithoutGroup();
         long diff;
         switch (channelId) {

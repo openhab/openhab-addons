@@ -326,6 +326,11 @@ public class LinkyHandler extends BaseThingHandler {
                         : (days.datas.size() <= days.periodes.size() ? days.datas.size() : days.periodes.size());
                 for (int i = 0; i < size; i++) {
                     double consumption = days.datas.get(i);
+                    LocalDate day = days.periodes.get(i).dateDebut.toLocalDate();
+                    // Filter data in case it contains data from dates outside the requested period
+                    if (day.isBefore(startDay) || day.isAfter(endDay)) {
+                        continue;
+                    }
                     String line = days.periodes.get(i).dateDebut.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator;
                     if (consumption >= 0) {
                         line += String.valueOf(consumption);

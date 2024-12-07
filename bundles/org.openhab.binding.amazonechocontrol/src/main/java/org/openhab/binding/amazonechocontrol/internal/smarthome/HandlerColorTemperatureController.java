@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.smarthome;
 
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.ITEM_TYPE_NUMBER;
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.ITEM_TYPE_STRING;
+import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,6 +27,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabil
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
@@ -51,13 +51,13 @@ public class HandlerColorTemperatureController extends HandlerBase {
     private static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEMPERATURE_NAME = new ChannelTypeUID(
             AmazonEchoControlBindingConstants.BINDING_ID, "colorTemperatureName");
 
-    private static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "colorTemperatureInKelvin");
+    private static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEMPERATURE_IN_KELVIN = //
+            DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_COLOR_TEMPERATURE_ABS;
 
     // Channel and Properties
     private static final ChannelInfo COLOR_TEMPERATURE_IN_KELVIN = new ChannelInfo(
             "colorTemperatureInKelvin" /* propertyName */ , "colorTemperatureInKelvin" /* ChannelId */,
-            CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN /* Channel Type */ , ITEM_TYPE_NUMBER /* Item Type */);
+            CHANNEL_TYPE_COLOR_TEMPERATURE_IN_KELVIN /* Channel Type */ , ITEM_TYPE_NUMBER_TEMPERATURE /* Item Type */);
 
     private static final ChannelInfo COLOR_TEMPERATURE_NAME = new ChannelInfo("colorProperties" /* propertyName */ ,
             "colorTemperatureName" /* ChannelId */, CHANNEL_TYPE_COLOR_TEMPERATURE_NAME /* Channel Type */ ,

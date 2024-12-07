@@ -26,11 +26,14 @@ public enum ComponentChannelType {
     COLOR("ha-color"),
     DIMMER("ha-dimmer"),
     IMAGE("ha-image"),
+    LOCATION("ha-location"),
     NUMBER("ha-number"),
     ROLLERSHUTTER("ha-rollershutter"),
     STRING("ha-string"),
     SWITCH("ha-switch"),
-    TRIGGER("ha-trigger");
+    TRIGGER("ha-trigger"),
+    HUMIDITY("ha-humidity"),
+    GPS_ACCURACY("ha-gps-accuracy");
 
     final ChannelTypeUID channelTypeUID;
 

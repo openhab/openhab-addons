@@ -43,6 +43,7 @@
 		<item-type>Switch</item-type>
 		<label>Digital Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -65,6 +66,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Percentage Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -102,6 +104,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Numeric Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -122,6 +125,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -162,6 +166,7 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -181,6 +186,7 @@
 		<item-type>Number:Power</item-type>
 		<label>Power Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -200,6 +206,7 @@
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Flowrate Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -220,6 +227,7 @@
 		<item-type>Number:Energy</item-type>
 		<label>Active Energy Readonly DataPoint</label>
 		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -239,6 +247,8 @@
 	<channel-type id="mode-r">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Mode Readonly DataPoint</label>
+		<state readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>

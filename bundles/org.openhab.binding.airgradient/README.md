@@ -77,7 +77,7 @@ For more information about the data in the channels, please refer to the models 
 | tvoc               | Number:Density       | Read       | Total Volatile Organic Compounds                                                 |
 | atmp               | Number:Temperature   | Read       | Ambient Temperature                                                              |
 | rhum               | Number:Dimensionless | Read       | Relative Humidity Percentage                                                     |
-| wifi               | Number               | Read       | Received signal strength indicator                                               |
+| wifi               | Number:Power         | Read       | Received signal strength indicator                                               |
 | uploads-since-boot | Number:Dimensionless | Read       | Number of measure uploads since last reboot (boot)                               |
 | leds               | String               | Read/Write | Sets the leds mode (off/co2/pm)                                                  |
 | calibration        | String               | Write      | Triggers co2 calibration on the device                                           |

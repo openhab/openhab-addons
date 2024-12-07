@@ -15,6 +15,7 @@ package org.openhab.binding.meteofrance.internal.handler;
 import static org.openhab.binding.meteofrance.internal.MeteoFranceBindingConstants.REQUEST_TIMEOUT_MS;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -159,10 +160,13 @@ public class MeteoFranceBridgeHandler extends BaseBridgeHandler {
     }
 
     public @Nullable RainForecast getRainForecast(PointType location) {
-        String url = RAIN_FORECAST_BASE_URL.formatted(location.getLatitude().doubleValue(),
+        String url = String.format(Locale.US, RAIN_FORECAST_BASE_URL, location.getLatitude().doubleValue(),
                 location.getLongitude().doubleValue());
         try {
+            logger.debug("Sending rain-forecast request to: {}", url);
             String answer = HttpUtil.executeUrl(HttpMethod.GET, url, REQUEST_TIMEOUT_MS);
+            logger.debug("Received answer: {}", answer);
+
             return deserializer.deserialize(RainForecast.class, answer);
         } catch (MeteoFranceException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
