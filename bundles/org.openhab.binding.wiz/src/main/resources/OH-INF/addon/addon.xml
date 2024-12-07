@@ -25,7 +25,7 @@
 					<value>{"method":"registration","id":1,"params":{"phoneIp":"$srcIp","register":false,"phoneMac":"$srcMac"}}</value>
 				</discovery-parameter>
 				<discovery-parameter>
-				  <name>fmtMac</name>
+					<name>fmtMac</name>
 					<value>%02X</value>
 				</discovery-parameter>
 				<discovery-parameter>
