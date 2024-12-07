@@ -30,7 +30,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -57,8 +56,7 @@ public class EnergiDataServiceHandlerFactory extends BaseThingHandlerFactory {
     public EnergiDataServiceHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference TimeZoneProvider timeZoneProvider,
             final @Reference ElectricityPriceProvider electricityPriceProvider,
-            final @Reference Co2EmissionProvider co2EmissionProvider, ComponentContext componentContext) {
-        super.activate(componentContext);
+            final @Reference Co2EmissionProvider co2EmissionProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.timeZoneProvider = timeZoneProvider;
         this.electricityPriceProvider = electricityPriceProvider;
