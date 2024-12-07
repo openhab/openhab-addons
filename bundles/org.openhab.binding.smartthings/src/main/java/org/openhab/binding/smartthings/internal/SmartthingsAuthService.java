@@ -133,7 +133,7 @@ public class SmartthingsAuthService {
     /**
      * @param listener Adds the given handler
      */
-    public void setSmartthingsAccountHandler(@NotNull SmartthingsAccountHandler accountHandler) {
+    public void setSmartthingsAccountHandler(@Nullable SmartthingsAccountHandler accountHandler) {
         this.accountHandler = accountHandler;
     }
 
