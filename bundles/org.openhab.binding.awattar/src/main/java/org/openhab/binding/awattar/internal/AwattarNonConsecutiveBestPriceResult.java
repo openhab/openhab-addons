@@ -64,8 +64,8 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
     }
 
     @Override
-    public boolean isActive(Instant now) {
-        return members.stream().anyMatch(x -> x.timerange().contains(now.toEpochMilli()));
+    public boolean isActive(Instant pointInTime) {
+        return members.stream().anyMatch(x -> x.timerange().contains(pointInTime.toEpochMilli()));
     }
 
     @Override

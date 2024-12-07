@@ -52,10 +52,10 @@ public abstract class AwattarBestPriceResult {
     /**
      * Returns true if the best price is active.
      *
-     * @param now the current time
+     * @param pointInTime the current time
      * @return true if the best price is active, false otherwise
      */
-    public abstract boolean isActive(Instant now);
+    public abstract boolean isActive(Instant pointInTime);
 
     /**
      * Returns the hours of the best price.
