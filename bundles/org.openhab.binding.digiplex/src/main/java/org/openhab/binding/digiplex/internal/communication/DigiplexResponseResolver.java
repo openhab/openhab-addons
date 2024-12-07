@@ -35,7 +35,6 @@ import org.openhab.binding.digiplex.internal.communication.events.ZoneStatusEven
 public class DigiplexResponseResolver {
 
     private static final String OK = "&ok";
-    // TODO: handle failures
     private static final String FAIL = "&fail";
 
     public static DigiplexResponse resolveResponse(String message) {
@@ -53,21 +52,42 @@ public class DigiplexResponseResolver {
                     return CommunicationStatus.OK;
                 }
             case "ZL": // zone label
-                zoneNo = Integer.valueOf(message.substring(2, 5));
+                if (message.length() < 5) {
+                    return new UnknownResponse(message);
+                }
+                try {
+                    zoneNo = Integer.valueOf(message.substring(2, 5));
+                } catch (NumberFormatException e) {
+                    return new UnknownResponse(message);
+                }
                 if (message.contains(FAIL)) {
                     return ZoneLabelResponse.failure(zoneNo);
                 } else {
                     return ZoneLabelResponse.success(zoneNo, message.substring(5).trim());
                 }
             case "AL": // area label
-                areaNo = Integer.valueOf(message.substring(2, 5));
+                if (message.length() < 5) {
+                    return new UnknownResponse(message);
+                }
+                try {
+                    areaNo = Integer.valueOf(message.substring(2, 5));
+                } catch (NumberFormatException e) {
+                    return new UnknownResponse(message);
+                }
                 if (message.contains(FAIL)) {
                     return AreaLabelResponse.failure(areaNo);
                 } else {
                     return AreaLabelResponse.success(areaNo, message.substring(5).trim());
                 }
             case "RZ": // zone status
-                zoneNo = Integer.valueOf(message.substring(2, 5));
+                if (message.length() < 10) {
+                    return new UnknownResponse(message);
+                }
+                try {
+                    zoneNo = Integer.valueOf(message.substring(2, 5));
+                } catch (NumberFormatException e) {
+                    return new UnknownResponse(message);
+                }
                 if (message.contains(FAIL)) {
                     return ZoneStatusResponse.failure(zoneNo);
                 } else {
@@ -79,10 +99,20 @@ public class DigiplexResponseResolver {
                             toBoolean(message.charAt(9))); // battery low
                 }
             case "RA": // area status
-                areaNo = Integer.valueOf(message.substring(2, 5));
+                if (message.length() < 10) {
+                    return new UnknownResponse(message);
+                }
+                try {
+                    areaNo = Integer.valueOf(message.substring(2, 5));
+                } catch (NumberFormatException e) {
+                    return new UnknownResponse(message);
+                }
                 if (message.contains(FAIL)) {
                     return AreaStatusResponse.failure(areaNo);
                 } else {
+                    if (message.length() < 12) {
+                        return new UnknownResponse(message);
+                    }
                     return AreaStatusResponse.success(areaNo, // zone number
                             AreaStatus.fromMessage(message.charAt(5)), // status
                             toBoolean(message.charAt(6)), // zone in memory
@@ -95,7 +125,11 @@ public class DigiplexResponseResolver {
             case "AA": // area arm
             case "AQ": // area quick arm
             case "AD": // area disarm
-                areaNo = Integer.valueOf(message.substring(2, 5));
+                try {
+                    areaNo = Integer.valueOf(message.substring(2, 5));
+                } catch (NumberFormatException e) {
+                    return new UnknownResponse(message);
+                }
                 if (message.contains(FAIL)) {
                     return AreaArmDisarmResponse.failure(areaNo, ArmDisarmType.fromMessage(commandType));
                 } else {
@@ -104,7 +138,7 @@ public class DigiplexResponseResolver {
             case "UL": // user label
             case "PG": // PGM events
             default:
-                if (message.startsWith("G")) {
+                if (message.startsWith("G") && message.length() >= 12) {
                     return resolveSystemEvent(message);
                 } else {
                     return new UnknownResponse(message);
@@ -117,9 +151,14 @@ public class DigiplexResponseResolver {
     }
 
     private static DigiplexResponse resolveSystemEvent(String message) {
-        int eventGroup = Integer.parseInt(message.substring(1, 4));
-        int eventNumber = Integer.parseInt(message.substring(5, 8));
-        int areaNumber = Integer.parseInt(message.substring(9, 12));
+        int eventGroup, eventNumber, areaNumber;
+        try {
+            eventGroup = Integer.parseInt(message.substring(1, 4));
+            eventNumber = Integer.parseInt(message.substring(5, 8));
+            areaNumber = Integer.parseInt(message.substring(9, 12));
+        } catch (NumberFormatException e) {
+            return new UnknownResponse(message);
+        }
         switch (eventGroup) {
             case 0:
                 return new ZoneStatusEvent(eventNumber, ZoneStatus.CLOSED, areaNumber);

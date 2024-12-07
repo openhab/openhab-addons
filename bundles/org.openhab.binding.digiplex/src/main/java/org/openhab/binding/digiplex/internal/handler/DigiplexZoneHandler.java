@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.digiplex.internal.DigiplexBindingConstants;
 import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandler;
 import org.openhab.binding.digiplex.internal.communication.DigiplexRequest;
+import org.openhab.binding.digiplex.internal.communication.UnknownResponse;
 import org.openhab.binding.digiplex.internal.communication.ZoneStatusRequest;
 import org.openhab.binding.digiplex.internal.communication.ZoneStatusResponse;
 import org.openhab.binding.digiplex.internal.communication.events.ZoneEvent;
@@ -41,6 +42,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DigiplexZoneHandler} is responsible for handling commands, which are
@@ -50,6 +53,8 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class DigiplexZoneHandler extends BaseThingHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(DigiplexZoneHandler.class);
 
     private @Nullable DigiplexBridgeHandler bridgeHandler;
     private DigiplexZoneMessageHandler messageHandler = new DigiplexZoneMessageHandler();
@@ -235,6 +240,11 @@ public class DigiplexZoneHandler extends BaseThingHandler {
                 }
                 updateAreaNo(event.getAreaNo());
             }
+        }
+
+        @Override
+        public void handleUnknownResponse(UnknownResponse response) {
+            logger.debug("Unknown response: {}", response.message);
         }
     }
 }
