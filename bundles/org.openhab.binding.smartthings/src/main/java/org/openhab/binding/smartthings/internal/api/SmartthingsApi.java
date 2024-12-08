@@ -13,10 +13,13 @@
 package org.openhab.binding.smartthings.internal.api;
 
 import java.io.IOException;
+import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.smartthings.internal.dto.AppRequest;
+import org.openhab.binding.smartthings.internal.dto.AppResponse;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -25,6 +28,7 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -43,23 +47,54 @@ public class SmartthingsApi {
 
     private final OAuthClientService oAuthClientService;
     private final SmartthingsNetworkConnector networkConnector;
+    private final String token;
+    private Gson gson = new Gson();
+    private String baseUrl = "https://api.smartthings.com/v1/";
 
     /**
      * Constructor.
      *
-     * @param authorizer The authorizer used to refresh the access token when expired
-     * @param connector The Spotify connector handling the Web Api calls to Spotify
+     * @param httpClientFactory The httpClientFactory
+     * @param OAuthClientService The oAuthClientService
+     * @param token The token to access the API
      */
-    public SmartthingsApi(HttpClientFactory httpClientFactory, OAuthClientService oAuthClientService) {
+    public SmartthingsApi(HttpClientFactory httpClientFactory, SmartthingsNetworkConnector networkConnector,
+            OAuthClientService oAuthClientService, String token) {
         this.oAuthClientService = oAuthClientService;
-        this.networkConnector = new SmartthingsNetworkConnectorImpl(httpClientFactory, oAuthClientService);
+        this.token = token;
+        this.networkConnector = networkConnector;
     }
 
     public JsonArray GetAllDevices() {
-        JsonElement result = DoRequest("https://api.smartthings.com/v1/devices");
+        JsonElement result = DoRequest(baseUrl + "/devices");
         JsonElement res1 = ((JsonObject) result).get("items");
         JsonArray devices = res1.getAsJsonArray();
         return devices;
+    }
+
+    public AppResponse CreateApp() {
+
+        try {
+            String uri = baseUrl + "/apps?signatureType=ST_PADLOCK&requireConfirmation=true";
+
+            String appName = "openhabnew" + new Random().nextInt(100);
+            AppRequest appRequest = new AppRequest();
+            appRequest.appName = appName;
+            appRequest.displayName = appName;
+            appRequest.description = "Desc " + appName;
+            appRequest.appType = "WEBHOOK_SMART_APP";
+            appRequest.webhookSmartApp = new AppRequest.webhookSmartApp("https://redirect.clae.net/openhabdev/");
+            appRequest.classifications = new String[1];
+            appRequest.classifications[0] = "AUTOMATION";
+
+            String body = gson.toJson(appRequest);
+            AppResponse appResponse = networkConnector.DoRequest(AppResponse.class, uri, null, token, body,
+                    HttpMethod.POST);
+
+            return appResponse;
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     public void SendCommand(String deviceId, String jsonMsg) {
@@ -67,14 +102,14 @@ public class SmartthingsApi {
             final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
-            String uri = "https://api.smartthings.com/v1/devices/" + deviceId + "/commands";
+            String uri = baseUrl + "/devices/" + deviceId + "/commands";
 
             if (accessToken == null || accessToken.isEmpty()) {
                 throw new RuntimeException(
                         "No Smartthings accesstoken. Did you authorize Smartthings via /connectsmartthings ?");
             } else {
 
-                networkConnector.DoRequest(uri, null, accessToken, jsonMsg, HttpMethod.POST);
+                networkConnector.DoRequest(JsonObject.class, uri, null, accessToken, jsonMsg, HttpMethod.POST);
             }
         } catch (final IOException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -88,14 +123,15 @@ public class SmartthingsApi {
             final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
-            String uri = "https://api.smartthings.com/v1/devices/" + deviceId + "/status";
+            String uri = baseUrl + "/devices/" + deviceId + "/status";
 
             if (accessToken == null || accessToken.isEmpty()) {
                 throw new RuntimeException(
                         "No Smartthings accesstoken. Did you authorize Smartthings via /connectsmartthings ?");
             } else {
 
-                JsonObject res = networkConnector.DoRequest(uri, null, accessToken, jsonMsg, HttpMethod.GET);
+                JsonObject res = networkConnector.DoRequest(JsonObject.class, uri, null, accessToken, jsonMsg,
+                        HttpMethod.GET);
                 return res;
             }
         } catch (final IOException e) {
@@ -115,7 +151,8 @@ public class SmartthingsApi {
                         "No Smartthings accesstoken. Did you authorize Smartthings via /connectsmartthings ?");
             } else {
 
-                JsonObject res = networkConnector.DoRequest(uri, null, accessToken, null, HttpMethod.GET);
+                JsonObject res = networkConnector.DoRequest(JsonObject.class, uri, null, accessToken, null,
+                        HttpMethod.GET);
                 return res;
             }
         } catch (final IOException e) {

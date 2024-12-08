@@ -17,16 +17,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 
-import com.google.gson.JsonObject;
-
 /**
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public interface SmartthingsNetworkConnector {
 
-    public @Nullable JsonObject DoRequest(String req, @Nullable SmartthingsNetworkCallback callback, String accessToken,
-            @Nullable String data, HttpMethod method);
+    public <T> T DoRequest(Class<T> resultClass, String req, @Nullable SmartthingsNetworkCallback callback,
+            String accessToken, @Nullable String data, HttpMethod method);
+
+    public @Nullable String DoBasicRequest(String uri, @Nullable SmartthingsNetworkCallback callback,
+            String accessToken, @Nullable String data, HttpMethod method) throws Exception;
 
     public void WaitAllPendingRequest();
 
