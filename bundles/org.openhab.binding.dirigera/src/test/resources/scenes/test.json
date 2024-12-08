@@ -1,0 +1,75 @@
+ {
+	"data": {
+		"createdAt": "2024-10-15T02:52:02.466Z",
+		"lastTriggered": "2024-10-15T03:04:49.427Z",
+		"undoAllowedDuration": 30,
+		"lastCompleted": "2024-10-15T03:04:49.427Z",
+		"lastUndo": "2024-10-15T03:03:37.537Z",
+		"id": "3f90176d-ca0e-4c2f-950a-4d4c96142f79",
+		"type": "userScene",
+		"triggers": [
+			{
+				"disabled": false,
+				"id": "30e42a65-52e5-4001-9a50-210abeba6e43",
+				"trigger": {
+					"filter": {
+						"attribute": {
+							"isDetected": true
+						}
+					},
+					"days": [
+						"Mon",
+						"Tue",
+						"Wed",
+						"Thu",
+						"Fri",
+						"Sat",
+						"Sun"
+					],
+					"deviceId": "5ac5e131-44a4-4d75-be78-759a095d31fb_1"
+				},
+				"type": "event"
+			},
+			{
+				"disabled": false,
+				"id": "1c515045-8888-4a63-a25c-c2675a353ab3",
+				"triggeredAt": "2024-10-15T03:05:04.534Z",
+				"type": "app"
+			}
+		],
+		"actions": [
+			{
+				"attributes": {
+					"lightLevel": 54,
+					"isOn": true,
+					"colorTemperature": 2188
+				},
+				"id": "5ffa4a1e-6fe2-4a24-b0af-b216937c4e8c_1",
+				"type": "device",
+				"deviceId": "5ffa4a1e-6fe2-4a24-b0af-b216937c4e8c_1",
+				"enabled": true
+			},
+			{
+				"attributes": {
+					"lightLevel": 51,
+					"isOn": true,
+					"colorTemperature": 2188
+				},
+				"id": "45165c60-0c1a-4b9f-ae09-c4a6220d1420_1",
+				"type": "device",
+				"deviceId": "45165c60-0c1a-4b9f-ae09-c4a6220d1420_1",
+				"enabled": true
+			}
+		],
+		"commands": [],
+		"info": {
+			"name": "openHAB Test",
+			"icon": "scenes_briefcase"
+		}
+	},
+	"specversion": "3.163.0",
+	"id": "2f8968a5-f040-4265-a35a-22e4ea6de0ee",
+	"time": "2024-10-15T03:05:04.538Z",
+	"source": "urn:com:ikea:homesmart:iotc:rulesengine",
+	"type": "sceneUpdated"
+}
