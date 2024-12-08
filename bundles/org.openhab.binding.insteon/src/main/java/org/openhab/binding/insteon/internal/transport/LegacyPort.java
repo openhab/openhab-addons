@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.binding.insteon.internal.InsteonLegacyBindingConstants;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
@@ -178,9 +179,9 @@ public class LegacyPort {
         }
 
         readThread = new Thread(reader);
-        setParamsAndStart(readThread, "Reader");
+        setParamsAndStart(readThread, "OH-binding-" + InsteonBindingConstants.BINDING_ID + "-LegacyReader");
         writeThread = new Thread(writer);
-        setParamsAndStart(writeThread, "Writer");
+        setParamsAndStart(writeThread, "OH-binding-" + InsteonBindingConstants.BINDING_ID + "-LegacyWriter");
 
         if (!mdbb.isComplete()) {
             modem.initialize();

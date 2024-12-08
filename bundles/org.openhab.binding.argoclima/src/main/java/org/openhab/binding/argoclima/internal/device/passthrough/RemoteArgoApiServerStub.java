@@ -290,7 +290,7 @@ public class RemoteArgoApiServerStub {
                 // to stop, actually)
                 s.setStopTimeout(1000L);
                 try {
-                    new Thread() {
+                    new Thread("OH-binding-" + this.id + "-APIStub") {
                         @Override
                         public void run() {
                             try {

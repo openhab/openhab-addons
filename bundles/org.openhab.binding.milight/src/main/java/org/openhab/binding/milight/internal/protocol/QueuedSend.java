@@ -21,6 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.milight.internal.MilightBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public class QueuedSend implements Runnable, Closeable {
      */
     public void start() {
         willbeclosed = false;
-        thread = new Thread(this);
+        thread = new Thread(this, "OH-binding-" + MilightBindingConstants.BINDING_ID + "-QueuedSend");
         thread.start();
     }
 

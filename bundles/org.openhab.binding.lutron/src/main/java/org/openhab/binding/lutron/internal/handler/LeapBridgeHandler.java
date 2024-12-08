@@ -304,12 +304,12 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, STATUS_INITIALIZING);
 
-        Thread readerThread = new Thread(this::readerThreadJob, "Lutron reader");
+        Thread readerThread = new Thread(this::readerThreadJob, "OH-binding-" + getThing().getUID() + "-BridgeReader");
         readerThread.setDaemon(true);
         readerThread.start();
         this.readerThread = readerThread;
 
-        Thread senderThread = new Thread(this::senderThreadJob, "Lutron sender");
+        Thread senderThread = new Thread(this::senderThreadJob, "OH-binding-" + getThing().getUID() + "-BridgeSender");
         senderThread.setDaemon(true);
         senderThread.start();
         this.senderThread = senderThread;

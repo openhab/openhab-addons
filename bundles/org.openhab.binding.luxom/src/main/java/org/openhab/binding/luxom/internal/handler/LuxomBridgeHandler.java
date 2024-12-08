@@ -139,7 +139,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.ONLINE);
 
-        messageSender = new Thread(this::sendCommandsThread, "Luxom sender");
+        messageSender = new Thread(this::sendCommandsThread, "OH-binding-" + getThing().getUID() + "-Sender");
         messageSender.start();
 
         logger.debug("Starting heartbeat job with interval {} (seconds)", HEARTBEAT_INTERVAL_SECONDS);
