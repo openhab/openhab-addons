@@ -92,8 +92,8 @@ public class EmulatedV6Bridge {
             FAKE_MAC[2], FAKE_MAC[3], FAKE_MAC[4], FAKE_MAC[5], 1 };
 
     EmulatedV6Bridge() {
-        new Thread(this::runDiscovery).start();
-        new Thread(this::runBrigde).start();
+        new Thread(this::runDiscovery, "OH-binding-" + MilightBindingConstants.BINDING_ID + "-runDiscovery").start();
+        new Thread(this::runBridge, "OH-binding-" + MilightBindingConstants.BINDING_ID + "-runBridge").start();
     }
 
     private void replaceWithMac(byte[] data, int offset) {
@@ -144,7 +144,7 @@ public class EmulatedV6Bridge {
         }
     }
 
-    public void runBrigde() {
+    public void runBridge() {
         try {
             byte[] a = new byte[0];
             DatagramPacket sPacket = new DatagramPacket(a, a.length);

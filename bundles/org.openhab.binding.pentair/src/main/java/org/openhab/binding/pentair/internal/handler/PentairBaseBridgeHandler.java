@@ -203,7 +203,7 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler
             return;
         }
 
-        Thread parserThread = new Thread(parser, "OH-pentair-" + this.getThing().getUID() + "-parser");
+        Thread parserThread = new Thread(parser, "OH-binding-" + this.getThing().getUID() + "-parser");
         this.parserThread = parserThread;
 
         parserThread.setDaemon(true);

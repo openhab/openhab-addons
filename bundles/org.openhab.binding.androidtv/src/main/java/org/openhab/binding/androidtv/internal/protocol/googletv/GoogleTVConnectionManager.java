@@ -579,7 +579,8 @@ public class GoogleTVConnectionManager {
                 logger.trace("{} - Starting Reader Thread for {}:{}", handler.getThingID(), config.ipAddress,
                         config.googletvPort);
 
-                Thread readerThread = new Thread(this::readerThreadJob, "GoogleTV reader " + handler.getThingID());
+                Thread readerThread = new Thread(this::readerThreadJob,
+                        "OH-binding-" + handler.getThingUID() + "-GoogleTVReader");
                 readerThread.setDaemon(true);
                 readerThread.start();
                 this.readerThread = readerThread;
@@ -587,7 +588,8 @@ public class GoogleTVConnectionManager {
                 logger.trace("{} - Starting Sender Thread for {}:{}", handler.getThingID(), config.ipAddress,
                         config.googletvPort);
 
-                Thread senderThread = new Thread(this::senderThreadJob, "GoogleTV sender " + handler.getThingID());
+                Thread senderThread = new Thread(this::senderThreadJob,
+                        "OH-binding-" + handler.getThingUID() + "-GoogleTVSender");
                 senderThread.setDaemon(true);
                 senderThread.start();
                 this.senderThread = senderThread;
@@ -698,12 +700,14 @@ public class GoogleTVConnectionManager {
                         this.shimServerSocket = serverSocket;
                         this.shimQueue.clear();
 
-                        Thread readerThread = new Thread(this::shimReaderThreadJob, "GoogleTV shim reader");
+                        Thread readerThread = new Thread(this::shimReaderThreadJob,
+                                "OH-binding-" + handler.getThingUID() + "-GoogleTVShimReader");
                         readerThread.setDaemon(true);
                         readerThread.start();
                         this.shimReaderThread = readerThread;
 
-                        Thread senderThread = new Thread(this::shimSenderThreadJob, "GoogleTV shim sender");
+                        Thread senderThread = new Thread(this::shimSenderThreadJob,
+                                "OH-binding-" + handler.getThingUID() + "-GoogleTVShimSender");
                         senderThread.setDaemon(true);
                         senderThread.start();
                         this.shimSenderThread = senderThread;

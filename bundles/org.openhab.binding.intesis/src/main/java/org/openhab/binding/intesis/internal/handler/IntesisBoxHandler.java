@@ -93,11 +93,8 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
         if (!config.ipAddress.isEmpty()) {
             updateStatus(ThingStatus.UNKNOWN);
             scheduler.submit(() -> {
-
-                String readerThreadName = "OH-binding-" + getThing().getUID().getAsString();
-
                 IntesisBoxSocketApi intesisLocalApi = intesisBoxSocketApi = new IntesisBoxSocketApi(config.ipAddress,
-                        config.port, readerThreadName);
+                        config.port, "OH-binding-" + getThing().getUID());
                 intesisLocalApi.addIntesisBoxChangeListener(this);
                 try {
                     intesisLocalApi.openConnection();

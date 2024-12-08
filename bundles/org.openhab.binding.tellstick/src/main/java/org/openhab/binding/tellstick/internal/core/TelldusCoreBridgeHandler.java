@@ -129,7 +129,8 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     private void setupDeviceController(TellstickBridgeConfiguration configuration) {
-        deviceController = new TelldusCoreDeviceController(configuration.resendInterval);
+        deviceController = new TelldusCoreDeviceController(configuration.resendInterval,
+                "OH-binding-" + getThing().getUID() + "-worker");
         eventHandler.addListener((TelldusCoreDeviceController) deviceController);
     }
 

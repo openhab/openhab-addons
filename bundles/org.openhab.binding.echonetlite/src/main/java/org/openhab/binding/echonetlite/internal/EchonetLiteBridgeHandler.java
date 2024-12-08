@@ -52,7 +52,8 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
     private final ArrayBlockingQueue<Message> requests = new ArrayBlockingQueue<>(1024);
     private final Map<InstanceKey, EchonetObject> devicesByKey = new HashMap<>();
     private final EchonetMessageBuilder messageBuilder = new EchonetMessageBuilder();
-    private final Thread networkingThread = new Thread(this::poll);
+    private final Thread networkingThread = new Thread(this::poll,
+            "OH-binding-" + EchonetLiteBindingConstants.BINDING_ID);
     private final EchonetMessage echonetMessage = new EchonetMessage();
     private final MonotonicClock clock = new MonotonicClock();
 
@@ -76,8 +77,6 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
         logger.debug("Binding echonet channel");
         echonetChannel = new EchonetChannel(discoveryKey.address);
         logger.debug("Starting networking thread");
-
-        networkingThread.setName("OH-binding-" + EchonetLiteBindingConstants.BINDING_ID);
         networkingThread.setDaemon(true);
         networkingThread.start();
     }
