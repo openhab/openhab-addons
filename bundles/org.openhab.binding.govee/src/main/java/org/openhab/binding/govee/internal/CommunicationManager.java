@@ -69,6 +69,9 @@ public class CommunicationManager {
 
     private static final String DISCOVER_REQUEST = "{\"msg\": {\"cmd\": \"scan\", \"data\": {\"account_topic\": \"reserve\"}}}";
 
+    private static final InetSocketAddress DISCOVERY_SOCKET_ADDRESS = new InetSocketAddress(DISCOVERY_MULTICAST_ADDRESS,
+            DISCOVERY_PORT);
+
     public interface DiscoveryResultReceiver {
         void onResultReceived(DiscoveryResponse result);
     }
@@ -156,8 +159,7 @@ public class CommunicationManager {
                                     .configureBlocking(false)) {
                                 logger.trace("Datagram channel bound to {}:{} on {}", ipv4Address, DISCOVERY_PORT,
                                         intf.getDisplayName());
-                                channel.send(ByteBuffer.wrap(DISCOVER_REQUEST.getBytes()),
-                                        new InetSocketAddress(DISCOVERY_MULTICAST_ADDRESS, DISCOVERY_PORT));
+                                channel.send(ByteBuffer.wrap(DISCOVER_REQUEST.getBytes()), DISCOVERY_SOCKET_ADDRESS);
                                 logger.trace("Sent request to {}:{} with content = {}", DISCOVERY_MULTICAST_ADDRESS,
                                         DISCOVERY_PORT, DISCOVER_REQUEST);
                             } catch (IOException e) {
