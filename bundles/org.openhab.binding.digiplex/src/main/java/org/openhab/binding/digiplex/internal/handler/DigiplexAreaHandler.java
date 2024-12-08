@@ -33,6 +33,7 @@ import org.openhab.binding.digiplex.internal.communication.AreaStatusResponse;
 import org.openhab.binding.digiplex.internal.communication.ArmType;
 import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandler;
 import org.openhab.binding.digiplex.internal.communication.DigiplexRequest;
+import org.openhab.binding.digiplex.internal.communication.UnknownResponse;
 import org.openhab.binding.digiplex.internal.communication.events.AreaEvent;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
@@ -45,6 +46,8 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DigiplexAreaHandler} is responsible for handling commands, which are
@@ -54,6 +57,8 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class DigiplexAreaHandler extends BaseThingHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(DigiplexAreaHandler.class);
 
     private @Nullable DigiplexAreaConfiguration config;
     private @Nullable DigiplexBridgeHandler bridgeHandler;
@@ -307,6 +312,11 @@ public class DigiplexAreaHandler extends BaseThingHandler {
                 }
                 tempStatus.ifPresent(s -> updateState(AREA_STATUS, s.toStringType()));
             }
+        }
+
+        @Override
+        public void handleUnknownResponse(UnknownResponse response) {
+            logger.debug("Unknown response: {}", response.message);
         }
     }
 }
