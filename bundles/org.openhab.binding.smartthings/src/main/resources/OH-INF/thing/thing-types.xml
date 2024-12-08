@@ -10,6 +10,10 @@
 		<description>Smartthings Cloud Hub</description>
 
 		<config-description>
+			<parameter name="token" type="text" required="true">
+				<label>Toeken</label>
+				<description>A smartthings token</description>
+			</parameter>
 			<parameter name="clientId" type="text" required="true">
 				<label>Client ID</label>
 				<description>The apps oauth client Id</description>

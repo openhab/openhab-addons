@@ -27,6 +27,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnector;
+import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse;
+import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.configurationData.Page;
+import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.configurationData.Page.Section;
+import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.configurationData.Page.Section.Setting;
+import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.configurationData.initialize;
+import org.openhab.binding.smartthings.internal.dto.LifeCycle;
+import org.openhab.binding.smartthings.internal.dto.LifeCycle.Data;
+import org.openhab.binding.smartthings.internal.dto.SMEvent;
+import org.openhab.binding.smartthings.internal.dto.SMEvent.device;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -39,7 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
@@ -53,11 +63,13 @@ public class SmartthingsServlet extends HttpServlet {
     private static final String PATH = "/smartthings";
     private final Logger logger = LoggerFactory.getLogger(SmartthingsServlet.class);
     private @NonNullByDefault({}) HttpService httpService;
+    private @NonNullByDefault({}) SmartthingsNetworkConnector networkConnector;
     private @Nullable EventAdmin eventAdmin;
     private Gson gson = new Gson();
 
-    public SmartthingsServlet(HttpService httpService) {
+    public SmartthingsServlet(HttpService httpService, SmartthingsNetworkConnector networkConnector) {
         this.httpService = httpService;
+        this.networkConnector = networkConnector;
     }
 
     @Activate
@@ -143,79 +155,121 @@ public class SmartthingsServlet extends HttpServlet {
         BufferedReader rdr = new BufferedReader(req.getReader());
         String s = rdr.lines().collect(Collectors.joining());
 
-        JsonObject resultObj = gson.fromJson(s, JsonObject.class);
-        String lifeCycle = resultObj.get("lifecycle").getAsString();
+        LifeCycle resultObj = gson.fromJson(s, LifeCycle.class);
 
-        if (lifeCycle.equals("EVENT")) {
-            JsonObject eventData = resultObj.get("eventData").getAsJsonObject();
-            JsonArray events = eventData.get("events").getAsJsonArray();
-            JsonObject event = events.get(0).getAsJsonObject();
-            String eventType = event.get("eventType").getAsString();
-            JsonObject deviceEvent = event.get("deviceEvent").getAsJsonObject();
-            String value = deviceEvent.get("value").getAsString();
-            String locationId = deviceEvent.get("locationId").getAsString();
-            String deviceId = deviceEvent.get("deviceId").getAsString();
-        } else if (lifeCycle.equals("CONFIGURATION")) {
-            resp.getWriter().print("");
-            resp.getWriter().print("{");
-            resp.getWriter().print("\"configurationData\": {");
-            resp.getWriter().print("\"initialize\": {");
-            resp.getWriter().print("\"name\": \"Openhab2\",");
-            resp.getWriter().print("\"description\": \"Openhab2 Desc\",");
-            resp.getWriter().print("    \"id\": \"6756ca2f-ba54-470b-bcd9-dbe3c564c9d0\",");
-            resp.getWriter().print("    \"permissions\": [\"r:devices\"],");
-            resp.getWriter().print("    \"firstPageId\": \"1\"");
-            resp.getWriter().print("  }");
-            resp.getWriter().print(" }");
-            resp.getWriter().print("}");
-        } else if (lifeCycle.equals("PAGE")) {
-            resp.getWriter().print("{");
-            resp.getWriter().print("\"configurationData\": {");
-            resp.getWriter().print("\"page\": {");
-            resp.getWriter().print("      \"pageId\": \"1\",");
-            resp.getWriter().print("      \"name\": \"aaa\",");
-            resp.getWriter().print("      \"nextPageId\": null,");
-            resp.getWriter().print("      \"previousPageId\": null,");
-            resp.getWriter().print("      \"complete\": true,");
-            resp.getWriter().print("      \"sections\": [");
-            resp.getWriter().print("          {");
-            resp.getWriter().print("              \"name\": \"When this opens closes...\",");
-            resp.getWriter().print("              \"settings\": [");
-            resp.getWriter().print("              {");
-            resp.getWriter().print("                  \"id\": \"contactSensor2\",");
-            resp.getWriter().print("                  \"name\": \"Which contact sensor\",");
-            resp.getWriter().print("                  \"description\": \"Tap to set\",");
-            resp.getWriter().print("                  \"type\": \"TEXT\",");
-            resp.getWriter().print("                  \"required\": true,");
-            resp.getWriter().print("                  \"multiple\": false,");
-            resp.getWriter().print("                  \"defaultValue\": \"Some default value\"");
-            resp.getWriter().print("              }");
-            resp.getWriter().print("              ]");
-            resp.getWriter().print("          },");
-            resp.getWriter().print("          {");
-            resp.getWriter().print("            \"name\": \"Turn on off this light...\",");
-            resp.getWriter().print("            \"settings\": [");
-            resp.getWriter().print("              {");
-            resp.getWriter().print("                \"id\": \"lightSwitch\",");
-            resp.getWriter().print("                \"name\": \"Which switch?\",");
-            resp.getWriter().print("                \"description\": \"Tap to set\",");
-            resp.getWriter().print("                \"type\": \"DEVICE\",");
-            resp.getWriter().print("                \"required\": true,");
-            resp.getWriter().print("                \"multiple\": false,");
-            resp.getWriter().print("                \"capabilities\": [");
-            resp.getWriter().print("                  \"switch\"");
-            resp.getWriter().print("                ],");
-            resp.getWriter().print("                \"permissions\": [");
-            resp.getWriter().print("                  \"r\",");
-            resp.getWriter().print("                  \"x\"");
-            resp.getWriter().print("                ]");
-            resp.getWriter().print("              }");
-            resp.getWriter().print("            ]");
-            resp.getWriter().print("          }");
-            resp.getWriter().print("      ]");
-            resp.getWriter().print("  }");
-            resp.getWriter().print("}");
-            resp.getWriter().print("}");
+        if (resultObj.lifecycle.equals("EVENT")) {
+            Data data = resultObj.eventData;
+            String deviceId = data.events[0].deviceEvent.deviceId;
+            String componentId = data.events[0].deviceEvent.componentId;
+            String capa = data.events[0].deviceEvent.capability;
+            String atttr = data.events[0].deviceEvent.attribute;
+            String value = data.events[0].deviceEvent.value;
+
+            logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, atttr, value);
+
+        } else if (resultObj.lifecycle.equals("UPDATE")) {
+            String token = resultObj.updateData.authToken;
+            String installedAppId = resultObj.updateData.installedApp.installedAppId;
+            String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
+                    + "/subscriptions";
+
+            JsonObject res = networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, "",
+                    HttpMethod.GET);
+
+            SMEvent evt = new SMEvent();
+            evt.sourceType = "DEVICE";
+            evt.device = new device("97806abc-ce85-4b28-9df2-31e33323cf62", "main", true, null);
+
+            String body = gson.toJson(evt);
+            JsonObject res2 = networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, body,
+                    HttpMethod.POST);
+
+            logger.info("UPDATE");
+        } else if (resultObj.lifecycle.equals("EXECUTE")) {
+            logger.info("EXCUTE");
+
+        } else if (resultObj.lifecycle.equals("CONFIGURATION")
+                && resultObj.configurationData.phase().equals("INITIALIZE")) {
+            ConfigurationResponse response = new ConfigurationResponse();
+            response.configurationData = response.new configurationData();
+
+            initialize init = response.configurationData.new initialize();
+            response.configurationData.initialize = init;
+            init.name = "OpenhabDev";
+            init.description = "OpenhabDev";
+            init.firstPageId = "1";
+            init.id = resultObj.configurationData.installedAppId();
+
+            // init.permissions = new String[1];
+            // init.permissions[0] = "";
+
+            // r:devices
+
+            String responseSt = gson.toJson(response);
+            resp.getWriter().print(responseSt);
+        } else if (resultObj.lifecycle.equals("CONFIGURATION") && resultObj.configurationData.phase().equals("PAGE")) {
+
+            ConfigurationResponse response = new ConfigurationResponse();
+            response.configurationData = response.new configurationData();
+
+            Page page1 = response.configurationData.new Page();
+            response.configurationData.page = page1;
+            page1.pageId = "1";
+            page1.nextPageId = null;
+            page1.previousPageId = null;
+            page1.name = "aaa";
+            page1.complete = true;
+            page1.sections = new Section[2];
+
+            Section section1 = response.configurationData.page.new Section();
+            page1.sections[0] = section1;
+            section1.name = "When this opens closes...";
+            section1.settings = new Setting[1];
+
+            Setting set1 = response.configurationData.page.sections[0].new Setting();
+            section1.settings[0] = set1;
+            set1.id = "contactSensor2";
+            set1.name = "Which contact sensor";
+            set1.description = "Tap to set";
+            set1.type = "TEXT";
+            set1.required = true;
+            set1.multiple = false;
+            set1.defaultValue = "defValue";
+
+            Section section2 = response.configurationData.page.new Section();
+            section2.name = "Turn on off this light";
+            page1.sections[1] = section2;
+            section2.settings = new Setting[1];
+
+            Setting set2 = response.configurationData.page.sections[0].new Setting();
+            section2.settings[0] = set2;
+            set2.id = "lightSwitch";
+            set2.name = "Which switch?";
+            set2.description = "Tap to set";
+            set2.type = "DEVICE";
+            set2.required = true;
+            set2.multiple = false;
+
+            set2.capabilities = new String[1];
+            set2.capabilities[0] = "switch";
+
+            set2.permissions = new String[2];
+            set2.permissions[0] = "r";
+            set2.permissions[1] = "x";
+
+            String responseSt = gson.toJson(response);
+            resp.getWriter().print(responseSt);
+        } else if (resultObj.lifecycle.equals("CONFIRMATION")) {
+            String appId = resultObj.confirmationData.appId();
+            String confirmUrl = resultObj.confirmationData.confirmationUrl();
+
+            try {
+                this.networkConnector.DoBasicRequest(confirmUrl, null, "", "", HttpMethod.GET);
+            } catch (Exception ex) {
+                logger.error("error during confirmation {}", confirmUrl);
+            }
+
+            logger.trace("CONFIRMATION {}", confirmUrl);
         }
 
         logger.trace("Smartthings servlet returning.");

@@ -13,6 +13,8 @@
 package org.openhab.binding.smartthings.internal.type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartthings.internal.dto.ErrorObject;
 
 /**
  *
@@ -24,6 +26,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SmartthingsException extends Exception {
     private static final long serialVersionUID = -3398100220952729816L;
+    @Nullable
+    private ErrorObject err;
 
     public SmartthingsException(String message, Exception e) {
         super(message, e);
@@ -31,5 +35,29 @@ public class SmartthingsException extends Exception {
 
     public SmartthingsException(String message) {
         super(message);
+    }
+
+    public SmartthingsException(String message, ErrorObject err) {
+        super(message);
+        this.err = err;
+    }
+
+    @Override
+    public @Nullable String getMessage() {
+        String msg = super.getMessage();
+        if (err != null) {
+            msg += "\r\n";
+            msg += "code      : " + err.requestId + "\r\n";
+            msg += "requestId : " + err.error.code + "\r\n";
+            msg += "message   : " + err.error.message + "\r\n";
+        }
+
+        for (ErrorObject.Error.Detail detail : err.error.details) {
+            msg += "code      : " + detail.code() + "\r\n";
+            msg += "target      : " + detail.target() + "\r\n";
+            msg += "message      : " + detail.message() + "\r\n";
+        }
+
+        return msg;
     }
 }

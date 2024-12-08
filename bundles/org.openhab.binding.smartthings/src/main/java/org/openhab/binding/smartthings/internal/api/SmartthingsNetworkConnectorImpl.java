@@ -29,6 +29,8 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.smartthings.internal.dto.ErrorObject;
+import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
@@ -37,7 +39,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
 /**
  *
@@ -222,8 +223,18 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
 
                 if (statusCode == HttpStatus.OK_200) {
                     String result = response.getContentAsString();
-
                     return result;
+                } else if (statusCode == HttpStatus.UNPROCESSABLE_ENTITY_422) {
+                    String result = response.getContentAsString();
+
+                    ErrorObject err = gson.fromJson(result, ErrorObject.class);
+                    if (err != null) {
+                        throw new SmartthingsException("Error occured during request:", err);
+                    } else {
+                        throw new SmartthingsException("Error occured during request");
+                    }
+                } else {
+                    throw new SmartthingsException("Unexepected return code : " + statusCode);
                 }
             }
         } catch (Exception ex) {
@@ -235,14 +246,13 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
     }
 
     @Override
-    public @Nullable JsonObject DoRequest(String req, @Nullable SmartthingsNetworkCallback callback, String accessToken,
-            @Nullable String data, HttpMethod method) {
+    public <T> T DoRequest(Class<T> resultClass, String req, @Nullable SmartthingsNetworkCallback callback,
+            String accessToken, @Nullable String data, HttpMethod method) {
         try {
             String response = DoBasicRequest(req, callback, accessToken, data, method);
 
             if (response != null) {
-
-                JsonObject resultObj = getGson().fromJson(response, JsonObject.class);
+                T resultObj = getGson().fromJson(response, resultClass);
                 return resultObj;
 
             }

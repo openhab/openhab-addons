@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SmartthingsBridgeConfig {
 
+    public String token = "";
+
     public String clientId = "";
 
     public String clientSecret = "";

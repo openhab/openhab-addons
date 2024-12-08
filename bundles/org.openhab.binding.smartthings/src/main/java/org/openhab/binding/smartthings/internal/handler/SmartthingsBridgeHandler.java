@@ -24,6 +24,7 @@ import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.SmartthingsServlet;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnector;
+import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnectorImpl;
 import org.openhab.binding.smartthings.internal.discovery.SmartthingsDiscoveryService;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -78,6 +79,7 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
         this.httpClientFactory = httpClientFactory;
+
         config = getThing().getConfiguration().as(SmartthingsBridgeConfig.class);
     }
 
@@ -98,11 +100,6 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
             return;
         }
 
-        if (servlet == null) {
-            servlet = new SmartthingsServlet(httpService);
-            servlet.activate();
-        }
-
         OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
                 SmartthingsBindingConstants.SMARTTHINGS_API_TOKEN_URL,
                 SmartthingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, config.clientId, config.clientSecret,
@@ -110,8 +107,14 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
 
         this.oAuthService = oAuthService;
         oAuthService.addAccessTokenRefreshListener(SmartthingsBridgeHandler.this);
+        this.networkConnector = new SmartthingsNetworkConnectorImpl(httpClientFactory, oAuthService);
 
-        smartthingsApi = new SmartthingsApi(httpClientFactory, oAuthService);
+        smartthingsApi = new SmartthingsApi(httpClientFactory, networkConnector, oAuthService, config.token);
+
+        if (servlet == null) {
+            servlet = new SmartthingsServlet(httpService, networkConnector);
+            servlet.activate();
+        }
 
         updateStatus(ThingStatus.ONLINE);
     }
