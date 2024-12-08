@@ -185,7 +185,7 @@
 	</channel-type>
 
 	<channel-type id="rssi" advanced="true">
-		<item-type unitHint="dB">Number:Dimensionless</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>RSSI</label>
 		<description>WiFi Received Signal Strength Indicator</description>
 		<category>QualityOfService</category>
