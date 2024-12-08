@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.tesla.internal.discovery;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.TeslaHandlerFactory;
 import org.openhab.binding.tesla.internal.handler.TeslaAccountHandler;
 import org.openhab.binding.tesla.internal.handler.VehicleListener;
-import org.openhab.binding.tesla.internal.protocol.Vehicle;
-import org.openhab.binding.tesla.internal.protocol.VehicleConfig;
+import org.openhab.binding.tesla.internal.protocol.dto.Vehicle;
+import org.openhab.binding.tesla.internal.protocol.dto.VehicleConfig;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -36,8 +37,9 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution
  *
  */
+@NonNullByDefault
 @Component(scope = ServiceScope.PROTOTYPE, service = TeslaVehicleDiscoveryService.class)
-public class TeslaVehicleDiscoveryService extends AbstractThingHandlerDiscoveryService<@NonNull TeslaAccountHandler>
+public class TeslaVehicleDiscoveryService extends AbstractThingHandlerDiscoveryService<TeslaAccountHandler>
         implements VehicleListener {
     private final Logger logger = LoggerFactory.getLogger(TeslaVehicleDiscoveryService.class);
 
@@ -63,13 +65,13 @@ public class TeslaVehicleDiscoveryService extends AbstractThingHandlerDiscoveryS
     }
 
     @Override
-    public void vehicleFound(Vehicle vehicle, VehicleConfig vehicleConfig) {
+    public void vehicleFound(Vehicle vehicle, @Nullable VehicleConfig vehicleConfig) {
         ThingTypeUID type = vehicleConfig == null ? TeslaBindingConstants.THING_TYPE_VEHICLE
                 : vehicleConfig.identifyModel();
         if (type != null) {
             logger.debug("Found a {} vehicle", type.getId());
             ThingUID thingUID = new ThingUID(type, thingHandler.getThing().getUID(), vehicle.vin);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(vehicle.display_name)
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(vehicle.displayName)
                     .withBridge(thingHandler.getThing().getUID()).withProperty(TeslaBindingConstants.VIN, vehicle.vin)
                     .build();
             thingDiscovered(discoveryResult);
