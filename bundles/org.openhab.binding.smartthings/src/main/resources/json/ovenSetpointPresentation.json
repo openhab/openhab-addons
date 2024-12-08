@@ -1,0 +1,37 @@
+{
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "slider",
+            "slider": {
+                "range": [
+                    0,
+                    40
+                ],
+                "command": "setOvenSetpoint",
+                "argumentType": "integer",
+                "value": "ovenSetpoint.value",
+                "valueType": "integer"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "command": "setOvenSetpoint",
+                    "argumentType": "integer",
+                    "range": [
+                        0,
+                        40
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "ovenSetpoint",
+    "version": 1
+}

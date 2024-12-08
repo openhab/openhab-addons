@@ -1,0 +1,27 @@
+{
+    "id": "odorSensor",
+    "version": 1,
+    "status": "live",
+    "name": "Odor Sensor",
+    "ephemeral": false,
+    "attributes": {
+        "odorLevel": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "PositiveInteger",
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

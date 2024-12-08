@@ -1,0 +1,14 @@
+{
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "textField",
+            "textField": {
+                "command": "setLanguage",
+                "value": "language.value"
+            }
+        }
+    ],
+    "id": "languageSetting",
+    "version": 1
+}

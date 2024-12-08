@@ -1,0 +1,29 @@
+{
+    "id": "shockSensor",
+    "version": 1,
+    "status": "deprecated",
+    "name": "Shock Sensor",
+    "ephemeral": false,
+    "attributes": {
+        "shock": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "clear",
+                            "detected"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

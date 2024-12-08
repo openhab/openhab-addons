@@ -1,0 +1,14 @@
+{
+    "id": "refresh",
+    "version": 1,
+    "status": "live",
+    "name": "Refresh",
+    "ephemeral": false,
+    "attributes": [],
+    "commands": {
+        "refresh": {
+            "name": "refresh",
+            "arguments": []
+        }
+    }
+}

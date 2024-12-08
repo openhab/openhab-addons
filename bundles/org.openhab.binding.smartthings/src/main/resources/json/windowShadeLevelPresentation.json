@@ -1,0 +1,68 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{shadeLevel.value}} {{shadeLevel.unit}}",
+                "alternatives": [
+                    {
+                        "key": "0",
+                        "value": "0",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "slider",
+            "slider": {
+                "range": [
+                    0,
+                    100
+                ],
+                "unit": "shadeLevel.unit",
+                "command": "setShadeLevel",
+                "argumentType": "integer",
+                "value": "shadeLevel.value",
+                "valueType": "integer"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "slider",
+                "slider": {
+                    "range": [
+                        0,
+                        100
+                    ],
+                    "unit": "shadeLevel.unit",
+                    "value": "shadeLevel.value",
+                    "valueType": "integer"
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "slider",
+                "slider": {
+                    "range": [
+                        0,
+                        100
+                    ],
+                    "unit": "shadeLevel.unit",
+                    "command": "setShadeLevel",
+                    "argumentType": "integer"
+                }
+            }
+        ]
+    },
+    "id": "windowShadeLevel",
+    "version": 1
+}

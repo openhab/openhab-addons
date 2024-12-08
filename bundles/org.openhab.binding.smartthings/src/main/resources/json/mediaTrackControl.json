@@ -1,0 +1,40 @@
+{
+    "id": "mediaTrackControl",
+    "version": 1,
+    "status": "live",
+    "name": "Media Track Control",
+    "ephemeral": false,
+    "attributes": {
+        "supportedTrackControlCommands": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "items": {
+                            "title": "MediaTrackCommands",
+                            "enum": [
+                                "previousTrack",
+                                "nextTrack"
+                            ],
+                            "type": "string"
+                        },
+                        "type": "array"
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "previousTrack": {
+            "name": "previousTrack",
+            "arguments": []
+        },
+        "nextTrack": {
+            "name": "nextTrack",
+            "arguments": []
+        }
+    }
+}

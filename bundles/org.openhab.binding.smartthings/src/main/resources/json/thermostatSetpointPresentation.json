@@ -1,0 +1,19 @@
+{
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "slider",
+            "slider": {
+                "range": [
+                    0,
+                    40
+                ],
+                "unit": "thermostatSetpoint.unit",
+                "value": "thermostatSetpoint.value",
+                "valueType": "number"
+            }
+        }
+    ],
+    "id": "thermostatSetpoint",
+    "version": 1
+}

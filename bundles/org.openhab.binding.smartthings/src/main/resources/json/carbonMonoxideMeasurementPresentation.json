@@ -1,0 +1,45 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{carbonMonoxideLevel.value}} {{carbonMonoxideLevel.unit}}"
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "slider",
+            "slider": {
+                "range": [
+                    0,
+                    1000000
+                ],
+                "unit": "carbonMonoxideLevel.unit",
+                "value": "carbonMonoxideLevel.value",
+                "valueType": "number"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "carbonMonoxideLevel.value",
+                    "valueType": "number",
+                    "unit": "carbonMonoxideLevel.unit",
+                    "range": [
+                        0,
+                        1000000
+                    ]
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "carbonMonoxideMeasurement",
+    "version": 1
+}

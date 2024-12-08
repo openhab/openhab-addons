@@ -1,0 +1,14 @@
+{
+    "id": "tone",
+    "version": 1,
+    "status": "live",
+    "name": "Tone",
+    "ephemeral": false,
+    "attributes": [],
+    "commands": {
+        "beep": {
+            "name": "beep",
+            "arguments": []
+        }
+    }
+}

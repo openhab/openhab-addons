@@ -29,7 +29,10 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsCloudBridgeHandler;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsHubBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsThingHandler;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -39,10 +42,12 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
+import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,18 +71,39 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     private @Nullable ThingUID bridgeUID;
     private Gson gson;
     private List<SmartthingsThingHandler> thingHandlers = Collections.synchronizedList(new ArrayList<>());
-
+    private @NonNullByDefault({}) HttpService httpService;
     private @NonNullByDefault({}) HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
+    private final SmartthingsAuthService authService;
+    private final OAuthFactory oAuthFactory;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return THING_TYPE_SMARTTHINGS.equals(thingTypeUID) || SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SmartthingsBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId());
+
+        // return THING_TYPE_SMARTTHINGS.equals(thingTypeUID) || THING_TYPE_SMARTTHINGSCLOUD.equals(thingTypeUID)
+        // || SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    public SmartthingsHandlerFactory() {
+    @Activate
+    public SmartthingsHandlerFactory(final @Reference HttpService httpService,
+            final @Reference SmartthingsAuthService authService, final @Reference OAuthFactory oAuthFactory,
+            final @Reference HttpClientFactory httpClientFactory) {
         // Get a Gson instance
         gson = new Gson();
+        this.httpService = httpService;
+        this.authService = authService;
+        this.httpClientFactory = httpClientFactory;
+        this.oAuthFactory = oAuthFactory;
     }
+
+    /*
+     * @Reference
+     * protected void setSmartthingsDiscoveryService(SmartthingsDiscoveryService disco) {
+     * logger.info("disco");
+     * }
+     *
+     */
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
@@ -92,11 +118,38 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
                         thing.getUID().getAsString());
                 return null;
             }
-            bridgeHandler = new SmartthingsBridgeHandler((Bridge) thing, this, bundleContext);
+            bridgeHandler = new SmartthingsHubBridgeHandler((Bridge) thing, this, bundleContext, httpService,
+                    oAuthFactory, httpClientFactory);
+
+            SmartthingsAccountHandler accountHandler = bridgeHandler;
+            authService.setSmartthingsAccountHandler(accountHandler);
+
             bridgeUID = thing.getUID();
             logger.debug("SmartthingsHandlerFactory created BridgeHandler for {}", thingTypeUID.getAsString());
             return bridgeHandler;
-        } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        } else if (thingTypeUID.equals(THING_TYPE_SMARTTHINGSCLOUD)) {
+            // This binding only supports one bridge. If the user tries to add a second bridge register and error and
+            // ignore
+            if (bridgeHandler != null) {
+                logger.warn(
+                        "The Smartthings binding only supports one bridge. Please change your configuration to only use one Bridge. This bridge {} will be ignored.",
+                        thing.getUID().getAsString());
+                return null;
+            }
+
+            bridgeHandler = new SmartthingsCloudBridgeHandler((Bridge) thing, this, bundleContext, httpService,
+                    oAuthFactory, httpClientFactory);
+
+            SmartthingsAccountHandler accountHandler = bridgeHandler;
+            authService.setSmartthingsAccountHandler(accountHandler);
+
+            bridgeUID = thing.getUID();
+            logger.debug("SmartthingsHandlerFactory created CloudBridgeHandler for {}", thingTypeUID.getAsString());
+            return bridgeHandler;
+        }
+        // else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        else if (SmartthingsBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
+
             // Everything but the bridge is handled by this one handler
             // Make sure this thing belongs to the registered Bridge
             if (bridgeUID != null && !bridgeUID.equals(thing.getBridgeUID())) {
@@ -125,19 +178,23 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     @Override
     public void sendDeviceCommand(String path, int timeout, String data)
             throws InterruptedException, TimeoutException, ExecutionException {
-        ContentResponse response = httpClient
-                .newRequest(bridgeHandler.getSmartthingsIp(), bridgeHandler.getSmartthingsPort())
-                .timeout(timeout, TimeUnit.SECONDS).path(path).method(HttpMethod.POST)
-                .content(new StringContentProvider(data), "application/json").send();
 
-        int status = response.getStatus();
-        if (status == 202) {
-            logger.debug(
-                    "Sent message \"{}\" with path \"{}\" to the Smartthings hub, received HTTP status {} (This is the normal code from Smartthings)",
-                    data, path, status);
-        } else {
-            logger.warn("Sent message \"{}\" with path \"{}\" to the Smartthings hub, received HTTP status {}", data,
-                    path, status);
+        if (bridgeHandler instanceof SmartthingsHubBridgeHandler) {
+            SmartthingsHubBridgeHandler hubBridgeHandler = (SmartthingsHubBridgeHandler) bridgeHandler;
+            ContentResponse response = httpClient
+                    .newRequest(hubBridgeHandler.getSmartthingsIp(), hubBridgeHandler.getSmartthingsPort())
+                    .timeout(timeout, TimeUnit.SECONDS).path(path).method(HttpMethod.POST)
+                    .content(new StringContentProvider(data), "application/json").send();
+
+            int status = response.getStatus();
+            if (status == 202) {
+                logger.debug(
+                        "Sent message \"{}\" with path \"{}\" to the Smartthings hub, received HTTP status {} (This is the normal code from Smartthings)",
+                        data, path, status);
+            } else {
+                logger.warn("Sent message \"{}\" with path \"{}\" to the Smartthings hub, received HTTP status {}",
+                        data, path, status);
+            }
         }
     }
 
@@ -192,6 +249,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
         this.httpClient = null;
     }
 
+    @Override
     @Nullable
     public SmartthingsBridgeHandler getBridgeHandler() {
         return bridgeHandler;

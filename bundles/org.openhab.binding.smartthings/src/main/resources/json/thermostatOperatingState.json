@@ -1,0 +1,35 @@
+{
+    "id": "thermostatOperatingState",
+    "version": 1,
+    "status": "live",
+    "name": "Thermostat Operating State",
+    "ephemeral": false,
+    "attributes": {
+        "thermostatOperatingState": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "ThermostatOperatingState",
+                        "type": "string",
+                        "enum": [
+                            "cooling",
+                            "fan only",
+                            "heating",
+                            "idle",
+                            "pending cool",
+                            "pending heat",
+                            "vent economizer"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

@@ -1,0 +1,115 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{pestControl.value}}",
+                "alternatives": [
+                    {
+                        "key": "idle",
+                        "value": "{{i18n.attributes.pestControl.i18n.value.idle.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "trapArmed",
+                        "value": "{{i18n.attributes.pestControl.i18n.value.trapArmed.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "trapRearmRequired",
+                        "value": "{{i18n.attributes.pestControl.i18n.value.trapRearmRequired.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "pestDetected",
+                        "value": "{{i18n.attributes.pestControl.i18n.value.pestDetected.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "pestExterminated",
+                        "value": "{{i18n.attributes.pestControl.i18n.value.pestExterminated.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{pestControl.value}}",
+                "alternatives": [
+                    {
+                        "key": "idle",
+                        "value": "{{i18n.attributes.pestControl.i18n.value.idle.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "trapArmed",
+                        "value": "{{i18n.attributes.pestControl.i18n.value.trapArmed.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "trapRearmRequired",
+                        "value": "{{i18n.attributes.pestControl.i18n.value.trapRearmRequired.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "pestDetected",
+                        "value": "{{i18n.attributes.pestControl.i18n.value.pestDetected.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "pestExterminated",
+                        "value": "{{i18n.attributes.pestControl.i18n.value.pestExterminated.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "idle",
+                            "value": "{{i18n.attributes.pestControl.i18n.value.idle.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "trapArmed",
+                            "value": "{{i18n.attributes.pestControl.i18n.value.trapArmed.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "trapRearmRequired",
+                            "value": "{{i18n.attributes.pestControl.i18n.value.trapRearmRequired.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "pestDetected",
+                            "value": "{{i18n.attributes.pestControl.i18n.value.pestDetected.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "pestExterminated",
+                            "value": "{{i18n.attributes.pestControl.i18n.value.pestExterminated.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "pestControl.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "pestControl",
+    "version": 1
+}

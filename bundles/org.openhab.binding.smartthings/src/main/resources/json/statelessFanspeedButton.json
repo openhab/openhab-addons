@@ -1,0 +1,47 @@
+{
+    "id": "statelessFanspeedButton",
+    "version": 1,
+    "status": "live",
+    "name": "Stateless Fanspeed Button",
+    "ephemeral": false,
+    "attributes": {
+        "availableFanspeedButtons": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "fanspeedUp",
+                                "fanspeedDown"
+                            ]
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": []
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setButton": {
+            "name": "setButton",
+            "arguments": [
+                {
+                    "name": "button",
+                    "optional": false,
+                    "schema": {
+                        "type": "string",
+                        "enum": [
+                            "fanspeedUp",
+                            "fanspeedDown"
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

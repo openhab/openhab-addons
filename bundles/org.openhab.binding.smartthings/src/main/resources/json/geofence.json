@@ -1,0 +1,131 @@
+{
+    "id": "geofence",
+    "version": 1,
+    "status": "proposed",
+    "name": "Geofence",
+    "ephemeral": false,
+    "attributes": {
+        "enableState": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "EnableState",
+                        "type": "string",
+                        "enum": [
+                            "enabled",
+                            "disabled"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "setter": "setEnableState",
+            "enumCommands": []
+        },
+        "geofence": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "GeofenceRadiusData",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "longitude": {
+                                "type": "number"
+                            },
+                            "latitude": {
+                                "type": "number"
+                            },
+                            "radius": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "setter": "setGeofence",
+            "enumCommands": []
+        },
+        "name": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "setter": "setName",
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setName": {
+            "name": "setName",
+            "arguments": [
+                {
+                    "name": "name",
+                    "optional": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "setEnableState": {
+            "name": "setEnableState",
+            "arguments": [
+                {
+                    "name": "enableState",
+                    "optional": false,
+                    "schema": {
+                        "title": "EnableState",
+                        "type": "string",
+                        "enum": [
+                            "enabled",
+                            "disabled"
+                        ]
+                    }
+                }
+            ]
+        },
+        "setGeofence": {
+            "name": "setGeofence",
+            "arguments": [
+                {
+                    "name": "geofence",
+                    "optional": false,
+                    "schema": {
+                        "title": "GeofenceRadiusData",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "longitude": {
+                                "type": "number"
+                            },
+                            "latitude": {
+                                "type": "number"
+                            },
+                            "radius": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

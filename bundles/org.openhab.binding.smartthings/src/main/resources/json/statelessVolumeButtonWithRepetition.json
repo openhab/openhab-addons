@@ -1,0 +1,38 @@
+{
+    "id": "statelessVolumeButtonWithRepetition",
+    "version": 1,
+    "status": "proposed",
+    "name": "Stateless Volume Button With Repetition",
+    "ephemeral": false,
+    "attributes": [],
+    "commands": {
+        "volumeDown": {
+            "name": "volumeDown",
+            "arguments": [
+                {
+                    "name": "repetition",
+                    "optional": false,
+                    "schema": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10
+                    }
+                }
+            ]
+        },
+        "volumeUp": {
+            "name": "volumeUp",
+            "arguments": [
+                {
+                    "name": "repetition",
+                    "optional": false,
+                    "schema": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10
+                    }
+                }
+            ]
+        }
+    }
+}

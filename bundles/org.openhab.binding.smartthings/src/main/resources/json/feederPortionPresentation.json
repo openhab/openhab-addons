@@ -1,0 +1,69 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{feedPortion.value}} {{feedPortion.value}}",
+                "alternatives": [
+                    {
+                        "key": "servings",
+                        "value": "{{i18n.attributes.feedPortion.i18n.unit.servings.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "slider",
+            "slider": {
+                "range": [
+                    0,
+                    100
+                ],
+                "step": 1,
+                "unit": "feedPortion.unit",
+                "alternatives": [
+                    {
+                        "key": "servings",
+                        "value": "{{i18n.attributes.feedPortion.i18n.unit.servings.label}}",
+                        "type": "active"
+                    }
+                ],
+                "command": "setPortion",
+                "argumentType": "number",
+                "value": "feedPortion.value",
+                "valueType": "number"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "slider",
+                "slider": {
+                    "range": [
+                        0,
+                        100
+                    ],
+                    "unit": "feedPortion.unit",
+                    "alternatives": [
+                        {
+                            "key": "servings",
+                            "value": "{{i18n.attributes.feedPortion.i18n.unit.servings.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setPortion",
+                    "argumentType": "number"
+                }
+            }
+        ]
+    },
+    "id": "feederPortion",
+    "version": 1
+}

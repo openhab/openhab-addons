@@ -1,0 +1,104 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{feederOperatingState.value}}",
+                "alternatives": [
+                    {
+                        "key": "feeding",
+                        "value": "{{i18n.attributes.feederOperatingState.i18n.value.feeding.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "idle",
+                        "value": "{{i18n.attributes.feederOperatingState.i18n.value.idle.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": [
+            {
+                "displayType": "pushButton",
+                "pushButton": {
+                    "command": "startFeeding"
+                }
+            }
+        ]
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "alternatives": [
+                        {
+                            "key": "startFeeding",
+                            "value": "{{i18n.commands.startFeeding.label}}",
+                            "type": "active"
+                        }
+                    ]
+                },
+                "state": {
+                    "value": "feederOperatingState.value",
+                    "valueType": "string",
+                    "alternatives": [
+                        {
+                            "key": "feeding",
+                            "value": "{{i18n.attributes.feederOperatingState.i18n.value.feeding.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "idle",
+                            "value": "{{i18n.attributes.feederOperatingState.i18n.value.idle.label}}",
+                            "type": "inactive"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "feeding",
+                            "value": "{{i18n.attributes.feederOperatingState.i18n.value.feeding.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "idle",
+                            "value": "{{i18n.attributes.feederOperatingState.i18n.value.idle.label}}",
+                            "type": "inactive"
+                        }
+                    ],
+                    "value": "feederOperatingState.value",
+                    "valueType": "string",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "startFeeding",
+                            "value": "{{i18n.commands.startFeeding.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "feederOperatingState",
+    "version": 1
+}

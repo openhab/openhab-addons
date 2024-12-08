@@ -1,0 +1,34 @@
+{
+    "id": "moldHealthConcern",
+    "version": 1,
+    "status": "live",
+    "name": "Mold Health Concern",
+    "ephemeral": false,
+    "attributes": {
+        "moldHealthConcern": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "AirQualityHealthConcern",
+                        "type": "string",
+                        "enum": [
+                            "good",
+                            "moderate",
+                            "slightlyUnhealthy",
+                            "unhealthy",
+                            "veryUnhealthy",
+                            "hazardous"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

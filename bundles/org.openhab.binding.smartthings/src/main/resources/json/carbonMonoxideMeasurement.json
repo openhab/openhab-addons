@@ -1,0 +1,35 @@
+{
+    "id": "carbonMonoxideMeasurement",
+    "version": 1,
+    "status": "live",
+    "name": "Carbon Monoxide Measurement",
+    "ephemeral": false,
+    "attributes": {
+        "carbonMonoxideLevel": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "minimum": 0,
+                        "type": "number",
+                        "maximum": 1000000
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "ppm"
+                        ],
+                        "default": "ppm"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value",
+                    "unit"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

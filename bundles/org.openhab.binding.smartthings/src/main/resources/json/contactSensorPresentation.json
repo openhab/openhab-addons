@@ -1,0 +1,70 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{contact.value}}",
+                "alternatives": [
+                    {
+                        "key": "open",
+                        "value": "{{i18n.attributes.contact.i18n.value.open.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "closed",
+                        "value": "{{i18n.attributes.contact.i18n.value.closed.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{contact.value}}",
+                "alternatives": [
+                    {
+                        "key": "open",
+                        "value": "{{i18n.attributes.contact.i18n.value.open.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "closed",
+                        "value": "{{i18n.attributes.contact.i18n.value.closed.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "open",
+                            "value": "{{i18n.attributes.contact.i18n.value.open.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "closed",
+                            "value": "{{i18n.attributes.contact.i18n.value.closed.label}}",
+                            "type": "inactive"
+                        }
+                    ],
+                    "value": "contact.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "contactSensor",
+    "version": 1
+}

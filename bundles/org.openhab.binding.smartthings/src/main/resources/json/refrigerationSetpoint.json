@@ -1,0 +1,54 @@
+{
+    "id": "refrigerationSetpoint",
+    "version": 1,
+    "status": "proposed",
+    "name": "Refrigeration Setpoint",
+    "ephemeral": false,
+    "attributes": {
+        "refrigerationSetpoint": {
+            "schema": {
+                "title": "Temperature",
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "TemperatureValue",
+                        "type": "number",
+                        "minimum": -460,
+                        "maximum": 10000
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "F",
+                            "C"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value",
+                    "unit"
+                ]
+            },
+            "setter": "setRefrigerationSetpoint",
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setRefrigerationSetpoint": {
+            "name": "setRefrigerationSetpoint",
+            "arguments": [
+                {
+                    "name": "setpoint",
+                    "optional": false,
+                    "schema": {
+                        "title": "TemperatureValue",
+                        "type": "number",
+                        "minimum": -460,
+                        "maximum": 10000
+                    }
+                }
+            ]
+        }
+    }
+}

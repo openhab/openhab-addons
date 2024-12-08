@@ -1,0 +1,36 @@
+{
+    "id": "formaldehydeMeasurement",
+    "version": 1,
+    "status": "live",
+    "name": "Formaldehyde Measurement",
+    "ephemeral": false,
+    "attributes": {
+        "formaldehydeLevel": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1000000
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "ppm",
+                            "mg\/m^3"
+                        ],
+                        "default": "ppm"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value",
+                    "unit"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

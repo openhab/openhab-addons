@@ -1,0 +1,29 @@
+{
+    "id": "panicAlarm",
+    "version": 1,
+    "status": "live",
+    "name": "Panic Alarm",
+    "ephemeral": false,
+    "attributes": {
+        "panicAlarm": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "panic",
+                            "clear"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

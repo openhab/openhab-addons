@@ -1,0 +1,62 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{energy.value}} {{energy.unit}}"
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "slider",
+            "slider": {
+                "range": [
+                    0,
+                    999.9
+                ],
+                "unit": "energy.unit",
+                "value": "energy.value",
+                "valueType": "number"
+            }
+        },
+        {
+            "label": "{{i18n.commands.resetEnergyMeter.label}}",
+            "displayType": "pushButton",
+            "pushButton": {
+                "command": "resetEnergyMeter"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "energy.value",
+                    "valueType": "number",
+                    "unit": "energy.unit"
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "resetEnergyMeter",
+                            "value": "{{i18n.commands.resetEnergyMeter.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "energyMeter",
+    "version": 1
+}

@@ -1,0 +1,2030 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{cookerState.value}}",
+                "alternatives": [
+                    {
+                        "key": "ready",
+                        "value": "{{i18n.attributes.cookerState.i18n.value.ready.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "running",
+                        "value": "{{i18n.attributes.cookerState.i18n.value.running.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "scheduled",
+                        "value": "{{i18n.attributes.cookerState.i18n.value.scheduled.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "error",
+                        "value": "{{i18n.attributes.cookerState.i18n.value.error.label}}",
+                        "type": "active"
+                    }
+                ]
+            },
+            {
+                "label": "{{cookerMode.value}}",
+                "alternatives": [
+                    {
+                        "key": "cooking",
+                        "value": "{{i18n.attributes.cookerMode.i18n.value.cooking.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "keepWarm",
+                        "value": "{{i18n.attributes.cookerMode.i18n.value.keepWarm.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "reheating",
+                        "value": "{{i18n.attributes.cookerMode.i18n.value.reheating.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "autoClean",
+                        "value": "{{i18n.attributes.cookerMode.i18n.value.autoClean.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "soakInnerPot",
+                        "value": "{{i18n.attributes.cookerMode.i18n.value.soakInnerPot.label}}",
+                        "type": "active"
+                    }
+                ]
+            },
+            {
+                "label": "{{completionTime.value}}"
+            },
+            {
+                "label": "{{startTime.value}}"
+            },
+            {
+                "label": "{{scheduledTime.value}}"
+            }
+        ],
+        "actions": [
+            {
+                "displayType": "pushButton",
+                "pushButton": {
+                    "command": "stop"
+                }
+            }
+        ]
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.attributes.cookerState.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{cookerState.value}}",
+                "alternatives": [
+                    {
+                        "key": "ready",
+                        "value": "{{i18n.attributes.cookerState.i18n.value.ready.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "running",
+                        "value": "{{i18n.attributes.cookerState.i18n.value.running.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "scheduled",
+                        "value": "{{i18n.attributes.cookerState.i18n.value.scheduled.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "error",
+                        "value": "{{i18n.attributes.cookerState.i18n.value.error.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        },
+        {
+            "label": "{{i18n.attributes.cookerMode.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setMode",
+                    "alternatives": [
+                        {
+                            "key": "keepWarm",
+                            "value": "{{i18n.commands.setMode.arguments.mode.i18n.keepWarm.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "reheating",
+                            "value": "{{i18n.commands.setMode.arguments.mode.i18n.reheating.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "autoClean",
+                            "value": "{{i18n.commands.setMode.arguments.mode.i18n.autoClean.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "soakInnerPot",
+                            "value": "{{i18n.commands.setMode.arguments.mode.i18n.soakInnerPot.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "argumentType": "string",
+                    "supportedValues": "supportedCookerModes.value"
+                },
+                "state": {
+                    "value": "cookerMode.value",
+                    "valueType": "string",
+                    "alternatives": [
+                        {
+                            "key": "cooking",
+                            "value": "{{i18n.attributes.cookerMode.i18n.value.cooking.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "keepWarm",
+                            "value": "{{i18n.attributes.cookerMode.i18n.value.keepWarm.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "reheating",
+                            "value": "{{i18n.attributes.cookerMode.i18n.value.reheating.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "autoClean",
+                            "value": "{{i18n.attributes.cookerMode.i18n.value.autoClean.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "soakInnerPot",
+                            "value": "{{i18n.attributes.cookerMode.i18n.value.soakInnerPot.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "label": "{{i18n.attributes.menu.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "startCooking",
+                    "alternatives": [
+                        {
+                            "key": "stickyPlainRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.stickyPlainRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "wellCookedPlainRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.wellCookedPlainRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "frozenPlainRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.frozenPlainRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrains",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrains.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "brownRice100",
+                            "value": "{{i18n.attributes.menu.i18n.value.brownRice100.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithBeans",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithBeans.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "barleyMixedGrainRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.barleyMixedGrainRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "superGrains",
+                            "value": "{{i18n.attributes.menu.i18n.value.superGrains.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "frozenMixedGrain",
+                            "value": "{{i18n.attributes.menu.i18n.value.frozenMixedGrain.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "cauldronRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.cauldronRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceForGimbap",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceForGimbap.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "plainQuick",
+                            "value": "{{i18n.attributes.menu.i18n.value.plainQuick.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "konjacRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.konjacRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSalad",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSalad.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainsQuick",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainsQuick.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "nutritiousRiceInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.nutritiousRiceInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "steamedDish",
+                            "value": "{{i18n.attributes.menu.i18n.value.steamedDish.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "nutritiousPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.nutritiousPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "scorchedRiceTea",
+                            "value": "{{i18n.attributes.menu.i18n.value.scorchedRiceTea.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "bakedEgg",
+                            "value": "{{i18n.attributes.menu.i18n.value.bakedEgg.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "sousVide",
+                            "value": "{{i18n.attributes.menu.i18n.value.sousVide.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "scorchedRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.scorchedRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "babyFoodStep1",
+                            "value": "{{i18n.attributes.menu.i18n.value.babyFoodStep1.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "babyFoodStep2",
+                            "value": "{{i18n.attributes.menu.i18n.value.babyFoodStep2.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "babyFoodStep3",
+                            "value": "{{i18n.attributes.menu.i18n.value.babyFoodStep3.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithSeasonedVegetablesInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithSeasonedVegetablesInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSlim",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSlim.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForVitality",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForVitality.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "haedeul",
+                            "value": "{{i18n.attributes.menu.i18n.value.haedeul.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "alchanmi",
+                            "value": "{{i18n.attributes.menu.i18n.value.alchanmi.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "odaemi",
+                            "value": "{{i18n.attributes.menu.i18n.value.odaemi.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "oatRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.oatRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chickpeaRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.chickpeaRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "quinoaRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.quinoaRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "lentilBeanRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.lentilBeanRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "steamedSweetPotato",
+                            "value": "{{i18n.attributes.menu.i18n.value.steamedSweetPotato.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "galbijjim",
+                            "value": "{{i18n.attributes.menu.i18n.value.galbijjim.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "samgyetang",
+                            "value": "{{i18n.attributes.menu.i18n.value.samgyetang.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithWebfootOctopusAndSaussureaInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithWebfootOctopusAndSaussureaInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithAbaloneInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithAbaloneInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithTruffledBulgogiInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithTruffledBulgogiInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithSteakInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithSteakInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithRipeKimchiAndAbaloneInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithRipeKimchiAndAbaloneInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithBeefAndBeanSproutsInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithBeefAndBeanSproutsInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithAssortedMushrommsInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithAssortedMushrommsInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithBrackenAndSteakInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithBrackenAndSteakInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithBeefAndAssortedMushroomsInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithBeefAndAssortedMushroomsInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithSpicyWebfootOctopusInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithSpicyWebfootOctopusInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "kamutRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.kamutRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithLentilBean",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithLentilBean.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithChickpea(1Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithChickpea(1Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithQuinoa",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithQuinoa.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithMillet",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithMillet.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithChickpea(2Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithChickpea(2Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithBarley",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithBarley.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithBrownRice(1Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithBrownRice(1Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithOatRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithOatRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithBrownRice(2Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithBrownRice(2Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithKamut",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithKamut.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithBrownRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithBrownRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithQuinoa(1Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithQuinoa(1Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithChickpea",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithChickpea.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithQuinoa(2Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithQuinoa(2Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithAdlay",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithAdlay.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithLentilBean(1Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithLentilBean(1Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "plainPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.plainPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithLentilBean(2Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithLentilBean(2Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "abalonePorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.abalonePorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "pineNutPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.pineNutPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "boiledEgg",
+                            "value": "{{i18n.attributes.menu.i18n.value.boiledEgg.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,SweetPumpkin,Cabbage,StickyRicePorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,SweetPumpkin,Cabbage,StickyRicePorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,Zucchini,SweetPotato,StickyRicePorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,Zucchini,SweetPotato,StickyRicePorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,Apple,BroccoliPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,Apple,BroccoliPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,BokChoy,BananaPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,BokChoy,BananaPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,Zucchini,PearPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,Zucchini,PearPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,ShiitakeMushroom,EggPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,ShiitakeMushroom,EggPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,KingTrumpetMushroom,BroccoliPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,KingTrumpetMushroom,BroccoliPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,BeanSprouts,Jujube,StickyRicePorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,BeanSprouts,Jujube,StickyRicePorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "cod-Meat,Vitamin,CarrotPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.cod-Meat,Vitamin,CarrotPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,SweetPotato,Beet,BeetPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,SweetPotato,Beet,BeetPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,PineNut,Chestnut,Spinach,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,PineNut,Chestnut,Spinach,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,Beet,EnokiMushroom,PerillaSeeds,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,Beet,EnokiMushroom,PerillaSeeds,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,Cheese,Beet,Eggplant,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,Cheese,Beet,Eggplant,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "codFlesh,SweetPumpkin,Mung-BeanSprouts,BlackSesame,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.codFlesh,SweetPumpkin,Mung-BeanSprouts,BlackSesame,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,Cabbage,WhiteMushroom,Jujube,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,Cabbage,WhiteMushroom,Jujube,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "broccoliPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.broccoliPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "potatoCarrotPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.potatoCarrotPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "yakbab",
+                            "value": "{{i18n.attributes.menu.i18n.value.yakbab.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "steamedPotato",
+                            "value": "{{i18n.attributes.menu.i18n.value.steamedPotato.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu01",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu01.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu02",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu02.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu03",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu03.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu04",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu04.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu05",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu05.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu06",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu06.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu07",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu07.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu08",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu08.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu09",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu09.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu10",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu10.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu11",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu11.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu12",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu12.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu13",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu13.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu14",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu14.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu15",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu15.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu16",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu16.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu17",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu17.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu18",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu18.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu19",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu19.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu20",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu20.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "argumentType": "string",
+                    "supportedValues": "supportedMenus.value"
+                },
+                "state": {
+                    "value": "menu.value",
+                    "valueType": "string",
+                    "alternatives": [
+                        {
+                            "key": "stickyPlainRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.stickyPlainRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "wellCookedPlainRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.wellCookedPlainRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "frozenPlainRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.frozenPlainRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrains",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrains.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "brownRice100",
+                            "value": "{{i18n.attributes.menu.i18n.value.brownRice100.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithBeans",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithBeans.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "barleyMixedGrainRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.barleyMixedGrainRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "superGrains",
+                            "value": "{{i18n.attributes.menu.i18n.value.superGrains.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "frozenMixedGrain",
+                            "value": "{{i18n.attributes.menu.i18n.value.frozenMixedGrain.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "cauldronRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.cauldronRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceForGimbap",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceForGimbap.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "plainQuick",
+                            "value": "{{i18n.attributes.menu.i18n.value.plainQuick.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "konjacRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.konjacRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSalad",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSalad.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainsQuick",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainsQuick.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "nutritiousRiceInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.nutritiousRiceInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "steamedDish",
+                            "value": "{{i18n.attributes.menu.i18n.value.steamedDish.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "nutritiousPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.nutritiousPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "scorchedRiceTea",
+                            "value": "{{i18n.attributes.menu.i18n.value.scorchedRiceTea.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "bakedEgg",
+                            "value": "{{i18n.attributes.menu.i18n.value.bakedEgg.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "sousVide",
+                            "value": "{{i18n.attributes.menu.i18n.value.sousVide.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "scorchedRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.scorchedRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "babyFoodStep1",
+                            "value": "{{i18n.attributes.menu.i18n.value.babyFoodStep1.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "babyFoodStep2",
+                            "value": "{{i18n.attributes.menu.i18n.value.babyFoodStep2.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "babyFoodStep3",
+                            "value": "{{i18n.attributes.menu.i18n.value.babyFoodStep3.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithSeasonedVegetablesInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithSeasonedVegetablesInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSlim",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSlim.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForVitality",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForVitality.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "haedeul",
+                            "value": "{{i18n.attributes.menu.i18n.value.haedeul.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "alchanmi",
+                            "value": "{{i18n.attributes.menu.i18n.value.alchanmi.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "odaemi",
+                            "value": "{{i18n.attributes.menu.i18n.value.odaemi.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "oatRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.oatRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chickpeaRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.chickpeaRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "quinoaRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.quinoaRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "lentilBeanRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.lentilBeanRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "steamedSweetPotato",
+                            "value": "{{i18n.attributes.menu.i18n.value.steamedSweetPotato.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "galbijjim",
+                            "value": "{{i18n.attributes.menu.i18n.value.galbijjim.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "samgyetang",
+                            "value": "{{i18n.attributes.menu.i18n.value.samgyetang.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithWebfootOctopusAndSaussureaInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithWebfootOctopusAndSaussureaInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithAbaloneInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithAbaloneInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithTruffledBulgogiInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithTruffledBulgogiInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithSteakInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithSteakInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithRipeKimchiAndAbaloneInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithRipeKimchiAndAbaloneInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithBeefAndBeanSproutsInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithBeefAndBeanSproutsInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithAssortedMushrommsInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithAssortedMushrommsInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithBrackenAndSteakInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithBrackenAndSteakInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithBeefAndAssortedMushroomsInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithBeefAndAssortedMushroomsInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithSpicyWebfootOctopusInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithSpicyWebfootOctopusInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "kamutRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.kamutRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithLentilBean",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithLentilBean.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithChickpea(1Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithChickpea(1Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithQuinoa",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithQuinoa.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithMillet",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithMillet.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithChickpea(2Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithChickpea(2Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithBarley",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithBarley.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithBrownRice(1Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithBrownRice(1Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithOatRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithOatRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithBrownRice(2Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithBrownRice(2Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithKamut",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithKamut.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithBrownRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithBrownRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithQuinoa(1Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithQuinoa(1Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithChickpea",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithChickpea.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithQuinoa(2Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithQuinoa(2Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithAdlay",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithAdlay.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithLentilBean(1Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithLentilBean(1Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "plainPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.plainPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithLentilBean(2Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithLentilBean(2Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "abalonePorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.abalonePorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "pineNutPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.pineNutPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "boiledEgg",
+                            "value": "{{i18n.attributes.menu.i18n.value.boiledEgg.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,SweetPumpkin,Cabbage,StickyRicePorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,SweetPumpkin,Cabbage,StickyRicePorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,Zucchini,SweetPotato,StickyRicePorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,Zucchini,SweetPotato,StickyRicePorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,Apple,BroccoliPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,Apple,BroccoliPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,BokChoy,BananaPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,BokChoy,BananaPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,Zucchini,PearPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,Zucchini,PearPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,ShiitakeMushroom,EggPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,ShiitakeMushroom,EggPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,KingTrumpetMushroom,BroccoliPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,KingTrumpetMushroom,BroccoliPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,BeanSprouts,Jujube,StickyRicePorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,BeanSprouts,Jujube,StickyRicePorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "cod-Meat,Vitamin,CarrotPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.cod-Meat,Vitamin,CarrotPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,SweetPotato,Beet,BeetPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,SweetPotato,Beet,BeetPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,PineNut,Chestnut,Spinach,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,PineNut,Chestnut,Spinach,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,Beet,EnokiMushroom,PerillaSeeds,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,Beet,EnokiMushroom,PerillaSeeds,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,Cheese,Beet,Eggplant,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,Cheese,Beet,Eggplant,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "codFlesh,SweetPumpkin,Mung-BeanSprouts,BlackSesame,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.codFlesh,SweetPumpkin,Mung-BeanSprouts,BlackSesame,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,Cabbage,WhiteMushroom,Jujube,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,Cabbage,WhiteMushroom,Jujube,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "broccoliPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.broccoliPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "potatoCarrotPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.potatoCarrotPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "yakbab",
+                            "value": "{{i18n.attributes.menu.i18n.value.yakbab.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "steamedPotato",
+                            "value": "{{i18n.attributes.menu.i18n.value.steamedPotato.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu01",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu01.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu02",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu02.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu03",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu03.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu04",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu04.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu05",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu05.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu06",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu06.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu07",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu07.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu08",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu08.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu09",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu09.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu10",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu10.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu11",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu11.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu12",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu12.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu13",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu13.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu14",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu14.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu15",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu15.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu16",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu16.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu17",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu17.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu18",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu18.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu19",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu19.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu20",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu20.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "label": "{{i18n.attributes.event.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{event.value}}",
+                "alternatives": [
+                    {
+                        "key": "cookingComplete",
+                        "value": "{{i18n.attributes.event.i18n.value.cookingComplete.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "keepWarmComplete",
+                        "value": "{{i18n.attributes.event.i18n.value.keepWarmComplete.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "reheatingComplete",
+                        "value": "{{i18n.attributes.event.i18n.value.reheatingComplete.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "autoCleanComplete",
+                        "value": "{{i18n.attributes.event.i18n.value.autoCleanComplete.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "soakInnerPotComplete",
+                        "value": "{{i18n.attributes.event.i18n.value.soakInnerPotComplete.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "steamEmission",
+                        "value": "{{i18n.attributes.event.i18n.value.steamEmission.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        },
+        {
+            "label": "{{i18n.attributes.startTime.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{startTime.value}}"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.completionTime.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{completionTime.value}}"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.schedulingEnabled.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{schedulingEnabled.value}}"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.scheduledTime.label}}",
+            "displayType": "textField",
+            "textField": {
+                "command": "scheduleCooking",
+                "argumentType": "string",
+                "value": "scheduledTime.value",
+                "valueType": "string",
+                "range": [
+                    0,
+                    24
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.attributes.cookerMode.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "cooking",
+                            "value": "{{i18n.attributes.cookerMode.i18n.value.cooking.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "keepWarm",
+                            "value": "{{i18n.attributes.cookerMode.i18n.value.keepWarm.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "reheating",
+                            "value": "{{i18n.attributes.cookerMode.i18n.value.reheating.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "autoClean",
+                            "value": "{{i18n.attributes.cookerMode.i18n.value.autoClean.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "soakInnerPot",
+                            "value": "{{i18n.attributes.cookerMode.i18n.value.soakInnerPot.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "supportedValues": "supportedCookerModes.value",
+                    "value": "cookerMode.value",
+                    "valueType": "string",
+                    "multiSelectable": false
+                }
+            },
+            {
+                "label": "{{i18n.attributes.event.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "cookingComplete",
+                            "value": "{{i18n.attributes.event.i18n.value.cookingComplete.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "keepWarmComplete",
+                            "value": "{{i18n.attributes.event.i18n.value.keepWarmComplete.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "reheatingComplete",
+                            "value": "{{i18n.attributes.event.i18n.value.reheatingComplete.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "autoCleanComplete",
+                            "value": "{{i18n.attributes.event.i18n.value.autoCleanComplete.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "soakInnerPotComplete",
+                            "value": "{{i18n.attributes.event.i18n.value.soakInnerPotComplete.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "steamEmission",
+                            "value": "{{i18n.attributes.event.i18n.value.steamEmission.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "supportedValues": "supportedEvents.value",
+                    "value": "event.value",
+                    "valueType": "string",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.commands.startCooking.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "stickyPlainRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.stickyPlainRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "wellCookedPlainRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.wellCookedPlainRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "frozenPlainRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.frozenPlainRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrains",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrains.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "brownRice100",
+                            "value": "{{i18n.attributes.menu.i18n.value.brownRice100.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithBeans",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithBeans.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "barleyMixedGrainRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.barleyMixedGrainRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "superGrains",
+                            "value": "{{i18n.attributes.menu.i18n.value.superGrains.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "frozenMixedGrain",
+                            "value": "{{i18n.attributes.menu.i18n.value.frozenMixedGrain.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "cauldronRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.cauldronRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceForGimbap",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceForGimbap.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "plainQuick",
+                            "value": "{{i18n.attributes.menu.i18n.value.plainQuick.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "konjacRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.konjacRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSalad",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSalad.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainsQuick",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainsQuick.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "nutritiousRiceInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.nutritiousRiceInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "steamedDish",
+                            "value": "{{i18n.attributes.menu.i18n.value.steamedDish.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "nutritiousPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.nutritiousPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "scorchedRiceTea",
+                            "value": "{{i18n.attributes.menu.i18n.value.scorchedRiceTea.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "bakedEgg",
+                            "value": "{{i18n.attributes.menu.i18n.value.bakedEgg.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "sousVide",
+                            "value": "{{i18n.attributes.menu.i18n.value.sousVide.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "scorchedRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.scorchedRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "babyFoodStep1",
+                            "value": "{{i18n.attributes.menu.i18n.value.babyFoodStep1.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "babyFoodStep2",
+                            "value": "{{i18n.attributes.menu.i18n.value.babyFoodStep2.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "babyFoodStep3",
+                            "value": "{{i18n.attributes.menu.i18n.value.babyFoodStep3.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithSeasonedVegetablesInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithSeasonedVegetablesInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSlim",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSlim.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForVitality",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForVitality.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "haedeul",
+                            "value": "{{i18n.attributes.menu.i18n.value.haedeul.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "alchanmi",
+                            "value": "{{i18n.attributes.menu.i18n.value.alchanmi.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "odaemi",
+                            "value": "{{i18n.attributes.menu.i18n.value.odaemi.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "oatRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.oatRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chickpeaRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.chickpeaRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "quinoaRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.quinoaRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "lentilBeanRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.lentilBeanRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "steamedSweetPotato",
+                            "value": "{{i18n.attributes.menu.i18n.value.steamedSweetPotato.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "galbijjim",
+                            "value": "{{i18n.attributes.menu.i18n.value.galbijjim.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "samgyetang",
+                            "value": "{{i18n.attributes.menu.i18n.value.samgyetang.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithWebfootOctopusAndSaussureaInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithWebfootOctopusAndSaussureaInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithAbaloneInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithAbaloneInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithTruffledBulgogiInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithTruffledBulgogiInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithSteakInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithSteakInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithRipeKimchiAndAbaloneInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithRipeKimchiAndAbaloneInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithBeefAndBeanSproutsInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithBeefAndBeanSproutsInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithAssortedMushrommsInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithAssortedMushrommsInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithBrackenAndSteakInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithBrackenAndSteakInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithBeefAndAssortedMushroomsInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithBeefAndAssortedMushroomsInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "riceWithSpicyWebfootOctopusInHotPot",
+                            "value": "{{i18n.attributes.menu.i18n.value.riceWithSpicyWebfootOctopusInHotPot.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "kamutRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.kamutRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithLentilBean",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithLentilBean.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithChickpea(1Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithChickpea(1Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithQuinoa",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithQuinoa.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithMillet",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithMillet.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithChickpea(2Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithChickpea(2Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithBarley",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithBarley.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithBrownRice(1Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithBrownRice(1Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithOatRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithOatRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithBrownRice(2Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithBrownRice(2Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithKamut",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithKamut.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithBrownRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithBrownRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithQuinoa(1Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithQuinoa(1Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithChickpea",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithChickpea.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithQuinoa(2Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithQuinoa(2Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithAdlay",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithAdlay.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithLentilBean(1Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithLentilBean(1Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "plainPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.plainPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "mixedGrainForSaladWithLentilBean(2Cup)",
+                            "value": "{{i18n.attributes.menu.i18n.value.mixedGrainForSaladWithLentilBean(2Cup).label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "abalonePorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.abalonePorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "pineNutPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.pineNutPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "boiledEgg",
+                            "value": "{{i18n.attributes.menu.i18n.value.boiledEgg.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,SweetPumpkin,Cabbage,StickyRicePorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,SweetPumpkin,Cabbage,StickyRicePorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,Zucchini,SweetPotato,StickyRicePorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,Zucchini,SweetPotato,StickyRicePorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,Apple,BroccoliPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,Apple,BroccoliPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,BokChoy,BananaPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,BokChoy,BananaPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,Zucchini,PearPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,Zucchini,PearPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,ShiitakeMushroom,EggPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,ShiitakeMushroom,EggPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,KingTrumpetMushroom,BroccoliPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,KingTrumpetMushroom,BroccoliPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,BeanSprouts,Jujube,StickyRicePorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,BeanSprouts,Jujube,StickyRicePorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "cod-Meat,Vitamin,CarrotPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.cod-Meat,Vitamin,CarrotPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,SweetPotato,Beet,BeetPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,SweetPotato,Beet,BeetPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,PineNut,Chestnut,Spinach,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,PineNut,Chestnut,Spinach,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,Beet,EnokiMushroom,PerillaSeeds,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,Beet,EnokiMushroom,PerillaSeeds,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "chicken,Cheese,Beet,Eggplant,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.chicken,Cheese,Beet,Eggplant,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "codFlesh,SweetPumpkin,Mung-BeanSprouts,BlackSesame,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.codFlesh,SweetPumpkin,Mung-BeanSprouts,BlackSesame,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "beef,Cabbage,WhiteMushroom,Jujube,SoftBoiledRice",
+                            "value": "{{i18n.attributes.menu.i18n.value.beef,Cabbage,WhiteMushroom,Jujube,SoftBoiledRice.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "broccoliPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.broccoliPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "potatoCarrotPorridge",
+                            "value": "{{i18n.attributes.menu.i18n.value.potatoCarrotPorridge.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "yakbab",
+                            "value": "{{i18n.attributes.menu.i18n.value.yakbab.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "steamedPotato",
+                            "value": "{{i18n.attributes.menu.i18n.value.steamedPotato.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu01",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu01.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu02",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu02.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu03",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu03.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu04",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu04.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu05",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu05.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu06",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu06.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu07",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu07.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu08",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu08.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu09",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu09.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu10",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu10.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu11",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu11.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu12",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu12.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu13",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu13.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu14",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu14.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu15",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu15.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu16",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu16.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu17",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu17.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu18",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu18.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu19",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu19.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "customMenu20",
+                            "value": "{{i18n.attributes.menu.i18n.value.customMenu20.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "supportedValues": "supportedMenus.value",
+                    "command": "startCooking",
+                    "argumentType": "string"
+                }
+            },
+            {
+                "label": "{{i18n.commands.setMode.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "keepWarm",
+                            "value": "{{i18n.commands.setMode.arguments.mode.i18n.keepWarm.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "reheating",
+                            "value": "{{i18n.commands.setMode.arguments.mode.i18n.reheating.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "autoClean",
+                            "value": "{{i18n.commands.setMode.arguments.mode.i18n.autoClean.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "soakInnerPot",
+                            "value": "{{i18n.commands.setMode.arguments.mode.i18n.soakInnerPot.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "supportedValues": "supportedCookerModes.value",
+                    "command": "setMode",
+                    "argumentType": "string"
+                }
+            }
+        ]
+    },
+    "id": "riceCooker",
+    "version": 1
+}

@@ -1,0 +1,157 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{washerMode.value}}",
+                "alternatives": [
+                    {
+                        "key": "regular",
+                        "value": "{{i18n.attributes.washerMode.i18n.value.regular.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "heavy",
+                        "value": "{{i18n.attributes.washerMode.i18n.value.heavy.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "rinse",
+                        "value": "{{i18n.attributes.washerMode.i18n.value.rinse.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "spinDry",
+                        "value": "Spin Dry",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setWasherMode",
+                    "alternatives": [
+                        {
+                            "key": "regular",
+                            "value": "{{i18n.commands.setWasherMode.arguments.mode.i18n.regular.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "heavy",
+                            "value": "{{i18n.commands.setWasherMode.arguments.mode.i18n.heavy.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "rinse",
+                            "value": "{{i18n.commands.setWasherMode.arguments.mode.i18n.rinse.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "spinDry",
+                            "value": "Spin Dry",
+                            "type": "active"
+                        }
+                    ]
+                },
+                "state": {
+                    "value": "washerMode.value",
+                    "alternatives": [
+                        {
+                            "key": "regular",
+                            "value": "{{i18n.attributes.washerMode.i18n.value.regular.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "heavy",
+                            "value": "{{i18n.attributes.washerMode.i18n.value.heavy.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "rinse",
+                            "value": "{{i18n.attributes.washerMode.i18n.value.rinse.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "spinDry",
+                            "value": "Spin Dry",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "regular",
+                            "value": "{{i18n.attributes.washerMode.i18n.value.regular.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "heavy",
+                            "value": "{{i18n.attributes.washerMode.i18n.value.heavy.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "rinse",
+                            "value": "{{i18n.attributes.washerMode.i18n.value.rinse.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "spinDry",
+                            "value": "Spin Dry",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "washerMode.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "regular",
+                            "value": "{{i18n.commands.setWasherMode.arguments.mode.i18n.regular.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "heavy",
+                            "value": "{{i18n.commands.setWasherMode.arguments.mode.i18n.heavy.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "rinse",
+                            "value": "{{i18n.commands.setWasherMode.arguments.mode.i18n.rinse.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "spinDry",
+                            "value": "Spin Dry",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setWasherMode"
+                }
+            }
+        ]
+    },
+    "id": "washerMode",
+    "version": 1
+}
