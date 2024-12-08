@@ -29,7 +29,7 @@ public class VehicleData {
     @SerializedName("user_id")
     public int userId;
     @SerializedName("vehicle_id")
-    public int vehicleId;
+    public String vehicleId;
     @SerializedName("vin")
     public String vin;
     @SerializedName("display_name")
