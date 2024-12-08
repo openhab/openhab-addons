@@ -194,33 +194,21 @@ public class GoveeHandler extends BaseThingHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_COLOR:
                     if (command instanceof HSBType hsb) {
-                        communicationTasks.add(() -> {
-                            sendColor(hsb);
-                            return true;
-                        });
+                        communicationTasks.add(() -> sendColor(hsb));
                         command = hsb.getBrightness(); // fall through
                     }
                     if (command instanceof PercentType percent) {
-                        communicationTasks.add(() -> {
-                            sendBrightness(percent);
-                            return true;
-                        });
+                        communicationTasks.add(() -> sendBrightness(percent));
                         command = OnOffType.from(percent.intValue() > 0); // fall through
                     }
                     if (command instanceof OnOffType onOff) {
-                        communicationTasks.add(() -> {
-                            sendOnOff(onOff);
-                            return true;
-                        });
+                        communicationTasks.add(() -> sendOnOff(onOff));
                     }
                     break;
 
                 case CHANNEL_COLOR_TEMPERATURE:
                     if (command instanceof PercentType percent) {
-                        communicationTasks.add(() -> {
-                            sendKelvin(percentToKelvin(percent));
-                            return true;
-                        });
+                        communicationTasks.add(() -> sendKelvin(percentToKelvin(percent)));
                     }
                     break;
 
@@ -231,24 +219,15 @@ public class GoveeHandler extends BaseThingHandler {
                             logger.warn("handleCommand() invalid QuantityType:{}", genericQuantity);
                             break;
                         }
-                        communicationTasks.add(() -> {
-                            sendKelvin(kelvin.intValue());
-                            return true;
-                        });
+                        communicationTasks.add(() -> sendKelvin(kelvin.intValue()));
                     } else if (command instanceof DecimalType kelvin) {
-                        communicationTasks.add(() -> {
-                            sendKelvin(kelvin.intValue());
-                            return true;
-                        });
+                        communicationTasks.add(() -> sendKelvin(kelvin.intValue()));
                     }
                     break;
             }
 
             if (mustRefresh || !communicationTasks.isEmpty()) {
-                communicationTasks.add(() -> {
-                    triggerDeviceStatusRefresh();
-                    return true;
-                });
+                communicationTasks.add(() -> triggerDeviceStatusRefresh());
             }
 
             if (!communicationTasks.isEmpty()) {
@@ -296,52 +275,57 @@ public class GoveeHandler extends BaseThingHandler {
     /**
      * Initiate a refresh to our thing device
      */
-    private void triggerDeviceStatusRefresh() throws IOException {
+    private boolean triggerDeviceStatusRefresh() throws IOException {
         logger.debug("triggerDeviceStatusRefresh() to {}", thing.getUID());
         GenericGoveeData data = new EmptyValueQueryStatusData();
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("devStatus", data));
         communicationManager.sendRequest(this, request);
+        return true;
     }
 
     /**
      * Send the normalized RGB color parameters.
      */
-    public void sendColor(HSBType color) throws IOException {
+    public boolean sendColor(HSBType color) throws IOException {
         logger.debug("sendColor({}) to {}", color, thing.getUID());
         int[] normalRGB = ColorUtil.hsbToRgb(new HSBType(color.getHue(), color.getSaturation(), PercentType.HUNDRED));
         GenericGoveeData data = new ColorData(new Color(normalRGB[0], normalRGB[1], normalRGB[2]), 0);
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("colorwc", data));
         communicationManager.sendRequest(this, request);
+        return true;
     }
 
     /**
      * Send the brightness parameter.
      */
-    public void sendBrightness(PercentType brightness) throws IOException {
+    public boolean sendBrightness(PercentType brightness) throws IOException {
         logger.debug("sendBrightness({}) to {}", brightness, thing.getUID());
         GenericGoveeData data = new ValueIntData(brightness.intValue());
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("brightness", data));
         communicationManager.sendRequest(this, request);
+        return true;
     }
 
     /**
      * Send the on-off parameter.
      */
-    private void sendOnOff(OnOffType onOff) throws IOException {
+    private boolean sendOnOff(OnOffType onOff) throws IOException {
         logger.debug("sendOnOff({}) to {}", onOff, thing.getUID());
         GenericGoveeData data = new ValueIntData(onOff == OnOffType.ON ? 1 : 0);
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("turn", data));
         communicationManager.sendRequest(this, request);
+        return true;
     }
 
     /**
      * Set the color temperature (Kelvin) parameter.
      */
-    private void sendKelvin(int kelvin) throws IOException {
+    private boolean sendKelvin(int kelvin) throws IOException {
         logger.debug("sendKelvin({}) to {}", kelvin, thing.getUID());
         GenericGoveeData data = new ColorData(new Color(0, 0, 0), kelvin);
         GenericGoveeRequest request = new GenericGoveeRequest(new GenericGoveeMsg("colorwc", data));
         communicationManager.sendRequest(this, request);
+        return true;
     }
 
     /**

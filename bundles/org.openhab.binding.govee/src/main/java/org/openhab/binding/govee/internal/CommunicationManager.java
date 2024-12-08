@@ -28,7 +28,6 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -217,13 +216,14 @@ public class CommunicationManager {
         public void run() {
             while (!stopped) {
                 try {
-                    socket = new DatagramSocket(RESPONSE_PORT);
+                    DatagramSocket loopSocket = new DatagramSocket(RESPONSE_PORT);
+                    this.socket = loopSocket;
                     byte[] buffer = new byte[10240];
-                    Objects.requireNonNull(socket).setReuseAddress(true);
+                    loopSocket.setReuseAddress(true);
                     while (!stopped) {
                         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                        if (!Objects.requireNonNull(socket).isClosed()) {
-                            Objects.requireNonNull(socket).receive(packet);
+                        if (!loopSocket.isClosed()) {
+                            loopSocket.receive(packet);
                         } else {
                             logger.warn("Socket was unexpectedly closed");
                             break;
