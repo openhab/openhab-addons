@@ -10,9 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tesla.internal.protocol.sso;
+package org.openhab.binding.tesla.internal.protocol.dto.sso;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link AuthorizationCodeExchangeRequest} is a datastructure to exchange
@@ -22,14 +24,18 @@ import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
  */
 @SuppressWarnings("unused") // Unused fields must not be removed since they are used for serialization to JSON
 public class AuthorizationCodeExchangeRequest {
-    private String grant_type = "authorization_code";
-    private String client_id = CLIENT_ID;
+    @SerializedName("grant_type")
+    private String grantType = "authorization_code";
+    @SerializedName("client_id")
+    private String clientId = CLIENT_ID;
     private String code;
-    private String code_verifier;
-    private String redirect_uri = URI_CALLBACK;
+    @SerializedName("code_verifier")
+    private String codeVerifier;
+    @SerializedName("redirect_uri")
+    private String redirectUri = URI_CALLBACK;
 
     public AuthorizationCodeExchangeRequest(String code, String codeVerifier) {
         this.code = code;
-        this.code_verifier = codeVerifier;
+        this.codeVerifier = codeVerifier;
     }
 }
