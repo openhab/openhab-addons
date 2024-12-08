@@ -117,8 +117,8 @@ public class SatelSystemHandler extends SatelStateThingHandler {
                     dateTime = dateTimeCommand;
                 }
                 if (dateTime != null) {
-                    return Optional.of(new SetClockCommand(dateTime.getZonedDateTime()
-                            .withZoneSameInstant(bridgeHandler.getZoneId()).toLocalDateTime(),
+                    return Optional.of(new SetClockCommand(
+                            dateTime.getInstant().atZone(bridgeHandler.getZoneId()).toLocalDateTime(),
                             bridgeHandler.getUserCode()));
                 }
                 break;
