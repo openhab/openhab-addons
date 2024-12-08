@@ -55,11 +55,11 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     private Thread workerThread;
     private SortedMap<Device, TelldusCoreSendEvent> messageQue;
 
-    public TelldusCoreDeviceController(long resendInterval) {
+    public TelldusCoreDeviceController(long resendInterval, final String threadName) {
         this.resendInterval = resendInterval;
         messageQue = Collections.synchronizedSortedMap(new TreeMap<>());
         telldusCoreWorker = new TelldusCoreWorker(messageQue);
-        workerThread = new Thread(telldusCoreWorker);
+        workerThread = new Thread(telldusCoreWorker, threadName);
     }
 
     @Override

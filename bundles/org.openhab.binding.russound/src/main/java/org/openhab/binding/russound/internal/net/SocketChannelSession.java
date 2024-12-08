@@ -24,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.openhab.binding.russound.internal.RussoundBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,8 +128,10 @@ public class SocketChannelSession implements SocketSession {
 
         responses.clear();
 
-        dispatchingThread = new Thread(new Dispatcher());
-        responseThread = new Thread(new ResponseReader());
+        dispatchingThread = new Thread(new Dispatcher(),
+                "OH-binding-" + RussoundBindingConstants.BINDING_ID + "-dispatcher");
+        responseThread = new Thread(new ResponseReader(),
+                "OH-binding-" + RussoundBindingConstants.BINDING_ID + "-responseReader");
 
         dispatchingThread.start();
         responseThread.start();
