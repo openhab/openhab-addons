@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tesla.internal.protocol.sso;
+package org.openhab.binding.tesla.internal.protocol.dto.sso;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link TokenResponse} is a datastructure to capture
@@ -19,12 +21,16 @@ package org.openhab.binding.tesla.internal.protocol.sso;
  * @author Nicolai Grødum - Initial contribution
  */
 public class TokenResponse {
-
-    public String access_token;
-    public String token_type;
-    public Long expires_in;
-    public Long created_at;
-    public String refresh_token;
+    @SerializedName("access_token")
+    public String accessToken;
+    @SerializedName("token_type")
+    public String tokenType;
+    @SerializedName("expires_in")
+    public Long expiresIn;
+    @SerializedName("created_at")
+    public Long createdAt;
+    @SerializedName("refresh_token")
+    public String refreshToken;
 
     public TokenResponse() {
     }
