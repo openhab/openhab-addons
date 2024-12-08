@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import org.openhab.binding.yeelight.internal.YeelightBindingConstants;
 import org.openhab.binding.yeelight.internal.lib.device.ConnectState;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceMethod;
@@ -120,7 +121,7 @@ public class WifiConnection implements ConnectionBase {
                 mDevice.setConnectionState(ConnectState.DISCONNECTED);
                 mSocket = null;
             }
-        });
+        }, "OH-binding-" + YeelightBindingConstants.BINDING_ID + "-WifiConnection");
         mConnectThread.start();
         return false;
     }

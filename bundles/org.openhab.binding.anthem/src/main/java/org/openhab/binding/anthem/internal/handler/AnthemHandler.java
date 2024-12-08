@@ -242,12 +242,12 @@ public class AnthemHandler extends BaseThingHandler {
             scheduleConnectRetry(reconnectIntervalMinutes);
             return;
         }
-        Thread localReaderThread = new Thread(this::readerThreadJob, "Anthem reader");
+        Thread localReaderThread = new Thread(this::readerThreadJob, "OH-binding-" + getThing().getUID() + "-Reader");
         localReaderThread.setDaemon(true);
         localReaderThread.start();
         this.readerThread = localReaderThread;
 
-        Thread localSenderThread = new Thread(this::senderThreadJob, "Anthem sender");
+        Thread localSenderThread = new Thread(this::senderThreadJob, "OH-binding-" + getThing().getUID() + "-Sender");
         localSenderThread.setDaemon(true);
         localSenderThread.start();
         this.senderThread = localSenderThread;
