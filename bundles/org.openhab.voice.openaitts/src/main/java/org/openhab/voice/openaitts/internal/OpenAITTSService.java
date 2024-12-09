@@ -63,7 +63,7 @@ import com.google.gson.JsonObject;
 public class OpenAITTSService extends AbstractCachedTTSService {
 
     private static final int REQUEST_TIMEOUT_MS = 10_000;
-    private final static Logger logger = LoggerFactory.getLogger(OpenAITTSService.class);
+    private final Logger logger = LoggerFactory.getLogger(OpenAITTSService.class);
     private OpenAITTSConfiguration config = new OpenAITTSConfiguration();
     private HttpClient httpClient;
     private Gson gson = new Gson();
