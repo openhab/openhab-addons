@@ -278,7 +278,7 @@ class BoschHttpClientTest {
         ExecutionException e = assertThrows(ExecutionException.class,
                 () -> httpClient.sendRequest(request, SubscribeResult.class, sr -> false, null));
         assertEquals(
-                "Received invalid content in response, expected type org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult: com.google.gson.stream.MalformedJsonException: Unterminated string at line 1 column 44 path $.@type",
+                "Received invalid content in response, expected type org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult: com.google.gson.stream.MalformedJsonException: Unterminated string at line 1 column 44 path $.@type\nSee https://github.com/google/gson/blob/main/Troubleshooting.md#malformed-json",
                 e.getMessage());
     }
 }
