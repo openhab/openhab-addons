@@ -13,10 +13,7 @@
 		<description>Sensor measuring illuminance in your room</description>
 
 		<channels>
-			<channel id="illuminance" typeId="illuminance">
-				<label>Illuminance</label>
-				<description>Illuminance in Lux </description>
-			</channel>
+			<channel id="illuminance" typeId="illuminance"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>

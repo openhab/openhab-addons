@@ -45,23 +45,10 @@
 				<label>Particulate Matter</label>
 				<description>Category 2.5 particulate matter</description>
 			</channel>
-			<channel id="disable-light" typeId="switch">
-				<label>Disable Status Light</label>
-				<description>Disable status light on device</description>
-			</channel>
-			<channel id="child-lock" typeId="switch">
-				<label>Child Lock</label>
-				<description>Child lock for button on device</description>
-			</channel>
-			<channel id="custom-name" typeId="text">
-				<label>Custom Name</label>
-				<description>Name given from IKEA home smart</description>
-			</channel>
+			<channel id="disable-status-light" typeId="disable-status-light"/>
+			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="custom-name" typeId="custom-name"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">2</property>
-		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>
