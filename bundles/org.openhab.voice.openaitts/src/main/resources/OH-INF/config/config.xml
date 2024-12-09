@@ -14,7 +14,7 @@
 			<description>Configure Text to Speech.</description>
 		</parameter-group>
 		<parameter name="apiKey" type="text" required="true" groupName="authentication">
-			<label>Api key</label>
+			<label>API key</label>
 			<required>true</required>
 			<description>OpenAI Api key.</description>
 		</parameter>
