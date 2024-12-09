@@ -16,7 +16,7 @@
 		<parameter name="apiKey" type="text" required="true" groupName="authentication">
 			<label>API key</label>
 			<required>true</required>
-			<description>OpenAI Api key.</description>
+			<description>OpenAI API key.</description>
 		</parameter>
 		<parameter name="apiUrl" type="text" required="true" groupName="authentication">
 			<label>Api URL</label>
