@@ -134,7 +134,6 @@ public class OpenAITTSService extends AbstractCachedTTSService {
      */
     @Override
     public AudioStream synthesizeForCache(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
-
         JsonObject content = new JsonObject();
         content.addProperty("model", config.model);
         content.addProperty("input", text);
