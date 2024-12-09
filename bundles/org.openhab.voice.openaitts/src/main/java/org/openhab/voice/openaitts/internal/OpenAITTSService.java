@@ -15,13 +15,14 @@ package org.openhab.voice.openaitts.internal;
 import static org.openhab.voice.openaitts.internal.OpenAITTSConstants.TTS_SERVICE_ID;
 import static org.openhab.voice.openaitts.internal.OpenAITTSConstants.TTS_SERVICE_PID;
 
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -54,6 +55,7 @@ import com.google.gson.JsonObject;
 
 /**
  * @author Artur Fedjukevits - Initial contribution
+ *         API documentation: https://platform.openai.com/docs/guides/text-to-speech
  */
 @Component(configurationPid = TTS_SERVICE_PID, property = Constants.SERVICE_PID + "="
         + TTS_SERVICE_PID, service = TTSService.class)
@@ -67,7 +69,8 @@ public class OpenAITTSService extends AbstractCachedTTSService {
     private OpenAITTSConfiguration config = new OpenAITTSConfiguration();
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
-    private Set<Voice> voices = new HashSet<>();
+    private static final Set<Voice> VOICES = Stream.of("nova", "alloy", "echo", "fable", "onyx", "shimmer")
+            .map(OpenAITTSVoice::new).collect(Collectors.toSet());
 
     @Activate
     public OpenAITTSService(@Reference HttpClientFactory httpClientFactory, @Reference TTSCache ttsCache,
@@ -79,7 +82,6 @@ public class OpenAITTSService extends AbstractCachedTTSService {
     @Activate
     protected void activate(Map<String, Object> config) {
         this.config = new Configuration(config).as(OpenAITTSConfiguration.class);
-        this.voices = initVoices();
     }
 
     @Modified
@@ -104,23 +106,7 @@ public class OpenAITTSService extends AbstractCachedTTSService {
 
     @Override
     public Set<Voice> getAvailableVoices() {
-        return voices;
-    }
-
-    /**
-     * I did not find a way to get the available voices from the OpenAI API
-     * 
-     * @return The available voices
-     */
-    private Set<Voice> initVoices() {
-        Set<Voice> result = new HashSet<>();
-        result.add(new OpenAITTSVoice("nova"));
-        result.add(new OpenAITTSVoice("alloy"));
-        result.add(new OpenAITTSVoice("echo"));
-        result.add(new OpenAITTSVoice("fable"));
-        result.add(new OpenAITTSVoice("onyx"));
-        result.add(new OpenAITTSVoice("shimmer"));
-        return result;
+        return VOICES;
     }
 
     /**
