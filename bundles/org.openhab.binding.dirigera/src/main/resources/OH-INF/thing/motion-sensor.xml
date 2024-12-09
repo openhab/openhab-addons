@@ -41,23 +41,8 @@
 				<label>Light Preset</label>
 				<description>Light presets for different times of the day</description>
 			</channel>
-			<channel id="custom-name" typeId="text">
-				<label>Custom Name</label>
-				<description>Name given from IKEA home smart</description>
-			</channel>
-			<channel id="links" typeId="text-veto-advanced">
-				<label>Links</label>
-				<description>Linked controllers and sensors</description>
-			</channel>
-			<channel id="link-candidates" typeId="text-veto-advanced">
-				<label>Link Candidates</label>
-				<description>Candidates which can be linked</description>
-			</channel>
+			<channel id="custom-name" typeId="custom-name"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

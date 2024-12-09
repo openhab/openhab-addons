@@ -8,15 +8,10 @@
 		<item-type>String</item-type>
 		<label>Simple Text</label>
 	</channel-type>
-	<channel-type id="text-veto">
+	<channel-type id="custom-name">
 		<item-type>String</item-type>
-		<label>Simple Text</label>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="text-veto-advanced" advanced="true">
-		<item-type>String</item-type>
-		<label>Simple Text</label>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<label>Custom Name</label>
+		<description>Name given from IKEA home smart</description>
 	</channel-type>
 	<channel-type id="light-preset">
 		<item-type>String</item-type>
@@ -72,6 +67,7 @@
 	<channel-type id="startup">
 		<item-type>Number</item-type>
 		<label>Startup Behavior</label>
+		<description>Startup behavior after power cutoff</description>
 		<state>
 			<options>
 				<option value="0">Previous</option>
@@ -90,6 +86,18 @@
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
+	<channel-type id="disable-status-light">
+		<item-type>Switch</item-type>
+		<label>Disable Status Light</label>
+		<description>Disable status light on device</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="child-lock">
+		<item-type>Switch</item-type>
+		<label>Child Lock</label>
+		<description>Child lock for button on device</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>On Off Switch</label>
@@ -104,17 +112,29 @@
 		<item-type>Switch</item-type>
 		<label>Alarm Switch</label>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="illuminance">
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
+		<description>Illuminance in Lux </description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<category>Contact</category>
+		<tags>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="dimmer">
@@ -248,7 +268,8 @@
 	</channel-type>
 	<channel-type id="blind-state">
 		<item-type>Number</item-type>
-		<label>Blind State Status</label>
+		<label>Blind State</label>
+		<description>State if blind is moving up, down or stopped</description>
 		<state>
 			<options>
 				<option value="0">Stopped</option>
@@ -263,6 +284,16 @@
 				<option value="2">Down</option>
 			</options>
 		</command>
+	</channel-type>
+	<channel-type id="blind-dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Blind Level</label>
+		<description>Current blind level</description>
+		<category>Rollershutter</category>
+		<tags>
+			<tag>OpenLevel</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="ota-status">
 		<item-type>Number</item-type>
@@ -300,5 +331,17 @@
 		<label>OTA Progress</label>
 		<description>Over-the-air update progress</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="links" advanced="true">
+		<item-type>String</item-type>
+		<label>Links</label>
+		<description>Linked controllers and sensors</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="link-candidates" advanced="true">
+		<item-type>String</item-type>
+		<label>Link Candidates</label>
+		<description>Candidates which can be linked</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

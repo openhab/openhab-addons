@@ -927,7 +927,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     }
 
     private void handleUpdate(JSONObject data) {
-        // websocket stats for each update
+        // websocket statistics for each update
         updateState(new ChannelUID(thing.getUID(), CHANNEL_STATISTICS),
                 StringType.valueOf(websocket.getStatistics().toString()));
 
@@ -954,6 +954,15 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             } else {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), UnDefType.UNDEF);
             }
+            if (attributes.has(PROPERTY_OTA_STATUS)) {
+                String otaStatusString = attributes.getString(PROPERTY_OTA_STATUS);
+                Integer otaStatus = OTA_STATUS_MAP.get(otaStatusString);
+                if (otaStatus != null) {
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), new DecimalType(otaStatus));
+                } else {
+                    logger.warn("DIRIGERA HANDLER {} Cannot decode ota status {}", thing.getLabel(), otaStatusString);
+                }
+            }
             if (attributes.has(PROPERTY_OTA_STATE)) {
                 String otaStateString = attributes.getString(PROPERTY_OTA_STATE);
                 if (OTA_STATE_MAP.containsKey(otaStateString)) {
@@ -963,10 +972,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                         // if ota state changes also update properties to keep firmware in thing properties up to date
                         updateProperties();
                     } else {
-                        logger.debug("Cannot decode ota state {}", otaStateString);
+                        logger.debug("DIRIGERA HANDLER {} Cannot decode ota state {}", thing.getLabel(),
+                                otaStateString);
                     }
                 } else {
-                    logger.debug("Cannot decode ota state {}", otaStateString);
+                    logger.debug("DIRIGERA HANDLER {} Cannot decode ota state {}", thing.getLabel(), otaStateString);
                 }
             }
             if (attributes.has(PROPERTY_OTA_PROGRESS)) {

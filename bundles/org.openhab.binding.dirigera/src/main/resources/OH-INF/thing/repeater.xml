@@ -13,10 +13,7 @@
 		<description>Repeater to strengthen signal</description>
 
 		<channels>
-			<channel id="custom-name" typeId="text">
-				<label>Custom Name</label>
-				<description>Name given from IKEA home smart</description>
-			</channel>
+			<channel id="custom-name" typeId="custom-name"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
