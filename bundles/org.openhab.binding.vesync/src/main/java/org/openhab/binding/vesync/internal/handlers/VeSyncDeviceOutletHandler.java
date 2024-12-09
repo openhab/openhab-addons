@@ -12,18 +12,7 @@
  */
 package org.openhab.binding.vesync.internal.handlers;
 
-import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_CHANNEL_CURRENT;
-import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_CHANNEL_ENABLED;
-import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_CHANNEL_ENERGY;
-import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_CHANNEL_ENERGY_MONTH;
-import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_CHANNEL_ENERGY_WEEK;
-import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_CHANNEL_HIGHEST_VOLTAGE;
-import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_CHANNEL_POWER;
-import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_CHANNEL_VOLTAGE;
-import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_CHANNEL_VOLTAGE_PT_STATUS;
-import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_PROP_DEVICE_FAMILY;
-import static org.openhab.binding.vesync.internal.VeSyncConstants.EMPTY_STRING;
-import static org.openhab.binding.vesync.internal.VeSyncConstants.THING_TYPE_OUTLET;
+import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.DEVICE_GET_ENEGERGY_HISTORY;
 import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.DEVICE_GET_OUTLET_STATUS;
 import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.DEVICE_SET_SWITCH;
