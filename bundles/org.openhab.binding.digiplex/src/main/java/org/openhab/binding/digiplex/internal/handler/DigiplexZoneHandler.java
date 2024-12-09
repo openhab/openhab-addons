@@ -15,7 +15,7 @@ package org.openhab.binding.digiplex.internal.handler;
 import static org.openhab.binding.digiplex.internal.DigiplexBindingConstants.*;
 import static org.openhab.binding.digiplex.internal.handler.TypeUtils.openClosedFromBoolean;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -199,7 +199,7 @@ public class DigiplexZoneHandler extends BaseThingHandler {
             if (event.getZoneNo() == DigiplexZoneHandler.this.zoneNo) {
                 status = event.getStatus().toOpenClosedType();
                 extendedStatus = new StringType(event.getStatus().toString());
-                lastTriggered = new DateTimeType(ZonedDateTime.now());
+                lastTriggered = new DateTimeType(Instant.now());
                 updateChannels(false);
                 updateAreaNo(event.getAreaNo());
             }
