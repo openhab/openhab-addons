@@ -639,8 +639,7 @@ public class JdbcBaseDAO {
                 break;
             case "DATETIMEITEM":
                 vo.setValueTypes(getSqlTypes().get(itemType), java.sql.Timestamp.class);
-                java.sql.Timestamp d = new java.sql.Timestamp(
-                        ((DateTimeType) itemState).getZonedDateTime().toInstant().toEpochMilli());
+                java.sql.Timestamp d = new java.sql.Timestamp(((DateTimeType) itemState).getInstant().toEpochMilli());
                 logger.debug("JDBC::storeItemValueProvider: DateTimeItem: '{}'", d);
                 vo.setValue(d);
                 break;
@@ -684,7 +683,7 @@ public class JdbcBaseDAO {
             }
             return unit == null ? DecimalType.valueOf(objectAsString(v)) : QuantityType.valueOf(objectAsString(v));
         } else if (item instanceof DateTimeItem) {
-            return new DateTimeType(objectAsInstant(v).atZone(ZoneId.systemDefault()));
+            return new DateTimeType(objectAsInstant(v));
         } else if (item instanceof ColorItem) {
             return HSBType.valueOf(objectAsString(v));
         } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {

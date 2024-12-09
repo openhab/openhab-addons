@@ -18,7 +18,6 @@ import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -304,9 +303,7 @@ public class RobonectHandler extends BaseThingHandler {
         long adjustedTime = rawInstant.getEpochSecond() - offsetToConfiguredZone.getTotalSeconds();
         Instant adjustedInstant = Instant.ofEpochMilli(adjustedTime * 1000);
 
-        // we provide the time in the format as configured in the openHAB settings
-        ZonedDateTime zdt = adjustedInstant.atZone(timeZoneProvider.getTimeZone());
-        return new DateTimeType(zdt);
+        return new DateTimeType(adjustedInstant);
     }
 
     private void refreshVersionInfo() {
