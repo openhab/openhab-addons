@@ -13,35 +13,14 @@
 		<description>Window or door blind</description>
 
 		<channels>
-			<channel id="blind-state" typeId="blind-state">
-				<label>Blind State</label>
-				<description>State if blind is moving up, down or stopped</description>
-			</channel>
-			<channel id="blind-level" typeId="dimmer">
-				<label>Blind Level</label>
-				<description>Current blind level</description>
-			</channel>
+			<channel id="blind-state" typeId="blind-state"/>
+			<channel id="blind-level" typeId="blind-dimmer"/>
 			<channel id="battery-level" typeId="system.battery-level">
 				<label>Battery Charge Level</label>
 				<description>Battery charge level in percent</description>
 			</channel>
-			<channel id="custom-name" typeId="text">
-				<label>Custom Name</label>
-				<description>Name given from IKEA home smart</description>
-			</channel>
-			<channel id="links" typeId="text-veto-advanced">
-				<label>Links</label>
-				<description>Linked controllers and sensors</description>
-			</channel>
-			<channel id="link-candidates" typeId="text-veto-advanced">
-				<label>Link Candidates</label>
-				<description>Candidates which can be linked</description>
-			</channel>
+			<channel id="custom-name" typeId="custom-name"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">2</property>
-		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

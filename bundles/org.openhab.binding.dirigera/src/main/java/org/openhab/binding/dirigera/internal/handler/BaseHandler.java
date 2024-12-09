@@ -331,20 +331,6 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
         if (update.has(PROPERTY_DEVICE_TYPE) && deviceType.isBlank()) {
             deviceType = update.getString(PROPERTY_DEVICE_TYPE);
         }
-        if (update.has(PROPERTY_REMOTE_LINKS)) {
-            JSONArray remoteLinks = update.getJSONArray(PROPERTY_REMOTE_LINKS);
-            List<String> updateList = new ArrayList<>();
-            remoteLinks.forEach(link -> {
-                updateList.add(link.toString());
-            });
-            Collections.sort(updateList);
-            Collections.sort(hardLinks);
-            if (!hardLinks.equals(updateList)) {
-                hardLinks = updateList;
-                // just update internal link list and let the gateway update do all updates regarding soft links
-                gateway().updateLinks();
-            }
-        }
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             // check OTA for each device
@@ -373,7 +359,7 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                 }
             }
             if (attributes.has(PROPERTY_OTA_PROGRESS)) {
-                createChannelIfNecessary(CHANNEL_OTA_PROGRESS, "pota-ercent", CoreItemFactory.NUMBER);
+                createChannelIfNecessary(CHANNEL_OTA_PROGRESS, "ota-percent", "Number:Dimensionless");
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS),
                         QuantityType.valueOf(attributes.getInt(PROPERTY_OTA_PROGRESS), Units.PERCENT));
             }
@@ -411,11 +397,24 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME), StringType.valueOf(customName));
             }
         }
+        if (update.has(PROPERTY_REMOTE_LINKS)) {
+            JSONArray remoteLinks = update.getJSONArray(PROPERTY_REMOTE_LINKS);
+            List<String> updateList = new ArrayList<>();
+            remoteLinks.forEach(link -> {
+                updateList.add(link.toString());
+            });
+            Collections.sort(updateList);
+            Collections.sort(hardLinks);
+            if (!hardLinks.equals(updateList)) {
+                hardLinks = updateList;
+                // just update internal link list and let the gateway update do all updates regarding soft links
+                gateway().updateLinks();
+            }
+        }
     }
 
-    protected void createChannelIfNecessary(String channelId, String channelTypeUID, String itemType) {
+    protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID, String itemType) {
         if (thing.getChannel(channelId) == null) {
-            logger.info("Create new channel {} {} {}", channelId, channelTypeUID, itemType);
             // https://www.openhab.org/docs/developer/bindings/#updating-the-thing-structure
             ThingBuilder thingBuilder = editThing();
             // channel type UID needs to be defined in channel-types.xml
@@ -612,7 +611,9 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
      * Update cycle of gateway is done
      */
     public void updateLinksDone() {
-        if (linksSupported()) {
+        if (hasLinksOrCandidates()) {
+            createChannelIfNecessary(CHANNEL_LINKS, CHANNEL_LINKS, CoreItemFactory.STRING);
+            createChannelIfNecessary(CHANNEL_LINK_CANDIDATES, CHANNEL_LINK_CANDIDATES, CoreItemFactory.STRING);
             updateLinks();
             // The candidates needs to be evaluated by child class
             // - blindController needs blinds and vice versa
@@ -620,11 +621,6 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
             // - lightController needs light and outlet and vice versa
             // So assure "linkCandidateTypes" are overwritten by child class with correct types
             updateCandidateLinks();
-        } else {
-            if (!hardLinks.isEmpty() || !softLinks.isEmpty()) {
-                logger.trace("DIRIGERA BASE_HANDLER {} Device doesn't support links hard {} soft {}", thing.getLabel(),
-                        hardLinks.size(), softLinks.size());
-            }
         }
     }
 
@@ -677,12 +673,13 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
     }
 
     /**
-     * Check if device is supporting link handling
+     * Check is any outgoing or incoming links or candidates are available
      *
-     * @return true is links are supported, false otherwise
+     * @return true if one of the above conditions is true
      */
-    public boolean linksSupported() {
-        return channel2PropertyMap.containsKey(CHANNEL_LINKS);
+    private boolean hasLinksOrCandidates() {
+        return (!hardLinks.isEmpty() || !softLinks.isEmpty()
+                || !gateway().model().getDevicesForTypes(linkCandidateTypes).isEmpty());
     }
 
     public void addPowerListener(LightListener listener) {

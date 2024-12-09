@@ -171,7 +171,7 @@ public class Constants {
     public static final String CHANNEL_CURRENT = "electric-current";
     public static final String CHANNEL_POTENTIAL = "electric-voltage";
     public static final String CHANNEL_CHILD_LOCK = "child-lock";
-    public static final String CHANNEL_DISABLE_STATUS_LIGHT = "disable-light";
+    public static final String CHANNEL_DISABLE_STATUS_LIGHT = "disable-status-light";
 
     // Speaker channels
     public static final String CHANNEL_PLAYER = "media-control";
@@ -267,72 +267,38 @@ public class Constants {
             put("childLock", CHANNEL_CHILD_LOCK);
             put("currentPM25", CHANNEL_PARTICULATE_MATTER);
             put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
-            put(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS);
-            put(PROPERTY_OTA_STATE, CHANNEL_OTA_STATE);
-            put(PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
         }
     };
     public static final Map<String, String> AIR_QUALITY_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "currentTemperature", CHANNEL_TEMPERATURE, "currentRH", CHANNEL_HUMIDITY, "currentPM25",
-            CHANNEL_PARTICULATE_MATTER, "vocIndex", CHANNEL_VOC_INDEX, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
-            PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+            CHANNEL_PARTICULATE_MATTER, "vocIndex", CHANNEL_VOC_INDEX);
 
     public static final Map<String, String> BLIND_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
-            CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS, PROPERTY_REMOTE_LINKS, CHANNEL_LINKS,
-            "candidates", CHANNEL_LINK_CANDIDATES);
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL);
 
     public static final Map<String, String> BLINDS_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "blindsState", CHANNEL_BLIND_STATE, "batteryPercentage", CHANNEL_BATTERY_LEVEL, "blindsCurrentLevel",
-            CHANNEL_BLIND_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE,
-            PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS, PROPERTY_REMOTE_LINKS, CHANNEL_LINKS, "candidates",
-            CHANNEL_LINK_CANDIDATES);
+            CHANNEL_BLIND_LEVEL);
 
-    public static final Map<String, String> COLOR_LIGHT_MAP = new HashMap<String, String>() {
-        private static final long serialVersionUID = 1L;
-        {
-            put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
-            put(PROPERTY_POWER_STATE, CHANNEL_POWER_STATE);
-            put("lightLevel", CHANNEL_LIGHT_BRIGHTNESS);
-            put("colorHue", CHANNEL_LIGHT_COLOR);
-            put("colorSaturation", CHANNEL_LIGHT_COLOR);
-            put("colorTemperature", CHANNEL_LIGHT_TEMPERATURE);
-            put(PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);
-            put(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS);
-            put(PROPERTY_OTA_STATE, CHANNEL_OTA_STATE);
-            put(PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
-            put(PROPERTY_REMOTE_LINKS, CHANNEL_LINKS);
-            put("candidates", CHANNEL_LINK_CANDIDATES);
-        }
-    };
+    public static final Map<String, String> COLOR_LIGHT_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            PROPERTY_POWER_STATE, CHANNEL_POWER_STATE, "lightLevel", CHANNEL_LIGHT_BRIGHTNESS, "colorHue",
+            CHANNEL_LIGHT_COLOR, "colorSaturation", CHANNEL_LIGHT_COLOR, "colorTemperature", CHANNEL_LIGHT_TEMPERATURE,
+            PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);;
 
     public static final Map<String, String> CONTACT_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isOpen", CHANNEL_CONTACT);
 
     public static final Map<String, String> LIGHT_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
-            CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS, PROPERTY_REMOTE_LINKS, CHANNEL_LINKS,
-            "candidates", CHANNEL_LINK_CANDIDATES, "circadianPresets", CHANNEL_LIGHT_PRESET);
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "circadianPresets", CHANNEL_LIGHT_PRESET);
 
     public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "illuminance", CHANNEL_ILLUMINANCE);
 
-    public static final Map<String, String> MOTION_LIGHT_SENSOR_MAP = new HashMap<String, String>() {
-        private static final long serialVersionUID = 1L;
-        {
-            put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
-            put("batteryPercentage", CHANNEL_BATTERY_LEVEL);
-            put("isDetected", CHANNEL_MOTION_DETECTION);
-            put("illuminance", CHANNEL_ILLUMINANCE);
-            put("sensorConfig", CHANNEL_ACTIVE_DURATION);
-            put(PROPERTY_REMOTE_LINKS, CHANNEL_LINKS);
-            put("candidates", CHANNEL_LINK_CANDIDATES);
-            put("schedule", CHANNEL_SCHEDULE);
-            put("schedule-start", CHANNEL_SCHEDULE_START);
-            put("schedule-end", CHANNEL_SCHEDULE_END);
-            put("circadianPresets", CHANNEL_LIGHT_PRESET);
-        }
-    };
+    public static final Map<String, String> MOTION_LIGHT_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isDetected", CHANNEL_MOTION_DETECTION, "illuminance",
+            CHANNEL_ILLUMINANCE, "sensorConfig", CHANNEL_ACTIVE_DURATION, "schedule", CHANNEL_SCHEDULE,
+            "schedule-start", CHANNEL_SCHEDULE_START, "schedule-end", CHANNEL_SCHEDULE_END, "circadianPresets",
+            CHANNEL_LIGHT_PRESET);
 
     public static final Map<String, String> MOTION_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isDetected", CHANNEL_MOTION_DETECTION, "sensorConfig",
@@ -340,15 +306,12 @@ public class Constants {
             "schedule", CHANNEL_SCHEDULE, "schedule-start", CHANNEL_SCHEDULE_START, "schedule-end",
             CHANNEL_SCHEDULE_END, "circadianPresets", CHANNEL_LIGHT_PRESET);
 
-    public static final Map<String, String> REPEATER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
-            CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> REPEATER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
 
     public static final Map<String, String> SCENE_MAP = Map.of("lastTriggered", CHANNEL_TRIGGER);
 
     public static final Map<String, String> SHORTCUT_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
-            CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL);
 
     public static final Map<String, String> SMART_PLUG_MAP = new HashMap<String, String>() {
         private static final long serialVersionUID = 1L;
@@ -362,58 +325,24 @@ public class Constants {
             put("timeOfLastEnergyReset", CHANNEL_ENERGY_RESET_DATE);
             put("statusLight", CHANNEL_DISABLE_STATUS_LIGHT);
             put("childLock", CHANNEL_CHILD_LOCK);
-            put(PROPERTY_REMOTE_LINKS, CHANNEL_LINKS);
-            put("candidates", CHANNEL_LINK_CANDIDATES);
             put(PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);
             put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
-            put(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS);
-            put(PROPERTY_OTA_STATE, CHANNEL_OTA_STATE);
-            put(PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
         }
     };
 
     public static final Map<String, String> SOUND_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
-            CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS, PROPERTY_REMOTE_LINKS, CHANNEL_LINKS,
-            "candidates", CHANNEL_LINK_CANDIDATES);
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL);
 
-    public static final Map<String, String> SPEAKER_MAP = new HashMap<String, String>() {
-        private static final long serialVersionUID = 1L;
-        {
-            put("playback", CHANNEL_PLAYER);
-            put("volume", CHANNEL_VOLUME);
-            put("isMuted", CHANNEL_MUTE);
-            put("playbackAudio", CHANNEL_TRACK);
-            put("playbackModes", CHANNEL_PLAY_MODES);
-            put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
-            put(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS);
-            put(PROPERTY_OTA_STATE, CHANNEL_OTA_STATE);
-            put(PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
-            put(PROPERTY_REMOTE_LINKS, CHANNEL_LINKS);
-            put("candidates", CHANNEL_LINK_CANDIDATES);
-        }
-    };
+    public static final Map<String, String> SPEAKER_MAP = Map.of("playback", CHANNEL_PLAYER, "volume", CHANNEL_VOLUME,
+            "isMuted", CHANNEL_MUTE, "playbackAudio", CHANNEL_TRACK, "playbackModes", CHANNEL_PLAY_MODES,
+            PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
 
-    public static final Map<String, String> TEMPERATURE_LIGHT_MAP = new HashMap<String, String>() {
-        private static final long serialVersionUID = 1L;
-        {
-            put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
-            put(PROPERTY_POWER_STATE, CHANNEL_POWER_STATE);
-            put("lightLevel", CHANNEL_LIGHT_BRIGHTNESS);
-            put("colorTemperature", CHANNEL_LIGHT_TEMPERATURE);
-            put(PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);
-            put(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS);
-            put(PROPERTY_OTA_STATE, CHANNEL_OTA_STATE);
-            put(PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
-            put(PROPERTY_REMOTE_LINKS, CHANNEL_LINKS);
-            put("candidates", CHANNEL_LINK_CANDIDATES);
-        }
-    };
+    public static final Map<String, String> TEMPERATURE_LIGHT_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            PROPERTY_POWER_STATE, CHANNEL_POWER_STATE, "lightLevel", CHANNEL_LIGHT_BRIGHTNESS, "colorTemperature",
+            CHANNEL_LIGHT_TEMPERATURE, PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);
 
     public static final Map<String, String> WATER_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "waterLeakDetected", CHANNEL_LEAK_DETECTION,
-            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
-            CHANNEL_OTA_PROGRESS);
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "waterLeakDetected", CHANNEL_LEAK_DETECTION);
 
     public static Map<Integer, String> reverseStateMapping(Map<String, Integer> mapping) {
         Map<Integer, String> reverseMap = new HashMap<>();

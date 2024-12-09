@@ -84,7 +84,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             }
             return statusObject;
         } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
-            logger.warn("DIRIGERA Exception calling {}", url);
+            logger.warn("DIRIGERA API Exception calling {}", url);
             statusObject = getErrorJson(500, e.getMessage());
             return statusObject;
         } finally {
@@ -108,7 +108,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             }
             return statusObject;
         } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
-            logger.warn("DIRIGERA API Exception calling  {}", url);
+            logger.warn("DIRIGERA API Exception calling {}", url);
             statusObject = getErrorJson(500, e.getMessage());
             return statusObject;
         } finally {
@@ -211,7 +211,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             }
             return statusObject;
         } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
-            logger.warn("DIRIGERA API Exception calling  {}", url);
+            logger.warn("DIRIGERA API Exception calling {}", url);
             statusObject = getErrorJson(-1, e.getMessage());
             return statusObject;
         } finally {
@@ -226,7 +226,6 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         String payload = String.format(sceneTemplate, uuid, "openHAB Shortcut Proxy", clickPattern, "0", controllerId);
         StringContentProvider stringProvider = new StringContentProvider("application/json", payload,
                 StandardCharsets.UTF_8);
-        logger.info("DIRIGERA API send {} to {}", payload, url);
         Request sceneCreateRequest = httpClient.newRequest(url).method("POST")
                 .header(HttpHeader.CONTENT_TYPE, "application/json").content(stringProvider);
 

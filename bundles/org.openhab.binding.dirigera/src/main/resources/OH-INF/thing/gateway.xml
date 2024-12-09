@@ -9,10 +9,7 @@
 		<description>IKEA Gateway for smart products</description>
 
 		<channels>
-			<channel id="custom-name" typeId="text">
-				<label>Custom Name</label>
-				<description>Name given from IKEA home smart</description>
-			</channel>
+			<channel id="custom-name" typeId="custom-name"/>
 			<channel id="location" typeId="text">
 				<label>Home Location</label>
 				<description>Location in latitude, longitude coordinates</description>
@@ -46,10 +43,6 @@
 				<description>Several statistics about gateway activities</description>
 			</channel>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">2</property>
-		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:gateway"/>
 	</bridge-type>
