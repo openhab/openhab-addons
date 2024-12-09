@@ -60,20 +60,14 @@ import org.slf4j.LoggerFactory;
 public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
 
     public static final String DEV_TYPE_FAMILY_OUTLET = "OUT";
-
     public static final int DEFAULT_OUTLET_POLL_RATE = 60;
-
     public static final String DEV_FAMILY_CORE_WHOG_PLUG = "WHOG";
-
     public static final VeSyncDeviceMetadata COREWHOPGPLUG = new VeSyncDeviceMetadata(DEV_FAMILY_CORE_WHOG_PLUG,
             Arrays.asList("WHOG"), List.of("WHOGPLUG"));
-
     public static final List<VeSyncDeviceMetadata> SUPPORTED_MODEL_FAMILIES = Arrays.asList(COREWHOPGPLUG);
-
-    private final Logger logger = LoggerFactory.getLogger(VeSyncDeviceOutletHandler.class);
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OUTLET);
-
+    
+    private final Logger logger = LoggerFactory.getLogger(VeSyncDeviceOutletHandler.class);
     private final Object pollLock = new Object();
 
     public VeSyncDeviceOutletHandler(Thing thing, @Reference TranslationProvider translationProvider,
