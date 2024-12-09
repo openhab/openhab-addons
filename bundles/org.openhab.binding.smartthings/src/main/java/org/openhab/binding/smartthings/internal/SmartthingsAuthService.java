@@ -20,12 +20,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -33,7 +33,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,14 +59,17 @@ public class SmartthingsAuthService {
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> properties) {
+        bundleContext = componentContext.getBundleContext();
+    }
+
+    protected void initialize() {
         try {
-            bundleContext = componentContext.getBundleContext();
             httpService.registerServlet(SmartthingsBindingConstants.SMARTTHINGS_ALIAS, createServlet(),
                     new Hashtable<>(), httpService.createDefaultHttpContext());
             httpService.registerResources(
                     SmartthingsBindingConstants.SMARTTHINGS_ALIAS + SmartthingsBindingConstants.SMARTTHINGS_IMG_ALIAS,
                     "web", null);
-        } catch (NamespaceException | ServletException | IOException e) {
+        } catch (Exception e) {
             logger.warn("Error during spotify servlet startup", e);
         }
     }
@@ -85,8 +87,14 @@ public class SmartthingsAuthService {
      * @return the newly created servlet
      * @throws IOException thrown when an HTML template could not be read
      */
-    private HttpServlet createServlet() throws IOException {
-        return new SmartthingsAuthServlet(this, readTemplate(TEMPLATE_INDEX));
+    private HttpServlet createServlet() throws Exception {
+        SmartthingsBridgeHandler bridgeHandler = (SmartthingsBridgeHandler) accountHandler;
+        if (bridgeHandler != null) {
+            return new SmartthingsAuthServlet(bridgeHandler, this, readTemplate(TEMPLATE_INDEX));
+        } else {
+
+            throw new Exception("BridgeHandler is null");
+        }
     }
 
     /**
@@ -150,49 +158,6 @@ public class SmartthingsAuthService {
     public @Nullable SmartthingsAccountHandler getSmartthingsAccountHandler() {
         return this.accountHandler;
     }
-
-    /**
-     * @param listener Adds the given handler
-     */
-    /*
-     * public void addSpotifyAccountHandler(SpotifyAccountHandler listener) {
-     * if (!handlers.contains(listener)) {
-     * handlers.add(listener);
-     * }
-     * }
-     */
-
-    /**
-     * @param handler Removes the given handler
-     */
-    /*
-     * public void removeSpotifyAccountHandler(SpotifyAccountHandler handler) {
-     * handlers.remove(handler);
-     * }
-     */
-
-    /**
-     * @return Returns all {@link SpotifyAccountHandler}s.
-     */
-    /*
-     * public List<SpotifyAccountHandler> getSpotifyAccountHandlers() {
-     * return handlers;
-     * }
-     */
-
-    /**
-     * Get the {@link SpotifyAccountHandler} that matches the given thing UID.
-     *
-     * @param thingUID UID of the thing to match the handler with
-     * @return the {@link SpotifyAccountHandler} matching the thing UID or null
-     */
-    /*
-     * private @Nullable SpotifyAccountHandler getSpotifyAuthListener(String thingUID) {
-     * final Optional<SpotifyAccountHandler> maybeListener = handlers.stream().filter(l -> l.equalsThingUID(thingUID))
-     * .findFirst();
-     * return maybeListener.isPresent() ? maybeListener.get() : null;
-     * }
-     */
 
     @Reference
     protected void setHttpService(HttpService httpService) {

@@ -206,14 +206,17 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
         return DoBasicRequest(uri, callback, accessToken, data, method);
     }
 
+    @Override
     public @Nullable String DoBasicRequest(String uri, @Nullable SmartthingsNetworkCallback callback,
             String accessToken, @Nullable String data, HttpMethod method) throws Exception {
 
         try {
             logger.debug("Execute request: {}", uri);
-            Request request = httpClient.newRequest(uri).header("Authorization", "Bearer " + accessToken)
-                    .method(method);
-            if (method == HttpMethod.POST) {
+            Request request = httpClient.newRequest(uri).method(method);
+            if (!accessToken.equals("")) {
+                request = request.header("Authorization", "Bearer " + accessToken);
+            }
+            if (method == HttpMethod.POST || method == HttpMethod.PUT) {
                 request = request.content(new StringContentProvider(data), "application/json");
             }
 

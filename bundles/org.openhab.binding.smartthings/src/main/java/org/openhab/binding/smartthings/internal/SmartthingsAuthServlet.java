@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.UrlEncoded;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +69,12 @@ public class SmartthingsAuthServlet extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsAuthServlet.class);
     private final SmartthingsAuthService smartthingsAuthService;
+    private final SmartthingsBridgeHandler bridgeHandler;
     private final String indexTemplate;
 
-    public SmartthingsAuthServlet(SmartthingsAuthService smartthingsAuthService, String indexTemplate) {
+    public SmartthingsAuthServlet(SmartthingsBridgeHandler bridgeHandler, SmartthingsAuthService smartthingsAuthService,
+            String indexTemplate) {
+        this.bridgeHandler = bridgeHandler;
         this.smartthingsAuthService = smartthingsAuthService;
         this.indexTemplate = indexTemplate;
     }
@@ -88,7 +92,18 @@ public class SmartthingsAuthServlet extends HttpServlet {
         SmartthingsAccountHandler accountHandler = smartthingsAuthService.getSmartthingsAccountHandler();
 
         replaceMap.put(KEY_REDIRECT_URI, servletBaseURLSecure);
-        replaceMap.put(KEY_BRIDGE_URI, accountHandler.formatAuthorizationUrl(servletBaseURLSecure));
+        // replaceMap.put(KEY_BRIDGE_URI, accountHandler.formatAuthorizationUrl(servletBaseURLSecure));
+
+        String locationId = "cb73e411-15b4-40e8-b6cd-f9a34f6ced4b";
+        String uri = "https://account.smartthings.com/login?redirect=https%3A%2F%2Fstrongman-regional.api.smartthings.com%2F%3FappId%3D";
+        uri = uri + bridgeHandler.getAppId();
+        uri = uri + "%26locationId%3D" + locationId;
+        uri = uri + "%26appType%3DENDPOINTAPP";
+        uri = uri + "%26language%3Den";
+        uri = uri + "%26clientOS%3Dweb";
+
+        replaceMap.put(KEY_BRIDGE_URI, uri);
+
         resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
         resp.getWriter().close();
     }

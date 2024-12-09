@@ -28,16 +28,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnector;
 import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse;
 import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.configurationData.Page;
-import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.configurationData.Page.Section;
-import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.configurationData.Page.Section.Setting;
 import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.configurationData.initialize;
 import org.openhab.binding.smartthings.internal.dto.LifeCycle;
 import org.openhab.binding.smartthings.internal.dto.LifeCycle.Data;
 import org.openhab.binding.smartthings.internal.dto.SMEvent;
 import org.openhab.binding.smartthings.internal.dto.SMEvent.device;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -62,14 +62,19 @@ import com.google.gson.JsonObject;
 public class SmartthingsServlet extends HttpServlet {
     private static final String PATH = "/smartthings";
     private final Logger logger = LoggerFactory.getLogger(SmartthingsServlet.class);
+    private @NonNullByDefault({}) SmartthingsBridgeHandler bridgeHandler;
     private @NonNullByDefault({}) HttpService httpService;
     private @NonNullByDefault({}) SmartthingsNetworkConnector networkConnector;
+    private @NonNullByDefault({}) String token;
     private @Nullable EventAdmin eventAdmin;
     private Gson gson = new Gson();
 
-    public SmartthingsServlet(HttpService httpService, SmartthingsNetworkConnector networkConnector) {
+    public SmartthingsServlet(SmartthingsBridgeHandler bridgeHandler, HttpService httpService,
+            SmartthingsNetworkConnector networkConnector, String token) {
+        this.bridgeHandler = bridgeHandler;
         this.httpService = httpService;
         this.networkConnector = networkConnector;
+        this.token = token;
     }
 
     @Activate
@@ -184,6 +189,13 @@ public class SmartthingsServlet extends HttpServlet {
             JsonObject res2 = networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, body,
                     HttpMethod.POST);
 
+            evt = new SMEvent();
+            evt.sourceType = "DEVICE";
+            evt.device = new device("ee87617f-0c84-40a3-be25-e70e53f3fc6a", "main", true, null);
+
+            body = gson.toJson(evt);
+            res2 = networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
+
             logger.info("UPDATE");
         } else if (resultObj.lifecycle.equals("EXECUTE")) {
             logger.info("EXCUTE");
@@ -195,15 +207,13 @@ public class SmartthingsServlet extends HttpServlet {
 
             initialize init = response.configurationData.new initialize();
             response.configurationData.initialize = init;
-            init.name = "OpenhabDev";
-            init.description = "OpenhabDev";
+            init.name = "Openhab";
+            init.description = "Openhab";
             init.firstPageId = "1";
-            init.id = resultObj.configurationData.installedAppId();
+            init.id = "Openhab";
 
-            // init.permissions = new String[1];
-            // init.permissions[0] = "";
-
-            // r:devices
+            init.permissions = new String[1];
+            init.permissions[0] = "r:devices:*";
 
             String responseSt = gson.toJson(response);
             resp.getWriter().print(responseSt);
@@ -217,45 +227,8 @@ public class SmartthingsServlet extends HttpServlet {
             page1.pageId = "1";
             page1.nextPageId = null;
             page1.previousPageId = null;
-            page1.name = "aaa";
+            page1.name = "Openhab";
             page1.complete = true;
-            page1.sections = new Section[2];
-
-            Section section1 = response.configurationData.page.new Section();
-            page1.sections[0] = section1;
-            section1.name = "When this opens closes...";
-            section1.settings = new Setting[1];
-
-            Setting set1 = response.configurationData.page.sections[0].new Setting();
-            section1.settings[0] = set1;
-            set1.id = "contactSensor2";
-            set1.name = "Which contact sensor";
-            set1.description = "Tap to set";
-            set1.type = "TEXT";
-            set1.required = true;
-            set1.multiple = false;
-            set1.defaultValue = "defValue";
-
-            Section section2 = response.configurationData.page.new Section();
-            section2.name = "Turn on off this light";
-            page1.sections[1] = section2;
-            section2.settings = new Setting[1];
-
-            Setting set2 = response.configurationData.page.sections[0].new Setting();
-            section2.settings[0] = set2;
-            set2.id = "lightSwitch";
-            set2.name = "Which switch?";
-            set2.description = "Tap to set";
-            set2.type = "DEVICE";
-            set2.required = true;
-            set2.multiple = false;
-
-            set2.capabilities = new String[1];
-            set2.capabilities[0] = "switch";
-
-            set2.permissions = new String[2];
-            set2.permissions[0] = "r";
-            set2.permissions[1] = "x";
 
             String responseSt = gson.toJson(response);
             resp.getWriter().print(responseSt);
@@ -263,11 +236,23 @@ public class SmartthingsServlet extends HttpServlet {
             String appId = resultObj.confirmationData.appId();
             String confirmUrl = resultObj.confirmationData.confirmationUrl();
 
+            bridgeHandler.setAppId(appId);
+
+            String responseSt = "{";
+
+            responseSt = responseSt + "\"targetUrl\": \"" + confirmUrl + "\"";
+            responseSt = responseSt + "}";
+            resp.getWriter().print(responseSt);
+
             try {
+                Thread.sleep(2000);
                 this.networkConnector.DoBasicRequest(confirmUrl, null, "", "", HttpMethod.GET);
             } catch (Exception ex) {
                 logger.error("error during confirmation {}", confirmUrl);
             }
+
+            SmartthingsApi api = bridgeHandler.getSmartthingsApi();
+            api.CreateAppOAuth(appId);
 
             logger.trace("CONFIRMATION {}", confirmUrl);
         }

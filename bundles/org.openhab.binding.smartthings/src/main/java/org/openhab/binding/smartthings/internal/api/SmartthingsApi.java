@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.smartthings.internal.dto.AppRequest;
 import org.openhab.binding.smartthings.internal.dto.AppResponse;
+import org.openhab.binding.smartthings.internal.dto.OAuthConfigRequest;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -77,7 +78,7 @@ public class SmartthingsApi {
         try {
             String uri = baseUrl + "/apps?signatureType=ST_PADLOCK&requireConfirmation=true";
 
-            String appName = "openhabnew" + new Random().nextInt(100);
+            String appName = "openhabnew" + new Random().nextInt(10000);
             AppRequest appRequest = new AppRequest();
             appRequest.appName = appName;
             appRequest.displayName = appName;
@@ -92,6 +93,27 @@ public class SmartthingsApi {
                     HttpMethod.POST);
 
             return appResponse;
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public void CreateAppOAuth(String appId) {
+        try {
+            String uri = baseUrl + "apps/" + appId + "/oauth";
+
+            OAuthConfigRequest oAuthConfig = new OAuthConfigRequest();
+            oAuthConfig.clientName = "Openhab Integration";
+            oAuthConfig.scope = new String[1];
+            oAuthConfig.scope[0] = "r:devices:*";
+
+            // oAuthConfig.redirectUris = new String[1];
+            // oAuthConfig.redirectUris[0] = "https://redirect.clae.net/openhabdev/";
+
+            String body = gson.toJson(oAuthConfig);
+            JsonObject result = networkConnector.DoRequest(JsonObject.class, uri, null, token, body, HttpMethod.PUT);
+
+            // return appResponse;
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
