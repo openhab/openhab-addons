@@ -9,7 +9,7 @@ To configure the OpenAI TTS, **Settings / Other Services - OpenAI Text-to-Speech
 * **apiKey** - The API key to be used for the requests.
 * **apiUrl** - The server API where to reach the AI TTS service.
 * **model**  - The ID of the model to use for TTS.
-* **voice**  - The voice to use when generating the audio. Previews of the voices are available in the [text to speech guide.](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
+* **voice**  - The voice to use when generating the audio. Previews of the voices are available in the [text to speech guide](https://platform.openai.com/docs/guides/text-to-speech/voice-options).
 
 ### Default Text-to-Speech and Voice Configuration
 
