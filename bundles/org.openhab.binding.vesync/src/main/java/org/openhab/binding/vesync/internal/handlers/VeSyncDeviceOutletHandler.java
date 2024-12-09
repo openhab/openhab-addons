@@ -16,11 +16,9 @@ import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -34,7 +32,6 @@ import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassOutletSta
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -65,7 +62,6 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
             Arrays.asList("WHOG"), List.of("WHOGPLUG"));
     public static final List<VeSyncDeviceMetadata> SUPPORTED_MODEL_FAMILIES = Arrays.asList(COREWHOPGPLUG);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OUTLET);
-    
     private final Logger logger = LoggerFactory.getLogger(VeSyncDeviceOutletHandler.class);
     private final Object pollLock = new Object();
 
