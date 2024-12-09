@@ -1,0 +1,21 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{eta.value}}"
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{eta.value}}"
+            }
+        }
+    ],
+    "id": "estimatedTimeOfArrival",
+    "version": 1
+}

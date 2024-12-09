@@ -1,0 +1,13 @@
+{
+    "detailView": [
+        {
+            "label": "Video Stream",
+            "displayType": "state",
+            "state": {
+                "label": "{{stream.value}}"
+            }
+        }
+    ],
+    "id": "videoStream",
+    "version": 1
+}

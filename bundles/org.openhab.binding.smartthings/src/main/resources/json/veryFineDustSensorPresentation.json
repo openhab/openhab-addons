@@ -1,0 +1,36 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "PM1.0 {{veryFineDustLevel.value}} \u00b5g\/m\u00b3"
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{veryFineDustLevel.value}}",
+                "unit": "veryFineDustLevel.unit"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "veryFineDustLevel.value",
+                    "valueType": "integer",
+                    "unit": "veryFineDustLevel.unit"
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "veryFineDustSensor",
+    "version": 1
+}

@@ -1,0 +1,32 @@
+{
+    "id": "pestControl",
+    "version": 1,
+    "status": "proposed",
+    "name": "Pest Control",
+    "ephemeral": false,
+    "attributes": {
+        "pestControl": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "idle",
+                            "trapArmed",
+                            "trapRearmRequired",
+                            "pestDetected",
+                            "pestExterminated"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

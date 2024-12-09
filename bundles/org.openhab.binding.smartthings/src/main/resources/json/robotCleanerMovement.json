@@ -1,0 +1,63 @@
+{
+    "id": "robotCleanerMovement",
+    "version": 1,
+    "status": "proposed",
+    "name": "Robot Cleaner Movement",
+    "ephemeral": false,
+    "attributes": {
+        "robotCleanerMovement": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "homing",
+                            "idle",
+                            "charging",
+                            "alarm",
+                            "powerOff",
+                            "reserve",
+                            "point",
+                            "after",
+                            "cleaning",
+                            "pause"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "setter": "setRobotCleanerMovement",
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setRobotCleanerMovement": {
+            "name": "setRobotCleanerMovement",
+            "arguments": [
+                {
+                    "name": "mode",
+                    "optional": false,
+                    "schema": {
+                        "type": "string",
+                        "enum": [
+                            "homing",
+                            "idle",
+                            "charging",
+                            "alarm",
+                            "powerOff",
+                            "reserve",
+                            "point",
+                            "after",
+                            "cleaning",
+                            "pause"
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

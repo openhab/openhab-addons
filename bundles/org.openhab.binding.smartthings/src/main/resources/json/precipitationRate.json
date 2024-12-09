@@ -1,0 +1,35 @@
+{
+    "id": "precipitationRate",
+    "version": 1,
+    "status": "proposed",
+    "name": "Precipitation Rate",
+    "ephemeral": false,
+    "attributes": {
+        "precipitationRate": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "PositiveNumber",
+                        "type": "number",
+                        "minimum": 0
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "mm\/h",
+                            "in\/h"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value",
+                    "unit"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

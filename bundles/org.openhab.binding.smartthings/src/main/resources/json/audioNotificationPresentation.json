@@ -1,0 +1,13 @@
+{
+    "detailView": [
+        {
+            "label": "Audio alert",
+            "displayType": "textField",
+            "textField": {
+                "command": "playTrack"
+            }
+        }
+    ],
+    "id": "audioNotification",
+    "version": 1
+}

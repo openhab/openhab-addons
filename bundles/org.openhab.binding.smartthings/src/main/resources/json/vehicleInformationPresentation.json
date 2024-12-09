@@ -1,0 +1,62 @@
+{
+    "detailView": [
+        {
+            "label": "{{i18n.attributes.vehicleColor.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{vehicleColor.value}}"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.vehicleYear.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{vehicleYear.value}}"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.vehicleImage.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{vehicleImage.value}}"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.vehicleTrim.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{vehicleTrim.value}}"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.vehiclePlate.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{vehiclePlate.value}}"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.vehicleModel.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{vehicleModel.value}}"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.vehicleId.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{vehicleId.value}}"
+            }
+        },
+        {
+            "label": "{{i18n.attributes.vehicleMake.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{vehicleMake.value}}"
+            }
+        }
+    ],
+    "id": "vehicleInformation",
+    "version": 1
+}

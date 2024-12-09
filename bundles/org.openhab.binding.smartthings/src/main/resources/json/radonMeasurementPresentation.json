@@ -1,0 +1,45 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{radonLevel.value}} {{radonLevel.unit}}"
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "slider",
+            "slider": {
+                "range": [
+                    0.2,
+                    99.9
+                ],
+                "unit": "radonLevel.unit",
+                "value": "radonLevel.value",
+                "valueType": "number"
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "value": "radonLevel.value",
+                    "valueType": "number",
+                    "unit": "radonLevel.unit",
+                    "range": [
+                        0.2,
+                        99.9
+                    ]
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "radonMeasurement",
+    "version": 1
+}

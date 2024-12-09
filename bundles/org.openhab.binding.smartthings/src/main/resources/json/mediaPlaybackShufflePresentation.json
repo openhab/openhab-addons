@@ -1,0 +1,107 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{playbackShuffle.value}}",
+                "alternatives": [
+                    {
+                        "key": "enabled",
+                        "value": "{{i18n.attributes.playbackShuffle.i18n.value.enabled.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "disabled",
+                        "value": "{{i18n.attributes.playbackShuffle.i18n.value.disabled.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setPlaybackShuffle",
+                    "alternatives": [
+                        {
+                            "key": "enabled",
+                            "value": "{{i18n.commands.setPlaybackShuffle.arguments.shuffle.i18n.enabled.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "disabled",
+                            "value": "{{i18n.commands.setPlaybackShuffle.arguments.shuffle.i18n.disabled.label}}",
+                            "type": "inactive"
+                        }
+                    ]
+                },
+                "state": {
+                    "value": "playbackShuffle.value",
+                    "alternatives": [
+                        {
+                            "key": "enabled",
+                            "value": "{{i18n.attributes.playbackShuffle.i18n.value.enabled.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "disabled",
+                            "value": "{{i18n.attributes.playbackShuffle.i18n.value.disabled.label}}",
+                            "type": "inactive"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "enabled",
+                            "value": "{{i18n.attributes.playbackShuffle.i18n.value.enabled.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "disabled",
+                            "value": "{{i18n.attributes.playbackShuffle.i18n.value.disabled.label}}",
+                            "type": "inactive"
+                        }
+                    ],
+                    "value": "playbackShuffle.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "enabled",
+                            "value": "{{i18n.commands.setPlaybackShuffle.arguments.shuffle.i18n.enabled.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "disabled",
+                            "value": "{{i18n.commands.setPlaybackShuffle.arguments.shuffle.i18n.disabled.label}}",
+                            "type": "inactive"
+                        }
+                    ],
+                    "command": "setPlaybackShuffle"
+                }
+            }
+        ]
+    },
+    "id": "mediaPlaybackShuffle",
+    "version": 1
+}

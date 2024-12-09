@@ -1,0 +1,107 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{wirelessOperatingMode.value}}",
+                "alternatives": [
+                    {
+                        "key": "alwaysOn",
+                        "value": "{{i18n.attributes.wirelessOperatingMode.i18n.value.alwaysOn.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "whenNeeded",
+                        "value": "{{i18n.attributes.wirelessOperatingMode.i18n.value.whenNeeded.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setWirelessOperatingMode",
+                    "alternatives": [
+                        {
+                            "key": "alwaysOn",
+                            "value": "{{i18n.commands.setWirelessOperatingMode.arguments.wirelessOperatingMode.i18n.alwaysOn.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "whenNeeded",
+                            "value": "{{i18n.commands.setWirelessOperatingMode.arguments.wirelessOperatingMode.i18n.whenNeeded.label}}",
+                            "type": "active"
+                        }
+                    ]
+                },
+                "state": {
+                    "value": "wirelessOperatingMode.value",
+                    "alternatives": [
+                        {
+                            "key": "alwaysOn",
+                            "value": "{{i18n.attributes.wirelessOperatingMode.i18n.value.alwaysOn.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "whenNeeded",
+                            "value": "{{i18n.attributes.wirelessOperatingMode.i18n.value.whenNeeded.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "alwaysOn",
+                            "value": "{{i18n.attributes.wirelessOperatingMode.i18n.value.alwaysOn.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "whenNeeded",
+                            "value": "{{i18n.attributes.wirelessOperatingMode.i18n.value.whenNeeded.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "wirelessOperatingMode.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "alwaysOn",
+                            "value": "{{i18n.commands.setWirelessOperatingMode.arguments.wirelessOperatingMode.i18n.alwaysOn.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "whenNeeded",
+                            "value": "{{i18n.commands.setWirelessOperatingMode.arguments.wirelessOperatingMode.i18n.whenNeeded.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setWirelessOperatingMode"
+                }
+            }
+        ]
+    },
+    "id": "wirelessOperatingMode",
+    "version": 1
+}

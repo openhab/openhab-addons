@@ -1,0 +1,158 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{door.value}}",
+                "alternatives": [
+                    {
+                        "key": "closed",
+                        "value": "{{i18n.attributes.door.i18n.value.closed.label}}",
+                        "type": "inactive"
+                    },
+                    {
+                        "key": "open",
+                        "value": "{{i18n.attributes.door.i18n.value.open.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "unknown",
+                        "value": "{{i18n.attributes.door.i18n.value.unknown.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "opening",
+                        "value": "{{i18n.attributes.door.i18n.value.opening.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "closing",
+                        "value": "{{i18n.attributes.door.i18n.value.closing.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": [
+            {
+                "displayType": "toggleSwitch",
+                "toggleSwitch": {
+                    "command": {
+                        "on": "open",
+                        "off": "close"
+                    },
+                    "state": {
+                        "value": "door.value",
+                        "on": "open",
+                        "off": "closed"
+                    }
+                }
+            }
+        ]
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "toggleSwitch",
+            "toggleSwitch": {
+                "command": {
+                    "on": "open",
+                    "off": "close"
+                },
+                "state": {
+                    "value": "door.value",
+                    "on": "open",
+                    "off": "closed",
+                    "label": "{{door.value}}",
+                    "alternatives": [
+                        {
+                            "key": "closed",
+                            "value": "{{i18n.attributes.door.i18n.value.closed.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "open",
+                            "value": "{{i18n.attributes.door.i18n.value.open.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "unknown",
+                            "value": "{{i18n.attributes.door.i18n.value.unknown.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "opening",
+                            "value": "{{i18n.attributes.door.i18n.value.opening.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "closing",
+                            "value": "{{i18n.attributes.door.i18n.value.closing.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "closing",
+                            "value": "{{i18n.attributes.door.i18n.value.closing.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "opening",
+                            "value": "{{i18n.attributes.door.i18n.value.opening.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "closed",
+                            "value": "{{i18n.attributes.door.i18n.value.closed.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "open",
+                            "value": "{{i18n.attributes.door.i18n.value.open.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "unknown",
+                            "value": "{{i18n.attributes.door.i18n.value.unknown.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "door.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "close",
+                            "value": "{{i18n.commands.close.label}}",
+                            "type": "inactive"
+                        },
+                        {
+                            "key": "open",
+                            "value": "{{i18n.commands.open.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "garageDoorControl",
+    "version": 1
+}

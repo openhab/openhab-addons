@@ -1,0 +1,69 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{camera.value}}",
+                "alternatives": [
+                    {
+                        "key": "on",
+                        "value": "{{i18n.attributes.camera.i18n.value.on.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "off",
+                        "value": "{{i18n.attributes.camera.i18n.value.off.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": [
+            {
+                "displayType": "toggleSwitch",
+                "toggleSwitch": {
+                    "command": {
+                        "on": "on",
+                        "off": "off"
+                    },
+                    "state": {
+                        "value": "camera.value",
+                        "on": "on",
+                        "off": "off"
+                    }
+                }
+            }
+        ]
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "toggleSwitch",
+            "toggleSwitch": {
+                "command": {
+                    "on": "on",
+                    "off": "off"
+                },
+                "state": {
+                    "value": "camera.value",
+                    "on": "on",
+                    "off": "off",
+                    "label": "{{camera.value}}",
+                    "alternatives": [
+                        {
+                            "key": "on",
+                            "value": "{{i18n.attributes.camera.i18n.value.on.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "off",
+                            "value": "{{i18n.attributes.camera.i18n.value.off.label}}",
+                            "type": "inactive"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "id": "videoCamera",
+    "version": 1
+}

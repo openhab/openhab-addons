@@ -1,0 +1,70 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{motion.value}}",
+                "alternatives": [
+                    {
+                        "key": "active",
+                        "value": "{{i18n.attributes.motion.i18n.value.active.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "inactive",
+                        "value": "{{i18n.attributes.motion.i18n.value.inactive.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{motion.value}}",
+                "alternatives": [
+                    {
+                        "key": "active",
+                        "value": "{{i18n.attributes.motion.i18n.value.active.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "inactive",
+                        "value": "{{i18n.attributes.motion.i18n.value.inactive.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "active",
+                            "value": "{{i18n.attributes.motion.i18n.value.active.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "inactive",
+                            "value": "{{i18n.attributes.motion.i18n.value.inactive.label}}",
+                            "type": "inactive"
+                        }
+                    ],
+                    "value": "motion.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "motionSensor",
+    "version": 1
+}

@@ -18,15 +18,17 @@ package org.openhab.binding.smartthings.internal.dto;
  * @author Bob Raker - Initial contribution
  */
 public class SmartthingsDeviceData {
-    public String capability;
+    public String deviceType;
     public String attribute;
+    public String label;
     public String name;
     public String id;
+    public String description;
 
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("capability :").append(capability);
+        sb.append("capability :").append(deviceType);
         sb.append(", attribute :").append(attribute);
         sb.append(", name: ").append(name);
         sb.append(", id: ").append(id);

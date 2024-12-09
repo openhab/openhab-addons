@@ -1,0 +1,75 @@
+{
+    "id": "operatingState",
+    "version": 1,
+    "status": "proposed",
+    "name": "Operating State",
+    "ephemeral": false,
+    "attributes": {
+        "machineState": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "OperatingState",
+                        "type": "string",
+                        "enum": [
+                            "paused",
+                            "running",
+                            "ready"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "setter": "setMachineState",
+            "enumCommands": []
+        },
+        "supportedMachineStates": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "array",
+                        "items": {
+                            "title": "OperatingState",
+                            "type": "string",
+                            "enum": [
+                                "paused",
+                                "running",
+                                "ready"
+                            ]
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "setMachineState": {
+            "name": "setMachineState",
+            "arguments": [
+                {
+                    "name": "state",
+                    "optional": false,
+                    "schema": {
+                        "title": "OperatingState",
+                        "type": "string",
+                        "enum": [
+                            "paused",
+                            "running",
+                            "ready"
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

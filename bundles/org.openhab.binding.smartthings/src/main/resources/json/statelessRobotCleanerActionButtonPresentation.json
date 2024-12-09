@@ -1,0 +1,65 @@
+{
+    "detailView": [
+        {
+            "label": "Stateless Robot Cleaner Action Button",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setButton",
+                    "alternatives": [
+                        {
+                            "key": "start",
+                            "value": "Start",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stop",
+                            "value": "Stop",
+                            "type": "active"
+                        },
+                        {
+                            "key": "quit",
+                            "value": "Quit",
+                            "type": "active"
+                        }
+                    ],
+                    "argumentType": "string",
+                    "supportedValues": "availableRobotCleanerActionButtons.value"
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "Stateless Robot Cleaner Action Button",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "start",
+                            "value": "Start",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stop",
+                            "value": "Stop",
+                            "type": "active"
+                        },
+                        {
+                            "key": "quit",
+                            "value": "Quit",
+                            "type": "active"
+                        }
+                    ],
+                    "supportedValues": "availableRobotCleanerActionButtons.value",
+                    "command": "setButton",
+                    "argumentType": "string"
+                }
+            }
+        ]
+    },
+    "id": "statelessRobotCleanerActionButton",
+    "version": 1
+}

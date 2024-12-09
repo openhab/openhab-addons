@@ -1,0 +1,34 @@
+{
+    "id": "carbonDioxideMeasurement",
+    "version": 1,
+    "status": "live",
+    "name": "Carbon Dioxide Measurement",
+    "ephemeral": false,
+    "attributes": {
+        "carbonDioxide": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1000000
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": [
+                            "ppm"
+                        ],
+                        "default": "ppm"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

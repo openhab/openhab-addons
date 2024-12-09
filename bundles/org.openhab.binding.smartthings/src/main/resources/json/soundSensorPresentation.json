@@ -1,0 +1,70 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{sound.value}}",
+                "alternatives": [
+                    {
+                        "key": "detected",
+                        "value": "{{i18n.attributes.sound.i18n.value.detected.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "not detected",
+                        "value": "{{i18n.attributes.sound.i18n.value.not detected.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "state",
+            "state": {
+                "label": "{{sound.value}}",
+                "alternatives": [
+                    {
+                        "key": "detected",
+                        "value": "{{i18n.attributes.sound.i18n.value.detected.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "not detected",
+                        "value": "{{i18n.attributes.sound.i18n.value.not detected.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "detected",
+                            "value": "{{i18n.attributes.sound.i18n.value.detected.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "not detected",
+                            "value": "{{i18n.attributes.sound.i18n.value.not detected.label}}",
+                            "type": "inactive"
+                        }
+                    ],
+                    "value": "sound.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": []
+    },
+    "id": "soundSensor",
+    "version": 1
+}

@@ -1,0 +1,85 @@
+{
+    "detailView": [
+        {
+            "label": "Media Playback Button",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setButton",
+                    "alternatives": [
+                        {
+                            "key": "pause",
+                            "value": "{{i18n.commands.setButton.arguments.button.i18n.pause.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "play",
+                            "value": "{{i18n.commands.setButton.arguments.button.i18n.play.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stop",
+                            "value": "{{i18n.commands.setButton.arguments.button.i18n.stop.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "fastForward",
+                            "value": "{{i18n.commands.setButton.arguments.button.i18n.fastForward.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "rewind",
+                            "value": "{{i18n.commands.setButton.arguments.button.i18n.rewind.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "argumentType": "string",
+                    "supportedValues": "availableMediaPlaybackButtons.value"
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "Media Playback Button",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "pause",
+                            "value": "{{i18n.commands.setButton.arguments.button.i18n.pause.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "play",
+                            "value": "{{i18n.commands.setButton.arguments.button.i18n.play.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "stop",
+                            "value": "{{i18n.commands.setButton.arguments.button.i18n.stop.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "fastForward",
+                            "value": "{{i18n.commands.setButton.arguments.button.i18n.fastForward.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "rewind",
+                            "value": "{{i18n.commands.setButton.arguments.button.i18n.rewind.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "supportedValues": "availableMediaPlaybackButtons.value",
+                    "command": "setButton",
+                    "argumentType": "string"
+                }
+            }
+        ]
+    },
+    "id": "statelessMediaPlaybackButton",
+    "version": 1
+}

@@ -1,0 +1,29 @@
+{
+    "id": "tamperAlert",
+    "version": 1,
+    "status": "live",
+    "name": "Tamper Alert",
+    "ephemeral": false,
+    "attributes": {
+        "tamper": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "clear",
+                            "detected"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

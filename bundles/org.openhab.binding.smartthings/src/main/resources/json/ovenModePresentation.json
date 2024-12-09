@@ -1,0 +1,157 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{ovenMode.value}}",
+                "alternatives": [
+                    {
+                        "key": "heating",
+                        "value": "{{i18n.attributes.ovenMode.i18n.value.heating.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "grill",
+                        "value": "{{i18n.attributes.ovenMode.i18n.value.grill.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "warming",
+                        "value": "{{i18n.attributes.ovenMode.i18n.value.warming.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "defrosting",
+                        "value": "{{i18n.attributes.ovenMode.i18n.value.defrosting.label}}",
+                        "type": "active"
+                    }
+                ]
+            }
+        ],
+        "actions": []
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "name": "setOvenMode",
+                    "alternatives": [
+                        {
+                            "key": "heating",
+                            "value": "{{i18n.commands.setOvenMode.arguments.mode.i18n.heating.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "grill",
+                            "value": "{{i18n.commands.setOvenMode.arguments.mode.i18n.grill.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "warming",
+                            "value": "{{i18n.commands.setOvenMode.arguments.mode.i18n.warming.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "defrosting",
+                            "value": "{{i18n.commands.setOvenMode.arguments.mode.i18n.defrosting.label}}",
+                            "type": "active"
+                        }
+                    ]
+                },
+                "state": {
+                    "value": "ovenMode.value",
+                    "alternatives": [
+                        {
+                            "key": "heating",
+                            "value": "{{i18n.attributes.ovenMode.i18n.value.heating.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "grill",
+                            "value": "{{i18n.attributes.ovenMode.i18n.value.grill.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "warming",
+                            "value": "{{i18n.attributes.ovenMode.i18n.value.warming.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "defrosting",
+                            "value": "{{i18n.attributes.ovenMode.i18n.value.defrosting.label}}",
+                            "type": "active"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "heating",
+                            "value": "{{i18n.attributes.ovenMode.i18n.value.heating.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "grill",
+                            "value": "{{i18n.attributes.ovenMode.i18n.value.grill.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "warming",
+                            "value": "{{i18n.attributes.ovenMode.i18n.value.warming.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "defrosting",
+                            "value": "{{i18n.attributes.ovenMode.i18n.value.defrosting.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "value": "ovenMode.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "heating",
+                            "value": "{{i18n.commands.setOvenMode.arguments.mode.i18n.heating.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "grill",
+                            "value": "{{i18n.commands.setOvenMode.arguments.mode.i18n.grill.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "warming",
+                            "value": "{{i18n.commands.setOvenMode.arguments.mode.i18n.warming.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "defrosting",
+                            "value": "{{i18n.commands.setOvenMode.arguments.mode.i18n.defrosting.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "command": "setOvenMode"
+                }
+            }
+        ]
+    },
+    "id": "ovenMode",
+    "version": 1
+}

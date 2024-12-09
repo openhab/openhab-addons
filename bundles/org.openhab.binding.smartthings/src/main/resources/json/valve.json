@@ -1,0 +1,47 @@
+{
+    "id": "valve",
+    "version": 1,
+    "status": "live",
+    "name": "Valve",
+    "ephemeral": false,
+    "attributes": {
+        "valve": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "enum": [
+                            "closed",
+                            "open"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": [
+                {
+                    "command": "close",
+                    "value": "closed"
+                },
+                {
+                    "command": "open",
+                    "value": "open"
+                }
+            ]
+        }
+    },
+    "commands": {
+        "close": {
+            "name": "close",
+            "arguments": []
+        },
+        "open": {
+            "name": "open",
+            "arguments": []
+        }
+    }
+}

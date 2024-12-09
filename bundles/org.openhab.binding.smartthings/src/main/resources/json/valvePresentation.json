@@ -1,0 +1,113 @@
+{
+    "dashboard": {
+        "states": [
+            {
+                "label": "{{valve.value}}",
+                "alternatives": [
+                    {
+                        "key": "open",
+                        "value": "{{i18n.attributes.valve.i18n.value.open.label}}",
+                        "type": "active"
+                    },
+                    {
+                        "key": "closed",
+                        "value": "{{i18n.attributes.valve.i18n.value.closed.label}}",
+                        "type": "inactive"
+                    }
+                ]
+            }
+        ],
+        "actions": [
+            {
+                "displayType": "toggleSwitch",
+                "toggleSwitch": {
+                    "command": {
+                        "on": "open",
+                        "off": "close"
+                    },
+                    "state": {
+                        "value": "valve.value",
+                        "on": "open",
+                        "off": "closed"
+                    }
+                }
+            }
+        ]
+    },
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "toggleSwitch",
+            "toggleSwitch": {
+                "command": {
+                    "on": "open",
+                    "off": "close"
+                },
+                "state": {
+                    "value": "valve.value",
+                    "on": "open",
+                    "off": "closed",
+                    "label": "{{valve.value}}",
+                    "alternatives": [
+                        {
+                            "key": "open",
+                            "value": "{{i18n.attributes.valve.i18n.value.open.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "closed",
+                            "value": "{{i18n.attributes.valve.i18n.value.closed.label}}",
+                            "type": "inactive"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "open",
+                            "value": "{{i18n.attributes.valve.i18n.value.open.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "closed",
+                            "value": "{{i18n.attributes.valve.i18n.value.closed.label}}",
+                            "type": "inactive"
+                        }
+                    ],
+                    "value": "valve.value",
+                    "multiSelectable": false
+                }
+            }
+        ],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "open",
+                            "value": "{{i18n.commands.open.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "close",
+                            "value": "{{i18n.commands.close.label}}",
+                            "type": "inactive"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "id": "valve",
+    "version": 1
+}

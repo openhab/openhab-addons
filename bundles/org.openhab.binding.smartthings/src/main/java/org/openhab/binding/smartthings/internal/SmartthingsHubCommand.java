@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.openhab.core.thing.ThingUID;
 
 /**
@@ -39,4 +40,6 @@ public interface SmartthingsHubCommand {
             throws InterruptedException, TimeoutException, ExecutionException;
 
     ThingUID getBridgeUID();
+
+    SmartthingsBridgeHandler getBridgeHandler();
 }

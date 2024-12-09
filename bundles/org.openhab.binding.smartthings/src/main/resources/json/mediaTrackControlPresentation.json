@@ -1,0 +1,51 @@
+{
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "list",
+            "list": {
+                "command": {
+                    "alternatives": [
+                        {
+                            "key": "nextTrack",
+                            "value": "{{i18n.commands.nextTrack.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "previousTrack",
+                            "value": "{{i18n.commands.previousTrack.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "supportedValues": "supportedTrackControlCommands.value"
+                }
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "list",
+                "list": {
+                    "alternatives": [
+                        {
+                            "key": "nextTrack",
+                            "value": "{{i18n.commands.nextTrack.label}}",
+                            "type": "active"
+                        },
+                        {
+                            "key": "previousTrack",
+                            "value": "{{i18n.commands.previousTrack.label}}",
+                            "type": "active"
+                        }
+                    ],
+                    "supportedValues": "supportedTrackControlCommands.value"
+                }
+            }
+        ]
+    },
+    "id": "mediaTrackControl",
+    "version": 1
+}

@@ -1,0 +1,30 @@
+{
+    "id": "waterSensor",
+    "version": 1,
+    "status": "live",
+    "name": "Water Sensor",
+    "ephemeral": false,
+    "attributes": {
+        "water": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "MoistureState",
+                        "type": "string",
+                        "enum": [
+                            "dry",
+                            "wet"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}

@@ -1,0 +1,48 @@
+{
+    "id": "light",
+    "version": 1,
+    "status": "deprecated",
+    "name": "Light",
+    "ephemeral": false,
+    "attributes": {
+        "switch": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "SwitchState",
+                        "type": "string",
+                        "enum": [
+                            "on",
+                            "off"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": [
+                {
+                    "command": "on",
+                    "value": "on"
+                },
+                {
+                    "command": "off",
+                    "value": "off"
+                }
+            ]
+        }
+    },
+    "commands": {
+        "off": {
+            "name": "off",
+            "arguments": []
+        },
+        "on": {
+            "name": "on",
+            "arguments": []
+        }
+    }
+}

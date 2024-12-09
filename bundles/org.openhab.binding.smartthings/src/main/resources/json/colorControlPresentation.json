@@ -1,0 +1,47 @@
+{
+    "detailView": [
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "numberField",
+            "numberField": {
+                "value": "hue.value",
+                "valueType": "number",
+                "command": "setHue",
+                "argumentType": "number",
+                "range": [
+                    0,
+                    255
+                ]
+            }
+        },
+        {
+            "label": "{{i18n.label}}",
+            "displayType": "numberField",
+            "numberField": {
+                "value": "saturation.value",
+                "valueType": "number",
+                "command": "setSaturation",
+                "argumentType": "number",
+                "range": [
+                    0,
+                    255
+                ]
+            }
+        }
+    ],
+    "automation": {
+        "conditions": [],
+        "actions": [
+            {
+                "label": "{{i18n.label}}",
+                "displayType": "numberField",
+                "numberField": {
+                    "command": "setColor",
+                    "argumentType": "object"
+                }
+            }
+        ]
+    },
+    "id": "colorControl",
+    "version": 1
+}

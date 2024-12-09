@@ -27,7 +27,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHubCommand;
+import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDeviceData;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
+import org.openhab.binding.smartthings.internal.type.SmartthingsChannelGroupTypeProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsChannelTypeProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsConfigDescriptionProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsThingTypeProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -41,6 +48,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * Smartthings Discovery service
@@ -65,12 +75,32 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     private @Nullable ScheduledFuture<?> scanningJob;
 
+    private @Nullable SmartthingsApi api;
+
+    private @Nullable SmartthingsTypeRegistry typeRegistry;
+    private @Nullable SmartthingsThingTypeProvider thingTypeProvider;
+    private @Nullable SmartthingsChannelTypeProvider channelTypeProvider;
+    private @Nullable SmartthingsChannelGroupTypeProvider channelGroupTypeProvider;
+    private @Nullable SmartthingsConfigDescriptionProvider configDescriptionProvider;
+
     /*
      * default constructor
      */
     public SmartthingsDiscoveryService() {
         super(SmartthingsBindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SEC);
         gson = new Gson();
+    }
+
+    @Reference
+    protected void setSmartthingsTypeRegistry(SmartthingsTypeRegistry typeRegistry) {
+        this.typeRegistry = typeRegistry;
+    }
+
+    protected void unsetSmartthingsTypeRegistry(SmartthingsTypeRegistry typeRegistry) {
+        // Make sure it is this handleFactory that should be unset
+        if (Objects.equals(this.typeRegistry, typeRegistry)) {
+            this.typeRegistry = null;
+        }
     }
 
     @Reference
@@ -85,12 +115,195 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         }
     }
 
+    @Reference
+    protected void setThingTypeProvider(SmartthingsThingTypeProvider thingTypeProvider) {
+        this.thingTypeProvider = thingTypeProvider;
+    }
+
+    protected void unsetThingTypeProvider(SmartthingsThingTypeProvider thingTypeProvider) {
+        this.thingTypeProvider = null;
+    }
+
+    @Reference
+    protected void setChannelTypeProvider(SmartthingsChannelTypeProvider channelTypeProvider) {
+        this.channelTypeProvider = channelTypeProvider;
+    }
+
+    protected void unsetChannelTypeProvider(SmartthingsChannelTypeProvider channelTypeProvider) {
+        this.channelTypeProvider = null;
+    }
+
+    //
+    @Reference
+    protected void setChannelGroupTypeProvider(SmartthingsChannelGroupTypeProvider channelGroupTypeProvider) {
+        this.channelGroupTypeProvider = channelGroupTypeProvider;
+    }
+
+    protected void unsetChannelGroupTypeProvider(SmartthingsChannelGroupTypeProvider channelGroupTypeProvider) {
+        this.channelGroupTypeProvider = null;
+    }
+
+    @Reference
+    protected void setConfigDescriptionProvider(SmartthingsConfigDescriptionProvider configDescriptionProvider) {
+        this.configDescriptionProvider = configDescriptionProvider;
+    }
+
+    protected void unsetConfigDescriptionProvider(SmartthingsConfigDescriptionProvider configDescriptionProvider) {
+        this.configDescriptionProvider = null;
+    }
+
+    /*
+     * public void setApi(@Nullable SmartthingsApi api) {
+     * this.api = api;
+     * }
+     *
+     * public void unssetApi(SmartthingsApi api) {
+     * this.api = null;
+     * }
+     */
     /**
      * Called from the UI when starting a search.
      */
     @Override
     public void startScan() {
-        sendSmartthingsDiscoveryRequest();
+        // sendSmartthingsDiscoveryRequest();
+
+        SmartthingsBridgeHandler bridge = smartthingsHubCommand.getBridgeHandler();
+        SmartthingsApi api = bridge.getSmartthingsApi();
+
+        JsonArray devices = api.GetAllDevices();
+
+        for (JsonElement dev : devices) {
+            JsonObject devObj = (JsonObject) dev;
+
+            String name = devObj.get("name").getAsString();
+            String id = devObj.get("deviceId").getAsString();
+            String label = devObj.get("label").getAsString();
+            String manufacturerName = devObj.get("manufacturerName").getAsString();
+            String locationId = null;
+            String roomId = null;
+
+            if (devObj.has("locationId")) {
+                locationId = devObj.get("locationId").getAsString();
+            }
+            if (devObj.has("roomId")) {
+                roomId = devObj.get("roomId").getAsString();
+            }
+            logger.debug("Device");
+
+            JsonElement components = devObj.get("components");
+            if (components == null || !components.isJsonArray()) {
+                return;
+            }
+
+            Boolean enabled = false;
+            if (label.equals("Four")) {
+                enabled = true;
+            }
+            if (label.equals("Petrole")) {
+                enabled = true;
+            }
+
+            // if (!enabled) {
+            // continue;
+            // }
+
+            JsonArray componentsArray = (JsonArray) components;
+
+            String deviceType = null;
+
+            for (JsonElement elm : componentsArray) {
+                JsonObject component = (JsonObject) elm;
+                String compId = component.get("id").getAsString();
+                String compLabel = component.get("label").getAsString();
+
+                JsonElement capabilitites = component.get("capabilities");
+                if (capabilitites != null && capabilitites.isJsonArray()) {
+                    JsonArray capabilititesArray = (JsonArray) capabilitites;
+                    for (JsonElement elmCap : capabilititesArray) {
+                        JsonObject elmCapObj = (JsonObject) elmCap;
+                        String capId = elmCapObj.get("id").getAsString();
+                        String capVersion = elmCapObj.get("version").getAsString();
+
+                        logger.info("");
+                    }
+                }
+
+                JsonElement categories = component.get("categories");
+                if (categories != null && categories.isJsonArray()) {
+                    JsonArray categoriesArray = (JsonArray) categories;
+                    for (JsonElement elmCat : categoriesArray) {
+                        JsonObject elmCatObj = (JsonObject) elmCat;
+                        String catId = elmCatObj.get("name").getAsString();
+                        String catType = elmCatObj.get("categoryType").getAsString();
+
+                        if (compId.equals("main")) {
+                            deviceType = catId;
+                        }
+                    }
+                }
+            }
+
+            if (deviceType == null) {
+                logger.info("unknow device, bypass");
+                continue;
+            }
+
+            if (name.equals("white-and-color-ambiance")) {
+                continue;
+            }
+
+            SmartthingsDeviceData deviceData = new SmartthingsDeviceData();
+            deviceData.label = label;
+            deviceData.name = name;
+            deviceData.id = id;
+            deviceData.description = "";
+            deviceData.deviceType = deviceType.toLowerCase();
+
+            this.typeRegistry.Register(deviceData, devObj);
+            createDevice(Objects.requireNonNull(deviceData));
+
+        }
+
+        logger.debug("End Discovery");
+    }
+
+    /**
+     * Create a device with the data from the Smartthings hub
+     *
+     * @param deviceData Device data from the hub
+     */
+    private void createDevice(SmartthingsDeviceData deviceData) {
+        logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceData.deviceType, deviceData.name);
+
+        // Build the UID as a string smartthings:{ThingType}:{BridgeName}:{DeviceName}
+        String name = deviceData.label; // Note: this is necessary for null analysis to work
+        if (name == null) {
+            logger.info(
+                    "Unexpectedly received data for a device with no name. Check the Smartthings hub devices and make sure every device has a name");
+            return;
+        }
+        String deviceNameNoSpaces = name.replaceAll("\\s", "_");
+        String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
+        if (smartthingsHubCommand == null) {
+            logger.info("SmartthingsHubCommand is unexpectedly null, could not create device {}", deviceData);
+            return;
+        }
+        ThingUID bridgeUid = smartthingsHubCommand.getBridgeUID();
+        String bridgeId = bridgeUid.getId();
+        String uidStr = String.format("smartthings:%s:%s:%s", deviceData.deviceType, bridgeId, smartthingsDeviceName);
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("smartthingsName", name);
+        properties.put("deviceId", deviceData.id);
+        properties.put("deviceLabel", deviceData.label);
+        properties.put("deviceName", deviceData.name);
+        properties.put("deviceDescription", deviceData.description);
+
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr)).withProperties(properties)
+                .withRepresentationProperty("deviceId").withBridge(bridgeUid).withLabel(name).build();
+
+        thingDiscovered(discoveryResult);
     }
 
     /**
@@ -169,40 +382,5 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
             SmartthingsDeviceData deviceData = gson.fromJson(device, SmartthingsDeviceData.class);
             createDevice(Objects.requireNonNull(deviceData));
         }
-    }
-
-    /**
-     * Create a device with the data from the Smartthings hub
-     *
-     * @param deviceData Device data from the hub
-     */
-    private void createDevice(SmartthingsDeviceData deviceData) {
-        logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceData.capability, deviceData.name);
-
-        // Build the UID as a string smartthings:{ThingType}:{BridgeName}:{DeviceName}
-        String name = deviceData.name; // Note: this is necessary for null analysis to work
-        if (name == null) {
-            logger.info(
-                    "Unexpectedly received data for a device with no name. Check the Smartthings hub devices and make sure every device has a name");
-            return;
-        }
-        String deviceNameNoSpaces = name.replaceAll("\\s", "_");
-        String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
-        if (smartthingsHubCommand == null) {
-            logger.info("SmartthingsHubCommand is unexpectedly null, could not create device {}", deviceData);
-            return;
-        }
-        ThingUID bridgeUid = smartthingsHubCommand.getBridgeUID();
-        String bridgeId = bridgeUid.getId();
-        String uidStr = String.format("smartthings:%s:%s:%s", deviceData.capability, bridgeId, smartthingsDeviceName);
-
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("smartthingsName", name);
-        properties.put("deviceId", deviceData.id);
-
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr)).withProperties(properties)
-                .withRepresentationProperty("deviceId").withBridge(bridgeUid).withLabel(name).build();
-
-        thingDiscovered(discoveryResult);
     }
 }

@@ -1,0 +1,79 @@
+{
+    "id": "audioNotification",
+    "version": 1,
+    "status": "live",
+    "name": "Audio Notification",
+    "ephemeral": false,
+    "attributes": [],
+    "commands": {
+        "playTrackAndResume": {
+            "name": "playTrackAndResume",
+            "arguments": [
+                {
+                    "name": "uri",
+                    "optional": false,
+                    "schema": {
+                        "title": "URI",
+                        "type": "string",
+                        "format": "uri"
+                    }
+                },
+                {
+                    "name": "level",
+                    "optional": true,
+                    "schema": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                    }
+                }
+            ]
+        },
+        "playTrackAndRestore": {
+            "name": "playTrackAndRestore",
+            "arguments": [
+                {
+                    "name": "uri",
+                    "optional": false,
+                    "schema": {
+                        "title": "URI",
+                        "type": "string",
+                        "format": "uri"
+                    }
+                },
+                {
+                    "name": "level",
+                    "optional": true,
+                    "schema": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                    }
+                }
+            ]
+        },
+        "playTrack": {
+            "name": "playTrack",
+            "arguments": [
+                {
+                    "name": "uri",
+                    "optional": false,
+                    "schema": {
+                        "title": "URI",
+                        "type": "string",
+                        "format": "uri"
+                    }
+                },
+                {
+                    "name": "level",
+                    "optional": true,
+                    "schema": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                    }
+                }
+            ]
+        }
+    }
+}

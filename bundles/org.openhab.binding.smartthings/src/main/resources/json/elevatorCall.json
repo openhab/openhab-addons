@@ -1,0 +1,35 @@
+{
+    "id": "elevatorCall",
+    "version": 1,
+    "status": "live",
+    "name": "Elevator Call",
+    "ephemeral": false,
+    "attributes": {
+        "callStatus": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "enum": [
+                            "called",
+                            "standby",
+                            "unknown"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": {
+        "call": {
+            "name": "call",
+            "arguments": []
+        }
+    }
+}

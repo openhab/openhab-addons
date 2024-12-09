@@ -1,0 +1,42 @@
+{
+    "id": "lockOnly",
+    "version": 1,
+    "status": "deprecated",
+    "name": "Lock Only",
+    "ephemeral": false,
+    "attributes": {
+        "lock": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "LockState",
+                        "type": "string",
+                        "enum": [
+                            "locked",
+                            "unknown",
+                            "unlocked",
+                            "unlocked with timeout"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": [
+                {
+                    "command": "lock",
+                    "value": "locked"
+                }
+            ]
+        }
+    },
+    "commands": {
+        "lock": {
+            "name": "lock",
+            "arguments": []
+        }
+    }
+}

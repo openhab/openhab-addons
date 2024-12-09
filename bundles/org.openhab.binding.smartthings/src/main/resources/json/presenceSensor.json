@@ -1,0 +1,30 @@
+{
+    "id": "presenceSensor",
+    "version": 1,
+    "status": "live",
+    "name": "Presence Sensor",
+    "ephemeral": false,
+    "attributes": {
+        "presence": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "title": "PresenceState",
+                        "type": "string",
+                        "enum": [
+                            "present",
+                            "not present"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "value"
+                ]
+            },
+            "enumCommands": []
+        }
+    },
+    "commands": []
+}
