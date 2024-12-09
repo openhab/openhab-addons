@@ -83,14 +83,54 @@ Let's start pairing
 | `sunrise`       | DateTime  | R          | Date and time of next sunrise                |          |
 | `sunset`        | DateTime  | R          | Date and time of next sunset                 |          |
 | `statistics`    | String    | R          | Several statistics about gateway activities  |          |
+
+Channel `location` can overwrite GPS position with openHAB location, but it's not possible to delete GPS data.
+See [Gateway Limitations](#gateway-limitations) for further infomration.
+
+### Follow Sun
+
+<img align="right" height="100" src="doc/follow-sun.png">
+
+[Motion Sensors](#motion-sensor) can be active all the time or follow a schedule.
+One schedule is follow the sun which needs to be activated in the DIRIGERA GATEWAY.
+
+## Things
+
+With [DIRIGERA Gateway Bridge](#gateway-bridge) in place things can be connected as mentioned in the [supported things section](#supported-things).
+Things contain generic [configuration](), [properties]() and [channels]() according to their capabilities.
+
+### Generic Thing Configuration
+
+Each thing is identified by a unique id which is mandatory to configure.
+Discovery will automatically identify the id.
+
+| Name              | Type    | Description                         | Default | Required |
+|-------------------|---------|-------------------------------------|---------|----------|
+| `id`              | text    | Unique id of this device / scene    | N/A     | yes      |
+
+### Generic Thing Properties
+
+Each thing has properties attached for identification.
+
+<img align="center" width="500" src="doc/thing-properties.png">
+
+### Generic Thing Channels
+
+#### OTA Channels
+
+Over-the-Air (OTA) updates are common for many devices. 
+If device is providing these channels is detected during runtime.
+
+| Channel         | Type      | Read/Write | Description                                  | Advanced |
+|-----------------|-----------|------------|----------------------------------------------|----------|
 | `ota-status`    | Number    | R          | Over-the-air overall status                  |          |
 | `ota-state`     | Number    | R          | Over-the-air current state                   |    X     |
 | `ota-progress`  | Number    | R          | Over-the-air current progress                |    X     |
 
-Channel `location` isn't writeable yet.
-See [Gateway Limitations](#gateway-limitations) for further infomration.
+`ota-status` shows the _overall status_ if your device is _up to date_ or an _update is available_.
+`ota-state` and `ota-progress` shows more detailed information which you may want to follow, that's why they are declared as advanced channels.
 
-### OTA Mappings
+**OTA Mappings**
 
 Mappings for `ota-status`
 
@@ -111,38 +151,66 @@ Mappings for `ota-state`
 - 9 : Update complete
 - 10 : Battery check failed
 
-### Follow Sun
+#### Links and Candidates
 
-<img align="right" height="100" src="doc/follow-sun.png">
+Devices can be connected directly e.g. sensors or controllers with lights, plugs, blinds or speakers.
+It's detected during runtime if a device is capable to support links _and_ if devices are available in your system to support this connection.
+The channels are declered advanced and can be used for setup procedure.
 
-[Motion Sensors](#motion-sensor) can be active all the time or follow a schedule.
-One schedule is follow the sun which needs to be activated in the DIRIGERA GATEWAY.
+| Channel               | Type                  | Read/Write | Description                                      | Advanced |
+|-----------------------|-----------------------|------------|--------------------------------------------------|----------|
+| `links`               | String                | RW         | Linked controllers and sensors                   |    X     |
+| `link-candidates`     | String                | RW         | Candidates which can be linked                   |    X     |
 
-## Things
+<img align="right" width="300" src="doc/link-candidates.png">
 
-The binding is in development phase alpha.
-Goal is to extend testing in the community to cover as many as possible old and new devices.
-Your help is needed to extend and fix the current implementation.
+Several devices can be linked together like
+
+- [Light Controller](#light-controller) and [Motion Sensors](#motion-sensor) to [Plugs](#power-plugs) and [Lights](#lights)
+- [Blind Controller](#blind-controller) to [Blinds](#blinds)
+- [Sound Controller](#sound-controller) to [Speakers](#speaker)
+
+Established links are shown in channel `links`.
+The linked devices can be clicked in the UI and the link will be removed.
+
+Possible candidates to be linked are shown in channel `link-candidates`.
+If a candidate is clicked in the UI the link will be established.
+
+Candidates and links marked with `(!)` are not present in openHAB environment so no handler is created yet.
+In this case it's possible not all links are shown in the UI, but the present ones shall work.
+
+#### Other Channels
+
+| Channel               | Type              | Read/Write | Description                                  | Advanced |
+|-----------------------|-------------------|------------|----------------------------------------------|----------|
+| `startup`             | Number            | RW         | Startup behavior after power cutoff          |          |
+| `custom-name`         | String            | RW         | Name given from IKEA home smart              |          |
+
+`startup` defines how the device shall behave after a power cutoff.
+If there's a dedicated hardwired light switch which cuts power towards the bulb it makes sense to switch them on every time the switch is pressed.
+But it's also possible to recover the last state.
+
+Mappings for `startup`
+
+- 0 : Previous
+- 1 : On
+- 2 : Off
+- 3 : Switch
+
+Option 3 is offered in IKEA Smart home app to control ligths with using your normal light switch _slowly and smooth_.
+With this the light shall stay online.
+I wasn't able to reproduce this behavior.
+Maybe somebody has more success.
+
+
+`custom-name` is declared e.g. in your IKEA Homesmart App.
+This name is reflected in the discovery and if thing is created this name will be the thing label.
+If `custom-name` is changed via openHAB API or a rule the label will not change.
 
 ### Unknown Devices
 
 Filter your traces regarding 'DIRIGERA MODEL Unsuppoerted Device'. 
 The trace cotains a json object at the end which is needed to implememnt a corresponding hanlder.
-
-### Thing Configuration
-
-Each thing is identified by a unique id which is mandatory to configure.
-Discovery will automatically identify the id.
-
-| Name              | Type    | Description                         | Default | Required |
-|-------------------|---------|-------------------------------------|---------|----------|
-| `id`              | text    | Unique id of this device / scene    | N/A     | yes      |
-
-### Thing Properties
-
-Each thing has properties attached for identification.
-
-<img align="center" width="500" src="doc/thing-properties.png">
 
 ## Air Purifier
 
@@ -160,10 +228,6 @@ Air cleaning device with particle filter.
 | `particulate-matter`  | Number:Density    | R          | Category 2.5 particulate matter              |          |
 | `disable-light`       | Switch            | RW         | Disable status light on plug                 |          |
 | `child-lock`          | Switch            | RW         | Child lock for button on plug                |          |
-| `custom-name`         | String            | RW         | Name given from IKEA home smart              |          |
-| `ota-status`          | Number            | R          | Over-the-air overall status                  |          |
-| `ota-state`           | Number            | R          | Over-the-air current state                   |    X     |
-| `ota-progress`        | Number            | R          | Over-the-air current progress                |    X     |
 
 There are several `Number:Time` which are delivered in minutes as default.
 Note you can change the unit when connecting an item e.g. to `d` (days) for readability.
@@ -180,8 +244,6 @@ Mappings for `fan-mode`
 - 4 : On
 - 5 : Off
 
-See [OTA channel mappings](#ota-mappings) for over the air updates.
-
 ## Blinds
 
 Window or door blind.
@@ -191,16 +253,7 @@ Window or door blind.
 | `blind-state`         | Number                | RW         | State if blind is moving up, down or stopped     |          |
 | `blind-level`         | Dimmer                | RW         | Current blind level                              |          |
 | `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent                  |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart                  |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                      |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                       |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                    |    X     |
-| `links`               | String                | RW         | Linked controllers and sensors                   |    X     |
-| `link-candidates`     | String                | RW         | Candidates which can be linked                   |    X     |
 
-See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
- 
 #### Blind Channel Mappings
 
 Mappings for `blind-state`
@@ -208,8 +261,6 @@ Mappings for `blind-state`
 - 0 : Stopped
 - 1 : Up
 - 2 : Down
-
-See [OTA channel mappings](#ota-mappings) for over the air updates.
 
 ## Lights
 
@@ -260,17 +311,6 @@ Light with switch ON, OFF capability
 | Channel               | Type                  | Read/Write | Description                                      | Advanced |
 |-----------------------|-----------------------|------------|--------------------------------------------------|----------|
 | `power`               | Switch                | RW         | Power state of light                             |          |
-| `startup`             | Number                | RW         | Startup behavior after power cutoff              |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart                  |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                      |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                       |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                    |    X     |
-| `links`               | String                | RW         | Linked controllers and sensors                   |    X     |
-| `link-candidates`     | String                | RW         | Candidates which can be linked                   |    X     |
-
-See [sartup mappings](#startup-channel-mappings) for device startup behavior.
-See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Dimmable Lights
 
@@ -280,42 +320,11 @@ Light with brightness support.
 |-----------------------|-----------------------|------------|--------------------------------------------------|----------|
 | `power`               | Switch                | RW         | Power state of light                             |          |
 | `brightness`          | Dimmer                | RW         | Control brightness of light                      |          |
-| `startup`             | Number                | RW         | Startup behavior after power cutoff              |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart                  |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                      |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                       |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                    |    X     |
-| `links`               | String                | RW         | Linked controllers and sensors                   |    X     |
-| `link-candidates`     | String                | RW         | Candidates which can be linked                   |    X     |
 
 Channel `brightness` can receive
 
 - ON / OFF 
 - numbers from 0 to 100 as percent where 0 will switch the light OFF, any other > 0 switches light ON
-
-See [sartup mappings](#startup-channel-mappings) for device startup behavior.
-See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
-
-### Startup Channel Mappings
-
-The startup defines how the device shall behave after a power cutoff.
-If there's a dedicated hardwired light switch which cuts power towards the bulb it makes sense to sitch them on every time the switch is pressed.
-But it's also possible to recover the last state.
-
-Mappings for `startup`
-
-- 0 : Previous
-- 1 : On
-- 2 : Off
-- 3 : Switch
-
-Option 3 is offered in IKEA Smart home app to control ligths with using your normal light switch _slowly and smooth_.
-With this the light shall stay online.
-I wasn't able to reproduce this behavior at all.
-Maybe somebody has more success.
-
-See [OTA channel mappings](#ota-mappings) for over the air updates.
 
 ## Temperature Lights
 
@@ -326,22 +335,6 @@ Light with color temperature support.
 | `power`               | Switch                | RW         | Power state of light                                 |          |
 | `brightness`          | Dimmer                | RW         | Control brightness of light                          |          |
 | `color-temperature`   | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
-| `startup`             | Number                | RW         | Startup behavior after power cutoff                  |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart                      |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                          |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                           |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                        |    X     |
-| `links`               | String                | RW         | Linked controllers and sensors                       |    X     |
-| `link-candidates`     | String                | RW         | Candidates which can be linked                       |    X     |
-
-Channel `brightness` can receive
-
-- ON / OFF 
-- numbers from 0 to 100 as percent where 0 will switch the light OFF, any other > 0 switches light ON
-
-See [sartup mappings](#startup-channel-mappings) for device startup behavior.
-See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Color Lights
 
@@ -353,23 +346,12 @@ Light with color support.
 | `brightness`          | Dimmer                | RW         | Brightness of light in percent                       |          |
 | `color-temperature`   | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
 | `color`               | Color                 | RW         | Color of light with hue, saturation and brightness   |          |
-| `startup`             | Number                | RW         | Startup behavior after power cutoff                  |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart                      |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                          |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                           |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                        |    X     |
-| `links`               | String                | RW         | Linked controllers and sensors                       |    X     |
-| `link-candidates`     | String                | RW         | Candidates which can be linked                       |    X     |
 
 Channel `color` can receive
 
 - ON / OFF 
 - numbers from 0 to 100 as brightness in percent where 0 will switch the light OFF, any other > 0 switches light ON
 - triple values for hue, saturation, brightness
-
-See [sartup mappings](#startup-channel-mappings) for device startup behavior.
-See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Power Plugs
 
@@ -382,17 +364,6 @@ Simple plug with control of power state and startup behavior.
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `power`               | Switch                | RW         | Power state of plug                          |          |
-| `startup`             | Number                | RW         | Startup behavior after power cutoff          |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                  |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
-| `links`               | String                | RW         | Linked controllers and sensors               |    X     |
-| `link-candidates`     | String                | RW         | Candidates which can be linked               |    X     |
-
-See [sartup mappings](#startup-channel-mappings) for device startup behavior.
-See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Power Plug
 
@@ -401,6 +372,7 @@ Same channels as [Simple Plug](#simple-plug) plus following channels.
 
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
+| `power`               | Switch                | RW         | Power state of plug                          |          |
 | `child-lock`          | Switch                | RW         | Child lock for button on plug                |          |
 | `disable-light`       | Switch                | RW         | Disable status light on plug                 |          |
 
@@ -410,6 +382,9 @@ Smart plug like [Power Plug](#power-plug) plus measuring capability.
 
 | Channel               | Type                      | Read/Write | Description                                  | Advanced |
 |-----------------------|---------------------------|------------|----------------------------------------------|----------|
+| `power`               | Switch                    | RW         | Power state of plug                          |          |
+| `child-lock`          | Switch                    | RW         | Child lock for button on plug                |          |
+| `disable-light`       | Switch                    | RW         | Disable status light on plug                 |          |
 | `electric-power`      | Number:Power              | R          | Electric power delivered by plug             |          |
 | `energy-total`        | Number:Energy             | R          | Total energy consumption                     |          |
 | `energy-reset`        | Number:Energy             | R          | Energy consumption since last reset          |          |
@@ -438,12 +413,6 @@ Sensor detecting motion events.
 | `schedule-start`      | DateTime              | RW         | Start time of sensor activity                    |          |
 | `schedule-end`        | DateTime              | RW         | End time of sensor activity                      |          |
 | `light-preset`        | String                | RW         | Light presets for different times of the day     |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart                  |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                      |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                       |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                    |    X     |
-| `links`               | String                | RW         | Linked controllers and sensors                   |    X     |
-| `link-candidates`     | String                | RW         | Candidates which can be linked                   |    X     |
 
 When motion is detected via `motion` channel all connected devices from `links` channel will be active for the time configured in `active-duration`.
 Standard duration is seconds if raw number is sent as command. 
@@ -458,9 +427,6 @@ Mappings for `schedule`
 If option 1, follow sun is selected ensure you gave the permission in the IKEA smart home app to use your GPS position to calculate times for sunrise and sunset.
 
 See [Light Controller](#light-controller) for light-preset`.
-
-See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Motion Light Sensor
 
@@ -479,12 +445,6 @@ Sensor to detect water leaks.
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `leak`                | Switch                | R          | Water leak detected                          |          |
 | `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                  |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
-
-See [OTA channel mappings](#ota-mappings) for over the air updates.
 
 ## Contact Sensor
 
@@ -494,7 +454,6 @@ Sensor tracking if windows or doors are open
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `contact`             | Contact               | R          | State if door or window is open or closed    |          |
 | `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 
 ## Air Quality Sensor
 
@@ -506,12 +465,6 @@ Air measure for temperature, humidity and particles.
 | `humidity`            | Number:Dimensionless  | R          | Air Humidity                                 |          |
 | `particulate-matter`  | Number:Density        | R          | Category 2.5 particulate matter              |          |
 | `voc-index`           | Number:Density        | R          | Volatile organic compounds measure           |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                  |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
-
-See [OTA channel mappings](#ota-mappings) for over the air updates.
 
 ## Controller
 
@@ -525,12 +478,6 @@ Shortcut controller with one button.
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `button1`             | trigger               |            | Trigger of first button                      |          |
 | `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                  |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
-
-See [OTA channel mappings](#ota-mappings) for over the air updates.
 
 ### Button Triggers
 
@@ -558,12 +505,6 @@ Controller to handle light attributes.
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
 | `light-preset`        | String                | RW         | Light presets for different times of the day |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                  |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
-| `links`               | String                | RW         | Linked controllers and sensors               |    X     |
-| `link-candidates`     | String                | RW         | Candidates which can be linked               |    X     |
 
 <img align="right" width="150" src="doc/light-presets.png">
 
@@ -581,9 +522,6 @@ They are provided as options as strings
 
 This feature is from IKEA test center and not officially present in the IKEA Smart home app now.
 
-See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
-
 ## Blind Controller
 
 Controller to open and close blinds.
@@ -591,15 +529,6 @@ Controller to open and close blinds.
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                  |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
-| `links`               | String                | RW         | Linked controllers and sensors               |    X     |
-| `link-candidates`     | String                | RW         | Candidates which can be linked               |    X     |
-
-See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Sound Controller
 
@@ -608,15 +537,6 @@ Controller for speakers.
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                  |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
-| `links`               | String                | RW         | Linked controllers and sensors               |    X     |
-| `link-candidates`     | String                | RW         | Candidates which can be linked               |    X     |
-
-See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Speaker
 
@@ -632,25 +552,15 @@ Speaker with player activities.
 | `repeat`              | Number                | RW         | Over-the-air overall status                  |          |
 | `media-title`         | String                | R          | Title of a played media file                 |          |
 | `image`               | RawType               | R          | Current playing track image                  |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
-| `links`               | String                | RW         | Linked controllers and sensors               |    X     |
-| `link-candidates`     | String                | RW         | Candidates which can be linked               |    X     |
 
-See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 Channel `mute` should be writable but this isnn't the case now.
 See [Known Limitations](#speaker-limitations). 
 
 ## Repeater
 
 Repeater to strengthen signal.
+Sadly there's no further information like _signal strength_ available so only [OTA channels](#ota-channels) and [custom name](#other-channels) is available. 
  
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                  |          |
-| `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
-
 ## Scenes
 
 Scene from IKEA home smart App which can be triggered.
@@ -670,25 +580,6 @@ If command 0 (Trigger) is sent scene will be executed.
 There's a 30 seconds timeslot to send command 1 (Undo). 
 The countdown is updating `trigger` channel state which can be evaluated if an undo operation is still possible.
 State will switch to `Undef` after countdown.
-
-## Links and Candidates
-
-<img align="right" width="300" src="doc/link-candidates.png">
-
-Several devices can be linked together like
-
-- [Light Controller](#light-controller) and [Motion Sensors](#motion-sensor) to [Plugs](#power-plugs) and [Lights](#lights)
-- [Blind Controller](#blind-controller) to [Blinds](#blinds)
-- [Sound Controller](#sound-controller) to [Speakers](#speaker)
-
-Established links are shown in channel `links`.
-The linked devices can be clicked in the UI and the link will be removed.
-
-Possible candidates to be linked are shown in channel `link-candidates`.
-If a candidate is clicked in the UI the link will be established.
-
-Candidates and links marked with `(!)` are not present in openHAB environment so no handler is created yet.
-In this case it's possible not all links are shown in the UI, but the present ones shall work.
 
 ## Known Limitatios
 

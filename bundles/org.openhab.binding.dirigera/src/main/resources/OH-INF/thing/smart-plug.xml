@@ -17,14 +17,8 @@
 				<label>Plug Powered</label>
 				<description>Power state of plug </description>
 			</channel>
-			<channel id="disable-light" typeId="switch">
-				<label>Disable Status Light</label>
-				<description>Disable status light on plug</description>
-			</channel>
-			<channel id="child-lock" typeId="switch">
-				<label>Child Lock</label>
-				<description>Child lock for button on plug</description>
-			</channel>
+			<channel id="disable-status-light" typeId="disable-status-light"/>
+			<channel id="child-lock" typeId="child-lock"/>
 			<channel id="electric-power" typeId="system.electric-power">
 				<label>Electric Power</label>
 				<description>Electric power delivered by plug</description>
@@ -49,27 +43,9 @@
 				<label>Plug Voltage</label>
 				<description>Electric potential of plug</description>
 			</channel>
-			<channel id="startup" typeId="startup">
-				<label>Startup Behavior</label>
-				<description>Startup behavior after power cutoff</description>
-			</channel>
-			<channel id="custom-name" typeId="text">
-				<label>Custom Name</label>
-				<description>Name given from IKEA home smart</description>
-			</channel>
-			<channel id="links" typeId="text-veto-advanced">
-				<label>Links</label>
-				<description>Linked controllers and sensors</description>
-			</channel>
-			<channel id="link-candidates" typeId="text-veto-advanced">
-				<label>Link Candidates</label>
-				<description>Candidates which can be linked</description>
-			</channel>
+			<channel id="startup" typeId="startup"/>
+			<channel id="custom-name" typeId="custom-name"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

@@ -29,39 +29,9 @@
 				<label>Color</label>
 				<description>Color of light with hue, saturation and brightness</description>
 			</channel>
-			<channel id="startup" typeId="startup">
-				<label>Startup Behavior</label>
-				<description>Startup behavior after power cutoff</description>
-			</channel>
-			<channel id="custom-name" typeId="text">
-				<label>Custom Name</label>
-				<description>Name given from IKEA home smart</description>
-			</channel>
-			<channel id="ota-status" typeId="ota-status">
-				<label>OTA Status</label>
-				<description>Over-the-air overall status</description>
-			</channel>
-			<channel id="ota-state" typeId="ota-state">
-				<label>OTA State</label>
-				<description>Over-the-air current state</description>
-			</channel>
-			<channel id="ota-progress" typeId="ota-percent">
-				<label>OTA Progress</label>
-				<description>Over-the-air update progress</description>
-			</channel>
-			<channel id="links" typeId="text-veto-advanced">
-				<label>Links</label>
-				<description>Linked controllers and sensors</description>
-			</channel>
-			<channel id="link-candidates" typeId="text-veto-advanced">
-				<label>Link Candidates</label>
-				<description>Candidates which can be linked</description>
-			</channel>
+			<channel id="startup" typeId="startup"/>
+			<channel id="custom-name" typeId="custom-name"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">2</property>
-		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:color-light"/>
 	</thing-type>

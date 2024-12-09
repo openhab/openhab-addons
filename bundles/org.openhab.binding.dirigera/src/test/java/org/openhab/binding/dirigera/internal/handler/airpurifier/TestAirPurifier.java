@@ -130,7 +130,7 @@ class TestAirPurifier {
         assertTrue(((QuantityType<?>) otaProgess).getUnit().equals(Units.PERCENT));
         assertEquals(0, ((QuantityType<?>) otaProgess).intValue(), "OTA Progress");
 
-        State disableLightState = callback.getState("dirigera:air-purifier:test-device:disable-light");
+        State disableLightState = callback.getState("dirigera:air-purifier:test-device:disable-status-light");
         assertNotNull(disableLightState);
         assertTrue(disableLightState instanceof OnOffType);
         assertTrue(OnOffType.ON.equals((disableLightState)), "Status Light Disabled");
