@@ -17,6 +17,8 @@ import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolCon
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -108,7 +110,7 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
     public void updateBridgeBasedPolls(final VeSyncBridgeConfiguration config) {
         Integer pollRate = config.outletPollInterval;
         if (pollRate == null) {
-            pollRate = DEFAULT_OUTLET_POLL_RATE;
+            pollRate = (Integer) DEFAULT_OUTLET_POLL_RATE;
         }
         if (ThingStatus.OFFLINE.equals(getThing().getStatus())) {
             setBackgroundPollInterval(-1);
@@ -138,7 +140,7 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
 
                 try {
                     long end = getTimestampForToday();
-                    long start = end - 2592000; // 30 days
+                    long start = end - SECONDS_IN_MONTH; // 30 days
                     responseEnergyHistory = sendV2BypassCommand(DEVICE_GET_ENEGERGY_HISTORY,
                             new VeSyncRequestManagedDeviceBypassV2.GetEnergyHistory(start, end));
                 } catch (ParseException e) {
@@ -146,9 +148,11 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
                 }
             } else {
                 logger.trace("Using cached response {}", responses);
-                String[] responseStrings = responses.split("/?");
-                responseStatus = responseStrings[0];
-                responseEnergyHistory = responseStrings[1];
+                if (responses.contains("?")) {
+                    String[] responseStrings = responses.split("/?");
+                    responseStatus = responseStrings[0];
+                    responseEnergyHistory = responseStrings[1];
+                }
             }
 
             if (responseStatus.equals(EMPTY_STRING) || responseEnergyHistory.equals(EMPTY_STRING)) {
@@ -190,16 +194,15 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
         updateState(DEVICE_CHANNEL_HIGHEST_VOLTAGE,
                 new QuantityType<>(outletStatus.outletResult.result.highestVoltage, Units.VOLT));
         updateState(DEVICE_CHANNEL_VOLTAGE_PT_STATUS, OnOffType.from(outletStatus.outletResult.result.voltagePTStatus));
-        updateState(DEVICE_CHANNEL_ENERGY_WEEK, new DecimalType(getEnergy(energyHistory, 7)));
-        updateState(DEVICE_CHANNEL_ENERGY_MONTH, new DecimalType(getEnergy(energyHistory, 30)));
+        updateState(DEVICE_CHANNEL_ENERGY_WEEK,
+                new QuantityType<>(getEnergy(energyHistory, 7), MetricPrefix.KILO(Units.WATT_HOUR)));
+        updateState(DEVICE_CHANNEL_ENERGY_MONTH,
+                new QuantityType<>(getEnergy(energyHistory, 30), MetricPrefix.KILO(Units.WATT_HOUR)));
     }
 
     private static long getTimestampForToday() throws ParseException {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date todayDate = new Date();
-        String todayString = simpleDateFormat.format(todayDate);
-        String endString = todayString.replaceFirst("/d/d:/d/d:/dd", "02:00:00");
-        return simpleDateFormat.parse(endString).getTime() / 1000;
+        Instant instant = Instant.now().truncatedTo(ChronoUnit.DAYS);
+        return instant.toEpochMilli() / 1000;
     }
 
     private static double getEnergy(VeSyncV2BypassEnergyHistory energyHistory, int days) {

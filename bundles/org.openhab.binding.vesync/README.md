@@ -115,16 +115,17 @@ Channel names in **bold** are read/write, everything else is read-only
 
 ### Outlet Thing
 
-| Channel                    | Type                 | Description                                                   | Model's Supported                     | Controllable Values |
-|----------------------------|----------------------|---------------------------------------------------------------|---------------------------------------|---------------------|
-| **enabled**                | Switch               | Whether the hardware device is enabled (Switched on)          | WHOGPLUG | [ON, OFF]
-
-
-### Outlet Thing
-
-| Channel                    | Type                 | Description                                                   | Model's Supported                     | Controllable Values |
-|----------------------------|----------------------|---------------------------------------------------------------|---------------------------------------|---------------------|
-| **enabled**                | Switch               | Whether the hardware device is enabled (Switched on)          | WHOGPLUG | [ON, OFF]
+| Channel         | Type                   | Description                                          | Model's Supported | Controllable Values |
+|-----------------|------------------------|------------------------------------------------------|-------------------|---------------------|
+| **enabled**     | Switch                 | Whether the hardware device is enabled (Switched on) | WHOGPLUG          | [ON, OFF]           |
+| current         | Number:ElectricCurrent | Actual current in A                                  | WHOGPLUG          |                     |
+| energy          | Number:Energy          | Today's energy in kWh                                | WHOGPLUG          |                     |
+| power           | Number:Power           | Current power in W                                   | WHOGPLUG          |                     |
+| voltage         | ElectricPotential      | Current Voltage                                      | WHOGPLUG          |                     |
+| highestVoltage  | ElectricPotential      | Highest Voltage ever measured by the outlet          | WHOGPLUG          |                     |
+| energyWeek      | Number:Energy          | Total energy of week in kWh                          | WHOGPLUG          |                     |
+| energyMonth     | Number:Energy          | Total energy of month in kWh                         | WHOGPLUG          |                     |
+| energyYear      | Number:Energy          | Total energy of year in kWh                          | WHOGPLUG          |                     |
 
 
 ## Full Example

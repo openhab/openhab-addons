@@ -38,7 +38,7 @@
 				<default>60</default>
 			</parameter>
 			<parameter name="outletPollInterval" type="integer" min="5" step="1" unit="s">
-				<label>Oultet Poll Rate</label>
+				<label>Outlet Poll Rate</label>
 				<description>Seconds between fetching background updates about the outlets.</description>
 				<default>60</default>
 			</parameter>
@@ -67,17 +67,17 @@
 		</channels>
 
 		<properties>
-			<property name="Device Name"/>
-			<property name="Device Type"/>
-			<property name="MAC Id"/>
-			<property name="Device Family"/>
+			<property name="deviceName"/>
+			<property name="deviceType"/>
+			<property name="mac"/>
+			<property name="deviceFamily"/>
 		</properties>
-		<representation-property>macId</representation-property>
+		<representation-property>mac</representation-property>
 
 		<config-description>
-			<parameter name="macId" type="text">
-				<label>MAC Id</label>
-				<description>The MAC Id of the device as reported by the API.</description>
+			<parameter name="mac" type="text">
+				<label>MAC</label>
+				<description>The MAC of the device as reported by the API.</description>
 			</parameter>
 			<parameter name="deviceName" type="text">
 				<label>Device Name</label>

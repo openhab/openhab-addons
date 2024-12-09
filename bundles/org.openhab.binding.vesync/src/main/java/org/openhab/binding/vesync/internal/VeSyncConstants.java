@@ -37,6 +37,7 @@ public class VeSyncConstants {
 
     public static final long DEFAULT_REFRESH_INTERVAL_DISCOVERED_DEVICES = 3600;
     public static final long DEFAULT_POLL_INTERVAL_AIR_FILTERS_DEVICES = 10;
+    public static final long SECONDS_IN_MONTH = 2592000;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
