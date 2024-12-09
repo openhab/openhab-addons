@@ -15,11 +15,17 @@ package org.openhab.binding.govee.internal;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.MulticastSocket;
 import java.net.NetworkInterface;
+import java.net.StandardProtocolFamily;
+import java.net.StandardSocketOptions;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,6 +69,9 @@ public class CommunicationManager {
 
     private static final String DISCOVER_REQUEST = "{\"msg\": {\"cmd\": \"scan\", \"data\": {\"account_topic\": \"reserve\"}}}";
 
+    private static final InetSocketAddress DISCOVERY_SOCKET_ADDRESS = new InetSocketAddress(DISCOVERY_MULTICAST_ADDRESS,
+            DISCOVERY_PORT);
+
     public interface DiscoveryResultReceiver {
         void onResultReceived(DiscoveryResponse result);
     }
@@ -71,9 +80,20 @@ public class CommunicationManager {
     public CommunicationManager() {
     }
 
+    /**
+     * Get the resolved IP address from the given host name
+     */
+    private static String ipAddressFrom(String host) {
+        try {
+            return InetAddress.getByName(host).getHostAddress();
+        } catch (UnknownHostException e) {
+        }
+        return host;
+    }
+
     public void registerHandler(GoveeHandler handler) {
         synchronized (thingHandlers) {
-            thingHandlers.put(handler.getHostname(), handler);
+            thingHandlers.put(ipAddressFrom(handler.getHostname()), handler);
             if (receiverThread == null) {
                 receiverThread = new StatusReceiver();
                 receiverThread.start();
@@ -83,7 +103,7 @@ public class CommunicationManager {
 
     public void unregisterHandler(GoveeHandler handler) {
         synchronized (thingHandlers) {
-            thingHandlers.remove(handler.getHostname());
+            thingHandlers.remove(ipAddressFrom(handler.getHostname()));
             if (thingHandlers.isEmpty()) {
                 StatusReceiver receiver = receiverThread;
                 if (receiver != null) {
@@ -102,7 +122,8 @@ public class CommunicationManager {
         final byte[] data = message.getBytes();
         final InetAddress address = InetAddress.getByName(hostname);
         DatagramPacket packet = new DatagramPacket(data, data.length, address, REQUEST_PORT);
-        logger.trace("Sending {} to {}", message, hostname);
+        logger.trace("Sending request to {} on {} with content = {}", handler.getThing().getUID(),
+                address.getHostAddress(), message);
         socket.send(packet);
         socket.close();
     }
@@ -125,24 +146,26 @@ public class CommunicationManager {
                     activeReceiver.setDiscoveryResultsReceiver(receiver);
                 }
 
-                final InetAddress broadcastAddress = InetAddress.getByName(DISCOVERY_MULTICAST_ADDRESS);
-                final InetSocketAddress socketAddress = new InetSocketAddress(broadcastAddress, RESPONSE_PORT);
-                final Instant discoveryStartTime = Instant.now();
-                final Instant discoveryEndTime = discoveryStartTime.plusSeconds(INTERFACE_TIMEOUT_SEC);
+                final Instant discoveryEndTime = Instant.now().plusSeconds(INTERFACE_TIMEOUT_SEC);
 
-                try (MulticastSocket sendSocket = new MulticastSocket(socketAddress)) {
-                    sendSocket.setSoTimeout(INTERFACE_TIMEOUT_SEC * 1000);
-                    sendSocket.setReuseAddress(true);
-                    sendSocket.setBroadcast(true);
-                    sendSocket.setTimeToLive(2);
-                    sendSocket.joinGroup(new InetSocketAddress(broadcastAddress, RESPONSE_PORT), intf);
-
-                    byte[] requestData = DISCOVER_REQUEST.getBytes();
-
-                    DatagramPacket request = new DatagramPacket(requestData, requestData.length, broadcastAddress,
-                            DISCOVERY_PORT);
-                    sendSocket.send(request);
-                }
+                Collections.list(intf.getInetAddresses()).stream().filter(address -> address instanceof Inet4Address)
+                        .map(address -> address.getHostAddress()).forEach(ipv4Address -> {
+                            try (DatagramChannel channel = (DatagramChannel) DatagramChannel
+                                    .open(StandardProtocolFamily.INET)
+                                    .setOption(StandardSocketOptions.SO_REUSEADDR, true)
+                                    .setOption(StandardSocketOptions.IP_MULTICAST_TTL, 64)
+                                    .setOption(StandardSocketOptions.IP_MULTICAST_IF, intf)
+                                    .bind(new InetSocketAddress(ipv4Address, DISCOVERY_PORT))
+                                    .configureBlocking(false)) {
+                                logger.trace("Datagram channel bound to {}:{} on {}", ipv4Address, DISCOVERY_PORT,
+                                        intf.getDisplayName());
+                                channel.send(ByteBuffer.wrap(DISCOVER_REQUEST.getBytes()), DISCOVERY_SOCKET_ADDRESS);
+                                logger.trace("Sent request to {}:{} with content = {}", DISCOVERY_MULTICAST_ADDRESS,
+                                        DISCOVERY_PORT, DISCOVER_REQUEST);
+                            } catch (IOException e) {
+                                logger.debug("Network error", e);
+                            }
+                        });
 
                 do {
                     try {
@@ -167,10 +190,10 @@ public class CommunicationManager {
         private boolean stopped = false;
         private @Nullable DiscoveryResultReceiver discoveryResultReceiver;
 
-        private @Nullable MulticastSocket socket;
+        private @Nullable DatagramSocket socket;
 
         StatusReceiver() {
-            super("GoveeStatusReceiver");
+            super("OH-binding-" + GoveeBindingConstants.BINDING_ID + "-StatusReceiver");
         }
 
         synchronized void setDiscoveryResultsReceiver(@Nullable DiscoveryResultReceiver receiver) {
@@ -195,13 +218,14 @@ public class CommunicationManager {
         public void run() {
             while (!stopped) {
                 try {
-                    socket = new MulticastSocket(RESPONSE_PORT);
+                    DatagramSocket loopSocket = new DatagramSocket(RESPONSE_PORT);
+                    this.socket = loopSocket;
                     byte[] buffer = new byte[10240];
-                    socket.setReuseAddress(true);
+                    loopSocket.setReuseAddress(true);
                     while (!stopped) {
                         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                        if (!socket.isClosed()) {
-                            socket.receive(packet);
+                        if (!loopSocket.isClosed()) {
+                            loopSocket.receive(packet);
                         } else {
                             logger.warn("Socket was unexpectedly closed");
                             break;
@@ -212,7 +236,7 @@ public class CommunicationManager {
 
                         String response = new String(packet.getData(), packet.getOffset(), packet.getLength());
                         String deviceIPAddress = packet.getAddress().toString().replace("/", "");
-                        logger.trace("Response from {} = {}", deviceIPAddress, response);
+                        logger.trace("Received response from {} with content = {}", deviceIPAddress, response);
 
                         final DiscoveryResultReceiver discoveryReceiver;
                         synchronized (this) {
@@ -240,20 +264,22 @@ public class CommunicationManager {
                                 handler = thingHandlers.get(deviceIPAddress);
                             }
                             if (handler == null) {
-                                logger.warn("thing Handler for {} couldn't be found.", deviceIPAddress);
+                                logger.warn("Handler not found for {}", deviceIPAddress);
                             } else {
-                                logger.debug("processing status updates for thing {} ", handler.getThing().getLabel());
+                                logger.debug("Processing response for {} on {}", handler.getThing().getUID(),
+                                        deviceIPAddress);
                                 handler.handleIncomingStatus(response);
                             }
                         }
                     }
                 } catch (IOException e) {
-                    logger.warn("exception when receiving status packet", e);
+                    logger.debug("Exception when receiving status packet {}", e.getMessage());
                     // as we haven't received a packet we also don't know where it should have come from
                     // hence, we don't know which thing put offline.
                     // a way to monitor this would be to keep track in a list, which device answers we expect
                     // and supervise an expected answer within a given time but that will make the whole
                     // mechanism much more complicated and may be added in the future
+                    // PS it also seems to be 'normal' to encounter errors when in device discovery mode
                 } finally {
                     if (socket != null) {
                         socket.close();
