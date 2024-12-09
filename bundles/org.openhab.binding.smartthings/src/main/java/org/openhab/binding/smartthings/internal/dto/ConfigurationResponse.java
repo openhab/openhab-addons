@@ -23,9 +23,9 @@ public class ConfigurationResponse {
             public String name;
             public String description;
             public String id;
-            public String firstPageId;
-
             public String[] permissions;
+
+            public String firstPageId;
         }
 
         public initialize initialize;

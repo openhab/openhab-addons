@@ -123,6 +123,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
 
             SmartthingsAccountHandler accountHandler = bridgeHandler;
             authService.setSmartthingsAccountHandler(accountHandler);
+            authService.initialize();
 
             bridgeUID = thing.getUID();
             logger.debug("SmartthingsHandlerFactory created BridgeHandler for {}", thingTypeUID.getAsString());
@@ -142,6 +143,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
 
             SmartthingsAccountHandler accountHandler = bridgeHandler;
             authService.setSmartthingsAccountHandler(accountHandler);
+            authService.initialize();
 
             bridgeUID = thing.getUID();
             logger.debug("SmartthingsHandlerFactory created CloudBridgeHandler for {}", thingTypeUID.getAsString());

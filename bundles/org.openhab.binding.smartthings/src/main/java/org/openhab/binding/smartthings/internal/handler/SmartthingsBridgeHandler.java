@@ -69,6 +69,7 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
     private @Nullable OAuthClientService oAuthService;
     private @NonNullByDefault({}) SmartthingsNetworkConnector networkConnector;
     private final OAuthFactory oAuthFactory;
+    private String appId = "";
 
     public SmartthingsBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
             BundleContext bundleContext, HttpService httpService, OAuthFactory oAuthFactory,
@@ -112,7 +113,7 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
         smartthingsApi = new SmartthingsApi(httpClientFactory, networkConnector, oAuthService, config.token);
 
         if (servlet == null) {
-            servlet = new SmartthingsServlet(httpService, networkConnector);
+            servlet = new SmartthingsServlet(this, httpService, networkConnector, config.token);
             servlet.activate();
         }
 
@@ -220,5 +221,13 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
             logger.debug("Error constructing AuthorizationUrl: ", e);
             return "";
         }
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public String getAppId() {
+        return this.appId;
     }
 }
