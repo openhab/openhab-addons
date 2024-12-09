@@ -13,10 +13,7 @@
 package org.openhab.binding.vesync.internal.handlers;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.DEVICE_GET_ENEGERGY_HISTORY;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.DEVICE_GET_OUTLET_STATUS;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.DEVICE_SET_SWITCH;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.MODE_ON;
+import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
