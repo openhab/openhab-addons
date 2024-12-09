@@ -143,7 +143,6 @@ public class OpenAITTSService extends AbstractCachedTTSService {
         String queryJson = gson.toJson(content);
 
         try {
-
             ContentResponse response = httpClient.newRequest(config.apiUrl).method(HttpMethod.POST)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                     .header("Authorization", "Bearer " + config.apiKey).header("Content-Type", "application/json")
