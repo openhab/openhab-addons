@@ -155,7 +155,6 @@ public class OpenAITTSService extends AbstractCachedTTSService {
                         response.getReason());
                 throw new TTSException("Failed to generate audio data");
             }
-
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.error("Request to OpenAI failed: {}", e.getMessage(), e);
             throw new TTSException("Failed to generate audio data");
