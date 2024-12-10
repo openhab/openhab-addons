@@ -15,6 +15,7 @@ package org.openhab.binding.freeboxos.internal.action;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.handler.ActivePlayerHandler;
 import org.openhab.binding.freeboxos.internal.handler.PlayerHandler;
+import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -51,5 +52,31 @@ public class ActivePlayerActions extends PlayerActions {
         } else {
             throw new IllegalArgumentException("actions parameter is not an ActivePlayerActions class.");
         }
+    }
+
+    @Override
+    @RuleAction(label = "@text/action.sendKey.label", description = "@text/action.sendKey.description")
+    public void sendKey(@ActionInput(name = "key", label = "@text/action.input.key.label") String key) {
+        super.sendKey(key);
+    }
+
+    @Override
+    @RuleAction(label = "@text/action.sendLongKey.label", description = "@text/action.sendLongKey.description")
+    public void sendLongKey(@ActionInput(name = "key", label = "@text/action.input.key.label") String key) {
+        super.sendLongKey(key);
+    }
+
+    @Override
+    @RuleAction(label = "@text/action.sendMultipleKeys.label", description = "@text/action.sendMultipleKeys.description")
+    public void sendMultipleKeys(
+            @ActionInput(name = "keys", label = "@text/action.sendMultipleKeys.input.keys.label", description = "@text/action.sendMultipleKeys.input.keys.description") String keys) {
+        super.sendMultipleKeys(keys);
+    }
+
+    @Override
+    @RuleAction(label = "@text/action.sendKeyRepeat.label", description = "@text/action.sendKeyRepeat.description")
+    public void sendKeyRepeat(@ActionInput(name = "key", label = "@text/action.input.key.label") String key,
+            @ActionInput(name = "count", label = "@text/action.sendKeyRepeat.input.count.label", description = "@text/action.sendKeyRepeat.input.count.description") int count) {
+        super.sendKeyRepeat(key, count);
     }
 }
