@@ -95,7 +95,7 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
      * @throws AwattarApiException
      */
     @Test
-    void testRefreshIfNeeded_ThingOffline() throws SecurityException, AwattarApiException {
+    void testRefreshIfNeededThingOffline() throws SecurityException, AwattarApiException {
         when(bridgeMock.getStatus()).thenReturn(ThingStatus.OFFLINE);
 
         bridgeHandler.refreshIfNeeded();
@@ -113,7 +113,7 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
      * @throws AwattarApiException
      */
     @Test
-    void testRefreshIfNeeded_DataEmpty() throws SecurityException, AwattarApiException {
+    void testRefreshIfNeededDataEmpty() throws SecurityException, AwattarApiException {
         when(bridgeMock.getStatus()).thenReturn(ThingStatus.ONLINE);
 
         bridgeHandler.refreshIfNeeded();
@@ -124,7 +124,7 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
     }
 
     @Test
-    void testNeedRefresh_ThingOffline() throws SecurityException {
+    void testNeedRefreshThingOffline() throws SecurityException {
         when(bridgeMock.getStatus()).thenReturn(ThingStatus.OFFLINE);
 
         // get private method via reflection
@@ -136,7 +136,7 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
     }
 
     @Test
-    void testNeedRefresh_DataEmpty() throws SecurityException, IllegalArgumentException, IllegalAccessException {
+    void testNeedRefreshDataEmpty() throws SecurityException, IllegalArgumentException, IllegalAccessException {
         when(bridgeMock.getStatus()).thenReturn(ThingStatus.ONLINE);
 
         List<Field> fields = ReflectionSupport.findFields(AwattarBridgeHandler.class,

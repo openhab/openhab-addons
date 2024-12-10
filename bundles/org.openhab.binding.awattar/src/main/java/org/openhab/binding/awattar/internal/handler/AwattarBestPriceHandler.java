@@ -163,7 +163,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         long diff;
         switch (channelId) {
             case CHANNEL_ACTIVE:
-                state = OnOffType.from(result.isActive());
+                state = OnOffType.from(result.isActive(getNow()));
                 break;
             case CHANNEL_START:
                 state = getDateTimeType(result.getStart(), timeZoneProvider);
@@ -172,7 +172,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                 state = getDateTimeType(result.getEnd(), timeZoneProvider);
                 break;
             case CHANNEL_COUNTDOWN:
-                diff = result.getStart() - Instant.now().toEpochMilli();
+                diff = result.getStart() - getNow().toEpochMilli();
                 if (diff >= 0) {
                     state = getDuration(diff);
                 } else {
@@ -180,8 +180,8 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_REMAINING:
-                if (result.isActive()) {
-                    diff = result.getEnd() - Instant.now().toEpochMilli();
+                if (result.isActive(getNow())) {
+                    diff = result.getEnd() - getNow().toEpochMilli();
                     state = getDuration(diff);
                 } else {
                     state = QuantityType.valueOf(0, Units.MINUTE);
@@ -216,20 +216,49 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         return result;
     }
 
+    /**
+     * Returns the time range for the given start hour and duration.
+     *
+     * @param start the start hour (0-23)
+     * @param duration the duration in hours
+     * @param zoneId the time zone to use
+     * @return the range
+     */
     protected TimeRange getRange(int start, int duration, ZoneId zoneId) {
-        ZonedDateTime startCal = getCalendarForHour(start, zoneId);
-        ZonedDateTime endCal = startCal.plusHours(duration);
-        ZonedDateTime now = ZonedDateTime.now(zoneId);
+        ZonedDateTime startTime = getStartTime(start, zoneId);
+        ZonedDateTime endTime = startTime.plusHours(duration);
+        ZonedDateTime now = getNow().atZone(zoneId);
         if (now.getHour() < start) {
             // we are before the range, so we might be still within the last range
-            startCal = startCal.minusDays(1);
-            endCal = endCal.minusDays(1);
+            startTime = startTime.minusDays(1);
+            endTime = endTime.minusDays(1);
         }
-        if (endCal.toInstant().toEpochMilli() < Instant.now().toEpochMilli()) {
+        if (endTime.isBefore(now)) {
             // span is in the past, add one day
-            startCal = startCal.plusDays(1);
-            endCal = endCal.plusDays(1);
+            startTime = startTime.plusDays(1);
+            endTime = endTime.plusDays(1);
         }
-        return new TimeRange(startCal.toInstant().toEpochMilli(), endCal.toInstant().toEpochMilli());
+        return new TimeRange(startTime.toInstant().toEpochMilli(), endTime.toInstant().toEpochMilli());
+    }
+
+    /**
+     * Returns the start time for the given hour.
+     *
+     * @param start the hour. Must be between 0 and 23.
+     * @param zoneId the time zone
+     * @return the start time
+     */
+    protected ZonedDateTime getStartTime(int start, ZoneId zoneId) {
+        return getCalendarForHour(start, zoneId);
+    }
+
+    /**
+     * Returns the current time.
+     *
+     * @param zoneId the time zone
+     * @return the current time
+     */
+    protected Instant getNow() {
+        return Instant.now();
     }
 }
