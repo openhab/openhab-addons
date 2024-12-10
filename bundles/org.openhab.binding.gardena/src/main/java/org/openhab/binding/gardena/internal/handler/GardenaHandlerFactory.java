@@ -59,7 +59,7 @@ public class GardenaHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID())) {
             return new GardenaAccountHandler((Bridge) thing, httpClientFactory, webSocketFactory, timeZoneProvider);
         } else {
-            return new GardenaThingHandler(thing, timeZoneProvider);
+            return new GardenaThingHandler(thing);
         }
     }
 }
