@@ -122,11 +122,6 @@ Import-Package: \\
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.openhab.addons.bundles</groupId>
-        <artifactId>org.openhab.voice.openaitts</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.openhab.core.bom</groupId>
         <artifactId>org.openhab.core.bom.compile</artifactId>
         <version>${ohc.version}</version>
