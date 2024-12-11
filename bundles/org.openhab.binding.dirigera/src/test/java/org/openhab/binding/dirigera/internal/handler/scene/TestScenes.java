@@ -42,7 +42,7 @@ class TestScene {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_SCENE, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
-        SceneHandler handler = new SceneHandler(thing, SPEAKER_MAP, DirigeraBridgeProvider.TZP);
+        SceneHandler handler = new SceneHandler(thing, SCENE_MAP, DirigeraBridgeProvider.TZP);
         CallbackMock callback = new CallbackMock();
         callback.setBridge(hubBridge);
         handler.setCallback(callback);
