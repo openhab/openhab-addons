@@ -16,6 +16,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +33,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SceneHandler} for triggering defined scenes
@@ -40,6 +43,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class SceneHandler extends BaseHandler {
+    private final Logger logger = LoggerFactory.getLogger(SceneHandler.class);
     private TimeZoneProvider timeZoneProvider;
     private Instant lastTrigger = Instant.MAX;
     private int undoDuration = 30;
@@ -48,6 +52,7 @@ public class SceneHandler extends BaseHandler {
         super(thing, mapping);
         super.setChildHandler(this);
         this.timeZoneProvider = timeZoneProvider;
+        logger.warn("TimeZone {}", this.timeZoneProvider.getTimeZone());
         // no link support for Scenes
         hardLinks = Arrays.asList();
     }
@@ -99,9 +104,10 @@ public class SceneHandler extends BaseHandler {
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
         if (update.has("lastTriggered")) {
-            Instant sunsetInstant = Instant.parse(update.getString("lastTriggered"));
-            updateState(new ChannelUID(thing.getUID(), CHANNEL_LAST_TRIGGER),
-                    new DateTimeType(sunsetInstant.atZone(timeZoneProvider.getTimeZone())));
+            Instant lastRiggeredInstant = Instant.parse(update.getString("lastTriggered"));
+            ZonedDateTime lastTriggeredZDT = lastRiggeredInstant.atZone(timeZoneProvider.getTimeZone());
+            logger.warn("Time at TimeZone {}", lastTriggeredZDT);
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_LAST_TRIGGER), new DateTimeType(lastTriggeredZDT));
         }
     }
 
