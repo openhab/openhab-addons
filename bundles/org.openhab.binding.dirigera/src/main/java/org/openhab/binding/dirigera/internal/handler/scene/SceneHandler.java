@@ -105,10 +105,11 @@ public class SceneHandler extends BaseHandler {
         super.handleUpdate(update);
         if (update.has("lastTriggered")) {
             Instant lastRiggeredInstant = Instant.parse(update.getString("lastTriggered"));
+            logger.warn("LastTrigger Instant       {}", lastRiggeredInstant);
             ZonedDateTime lastTriggeredZDT = lastRiggeredInstant.atZone(timeZoneProvider.getTimeZone());
-            logger.warn("LastTrigger at TimeZone ZonedDateTime {}", lastTriggeredZDT);
+            logger.warn("LastTrigger ZonedDateTime {}", lastTriggeredZDT);
             DateTimeType dtt = new DateTimeType(lastTriggeredZDT);
-            logger.warn("LastTrigger at TimeZone DateTimeType {}", dtt);
+            logger.warn("LastTrigger DateTimeType  {}", dtt);
             updateState(new ChannelUID(thing.getUID(), CHANNEL_LAST_TRIGGER), dtt);
         }
     }
