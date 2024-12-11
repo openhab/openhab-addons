@@ -13,9 +13,7 @@
 package org.openhab.binding.smartthings.internal.type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsDeviceData;
-
-import com.google.gson.JsonObject;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 
 /**
  *
@@ -29,5 +27,5 @@ public interface SmartthingsTypeRegistry {
      */
     void initialize();
 
-    void Register(SmartthingsDeviceData deviceData, JsonObject devObj);
+    void Register(String deviceType, SmartthingsDevice device);
 }

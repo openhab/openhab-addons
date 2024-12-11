@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.smartthings.internal.discovery;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -28,7 +26,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHubCommand;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsDeviceData;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsCategory;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsComponent;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.type.SmartthingsChannelGroupTypeProvider;
 import org.openhab.binding.smartthings.internal.type.SmartthingsChannelTypeProvider;
@@ -48,9 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * Smartthings Discovery service
@@ -171,28 +169,20 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         SmartthingsBridgeHandler bridge = smartthingsHubCommand.getBridgeHandler();
         SmartthingsApi api = bridge.getSmartthingsApi();
 
-        JsonArray devices = api.GetAllDevices();
+        SmartthingsDevice[] devices = api.GetAllDevices();
 
-        for (JsonElement dev : devices) {
-            JsonObject devObj = (JsonObject) dev;
+        for (SmartthingsDevice device : devices) {
 
-            String name = devObj.get("name").getAsString();
-            String id = devObj.get("deviceId").getAsString();
-            String label = devObj.get("label").getAsString();
-            String manufacturerName = devObj.get("manufacturerName").getAsString();
-            String locationId = null;
-            String roomId = null;
+            String name = device.name;
+            String id = device.deviceId;
+            String label = device.label;
+            String manufacturerName = device.manufacturerName;
+            String locationId = device.locationId;
+            String roomId = device.roomId;
 
-            if (devObj.has("locationId")) {
-                locationId = devObj.get("locationId").getAsString();
-            }
-            if (devObj.has("roomId")) {
-                roomId = devObj.get("roomId").getAsString();
-            }
             logger.debug("Device");
 
-            JsonElement components = devObj.get("components");
-            if (components == null || !components.isJsonArray()) {
+            if (device.components == null || device.components.length == 0) {
                 return;
             }
 
@@ -208,38 +198,30 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
             // continue;
             // }
 
-            JsonArray componentsArray = (JsonArray) components;
-
             String deviceType = null;
+            for (SmartthingsComponent component : device.components) {
+                String compId = component.id;
+                String compLabel = component.label;
 
-            for (JsonElement elm : componentsArray) {
-                JsonObject component = (JsonObject) elm;
-                String compId = component.get("id").getAsString();
-                String compLabel = component.get("label").getAsString();
-
-                JsonElement capabilitites = component.get("capabilities");
-                if (capabilitites != null && capabilitites.isJsonArray()) {
-                    JsonArray capabilititesArray = (JsonArray) capabilitites;
-                    for (JsonElement elmCap : capabilititesArray) {
-                        JsonObject elmCapObj = (JsonObject) elmCap;
-                        String capId = elmCapObj.get("id").getAsString();
-                        String capVersion = elmCapObj.get("version").getAsString();
+                if (component.capabilities != null && component.capabilities.length > 0) {
+                    for (SmartthingsCapabilitie cap : component.capabilities) {
+                        String capId = cap.id;
+                        String capVersion = cap.version;
 
                         logger.info("");
                     }
                 }
 
-                JsonElement categories = component.get("categories");
-                if (categories != null && categories.isJsonArray()) {
-                    JsonArray categoriesArray = (JsonArray) categories;
-                    for (JsonElement elmCat : categoriesArray) {
-                        JsonObject elmCatObj = (JsonObject) elmCat;
-                        String catId = elmCatObj.get("name").getAsString();
-                        String catType = elmCatObj.get("categoryType").getAsString();
+                if (component.categories != null && component.categories.length > 0) {
+                    for (SmartthingsCategory cat : component.categories) {
+                        String catId = cat.name;
+                        String catType = cat.categoryType;
 
                         if (compId.equals("main")) {
                             deviceType = catId;
                         }
+
+                        logger.info("");
                     }
                 }
             }
@@ -253,15 +235,9 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
                 continue;
             }
 
-            SmartthingsDeviceData deviceData = new SmartthingsDeviceData();
-            deviceData.label = label;
-            deviceData.name = name;
-            deviceData.id = id;
-            deviceData.description = "";
-            deviceData.deviceType = deviceType.toLowerCase();
-
-            this.typeRegistry.Register(deviceData, devObj);
-            createDevice(Objects.requireNonNull(deviceData));
+            deviceType = deviceType.toLowerCase();
+            this.typeRegistry.Register(deviceType, device);
+            createDevice(deviceType, Objects.requireNonNull(device));
 
         }
 
@@ -273,11 +249,11 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
      *
      * @param deviceData Device data from the hub
      */
-    private void createDevice(SmartthingsDeviceData deviceData) {
-        logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceData.deviceType, deviceData.name);
+    private void createDevice(String deviceType, SmartthingsDevice device) {
+        logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceType, device.name);
 
         // Build the UID as a string smartthings:{ThingType}:{BridgeName}:{DeviceName}
-        String name = deviceData.label; // Note: this is necessary for null analysis to work
+        String name = device.label; // Note: this is necessary for null analysis to work
         if (name == null) {
             logger.info(
                     "Unexpectedly received data for a device with no name. Check the Smartthings hub devices and make sure every device has a name");
@@ -286,19 +262,18 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         String deviceNameNoSpaces = name.replaceAll("\\s", "_");
         String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
         if (smartthingsHubCommand == null) {
-            logger.info("SmartthingsHubCommand is unexpectedly null, could not create device {}", deviceData);
+            logger.info("SmartthingsHubCommand is unexpectedly null, could not create device {}", device);
             return;
         }
         ThingUID bridgeUid = smartthingsHubCommand.getBridgeUID();
         String bridgeId = bridgeUid.getId();
-        String uidStr = String.format("smartthings:%s:%s:%s", deviceData.deviceType, bridgeId, smartthingsDeviceName);
+        String uidStr = String.format("smartthings:%s:%s:%s", deviceType, bridgeId, smartthingsDeviceName);
 
         Map<String, Object> properties = new HashMap<>();
         properties.put("smartthingsName", name);
-        properties.put("deviceId", deviceData.id);
-        properties.put("deviceLabel", deviceData.label);
-        properties.put("deviceName", deviceData.name);
-        properties.put("deviceDescription", deviceData.description);
+        properties.put("deviceId", device.deviceId);
+        properties.put("deviceLabel", device.label);
+        properties.put("deviceName", device.name);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr)).withProperties(properties)
                 .withRepresentationProperty("deviceId").withBridge(bridgeUid).withLabel(name).build();
@@ -376,11 +351,13 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
         // The data returned from the Smartthings hub is a list of strings where each
         // element is the data for one device. That device string is another json object
-        List<String> devices = new ArrayList<>();
-        devices = gson.fromJson(data, devices.getClass());
-        for (String device : devices) {
-            SmartthingsDeviceData deviceData = gson.fromJson(device, SmartthingsDeviceData.class);
-            createDevice(Objects.requireNonNull(deviceData));
-        }
+        /*
+         * List<String> devices = new ArrayList<>();
+         * devices = gson.fromJson(data, devices.getClass());
+         * for (String device : devices) {
+         * SmartthingsDeviceData deviceData = gson.fromJson(device, SmartthingsDeviceData.class);
+         * createDevice(Objects.requireNonNull(deviceData));
+         * }
+         */
     }
 }

@@ -18,8 +18,10 @@ import java.util.Random;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsApp;
 import org.openhab.binding.smartthings.internal.dto.AppRequest;
 import org.openhab.binding.smartthings.internal.dto.AppResponse;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 import org.openhab.binding.smartthings.internal.dto.OAuthConfigRequest;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -30,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -50,7 +51,9 @@ public class SmartthingsApi {
     private final SmartthingsNetworkConnector networkConnector;
     private final String token;
     private Gson gson = new Gson();
-    private String baseUrl = "https://api.smartthings.com/v1/";
+    private String baseUrl = "https://api.smartthings.com/v1";
+    private String deviceEndPoint = "/devices";
+    private String appEndPoint = "/apps";
 
     /**
      * Constructor.
@@ -66,17 +69,53 @@ public class SmartthingsApi {
         this.networkConnector = networkConnector;
     }
 
-    public JsonArray GetAllDevices() {
-        JsonElement result = DoRequest(baseUrl + "/devices");
-        JsonElement res1 = ((JsonObject) result).get("items");
-        JsonArray devices = res1.getAsJsonArray();
+    public SmartthingsDevice[] GetAllDevices() {
+        SmartthingsDevice[] devices = networkConnector.DoRequest(SmartthingsDevice[].class, baseUrl + deviceEndPoint, null, token, null,
+                HttpMethod.GET);
         return devices;
     }
 
-    public AppResponse CreateApp() {
+    public AppResponse SetupApp() {
 
+        SmartthingsApp[] appList = ListAllApp();
+
+        GetApp(appList[0].appId);
+
+        AppResponse result = CreateApp();
+        return result;
+    }
+
+    public SmartthingsApp[] ListAllApp() {
         try {
-            String uri = baseUrl + "/apps?signatureType=ST_PADLOCK&requireConfirmation=true";
+            String uri = baseUrl + appEndPoint;
+
+            SmartthingsApp[] listApps = networkConnector.DoRequest(SmartthingsApp[].class, uri, null, token, null, HttpMethod.GET);
+
+            logger.info("");
+            return listApps;
+
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+
+    }
+
+    public SmartthingsApp GetApp(String appId) {
+        try {
+            String uri = baseUrl + appEndPoint + "/" + appId;
+
+            SmartthingsApp app = networkConnector.DoRequest(SmartthingsApp.class, uri, null, token, null, HttpMethod.GET);
+
+            return app;
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+
+    }
+
+    public AppResponse CreateApp() {
+        try {
+            String uri = baseUrl + appEndPoint + "?signatureType=ST_PADLOCK&requireConfirmation=true";
 
             String appName = "openhabnew" + new Random().nextInt(10000);
             AppRequest appRequest = new AppRequest();
@@ -93,14 +132,16 @@ public class SmartthingsApi {
                     HttpMethod.POST);
 
             return appResponse;
-        } catch (final Exception e) {
+        } catch (
+
+        final Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
     public void CreateAppOAuth(String appId) {
         try {
-            String uri = baseUrl + "apps/" + appId + "/oauth";
+            String uri = baseUrl + appEndPoint + "/" + appId + "/oauth";
 
             OAuthConfigRequest oAuthConfig = new OAuthConfigRequest();
             oAuthConfig.clientName = "Openhab Integration";
@@ -124,7 +165,7 @@ public class SmartthingsApi {
             final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
-            String uri = baseUrl + "/devices/" + deviceId + "/commands";
+            String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/commands";
 
             if (accessToken == null || accessToken.isEmpty()) {
                 throw new RuntimeException(
@@ -145,7 +186,7 @@ public class SmartthingsApi {
             final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
-            String uri = baseUrl + "/devices/" + deviceId + "/status";
+            String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/status";
 
             if (accessToken == null || accessToken.isEmpty()) {
                 throw new RuntimeException(

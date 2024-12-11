@@ -12,25 +12,20 @@
  */
 package org.openhab.binding.smartthings.internal;
 
-import static org.openhab.binding.smartthings.internal.SmartthingsBindingConstants.*;
+import static org.openhab.binding.smartthings.internal.SmartthingsBindingConstants.THING_TYPE_SMARTTHINGSCLOUD;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsCloudBridgeHandler;
-import org.openhab.binding.smartthings.internal.handler.SmartthingsHubBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsThingHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -109,26 +104,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SMARTTHINGS)) {
-            // This binding only supports one bridge. If the user tries to add a second bridge register and error and
-            // ignore
-            if (bridgeHandler != null) {
-                logger.warn(
-                        "The Smartthings binding only supports one bridge. Please change your configuration to only use one Bridge. This bridge {} will be ignored.",
-                        thing.getUID().getAsString());
-                return null;
-            }
-            bridgeHandler = new SmartthingsHubBridgeHandler((Bridge) thing, this, bundleContext, httpService,
-                    oAuthFactory, httpClientFactory);
-
-            SmartthingsAccountHandler accountHandler = bridgeHandler;
-            authService.setSmartthingsAccountHandler(accountHandler);
-            authService.initialize();
-
-            bridgeUID = thing.getUID();
-            logger.debug("SmartthingsHandlerFactory created BridgeHandler for {}", thingTypeUID.getAsString());
-            return bridgeHandler;
-        } else if (thingTypeUID.equals(THING_TYPE_SMARTTHINGSCLOUD)) {
+        if (thingTypeUID.equals(THING_TYPE_SMARTTHINGSCLOUD)) {
             // This binding only supports one bridge. If the user tries to add a second bridge register and error and
             // ignore
             if (bridgeHandler != null) {
@@ -181,23 +157,26 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     public void sendDeviceCommand(String path, int timeout, String data)
             throws InterruptedException, TimeoutException, ExecutionException {
 
-        if (bridgeHandler instanceof SmartthingsHubBridgeHandler) {
-            SmartthingsHubBridgeHandler hubBridgeHandler = (SmartthingsHubBridgeHandler) bridgeHandler;
-            ContentResponse response = httpClient
-                    .newRequest(hubBridgeHandler.getSmartthingsIp(), hubBridgeHandler.getSmartthingsPort())
-                    .timeout(timeout, TimeUnit.SECONDS).path(path).method(HttpMethod.POST)
-                    .content(new StringContentProvider(data), "application/json").send();
-
-            int status = response.getStatus();
-            if (status == 202) {
-                logger.debug(
-                        "Sent message \"{}\" with path \"{}\" to the Smartthings hub, received HTTP status {} (This is the normal code from Smartthings)",
-                        data, path, status);
-            } else {
-                logger.warn("Sent message \"{}\" with path \"{}\" to the Smartthings hub, received HTTP status {}",
-                        data, path, status);
-            }
-        }
+        /*
+         * if (bridgeHandler instanceof SmartthingsHubBridgeHandler) {
+         * SmartthingsHubBridgeHandler hubBridgeHandler = (SmartthingsHubBridgeHandler) bridgeHandler;
+         * ContentResponse response = httpClient
+         * .newRequest(hubBridgeHandler.getSmartthingsIp(), hubBridgeHandler.getSmartthingsPort())
+         * .timeout(timeout, TimeUnit.SECONDS).path(path).method(HttpMethod.POST)
+         * .content(new StringContentProvider(data), "application/json").send();
+         * 
+         * int status = response.getStatus();
+         * if (status == 202) {
+         * logger.debug(
+         * "Sent message \"{}\" with path \"{}\" to the Smartthings hub, received HTTP status {} (This is the normal code from Smartthings)"
+         * ,
+         * data, path, status);
+         * } else {
+         * logger.warn("Sent message \"{}\" with path \"{}\" to the Smartthings hub, received HTTP status {}",
+         * data, path, status);
+         * }
+         * }
+         */
     }
 
     /**

@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -255,8 +256,19 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
             String response = DoBasicRequest(req, callback, accessToken, data, method);
 
             if (response != null) {
-                T resultObj = getGson().fromJson(response, resultClass);
-                return resultObj;
+                if (resultClass.isArray()) {
+                    JsonObject obj = getGson().fromJson(response, JsonObject.class);
+                    if (obj != null && obj.has("items")) {
+                        T resultObj = getGson().fromJson(obj.get("items"), resultClass);
+                        return resultObj;
+                    } else {
+                        throw new Exception(
+                                "Requesting a Array result object, but data does not contains array definition");
+                    }
+                } else {
+                    T resultObj = getGson().fromJson(response, resultClass);
+                    return resultObj;
+                }
 
             }
         } catch (Exception e) {
