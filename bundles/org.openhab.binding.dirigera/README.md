@@ -2,11 +2,6 @@
 
 Binding supporting the DIRIGERA Gateway from IKEA. 
 
-It provides devices and scenes towards openHAB. 
-With this it's possible to connect them with other devices outside of the IKEA world.
-
-The goal is not to provide similar functionality of the IKEA Home Smart App like create / remove scenes, rename devices or handling rooms.
-
 ## Supported Things
 
 The DIRIGERA `bridge` is providing the connection to all devices and scenes.  
@@ -71,7 +66,7 @@ Let's start pairing
 
 1. Add the bridge found in discovery 
 2. Pairing started automatically after creation!
-3. Press the button on the DIRIGERA rear site
+3. Press the button on the DIRIGERA rear side
 4. Your brdige shall switch to ONLINE 
 
 ### Gateway Channels
