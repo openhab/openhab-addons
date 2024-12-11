@@ -18,8 +18,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Set;
 
@@ -601,18 +599,17 @@ public abstract class MessageHandler extends BaseFeatureHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            Instant instant = Instant.ofEpochMilli(msg.getTimestamp());
-            ZonedDateTime timestamp = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
-            ZonedDateTime lastTimestamp = getLastTimestamp();
+            Instant timestamp = Instant.ofEpochMilli(msg.getTimestamp());
+            Instant lastTimestamp = getLastTimestamp();
             // set last time if not defined yet or message timestamp is greater than last value
             if (lastTimestamp == null || timestamp.compareTo(lastTimestamp) > 0) {
                 feature.updateState(new DateTimeType(timestamp));
             }
         }
 
-        private @Nullable ZonedDateTime getLastTimestamp() {
+        private @Nullable Instant getLastTimestamp() {
             State state = feature.getState();
-            return state instanceof DateTimeType datetime ? datetime.getZonedDateTime() : null;
+            return state instanceof DateTimeType datetime ? datetime.getInstant() : null;
         }
     }
 

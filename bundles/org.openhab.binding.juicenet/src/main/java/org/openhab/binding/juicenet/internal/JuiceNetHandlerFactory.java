@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.juicenet.internal.handler.JuiceNetBridgeHandler;
 import org.openhab.binding.juicenet.internal.handler.JuiceNetDeviceHandler;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -44,13 +43,10 @@ public class JuiceNetHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE, DEVICE_THING_TYPE);
     private final HttpClientFactory httpClientFactory;
-    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
-    public JuiceNetHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference TimeZoneProvider timeZoneProvider) {
+    public JuiceNetHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
         this.httpClientFactory = httpClientFactory;
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -65,7 +61,7 @@ public class JuiceNetHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
             return new JuiceNetBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient());
         } else if (thingTypeUID.equals(DEVICE_THING_TYPE)) {
-            return new JuiceNetDeviceHandler(thing, timeZoneProvider);
+            return new JuiceNetDeviceHandler(thing);
         }
 
         return null;

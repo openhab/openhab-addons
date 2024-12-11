@@ -19,11 +19,9 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
-import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -512,8 +510,8 @@ public class ValloxMVWebSocket {
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS, new DecimalType(iUptimeHours));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS_CURRENT,
                         new DecimalType(iUptimeHoursCurrent));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_FILTER_CHANGED_DATE, new DateTimeType(
-                        ZonedDateTime.ofInstant(cFilterChangedDate.toInstant(), TimeZone.getDefault().toZoneId())));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FILTER_CHANGED_DATE,
+                        new DateTimeType(cFilterChangedDate.toInstant()));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_REMAINING_FILTER_DAYS,
                         new QuantityType<>(iRemainingTimeForFilter, Units.DAY));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE,
