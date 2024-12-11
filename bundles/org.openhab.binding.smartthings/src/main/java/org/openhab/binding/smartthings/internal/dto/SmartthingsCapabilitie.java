@@ -4,5 +4,4 @@ public class SmartthingsCapabilitie {
 
     public String id;
     public String version;
-
 }

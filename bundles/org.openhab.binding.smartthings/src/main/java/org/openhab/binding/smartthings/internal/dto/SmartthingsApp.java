@@ -49,5 +49,4 @@ public class SmartthingsApp {
     }
 
     public owner owner;
-
 }
