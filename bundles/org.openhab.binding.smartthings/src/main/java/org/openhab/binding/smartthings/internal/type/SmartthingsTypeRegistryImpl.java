@@ -319,12 +319,11 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     }
 
     @Override
-    public void Register(SmartthingsDeviceData deviceData, JsonObject devObj) {
-        generateThingsType(deviceData.id, deviceData.label, deviceData.deviceType, deviceData.description, devObj);
+    public void Register(String deviceType, SmartthingsDevice device) {
+        generateThingsType(device.deviceId, device.label, deviceType, device);
     }
 
-    private void generateThingsType(String deviceId, String deviceLabel, String deviceType, String deviceDescription,
-            JsonObject devObj) {
+    private void generateThingsType(String deviceId, String deviceLabel, String deviceType, SmartthingsDevice device) {
 
         SmartthingsThingTypeProvider lcThingTypeProvider = thingTypeProvider;
         SmartthingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
@@ -340,42 +339,37 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                 List<ChannelGroupType> groupTypes = new ArrayList<>();
                 List<ChannelDefinition> channelDefinitions = new ArrayList<>();
 
-                JsonElement components = devObj.get("components");
-                if (components == null || !components.isJsonArray()) {
+                if (device.components == null || device.components.length == 0) {
                     return;
                 }
-                JsonArray componentsArray = (JsonArray) components;
 
-                for (JsonElement elm : componentsArray) {
-                    JsonObject component = (JsonObject) elm;
-                    String compId = component.get("id").getAsString();
-                    String compLabel = component.get("label").getAsString();
+                for (SmartthingsComponent component : device.components) {
+                    String compId = component.id;
+                    String compLabel = component.label;
 
                     if (!compId.equals("main")) {
                         continue;
                     }
 
-                    JsonElement capabilitites = component.get("capabilities");
-                    if (capabilitites != null && capabilitites.isJsonArray()) {
-                        JsonArray capabilititesArray = (JsonArray) capabilitites;
-                        for (JsonElement elmCap : capabilititesArray) {
-                            JsonObject elmCapObj = (JsonObject) elmCap;
-                            String capId = elmCapObj.get("id").getAsString();
-                            String capVersion = elmCapObj.get("version").getAsString();
-
-                            capId = capId.replace('.', '_');
-
-                            SmartthingsJSonCapabilities capa = capabilitiesDict.get(capId);
-
-                            addChannel(deviceType, groupTypes, channelDefinitions, capId + "channel", capId);
-
-                            logger.info("");
-                        }
+                    if (component.capabilities != null && component.capabilities.length > 0) {
+                        continue;
                     }
 
+                    for (SmartthingsCapabilitie cap : component.capabilities) {
+                        String capId = cap.id;
+                        String capVersion = cap.version;
+
+                        capId = capId.replace('.', '_');
+
+                        SmartthingsJSonCapabilities capa = capabilitiesDict.get(capId);
+
+                        addChannel(deviceType, groupTypes, channelDefinitions, capId + "channel", capId);
+
+                        logger.info("");
+                    }
                 }
 
-                tt = createThingType(deviceType, deviceId, deviceDescription, groupTypes);
+                tt = createThingType(deviceType, deviceId, "", groupTypes);
                 lcThingTypeProvider.addThingType(tt);
             }
         }

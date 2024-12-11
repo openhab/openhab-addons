@@ -18,15 +18,36 @@ package org.openhab.binding.smartthings.internal.dto;
  *
  * @author Laurent ARNAL - Initial contribution
  */
-public class AppRequest {
+
+public class SmartthingsApp {
     public String appName;
     public String displayName;
     public String description;
     public String appType;
+    public String appId;
+    public String createdDate;
+    public String lastUpdatedDate;
 
-    public record webhookSmartApp(String targetUrl) {
+    public String principalType;
+
+    public String[] classifications;
+
+    public Boolean singleInstance;
+
+    public record webhookSmartApp(String targetUrl, String targetStatus, String publicKey, String signatureType) {
     }
 
     public webhookSmartApp webhookSmartApp;
-    public String[] classifications;
+
+    public record ui(String publicId, String pluginUri, Boolean dashboardCardsEnabled,
+            Boolean preInstallDashboardCardsEnabled) {
+    }
+
+    public ui ui;
+
+    public record owner(String ownerType, String ownerId) {
+    }
+
+    public owner owner;
+
 }

@@ -59,7 +59,7 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
 
         SmartthingsApi api = this.getSmartthingsApi();
 
-        AppResponse appResponse = api.CreateApp();
+        AppResponse appResponse = api.SetupApp();
         config.clientId = appResponse.oauthClientId;
         config.clientSecret = appResponse.oauthClientSecret;
 
