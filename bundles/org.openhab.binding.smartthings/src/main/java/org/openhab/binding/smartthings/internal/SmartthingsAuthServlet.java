@@ -29,6 +29,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.UrlEncoded;
+import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
+import org.openhab.binding.smartthings.internal.dto.AppResponse;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,11 +63,6 @@ public class SmartthingsAuthServlet extends HttpServlet {
     private static final String KEY_BRIDGE_URI = "bridge.uri";
     private static final String KEY_REDIRECT_URI = "redirectUri";
     // Keys present in the player.html
-    private static final String PLAYER_ID = "player.id";
-    private static final String PLAYER_NAME = "player.name";
-    private static final String PLAYER_SMARTTHINGS_USER_ID = "player.user";
-    private static final String PLAYER_AUTHORIZED_CLASS = "player.authorized";
-    private static final String PLAYER_AUTHORIZE = "player.authorize";
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsAuthServlet.class);
     private final SmartthingsAuthService smartthingsAuthService;
@@ -106,6 +103,16 @@ public class SmartthingsAuthServlet extends HttpServlet {
 
         resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
         resp.getWriter().close();
+    }
+
+    protected void test() {
+        SmartthingsApi api = bridgeHandler.getSmartthingsApi();
+
+        AppResponse appResponse = api.SetupApp();
+        if (appResponse.oauthClientId != null && appResponse.oauthClientSecret != null) {
+            bridgeHandler.updateConfig(appResponse.oauthClientId, appResponse.oauthClientSecret);
+        }
+
     }
 
     /**

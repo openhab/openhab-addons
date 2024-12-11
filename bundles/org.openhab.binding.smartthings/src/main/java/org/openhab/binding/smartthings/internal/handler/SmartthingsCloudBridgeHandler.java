@@ -18,7 +18,6 @@ import java.util.LinkedList;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
-import org.openhab.binding.smartthings.internal.dto.AppResponse;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -62,10 +61,6 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
 
         SmartthingsApi api = this.getSmartthingsApi();
         initCapabilites();
-
-        AppResponse appResponse = api.SetupApp();
-        config.clientId = appResponse.oauthClientId;
-        config.clientSecret = appResponse.oauthClientSecret;
 
         updateStatus(ThingStatus.ONLINE);
     }

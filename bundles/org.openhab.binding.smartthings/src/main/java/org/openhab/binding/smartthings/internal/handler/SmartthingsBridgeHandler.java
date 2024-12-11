@@ -123,6 +123,11 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
         updateStatus(ThingStatus.ONLINE);
     }
 
+    public void updateConfig(String clientId, String clientSecret) {
+        config.clientId = clientId;
+        config.clientSecret = clientSecret;
+    }
+
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
     }

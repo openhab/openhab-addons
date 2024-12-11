@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.smartthings.internal.api;
 
-import java.util.Random;
+import java.util.Arrays;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -79,7 +80,23 @@ public class SmartthingsApi {
 
         SmartthingsApp[] appList = GetAllApps();
 
-        SmartthingsApp app = GetApp(appList[0].appId);
+        Optional<SmartthingsApp> appOptional = Arrays.stream(appList).filter(x -> "OpenHab".equals(x.appName))
+                .findFirst();
+
+        if (appOptional.isPresent()) {
+            SmartthingsApp app = appOptional.get(); // Get it from optional
+            app = GetApp(app.appId);
+
+            AppResponse result = new AppResponse();
+            result.app = app;
+            result.oauthClientId = null;
+            result.oauthClientSecret = null;
+
+            return result;
+        } else {
+            AppResponse result = CreateApp();
+            return result;
+        }
 
         // SmartthingsLocation[] locList = GetAllLocations();
         // SmartthingsLocation loc = GetLocation(locList[0].locationId);
@@ -87,9 +104,6 @@ public class SmartthingsApi {
         // SmartthingsRoom[] roomList = GetRooms(loc.locationId);
         // SmartthingsRoom room = GetRoom(loc.locationId, roomList[0].roomId);
 
-        // AppResponse result = CreateApp();
-        // return result;
-        return new AppResponse();
     }
 
     public SmartthingsCapabilitie[] GetAllCapabilities() {
@@ -190,7 +204,7 @@ public class SmartthingsApi {
         try {
             String uri = baseUrl + appEndPoint + "?signatureType=ST_PADLOCK&requireConfirmation=true";
 
-            String appName = "openhabnew" + new Random().nextInt(10000);
+            String appName = "OpenHab";
             AppRequest appRequest = new AppRequest();
             appRequest.appName = appName;
             appRequest.displayName = appName;
