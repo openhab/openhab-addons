@@ -18,11 +18,11 @@ import java.util.Random;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsApp;
 import org.openhab.binding.smartthings.internal.dto.AppRequest;
 import org.openhab.binding.smartthings.internal.dto.AppResponse;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 import org.openhab.binding.smartthings.internal.dto.OAuthConfigRequest;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsApp;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -70,8 +70,8 @@ public class SmartthingsApi {
     }
 
     public SmartthingsDevice[] GetAllDevices() {
-        SmartthingsDevice[] devices = networkConnector.DoRequest(SmartthingsDevice[].class, baseUrl + deviceEndPoint, null, token, null,
-                HttpMethod.GET);
+        SmartthingsDevice[] devices = networkConnector.DoRequest(SmartthingsDevice[].class, baseUrl + deviceEndPoint,
+                null, token, null, HttpMethod.GET);
         return devices;
     }
 
@@ -89,7 +89,8 @@ public class SmartthingsApi {
         try {
             String uri = baseUrl + appEndPoint;
 
-            SmartthingsApp[] listApps = networkConnector.DoRequest(SmartthingsApp[].class, uri, null, token, null, HttpMethod.GET);
+            SmartthingsApp[] listApps = networkConnector.DoRequest(SmartthingsApp[].class, uri, null, token, null,
+                    HttpMethod.GET);
 
             logger.info("");
             return listApps;
@@ -97,20 +98,19 @@ public class SmartthingsApi {
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
     }
 
     public SmartthingsApp GetApp(String appId) {
         try {
             String uri = baseUrl + appEndPoint + "/" + appId;
 
-            SmartthingsApp app = networkConnector.DoRequest(SmartthingsApp.class, uri, null, token, null, HttpMethod.GET);
+            SmartthingsApp app = networkConnector.DoRequest(SmartthingsApp.class, uri, null, token, null,
+                    HttpMethod.GET);
 
             return app;
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
     }
 
     public AppResponse CreateApp() {

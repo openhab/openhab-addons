@@ -4,5 +4,4 @@ public class SmartthingsCategory {
 
     public String name;
     public String categoryType;
-
 }
