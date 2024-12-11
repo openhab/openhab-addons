@@ -14,7 +14,7 @@
 package org.openhab.binding.smartthings.internal.dto;
 
 /**
- * Data object for smartthings app request
+ * Data object for Smartthings device description
  *
  * @author Laurent ARNAL - Initial contribution
  */
