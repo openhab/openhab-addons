@@ -308,7 +308,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                         continue;
                     }
 
-                    if (component.capabilities != null && component.capabilities.length > 0) {
+                    if (component.capabilities == null || component.capabilities.length == 0) {
                         continue;
                     }
 

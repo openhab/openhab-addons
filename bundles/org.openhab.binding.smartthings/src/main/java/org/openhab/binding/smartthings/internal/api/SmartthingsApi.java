@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.smartthings.internal.api;
 
-import java.io.IOException;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,10 +22,7 @@ import org.openhab.binding.smartthings.internal.dto.AppResponse;
 import org.openhab.binding.smartthings.internal.dto.OAuthConfigRequest;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsApp;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
-import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
-import org.openhab.core.auth.client.oauth2.OAuthException;
-import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,67 +156,47 @@ public class SmartthingsApi {
         }
     }
 
+    public String getToken() {
+        // final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+        // final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
+        String accessToken = token;
+        if (accessToken == null || accessToken.isEmpty()) {
+            throw new RuntimeException(
+                    "No Smartthings accesstoken. Did you authorize Smartthings via /connectsmartthings ?");
+        }
+
+        return accessToken;
+    }
+
     public void SendCommand(String deviceId, String jsonMsg) {
         try {
-            final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-            final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
             String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/commands";
-
-            if (accessToken == null || accessToken.isEmpty()) {
-                throw new RuntimeException(
-                        "No Smartthings accesstoken. Did you authorize Smartthings via /connectsmartthings ?");
-            } else {
-
-                networkConnector.DoRequest(JsonObject.class, uri, null, accessToken, jsonMsg, HttpMethod.POST);
-            }
-        } catch (final IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        } catch (OAuthException | OAuthResponseException e) {
+            networkConnector.DoRequest(JsonObject.class, uri, null, getToken(), jsonMsg, HttpMethod.POST);
+        } catch (final Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
     public @Nullable JsonObject SendStatus(String deviceId, String jsonMsg) {
         try {
-            final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-            final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
-
             String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/status";
 
-            if (accessToken == null || accessToken.isEmpty()) {
-                throw new RuntimeException(
-                        "No Smartthings accesstoken. Did you authorize Smartthings via /connectsmartthings ?");
-            } else {
-
-                JsonObject res = networkConnector.DoRequest(JsonObject.class, uri, null, accessToken, jsonMsg,
-                        HttpMethod.GET);
-                return res;
-            }
-        } catch (final IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        } catch (OAuthException | OAuthResponseException e) {
+            JsonObject res = networkConnector.DoRequest(JsonObject.class, uri, null, getToken(), jsonMsg,
+                    HttpMethod.GET);
+            return res;
+        } catch (final Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
     private @Nullable JsonElement DoRequest(String uri) {
         try {
-            final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-            final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
-
-            if (accessToken == null || accessToken.isEmpty()) {
-                throw new RuntimeException(
-                        "No Smartthings accesstoken. Did you authorize Smartthings via /connectsmartthings ?");
-            } else {
-
-                JsonObject res = networkConnector.DoRequest(JsonObject.class, uri, null, accessToken, null,
-                        HttpMethod.GET);
-                return res;
-            }
-        } catch (final IOException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        } catch (OAuthException | OAuthResponseException e) {
+            // final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+            // final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
+            JsonObject res = networkConnector.DoRequest(JsonObject.class, uri, null, getToken(), null, HttpMethod.GET);
+            return res;
+        } catch (final Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
