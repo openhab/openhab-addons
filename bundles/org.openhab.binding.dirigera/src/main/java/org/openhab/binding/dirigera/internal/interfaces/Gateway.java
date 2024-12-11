@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.interfaces;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,7 +21,6 @@ import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
 import org.openhab.binding.dirigera.internal.exception.ApiMissingException;
 import org.openhab.binding.dirigera.internal.exception.ModelMissingException;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 import org.osgi.framework.BundleContext;
 
@@ -61,13 +60,6 @@ public interface Gateway {
      * @return DirigeraCommandProvider as DynamicCommandDescriptionProvider
      */
     DirigeraCommandProvider getCommandProvider();
-
-    /**
-     * Get TimeZoneProvider to convert timestamps correctly.
-     *
-     * @return TimeZoneProvider
-     */
-    TimeZoneProvider getTimeZoneProvider();
 
     /**
      * Returns the configuration setting if discovery is enabled.
@@ -158,7 +150,7 @@ public interface Gateway {
      * @return next sunrise as ZonedDateTime
      */
     @Nullable
-    ZonedDateTime getSunriseDateTime();
+    Instant getSunriseDateTime();
 
     /**
      * Next sunset ZonedDateTime. Value is presented if gateway allows access to GPS position. Handler needs to take
@@ -167,7 +159,7 @@ public interface Gateway {
      * @return next sunrise as ZonedDateTime
      */
     @Nullable
-    ZonedDateTime getSunsetDateTime();
+    Instant getSunsetDateTime();
 
     /**
      * Comfort access towards API which is only present after initialization.

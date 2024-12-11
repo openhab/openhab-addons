@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,6 @@ import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
 import org.openhab.binding.dirigera.internal.mock.DirigeraHandlerManipulator;
 import org.openhab.binding.dirigera.internal.mock.DiscoveryMangerMock;
 import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
@@ -47,14 +45,6 @@ import org.openhab.core.thing.internal.ThingImpl;
  */
 @NonNullByDefault
 public class DirigeraBridgeProvider {
-    public static final TimeZoneProvider TZP = new TimeZoneProvider() {
-
-        @Override
-        public ZoneId getTimeZone() {
-            return ZoneId.of("Europe/Berlin");
-        }
-    };
-
     public static Bridge prepareSimuBridge() {
         return prepareSimuBridge("src/test/resources/home/home.json", false, List.of());
     }
@@ -89,7 +79,7 @@ public class DirigeraBridgeProvider {
          * new version with api simulation in background
          */
         DirigeraHandlerManipulator hubHandler = new DirigeraHandlerManipulator(hubBridge, httpMock, mockStorage,
-                new DiscoveryMangerMock(), TZP);
+                new DiscoveryMangerMock());
         hubBridge.setHandler(hubHandler);
         CallbackMock bridgeCallback = new CallbackMock();
         hubHandler.setCallback(bridgeCallback);
