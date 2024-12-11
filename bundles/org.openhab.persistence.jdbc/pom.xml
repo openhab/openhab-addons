@@ -25,7 +25,7 @@
     <yank.version>3.4.0</yank.version>
 
     <!-- JDBC database driver versions -->
-    <derby.version>10.14.2.0</derby.version>
+    <derby.version>10.17.1.0</derby.version>
     <h2.version>2.2.224</h2.version>
     <hsqldb.version>2.3.3</hsqldb.version>
     <mariadb.version>3.0.8</mariadb.version>
