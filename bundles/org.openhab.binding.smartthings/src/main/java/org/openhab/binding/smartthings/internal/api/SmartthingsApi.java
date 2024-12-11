@@ -22,13 +22,14 @@ import org.openhab.binding.smartthings.internal.dto.AppResponse;
 import org.openhab.binding.smartthings.internal.dto.OAuthConfigRequest;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsApp;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsLocation;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsRoom;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -50,6 +51,8 @@ public class SmartthingsApi {
     private String baseUrl = "https://api.smartthings.com/v1";
     private String deviceEndPoint = "/devices";
     private String appEndPoint = "/apps";
+    private String locationEndPoint = "/locations";
+    private String roomsEndPoint = "/rooms";
 
     /**
      * Constructor.
@@ -66,27 +69,78 @@ public class SmartthingsApi {
     }
 
     public SmartthingsDevice[] GetAllDevices() {
-        SmartthingsDevice[] devices = networkConnector.DoRequest(SmartthingsDevice[].class, baseUrl + deviceEndPoint,
-                null, token, null, HttpMethod.GET);
+        SmartthingsDevice[] devices = DoRequest(SmartthingsDevice[].class, baseUrl + deviceEndPoint);
         return devices;
     }
 
     public AppResponse SetupApp() {
 
-        SmartthingsApp[] appList = ListAllApp();
+        SmartthingsApp[] appList = GetAllApps();
 
-        GetApp(appList[0].appId);
+        SmartthingsApp app = GetApp(appList[0].appId);
 
-        AppResponse result = CreateApp();
-        return result;
+        SmartthingsLocation[] locList = GetAllLocations();
+        SmartthingsLocation loc = GetLocation(locList[0].locationId);
+
+        SmartthingsRoom[] roomList = GetRooms(loc.locationId);
+        SmartthingsRoom room = GetRoom(loc.locationId, roomList[0].roomId);
+
+        // AppResponse result = CreateApp();
+        // return result;
+        return new AppResponse();
     }
 
-    public SmartthingsApp[] ListAllApp() {
+    public SmartthingsLocation[] GetAllLocations() {
+        try {
+            String uri = baseUrl + locationEndPoint;
+            SmartthingsLocation[] listLocations = DoRequest(SmartthingsLocation[].class, uri);
+            return listLocations;
+
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public SmartthingsLocation GetLocation(String locationId) {
+        try {
+            String uri = baseUrl + locationEndPoint + "/" + locationId;
+
+            SmartthingsLocation loc = DoRequest(SmartthingsLocation.class, uri);
+
+            return loc;
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public SmartthingsRoom[] GetRooms(String locationId) {
+        try {
+            String uri = baseUrl + locationEndPoint + "/" + locationId + roomsEndPoint;
+            SmartthingsRoom[] listRooms = DoRequest(SmartthingsRoom[].class, uri);
+            return listRooms;
+
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public SmartthingsRoom GetRoom(String locationId, String roomId) {
+        try {
+            String uri = baseUrl + locationEndPoint + "/" + locationId + roomsEndPoint + "/" + roomId;
+
+            SmartthingsRoom loc = DoRequest(SmartthingsRoom.class, uri);
+
+            return loc;
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public SmartthingsApp[] GetAllApps() {
         try {
             String uri = baseUrl + appEndPoint;
 
-            SmartthingsApp[] listApps = networkConnector.DoRequest(SmartthingsApp[].class, uri, null, token, null,
-                    HttpMethod.GET);
+            SmartthingsApp[] listApps = DoRequest(SmartthingsApp[].class, uri);
 
             logger.info("");
             return listApps;
@@ -100,8 +154,7 @@ public class SmartthingsApi {
         try {
             String uri = baseUrl + appEndPoint + "/" + appId;
 
-            SmartthingsApp app = networkConnector.DoRequest(SmartthingsApp.class, uri, null, token, null,
-                    HttpMethod.GET);
+            SmartthingsApp app = DoRequest(SmartthingsApp.class, uri);
 
             return app;
         } catch (final Exception e) {
@@ -124,8 +177,7 @@ public class SmartthingsApi {
             appRequest.classifications[0] = "AUTOMATION";
 
             String body = gson.toJson(appRequest);
-            AppResponse appResponse = networkConnector.DoRequest(AppResponse.class, uri, null, token, body,
-                    HttpMethod.POST);
+            AppResponse appResponse = DoRequest(AppResponse.class, uri, body, false);
 
             return appResponse;
         } catch (
@@ -148,7 +200,7 @@ public class SmartthingsApi {
             // oAuthConfig.redirectUris[0] = "https://redirect.clae.net/openhabdev/";
 
             String body = gson.toJson(oAuthConfig);
-            JsonObject result = networkConnector.DoRequest(JsonObject.class, uri, null, token, body, HttpMethod.PUT);
+            JsonObject result = DoRequest(JsonObject.class, uri, body, false);
 
             // return appResponse;
         } catch (final Exception e) {
@@ -172,7 +224,7 @@ public class SmartthingsApi {
         try {
 
             String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/commands";
-            networkConnector.DoRequest(JsonObject.class, uri, null, getToken(), jsonMsg, HttpMethod.POST);
+            DoRequest(JsonObject.class, uri, jsonMsg, false);
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -182,19 +234,28 @@ public class SmartthingsApi {
         try {
             String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/status";
 
-            JsonObject res = networkConnector.DoRequest(JsonObject.class, uri, null, getToken(), jsonMsg,
-                    HttpMethod.GET);
+            JsonObject res = DoRequest(JsonObject.class, uri, jsonMsg, false);
             return res;
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
-    private @Nullable JsonElement DoRequest(String uri) {
+    public <T> T DoRequest(Class<T> resultClass, String uri) {
+        return DoRequest(resultClass, uri, null, false);
+    }
+
+    public <T> T DoRequest(Class<T> resultClass, String uri, @Nullable String body, Boolean update) {
         try {
-            // final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-            // final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
-            JsonObject res = networkConnector.DoRequest(JsonObject.class, uri, null, getToken(), null, HttpMethod.GET);
+            HttpMethod httpMethod = HttpMethod.GET;
+            if (body != null) {
+                if (update) {
+                    httpMethod = HttpMethod.PUT;
+                } else {
+                    httpMethod = HttpMethod.POST;
+                }
+            }
+            T res = networkConnector.DoRequest(resultClass, uri, null, getToken(), body, httpMethod);
             return res;
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage(), e);
