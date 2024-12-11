@@ -21,6 +21,7 @@ import org.openhab.binding.smartthings.internal.dto.AppRequest;
 import org.openhab.binding.smartthings.internal.dto.AppResponse;
 import org.openhab.binding.smartthings.internal.dto.OAuthConfigRequest;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsApp;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsLocation;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsRoom;
@@ -53,6 +54,7 @@ public class SmartthingsApi {
     private String appEndPoint = "/apps";
     private String locationEndPoint = "/locations";
     private String roomsEndPoint = "/rooms";
+    private String capabilitiesEndPoint = "/capabilities";
 
     /**
      * Constructor.
@@ -79,15 +81,37 @@ public class SmartthingsApi {
 
         SmartthingsApp app = GetApp(appList[0].appId);
 
-        SmartthingsLocation[] locList = GetAllLocations();
-        SmartthingsLocation loc = GetLocation(locList[0].locationId);
+        // SmartthingsLocation[] locList = GetAllLocations();
+        // SmartthingsLocation loc = GetLocation(locList[0].locationId);
 
-        SmartthingsRoom[] roomList = GetRooms(loc.locationId);
-        SmartthingsRoom room = GetRoom(loc.locationId, roomList[0].roomId);
+        // SmartthingsRoom[] roomList = GetRooms(loc.locationId);
+        // SmartthingsRoom room = GetRoom(loc.locationId, roomList[0].roomId);
 
         // AppResponse result = CreateApp();
         // return result;
         return new AppResponse();
+    }
+
+    public SmartthingsCapabilitie[] GetAllCapabilities() {
+        try {
+            String uri = baseUrl + capabilitiesEndPoint;
+            SmartthingsCapabilitie[] listCapabilities = DoRequest(SmartthingsCapabilitie[].class, uri);
+            return listCapabilities;
+
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public SmartthingsCapabilitie GetCapabilitie(String capabilityId, String version) {
+        try {
+            String uri = baseUrl + capabilitiesEndPoint + "/" + capabilityId + "/" + version;
+            SmartthingsCapabilitie capabilitie = DoRequest(SmartthingsCapabilitie.class, uri);
+            return capabilitie;
+
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     public SmartthingsLocation[] GetAllLocations() {

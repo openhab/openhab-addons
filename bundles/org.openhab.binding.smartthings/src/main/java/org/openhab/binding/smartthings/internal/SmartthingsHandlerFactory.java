@@ -27,6 +27,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsCloudBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsThingHandler;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -71,6 +72,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     private final HttpClientFactory httpClientFactory;
     private final SmartthingsAuthService authService;
     private final OAuthFactory oAuthFactory;
+    private final SmartthingsTypeRegistry typeRegistry;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -83,13 +85,15 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     @Activate
     public SmartthingsHandlerFactory(final @Reference HttpService httpService,
             final @Reference SmartthingsAuthService authService, final @Reference OAuthFactory oAuthFactory,
-            final @Reference HttpClientFactory httpClientFactory) {
+            final @Reference HttpClientFactory httpClientFactory,
+            final @Reference SmartthingsTypeRegistry typeRegistery) {
         // Get a Gson instance
         gson = new Gson();
         this.httpService = httpService;
         this.authService = authService;
         this.httpClientFactory = httpClientFactory;
         this.oAuthFactory = oAuthFactory;
+        this.typeRegistry = typeRegistery;
     }
 
     /*
@@ -115,7 +119,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
             }
 
             bridgeHandler = new SmartthingsCloudBridgeHandler((Bridge) thing, this, bundleContext, httpService,
-                    oAuthFactory, httpClientFactory);
+                    oAuthFactory, httpClientFactory, typeRegistry);
 
             SmartthingsAccountHandler accountHandler = bridgeHandler;
             authService.setSmartthingsAccountHandler(accountHandler);
@@ -164,7 +168,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
          * .newRequest(hubBridgeHandler.getSmartthingsIp(), hubBridgeHandler.getSmartthingsPort())
          * .timeout(timeout, TimeUnit.SECONDS).path(path).method(HttpMethod.POST)
          * .content(new StringContentProvider(data), "application/json").send();
-         * 
+         *
          * int status = response.getStatus();
          * if (status == 202) {
          * logger.debug(

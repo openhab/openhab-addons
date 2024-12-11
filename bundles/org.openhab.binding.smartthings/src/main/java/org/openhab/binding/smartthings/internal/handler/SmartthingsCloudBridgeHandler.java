@@ -19,6 +19,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.dto.AppResponse;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -44,8 +46,9 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
 
     public SmartthingsCloudBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
             BundleContext bundleContext, HttpService httpService, OAuthFactory oAuthFactory,
-            HttpClientFactory httpClientFactory) {
-        super(bridge, smartthingsHandlerFactory, bundleContext, httpService, oAuthFactory, httpClientFactory);
+            HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry) {
+        super(bridge, smartthingsHandlerFactory, bundleContext, httpService, oAuthFactory, httpClientFactory,
+                typeRegistry);
     }
 
     @Override
@@ -58,12 +61,25 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
         super.initialize();
 
         SmartthingsApi api = this.getSmartthingsApi();
+        initCapabilites();
 
         AppResponse appResponse = api.SetupApp();
         config.clientId = appResponse.oauthClientId;
         config.clientSecret = appResponse.oauthClientSecret;
 
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    public void initCapabilites() {
+        SmartthingsApi api = this.getSmartthingsApi();
+        SmartthingsCapabilitie[] capabilitiesList = api.GetAllCapabilities();
+
+        for (SmartthingsCapabilitie cap : capabilitiesList) {
+            String capId = cap.id;
+            String capVersion = cap.version;
+            SmartthingsCapabilitie capa = api.GetCapabilitie(capId, capVersion);
+            typeRegistry.RegisterCapabilities(capa);
+        }
     }
 
     @Override

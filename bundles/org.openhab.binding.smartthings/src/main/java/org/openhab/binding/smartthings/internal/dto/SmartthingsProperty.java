@@ -14,20 +14,21 @@ package org.openhab.binding.smartthings.internal.dto;
 
 import java.util.Hashtable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Data object for Smartthings capabilities description
  *
  * @author Laurent ARNAL - Initial contribution
  */
-public class SmartthingsCapabilitie {
+public class SmartthingsProperty {
+    public String type;
+    public int minimum;
+    public int maximum;
+    public String title;
 
-    public String id;
-    public String version;
-    protected String status;
-    protected String name;
-    protected boolean ephemeral;
+    @SerializedName("enum")
+    public String[] enumeration;
 
-    protected Hashtable<String, SmartthingsAttribute> attributes;
-    protected Hashtable<String, SmartthingsCommand> commands;
-
+    public Hashtable<String, SmartthingsProperty> properties;
 }
