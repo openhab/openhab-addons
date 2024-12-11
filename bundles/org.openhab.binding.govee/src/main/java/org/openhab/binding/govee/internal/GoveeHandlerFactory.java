@@ -42,8 +42,8 @@ public class GoveeHandlerFactory extends BaseThingHandlerFactory {
     private final GoveeStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
-    public GoveeHandlerFactory(@Reference CommunicationManager communicationManager,
-            @Reference GoveeStateDescriptionProvider stateDescriptionProvider) {
+    public GoveeHandlerFactory(final @Reference CommunicationManager communicationManager,
+            final @Reference GoveeStateDescriptionProvider stateDescriptionProvider) {
         this.communicationManager = communicationManager;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }

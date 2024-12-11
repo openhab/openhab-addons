@@ -19,15 +19,18 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.StandardProtocolFamily;
 import java.net.StandardSocketOptions;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,6 +38,7 @@ import org.openhab.binding.govee.internal.model.DiscoveryResponse;
 import org.openhab.binding.govee.internal.model.GenericGoveeRequest;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,39 +53,52 @@ import com.google.gson.JsonParseException;
  *
  * @author Stefan Höhn - Initial contribution
  * @author Danny Baumann - Thread-Safe design refactoring
+ * @author Andrew Fiddian-Green - Extensive refactoring
  */
 @NonNullByDefault
 @Component(service = CommunicationManager.class)
-public class CommunicationManager {
+public class CommunicationManager implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(CommunicationManager.class);
     private final Gson gson = new Gson();
-    // Holds a list of all thing handlers to send them thing updates via the receiver-Thread
-    private final Map<String, GoveeHandler> thingHandlers = new HashMap<>();
-    @Nullable
-    private StatusReceiver receiverThread;
+
+    // list of Thing handler listeners that will receive state notifications
+    private final Map<String, GoveeHandler> thingHandlerListeners = new ConcurrentHashMap<>();
+
+    private @Nullable GoveeDiscoveryListener discoveryListener;
+    private @Nullable Thread serverThread;
+    private @Nullable DatagramSocket serverSocket;
+    private final Object serverLock = new Object();
 
     private static final String DISCOVERY_MULTICAST_ADDRESS = "239.255.255.250";
     private static final int DISCOVERY_PORT = 4001;
     private static final int RESPONSE_PORT = 4002;
     private static final int REQUEST_PORT = 4003;
 
-    private static final int INTERFACE_TIMEOUT_SEC = 5;
+    public static final int SCAN_TIMEOUT_SEC = 5;
 
     private static final String DISCOVER_REQUEST = "{\"msg\": {\"cmd\": \"scan\", \"data\": {\"account_topic\": \"reserve\"}}}";
 
     private static final InetSocketAddress DISCOVERY_SOCKET_ADDRESS = new InetSocketAddress(DISCOVERY_MULTICAST_ADDRESS,
             DISCOVERY_PORT);
 
-    public interface DiscoveryResultReceiver {
-        void onResultReceived(DiscoveryResponse result);
+    public interface GoveeDiscoveryListener {
+        void onDiscoveryResponse(DiscoveryResponse discoveryResponse);
     }
 
     @Activate
     public CommunicationManager() {
+        super();
+    }
+
+    @Deactivate
+    public void deactivate() {
+        thingHandlerListeners.clear();
+        discoveryListener = null;
+        listenerCountDecreased();
     }
 
     /**
-     * Get the resolved IP address from the given host name
+     * Get the resolved IP address from the given host name.
      */
     private static String ipAddressFrom(String host) {
         try {
@@ -91,202 +108,186 @@ public class CommunicationManager {
         return host;
     }
 
+    /**
+     * Call this after one or more listeners have been added.
+     * Starts the server thread if it is not already running.
+     */
+    private void listenerCountIncreased() {
+        synchronized (serverLock) {
+            Thread thread = serverThread;
+            if ((thread == null) || thread.isInterrupted() || !thread.isAlive()) {
+                thread = new Thread(this, "OH-binding-" + GoveeBindingConstants.BINDING_ID + "-StatusReceiver");
+                serverThread = thread;
+                thread.start();
+            }
+        }
+    }
+
+    /**
+     * Call this after one or more listeners have been removed.
+     * Stops the server thread when listener count reaches zero.
+     */
+    private void listenerCountDecreased() {
+        synchronized (serverLock) {
+            if (thingHandlerListeners.isEmpty() && (discoveryListener == null)) {
+                Thread thread = serverThread;
+                DatagramSocket socket = serverSocket;
+                if (thread != null) {
+                    thread.interrupt(); // set interrupt flag before closing socket
+                }
+                if (socket != null) {
+                    socket.close();
+                }
+                serverThread = null;
+                serverSocket = null;
+            }
+        }
+    }
+
+    /**
+     * Thing handlers register themselves to receive state updates when they are initalized.
+     */
     public void registerHandler(GoveeHandler handler) {
-        synchronized (thingHandlers) {
-            thingHandlers.put(ipAddressFrom(handler.getHostname()), handler);
-            if (receiverThread == null) {
-                receiverThread = new StatusReceiver();
-                receiverThread.start();
-            }
-        }
+        thingHandlerListeners.put(ipAddressFrom(handler.getHostname()), handler);
+        listenerCountIncreased();
     }
 
+    /**
+     * Thing handlers unregister themselves when they are destroyed.
+     */
     public void unregisterHandler(GoveeHandler handler) {
-        synchronized (thingHandlers) {
-            thingHandlers.remove(ipAddressFrom(handler.getHostname()));
-            if (thingHandlers.isEmpty()) {
-                StatusReceiver receiver = receiverThread;
-                if (receiver != null) {
-                    receiver.stopReceiving();
-                }
-                receiverThread = null;
-            }
-        }
+        thingHandlerListeners.remove(ipAddressFrom(handler.getHostname()));
+        listenerCountDecreased();
     }
 
+    /**
+     * Send a unicast command request to the device.
+     */
     public void sendRequest(GoveeHandler handler, GenericGoveeRequest request) throws IOException {
-        final String hostname = handler.getHostname();
-        final DatagramSocket socket = new DatagramSocket();
-        socket.setReuseAddress(true);
-        final String message = gson.toJson(request);
-        final byte[] data = message.getBytes();
-        final InetAddress address = InetAddress.getByName(hostname);
-        DatagramPacket packet = new DatagramPacket(data, data.length, address, REQUEST_PORT);
-        logger.trace("Sending request to {} on {} with content = {}", handler.getThing().getUID(),
-                address.getHostAddress(), message);
-        socket.send(packet);
-        socket.close();
-    }
-
-    public void runDiscoveryForInterface(NetworkInterface intf, DiscoveryResultReceiver receiver) throws IOException {
-        synchronized (receiver) {
-            StatusReceiver localReceiver = null;
-            StatusReceiver activeReceiver = null;
-
-            try {
-                if (receiverThread == null) {
-                    localReceiver = new StatusReceiver();
-                    localReceiver.start();
-                    activeReceiver = localReceiver;
-                } else {
-                    activeReceiver = receiverThread;
-                }
-
-                if (activeReceiver != null) {
-                    activeReceiver.setDiscoveryResultsReceiver(receiver);
-                }
-
-                final Instant discoveryEndTime = Instant.now().plusSeconds(INTERFACE_TIMEOUT_SEC);
-
-                Collections.list(intf.getInetAddresses()).stream().filter(address -> address instanceof Inet4Address)
-                        .map(address -> address.getHostAddress()).forEach(ipv4Address -> {
-                            try (DatagramChannel channel = (DatagramChannel) DatagramChannel
-                                    .open(StandardProtocolFamily.INET)
-                                    .setOption(StandardSocketOptions.SO_REUSEADDR, true)
-                                    .setOption(StandardSocketOptions.IP_MULTICAST_TTL, 64)
-                                    .setOption(StandardSocketOptions.IP_MULTICAST_IF, intf)
-                                    .bind(new InetSocketAddress(ipv4Address, DISCOVERY_PORT))
-                                    .configureBlocking(false)) {
-                                logger.trace("Datagram channel bound to {}:{} on {}", ipv4Address, DISCOVERY_PORT,
-                                        intf.getDisplayName());
-                                channel.send(ByteBuffer.wrap(DISCOVER_REQUEST.getBytes()), DISCOVERY_SOCKET_ADDRESS);
-                                logger.trace("Sent request to {}:{} with content = {}", DISCOVERY_MULTICAST_ADDRESS,
-                                        DISCOVERY_PORT, DISCOVER_REQUEST);
-                            } catch (IOException e) {
-                                logger.debug("Network error", e);
-                            }
-                        });
-
-                do {
-                    try {
-                        receiver.wait(INTERFACE_TIMEOUT_SEC * 1000);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                } while (Instant.now().isBefore(discoveryEndTime));
-            } finally {
-                if (activeReceiver != null) {
-                    activeReceiver.setDiscoveryResultsReceiver(null);
-                }
-                if (localReceiver != null) {
-                    localReceiver.stopReceiving();
-                }
-            }
+        try (DatagramSocket socket = new DatagramSocket()) {
+            socket.setReuseAddress(true);
+            String message = gson.toJson(request);
+            byte[] data = message.getBytes();
+            String hostname = handler.getHostname();
+            InetAddress address = InetAddress.getByName(hostname);
+            DatagramPacket packet = new DatagramPacket(data, data.length, address, REQUEST_PORT);
+            socket.send(packet);
+            logger.trace("Sent request to {} on {} with content = {}", handler.getThing().getUID(),
+                    address.getHostAddress(), message);
         }
     }
 
-    private class StatusReceiver extends Thread {
-        private final Logger logger = LoggerFactory.getLogger(CommunicationManager.class);
-        private boolean stopped = false;
-        private @Nullable DiscoveryResultReceiver discoveryResultReceiver;
+    /**
+     * Send discovery multicast pings on any ipv4 address bound to any network interface in the given list and
+     * then sleep for sufficient time until responses may have been received.
+     */
+    public void runDiscoveryForInterfaces(List<NetworkInterface> interfaces, GoveeDiscoveryListener listener) {
+        try {
+            discoveryListener = listener;
+            listenerCountIncreased();
+            Instant sleepUntil = Instant.now().plusSeconds(SCAN_TIMEOUT_SEC);
 
-        private @Nullable DatagramSocket socket;
+            interfaces.parallelStream() // send on all interfaces in parallel
+                    .forEach(interFace -> Collections.list(interFace.getInetAddresses()).stream()
+                            .filter(address -> address instanceof Inet4Address).map(address -> address.getHostAddress())
+                            .forEach(ipv4Address -> sendPing(interFace, ipv4Address)));
 
-        StatusReceiver() {
-            super("OH-binding-" + GoveeBindingConstants.BINDING_ID + "-StatusReceiver");
-        }
-
-        synchronized void setDiscoveryResultsReceiver(@Nullable DiscoveryResultReceiver receiver) {
-            discoveryResultReceiver = receiver;
-        }
-
-        void stopReceiving() {
-            stopped = true;
-            interrupt();
-            if (socket != null) {
-                socket.close();
-            }
-
-            try {
-                join();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        @Override
-        public void run() {
-            while (!stopped) {
+            Duration sleepDuration = Duration.between(Instant.now(), sleepUntil);
+            if (!sleepDuration.isNegative()) {
                 try {
-                    DatagramSocket loopSocket = new DatagramSocket(RESPONSE_PORT);
-                    this.socket = loopSocket;
-                    byte[] buffer = new byte[10240];
-                    loopSocket.setReuseAddress(true);
-                    while (!stopped) {
-                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                        if (!loopSocket.isClosed()) {
-                            loopSocket.receive(packet);
-                        } else {
-                            logger.warn("Socket was unexpectedly closed");
-                            break;
-                        }
-                        if (stopped) {
-                            break;
-                        }
-
-                        String response = new String(packet.getData(), packet.getOffset(), packet.getLength());
-                        String deviceIPAddress = packet.getAddress().toString().replace("/", "");
-                        logger.trace("Received response from {} with content = {}", deviceIPAddress, response);
-
-                        final DiscoveryResultReceiver discoveryReceiver;
-                        synchronized (this) {
-                            discoveryReceiver = discoveryResultReceiver;
-                        }
-                        if (discoveryReceiver != null) {
-                            // We're in discovery mode: try to parse result as discovery message and signal the receiver
-                            // if parsing was successful
-                            try {
-                                DiscoveryResponse result = gson.fromJson(response, DiscoveryResponse.class);
-                                if (result != null) {
-                                    synchronized (discoveryReceiver) {
-                                        discoveryReceiver.onResultReceived(result);
-                                        discoveryReceiver.notifyAll();
-                                    }
-                                }
-                            } catch (JsonParseException e) {
-                                logger.debug(
-                                        "JsonParseException when trying to parse the response, probably a status message",
-                                        e);
-                            }
-                        } else {
-                            final @Nullable GoveeHandler handler;
-                            synchronized (thingHandlers) {
-                                handler = thingHandlers.get(deviceIPAddress);
-                            }
-                            if (handler == null) {
-                                logger.warn("Handler not found for {}", deviceIPAddress);
-                            } else {
-                                logger.debug("Processing response for {} on {}", handler.getThing().getUID(),
-                                        deviceIPAddress);
-                                handler.handleIncomingStatus(response);
-                            }
-                        }
-                    }
-                } catch (IOException e) {
-                    logger.debug("Exception when receiving status packet {}", e.getMessage());
-                    // as we haven't received a packet we also don't know where it should have come from
-                    // hence, we don't know which thing put offline.
-                    // a way to monitor this would be to keep track in a list, which device answers we expect
-                    // and supervise an expected answer within a given time but that will make the whole
-                    // mechanism much more complicated and may be added in the future
-                    // PS it also seems to be 'normal' to encounter errors when in device discovery mode
-                } finally {
-                    if (socket != null) {
-                        socket.close();
-                        socket = null;
-                    }
+                    Thread.sleep(sleepDuration.toMillis());
+                } catch (InterruptedException e) {
+                    // just return
                 }
             }
+        } finally {
+            discoveryListener = null;
+            listenerCountDecreased();
         }
+    }
+
+    /**
+     * Send discovery ping multicast on the given network interface and ipv4 address.
+     */
+    private void sendPing(NetworkInterface interFace, String ipv4Address) {
+        try (DatagramChannel channel = (DatagramChannel) DatagramChannel.open(StandardProtocolFamily.INET)
+                .setOption(StandardSocketOptions.SO_REUSEADDR, true)
+                .setOption(StandardSocketOptions.IP_MULTICAST_TTL, 64)
+                .setOption(StandardSocketOptions.IP_MULTICAST_IF, interFace)
+                .bind(new InetSocketAddress(ipv4Address, DISCOVERY_PORT)).configureBlocking(false)) {
+            logger.trace("Sending ping from {}:{} ({}) to {}:{} with content = {}", ipv4Address, DISCOVERY_PORT,
+                    interFace.getDisplayName(), DISCOVERY_MULTICAST_ADDRESS, DISCOVERY_PORT, DISCOVER_REQUEST);
+            channel.send(ByteBuffer.wrap(DISCOVER_REQUEST.getBytes()), DISCOVERY_SOCKET_ADDRESS);
+        } catch (IOException e) {
+            logger.debug("Network error", e);
+        }
+    }
+
+    /**
+     * This is a {@link Runnable} 'run()' method which gets executed on the server thread.
+     */
+    @Override
+    public synchronized void run() {
+        while (!Thread.currentThread().isInterrupted()) {
+            try (DatagramSocket socket = new DatagramSocket(RESPONSE_PORT)) {
+                serverSocket = socket;
+                socket.setReuseAddress(true);
+                byte[] buffer = new byte[1024];
+
+                while (!Thread.currentThread().isInterrupted()) {
+                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                    try {
+                        socket.receive(packet);
+                    } catch (IOException e) {
+                        if (Thread.currentThread().isInterrupted()) {
+                            return; // terminate thread
+                        } else {
+                            logger.debug("Unexpected receive exception {}", e.getMessage());
+                            break; // recycle socket and retry
+                        }
+                    }
+
+                    String notification = new String(packet.getData(), packet.getOffset(), packet.getLength());
+                    String ipAddress = packet.getAddress().toString().replace("/", "");
+                    logger.trace("Received notification from {} with content = {}", ipAddress, notification);
+
+                    /*
+                     * check if there is a discovery listener and if so try to parse the notification as a discovery
+                     * notification and if it parsed successfully then notify the listener
+                     */
+                    GoveeDiscoveryListener discoveryListener = this.discoveryListener;
+                    if (discoveryListener != null) {
+                        try {
+                            DiscoveryResponse response = gson.fromJson(notification, DiscoveryResponse.class);
+                            if ((response != null) && !thingHandlerListeners.containsKey(ipAddress)) {
+                                logger.debug("Notifying potential new Thing discovered on {}", ipAddress);
+                                discoveryListener.onDiscoveryResponse(response);
+                            }
+                            continue; // prepare to receive next notification
+                        } catch (JsonParseException e) {
+                            logger.debug("Cannot parse as discovery notification; consider as state notification");
+                            // fall through: consider as state notification
+                        }
+                    }
+
+                    /*
+                     * check if there is a thing handler listener and if so try to process the notification as a
+                     * state notification by notifying the listener
+                     */
+                    GoveeHandler handler = thingHandlerListeners.get(ipAddress);
+                    if (handler != null) {
+                        logger.debug("Sending state notification to {} on {}", handler.getThing().getUID(), ipAddress);
+                        handler.handleIncomingStatus(notification);
+                    } else {
+                        logger.warn("Missing Thing handler listener for {}", ipAddress);
+                    }
+                } // {while}
+            } catch (SocketException e) {
+                logger.debug("Unexpected socket exception {}", e.getMessage());
+            } finally {
+                serverSocket = null;
+                serverThread = null;
+            }
+        } // {while}
     }
 }
