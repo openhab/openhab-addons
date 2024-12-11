@@ -29,5 +29,4 @@ public class SmartthingsCapabilitie {
 
     protected Hashtable<String, SmartthingsAttribute> attributes;
     protected Hashtable<String, SmartthingsCommand> commands;
-
 }

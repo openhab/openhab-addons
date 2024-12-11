@@ -22,5 +22,4 @@ public class SmartthingsAttribute {
     public String setter;
     public SmartthingsSchema schema;
     public SmartthingsEnumCommand[] enumCommands;
-
 }
