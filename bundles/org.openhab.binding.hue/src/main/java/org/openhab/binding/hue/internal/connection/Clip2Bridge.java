@@ -397,7 +397,8 @@ public class Clip2Bridge implements Closeable {
         public void onGoAway(@Nullable Session session, @Nullable GoAwayFrame frame) {
             Objects.requireNonNull(session);
             if (session.equals(http2Session)) {
-                Thread recreateThread = new Thread(() -> recreateSession());
+                Thread recreateThread = new Thread(() -> recreateSession(),
+                        "OH-binding-" + bridgeHandler.getThing().getUID() + "-RecreateSession");
                 Clip2Bridge.this.recreateThread = recreateThread;
                 recreateThread.start();
             }

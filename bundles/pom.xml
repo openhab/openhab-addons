@@ -195,6 +195,7 @@
     <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.http</module>
     <module>org.openhab.binding.hue</module>
+    <module>org.openhab.binding.huesync</module>
     <module>org.openhab.binding.hydrawise</module>
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.iammeter</module>
@@ -285,6 +286,7 @@
     <module>org.openhab.binding.mycroft</module>
     <module>org.openhab.binding.mynice</module>
     <module>org.openhab.binding.mystrom</module>
+    <module>org.openhab.binding.myuplink</module>
     <module>org.openhab.binding.nanoleaf</module>
     <module>org.openhab.binding.neato</module>
     <module>org.openhab.binding.neeo</module>
@@ -452,6 +454,7 @@
     <module>org.openhab.binding.wemo</module>
     <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.windcentrale</module>
+    <module>org.openhab.binding.wiz</module>
     <module>org.openhab.binding.wlanthermo</module>
     <module>org.openhab.binding.wled</module>
     <module>org.openhab.binding.wolfsmartset</module>

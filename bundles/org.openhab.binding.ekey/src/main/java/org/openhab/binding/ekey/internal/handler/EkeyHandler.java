@@ -82,10 +82,10 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
 
             scheduler.submit(() -> {
                 populateChannels(config.protocol);
-                String readerThreadName = "OH-binding-" + getThing().getUID().getAsString();
 
                 EkeyUdpPacketReceiver localReceiver = receiver = new EkeyUdpPacketReceiver(
-                        Objects.requireNonNullElse(config.natIp, config.ipAddress), config.port, readerThreadName);
+                        Objects.requireNonNullElse(config.natIp, config.ipAddress), config.port,
+                        "OH-binding-" + getThing().getUID());
                 localReceiver.addEkeyPacketListener(this);
                 try {
                     localReceiver.openConnection();

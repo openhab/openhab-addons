@@ -173,7 +173,7 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             if (supportedFeatures.contains(FEATURE_BATTERY)) {
                 buildOptionalChannel(newStyleChannels ? BATTERY_LEVEL_CH_ID : BATTERY_LEVEL_CH_ID_DEPRECATED,
                         ComponentChannelType.DIMMER,
-                        new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.ONE, null, null),
+                        new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.ONE, null, null, null),
                         updateListener, null, null, "{{ value_json.battery_level }}", channelConfiguration.stateTopic);
             }
         }

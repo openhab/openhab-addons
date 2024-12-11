@@ -145,7 +145,8 @@ public class SilvercrestWifiSocketMediatorImpl implements SilvercrestWifiSocketM
             try {
                 this.receiver = new SilvercrestWifiSocketUpdateReceiverRunnable(this,
                         SilvercrestWifiSocketBindingConstants.WIFI_SOCKET_DEFAULT_UDP_PORT);
-                this.receiverThread = new Thread(this.receiver);
+                this.receiverThread = new Thread(this.receiver,
+                        "OH-binding-" + SilvercrestWifiSocketBindingConstants.BINDING_ID + "-receiver");
                 this.receiverThread.start();
                 logger.debug("Invoked the start of receiver thread.");
             } catch (SocketException e) {

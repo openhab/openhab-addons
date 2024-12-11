@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2.enums;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -26,6 +28,8 @@ public enum ZigbeeStatus {
     DISCONNECTED,
     CONNECTIVITY_ISSUE,
     UNIDIRECTIONAL_INCOMING;
+
+    private static final Set<ZigbeeStatus> CONNECTIVITY_ISSUES = Set.of(DISCONNECTED, CONNECTIVITY_ISSUE);
 
     public static ZigbeeStatus of(@Nullable String value) {
         if (value != null) {
@@ -42,5 +46,12 @@ public enum ZigbeeStatus {
     public String toString() {
         String s = this.name().replace("_", " ");
         return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+    }
+
+    /**
+     * Return true if the status is a connectivity issue
+     */
+    public boolean isConnectivityIssue() {
+        return CONNECTIVITY_ISSUES.contains(this);
     }
 }

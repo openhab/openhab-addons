@@ -41,6 +41,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusInfo;
@@ -64,6 +65,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
     private @NonNullByDefault({}) LatchThingHandler thingHandler;
+    protected @Mock @NonNullByDefault({}) UnitProvider unitProvider;
 
     @BeforeEach
     public void setupThingHandler() {
@@ -84,7 +86,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
             haThing.setProperty("newStyleChannels", "true");
         }
         thingHandler = new LatchThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
-                channelTypeRegistry, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+                channelTypeRegistry, unitProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         thingHandler = spy(thingHandler);
@@ -341,9 +343,9 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
 
         public LatchThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
                 MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
-                int subscribeTimeout, int attributeReceiveTimeout) {
+                UnitProvider unitProvider, int subscribeTimeout, int attributeReceiveTimeout) {
             super(thing, channelTypeProvider, stateDescriptionProvider, channelTypeRegistry, new Jinjava(),
-                    subscribeTimeout, attributeReceiveTimeout);
+                    unitProvider, subscribeTimeout, attributeReceiveTimeout);
         }
 
         @Override
