@@ -184,51 +184,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
         while (entries.hasMoreElements()) {
             String entry = entries.nextElement();
 
-            boolean shouldLoad = false;
-            if (entry.indexOf("colorControl") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("colorTemperature") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("switch") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("switchLevel") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("powerMeter") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("switch") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("energyMeter") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("powerConsumptionReport") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("battery") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("waterSensor") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("doorControl") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("thermostatHeatingSetpoint") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("execute") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("ovenOperationalState") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("ovenSetpoint") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("ovenMode") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("ovenOperatingState") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("temperatureMeasurement") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("healthCheck") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("refresh") >= 0) {
-                shouldLoad = true;
-            } else if (entry.indexOf("firmwareUpdate") >= 0) {
-                shouldLoad = true;
-            }
-
+            boolean shouldLoad = true;
             if (entry.indexOf("Presentation") >= 0) {
                 shouldLoad = false;
             }
