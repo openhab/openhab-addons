@@ -55,6 +55,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +103,15 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             manager.initialize(insecureClient, ip);
         }
         bindingStorage = storageService.getStorage(BINDING_ID);
+    }
+
+    @Deactivate
+    public void deactivate() {
+        try {
+            insecureClient.stop();
+        } catch (Exception e) {
+            logger.warn("Failed to stop http client: {}", e.getMessage());
+        }
     }
 
     @Override
