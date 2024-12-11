@@ -21,6 +21,7 @@ This binding supports the follow thing types:
 | Bridge         | Bridge     | bridge         | Manual    | A single connection to the VeSync API                                 |
 | Air Purifier   | Thing      | airPurifier    | Automatic | An Air Purifier supporting V2 e.g. Core200S/Core300S or Core400S unit |
 | Air Humidifier | Thing      | airHumidifier  | Automatic | An Air Humidifier supporting V2 e.g. Classic300S or 600s              |
+| Outlet         | Thing      | outlet         | Automatic | An Outlet supporting V2 eg WHOGPLUG                                   |
 
 This binding was developed from the great work in the listed projects.
 
@@ -40,6 +41,7 @@ Once the bridge is configured auto discovery will discover supported devices fro
 | username                         | String | The username as used in the VeSync mobile application     |                    |
 | password                         | String | The password as used in the VeSync mobile application     |                    |
 | airPurifierPollInterval          | Number | The poll interval (seconds) for air filters / humidifiers | 60                 |
+| outletPollInterval               | Number | The poll interval (seconds) for outlets                   | 60                 |
 | backgroundDeviceDiscovery        | Switch | Should the system scan periodically for new devices       | ON                 |
 | refreshBackgroundDeviceDiscovery | Number | Frequency (seconds) of scans for new new devices          | 120                |
 
@@ -110,6 +112,21 @@ Channel names in **bold** are read/write, everything else is read-only
 | errorCode                  | Number:Dimensionless | The error code reported by the device                         | OasisMist1000                                        |                       | one  |
 | timerExpiry                | DateTime             | The expected expiry time of the current timer                 | OasisMist1000                                        |                       |      |
 | schedulesCount             | Number:Dimensionless | The number schedules configured                               | OasisMist1000                                        |                       | one  |
+
+### Outlet Thing
+
+| Channel         | Type                   | Description                                          | Model's Supported | Controllable Values |
+|-----------------|------------------------|------------------------------------------------------|-------------------|---------------------|
+| **enabled**     | Switch                 | Whether the hardware device is enabled (Switched on) | WHOGPLUG          | [ON, OFF]           |
+| current         | Number:ElectricCurrent | Actual current in A                                  | WHOGPLUG          |                     |
+| energy          | Number:Energy          | Today's energy in kWh                                | WHOGPLUG          |                     |
+| power           | Number:Power           | Current power in W                                   | WHOGPLUG          |                     |
+| voltage         | ElectricPotential      | Current Voltage                                      | WHOGPLUG          |                     |
+| highestVoltage  | ElectricPotential      | Highest Voltage ever measured by the outlet          | WHOGPLUG          |                     |
+| energyWeek      | Number:Energy          | Total energy of week in kWh                          | WHOGPLUG          |                     |
+| energyMonth     | Number:Energy          | Total energy of month in kWh                         | WHOGPLUG          |                     |
+| energyYear      | Number:Energy          | Total energy of year in kWh                          | WHOGPLUG          |                     |
+
 
 ## Full Example
 

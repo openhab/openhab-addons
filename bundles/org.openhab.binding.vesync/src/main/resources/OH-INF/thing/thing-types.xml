@@ -37,8 +37,54 @@
 				<description>Seconds between fetching background updates about the air purifiers / humidifiers.</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="outletPollInterval" type="integer" min="5" step="1" unit="s">
+				<label>Outlet Poll Rate</label>
+				<description>Seconds between fetching background updates about the outlets.</description>
+				<default>60</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
+
+	<thing-type id="outlet">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Outlet via VeSync</label>
+		<description>An Outlet uplinking to VeSync</description>
+
+		<channels>
+			<channel id="enabled" typeId="deviceEnabledType"/>
+			<channel id="current" typeId="currentType"/>
+			<channel id="energy" typeId="energyType"/>
+			<channel id="power" typeId="powerType"/>
+			<channel id="voltage" typeId="voltageType"/>
+			<channel id="highestVoltage" typeId="highestVoltageType"/>
+			<channel id="voltagePTStatus" typeId="voltagePTStatusType"/>
+			<channel id="energyWeek" typeId="energyWeekType"/>
+			<channel id="energyMonth" typeId="energyMonthType"/>
+			<channel id="energyYear" typeId="energyYearType"/>
+		</channels>
+
+		<properties>
+			<property name="deviceName"/>
+			<property name="deviceType"/>
+			<property name="mac"/>
+			<property name="deviceFamily"/>
+		</properties>
+		<representation-property>mac</representation-property>
+
+		<config-description>
+			<parameter name="mac" type="text">
+				<label>MAC</label>
+				<description>The MAC of the device as reported by the API.</description>
+			</parameter>
+			<parameter name="deviceName" type="text">
+				<label>Device Name</label>
+				<description>The name allocated to the device by the app. (Must be unique if used)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 	<thing-type id="airPurifier">
 		<supported-bridge-type-refs>
@@ -137,6 +183,68 @@
 		</config-description>
 
 	</thing-type>
+
+	<channel-type id="currentType">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Actual current in A</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyType">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy</label>
+		<description>Today's energy in kWh</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="powerType">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Power</label>
+		<description>Current power in W</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="voltageType">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Current Voltage</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="highestVoltageType">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Highest Voltage</label>
+		<description>Highest Voltage ever measured by the outlet</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="voltagePTStatusType">
+		<item-type>Switch</item-type>
+		<label>Voltage PT Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="energyWeekType">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy Week</label>
+		<description>Total energy of week in kWh</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyMonthType">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy Month</label>
+		<description>Total energy of month in kWh</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyYearType">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy Year</label>
+		<description>Total energy of year in kWh</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
 
 	<channel-type id="deviceEnabledType">
 		<item-type>Switch</item-type>
