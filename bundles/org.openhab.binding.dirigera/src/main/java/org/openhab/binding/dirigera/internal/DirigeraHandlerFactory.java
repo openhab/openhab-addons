@@ -44,7 +44,6 @@ import org.openhab.binding.dirigera.internal.handler.sensor.MotionSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.sensor.WaterSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.speaker.SpeakerHandler;
 import org.openhab.core.i18n.LocationProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -72,7 +71,6 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandlerFactory.class);
     private final DirigeraDiscoveryManager discoveryManager;
     private final DirigeraCommandProvider commandProvider;
-    private final TimeZoneProvider timeZoneProvider;
     private final LocationProvider locationProvider;
     private final Storage<String> bindingStorage;
     private final HttpClient insecureClient;
@@ -80,10 +78,9 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public DirigeraHandlerFactory(@Reference StorageService storageService,
             final @Reference NetworkAddressService networkService, final @Reference DirigeraDiscoveryManager manager,
-            final @Reference TimeZoneProvider timeZoneProvider, final @Reference LocationProvider locationProvider,
+            final @Reference LocationProvider locationProvider,
             final @Reference DirigeraCommandProvider commandProvider) {
         this.discoveryManager = manager;
-        this.timeZoneProvider = timeZoneProvider;
         this.locationProvider = locationProvider;
         this.commandProvider = commandProvider;
         this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
@@ -117,7 +114,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new DirigeraHandler((Bridge) thing, insecureClient, bindingStorage, discoveryManager,
-                    timeZoneProvider, locationProvider, commandProvider, bundleContext);
+                    locationProvider, commandProvider, bundleContext);
         } else if (THING_TYPE_COLOR_LIGHT.equals(thingTypeUID)) {
             return new ColorLightHandler(thing, COLOR_LIGHT_MAP);
         } else if (THING_TYPE_TEMPERATURE_LIGHT.equals(thingTypeUID)) {
@@ -143,7 +140,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
         } else if (THING_TYPE_SPEAKER.equals(thingTypeUID)) {
             return new SpeakerHandler(thing, SPEAKER_MAP);
         } else if (THING_TYPE_SCENE.equals(thingTypeUID)) {
-            return new SceneHandler(thing, SCENE_MAP, timeZoneProvider);
+            return new SceneHandler(thing, SCENE_MAP);
         } else if (THING_TYPE_REPEATER.equals(thingTypeUID)) {
             return new RepeaterHandler(thing, REPEATER_MAP);
         } else if (THING_TYPE_LIGHT_CONTROLLER.equals(thingTypeUID)) {

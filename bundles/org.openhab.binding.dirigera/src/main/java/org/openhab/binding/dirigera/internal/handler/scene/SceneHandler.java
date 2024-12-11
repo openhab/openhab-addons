@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
@@ -32,8 +31,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SceneHandler} for triggering defined scenes
@@ -42,16 +39,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SceneHandler extends BaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(SceneHandler.class);
-    private TimeZoneProvider timeZoneProvider;
     private Instant lastTrigger = Instant.MAX;
     private int undoDuration = 30;
 
-    public SceneHandler(Thing thing, Map<String, String> mapping, TimeZoneProvider timeZoneProvider) {
+    public SceneHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
-        this.timeZoneProvider = timeZoneProvider;
-        logger.warn("TimeZone {}", this.timeZoneProvider.getTimeZone());
         // no link support for Scenes
         hardLinks = Arrays.asList();
     }

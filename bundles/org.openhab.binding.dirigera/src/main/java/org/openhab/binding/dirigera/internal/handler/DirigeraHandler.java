@@ -20,7 +20,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -62,7 +61,6 @@ import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.binding.dirigera.internal.network.Websocket;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocationProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -105,7 +103,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     private final Map<String, BaseHandler> deviceTree = new HashMap<>();
     private final DirigeraDiscoveryManager discoveryManager;
     private final DirigeraCommandProvider commandProvider;
-    private final TimeZoneProvider timeZoneProvider;
     private final BundleContext bundleContext;
     private final Websocket websocket;
 
@@ -135,11 +132,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     public static long detectionTimeSeonds = 5;
 
     public DirigeraHandler(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
-            DirigeraDiscoveryManager discoveryManager, TimeZoneProvider timeZoneProvider,
-            LocationProvider locationProvider, DirigeraCommandProvider commandProvider, BundleContext bundleContext) {
+            DirigeraDiscoveryManager discoveryManager, LocationProvider locationProvider,
+            DirigeraCommandProvider commandProvider, BundleContext bundleContext) {
         super(bridge);
         this.discoveryManager = discoveryManager;
-        this.timeZoneProvider = timeZoneProvider;
         this.httpClient = insecureClient;
         this.storage = bindingStorage;
         this.commandProvider = commandProvider;
@@ -658,11 +654,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     }
 
     @Override
-    public TimeZoneProvider getTimeZoneProvider() {
-        return timeZoneProvider;
-    }
-
-    @Override
     public String getIpAddress() {
         return config.ipAddress;
     }
@@ -919,8 +910,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         long durationUpdateTime = Duration.between(modelUpdateStartTime, Instant.now()).toMillis();
         websocket.increase(Websocket.MODEL_UPDATES);
         websocket.getStatistics().put(Websocket.MODEL_UPDATE_TIME, durationUpdateTime + " ms");
-        websocket.getStatistics().put(Websocket.MODEL_UPDATE_LAST,
-                Instant.now().atZone(timeZoneProvider.getTimeZone()));
+        websocket.getStatistics().put(Websocket.MODEL_UPDATE_LAST, Instant.now());
         // updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(model().getModelString()));
         configureGateway();
         updateGateway();
@@ -988,8 +978,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                 String sunRiseString = attributes.getString("nextSunRise");
                 if (sunRiseString != null) {
                     sunriseInstant = Instant.parse(sunRiseString);
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNRISE),
-                            new DateTimeType(sunriseInstant.atZone(timeZoneProvider.getTimeZone())));
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNRISE), new DateTimeType(sunriseInstant));
                 }
             } else {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNRISE), UnDefType.UNDEF);
@@ -998,8 +987,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                 String sunsetString = attributes.getString("nextSunSet");
                 if (sunsetString != null) {
                     sunsetInstant = Instant.parse(attributes.getString("nextSunSet"));
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNSET),
-                            new DateTimeType(sunsetInstant.atZone(timeZoneProvider.getTimeZone())));
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNSET), new DateTimeType(sunsetInstant));
                 }
             } else {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNSET), UnDefType.UNDEF);
@@ -1008,19 +996,19 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     }
 
     @Override
-    public @Nullable ZonedDateTime getSunriseDateTime() {
+    public @Nullable Instant getSunriseDateTime() {
         if (sunriseInstant.equals(Instant.MAX)) {
             return null;
         }
-        return sunriseInstant.atZone(timeZoneProvider.getTimeZone());
+        return sunriseInstant;
     }
 
     @Override
-    public @Nullable ZonedDateTime getSunsetDateTime() {
+    public @Nullable Instant getSunsetDateTime() {
         if (sunsetInstant.equals(Instant.MIN)) {
             return null;
         }
-        return sunsetInstant.atZone(timeZoneProvider.getTimeZone());
+        return sunsetInstant;
     }
 
     /**
