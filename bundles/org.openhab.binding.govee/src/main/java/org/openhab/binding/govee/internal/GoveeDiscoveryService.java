@@ -12,16 +12,17 @@
  */
 package org.openhab.binding.govee.internal;
 
-import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.govee.internal.CommunicationManager.GoveeDiscoveryListener;
 import org.openhab.binding.govee.internal.model.DiscoveryData;
 import org.openhab.binding.govee.internal.model.DiscoveryResponse;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -79,17 +80,18 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.govee")
-public class GoveeDiscoveryService extends AbstractDiscoveryService {
+public class GoveeDiscoveryService extends AbstractDiscoveryService implements GoveeDiscoveryListener {
     private final Logger logger = LoggerFactory.getLogger(GoveeDiscoveryService.class);
 
-    private CommunicationManager communicationManager;
+    private final CommunicationManager communicationManager;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(GoveeBindingConstants.THING_TYPE_LIGHT);
 
     @Activate
-    public GoveeDiscoveryService(@Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider,
-            @Reference CommunicationManager communicationManager) {
-        super(SUPPORTED_THING_TYPES_UIDS, 0, false);
+    public GoveeDiscoveryService(final @Reference TranslationProvider i18nProvider,
+            final @Reference LocaleProvider localeProvider,
+            final @Reference CommunicationManager communicationManager) {
+        super(SUPPORTED_THING_TYPES_UIDS, CommunicationManager.SCAN_TIMEOUT_SEC, false);
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         this.communicationManager = communicationManager;
@@ -103,23 +105,9 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.debug("starting Scan");
-
-        getLocalNetworkInterfaces().forEach(localNetworkInterface -> {
-            logger.debug("Discovering Govee devices on {} ...", localNetworkInterface);
-            try {
-                communicationManager.runDiscoveryForInterface(localNetworkInterface, response -> {
-                    DiscoveryResult result = responseToResult(response);
-                    if (result != null) {
-                        thingDiscovered(result);
-                    }
-                });
-                logger.trace("After runDiscoveryForInterface");
-            } catch (IOException e) {
-                logger.debug("Discovery with IO exception: {}", e.getMessage());
-            }
-            logger.trace("After try");
-        });
+        logger.debug("Starting scan");
+        scheduler.schedule(() -> communicationManager.runDiscoveryForInterfaces(getLocalNetworkInterfaces(), this), 0,
+                TimeUnit.MILLISECONDS);
     }
 
     public @Nullable DiscoveryResult responseToResult(DiscoveryResponse response) {
@@ -165,11 +153,11 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
         }
 
         String hwVersion = data.wifiVersionHard();
-        if (hwVersion != null) {
+        if (!hwVersion.isEmpty()) {
             builder.withProperty(GoveeBindingConstants.HW_VERSION, hwVersion);
         }
         String swVersion = data.wifiVersionSoft();
-        if (swVersion != null) {
+        if (!swVersion.isEmpty()) {
             builder.withProperty(GoveeBindingConstants.SW_VERSION, swVersion);
         }
 
@@ -193,5 +181,17 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService {
             return List.of();
         }
         return result;
+    }
+
+    /**
+     * This method is called back by the {@link CommunicationManager} when it receives a {@link DiscoveryResponse}
+     * notification carrying information about potential newly discovered Things.
+     */
+    @Override
+    public synchronized void onDiscoveryResponse(DiscoveryResponse discoveryResponse) {
+        DiscoveryResult discoveryResult = responseToResult(discoveryResponse);
+        if (discoveryResult != null) {
+            thingDiscovered(discoveryResult);
+        }
     }
 }
