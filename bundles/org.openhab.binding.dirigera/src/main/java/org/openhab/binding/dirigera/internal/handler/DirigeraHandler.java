@@ -311,8 +311,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         propertiesMap.forEach((key, value) -> {
             currentProperties.put(key, value.toString());
         });
-        // just for development phase to identify installed binding version
-        currentProperties.put("bindingVersion", BINDING_VERSION);
         updateProperties(currentProperties);
     }
 

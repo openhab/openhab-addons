@@ -29,7 +29,6 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class Constants {
     public static final String BINDING_ID = "dirigera";
-    public static final String BINDING_VERSION = "0.5-beta";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
