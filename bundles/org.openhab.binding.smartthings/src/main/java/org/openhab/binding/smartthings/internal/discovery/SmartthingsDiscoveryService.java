@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.smartthings.internal.discovery;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -27,7 +25,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHubCommand;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsDeviceData;
+import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsCategory;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsComponent;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
+import org.openhab.binding.smartthings.internal.type.SmartthingsChannelGroupTypeProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsChannelTypeProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsConfigDescriptionProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsThingTypeProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -65,12 +73,32 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     private @Nullable ScheduledFuture<?> scanningJob;
 
+    private @Nullable SmartthingsApi api;
+
+    private @Nullable SmartthingsTypeRegistry typeRegistry;
+    private @Nullable SmartthingsThingTypeProvider thingTypeProvider;
+    private @Nullable SmartthingsChannelTypeProvider channelTypeProvider;
+    private @Nullable SmartthingsChannelGroupTypeProvider channelGroupTypeProvider;
+    private @Nullable SmartthingsConfigDescriptionProvider configDescriptionProvider;
+
     /*
      * default constructor
      */
     public SmartthingsDiscoveryService() {
         super(SmartthingsBindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SEC);
         gson = new Gson();
+    }
+
+    @Reference
+    protected void setSmartthingsTypeRegistry(SmartthingsTypeRegistry typeRegistry) {
+        this.typeRegistry = typeRegistry;
+    }
+
+    protected void unsetSmartthingsTypeRegistry(SmartthingsTypeRegistry typeRegistry) {
+        // Make sure it is this handleFactory that should be unset
+        if (Objects.equals(this.typeRegistry, typeRegistry)) {
+            this.typeRegistry = null;
+        }
     }
 
     @Reference
@@ -85,12 +113,172 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         }
     }
 
+    @Reference
+    protected void setThingTypeProvider(SmartthingsThingTypeProvider thingTypeProvider) {
+        this.thingTypeProvider = thingTypeProvider;
+    }
+
+    protected void unsetThingTypeProvider(SmartthingsThingTypeProvider thingTypeProvider) {
+        this.thingTypeProvider = null;
+    }
+
+    @Reference
+    protected void setChannelTypeProvider(SmartthingsChannelTypeProvider channelTypeProvider) {
+        this.channelTypeProvider = channelTypeProvider;
+    }
+
+    protected void unsetChannelTypeProvider(SmartthingsChannelTypeProvider channelTypeProvider) {
+        this.channelTypeProvider = null;
+    }
+
+    //
+    @Reference
+    protected void setChannelGroupTypeProvider(SmartthingsChannelGroupTypeProvider channelGroupTypeProvider) {
+        this.channelGroupTypeProvider = channelGroupTypeProvider;
+    }
+
+    protected void unsetChannelGroupTypeProvider(SmartthingsChannelGroupTypeProvider channelGroupTypeProvider) {
+        this.channelGroupTypeProvider = null;
+    }
+
+    @Reference
+    protected void setConfigDescriptionProvider(SmartthingsConfigDescriptionProvider configDescriptionProvider) {
+        this.configDescriptionProvider = configDescriptionProvider;
+    }
+
+    protected void unsetConfigDescriptionProvider(SmartthingsConfigDescriptionProvider configDescriptionProvider) {
+        this.configDescriptionProvider = null;
+    }
+
+    /*
+     * public void setApi(@Nullable SmartthingsApi api) {
+     * this.api = api;
+     * }
+     *
+     * public void unssetApi(SmartthingsApi api) {
+     * this.api = null;
+     * }
+     */
     /**
      * Called from the UI when starting a search.
      */
     @Override
     public void startScan() {
-        sendSmartthingsDiscoveryRequest();
+        // sendSmartthingsDiscoveryRequest();
+
+        SmartthingsBridgeHandler bridge = smartthingsHubCommand.getBridgeHandler();
+        SmartthingsApi api = bridge.getSmartthingsApi();
+
+        SmartthingsDevice[] devices = api.GetAllDevices();
+
+        for (SmartthingsDevice device : devices) {
+
+            String name = device.name;
+            String id = device.deviceId;
+            String label = device.label;
+            String manufacturerName = device.manufacturerName;
+            String locationId = device.locationId;
+            String roomId = device.roomId;
+
+            logger.debug("Device");
+
+            if (device.components == null || device.components.length == 0) {
+                return;
+            }
+
+            Boolean enabled = false;
+            if (label.equals("Four")) {
+                enabled = true;
+            }
+            if (label.equals("Petrole")) {
+                enabled = true;
+            }
+
+            // if (!enabled) {
+            // continue;
+            // }
+
+            String deviceType = null;
+            for (SmartthingsComponent component : device.components) {
+                String compId = component.id;
+                String compLabel = component.label;
+
+                if (component.capabilities != null && component.capabilities.length > 0) {
+                    for (SmartthingsCapabilitie cap : component.capabilities) {
+                        String capId = cap.id;
+                        String capVersion = cap.version;
+
+                        logger.info("");
+                    }
+                }
+
+                if (component.categories != null && component.categories.length > 0) {
+                    for (SmartthingsCategory cat : component.categories) {
+                        String catId = cat.name;
+                        String catType = cat.categoryType;
+
+                        if (compId.equals("main")) {
+                            deviceType = catId;
+                        }
+
+                        logger.info("");
+                    }
+                }
+            }
+
+            if (deviceType == null) {
+                logger.info("unknow device, bypass");
+                continue;
+            }
+
+            if (name.equals("white-and-color-ambiance")) {
+                continue;
+            }
+
+            deviceType = deviceType.toLowerCase();
+            this.typeRegistry.Register(deviceType, device);
+            createDevice(deviceType, Objects.requireNonNull(device));
+
+        }
+
+        logger.debug("End Discovery");
+    }
+
+    /**
+     * Create a device with the data from the Smartthings hub
+     *
+     * @param deviceData Device data from the hub
+     */
+    private void createDevice(String deviceType, SmartthingsDevice device) {
+        logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceType, device.name);
+
+        // Build the UID as a string smartthings:{ThingType}:{BridgeName}:{DeviceName}
+        String name = device.label; // Note: this is necessary for null analysis to work
+        if (name == null) {
+            logger.info(
+                    "Unexpectedly received data for a device with no name. Check the Smartthings hub devices and make sure every device has a name");
+            return;
+        }
+        String deviceNameNoSpaces = name.replaceAll("\\s", "_");
+        String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
+        if (smartthingsHubCommand == null) {
+            logger.info("SmartthingsHubCommand is unexpectedly null, could not create device {}", device);
+            return;
+        }
+        ThingUID bridgeUid = smartthingsHubCommand.getBridgeUID();
+        String bridgeId = bridgeUid.getId();
+        String uidStr = String.format("smartthings:%s:%s:%s", deviceType, bridgeId, smartthingsDeviceName);
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("smartthingsName", name);
+        properties.put("deviceId", device.deviceId);
+        properties.put("deviceLabel", device.label);
+        properties.put("deviceName", device.name);
+
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr)).withProperties(properties)
+                .withRepresentationProperty("deviceId").withBridge(bridgeUid).withLabel(name).build();
+
+        thingDiscovered(discoveryResult);
     }
 
     /**
@@ -163,46 +351,13 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
         // The data returned from the Smartthings hub is a list of strings where each
         // element is the data for one device. That device string is another json object
-        List<String> devices = new ArrayList<>();
-        devices = gson.fromJson(data, devices.getClass());
-        for (String device : devices) {
-            SmartthingsDeviceData deviceData = gson.fromJson(device, SmartthingsDeviceData.class);
-            createDevice(Objects.requireNonNull(deviceData));
-        }
-    }
-
-    /**
-     * Create a device with the data from the Smartthings hub
-     *
-     * @param deviceData Device data from the hub
-     */
-    private void createDevice(SmartthingsDeviceData deviceData) {
-        logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceData.capability, deviceData.name);
-
-        // Build the UID as a string smartthings:{ThingType}:{BridgeName}:{DeviceName}
-        String name = deviceData.name; // Note: this is necessary for null analysis to work
-        if (name == null) {
-            logger.info(
-                    "Unexpectedly received data for a device with no name. Check the Smartthings hub devices and make sure every device has a name");
-            return;
-        }
-        String deviceNameNoSpaces = name.replaceAll("\\s", "_");
-        String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
-        if (smartthingsHubCommand == null) {
-            logger.info("SmartthingsHubCommand is unexpectedly null, could not create device {}", deviceData);
-            return;
-        }
-        ThingUID bridgeUid = smartthingsHubCommand.getBridgeUID();
-        String bridgeId = bridgeUid.getId();
-        String uidStr = String.format("smartthings:%s:%s:%s", deviceData.capability, bridgeId, smartthingsDeviceName);
-
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("smartthingsName", name);
-        properties.put("deviceId", deviceData.id);
-
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr)).withProperties(properties)
-                .withRepresentationProperty("deviceId").withBridge(bridgeUid).withLabel(name).build();
-
-        thingDiscovered(discoveryResult);
+        /*
+         * List<String> devices = new ArrayList<>();
+         * devices = gson.fromJson(data, devices.getClass());
+         * for (String device : devices) {
+         * SmartthingsDeviceData deviceData = gson.fromJson(device, SmartthingsDeviceData.class);
+         * createDevice(Objects.requireNonNull(deviceData));
+         * }
+         */
     }
 }

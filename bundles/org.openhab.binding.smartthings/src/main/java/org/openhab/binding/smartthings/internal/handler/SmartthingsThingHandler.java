@@ -18,16 +18,19 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
+import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.converter.SmartthingsConverter;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -41,6 +44,8 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Bob Raker - Initial contribution
@@ -57,6 +62,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
     private Map<ChannelUID, SmartthingsConverter> converters = new HashMap<>();
 
     private final String smartthingsConverterName = "smartthings-converter";
+    private @Nullable ScheduledFuture<?> pollingJob = null;
 
     public SmartthingsThingHandler(Thing thing, SmartthingsHandlerFactory smartthingsHandlerFactory) {
         super(thing);
@@ -92,29 +98,77 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
             SmartthingsConverter converter = converters.get(channelUID);
 
             String path;
-            String jsonMsg;
+            String jsonMsg = "";
             if (command instanceof RefreshType) {
-                path = "/state";
-                // Go to ST hub and ask for current state
-                jsonMsg = String.format(
-                        "{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"capabilityAttribute\": \"%s\", \"openHabStartTime\": %d}",
-                        thingTypeId, smartthingsName, smartthingsType, System.currentTimeMillis());
-            } else {
-                // Send update to ST hub
-                path = "/update";
-                jsonMsg = converter.convertToSmartthings(channelUID, command);
+                SmartthingsCloudBridgeHandler cloudBridge = (SmartthingsCloudBridgeHandler) bridge.getHandler();
+                SmartthingsApi api = cloudBridge.getSmartthingsApi();
+                Map<String, String> properties = this.getThing().getProperties();
+                String deviceId = properties.get("deviceId");
 
-                // The smartthings hub won't (can't) return a response to this call. But, it will send a separate
-                // message back to the SmartthingBridgeHandler.receivedPushMessage handler
+                if (deviceId != null) {
+                    JsonObject res = api.SendStatus(deviceId, jsonMsg);
+                    if (res != null) {
+                        JsonObject cp = res.get("components").getAsJsonObject();
+                        JsonObject main = cp.get("main").getAsJsonObject();
+                        JsonObject sw = main.get("switch").getAsJsonObject();
+                        JsonObject sw2 = sw.get("switch").getAsJsonObject();
+                        String value = sw2.get("value").getAsString();
+                        if (value.equals("on")) {
+                            updateState(channelUID, OnOffType.ON);
+                        } else {
+                            updateState(channelUID, OnOffType.OFF);
+                        }
+
+                        logger.trace("");
+                    }
+                }
+
+            } else {
+                // @todo : review this
+                jsonMsg = converter.convertToSmartthings(channelUID, command);
             }
 
-            try {
-                smartthingsHandlerFactory.sendDeviceCommand(path, timeout, jsonMsg);
-                // Smartthings will not return a response to this message but will send it's response message
-                // which will get picked up by the SmartthingBridgeHandler.receivedPushMessage handler
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("Attempt to send command to the Smartthings hub for {} failed with exception: {}",
-                        smartthingsName, e.getMessage());
+            // try {
+
+            if (command instanceof OnOffType) {
+                OnOffType OnOff = (OnOffType) command;
+                String val = OnOff.toString().toLowerCase();
+
+                jsonMsg = String
+                        .format("{'commands': [{'component': 'main', 'capability': 'switch', 'command': '%s'}]}", val);
+
+                SmartthingsCloudBridgeHandler cloudBridge = (SmartthingsCloudBridgeHandler) bridge.getHandler();
+                SmartthingsApi api = cloudBridge.getSmartthingsApi();
+                Map<String, String> properties = this.getThing().getProperties();
+                String deviceId = properties.get("deviceId");
+
+                if (deviceId != null) {
+                    api.SendCommand(deviceId, jsonMsg);
+                }
+
+                updateState(channelUID, OnOff);
+
+            }
+
+            else if (command instanceof PercentType) {
+                PercentType pt = (PercentType) command;
+                String val = "" + pt.intValue();
+
+                jsonMsg = String.format(
+                        "{'commands': [{'component': 'main', 'capability': 'switchLevel', 'command': 'setLevel', 'arguments': [%s, 2]}]}",
+                        val);
+
+                SmartthingsCloudBridgeHandler cloudBridge = (SmartthingsCloudBridgeHandler) bridge.getHandler();
+                SmartthingsApi api = cloudBridge.getSmartthingsApi();
+                Map<String, String> properties = this.getThing().getProperties();
+                String deviceId = properties.get("deviceId");
+
+                if (deviceId != null) {
+                    api.SendCommand(deviceId, jsonMsg);
+                }
+
+                updateState(channelUID, pt);
+
             }
         }
     }
@@ -196,7 +250,42 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
             }
         }
 
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 5, TimeUnit.SECONDS);
+
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> lcPollingJob = pollingJob;
+        if (lcPollingJob != null) {
+            lcPollingJob.cancel(true);
+            pollingJob = null;
+        }
+    }
+
+    private void pollingCode() {
+        Bridge lcBridge = getBridge();
+
+        if (lcBridge == null) {
+            return;
+        }
+
+        if (lcBridge.getStatus() == ThingStatus.OFFLINE) {
+            if (!ThingStatusDetail.COMMUNICATION_ERROR.equals(lcBridge.getStatusInfo().getStatusDetail())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                return;
+            }
+        }
+
+        if (lcBridge.getStatus() != ThingStatus.ONLINE) {
+            if (!ThingStatusDetail.COMMUNICATION_ERROR.equals(lcBridge.getStatusInfo().getStatusDetail())) {
+                logger.debug("Bridge is not ready, don't enter polling for now!");
+                return;
+            }
+        }
+
+        long start = System.currentTimeMillis();
     }
 
     private @Nullable SmartthingsConverter getConverter(String converterName) {
@@ -231,13 +320,14 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
     }
 
     private boolean validateConfig(SmartthingsThingConfig config) {
-        String name = config.smartthingsName;
-        if (name.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Smartthings device name is missing");
-            return false;
-        }
-
+        /*
+         * String name = config.smartthingsName;
+         * if (name.isEmpty()) {
+         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+         * "Smartthings device name is missing");
+         * return false;
+         * }
+         */
         return true;
     }
 
