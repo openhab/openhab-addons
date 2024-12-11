@@ -21,7 +21,6 @@ import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.core.i18n.LocationProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -36,8 +35,8 @@ import org.osgi.framework.BundleContext;
 public class DirigeraHandlerManipulator extends DirigeraHandler {
 
     public DirigeraHandlerManipulator(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
-            DirigeraDiscoveryManager discoveryManager, TimeZoneProvider timeZoneProvider) {
-        super(bridge, insecureClient, bindingStorage, discoveryManager, timeZoneProvider, mock(LocationProvider.class),
+            DirigeraDiscoveryManager discoveryManager) {
+        super(bridge, insecureClient, bindingStorage, discoveryManager, mock(LocationProvider.class),
                 mock(DirigeraCommandProvider.class), mock(BundleContext.class));
         // Changes the class of the provider. During initialize this class will be used for instantiation
         super.apiProvider = DirigeraAPISimu.class;

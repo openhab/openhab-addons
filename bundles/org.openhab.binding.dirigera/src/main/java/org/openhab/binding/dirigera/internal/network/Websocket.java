@@ -181,7 +181,7 @@ public class Websocket {
             if (sent != null) {
                 long durationMS = Duration.between(sent, Instant.now()).toMillis();
                 statistics.put(PING_LATENCY, durationMS);
-                statistics.put(PING_LAST, Instant.now().atZone(gateway.getTimeZoneProvider().getTimeZone()));
+                statistics.put(PING_LAST, Instant.now());
             } else {
                 logger.info("DIRIGERA WS receiced pong without ping {}", paylodString);
             }
