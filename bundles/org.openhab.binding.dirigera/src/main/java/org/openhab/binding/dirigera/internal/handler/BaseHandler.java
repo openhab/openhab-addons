@@ -250,6 +250,10 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                             sendAttributes(attributes);
                         }
                         break;
+                }
+            } else {
+                // handle channels which are not defined in device map
+                switch (targetChannel) {
                     case CHANNEL_LINKS:
                         if (customDebug) {
                             logger.info("DIRIGERA BASE_HANDLER {} remove connection {}", thing.getLabel(),
@@ -282,7 +286,7 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
     protected int sendAttributes(JSONObject attributes) {
         int status = gateway().api().sendAttributes(config.id, attributes);
         if (customDebug) {
-            logger.info("DIRIGERA {} API call: Status {} payload {}", thing.getUID(), status, attributes);
+            logger.info("DIRIGERA BASE_HANDLER {} API call: Status {} payload {}", thing.getUID(), status, attributes);
         }
         return status;
     }
@@ -296,7 +300,7 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
     protected int sendPatch(JSONObject patch) {
         int status = gateway().api().sendPatch(config.id, patch);
         if (customDebug) {
-            logger.info("DIRIGERA {} API call: Status {} payload {}", thing.getUID(), status, patch);
+            logger.info("DIRIGERA BASE_HANDLER {} API call: Status {} payload {}", thing.getUID(), status, patch);
         }
         return status;
     }
@@ -315,7 +319,7 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
      */
     public void handleUpdate(JSONObject update) {
         if (customDebug) {
-            logger.info("DIRIGERA {} handleUpdate JSON {}", thing.getUID(), update);
+            logger.info("DIRIGERA BASE_HANDLER {} handleUpdate JSON {}", thing.getUID(), update);
         }
         // check online offline for each device
         if (update.has(Model.REACHABLE)) {
@@ -415,13 +419,16 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
 
     protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID, String itemType) {
         if (thing.getChannel(channelId) == null) {
+            if (customDebug) {
+                logger.info("DIRIGERA BASE_HANDLER {} create Channel {} {} {}", thing.getUID(), channelId,
+                        channelTypeUID, itemType);
+            }
             // https://www.openhab.org/docs/developer/bindings/#updating-the-thing-structure
             ThingBuilder thingBuilder = editThing();
             // channel type UID needs to be defined in channel-types.xml
             Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), itemType)
                     .withType(new ChannelTypeUID(BINDING_ID, channelTypeUID)).build();
-            thingBuilder.withChannel(channel);
-            updateThing(thingBuilder.build());
+            updateThing(thingBuilder.withChannel(channel).build());
         }
     }
 
