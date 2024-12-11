@@ -1,5 +1,3 @@
-package org.openhab.binding.dirigera.internal.exception;
-
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
@@ -12,6 +10,8 @@ package org.openhab.binding.dirigera.internal.exception;
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+package org.openhab.binding.dirigera.internal.exception;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
