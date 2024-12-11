@@ -114,7 +114,7 @@ public class SmartPlugHandler extends PowerPlugHandler {
                             String dateTime = attributes.getString(key);
                             Instant restTime = Instant.parse(dateTime);
                             updateState(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET_DATE),
-                                    new DateTimeType(restTime.atZone(gateway().getTimeZoneProvider().getTimeZone())));
+                                    new DateTimeType(restTime));
                             break;
                     }
                 }

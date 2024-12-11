@@ -15,6 +15,7 @@ package org.openhab.binding.dirigera.internal.handler.scene;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ class TestScene {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_SCENE, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
-        SceneHandler handler = new SceneHandler(thing, SCENE_MAP, DirigeraBridgeProvider.TZP);
+        SceneHandler handler = new SceneHandler(thing, SCENE_MAP);
         CallbackMock callback = new CallbackMock();
         callback.setBridge(hubBridge);
         handler.setCallback(callback);
@@ -65,6 +66,7 @@ class TestScene {
         State dateTimeState = callback.getState("dirigera:scene:test-device:last-trigger");
         assertNotNull(dateTimeState);
         assertTrue(dateTimeState instanceof DateTimeType);
-        assertEquals("2024-10-16T02:21:15.977+0200", ((DateTimeType) dateTimeState).toFullString(), "Last trigger");
+        assertEquals("2024-10-16T02:21:15.977+0200",
+                ((DateTimeType) dateTimeState).toFullString(ZoneId.of("Europe/Berlin")), "Last trigger");
     }
 }

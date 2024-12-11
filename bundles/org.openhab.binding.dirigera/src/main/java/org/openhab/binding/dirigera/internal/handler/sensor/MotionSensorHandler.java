@@ -14,6 +14,7 @@ package org.openhab.binding.dirigera.internal.handler.sensor;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
@@ -216,7 +217,7 @@ public class MotionSensorHandler extends BaseHandler {
                                                     // finally it's identified to follow the sun
                                                     updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE),
                                                             new DecimalType(1));
-                                                    ZonedDateTime sunsetDateTime = gateway().getSunsetDateTime();
+                                                    Instant sunsetDateTime = gateway().getSunsetDateTime();
                                                     if (sunsetDateTime != null) {
                                                         updateState(
                                                                 new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
@@ -228,7 +229,7 @@ public class MotionSensorHandler extends BaseHandler {
                                                         logger.info(
                                                                 "MOTION_SENSOR Location not activated in IKEA App - cannot follow sun");
                                                     }
-                                                    ZonedDateTime sunriseDateTime = gateway().getSunriseDateTime();
+                                                    Instant sunriseDateTime = gateway().getSunriseDateTime();
                                                     if (sunriseDateTime != null) {
                                                         updateState(
                                                                 new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END),
