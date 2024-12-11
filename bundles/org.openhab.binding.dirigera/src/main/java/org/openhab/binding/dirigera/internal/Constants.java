@@ -302,9 +302,8 @@ public class Constants {
 
     public static final Map<String, String> MOTION_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isDetected", CHANNEL_MOTION_DETECTION, "sensorConfig",
-            CHANNEL_ACTIVE_DURATION, PROPERTY_REMOTE_LINKS, CHANNEL_LINKS, "candidates", CHANNEL_LINK_CANDIDATES,
-            "schedule", CHANNEL_SCHEDULE, "schedule-start", CHANNEL_SCHEDULE_START, "schedule-end",
-            CHANNEL_SCHEDULE_END, "circadianPresets", CHANNEL_LIGHT_PRESET);
+            CHANNEL_ACTIVE_DURATION, "schedule", CHANNEL_SCHEDULE, "schedule-start", CHANNEL_SCHEDULE_START,
+            "schedule-end", CHANNEL_SCHEDULE_END, "circadianPresets", CHANNEL_LIGHT_PRESET);
 
     public static final Map<String, String> REPEATER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
 
