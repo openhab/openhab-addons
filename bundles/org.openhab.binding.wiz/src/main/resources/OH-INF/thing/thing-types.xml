@@ -17,6 +17,9 @@
 			<channel id="last-update" typeId="last-update"/>
 			<channel id="rssi" typeId="rssi"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
 
@@ -34,6 +37,9 @@
 			<channel id="last-update" typeId="last-update"/>
 			<channel id="rssi" typeId="rssi"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
 
@@ -49,6 +55,9 @@
 			<channel id="last-update" typeId="last-update"/>
 			<channel id="rssi" typeId="rssi"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
 
@@ -62,6 +71,9 @@
 			<channel id="last-update" typeId="last-update"/>
 			<channel id="rssi" typeId="rssi"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
 
@@ -78,6 +90,9 @@
 			<channel id="last-update" typeId="last-update"/>
 			<channel id="rssi" typeId="rssi"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
 
@@ -90,6 +105,9 @@
 			<channel-group id="light" typeId="dimmable-light"/>
 			<channel-group id="fan" typeId="fan-group"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
 
@@ -185,7 +203,7 @@
 	</channel-type>
 
 	<channel-type id="rssi" advanced="true">
-		<item-type unitHint="dB">Number:Dimensionless</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>RSSI</label>
 		<description>WiFi Received Signal Strength Indicator</description>
 		<category>QualityOfService</category>

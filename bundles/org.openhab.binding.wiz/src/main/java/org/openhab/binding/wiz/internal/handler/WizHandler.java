@@ -592,7 +592,7 @@ public class WizHandler extends BaseThingHandler {
                 strength = 4;
             }
             updateDeviceState(CHANNEL_SIGNAL_STRENGTH, new DecimalType(strength));
-            updateDeviceState(CHANNEL_RSSI, new QuantityType<>(receivedParam.rssi, Units.DECIBEL));
+            updateDeviceState(CHANNEL_RSSI, new QuantityType<>(receivedParam.rssi, Units.DECIBEL_MILLIWATTS));
         }
     }
 
