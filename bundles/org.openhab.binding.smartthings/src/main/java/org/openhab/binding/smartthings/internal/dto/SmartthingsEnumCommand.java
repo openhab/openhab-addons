@@ -12,22 +12,12 @@
  */
 package org.openhab.binding.smartthings.internal.dto;
 
-import java.util.Hashtable;
-
 /**
  * Data object for Smartthings capabilities description
  *
  * @author Laurent ARNAL - Initial contribution
  */
-public class SmartthingsCapabilitie {
-
-    public String id;
-    public String version;
-    protected String status;
-    protected String name;
-    protected boolean ephemeral;
-
-    protected Hashtable<String, SmartthingsAttribute> attributes;
-    protected Hashtable<String, SmartthingsCommand> commands;
-
+public class SmartthingsEnumCommand {
+    public String command;
+    public String value;
 }

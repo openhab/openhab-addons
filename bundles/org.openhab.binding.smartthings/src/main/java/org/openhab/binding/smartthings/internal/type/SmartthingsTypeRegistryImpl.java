@@ -15,20 +15,15 @@ package org.openhab.binding.smartthings.internal.type;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,15 +56,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.reflect.TypeToken;
-
 /**
  *
  * @author Laurent Arnal - Initial contribution
@@ -80,8 +66,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(SmartthingsTypeRegistryImpl.class);
 
-    private final @NotNull Gson gson;
-
     private static final String TEMPLATE_PATH = "json/";
     private @Nullable SmartthingsThingTypeProvider thingTypeProvider;
     private @Nullable SmartthingsChannelTypeProvider channelTypeProvider;
@@ -89,128 +73,15 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     private @Nullable SmartthingsConfigDescriptionProvider configDescriptionProvider;
     private @NonNullByDefault({}) BundleContext bundleContext;
 
-    private Dictionary<String, SmartthingsJSonCapabilities> capabilitiesDict = new Hashtable<String, SmartthingsJSonCapabilities>();
+    private Dictionary<String, SmartthingsCapabilitie> capabilitiesDict = new Hashtable<String, SmartthingsCapabilitie>();
 
     public SmartthingsTypeRegistryImpl() {
         this.bundleContext = FrameworkUtil.getBundle(SmartthingsTypeRegistryImpl.class).getBundleContext();
         logger.info("SmartthingsTypeRegistryImpl()");
-        GsonBuilder builder = new GsonBuilder();
-
-        Type smartthingsAttributesListType = new TypeToken<List<SmartthingsJSonAttributes>>() {
-        }.getType();
-
-        Type smartthingsCommandsListType = new TypeToken<List<SmartthingsJSonCommands>>() {
-        }.getType();
-
-        Type smartthingsPropertiesListType = new TypeToken<List<SmartthingsJSonProperties>>() {
-        }.getType();
-
-        gson = builder.setPrettyPrinting()
-                .registerTypeAdapter(smartthingsAttributesListType, new SmartthingsAttributesDeserializer())
-                .registerTypeAdapter(smartthingsCommandsListType, new SmartthingsCommandsDeserializer())
-                .registerTypeAdapter(smartthingsPropertiesListType, new SmartthingPropertiesDeserializer()).create();
-
-        loadCapabilitiesDefs();
-        logger.info("pa");
     }
 
-    class SmartthingsAttributesDeserializer implements JsonDeserializer<List<SmartthingsJSonAttributes>> {
-        @Override
-        public @Nullable List<SmartthingsJSonAttributes> deserialize(JsonElement json, Type typeOfT,
-                JsonDeserializationContext context) throws JsonParseException {
-            // TODO Auto-generated method stub
-
-            JsonObject obj = (JsonObject) json;
-            Set<String> keys = obj.keySet();
-            List<SmartthingsJSonAttributes> result = new ArrayList<SmartthingsJSonAttributes>();
-            for (String key : keys) {
-                JsonObject obj1 = (JsonObject) obj.get(key);
-                SmartthingsJSonAttributes attr = gson.fromJson(obj1, SmartthingsJSonAttributes.class);
-                attr.setName(key);
-                result.add(attr);
-            }
-
-            return result;
-        }
-    }
-
-    class SmartthingsCommandsDeserializer implements JsonDeserializer<List<SmartthingsJSonCommands>> {
-        @Override
-        public @Nullable List<SmartthingsJSonCommands> deserialize(JsonElement json, Type typeOfT,
-                JsonDeserializationContext context) throws JsonParseException {
-            // TODO Auto-generated method stub
-
-            List<SmartthingsJSonCommands> result = new ArrayList<SmartthingsJSonCommands>();
-
-            if (json.isJsonObject()) {
-                JsonObject obj = (JsonObject) json;
-                Set<String> keys = obj.keySet();
-                for (String key : keys) {
-                    JsonObject obj1 = (JsonObject) obj.get(key);
-                    SmartthingsJSonCommands commands = gson.fromJson(obj1, SmartthingsJSonCommands.class);
-                    commands.setName(key);
-                    result.add(commands);
-                }
-            } else if (json.isJsonArray()) {
-
-            }
-
-            return result;
-        }
-    }
-
-    class SmartthingPropertiesDeserializer implements JsonDeserializer<List<SmartthingsJSonProperties>> {
-        @Override
-        public @Nullable List<SmartthingsJSonProperties> deserialize(JsonElement json, Type typeOfT,
-                JsonDeserializationContext context) throws JsonParseException {
-            // TODO Auto-generated method stub
-
-            JsonObject obj = (JsonObject) json;
-            Set<String> keys = obj.keySet();
-            List<SmartthingsJSonProperties> result = new ArrayList<SmartthingsJSonProperties>();
-            for (String key : keys) {
-                JsonObject obj1 = (JsonObject) obj.get(key);
-                SmartthingsJSonProperties props = gson.fromJson(obj1, SmartthingsJSonProperties.class);
-                props.setName(key);
-                result.add(props);
-            }
-
-            return result;
-        }
-    }
-
-    public void loadCapabilitiesDefs() {
-        Enumeration<String> entries = bundleContext.getBundle().getEntryPaths("json/");
-        while (entries.hasMoreElements()) {
-            String entry = entries.nextElement();
-
-            boolean shouldLoad = true;
-            if (entry.indexOf("Presentation") >= 0) {
-                shouldLoad = false;
-            }
-
-            if (shouldLoad) {
-                loadCapabilityDef(entry);
-            }
-        }
-    }
-
-    public void loadCapabilityDef(String path) {
-        try {
-            logger.info("loading capa: {}", path);
-            String template = readTemplate(path);
-
-            SmartthingsJSonCapabilities resultObj = getGson().fromJson(template, SmartthingsJSonCapabilities.class);
-            capabilitiesDict.put(resultObj.id, resultObj);
-
-        } catch (Exception ex) {
-            logger.info("error loading capa: {} <> {}", path, ex.toString());
-            logger.info("");
-        }
-    }
-
-    public Gson getGson() {
-        return gson;
+    public void RegisterCapabilities(SmartthingsCapabilitie capa) {
+        capabilitiesDict.put(capa.id, capa);
     }
 
     @Override
@@ -318,7 +189,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
                         capId = capId.replace('.', '_');
 
-                        SmartthingsJSonCapabilities capa = capabilitiesDict.get(capId);
+                        SmartthingsCapabilitie capa = capabilitiesDict.get(capId);
 
                         addChannel(deviceType, groupTypes, channelDefinitions, capId + "channel", capId);
 

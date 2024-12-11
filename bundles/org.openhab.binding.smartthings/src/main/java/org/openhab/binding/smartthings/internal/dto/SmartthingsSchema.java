@@ -19,15 +19,10 @@ import java.util.Hashtable;
  *
  * @author Laurent ARNAL - Initial contribution
  */
-public class SmartthingsCapabilitie {
-
-    public String id;
-    public String version;
-    protected String status;
-    protected String name;
-    protected boolean ephemeral;
-
-    protected Hashtable<String, SmartthingsAttribute> attributes;
-    protected Hashtable<String, SmartthingsCommand> commands;
-
+public class SmartthingsSchema {
+    public String type;
+    public String title;
+    public Boolean additionalProperties;
+    public Hashtable<String, SmartthingsProperty> properties;
+    public String[] required;
 }

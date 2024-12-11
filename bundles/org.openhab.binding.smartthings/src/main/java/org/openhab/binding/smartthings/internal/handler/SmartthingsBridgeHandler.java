@@ -26,6 +26,7 @@ import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnector;
 import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnectorImpl;
 import org.openhab.binding.smartthings.internal.discovery.SmartthingsDiscoveryService;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -64,6 +65,7 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
     private @NonNullByDefault({}) HttpService httpService;
     private @NonNullByDefault({}) HttpClientFactory httpClientFactory;
     private @NonNullByDefault({}) SmartthingsApi smartthingsApi;
+    protected @NonNullByDefault({}) SmartthingsTypeRegistry typeRegistry;
 
     private @Nullable SmartthingsServlet servlet;
     private @Nullable OAuthClientService oAuthService;
@@ -73,13 +75,14 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
 
     public SmartthingsBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
             BundleContext bundleContext, HttpService httpService, OAuthFactory oAuthFactory,
-            HttpClientFactory httpClientFactory) {
+            HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry) {
         super(bridge);
         this.smartthingsHandlerFactory = smartthingsHandlerFactory;
         this.bundleContext = bundleContext;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
         this.httpClientFactory = httpClientFactory;
+        this.typeRegistry = typeRegistry;
 
         config = getThing().getConfiguration().as(SmartthingsBridgeConfig.class);
     }
