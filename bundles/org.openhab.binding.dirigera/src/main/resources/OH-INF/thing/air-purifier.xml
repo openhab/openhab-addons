@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="air-purifier">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Air Purifier</label>
+		<description>Air cleaning device with particle filter</description>
+
+		<channels>
+			<channel id="fan-mode" typeId="fan-mode">
+				<label>Fan Mode</label>
+				<description>Fan on, off, speed or automatic behavior</description>
+			</channel>
+			<channel id="fan-speed" typeId="dimmer">
+				<label>Fan Speed</label>
+				<description>Manual regulation of fan speed</description>
+			</channel>
+			<channel id="fan-runtime" typeId="time">
+				<label>Fan Runtime</label>
+				<description>Fan runtime in minutes</description>
+			</channel>
+			<channel id="filter-elapsed" typeId="time">
+				<label>Filter Elapsed</label>
+				<description>Filter elapsed time in minutes</description>
+			</channel>
+			<channel id="filter-remain" typeId="time">
+				<label>Filter Remain</label>
+				<description>Remaining filter time in minutes</description>
+			</channel>
+			<channel id="filter-lifetime" typeId="time">
+				<label>Filter Lifetime</label>
+				<description>Filter lifetime in minutes</description>
+			</channel>
+			<channel id="filter-alarm" typeId="switch-ro">
+				<label>Filter Alarm</label>
+				<description>Filter alarm signal</description>
+			</channel>
+			<channel id="particulate-matter" typeId="pm25">
+				<label>Particulate Matter</label>
+				<description>Category 2.5 particulate matter</description>
+			</channel>
+			<channel id="disable-status-light" typeId="disable-status-light"/>
+			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="custom-name" typeId="custom-name"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+</thing:thing-descriptions>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="speaker">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Speaker</label>
+		<description>Speaker with player activities</description>
+
+		<channels>
+			<channel id="media-control" typeId="system.media-control">
+				<label>Media Control</label>
+				<description>Media control play, pause, next, previous</description>
+			</channel>
+			<channel id="volume" typeId="system.volume">
+				<label>Volume Control</label>
+				<description>Control volume in percent</description>
+			</channel>
+			<channel id="mute" typeId="system.mute">
+				<label>Mute Control</label>
+				<description>Mute current audio without stop playing</description>
+			</channel>
+			<channel id="shuffle" typeId="switch">
+				<label>Shuffle</label>
+				<description>Control shuffle mode</description>
+			</channel>
+			<channel id="crossfade" typeId="switch">
+				<label>Cross Fade</label>
+				<description>Cross fading between tracks</description>
+			</channel>
+			<channel id="repeat" typeId="repeat">
+				<label>Repeat</label>
+				<description>Repeat Mode</description>
+			</channel>
+			<channel id="media-title" typeId="system.media-title">
+				<label>Media Title</label>
+				<description>Title of a played media file</description>
+			</channel>
+			<channel id="image" typeId="image">
+				<label>Image</label>
+				<description>Current playing track image</description>
+			</channel>
+			<channel id="custom-name" typeId="custom-name"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+</thing:thing-descriptions>

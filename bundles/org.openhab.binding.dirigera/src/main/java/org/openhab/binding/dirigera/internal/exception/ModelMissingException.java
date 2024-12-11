@@ -10,24 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.insteon.internal.device;
+package org.openhab.binding.dirigera.internal.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Interface for classes that represent a device address
+ * The {@link ModelMissingException} Exception if no gateway is available
  *
- * @author Jeremy Setton - Initial contribution
+ * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public interface DeviceAddress {
-    @Override
-    public String toString();
+public class ModelMissingException extends RuntimeException {
 
-    @Override
-    public boolean equals(@Nullable Object obj);
+    private static final long serialVersionUID = 5184571486237890053L;
 
-    @Override
-    public int hashCode();
+    public ModelMissingException(String message) {
+        super(message);
+    }
 }
