@@ -87,7 +87,6 @@ public class CommunicationManager implements Runnable {
 
     @Activate
     public CommunicationManager() {
-        super();
     }
 
     @Deactivate
@@ -95,53 +94,6 @@ public class CommunicationManager implements Runnable {
         thingHandlerListeners.clear();
         discoveryListener = null;
         listenerCountDecreased();
-    }
-
-    /**
-     * Get the resolved IP address from the given host name.
-     */
-    private static String ipAddressFrom(String host) {
-        try {
-            return InetAddress.getByName(host).getHostAddress();
-        } catch (UnknownHostException e) {
-        }
-        return host;
-    }
-
-    /**
-     * Call this after one or more listeners have been added.
-     * Starts the server thread if it is not already running.
-     */
-    private void listenerCountIncreased() {
-        synchronized (serverLock) {
-            Thread thread = serverThread;
-            if ((thread == null) || thread.isInterrupted() || !thread.isAlive()) {
-                thread = new Thread(this, "OH-binding-" + GoveeBindingConstants.BINDING_ID + "-StatusReceiver");
-                serverThread = thread;
-                thread.start();
-            }
-        }
-    }
-
-    /**
-     * Call this after one or more listeners have been removed.
-     * Stops the server thread when listener count reaches zero.
-     */
-    private void listenerCountDecreased() {
-        synchronized (serverLock) {
-            if (thingHandlerListeners.isEmpty() && (discoveryListener == null)) {
-                Thread thread = serverThread;
-                DatagramSocket socket = serverSocket;
-                if (thread != null) {
-                    thread.interrupt(); // set interrupt flag before closing socket
-                }
-                if (socket != null) {
-                    socket.close();
-                }
-                serverThread = null;
-                serverSocket = null;
-            }
-        }
     }
 
     /**
@@ -203,23 +155,6 @@ public class CommunicationManager implements Runnable {
         } finally {
             discoveryListener = null;
             listenerCountDecreased();
-        }
-    }
-
-    /**
-     * Send discovery ping multicast on the given network interface and ipv4 address.
-     */
-    private void sendPing(NetworkInterface interFace, String ipv4Address) {
-        try (DatagramChannel channel = (DatagramChannel) DatagramChannel.open(StandardProtocolFamily.INET)
-                .setOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .setOption(StandardSocketOptions.IP_MULTICAST_TTL, 64)
-                .setOption(StandardSocketOptions.IP_MULTICAST_IF, interFace)
-                .bind(new InetSocketAddress(ipv4Address, DISCOVERY_PORT)).configureBlocking(false)) {
-            logger.trace("Sending ping from {}:{} ({}) to {}:{} with content = {}", ipv4Address, DISCOVERY_PORT,
-                    interFace.getDisplayName(), DISCOVERY_MULTICAST_ADDRESS, DISCOVERY_PORT, DISCOVER_REQUEST);
-            channel.send(ByteBuffer.wrap(DISCOVER_REQUEST.getBytes()), DISCOVERY_SOCKET_ADDRESS);
-        } catch (IOException e) {
-            logger.debug("Network error", e);
         }
     }
 
@@ -289,5 +224,69 @@ public class CommunicationManager implements Runnable {
                 serverThread = null;
             }
         } // {while}
+    }
+
+    /**
+     * Get the resolved IP address from the given host name.
+     */
+    private static String ipAddressFrom(String host) {
+        try {
+            return InetAddress.getByName(host).getHostAddress();
+        } catch (UnknownHostException e) {
+        }
+        return host;
+    }
+
+    /**
+     * Call this after one or more listeners have been added.
+     * Starts the server thread if it is not already running.
+     */
+    private void listenerCountIncreased() {
+        synchronized (serverLock) {
+            Thread thread = serverThread;
+            if ((thread == null) || thread.isInterrupted() || !thread.isAlive()) {
+                thread = new Thread(this, "OH-binding-" + GoveeBindingConstants.BINDING_ID + "-StatusReceiver");
+                serverThread = thread;
+                thread.start();
+            }
+        }
+    }
+
+    /**
+     * Call this after one or more listeners have been removed.
+     * Stops the server thread when listener count reaches zero.
+     */
+    private void listenerCountDecreased() {
+        synchronized (serverLock) {
+            if (thingHandlerListeners.isEmpty() && (discoveryListener == null)) {
+                Thread thread = serverThread;
+                DatagramSocket socket = serverSocket;
+                if (thread != null) {
+                    thread.interrupt(); // set interrupt flag before closing socket
+                }
+                if (socket != null) {
+                    socket.close();
+                }
+                serverThread = null;
+                serverSocket = null;
+            }
+        }
+    }
+
+    /**
+     * Send discovery ping multicast on the given network interface and ipv4 address.
+     */
+    private void sendPing(NetworkInterface interFace, String ipv4Address) {
+        try (DatagramChannel channel = (DatagramChannel) DatagramChannel.open(StandardProtocolFamily.INET)
+                .setOption(StandardSocketOptions.SO_REUSEADDR, true)
+                .setOption(StandardSocketOptions.IP_MULTICAST_TTL, 64)
+                .setOption(StandardSocketOptions.IP_MULTICAST_IF, interFace)
+                .bind(new InetSocketAddress(ipv4Address, DISCOVERY_PORT)).configureBlocking(false)) {
+            logger.trace("Sending ping from {}:{} ({}) to {}:{} with content = {}", ipv4Address, DISCOVERY_PORT,
+                    interFace.getDisplayName(), DISCOVERY_MULTICAST_ADDRESS, DISCOVERY_PORT, DISCOVER_REQUEST);
+            channel.send(ByteBuffer.wrap(DISCOVER_REQUEST.getBytes()), DISCOVERY_SOCKET_ADDRESS);
+        } catch (IOException e) {
+            logger.debug("Network error", e);
+        }
     }
 }
