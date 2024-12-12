@@ -19,7 +19,7 @@
 			<description>OpenAI API key.</description>
 		</parameter>
 		<parameter name="apiUrl" type="text" required="true" groupName="authentication">
-			<label>Api URL</label>
+			<label>API URL</label>
 			<required>true</required>
 			<description>TTS host API URL.</description>
 			<default>https://api.openai.com/v1/audio/speech</default>
