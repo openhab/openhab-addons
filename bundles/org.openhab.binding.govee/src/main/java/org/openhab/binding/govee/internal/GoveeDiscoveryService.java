@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -81,9 +82,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.govee")
 public class GoveeDiscoveryService extends AbstractDiscoveryService implements GoveeDiscoveryListener {
+
+    private static final int BACKGROUND_SCAN_INTERVAL_SECONDS = 300;
+
     private final Logger logger = LoggerFactory.getLogger(GoveeDiscoveryService.class);
 
     private final CommunicationManager communicationManager;
+    private @Nullable ScheduledFuture<?> backgroundScanTask;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(GoveeBindingConstants.THING_TYPE_LIGHT);
 
@@ -91,7 +96,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
     public GoveeDiscoveryService(final @Reference TranslationProvider i18nProvider,
             final @Reference LocaleProvider localeProvider,
             final @Reference CommunicationManager communicationManager) {
-        super(SUPPORTED_THING_TYPES_UIDS, CommunicationManager.SCAN_TIMEOUT_SEC, false);
+        super(SUPPORTED_THING_TYPES_UIDS, CommunicationManager.SCAN_TIMEOUT_SEC, true);
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         this.communicationManager = communicationManager;
@@ -106,8 +111,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
     @Override
     protected void startScan() {
         logger.debug("Starting scan");
-        scheduler.schedule(() -> communicationManager.runDiscoveryForInterfaces(getLocalNetworkInterfaces(), this), 0,
-                TimeUnit.MILLISECONDS);
+        scheduler.schedule(this::doDiscovery, 0, TimeUnit.MILLISECONDS);
     }
 
     public @Nullable DiscoveryResult responseToResult(DiscoveryResponse response) {
@@ -184,6 +188,13 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
     }
 
     /**
+     * Command the {@link CommunicationManager) to run the scans.
+     */
+    private void doDiscovery() {
+        communicationManager.runDiscoveryForInterfaces(getLocalNetworkInterfaces(), this);
+    }
+
+    /**
      * This method is called back by the {@link CommunicationManager} when it receives a {@link DiscoveryResponse}
      * notification carrying information about potential newly discovered Things.
      */
@@ -192,6 +203,24 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
         DiscoveryResult discoveryResult = responseToResult(discoveryResponse);
         if (discoveryResult != null) {
             thingDiscovered(discoveryResult);
+        }
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        ScheduledFuture<?> backgroundScanTask = this.backgroundScanTask;
+        if (backgroundScanTask == null || backgroundScanTask.isCancelled()) {
+            this.backgroundScanTask = scheduler.scheduleWithFixedDelay(this::doDiscovery, 0,
+                    BACKGROUND_SCAN_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        ScheduledFuture<?> backgroundScanTask = this.backgroundScanTask;
+        if (backgroundScanTask != null) {
+            backgroundScanTask.cancel(true);
+            this.backgroundScanTask = null;
         }
     }
 }
