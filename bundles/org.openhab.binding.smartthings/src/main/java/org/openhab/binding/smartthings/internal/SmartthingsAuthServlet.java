@@ -68,6 +68,7 @@ public class SmartthingsAuthServlet extends HttpServlet {
     private static final String KEY_SETUP_URI = "setup.uri";
     private static final String KEY_REDIRECT_URI = "redirectUri";
     private static final String KEY_LOCATIONID_OPTION = "locationId.Option";
+    private static final String KEY_POOL_STATUS = "poolStatus";
 
     // Keys present in the player.html
 
@@ -77,6 +78,9 @@ public class SmartthingsAuthServlet extends HttpServlet {
 
     private final String indexTemplate;
     private final String selectLocationTemplate;
+    private final String poolTemplate;
+    private final String confirmationTemplate;
+    private int idx = 0;
 
     private static final String TEMPLATE_PATH = "templates/";
 
@@ -89,6 +93,8 @@ public class SmartthingsAuthServlet extends HttpServlet {
         try {
             this.indexTemplate = readTemplate("index.html");
             this.selectLocationTemplate = readTemplate("selectlocation.html");
+            this.poolTemplate = readTemplate("pool.ajax");
+            this.confirmationTemplate = readTemplate("confirmation.html");
 
         } catch (IOException e) {
             throw new SmartthingsException("unable to initialize auth servlet", e);
@@ -129,6 +135,10 @@ public class SmartthingsAuthServlet extends HttpServlet {
             template = indexTemplate;
         } else if (servletBaseUrl.contains("selectlocation")) {
             template = selectLocationTemplate;
+        } else if (servletBaseUrl.contains("pool")) {
+            template = poolTemplate;
+        } else if (servletBaseUrl.contains("confirmation")) {
+            template = confirmationTemplate;
         } else {
             template = indexTemplate;
         }
@@ -143,10 +153,18 @@ public class SmartthingsAuthServlet extends HttpServlet {
             for (SmartthingsLocation loc : locationList) {
                 optionBuffer.append("<option value=\"" + loc.locationId + "\">" + loc.name + "</option>");
             }
+        } else if (template == poolTemplate) {
+            idx++;
 
+            if (idx < 10) {
+                replaceMap.put(KEY_POOL_STATUS, "false");
+            } else {
+                replaceMap.put(KEY_POOL_STATUS, "true");
+            }
         }
 
         String servletBaseURLSecure = servletBaseUrl.replace("http://", "https://").replace("8080", "8443");
+
         handleSmartthingsRedirect(replaceMap, servletBaseURLSecure, req.getQueryString());
         resp.setContentType(CONTENT_TYPE);
         SmartthingsAccountHandler accountHandler = smartthingsAuthService.getSmartthingsAccountHandler();

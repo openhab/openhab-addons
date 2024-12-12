@@ -7,6 +7,7 @@ ${pageRefresh}
 <title>Authorize openHAB binding for Smartthings</title>
 <link rel="icon" href="img/favicon.ico" type="image/vnd.microsoft.icon">
 <link>
+<script src="/smartthings/web/js/thirdparty/jquery.min.js"></script>
 
 
 <style>
@@ -69,35 +70,9 @@ html {
     <path d="m 311.16893,3.3686968 c 46.45255,0 84.33469,37.4250352 84.33469,83.3154142 0,45.887409 -37.88214,83.314139 -84.33469,83.314139 -25.37318,0 -48.18501,-11.17665 -63.66633,-28.79057 l 2.98008,-2.95501 2.16319,-2.13785 2.16749,-2.14377 2.16835,-2.14209 0.0884,-0.0865 c 13.00665,15.21415 32.43854,24.9082 54.09884,24.9082 39.00964,0 70.82522,-31.42855 70.82522,-69.966579 0,-38.540154 -31.81558,-69.969554 -70.82522,-69.969554 -39.01137,0 -70.82694,31.4294 -70.82694,69.969554 0,5.189918 0.58434,10.24717 1.67968,15.121749 l -4.69923,4.65206 -6.27207,6.2012 c -2.73168,-8.18222 -4.217,-16.909931 -4.217,-25.97501 0,-45.89038 37.88214,-83.3154145 84.33556,-83.3154145 z" style="clip-rule:evenodd;fill:#474747;fill-rule:evenodd;stroke-width:0.87332809" />
   </g>
 </svg>
-	<h3>Setup openHAB binding for Smartthings</h3>
-	<p>This process will create a OpenHab smartapp on the smartthings side.<br/><br/>
-	The smarthingapps will be in charge to synchronize the Smartthings device state to openhab device.<br/><br/>
-	After the process you will should see a new openhab installed apps on the routine tab of the smarthings application, or on the mysmarthings site (https://my.smartthings.com/advanced/installedapps).<br/><br/>
+	<h3>Success</h3>
+	<p>The following location was added to Openhab : ${location}</p>
 	
-	For this to work, you will have to setup openhab cloud connector before starting this process <br/><br/>
-	
-	The process need multiple step:<br/><br/>
-	<ul>
-		<li>First selecting your location if you create multiple location in smarthings.</li>
-		<li>You will be next redirect to smartthings site, to confirm the app name installation.</li>
-		<li>Next, you will have to authorize openhab for access to your smarthings device.</li>
-		<li>Last step, you will come back to openhab side with a confirmations.</li>
-	</ul>
-	</p>
-	<p>
-		The redirect URI that will be used with Smartthings for this openHAB installation is
-		<a href="${redirectUri}">${redirectUri}</a>
-	</p>
-	
-	<div class="block${bridge.authorized}">
-        <p>
-                <div class="button">
-                    <a href="/connectsmartthings/selectlocation">Next
-                    </a>
-                </div>
-        </p>
-    </div>
-
-
+	<p>You can now go back to openhab to launch a Smartthings scan to discover all your devices</p>
 </body>
 </html>

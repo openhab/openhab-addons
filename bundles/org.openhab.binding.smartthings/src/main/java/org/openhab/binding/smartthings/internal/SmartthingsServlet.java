@@ -45,6 +45,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,16 +83,16 @@ public class SmartthingsServlet extends HttpServlet {
             logger.info("SmartthingsServlet.activate: httpService is unexpectedly null");
             return;
         }
-        // try {
-        Dictionary<String, String> servletParams = new Hashtable<String, String>();
-        logger.info("registerServlet:" + PATH);
-        // httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
-        // httpService.registerResources(PATH + "/img", "web", null);
+        try {
+            Dictionary<String, String> servletParams = new Hashtable<String, String>();
+            logger.info("registerServlet:" + PATH);
+            httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
+            httpService.registerResources(PATH + "/img", "img", null);
+            httpService.registerResources(PATH + "/web", "web", null);
 
-        //
-        // } catch (ServletException | NamespaceException e) {
-        // logger.warn("Could not start Smartthings servlet service: {}", e.getMessage());
-        // }
+        } catch (ServletException | NamespaceException e) {
+            logger.warn("Could not start Smartthings servlet service: {}", e.getMessage());
+        }
     }
 
     protected void deactivate(ComponentContext componentContext) {
