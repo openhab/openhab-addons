@@ -483,6 +483,7 @@
     <module>org.openhab.voice.mactts</module>
     <module>org.openhab.voice.marytts</module>
     <module>org.openhab.voice.mimictts</module>
+    <module>org.openhab.voice.openaitts</module>
     <module>org.openhab.voice.picotts</module>
     <module>org.openhab.voice.pipertts</module>
     <module>org.openhab.voice.pollytts</module>
