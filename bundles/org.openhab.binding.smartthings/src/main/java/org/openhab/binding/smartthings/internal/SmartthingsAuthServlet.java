@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.smartthings.internal;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +34,9 @@ import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.dto.AppResponse;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsLocation;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
+import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,30 +65,89 @@ public class SmartthingsAuthServlet extends HttpServlet {
     private static final String HTML_META_REFRESH_CONTENT = "<meta http-equiv='refresh' content='10; url=%s'>";
     private static final String KEY_AUTHORIZED_USER = "authorizedUser";
     private static final String KEY_ERROR = "error";
-    private static final String KEY_BRIDGE_URI = "bridge.uri";
+    private static final String KEY_SETUP_URI = "setup.uri";
     private static final String KEY_REDIRECT_URI = "redirectUri";
+    private static final String KEY_LOCATIONID_OPTION = "locationId.Option";
+
     // Keys present in the player.html
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsAuthServlet.class);
     private final SmartthingsAuthService smartthingsAuthService;
     private final SmartthingsBridgeHandler bridgeHandler;
-    private final String indexTemplate;
 
-    public SmartthingsAuthServlet(SmartthingsBridgeHandler bridgeHandler, SmartthingsAuthService smartthingsAuthService,
-            String indexTemplate) {
+    private final String indexTemplate;
+    private final String selectLocationTemplate;
+
+    private static final String TEMPLATE_PATH = "templates/";
+
+    public SmartthingsAuthServlet(SmartthingsBridgeHandler bridgeHandler, SmartthingsAuthService smartthingsAuthService)
+            throws SmartthingsException {
+
         this.bridgeHandler = bridgeHandler;
         this.smartthingsAuthService = smartthingsAuthService;
-        this.indexTemplate = indexTemplate;
+
+        try {
+            this.indexTemplate = readTemplate("index.html");
+            this.selectLocationTemplate = readTemplate("selectlocation.html");
+
+        } catch (IOException e) {
+            throw new SmartthingsException("unable to initialize auth servlet", e);
+        }
+
+    }
+
+    /**
+     * Reads a template from file and returns the content as String.
+     *
+     * @param templateName name of the template file to read
+     * @return The content of the template file
+     * @throws IOException thrown when an HTML template could not be read
+     */
+    private String readTemplate(String templateName) throws IOException {
+        final URL url = bridgeHandler.getBundleContext().getBundle().getEntry(TEMPLATE_PATH + templateName);
+
+        if (url == null) {
+            throw new FileNotFoundException(
+                    String.format("Cannot find {}' - failed to initialize Linky servlet".formatted(templateName)));
+        } else {
+            try (InputStream inputStream = url.openStream()) {
+                return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            }
+        }
     }
 
     @Override
     protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
         logger.debug("Smartthings auth callback servlet received GET request {}.", req.getRequestURI());
-        final String servletBaseURL = req.getRequestURL().toString();
         final Map<String, String> replaceMap = new HashMap<>();
 
-        String servletBaseURLSecure = servletBaseURL.replace("http://", "https://").replace("8080", "8443");
+        StringBuffer requestUrl = req.getRequestURL();
+        String servletBaseUrl = requestUrl != null ? requestUrl.toString() : "";
+
+        String template = "";
+        if (servletBaseUrl.contains("index")) {
+            template = indexTemplate;
+        } else if (servletBaseUrl.contains("selectlocation")) {
+            template = selectLocationTemplate;
+        } else {
+            template = indexTemplate;
+        }
+
+        StringBuffer optionBuffer = new StringBuffer();
+
+        if (template == indexTemplate) {
+            SetupApp();
+        } else if (template == selectLocationTemplate) {
+            SmartthingsApi api = bridgeHandler.getSmartthingsApi();
+            SmartthingsLocation[] locationList = api.GetAllLocations();
+            for (SmartthingsLocation loc : locationList) {
+                optionBuffer.append("<option value=\"" + loc.locationId + "\">" + loc.name + "</option>");
+            }
+
+        }
+
+        String servletBaseURLSecure = servletBaseUrl.replace("http://", "https://").replace("8080", "8443");
         handleSmartthingsRedirect(replaceMap, servletBaseURLSecure, req.getQueryString());
         resp.setContentType(CONTENT_TYPE);
         SmartthingsAccountHandler accountHandler = smartthingsAuthService.getSmartthingsAccountHandler();
@@ -92,20 +156,22 @@ public class SmartthingsAuthServlet extends HttpServlet {
         // replaceMap.put(KEY_BRIDGE_URI, accountHandler.formatAuthorizationUrl(servletBaseURLSecure));
 
         String locationId = "cb73e411-15b4-40e8-b6cd-f9a34f6ced4b";
-        String uri = "https://account.smartthings.com/login?redirect=https%3A%2F%2Fstrongman-regional.api.smartthings.com%2F%3FappId%3D";
+        String uri = "https://account.smartthings.com/login?redirect=https%3A%2F%2Fstrongman-regional.api.smartthings.com%2F";
+        uri = uri + "%3FappId%3D";
         uri = uri + bridgeHandler.getAppId();
         uri = uri + "%26locationId%3D" + locationId;
         uri = uri + "%26appType%3DENDPOINTAPP";
         uri = uri + "%26language%3Den";
         uri = uri + "%26clientOS%3Dweb";
 
-        replaceMap.put(KEY_BRIDGE_URI, uri);
+        replaceMap.put(KEY_SETUP_URI, uri);
+        replaceMap.put(KEY_LOCATIONID_OPTION, optionBuffer.toString());
 
-        resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
+        resp.getWriter().append(replaceKeysFromMap(template, replaceMap));
         resp.getWriter().close();
     }
 
-    protected void test() {
+    protected void SetupApp() {
         SmartthingsApi api = bridgeHandler.getSmartthingsApi();
 
         AppResponse appResponse = api.SetupApp();

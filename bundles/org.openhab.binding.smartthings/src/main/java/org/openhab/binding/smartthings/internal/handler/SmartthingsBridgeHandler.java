@@ -66,6 +66,7 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
     private @NonNullByDefault({}) HttpClientFactory httpClientFactory;
     private @NonNullByDefault({}) SmartthingsApi smartthingsApi;
     protected @NonNullByDefault({}) SmartthingsTypeRegistry typeRegistry;
+    protected @NonNullByDefault({}) SmartthingsDiscoveryService discoService;
 
     private @Nullable SmartthingsServlet servlet;
     private @Nullable OAuthClientService oAuthService;
@@ -75,14 +76,17 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
 
     public SmartthingsBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
             BundleContext bundleContext, HttpService httpService, OAuthFactory oAuthFactory,
-            HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry) {
+            HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry,
+            SmartthingsDiscoveryService disco) {
         super(bridge);
+
         this.smartthingsHandlerFactory = smartthingsHandlerFactory;
         this.bundleContext = bundleContext;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
         this.httpClientFactory = httpClientFactory;
         this.typeRegistry = typeRegistry;
+        this.discoService = disco;
 
         config = getThing().getConfiguration().as(SmartthingsBridgeConfig.class);
     }
@@ -94,6 +98,7 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
 
     @Reference
     protected void setSmartthingsDiscoveryService(SmartthingsDiscoveryService disco) {
+        this.discoService = disco;
         logger.info("disco");
     }
 

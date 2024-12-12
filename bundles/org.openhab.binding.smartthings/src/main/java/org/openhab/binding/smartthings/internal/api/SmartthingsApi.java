@@ -49,6 +49,8 @@ public class SmartthingsApi {
     private final OAuthClientService oAuthClientService;
     private final SmartthingsNetworkConnector networkConnector;
     private final String token;
+
+    private static final String APP_NAME = "openhabnew014";
     private Gson gson = new Gson();
     private String baseUrl = "https://api.smartthings.com/v1";
     private String deviceEndPoint = "/devices";
@@ -80,7 +82,7 @@ public class SmartthingsApi {
 
         SmartthingsApp[] appList = GetAllApps();
 
-        Optional<SmartthingsApp> appOptional = Arrays.stream(appList).filter(x -> "OpenHab".equals(x.appName))
+        Optional<SmartthingsApp> appOptional = Arrays.stream(appList).filter(x -> APP_NAME.equals(x.appName))
                 .findFirst();
 
         if (appOptional.isPresent()) {
@@ -204,7 +206,7 @@ public class SmartthingsApi {
         try {
             String uri = baseUrl + appEndPoint + "?signatureType=ST_PADLOCK&requireConfirmation=true";
 
-            String appName = "OpenHab";
+            String appName = APP_NAME;
             AppRequest appRequest = new AppRequest();
             appRequest.appName = appName;
             appRequest.displayName = appName;
@@ -238,7 +240,9 @@ public class SmartthingsApi {
             // oAuthConfig.redirectUris[0] = "https://redirect.clae.net/openhabdev/";
 
             String body = gson.toJson(oAuthConfig);
-            JsonObject result = DoRequest(JsonObject.class, uri, body, false);
+            JsonObject result = DoRequest(JsonObject.class, uri, body, true);
+
+            logger.info("");
 
             // return appResponse;
         } catch (final Exception e) {

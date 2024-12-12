@@ -23,10 +23,10 @@ public class SmartthingsCapabilitie {
 
     public String id;
     public String version;
-    protected String status;
-    protected String name;
-    protected boolean ephemeral;
+    public String status;
+    public String name;
+    public boolean ephemeral;
 
-    protected Hashtable<String, SmartthingsAttribute> attributes;
-    protected Hashtable<String, SmartthingsCommand> commands;
+    public Hashtable<String, SmartthingsAttribute> attributes;
+    public Hashtable<String, SmartthingsCommand> commands;
 }

@@ -23,6 +23,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.smartthings.internal.discovery.SmartthingsDiscoveryService;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsCloudBridgeHandler;
@@ -73,6 +74,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     private final SmartthingsAuthService authService;
     private final OAuthFactory oAuthFactory;
     private final SmartthingsTypeRegistry typeRegistry;
+    private @NonNullByDefault({}) SmartthingsDiscoveryService discoService;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -96,13 +98,10 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
         this.typeRegistry = typeRegistery;
     }
 
-    /*
-     * @Reference
-     * protected void setSmartthingsDiscoveryService(SmartthingsDiscoveryService disco) {
-     * logger.info("disco");
-     * }
-     *
-     */
+    public void setSmartthingsDiscoveryService(SmartthingsDiscoveryService disco) {
+        logger.info("disco");
+        this.discoService = disco;
+    }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
@@ -119,7 +118,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
             }
 
             bridgeHandler = new SmartthingsCloudBridgeHandler((Bridge) thing, this, bundleContext, httpService,
-                    oAuthFactory, httpClientFactory, typeRegistry);
+                    oAuthFactory, httpClientFactory, typeRegistry, discoService);
 
             SmartthingsAccountHandler accountHandler = bridgeHandler;
             authService.setSmartthingsAccountHandler(accountHandler);

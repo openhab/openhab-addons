@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
+import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.SmartthingsHubCommand;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
@@ -104,6 +105,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
     @Reference
     protected void setSmartthingsHubCommand(SmartthingsHubCommand hubCommand) {
         smartthingsHubCommand = hubCommand;
+        ((SmartthingsHandlerFactory) hubCommand).setSmartthingsDiscoveryService(this);
     }
 
     protected void unsetSmartthingsHubCommand(SmartthingsHubCommand hubCommand) {
@@ -164,8 +166,10 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
      */
     @Override
     public void startScan() {
-        // sendSmartthingsDiscoveryRequest();
+        doScan(true);
+    }
 
+    public void doScan(Boolean addDevice) {
         SmartthingsBridgeHandler bridge = smartthingsHubCommand.getBridgeHandler();
         SmartthingsApi api = bridge.getSmartthingsApi();
 
@@ -188,15 +192,17 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
             Boolean enabled = false;
             if (label.equals("Four")) {
-                enabled = true;
+                // enabled = true;
             }
             if (label.equals("Petrole")) {
                 enabled = true;
             }
 
-            // if (!enabled) {
-            // continue;
-            // }
+            enabled = true;
+
+            if (!enabled) {
+                continue;
+            }
 
             String deviceType = null;
             for (SmartthingsComponent component : device.components) {
@@ -237,7 +243,9 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
             deviceType = deviceType.toLowerCase();
             this.typeRegistry.Register(deviceType, device);
-            createDevice(deviceType, Objects.requireNonNull(device));
+            if (addDevice) {
+                createDevice(deviceType, Objects.requireNonNull(device));
+            }
 
         }
 

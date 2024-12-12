@@ -42,6 +42,7 @@ public class LifeCycle {
     public configurationData configurationData;
 
     public Data updateData;
+    public Data installData;
     public Data executeData;
     public Data eventData;
 

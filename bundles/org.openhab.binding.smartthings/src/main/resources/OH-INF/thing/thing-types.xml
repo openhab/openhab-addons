@@ -24,24 +24,4 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
-	<bridge-type id="smartthings">
-		<label>Smartthings Hub</label>
-		<description>Smartthings Hub V2 that is attached to the same network</description>
-
-		<config-description>
-			<parameter name="smartthingsIp" type="text" required="true">
-				<context>network-address</context>
-				<label>IP Address</label>
-				<description>IP address of the Smartthings Hub</description>
-			</parameter>
-			<parameter name="smartthingsPort" type="integer" min="0" max="65535" required="false">
-				<label>IP Port Number</label>
-				<description>Port number of the Smartthings Hub</description>
-				<default>39500</default>
-			</parameter>
-		</config-description>
-	</bridge-type>
-
-
-
 </thing:thing-descriptions>

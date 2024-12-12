@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.smartthings.internal;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -45,8 +41,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SmartthingsAuthService {
 
-    private static final String TEMPLATE_PATH = "templates/";
-    private static final String TEMPLATE_INDEX = TEMPLATE_PATH + "index.html";
     private static final String ERROR_UKNOWN_BRIDGE = "Returned 'state' by doesn't match any Bridges. Has the bridge been removed?";
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsAuthService.class);
@@ -90,30 +84,10 @@ public class SmartthingsAuthService {
     private HttpServlet createServlet() throws Exception {
         SmartthingsBridgeHandler bridgeHandler = (SmartthingsBridgeHandler) accountHandler;
         if (bridgeHandler != null) {
-            return new SmartthingsAuthServlet(bridgeHandler, this, readTemplate(TEMPLATE_INDEX));
+            return new SmartthingsAuthServlet(bridgeHandler, this);
         } else {
 
             throw new Exception("BridgeHandler is null");
-        }
-    }
-
-    /**
-     * Reads a template from file and returns the content as String.
-     *
-     * @param templateName name of the template file to read
-     * @return The content of the template file
-     * @throws IOException thrown when an HTML template could not be read
-     */
-    private String readTemplate(String templateName) throws IOException {
-        final URL index = bundleContext.getBundle().getEntry(templateName);
-
-        if (index == null) {
-            throw new FileNotFoundException(
-                    String.format("Cannot find '{}' - failed to initialize Smartthings servlet", templateName));
-        } else {
-            try (InputStream inputStream = index.openStream()) {
-                return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-            }
         }
     }
 

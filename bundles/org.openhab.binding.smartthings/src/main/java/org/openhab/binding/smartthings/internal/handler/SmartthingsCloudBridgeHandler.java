@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
+import org.openhab.binding.smartthings.internal.discovery.SmartthingsDiscoveryService;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -45,9 +46,10 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
 
     public SmartthingsCloudBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
             BundleContext bundleContext, HttpService httpService, OAuthFactory oAuthFactory,
-            HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry) {
+            HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry,
+            SmartthingsDiscoveryService disco) {
         super(bridge, smartthingsHandlerFactory, bundleContext, httpService, oAuthFactory, httpClientFactory,
-                typeRegistry);
+                typeRegistry, disco);
     }
 
     @Override
@@ -62,10 +64,13 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
         SmartthingsApi api = this.getSmartthingsApi();
         initCapabilites();
 
+        discoService.doScan(false);
+
         updateStatus(ThingStatus.ONLINE);
     }
 
     public void initCapabilites() {
+        logger.info("Start init capa");
         SmartthingsApi api = this.getSmartthingsApi();
         SmartthingsCapabilitie[] capabilitiesList = api.GetAllCapabilities();
 
@@ -75,6 +80,7 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
             SmartthingsCapabilitie capa = api.GetCapabilitie(capId, capVersion);
             typeRegistry.RegisterCapabilities(capa);
         }
+        logger.info("End init capa");
     }
 
     @Override
