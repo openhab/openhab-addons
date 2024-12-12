@@ -56,7 +56,8 @@ Base64 encoding is not supported
 | action              | String               | RO  | The current operating state of the HVAC device.                                          |
 | current-temperature | Number               | RO  | The current temperature.                                                                 |
 | fan-mode            | String               | R/W | The desired fan speed. Inspect the state description for allowed values.                 |
-| humidity            | Number:Dimensionless | RO  | The current relative humidity.                                                           |
+| current-humidity    | Number:Dimensionless | RO  | The current relative humidity.                                                           |
+| target-humidity     | Number:Dimensionless | RO  | The desired relative humidity.                                                           |
 | mode                | String               | R/W | The desired operating mode. Inspect the state description for allowed values.            |
 | preset-mode         | String               | R/W | The current preset mode (such as `eco`, `away`, `boost`, `comfort`, `home`, or `sleep`.) |
 | swing               | String               | R/W | The desired swing mode. Inspect the state description for allowed values.                |
