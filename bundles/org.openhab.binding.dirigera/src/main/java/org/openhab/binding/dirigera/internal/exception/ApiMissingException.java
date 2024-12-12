@@ -15,7 +15,7 @@ package org.openhab.binding.dirigera.internal.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ApiMissingException} Exception if no gateway is available
+ * {@link ApiMissingException} thrown if no API is available
  *
  * @author Bernd Weymann - Initial contribution
  */
