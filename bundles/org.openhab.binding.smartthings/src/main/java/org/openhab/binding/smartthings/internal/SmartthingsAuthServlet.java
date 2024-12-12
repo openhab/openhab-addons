@@ -93,7 +93,6 @@ public class SmartthingsAuthServlet extends HttpServlet {
         } catch (IOException e) {
             throw new SmartthingsException("unable to initialize auth servlet", e);
         }
-
     }
 
     /**
@@ -178,7 +177,6 @@ public class SmartthingsAuthServlet extends HttpServlet {
         if (appResponse.oauthClientId != null && appResponse.oauthClientSecret != null) {
             bridgeHandler.updateConfig(appResponse.oauthClientId, appResponse.oauthClientSecret);
         }
-
     }
 
     /**
