@@ -15,7 +15,7 @@ package org.openhab.binding.dirigera.internal.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ModelMissingException} Exception if no gateway is available
+ * {@link ModelMissingException} thrown if no model is available
  *
  * @author Bernd Weymann - Initial contribution
  */

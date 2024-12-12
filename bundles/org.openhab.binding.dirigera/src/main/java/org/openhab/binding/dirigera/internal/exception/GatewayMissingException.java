@@ -15,16 +15,16 @@ package org.openhab.binding.dirigera.internal.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link GatewayException} Exception if no gateway is available
+ * {@link GatewayMissingException} thrown if no gateway is available
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class GatewayException extends RuntimeException {
+public class GatewayMissingException extends RuntimeException {
 
-    private static final long serialVersionUID = 5184571486237890053L;
+    private static final long serialVersionUID = -5730424945694148342L;
 
-    public GatewayException(String message) {
+    public GatewayMissingException(String message) {
         super(message);
     }
 }
