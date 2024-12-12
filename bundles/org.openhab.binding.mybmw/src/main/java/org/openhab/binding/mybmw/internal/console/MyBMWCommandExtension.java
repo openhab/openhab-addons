@@ -27,6 +27,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -37,7 +38,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleBase;
@@ -140,7 +140,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
                 String accountPath = path + File.separator + "Account-" + String.valueOf(accountNdx);
                 handler.getMyBmwProxy().ifPresentOrElse(prox -> {
                     // get list of vehicles
-                    List<@NonNull VehicleBase> vehicles = null;
+                    List<VehicleBase> vehicles = null;
                     try {
                         vehicles = prox.requestVehiclesBase();
 
@@ -314,7 +314,8 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
                         .filter(t -> THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(t.getThingTypeUID())
                                 && args[1].equals(t.getConfiguration().get("userName")))
                         .map(t -> t.getHandler()).findAny().get();
-                List<VehicleBase> vehicles = handler.getMyBmwProxy().get().requestVehiclesBase();
+                List<VehicleBase> vehicles = handler != null ? handler.getMyBmwProxy().get().requestVehiclesBase()
+                        : new ArrayList<>();
                 return new StringsCompleter(
                         vehicles.stream().map(v -> v.getVin()).filter(Objects::nonNull).collect(Collectors.toList()),
                         false).complete(args, cursorArgumentIndex, cursorPosition, candidates);
