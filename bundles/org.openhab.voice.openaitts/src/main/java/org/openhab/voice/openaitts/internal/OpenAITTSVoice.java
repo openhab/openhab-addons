@@ -36,7 +36,7 @@ public class OpenAITTSVoice implements Voice {
      */
     @Override
     public String getUID() {
-        return "openaitts:" + label.replaceAll("[^a-zA-Z0-9_]", "");
+        return "openaitts:" + label;
     }
 
     /**
