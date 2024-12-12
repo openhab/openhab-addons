@@ -158,15 +158,18 @@ public class GoveeHandler extends BaseThingHandler {
         stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
                 minKelvin, maxKelvin);
 
-        int refreshSeconds = goveeConfiguration.refreshInterval;
-        refreshSeconds = refreshSeconds > 0 ? Math.max(refreshSeconds, REFRESH_SECONDS_MIN) : 0;
+        int refreshSecs = goveeConfiguration.refreshInterval;
+        if (refreshSecs < REFRESH_SECONDS_MIN) {
+            logger.warn("Config Param refreshInterval={} too low, minimum={}", refreshSecs, REFRESH_SECONDS_MIN);
+            refreshSecs = REFRESH_SECONDS_MIN;
+        }
 
         updateStatus(ThingStatus.UNKNOWN);
         communicationManager.registerHandler(this);
 
-        if (triggerStatusJob == null && refreshSeconds > 0) {
+        if (triggerStatusJob == null) {
             logger.debug("Starting refresh trigger job for thing {} ", thing.getLabel());
-            triggerStatusJob = executorService.scheduleWithFixedDelay(thingRefreshSender, 100, refreshSeconds,
+            triggerStatusJob = executorService.scheduleWithFixedDelay(thingRefreshSender, 100, refreshSecs,
                     TimeUnit.SECONDS);
         }
     }
