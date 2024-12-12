@@ -31,7 +31,6 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.dirigera.internal.exception.ApiMissingException;
 import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.LightCommand;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
@@ -149,7 +148,7 @@ class TestGeneric {
 
     void printOutput() {
         if ("throw".equals(output)) {
-            throw new ApiMissingException("crash");
+            throw new RuntimeException("crash");
         }
     }
 

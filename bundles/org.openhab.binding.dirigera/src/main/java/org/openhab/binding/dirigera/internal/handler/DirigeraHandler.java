@@ -50,8 +50,6 @@ import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.actions.DebugActions;
 import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
-import org.openhab.binding.dirigera.internal.exception.ApiMissingException;
-import org.openhab.binding.dirigera.internal.exception.ModelMissingException;
 import org.openhab.binding.dirigera.internal.interfaces.DebugHandler;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
@@ -616,17 +614,17 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     }
 
     @Override
-    public DirigeraAPI api() throws ApiMissingException {
+    public DirigeraAPI api() throws RuntimeException {
         if (api.isEmpty()) {
-            throw new ApiMissingException("No API available yet");
+            throw new RuntimeException("No API available yet");
         }
         return api.get();
     }
 
     @Override
-    public Model model() throws ModelMissingException {
+    public Model model() throws RuntimeException {
         if (model.isEmpty()) {
-            throw new ModelMissingException("No Model available yet");
+            throw new RuntimeException("No Model available yet");
         }
         return model.get();
     }

@@ -36,8 +36,6 @@ import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DirigeraAPISimu} basic DeviceHandler for all devices
@@ -46,7 +44,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DirigeraAPISimu implements DirigeraAPI {
-    private final Logger logger = LoggerFactory.getLogger(DirigeraAPISimu.class);
     private static JSONObject model = new JSONObject();
 
     public static String fileName = "src/test/resources/home/home.json";
@@ -59,7 +56,6 @@ public class DirigeraAPISimu implements DirigeraAPI {
 
     @Override
     public JSONObject readHome() {
-        logger.info("read home");
         String modelString = FileReader.readFileInString(fileName);
         model = new JSONObject(modelString);
         return model;
@@ -67,7 +63,6 @@ public class DirigeraAPISimu implements DirigeraAPI {
 
     @Override
     public JSONObject readDevice(String deviceId) {
-        logger.info("read device");
         JSONObject returnObject = new JSONObject();
         if (model.has("devices")) {
             JSONArray devices = model.getJSONArray("devices");
@@ -84,7 +79,6 @@ public class DirigeraAPISimu implements DirigeraAPI {
 
     @Override
     public void triggerScene(String sceneId, String trigger) {
-        logger.info("trigger scnene {}", trigger);
     }
 
     @Override
@@ -96,7 +90,6 @@ public class DirigeraAPISimu implements DirigeraAPI {
 
     @Override
     public int sendPatch(String id, JSONObject attributes) {
-        logger.warn("send patch {}", attributes);
         synchronized (patchMap) {
             patchMap.put(id, attributes.toString());
             patchMap.notifyAll();
@@ -118,7 +111,6 @@ public class DirigeraAPISimu implements DirigeraAPI {
 
     @Override
     public JSONObject readScene(String sceneId) {
-        logger.info("read scene");
         JSONObject returnObject = new JSONObject();
         if (model.has("devices")) {
             JSONArray devices = model.getJSONArray("scenes");
@@ -135,14 +127,12 @@ public class DirigeraAPISimu implements DirigeraAPI {
 
     @Override
     public String createScene(String uuid, String clickPattern, String controllerId) {
-        logger.warn("createScene {} {}", uuid, clickPattern);
         scenesAdded.add(uuid);
         return uuid;
     }
 
     @Override
     public void deleteScene(String uuid) {
-        logger.warn("deleteScene {}", uuid);
         scenesDeleted.add(uuid);
     }
 
