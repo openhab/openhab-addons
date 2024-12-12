@@ -29,7 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.actions.DebugActions;
 import org.openhab.binding.dirigera.internal.config.BaseDeviceConfiguration;
-import org.openhab.binding.dirigera.internal.exception.GatewayMissingException;
 import org.openhab.binding.dirigera.internal.interfaces.DebugHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.interfaces.LightListener;
@@ -475,7 +474,7 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
         if (gw != null) {
             return gw;
         } else {
-            throw new GatewayMissingException(thing.getUID() + " has no Gateway defined");
+            throw new RuntimeException(thing.getUID() + " has no Gateway defined");
         }
     }
 

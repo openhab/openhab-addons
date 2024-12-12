@@ -84,10 +84,10 @@ See [Gateway Limitations](#gateway-limitations) for further infomration.
 
 ### Follow Sun
 
-<img align="right" height="100" src="doc/follow-sun.png">
+<img align="right" height="150" src="doc/follow-sun.png">
 
 [Motion Sensors](#motion-sensor) can be active all the time or follow a schedule.
-One schedule is follow the sun which needs to be activated in the DIRIGERA GATEWAY.
+One schedule is follow the sun which needs to be activated in the IKEA Smarthome App in _Hub Settings_.
 
 ## Things
 
@@ -105,7 +105,9 @@ Discovery will automatically identify the id.
 
 ### Generic Thing Properties
 
-Each thing has properties attached for identification.
+Each thing has properties attached for product information.
+It contains information of hardware and firmware version, device model and manufacturer.
+Device capabilities are listed in `canReceive` and `canSend`. 
 
 <img align="center" width="500" src="doc/thing-properties.png">
 

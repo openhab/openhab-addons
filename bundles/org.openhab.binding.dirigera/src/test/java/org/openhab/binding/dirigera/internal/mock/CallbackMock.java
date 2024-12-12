@@ -41,8 +41,6 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link CallbackMock} basic DeviceHandler for all devices
@@ -51,8 +49,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class CallbackMock implements ThingHandlerCallback {
-    private final Logger logger = LoggerFactory.getLogger(CallbackMock.class);
-
     private @Nullable Bridge bridge;
     private ThingStatusInfo status = ThingStatusInfoBuilder.create(ThingStatus.OFFLINE).build();
     public Map<String, State> stateMap = new HashMap<>();
@@ -62,10 +58,6 @@ public class CallbackMock implements ThingHandlerCallback {
         stateMap.clear();
     }
 
-    public void dump() {
-        logger.warn("dump {}", stateMap);
-    }
-
     public @Nullable State getState(String channel) {
         return stateMap.get(channel);
     }
@@ -73,15 +65,10 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
         stateMap.put(channelUID.getAsString(), state);
-        // logger.warn("Update {} : {}", channelUID.getAsString(), state.toFullString());
-        if (!"json".equals(channelUID.getIdWithoutGroup())) {
-            logger.warn("Update {} : {}", channelUID.getAsString(), state.toFullString());
-        }
     }
 
     @Override
     public void postCommand(ChannelUID channelUID, Command command) {
-        logger.warn("POST command {} {} {}", channelUID, command);
     }
 
     @Override
@@ -90,8 +77,6 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
-        logger.warn("Update status {} {} {}", thingStatus.getStatus(), thingStatus.getStatusDetail(),
-                thingStatus.getDescription());
         synchronized (this) {
             status = thingStatus;
             this.notifyAll();
@@ -118,8 +103,6 @@ public class CallbackMock implements ThingHandlerCallback {
         // if method is exited without reaching ONLINE e.g. through timeout fail
         if (!ThingStatus.ONLINE.equals(status.getStatus())) {
             fail("waitForOnline just reached status " + status);
-        } else {
-            logger.info("Callback reached {}", status);
         }
     }
 
@@ -155,7 +138,6 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void channelTriggered(Thing thing, ChannelUID channelUID, String event) {
-        logger.warn("Callback trigger {} {}", channelUID.getAsString(), event);
         triggerMap.put(channelUID.getAsString(), event);
     }
 
