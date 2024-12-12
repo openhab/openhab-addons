@@ -61,7 +61,8 @@ Please check that proposed value is correct according to the place.
 | aq-bulletin-tomorrow | pm10-max       | Number:Density | R          | Maximum level of PM 10 concentration         |
 | aq-bulletin-tomorrow | pm25-min       | Number:Density | R          | Minimum level of PM 2.5 concentration        |
 | aq-bulletin-tomorrow | pm25-max       | Number:Density | R          | Maximum level of PM 2.5 concentration        |
-| daily                | message        | String         | R          | Today's daily general information            ||| daily                | tomorrow       | String         | R          | Tomorrow's daily general information         |
+| daily                | message        | String         | R          | Today's daily general information            |
+| daily                | tomorrow       | String         | R          | Tomorrow's daily general information         |
 
 ### `location` Thing Channels
 
@@ -150,19 +151,75 @@ This binding has its own IconProvider and makes available the following list of 
 | oh:airparif:willow     |   Yes   | ![](doc/images/willow.svg) |
 | oh:airparif:wormwood   |   Yes   | ![](doc/images/wormwood.svg) |
 
-
 ## Full Examplee
 
 ### Thing Configurationn
 
-```jav
+```java
 Bridge airparif:api:local "AirParif" [ apikey="xxxxx-dddd-cccc-4321-zzzzzzzzzzzzz" ] {
-    location yvelines "Yvelines" [ department="78", location="52.639,1.8284" ]
-}a
+    location 78 "Yvelines" [ department="78", location="52.639,1.8284" ]
+}
 ```
 ### Item Configurationn
 
 ```java
-Example item configuration goes here.
+String           AirParifPollensComment              "Situation"        {channel="airparif:api:local:pollens#comment"}
+DateTime         AirParifPollensBeginValidity        "Begin validity"   {channel="airparif:api:local:pollens#begin-validity"}
+DateTime         AirParifPollensEndValidity          "End validity"     {channel="airparif:api:local:pollens#end-validity"}
+String           AirParifAqBulletinComment           "Message"          {channel="airparif:api:local:aq-bulletin#comment"}
+Number:Density   AirParifAqBulletinNo2Min            "No2 min"          {channel="airparif:api:local:aq-bulletin#no2-min"}
+Number:Density   AirParifAqBulletinNo2Max            "No2 max"          {channel="airparif:api:local:aq-bulletin#no2-max"}
+Number:Density   AirParifAqBulletinO3Min             "O3 min"           {channel="airparif:api:local:aq-bulletin#o3-min"}
+Number:Density   AirParifAqBulletinO3Max             "O3 max"           {channel="airparif:api:local:aq-bulletin#o3-max"}
+Number:Density   AirParifAqBulletinPm10Min           "Pm 10 min"        {channel="airparif:api:local:aq-bulletin#pm10-min"}
+Number:Density   AirParifAqBulletinPm10Max           "Pm 10 max"        {channel="airparif:api:local:aq-bulletin#pm10-max"}
+Number:Density   AirParifAqBulletinPm25Min           "Pm 2.5 min"       {channel="airparif:api:local:aq-bulletin#pm25-min"}
+Number:Density   AirParifAqBulletinPm25Max           "Pm 2.5 max"       {channel="airparif:api:local:aq-bulletin#pm25-max"}
+String           AirParifAqBulletinTomorrowComment   "Message"          {channel="airparif:api:local:aq-bulletin-tomorrow#comment"}
+Number:Density   AirParifAqBulletinTomorrowNo2Min    "No2 min"          {channel="airparif:api:local:aq-bulletin-tomorrow#no2-min"}
+Number:Density   AirParifAqBulletinTomorrowNo2Max    "No2 max"          {channel="airparif:api:local:aq-bulletin-tomorrow#no2-max"}
+Number:Density   AirParifAqBulletinTomorrowO3Min     "O3 min"           {channel="airparif:api:local:aq-bulletin-tomorrow#o3-min"}
+Number:Density   AirParifAqBulletinTomorrowO3Max     "O3 max"           {channel="airparif:api:local:aq-bulletin-tomorrow#o3-max"}
+Number:Density   AirParifAqBulletinTomorrowPm10Min   "Pm 10 min"        {channel="airparif:api:local:aq-bulletin-tomorrow#pm10-min"}
+Number:Density   AirParifAqBulletinTomorrowPm10Max   "Pm 10 max"        {channel="airparif:api:local:aq-bulletin-tomorrow#pm10-max"}
+Number:Density   AirParifAqBulletinTomorrowPm25Min   "Pm 2.5 min"       {channel="airparif:api:local:aq-bulletin-tomorrow#pm25-min"}
+Number:Density   AirParifAqBulletinTomorrowPm25Max   "Pm 2.5 max"       {channel="airparif:api:local:aq-bulletin-tomorrow#pm25-max"}
+String           AirParifDailyMessage                "Message"          {channel="airparif:api:local:daily#message"}
+String           AirParifDailyTomorrow               "Tomorrow"         {channel="airparif:api:local:daily#tomorrow"}
+
+Number           Yvelines_Pollens_Cypress      "Cypress"         {channel="airparif:location:local:78:pollens#cypress"}
+Number           Yvelines_Pollens_Hazel        "Hazel level"     {channel="airparif:location:local:78:pollens#hazel"}
+Number           Yvelines_Pollens_Alder        "Alder"           {channel="airparif:location:local:78:pollens#alder"}
+Number           Yvelines_Pollens_Poplar       "Poplar"          {channel="airparif:location:local:78:pollens#poplar"}
+Number           Yvelines_Pollens_Willow       "Willow"          {channel="airparif:location:local:78:pollens#willow"}
+Number           Yvelines_Pollens_Ash          "Ash"             {channel="airparif:location:local:78:pollens#ash"}
+Number           Yvelines_Pollens_Hornbeam     "Hornbeam"        {channel="airparif:location:local:78:pollens#hornbeam"}
+Number           Yvelines_Pollens_Birch        "Birch level"     {channel="airparif:location:local:78:pollens#birch"}
+Number           Yvelines_Pollens_Plane        "Plane"           {channel="airparif:location:local:78:pollens#plane"}
+Number           Yvelines_Pollens_Oak          "Oak"             {channel="airparif:location:local:78:pollens#oak"}
+Number           Yvelines_Pollens_Olive        "Olive"           {channel="airparif:location:local:78:pollens#olive"}
+Number           Yvelines_Pollens_Linden       "Linden"          {channel="airparif:location:local:78:pollens#linden"}
+Number           Yvelines_Pollens_Chestnut     "Chestnut"        {channel="airparif:location:local:78:pollens#chestnut"}
+Number           Yvelines_Pollens_Rumex        "Rumex"           {channel="airparif:location:local:78:pollens#rumex"}
+Number           Yvelines_Pollens_Grasses      "Grasses"         {channel="airparif:location:local:78:pollens#grasses"}
+Number           Yvelines_Pollens_Plantain     "Plantain"        {channel="airparif:location:local:78:pollens#plantain"}
+Number           Yvelines_Pollens_Urticaceae   "Urticacea"       {channel="airparif:location:local:78:pollens#urticaceae"}
+Number           Yvelines_Pollens_Wormwood     "Wormwood"        {channel="airparif:location:local:78:pollens#wormwood"}
+Number           Yvelines_Pollens_Ragweed      "Ragweed"         {channel="airparif:location:local:78:pollens#ragweed"}
+String           Yvelines_Indice_Message       "Message"         {channel="airparif:location:local:78:indice#message"}
+DateTime         Yvelines_Indice_Timestamp     "Timestamp"       {channel="airparif:location:local:78:indice#timestamp"}
+Number           Yvelines_Indice_Alert         "Index"           {channel="airparif:location:local:78:indice#alert"}
+String           Yvelines_O3_Message           "Message"         {channel="airparif:location:local:78:o3#message"}
+Number:Density   Yvelines_O3_Value             "Concentration"   {channel="airparif:location:local:78:o3#value"}
+Number           Yvelines_O3_Alert             "Alert level"     {channel="airparif:location:local:78:o3#alert"}
+String           Yvelines_No2_Message          "Message"         {channel="airparif:location:local:78:no2#message"}
+Number:Density   Yvelines_No2_Value            "Concentration"   {channel="airparif:location:local:78:no2#value"}
+Number           Yvelines_No2_Alert            "Alert level"     {channel="airparif:location:local:78:no2#alert"}
+String           Yvelines_Pm25_Message         "Message"         {channel="airparif:location:local:78:pm25#message"}
+Number:Density   Yvelines_Pm25_Value           "Concentration"   {channel="airparif:location:local:78:pm25#value"}
+Number           Yvelines_Pm25_Alert           "Alert level"     {channel="airparif:location:local:78:pm25#alert"}
+String           Yvelines_Pm10_Message         "Message"         {channel="airparif:location:local:78:pm10#message"}
+Number:Density   Yvelines_Pm10_Value           "Concentration"   {channel="airparif:location:local:78:pm10#value"}
+Number           Yvelines_Pm10_Alert           "Alert level"     {channel="airparif:location:local:78:pm10#alert"}
 ``
 

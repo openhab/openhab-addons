@@ -16,16 +16,16 @@
 			<channel-group id="pollens" typeId="dept-pollens"/>
 			<channel-group id="indice" typeId="pollutant-ndx"/>
 			<channel-group id="o3" typeId="pollutant-mpc">
-				<label>Ozone Concentration Information</label>
+				<label>Ozone Concentration</label>
 			</channel-group>
 			<channel-group id="no2" typeId="pollutant-mpc">
-				<label>NO2 Concentration Information</label>
+				<label>NO2 Concentration</label>
 			</channel-group>
 			<channel-group id="pm25" typeId="pollutant-mpc">
-				<label>PM2.5 Concentration Information</label>
+				<label>PM2.5 Concentration</label>
 			</channel-group>
 			<channel-group id="pm10" typeId="pollutant-mpc">
-				<label>PM10 Concentration Information</label>
+				<label>PM10 Concentration</label>
 			</channel-group>
 		</channel-groups>
 

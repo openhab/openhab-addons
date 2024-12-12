@@ -13,9 +13,9 @@
 package org.openhab.binding.airparif.internal.api;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +54,7 @@ public class AirParifDto {
     }
 
     public record KeyInfo(//
-            ZonedDateTime expiration, //
+            Instant expiration, //
             @SerializedName("droits") Set<Scope> scopes) {
     }
 
@@ -135,33 +135,33 @@ public class AirParifDto {
         private static ZoneId DEFAULT_ZONE = ZoneId.of("Europe/Paris");
 
         public List<Pollens> data = List.of();
-        private @Nullable ZonedDateTime beginValidity;
-        private @Nullable ZonedDateTime endValidity;
+        private @Nullable Instant beginValidity;
+        private @Nullable Instant endValidity;
 
         public Optional<Pollens> getData() {
             return Optional.ofNullable(data.isEmpty() ? null : data.get(0));
         }
 
-        private Set<ZonedDateTime> getValidities() {
-            Set<ZonedDateTime> validities = new TreeSet<>();
+        private Set<Instant> getValidities() {
+            Set<Instant> validities = new TreeSet<>();
             getData().ifPresent(pollens -> {
                 Matcher matcher = PATTERN.matcher(pollens.periode);
                 while (matcher.find()) {
-                    validities.add(LocalDate.parse(matcher.group(), FORMATTER).atStartOfDay(DEFAULT_ZONE));
+                    validities.add(LocalDate.parse(matcher.group(), FORMATTER).atStartOfDay(DEFAULT_ZONE).toInstant());
                 }
             });
 
             return validities;
         }
 
-        public Optional<ZonedDateTime> getBeginValidity() {
+        public Optional<Instant> getBeginValidity() {
             if (beginValidity == null) {
                 beginValidity = getValidities().iterator().next();
             }
             return Optional.ofNullable(beginValidity);
         }
 
-        public Optional<ZonedDateTime> getEndValidity() {
+        public Optional<Instant> getEndValidity() {
             if (endValidity == null) {
                 endValidity = getValidities().stream().reduce((prev, next) -> next).orElse(null);
             }
@@ -170,7 +170,7 @@ public class AirParifDto {
 
         public Duration getValidityDuration() {
             return Objects.requireNonNull(getEndValidity().map(end -> {
-                Duration duration = Duration.between(ZonedDateTime.now().withZoneSameInstant(end.getZone()), end);
+                Duration duration = Duration.between(Instant.now(), end);
                 return duration.isNegative() ? Duration.ZERO : duration;
             }).orElse(Duration.ZERO));
         }
@@ -197,7 +197,7 @@ public class AirParifDto {
 
     public record Concentration(//
             @SerializedName("polluant") Pollutant pollutant, //
-            ZonedDateTime date, //
+            Instant date, //
             @SerializedName("valeurs") double[] values, //
             @Nullable Message message) {
 
@@ -224,7 +224,7 @@ public class AirParifDto {
     }
 
     public record Route(//
-            @SerializedName("dateRequise") ZonedDateTime requestedDate, //
+            @SerializedName("dateRequise") Instant requestedDate, //
             double[][] longlats, //
             @SerializedName("resultats") List<Concentration> concentrations, //
             @Nullable Message[] messages) {

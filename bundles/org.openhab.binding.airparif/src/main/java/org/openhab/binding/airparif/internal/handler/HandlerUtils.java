@@ -62,12 +62,12 @@ public interface HandlerUtils {
 
     default void schedule(String jobName, Runnable job, Duration duration) {
         ScheduledFuture<?> result = getJobs().remove(jobName);
-        String operation = "Scheduling";
+
+        getLogger().debug("{} {} in {}", result != null ? "Rescheduled" : "Scheduling", jobName, duration);
         if (result != null) {
-            operation = "Rescheduled";
             cancelFuture(result);
         }
-        getLogger().info("{} {} in {}", operation, jobName, duration);
+
         getJobs().put(jobName, getScheduler().schedule(job, duration.getSeconds(), TimeUnit.SECONDS));
     }
 

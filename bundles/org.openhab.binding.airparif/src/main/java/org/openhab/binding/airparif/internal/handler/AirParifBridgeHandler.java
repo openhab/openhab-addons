@@ -117,6 +117,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
                     "@text/offline.config-error-unknown-apikey");
             return;
         }
+        updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(this::initiateConnexion);
     }
 
@@ -196,7 +197,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         thing.setProperty("api-version", version.version());
         thing.setProperty("key-expiration", keyInfo.expiration().toString());
         thing.setProperty("scopes", keyInfo.scopes().stream().map(e -> e.name()).collect(Collectors.joining(",")));
-        logger.info("The api key is valid until {}", keyInfo.expiration().toString());
+        logger.debug("The api key is valid until {}", keyInfo.expiration().toString());
         updateStatus(ThingStatus.ONLINE);
 
         ThingUID thingUID = thing.getUID();
@@ -258,10 +259,8 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
             });
         });
 
-        ZonedDateTime tomorrowMorning = ZonedDateTime.now().plusDays(1).truncatedTo(ChronoUnit.DAYS).plusMinutes(1);
         logger.debug("Rescheduling daily air quality bulletin job tomorrow morning");
-        schedule(AQ_JOB, () -> updateDailyAQBulletin(todayGroupUID, tomorrowGroupUID),
-                Duration.between(ZonedDateTime.now(), tomorrowMorning));
+        schedule(AQ_JOB, () -> updateDailyAQBulletin(todayGroupUID, tomorrowGroupUID), untilTomorrowMorning());
     }
 
     private void updateEpisode(ChannelGroupUID dailyGroupUID) {
@@ -278,9 +277,12 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         updateState(new ChannelUID(dailyGroupUID, CHANNEL_MESSAGE), new StringType(episode.message().fr()));
         updateState(new ChannelUID(dailyGroupUID, CHANNEL_TOMORROW), new StringType(episode.message().fr()));
 
-        ZonedDateTime tomorrowMorning = ZonedDateTime.now().plusDays(1).truncatedTo(ChronoUnit.DAYS).plusMinutes(1);
-        schedule(EPISODE_JOB, () -> updateEpisode(dailyGroupUID),
-                Duration.between(ZonedDateTime.now(), tomorrowMorning));
+        schedule(EPISODE_JOB, () -> updateEpisode(dailyGroupUID), untilTomorrowMorning());
+    }
+
+    private Duration untilTomorrowMorning() {
+        return Duration.between(ZonedDateTime.now(),
+                ZonedDateTime.now().plusDays(1).truncatedTo(ChronoUnit.DAYS).plusMinutes(1));
     }
 
     public @Nullable Route getConcentrations(String location) {

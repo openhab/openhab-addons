@@ -12,18 +12,16 @@
  */
 package org.openhab.binding.airparif.internal.deserialization;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airparif.internal.AirParifException;
 import org.openhab.binding.airparif.internal.api.AirParifDto.PollutantConcentration;
 import org.openhab.binding.airparif.internal.api.PollenAlertLevel;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -42,7 +40,7 @@ public class AirParifDeserializer {
     private final Gson gson;
 
     @Activate
-    public AirParifDeserializer(final @Reference TimeZoneProvider timeZoneProvider) {
+    public AirParifDeserializer() {
         gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
                 .registerTypeAdapter(PollenAlertLevel.class, new PollenAlertLevelDeserializer())
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory())
@@ -50,10 +48,10 @@ public class AirParifDeserializer {
                 .registerTypeAdapter(LocalDate.class,
                         (JsonDeserializer<LocalDate>) (json, type, context) -> LocalDate
                                 .parse(json.getAsJsonPrimitive().getAsString()))
-                .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type, context) -> {
+                .registerTypeAdapter(Instant.class, (JsonDeserializer<Instant>) (json, type, context) -> {
                     String string = json.getAsJsonPrimitive().getAsString();
                     string += string.contains("+") ? "" : "Z";
-                    return ZonedDateTime.parse(string).withZoneSameInstant(timeZoneProvider.getTimeZone());
+                    return Instant.parse(string);
                 }).create();
     }
 

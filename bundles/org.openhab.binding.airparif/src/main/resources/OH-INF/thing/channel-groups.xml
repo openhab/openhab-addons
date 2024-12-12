@@ -101,7 +101,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="daily">
-		<label>Daily information for the region</label>
+		<label>Daily Region Information</label>
 		<channels>
 			<channel id="message" typeId="comment">
 				<label>Message</label>
@@ -115,7 +115,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="dept-pollens">
-		<label>Pollen information for the department</label>
+		<label>Department Pollen Information</label>
 		<channels>
 			<channel id="cypress" typeId="cypress-level"/>
 			<channel id="hazel" typeId="hazel-level"/>

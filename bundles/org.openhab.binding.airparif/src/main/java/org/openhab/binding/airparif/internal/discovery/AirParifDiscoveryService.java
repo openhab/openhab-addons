@@ -64,7 +64,7 @@ public class AirParifDiscoveryService extends AbstractThingHandlerDiscoveryServi
         LocationProvider localLocation = locationProvider;
         PointType location = localLocation != null ? localLocation.getLocation() : null;
         if (location == null) {
-            logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
+            logger.warn("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
             return;
         }
 
@@ -82,8 +82,6 @@ public class AirParifDiscoveryService extends AbstractThingHandlerDiscoveryServi
                             .withProperty(LocationConfiguration.LOCATION, serverLocation.toFullString())//
                             .withRepresentationProperty(LocationConfiguration.DEPARTMENT) //
                             .withBridge(bridgeUID).build()));
-        } else {
-            logger.info("No department could be discovered matching server location");
         }
     }
 }

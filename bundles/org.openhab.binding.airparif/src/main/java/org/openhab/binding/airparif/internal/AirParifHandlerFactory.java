@@ -16,7 +16,6 @@ import static org.openhab.binding.airparif.internal.AirParifBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.airparif.internal.deserialization.AirParifDeserializer;
 import org.openhab.binding.airparif.internal.handler.AirParifBridgeHandler;
 import org.openhab.binding.airparif.internal.handler.LocationHandler;
@@ -40,12 +39,12 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.airparif", service = ThingHandlerFactory.class)
 public class AirParifHandlerFactory extends BaseThingHandlerFactory {
     private final AirParifDeserializer deserializer;
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
     public AirParifHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference AirParifDeserializer deserializer) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
         this.deserializer = deserializer;
     }
 
@@ -59,7 +58,7 @@ public class AirParifHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         return APIBRIDGE_THING_TYPE.equals(thingTypeUID)
-                ? new AirParifBridgeHandler((Bridge) thing, httpClient, deserializer)
+                ? new AirParifBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(), deserializer)
                 : LOCATION_THING_TYPE.equals(thingTypeUID) ? new LocationHandler(thing) : null;
     }
 }

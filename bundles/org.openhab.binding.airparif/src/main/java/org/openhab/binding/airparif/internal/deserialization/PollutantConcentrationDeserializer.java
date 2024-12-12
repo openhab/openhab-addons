@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airparif.internal.api.AirParifDto.PollutantConcentration;
 import org.openhab.binding.airparif.internal.api.Pollutant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -32,6 +34,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 class PollutantConcentrationDeserializer implements JsonDeserializer<PollutantConcentration> {
+    private final Logger logger = LoggerFactory.getLogger(PollutantConcentrationDeserializer.class);
 
     @Override
     public @Nullable PollutantConcentration deserialize(JsonElement json, Type clazz,
@@ -44,7 +47,7 @@ class PollutantConcentrationDeserializer implements JsonDeserializer<PollutantCo
             try {
                 result = new PollutantConcentration(pollutant, array.get(1).getAsInt(), array.get(2).getAsInt());
             } catch (JsonSyntaxException ignore) {
-                // result will remain null
+                logger.debug("Error deserializing PollutantConcentration: {}", json.toString());
             }
         }
         return result;
