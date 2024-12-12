@@ -1,6 +1,6 @@
 # OpenAI Text-to-Speech
 
-The OpenAI TTS (Text-to-Speech) addon for openHAB allows you to integrate OpenAI's Text-to-Speech capabilities into your openHAB system.
+The OpenAI TTS (Text-to-Speech) add-on for openHAB allows you to integrate OpenAI's Text-to-Speech capabilities into your openHAB system.
 The advantage of this service over others is that one selected voice can speak different languages.
 This is useful, for example, in conjunction with ChatGPT binding, which will help in learning foreign languages.
 
