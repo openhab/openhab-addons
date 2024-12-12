@@ -14,7 +14,7 @@
 			<label>MAC Address</label>
 			<description>MAC Address of the device</description>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" unit="s">
+		<parameter name="refreshInterval" type="integer" unit="s" min="2" max="60" step="1">
 			<label>Light Refresh Interval</label>
 			<description>The amount of time that passes until the device is refreshed (in seconds)</description>
 			<default>2</default>
