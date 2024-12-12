@@ -99,11 +99,12 @@ public class GoveeHandler extends BaseThingHandler {
 
     private OnOffType lastSwitch = OnOffType.OFF;
     private HSBType lastColor = new HSBType();
-    private int lastKelvin;
 
+    private int lastKelvin;
     private int minKelvin;
     private int maxKelvin;
 
+    private static final int REFRESH_SECONDS_MIN = 2;
     private static final int INTER_COMMAND_DELAY_MILLISEC = 100;
 
     /**
@@ -157,12 +158,16 @@ public class GoveeHandler extends BaseThingHandler {
         stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
                 minKelvin, maxKelvin);
 
+        int refreshSeconds = goveeConfiguration.refreshInterval;
+        refreshSeconds = refreshSeconds > 0 ? Math.max(refreshSeconds, REFRESH_SECONDS_MIN) : 0;
+
         updateStatus(ThingStatus.UNKNOWN);
         communicationManager.registerHandler(this);
-        if (triggerStatusJob == null) {
+
+        if (triggerStatusJob == null && refreshSeconds > 0) {
             logger.debug("Starting refresh trigger job for thing {} ", thing.getLabel());
-            triggerStatusJob = executorService.scheduleWithFixedDelay(thingRefreshSender, 100,
-                    goveeConfiguration.refreshInterval * 1000L, TimeUnit.MILLISECONDS);
+            triggerStatusJob = executorService.scheduleWithFixedDelay(thingRefreshSender, 100, refreshSeconds,
+                    TimeUnit.SECONDS);
         }
     }
 
