@@ -191,38 +191,33 @@ public class CommunicationManager implements Runnable {
                     boolean isStatusNotification = notification.contains("devStatus");
                     GoveeDiscoveryListener discoveryListener = this.discoveryListener;
 
-                    /*
-                     * a Thing handler exists and we have a status notification, so notify the Thing handler
-                     * listener
-                     */
+                    // it is a status notification and there is a Thing handler listener, so notify that listener
                     if (handler != null && isStatusNotification) {
                         logger.debug("Sending state notification to {} on {}", handler.getThing().getUID(), ipAddress);
                         handler.handleIncomingStatus(notification);
                         continue;
                     }
 
-                    /*
-                     * a Thing handler does not exist, we do not have a status notification, but there is a
-                     * discoveryListener, so notify the discovery listener
-                     */
-                    if (handler == null && !isStatusNotification && discoveryListener != null) {
-                        try {
-                            DiscoveryResponse response = gson.fromJson(notification, DiscoveryResponse.class);
-                            if (response != null) {
-                                logger.debug("Notifying potential new Thing discovered on {}", ipAddress);
-                                discoveryListener.onDiscoveryResponse(response);
+                    // it is a discovery notification and there is a discoveryListener, so notify that listener
+                    if (!isStatusNotification && discoveryListener != null) {
+                        // send discovery notification only when there is no Thing handler listener
+                        if (handler == null) {
+                            try {
+                                DiscoveryResponse response = gson.fromJson(notification, DiscoveryResponse.class);
+                                if (response != null) {
+                                    logger.debug("Notifying potential new Thing discovered on {}", ipAddress);
+                                    discoveryListener.onDiscoveryResponse(response);
+                                }
+                            } catch (JsonParseException e) {
+                                logger.debug("Failed to parse discovery notification", e);
                             }
-                        } catch (JsonParseException e) {
-                            logger.debug("Failed to parse discovery notification", e);
                         }
                         continue;
                     }
 
-                    /*
-                     * none of the above conditions apply so log it
-                     */
+                    // none of the above conditions apply just so log it
                     logger.warn(
-                            "Unrecognised notification for ipAddress:{}, handler:{}, stateNotification:{}, discoveryListener:{}",
+                            "Unhandled notification for ipAddress:{}, handler:{}, stateNotification:{}, discoveryListener:{}",
                             ipAddress, handler, isStatusNotification, discoveryListener);
                 } // {while}
             } catch (SocketException e) {
