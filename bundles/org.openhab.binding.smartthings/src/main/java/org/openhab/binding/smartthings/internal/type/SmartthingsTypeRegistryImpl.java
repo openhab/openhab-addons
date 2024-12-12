@@ -34,6 +34,8 @@ import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsComponent;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsProperty;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeChannelDefinitions;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeChannelDefinitions.SmartthingsBridgeChannelDef;
 import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionParameterGroup;
@@ -89,8 +91,16 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
             return;
         }
         if (capa.id.indexOf("switch") < 0) {
-            return;
+            // return;
         }
+
+        capabilitiesDict.put(capa.id, capa);
+        CreateChannelDefinition(capa);
+    }
+
+    public void CreateChannelDefinition(SmartthingsCapabilitie capa) {
+        SmartthingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
+        SmartthingsChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
 
         for (String key : capa.attributes.keySet()) {
             SmartthingsAttribute attr = capa.attributes.get(key);
@@ -113,29 +123,38 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
             SmartthingsProperty prop = attr.schema.properties.get("value");
             String tpSmart = prop.type;
-            String tp = "NA";
+            String channelTp = "NA";
 
             SmartthingsProperty unit = null;
             if (attr.schema.properties.containsKey("unit")) {
                 unit = attr.schema.properties.get("unit");
             }
 
-            if (tpSmart.equals("integer")) {
-                tp = "Number";
-            } else if (tpSmart.equals("string")) {
-                tp = "String";
-            } else if (tpSmart.equals("object")) {
-                tp = "";
-            } else if (tpSmart.equals("array")) {
-                tp = "";
-            } else if (tpSmart.equals("string")) {
-                tp = "String";
-            } else if (tpSmart.equals("number")) {
-                tp = "Number";
-            } else if (tpSmart.equals("boolean")) {
-                tp = "String";
+            SmartthingsBridgeChannelDef channelDef = SmartthingsBridgeChannelDefinitions.getChannelDefs(key);
+            if (channelDef != null) {
+                channelTp = channelDef.tp;
             } else {
-                logger.info("need review");
+                if (tpSmart.equals("integer")) {
+                    channelTp = "Number";
+                } else if (tpSmart.equals("string")) {
+                    channelTp = "String";
+                } else if (tpSmart.equals("object")) {
+                    if (prop.title != null && prop.title.equals("JsonObject")) {
+                        channelTp = "String";
+                    } else {
+                        channelTp = "";
+                    }
+                } else if (tpSmart.equals("array")) {
+                    channelTp = "";
+                } else if (tpSmart.equals("string")) {
+                    channelTp = "String";
+                } else if (tpSmart.equals("number")) {
+                    channelTp = "Number";
+                } else if (tpSmart.equals("boolean")) {
+                    channelTp = "String";
+                } else {
+                    logger.info("need review");
+                }
             }
 
             String label = capa.name;
@@ -143,29 +162,59 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
             String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-') + "-channel")
                     .toLowerCase();
 
-            logger.info("<channel-type id=\"" + channelName + "\">");
-            logger.info("  <item-type>" + tp + "</item-type>");
-            logger.info("  <label>" + label + "</label>");
-            logger.info("  <category>" + category + "</category>");
+            Boolean display = false;
 
-            if (prop.enumeration != null) {
-                logger.info("  <state>");
-                logger.info("    <options>");
-                for (String opt : prop.enumeration) {
-                    String optValue = opt;
-                    String optName = StringUtils.capitalize(
-                            StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(opt), StringUtils.SPACE));
-                    logger.info("      <option value=\"" + optValue + "\">" + optName + "</option>");
+            if (display) {
+                logger.info("<channel-type id=\"" + channelName + "\">");
+                logger.info("  <item-type>" + channelTp + "</item-type>");
+                logger.info("  <label>" + label + "</label>");
+                logger.info("  <category>" + category + "</category>");
+
+                if (prop.enumeration != null && channelDef == null) {
+                    logger.info("  <state>");
+                    logger.info("    <options>");
+                    for (String opt : prop.enumeration) {
+                        String optValue = opt;
+                        String optName = StringUtils.capitalize(
+                                StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(opt), StringUtils.SPACE));
+                        logger.info("      <option value=\"" + optValue + "\">" + optName + "</option>");
+                    }
+                    logger.info("    </options>");
+                    logger.info("  </state>");
                 }
-                logger.info("    </options>");
-                logger.info("  </state>");
+                logger.info("</channel-type>");
+                logger.info("");
             }
-            logger.info("</channel-type>");
-            logger.info("");
+
+            if (channelTp == null || channelTp.equals("")) {
+                continue;
+            }
+
+            ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(channelName);
+            ChannelType channelType = null;
+            if (lcChannelTypeProvider != null) {
+                channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
+                if (channelType == null) {
+                    channelType = createChannelType(channelName, category, label, channelTp, channelTypeUID);
+                    lcChannelTypeProvider.addChannelType(channelType);
+                }
+            }
 
         }
-        capabilitiesDict.put(capa.id, capa);
-        // logger.info("");
+    }
+
+    private ChannelType createChannelType(String channelName, String category, String description, String channelTp,
+            ChannelTypeUID channelTypeUID) {
+        ChannelType channelType;
+
+        StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
+
+        final StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder
+                .state(channelTypeUID, channelName, channelTp).withStateDescriptionFragment(stateFragment.build());
+
+        channelType = channelTypeBuilder.isAdvanced(false).withDescription(description).withCategory(category).build();
+
+        return channelType;
     }
 
     @Override
@@ -281,7 +330,13 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
                         if (capa != null) {
                             logger.info("capa:" + cap.id);
-                            addChannel(deviceType, groupTypes, channelDefinitions, capa);
+                            for (String key : capa.attributes.keySet()) {
+                                if (key.indexOf("range") >= 0) {
+                                    continue;
+                                }
+                                SmartthingsAttribute attr = capa.attributes.get(key);
+                                addChannel(deviceType, groupTypes, channelDefinitions, capa, key, attr);
+                            }
                         } else {
                             logger.info("capa null");
                         }
@@ -296,31 +351,28 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     }
 
     private void addChannel(String deviceType, List<ChannelGroupType> groupTypes,
-            List<ChannelDefinition> channelDefinitions, SmartthingsCapabilitie capa) {
+            List<ChannelDefinition> channelDefinitions, SmartthingsCapabilitie capa, String key,
+            @Nullable SmartthingsAttribute attr) {
+
+        Map<String, String> props = new Hashtable<String, String>();
         SmartthingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         SmartthingsChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
-        String capaId = capa.id;
-        String channelName = capaId + "channel";
-        String channelTp = capaId;
+
+        String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-') + "-channel")
+                .toLowerCase();
 
         ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(channelName);
+
         ChannelType channelType = null;
         if (lcChannelTypeProvider != null) {
             channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
-            if (channelType == null) {
-                channelType = createChannelType(channelName, channelTp, channelTypeUID);
-                lcChannelTypeProvider.addChannelType(channelType);
-            }
         }
-
-        Map<String, String> props = new Hashtable<String, String>();
 
         if (channelType != null) {
             ChannelDefinition channelDef = new ChannelDefinitionBuilder(channelName, channelType.getUID())
                     .withLabel(channelName).withDescription("description").withProperties(props).build();
             channelDefinitions.add(channelDef);
         }
-
         // generate group
         String groupdId = deviceType + "_default";
         ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(groupdId);
@@ -338,31 +390,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                 groupTypes.add(groupType);
             }
         }
-    }
-
-    private ChannelType createChannelType(String channelName, String channelTp, ChannelTypeUID channelTypeUID) {
-        ChannelType channelType;
-
-        StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
-        String targetType = channelTp;
-
-        if (channelTp.equals("switch")) {
-            targetType = "Switch";
-        } else if (channelTp.equals("colorTemperature")) {
-            targetType = "Color";
-        } else if (channelTp.equals("colorControl")) {
-            targetType = "Color";
-        } else if (channelTp.equals("switchLevel")) {
-            targetType = "Dimmer";
-        }
-
-        final StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder
-                .state(channelTypeUID, channelName, targetType).withStateDescriptionFragment(stateFragment.build());
-
-        channelType = channelTypeBuilder.isAdvanced(false).withDescription("description").withCategory("category")
-                .build();
-
-        return channelType;
     }
 
     /**

@@ -105,7 +105,6 @@ public class SmartthingsApi {
 
         // SmartthingsRoom[] roomList = GetRooms(loc.locationId);
         // SmartthingsRoom room = GetRoom(loc.locationId, roomList[0].roomId);
-
     }
 
     public SmartthingsCapabilitie[] GetAllCapabilities() {
