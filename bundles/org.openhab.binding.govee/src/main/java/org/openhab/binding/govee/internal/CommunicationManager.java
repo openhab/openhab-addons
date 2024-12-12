@@ -164,6 +164,7 @@ public class CommunicationManager implements Runnable {
     @Override
     public synchronized void run() {
         while (!Thread.currentThread().isInterrupted()) {
+            logger.trace("Server thread started");
             try (DatagramSocket socket = new DatagramSocket(RESPONSE_PORT)) {
                 serverSocket = socket;
                 socket.setReuseAddress(true);
@@ -186,42 +187,50 @@ public class CommunicationManager implements Runnable {
                     String ipAddress = packet.getAddress().toString().replace("/", "");
                     logger.trace("Received notification from {} with content = {}", ipAddress, notification);
 
-                    /*
-                     * check if there is a discovery listener and if so try to parse the notification as a discovery
-                     * notification and if it parsed successfully then notify the listener
-                     */
+                    GoveeHandler handler = thingHandlerListeners.get(ipAddress);
+                    boolean isStatusNotification = notification.contains("devStatus");
                     GoveeDiscoveryListener discoveryListener = this.discoveryListener;
-                    if (discoveryListener != null) {
-                        try {
-                            DiscoveryResponse response = gson.fromJson(notification, DiscoveryResponse.class);
-                            if ((response != null) && !thingHandlerListeners.containsKey(ipAddress)) {
-                                logger.debug("Notifying potential new Thing discovered on {}", ipAddress);
-                                discoveryListener.onDiscoveryResponse(response);
-                            }
-                            continue; // prepare to receive next notification
-                        } catch (JsonParseException e) {
-                            logger.debug("Cannot parse as discovery notification; consider as state notification");
-                            // fall through: consider as state notification
-                        }
+
+                    /*
+                     * a Thing handler exists and we have a status notification, so notify the Thing handler
+                     * listener
+                     */
+                    if (handler != null && isStatusNotification) {
+                        logger.debug("Sending state notification to {} on {}", handler.getThing().getUID(), ipAddress);
+                        handler.handleIncomingStatus(notification);
+                        continue;
                     }
 
                     /*
-                     * check if there is a thing handler listener and if so try to process the notification as a
-                     * state notification by notifying the listener
+                     * a Thing handler does not exist, we do not have a status notification, but there is a
+                     * discoveryListener, so notify the discovery listener
                      */
-                    GoveeHandler handler = thingHandlerListeners.get(ipAddress);
-                    if (handler != null) {
-                        logger.debug("Sending state notification to {} on {}", handler.getThing().getUID(), ipAddress);
-                        handler.handleIncomingStatus(notification);
-                    } else {
-                        logger.warn("Missing Thing handler listener for {}", ipAddress);
+                    if (handler == null && !isStatusNotification && discoveryListener != null) {
+                        try {
+                            DiscoveryResponse response = gson.fromJson(notification, DiscoveryResponse.class);
+                            if (response != null) {
+                                logger.debug("Notifying potential new Thing discovered on {}", ipAddress);
+                                discoveryListener.onDiscoveryResponse(response);
+                            }
+                        } catch (JsonParseException e) {
+                            logger.debug("Failed to parse discovery notification", e);
+                        }
+                        continue;
                     }
+
+                    /*
+                     * none of the above conditions apply so log it
+                     */
+                    logger.warn(
+                            "Unrecognised notification for ipAddress:{}, handler:{}, stateNotification:{}, discoveryListener:{}",
+                            ipAddress, handler, isStatusNotification, discoveryListener);
                 } // {while}
             } catch (SocketException e) {
                 logger.debug("Unexpected socket exception {}", e.getMessage());
             } finally {
                 serverSocket = null;
                 serverThread = null;
+                logger.trace("Server thread finished");
             }
         } // {while}
     }
@@ -245,7 +254,7 @@ public class CommunicationManager implements Runnable {
         synchronized (serverLock) {
             Thread thread = serverThread;
             if ((thread == null) || thread.isInterrupted() || !thread.isAlive()) {
-                thread = new Thread(this, "OH-binding-" + GoveeBindingConstants.BINDING_ID + "-StatusReceiver");
+                thread = new Thread(this, "OH-binding-" + GoveeBindingConstants.BINDING_ID);
                 serverThread = thread;
                 thread.start();
             }
@@ -282,9 +291,9 @@ public class CommunicationManager implements Runnable {
                 .setOption(StandardSocketOptions.IP_MULTICAST_TTL, 64)
                 .setOption(StandardSocketOptions.IP_MULTICAST_IF, interFace)
                 .bind(new InetSocketAddress(ipv4Address, DISCOVERY_PORT)).configureBlocking(false)) {
-            logger.trace("Sending ping from {}:{} ({}) to {}:{} with content = {}", ipv4Address, DISCOVERY_PORT,
-                    interFace.getDisplayName(), DISCOVERY_MULTICAST_ADDRESS, DISCOVERY_PORT, DISCOVER_REQUEST);
             channel.send(ByteBuffer.wrap(DISCOVER_REQUEST.getBytes()), DISCOVERY_SOCKET_ADDRESS);
+            logger.trace("Sent ping from {}:{} ({}) to {}:{} with content = {}", ipv4Address, DISCOVERY_PORT,
+                    interFace.getDisplayName(), DISCOVERY_MULTICAST_ADDRESS, DISCOVERY_PORT, DISCOVER_REQUEST);
         } catch (IOException e) {
             logger.debug("Network error", e);
         }
