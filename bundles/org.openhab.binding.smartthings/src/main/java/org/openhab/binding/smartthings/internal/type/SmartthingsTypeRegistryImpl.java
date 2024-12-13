@@ -340,7 +340,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
             channelDefinitions.add(channelDef);
         }
         // generate group
-        String groupdId = deviceType + "_default";
+        String groupdId = "default";
         ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(groupdId);
         ChannelGroupType groupType = null;
 

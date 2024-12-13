@@ -40,6 +40,7 @@ import org.openhab.binding.smartthings.internal.dto.LifeCycle;
 import org.openhab.binding.smartthings.internal.dto.LifeCycle.Data;
 import org.openhab.binding.smartthings.internal.dto.SMEvent;
 import org.openhab.binding.smartthings.internal.dto.SMEvent.device;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsLocation;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsThingHandler;
@@ -236,8 +237,6 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                     logger.info("");
                     String token = resultObj.installData.authToken;
                     installedAppId = resultObj.installData.installedApp.installedAppId;
-                    String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
-                            + "/subscriptions";
 
                     try {
                         SmartthingsLocation loc = api.getLocation(resultObj.installData.installedApp.locationId);
@@ -246,21 +245,7 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                         installedLocation = "Unable to retrieve location!!";
                     }
 
-                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, "", HttpMethod.GET);
-
-                    SMEvent evt = new SMEvent();
-                    evt.sourceType = "DEVICE";
-                    evt.device = new device("97806abc-ce85-4b28-9df2-31e33323cf62", "main", true, null);
-
-                    String body = gson.toJson(evt);
-                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
-
-                    evt = new SMEvent();
-                    evt.sourceType = "DEVICE";
-                    evt.device = new device("ee87617f-0c84-40a3-be25-e70e53f3fc6a", "main", true, null);
-
-                    body = gson.toJson(evt);
-                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
+                    registerSubscriptions();
 
                     setupInProgress = false;
                     logger.info("INSTALL");
@@ -270,21 +255,7 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                     String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
                             + "/subscriptions";
 
-                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, "", HttpMethod.GET);
-
-                    SMEvent evt = new SMEvent();
-                    evt.sourceType = "DEVICE";
-                    evt.device = new device("97806abc-ce85-4b28-9df2-31e33323cf62", "main", true, null);
-
-                    String body = gson.toJson(evt);
-                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
-
-                    evt = new SMEvent();
-                    evt.sourceType = "DEVICE";
-                    evt.device = new device("ee87617f-0c84-40a3-be25-e70e53f3fc6a", "main", true, null);
-
-                    body = gson.toJson(evt);
-                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
+                    registerSubscriptions();
 
                     logger.info("UPDATE");
                 } else if (resultObj.lifecycle.equals("EXECUTE")) {
@@ -351,6 +322,30 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
             }
         }
         logger.trace("Smartthings servlet returning.");
+    }
+
+    protected void registerSubscriptions() {
+        try {
+            String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
+                    + "/subscriptions";
+
+            networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, "", HttpMethod.GET);
+
+            SmartthingsApi api = bridgeHandler.getSmartthingsApi();
+            SmartthingsDevice[] devices = api.getAllDevices();
+
+            for (SmartthingsDevice dev : devices) {
+                SMEvent evt = new SMEvent();
+                evt.sourceType = "DEVICE";
+                evt.device = new device(dev.deviceId, "main", true, null);
+
+                String body = gson.toJson(evt);
+                networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
+            }
+        } catch (SmartthingsException ex) {
+            logger.error("Unable to register subscriptions");
+        }
+
     }
 
     protected void setupApp() {

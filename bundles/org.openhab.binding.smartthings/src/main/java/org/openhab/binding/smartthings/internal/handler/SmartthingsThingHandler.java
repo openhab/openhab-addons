@@ -152,7 +152,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attr), '-') + "-channel")
                 .toLowerCase();
 
-        ChannelUID chanUid = new ChannelUID(this.getThing().getUID(), "light_default", channelName);
+        ChannelUID chanUid = new ChannelUID(this.getThing().getUID(), "default", channelName);
         Channel chan = thing.getChannel(chanUid);
 
         if (chan != null) {
