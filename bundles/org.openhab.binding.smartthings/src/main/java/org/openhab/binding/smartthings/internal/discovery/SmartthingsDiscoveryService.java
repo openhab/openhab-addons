@@ -15,10 +15,6 @@ package org.openhab.binding.smartthings.internal.discovery;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,16 +23,11 @@ import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.SmartthingsHubCommand;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCategory;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsComponent;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
-import org.openhab.binding.smartthings.internal.type.SmartthingsChannelGroupTypeProvider;
-import org.openhab.binding.smartthings.internal.type.SmartthingsChannelTypeProvider;
-import org.openhab.binding.smartthings.internal.type.SmartthingsConfigDescriptionProvider;
 import org.openhab.binding.smartthings.internal.type.SmartthingsException;
-import org.openhab.binding.smartthings.internal.type.SmartthingsThingTypeProvider;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -50,8 +41,6 @@ import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * Smartthings Discovery service
  *
@@ -62,33 +51,19 @@ import com.google.gson.Gson;
         EventHandler.class }, configurationPid = "discovery.smartthings", property = "event.topics=org/openhab/binding/smartthings/discovery")
 public class SmartthingsDiscoveryService extends AbstractDiscoveryService implements EventHandler {
     private static final int DISCOVERY_TIMEOUT_SEC = 30;
-    private static final int INITIAL_DELAY_SEC = 10; // Delay 10 sec to give time for bridge and things to be created
-    private static final int SCAN_INTERVAL_SEC = 600;
 
     private final Pattern findIllegalChars = Pattern.compile("[^A-Za-z0-9_-]");
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsDiscoveryService.class);
 
-    private final Gson gson;
-
     private @Nullable SmartthingsHubCommand smartthingsHubCommand;
-
-    private @Nullable ScheduledFuture<?> scanningJob;
-
-    private @Nullable SmartthingsApi api;
-
     private @Nullable SmartthingsTypeRegistry typeRegistry;
-    private @Nullable SmartthingsThingTypeProvider thingTypeProvider;
-    private @Nullable SmartthingsChannelTypeProvider channelTypeProvider;
-    private @Nullable SmartthingsChannelGroupTypeProvider channelGroupTypeProvider;
-    private @Nullable SmartthingsConfigDescriptionProvider configDescriptionProvider;
 
     /*
      * default constructor
      */
     public SmartthingsDiscoveryService() {
         super(SmartthingsBindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SEC);
-        gson = new Gson();
     }
 
     @Reference
@@ -116,52 +91,6 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         }
     }
 
-    @Reference
-    protected void setThingTypeProvider(SmartthingsThingTypeProvider thingTypeProvider) {
-        this.thingTypeProvider = thingTypeProvider;
-    }
-
-    protected void unsetThingTypeProvider(SmartthingsThingTypeProvider thingTypeProvider) {
-        this.thingTypeProvider = null;
-    }
-
-    @Reference
-    protected void setChannelTypeProvider(SmartthingsChannelTypeProvider channelTypeProvider) {
-        this.channelTypeProvider = channelTypeProvider;
-    }
-
-    protected void unsetChannelTypeProvider(SmartthingsChannelTypeProvider channelTypeProvider) {
-        this.channelTypeProvider = null;
-    }
-
-    //
-    @Reference
-    protected void setChannelGroupTypeProvider(SmartthingsChannelGroupTypeProvider channelGroupTypeProvider) {
-        this.channelGroupTypeProvider = channelGroupTypeProvider;
-    }
-
-    protected void unsetChannelGroupTypeProvider(SmartthingsChannelGroupTypeProvider channelGroupTypeProvider) {
-        this.channelGroupTypeProvider = null;
-    }
-
-    @Reference
-    protected void setConfigDescriptionProvider(SmartthingsConfigDescriptionProvider configDescriptionProvider) {
-        this.configDescriptionProvider = configDescriptionProvider;
-    }
-
-    protected void unsetConfigDescriptionProvider(SmartthingsConfigDescriptionProvider configDescriptionProvider) {
-        this.configDescriptionProvider = null;
-    }
-
-    /*
-     * public void setApi(@Nullable SmartthingsApi api) {
-     * this.api = api;
-     * }
-     *
-     * public void unssetApi(SmartthingsApi api) {
-     * this.api = null;
-     * }
-     */
     /**
      * Called from the UI when starting a search.
      */
@@ -171,7 +100,13 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
     }
 
     public void doScan(Boolean addDevice) {
-        SmartthingsBridgeHandler bridge = smartthingsHubCommand.getBridgeHandler();
+        SmartthingsBridgeHandler bridge = null;
+        if (smartthingsHubCommand != null) {
+            bridge = smartthingsHubCommand.getBridgeHandler();
+        }
+        if (bridge == null) {
+            return;
+        }
         SmartthingsApi api = bridge.getSmartthingsApi();
 
         try {
@@ -180,11 +115,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
             for (SmartthingsDevice device : devices) {
 
                 String name = device.name;
-                String id = device.deviceId;
                 String label = device.label;
-                String manufacturerName = device.manufacturerName;
-                String locationId = device.locationId;
-                String roomId = device.roomId;
 
                 logger.debug("Device");
 
@@ -209,21 +140,13 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
                 String deviceType = null;
                 for (SmartthingsComponent component : device.components) {
                     String compId = component.id;
-                    String compLabel = component.label;
 
                     if (component.capabilities != null && component.capabilities.length > 0) {
-                        for (SmartthingsCapabilitie cap : component.capabilities) {
-                            String capId = cap.id;
-                            String capVersion = cap.version;
-
-                            logger.info("");
-                        }
                     }
 
                     if (component.categories != null && component.categories.length > 0) {
                         for (SmartthingsCategory cat : component.categories) {
                             String catId = cat.name;
-                            String catType = cat.categoryType;
 
                             if (compId.equals("main")) {
                                 deviceType = catId;
@@ -244,7 +167,9 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
                 }
 
                 deviceType = deviceType.toLowerCase();
-                this.typeRegistry.Register(deviceType, device);
+                if (this.typeRegistry != null) {
+                    this.typeRegistry.Register(deviceType, device);
+                }
                 if (addDevice) {
                     createDevice(deviceType, Objects.requireNonNull(device));
                 }
@@ -275,24 +200,23 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         }
         String deviceNameNoSpaces = name.replaceAll("\\s", "_");
         String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
-        if (smartthingsHubCommand == null) {
-            logger.info("SmartthingsHubCommand is unexpectedly null, could not create device {}", device);
-            return;
+        if (smartthingsHubCommand != null) {
+            ThingUID bridgeUid = smartthingsHubCommand.getBridgeUID();
+            String bridgeId = bridgeUid.getId();
+            String uidStr = String.format("smartthings:%s:%s:%s", deviceType, bridgeId, smartthingsDeviceName);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("smartthingsName", name);
+            properties.put("deviceId", device.deviceId);
+            properties.put("deviceLabel", device.label);
+            properties.put("deviceName", device.name);
+
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr))
+                    .withProperties(properties).withRepresentationProperty("deviceId").withBridge(bridgeUid)
+                    .withLabel(name).build();
+
+            thingDiscovered(discoveryResult);
         }
-        ThingUID bridgeUid = smartthingsHubCommand.getBridgeUID();
-        String bridgeId = bridgeUid.getId();
-        String uidStr = String.format("smartthings:%s:%s:%s", deviceType, bridgeId, smartthingsDeviceName);
-
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("smartthingsName", name);
-        properties.put("deviceId", device.deviceId);
-        properties.put("deviceLabel", device.label);
-        properties.put("deviceName", device.name);
-
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr)).withProperties(properties)
-                .withRepresentationProperty("deviceId").withBridge(bridgeUid).withLabel(name).build();
-
-        thingDiscovered(discoveryResult);
     }
 
     /**
@@ -309,11 +233,6 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
      */
     @Override
     protected void startBackgroundDiscovery() {
-        if (scanningJob == null) {
-            this.scanningJob = scheduler.scheduleWithFixedDelay(this::sendSmartthingsDiscoveryRequest,
-                    INITIAL_DELAY_SEC, SCAN_INTERVAL_SEC, TimeUnit.SECONDS);
-            logger.debug("Discovery background scanning job started");
-        }
     }
 
     /**
@@ -321,27 +240,6 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
      */
     @Override
     protected void stopBackgroundDiscovery() {
-        final ScheduledFuture<?> currentScanningJob = scanningJob;
-        if (currentScanningJob != null) {
-            currentScanningJob.cancel(false);
-            scanningJob = null;
-        }
-    }
-
-    /**
-     * Start the discovery process by sending a discovery request to the Smartthings Hub
-     */
-    private void sendSmartthingsDiscoveryRequest() {
-        if (smartthingsHubCommand != null) {
-            try {
-                String discoveryMsg = "{\"discovery\": \"yes\"}";
-                smartthingsHubCommand.sendDeviceCommand("/discovery", 5, discoveryMsg);
-                // Smartthings will not return a response to this message but will send it's response message
-                // which will get picked up by the SmartthingBridgeHandler.receivedPushMessage handler
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("Attempt to send command to the Smartthings hub failed with: {}", e.getMessage());
-            }
-        }
     }
 
     /**

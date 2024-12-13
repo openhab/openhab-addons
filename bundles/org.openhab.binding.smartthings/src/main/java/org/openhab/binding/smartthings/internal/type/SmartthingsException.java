@@ -45,17 +45,18 @@ public class SmartthingsException extends Exception {
     @Override
     public @Nullable String getMessage() {
         String msg = super.getMessage();
-        if (err != null) {
+        ErrorObject errL = err;
+        if (errL != null) {
             msg += "\r\n";
-            msg += "code      : " + err.requestId + "\r\n";
-            msg += "requestId : " + err.error.code + "\r\n";
-            msg += "message   : " + err.error.message + "\r\n";
-        }
+            msg += "code      : " + errL.requestId + "\r\n";
+            msg += "requestId : " + errL.error.code + "\r\n";
+            msg += "message   : " + errL.error.message + "\r\n";
 
-        for (ErrorObject.Error.Detail detail : err.error.details) {
-            msg += "code      : " + detail.code() + "\r\n";
-            msg += "target      : " + detail.target() + "\r\n";
-            msg += "message      : " + detail.message() + "\r\n";
+            for (ErrorObject.Error.Detail detail : errL.error.details) {
+                msg += "code      : " + detail.code() + "\r\n";
+                msg += "target      : " + detail.target() + "\r\n";
+                msg += "message      : " + detail.message() + "\r\n";
+            }
         }
 
         return msg;

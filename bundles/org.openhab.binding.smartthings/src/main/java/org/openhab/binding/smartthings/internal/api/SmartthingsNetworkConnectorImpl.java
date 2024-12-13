@@ -53,12 +53,6 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
     private final static @NotNull Gson gson;
     // private final static @NotNull Gson gsonWithAdpter;
 
-    private @Nullable String sessionId = null;
-    private @Nullable String sessionIdHttp = null;
-    private String baseUrl = "";
-    private String userName = "";
-    private String userPassword = "";
-
     protected final HttpClientFactory httpClientFactory;
 
     protected HttpClient httpClient;
@@ -95,7 +89,6 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
         ctxFactory.setEndpointIdentificationAlgorithm(null);
 
         this.httpClient = new HttpClient(ctxFactory);
-        this.httpClient.setRemoveIdleDestinations(true);
         this.httpClient.setMaxConnectionsPerDestination(10);
         this.httpClient.setMaxRequestsQueuedPerDestination(1000);
         this.httpClient.setConnectTimeout(10000);
@@ -106,18 +99,6 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
         } catch (Exception e) {
             logger.error("Failed to start http client: {}", e.getMessage());
         }
-    }
-
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setUserPassword(String userPassword) {
-        this.userPassword = userPassword;
     }
 
     @Override
@@ -192,9 +173,6 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
                     "network:Exception by executing request: " + request.getQuery() + " ; " + e.getLocalizedMessage());
         }
         return response;
-    }
-
-    private void initConfig() throws Exception {
     }
 
     public @Nullable String DoBasicRequest(String uri, String accessToken, @Nullable String data, HttpMethod method)

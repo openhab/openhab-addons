@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.smartthings.internal.type;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -54,8 +49,6 @@ import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -71,17 +64,14 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(SmartthingsTypeRegistryImpl.class);
 
-    private static final String TEMPLATE_PATH = "json/";
     private @Nullable SmartthingsThingTypeProvider thingTypeProvider;
     private @Nullable SmartthingsChannelTypeProvider channelTypeProvider;
     private @Nullable SmartthingsChannelGroupTypeProvider channelGroupTypeProvider;
     private @Nullable SmartthingsConfigDescriptionProvider configDescriptionProvider;
-    private @NonNullByDefault({}) BundleContext bundleContext;
 
     private Dictionary<String, SmartthingsCapabilitie> capabilitiesDict = new Hashtable<String, SmartthingsCapabilitie>();
 
     public SmartthingsTypeRegistryImpl() {
-        this.bundleContext = FrameworkUtil.getBundle(SmartthingsTypeRegistryImpl.class).getBundleContext();
     }
 
     @Override
@@ -99,7 +89,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
     public void CreateChannelDefinition(SmartthingsCapabilitie capa) {
         SmartthingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
-        SmartthingsChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
 
         for (String key : capa.attributes.keySet()) {
             SmartthingsAttribute attr = capa.attributes.get(key);
@@ -110,6 +99,9 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
             logger.info("capa: {} <> {}", capa.id, key);
 
+            if (attr == null) {
+                continue;
+            }
             if (attr.schema == null) {
                 logger.info("no schema");
             }
@@ -121,81 +113,86 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
             }
 
             SmartthingsProperty prop = attr.schema.properties.get("value");
-            String tpSmart = prop.type;
-            String channelTp = "NA";
 
-            SmartthingsProperty unit = null;
-            if (attr.schema.properties.containsKey("unit")) {
-                unit = attr.schema.properties.get("unit");
-            }
+            if (prop != null) {
+                String tpSmart = prop.type;
+                String channelTp = "NA";
 
-            SmartthingsBridgeChannelDef channelDef = SmartthingsBridgeChannelDefinitions.getChannelDefs(key);
-            if (channelDef != null) {
-                channelTp = channelDef.tp;
-            } else {
-                if ("integer".equals(tpSmart)) {
-                    channelTp = "Number";
-                } else if ("string".equals(tpSmart)) {
-                    channelTp = "String";
-                } else if ("object".equals(tpSmart)) {
-                    if (prop.title != null && "JsonObject".equals(prop.title)) {
+                /*
+                 * SmartthingsProperty unit = null;
+                 * if (attr.schema.properties.containsKey("unit")) {
+                 * unit = attr.schema.properties.get("unit");
+                 * }
+                 */
+
+                SmartthingsBridgeChannelDef channelDef = SmartthingsBridgeChannelDefinitions.getChannelDefs(key);
+                if (channelDef != null) {
+                    channelTp = channelDef.tp;
+                } else {
+                    if ("integer".equals(tpSmart)) {
+                        channelTp = "Number";
+                    } else if ("string".equals(tpSmart)) {
+                        channelTp = "String";
+                    } else if ("object".equals(tpSmart)) {
+                        if (prop.title != null && "JsonObject".equals(prop.title)) {
+                            channelTp = "String";
+                        } else {
+                            channelTp = "";
+                        }
+                    } else if ("array".equals(tpSmart)) {
+                        channelTp = "";
+                    } else if ("string".equals(tpSmart)) {
+                        channelTp = "String";
+                    } else if ("number".equals(tpSmart)) {
+                        channelTp = "Number";
+                    } else if ("boolean".equals(tpSmart)) {
                         channelTp = "String";
                     } else {
-                        channelTp = "";
+                        logger.info("need review");
                     }
-                } else if ("array".equals(tpSmart)) {
-                    channelTp = "";
-                } else if ("string".equals(tpSmart)) {
-                    channelTp = "String";
-                } else if ("number".equals(tpSmart)) {
-                    channelTp = "Number";
-                } else if ("boolean".equals(tpSmart)) {
-                    channelTp = "String";
-                } else {
-                    logger.info("need review");
                 }
-            }
 
-            String label = capa.name;
-            String category = capa.id;
-            String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-') + "-channel")
-                    .toLowerCase();
+                String label = capa.name;
+                String category = capa.id;
+                String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-')
+                        + "-channel").toLowerCase();
 
-            Boolean display = false;
+                Boolean display = false;
 
-            if (display) {
-                logger.info("<channel-type id=\"{}\">", channelName);
-                logger.info("  <item-type>{}</item-type>", channelTp);
-                logger.info("  <label>{}</label>", label);
-                logger.info("  <category>{}</category>", category);
+                if (display) {
+                    logger.info("<channel-type id=\"{}\">", channelName);
+                    logger.info("  <item-type>{}</item-type>", channelTp);
+                    logger.info("  <label>{}</label>", label);
+                    logger.info("  <category>{}</category>", category);
 
-                if (prop.enumeration != null && channelDef == null) {
-                    logger.info("  <state>");
-                    logger.info("    <options>");
-                    for (String opt : prop.enumeration) {
-                        String optValue = opt;
-                        String optName = StringUtils.capitalize(
-                                StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(opt), StringUtils.SPACE));
-                        logger.info("      <option value=\"{}\">{}</option>", optValue, optName);
+                    if (prop.enumeration != null && channelDef == null) {
+                        logger.info("  <state>");
+                        logger.info("    <options>");
+                        for (String opt : prop.enumeration) {
+                            String optValue = opt;
+                            String optName = StringUtils.capitalize(StringUtils
+                                    .join(StringUtils.splitByCharacterTypeCamelCase(opt), StringUtils.SPACE));
+                            logger.info("      <option value=\"{}\">{}</option>", optValue, optName);
+                        }
+                        logger.info("    </options>");
+                        logger.info("  </state>");
                     }
-                    logger.info("    </options>");
-                    logger.info("  </state>");
+                    logger.info("</channel-type>");
+                    logger.info("");
                 }
-                logger.info("</channel-type>");
-                logger.info("");
-            }
 
-            if (channelTp == null || "".equals(channelTp)) {
-                continue;
-            }
+                if ("".equals(channelTp)) {
+                    continue;
+                }
 
-            ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(channelName);
-            ChannelType channelType = null;
-            if (lcChannelTypeProvider != null) {
-                channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
-                if (channelType == null) {
-                    channelType = createChannelType(channelName, category, label, channelTp, channelTypeUID);
-                    lcChannelTypeProvider.addChannelType(channelType);
+                ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(channelName);
+                ChannelType channelType = null;
+                if (lcChannelTypeProvider != null) {
+                    channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
+                    if (channelType == null) {
+                        channelType = createChannelType(channelName, category, label, channelTp, channelTypeUID);
+                        lcChannelTypeProvider.addChannelType(channelType);
+                    }
                 }
             }
 
@@ -258,26 +255,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
         this.configDescriptionProvider = null;
     }
 
-    /**
-     * Reads a template from file and returns the content as String.
-     *
-     * @param templateName name of the template file to read
-     * @return The content of the template file
-     * @throws IOException thrown when an HTML template could not be read
-     */
-    private String readTemplate(String templateName) throws IOException {
-        final URL index = bundleContext.getBundle().getEntry(templateName);
-
-        if (index == null) {
-            throw new FileNotFoundException(
-                    String.format("Cannot find '{}' - failed to initialize Smartthings servlet", templateName));
-        } else {
-            try (InputStream inputStream = index.openStream()) {
-                return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-            }
-        }
-    }
-
     @Override
     public void Register(String deviceType, SmartthingsDevice device) {
         try {
@@ -290,8 +267,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     private void generateThingsType(String deviceId, String deviceLabel, String deviceType, SmartthingsDevice device) {
 
         SmartthingsThingTypeProvider lcThingTypeProvider = thingTypeProvider;
-        SmartthingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
-        SmartthingsChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
 
         if (lcThingTypeProvider != null) {
             ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(deviceType);
@@ -309,7 +284,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
                 for (SmartthingsComponent component : device.components) {
                     String compId = component.id;
-                    String compLabel = component.label;
 
                     if (!compId.equals("main")) {
                         continue;
@@ -321,23 +295,18 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
                     for (SmartthingsCapabilitie cap : component.capabilities) {
                         String capId = cap.id;
-                        String capVersion = cap.version;
 
                         capId = capId.replace('.', '_');
 
                         SmartthingsCapabilitie capa = capabilitiesDict.get(capId);
 
-                        if (capa != null) {
-                            logger.info("capa: {}", cap.id);
-                            for (String key : capa.attributes.keySet()) {
-                                if (key.indexOf("range") >= 0) {
-                                    continue;
-                                }
-                                SmartthingsAttribute attr = capa.attributes.get(key);
-                                addChannel(deviceType, groupTypes, channelDefinitions, capa, key, attr);
+                        logger.info("capa: {}", cap.id);
+                        for (String key : capa.attributes.keySet()) {
+                            if (key.indexOf("range") >= 0) {
+                                continue;
                             }
-                        } else {
-                            logger.info("capa null");
+                            SmartthingsAttribute attr = capa.attributes.get(key);
+                            addChannel(deviceType, groupTypes, channelDefinitions, capa, key, attr);
                         }
 
                     }

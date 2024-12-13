@@ -27,7 +27,6 @@ import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsLocation;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsRoom;
 import org.openhab.binding.smartthings.internal.type.SmartthingsException;
-import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,11 +42,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class SmartthingsApi {
 
-    private static final String BEARER = "Bearer ";
-
     private final Logger logger = LoggerFactory.getLogger(SmartthingsApi.class);
 
-    private final OAuthClientService oAuthClientService;
     private final SmartthingsNetworkConnector networkConnector;
     private final String token;
 
@@ -68,8 +64,7 @@ public class SmartthingsApi {
      * @param token The token to access the API
      */
     public SmartthingsApi(HttpClientFactory httpClientFactory, SmartthingsNetworkConnector networkConnector,
-            OAuthClientService oAuthClientService, String token) {
-        this.oAuthClientService = oAuthClientService;
+            String token) {
         this.token = token;
         this.networkConnector = networkConnector;
     }
@@ -229,11 +224,8 @@ public class SmartthingsApi {
             oAuthConfig.scope = new String[1];
             oAuthConfig.scope[0] = "r:devices:*";
 
-            // oAuthConfig.redirectUris = new String[1];
-            // oAuthConfig.redirectUris[0] = "https://redirect.clae.net/openhabdev/";
-
             String body = gson.toJson(oAuthConfig);
-            JsonObject result = DoRequest(JsonObject.class, uri, body, true);
+            DoRequest(JsonObject.class, uri, body, true);
 
             logger.info("");
 
@@ -247,7 +239,7 @@ public class SmartthingsApi {
         // final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
         // final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
         String accessToken = token;
-        if (accessToken == null || accessToken.isEmpty()) {
+        if (accessToken.isEmpty()) {
             throw new RuntimeException(
                     "No Smartthings accesstoken. Did you authorize Smartthings via /connectsmartthings ?");
         }

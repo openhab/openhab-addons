@@ -123,7 +123,7 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
 
         authService.registerServlet();
 
-        smartthingsApi = new SmartthingsApi(httpClientFactory, networkConnector, oAuthService, config.token);
+        smartthingsApi = new SmartthingsApi(httpClientFactory, networkConnector, config.token);
 
         if (servlet == null) {
             servlet = new SmartthingsServlet(this, httpService, networkConnector, config.token);

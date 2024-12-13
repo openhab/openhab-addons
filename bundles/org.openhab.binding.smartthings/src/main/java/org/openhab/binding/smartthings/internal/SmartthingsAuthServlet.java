@@ -59,8 +59,6 @@ public class SmartthingsAuthServlet extends SmartthingsBaseServlet {
     private static final String KEY_ERROR = "error";
     private static final String KEY_BRIDGE_URI = "bridge.uri";
     private static final String KEY_REDIRECT_URI = "redirectUri";
-    private static final String KEY_LOCATIONID_OPTION = "locationId.Option";
-    private static final String KEY_POOL_STATUS = "poolStatus";
 
     public SmartthingsAuthServlet(SmartthingsBridgeHandler bridgeHandler, SmartthingsAuthService smartthingsAuthService,
             HttpService httpService, SmartthingsNetworkConnector networkConnector, String token)
@@ -81,13 +79,20 @@ public class SmartthingsAuthServlet extends SmartthingsBaseServlet {
     @Override
     protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
+
+        if (req == null) {
+            return;
+        }
+        if (resp == null) {
+            return;
+        }
+
         logger.debug("Smartthings auth callback servlet received GET request {}.", req.getRequestURI());
         final Map<String, String> replaceMap = new HashMap<>();
 
         StringBuffer requestUrl = req.getRequestURL();
         String servletBaseUrl = requestUrl != null ? requestUrl.toString() : "";
         String template = indexTemplate;
-        StringBuffer optionBuffer = new StringBuffer();
 
         String servletBaseURLSecure = servletBaseUrl.replace("http://", "https://").replace("8080", "8443");
 
@@ -96,7 +101,9 @@ public class SmartthingsAuthServlet extends SmartthingsBaseServlet {
         SmartthingsAccountHandler accountHandler = smartthingsAuthService.getSmartthingsAccountHandler();
 
         replaceMap.put(KEY_REDIRECT_URI, servletBaseURLSecure);
-        replaceMap.put(KEY_BRIDGE_URI, accountHandler.formatAuthorizationUrl(servletBaseURLSecure));
+        if (accountHandler != null) {
+            replaceMap.put(KEY_BRIDGE_URI, accountHandler.formatAuthorizationUrl(servletBaseURLSecure));
+        }
 
         resp.getWriter().append(replaceKeysFromMap(template, replaceMap));
         resp.getWriter().close();

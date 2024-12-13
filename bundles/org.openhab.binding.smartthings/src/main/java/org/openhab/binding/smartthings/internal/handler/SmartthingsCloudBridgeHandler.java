@@ -63,9 +63,7 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
     public void initialize() {
         super.initialize();
 
-        SmartthingsApi api = this.getSmartthingsApi();
         initCapabilites();
-
         discoService.doScan(false);
 
         updateStatus(ThingStatus.ONLINE);

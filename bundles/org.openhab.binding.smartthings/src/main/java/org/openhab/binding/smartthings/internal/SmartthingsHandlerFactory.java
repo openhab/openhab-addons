@@ -22,7 +22,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.smartthings.internal.discovery.SmartthingsDiscoveryService;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
@@ -69,7 +68,6 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     private Gson gson;
     private List<SmartthingsThingHandler> thingHandlers = Collections.synchronizedList(new ArrayList<>());
     private @NonNullByDefault({}) HttpService httpService;
-    private @NonNullByDefault({}) HttpClient httpClient;
     private final HttpClientFactory httpClientFactory;
     private final SmartthingsAuthService authService;
     private final OAuthFactory oAuthFactory;
@@ -133,7 +131,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
                         thing.getLabel());
                 return null;
             }
-            SmartthingsThingHandler thingHandler = new SmartthingsThingHandler(thing, this);
+            SmartthingsThingHandler thingHandler = new SmartthingsThingHandler(thing);
             thingHandlers.add(thingHandler);
             logger.debug("SmartthingsHandlerFactory created ThingHandler for {}, {}",
                     thing.getConfiguration().get("smartthingsName"), thing.getUID().getAsString());
@@ -219,15 +217,6 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
         return null;
     }
 
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory() {
-        this.httpClient = null;
-    }
-
     @Override
     @Nullable
     public SmartthingsBridgeHandler getBridgeHandler() {
@@ -237,6 +226,9 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     @Override
     @Nullable
     public ThingUID getBridgeUID() {
-        return bridgeHandler.getThing().getUID();
+        if (bridgeHandler != null) {
+            return bridgeHandler.getThing().getUID();
+        }
+        return null;
     }
 }

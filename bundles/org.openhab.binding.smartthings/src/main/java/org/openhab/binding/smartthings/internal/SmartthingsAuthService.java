@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.smartthings.internal;
 
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -23,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnector;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
-import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -49,12 +47,10 @@ public class SmartthingsAuthService {
     // private final List<SpotifyAccountHandler> handlers = new ArrayList<>();
 
     private @NonNullByDefault({}) HttpService httpService;
-    private @NonNullByDefault({}) BundleContext bundleContext;
     private @Nullable SmartthingsAccountHandler accountHandler;
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> properties) {
-        bundleContext = componentContext.getBundleContext();
     }
 
     protected void initialize() {
@@ -71,7 +67,6 @@ public class SmartthingsAuthService {
      * Creates a new {@link SpotifyAuthServlet}.
      *
      * @return the newly created servlet
-     * @throws IOException thrown when an HTML template could not be read
      */
 
     public void registerServlet() {
@@ -88,13 +83,12 @@ public class SmartthingsAuthService {
 
     private HttpServlet createServlet() throws Exception {
         SmartthingsBridgeHandler bridgeHandler = (SmartthingsBridgeHandler) accountHandler;
-        SmartthingsNetworkConnector networkConnector = bridgeHandler.getNetworkConnector();
-        if (bridgeHandler != null) {
-            return new SmartthingsAuthServlet(bridgeHandler, this, httpService, networkConnector, "");
-        } else {
-
+        if (bridgeHandler == null) {
             throw new Exception("BridgeHandler is null");
         }
+
+        SmartthingsNetworkConnector networkConnector = bridgeHandler.getNetworkConnector();
+        return new SmartthingsAuthServlet(bridgeHandler, this, httpService, networkConnector, "");
     }
 
     /**

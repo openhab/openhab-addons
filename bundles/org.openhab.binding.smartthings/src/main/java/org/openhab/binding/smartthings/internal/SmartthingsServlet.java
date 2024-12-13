@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,7 +41,6 @@ import org.openhab.binding.smartthings.internal.dto.SMEvent.device;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsLocation;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.type.SmartthingsException;
-import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.http.HttpService;
@@ -94,11 +92,6 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
 
     @Activate
     public void activate() {
-        if (httpService == null) {
-            logger.info("SmartthingsServlet.activate: httpService is unexpectedly null");
-            return;
-        }
-
         try {
             Dictionary<String, String> servletParams = new Hashtable<String, String>();
             logger.info("registerServlet:" + PATH);
@@ -116,20 +109,16 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
     }
 
     protected void deactivate(ComponentContext componentContext) {
-        if (httpService != null) {
-            try {
-                httpService.unregister(PATH);
-            } catch (IllegalArgumentException e) {
-                logger.warn("Could not stop Smartthings servlet service: {}", e.getMessage());
-            }
+        try {
+            httpService.unregister(PATH);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Could not stop Smartthings servlet service: {}", e.getMessage());
         }
     }
 
     @Override
     public void init(@Nullable ServletConfig servletConfig) throws ServletException {
         logger.info("SmartthingsServlet:init");
-        ServletContext context = servletConfig.getServletContext();
-        BundleContext bundleContext = (BundleContext) context.getAttribute("osgi-bundlecontext");
     }
 
     @Override
@@ -139,15 +128,18 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
         StringBuffer optionBuffer = new StringBuffer();
         SmartthingsApi api = bridgeHandler.getSmartthingsApi();
 
-        logger.info("SmartthingsServlet:service");
-
         if (req == null) {
             logger.debug("SmartthingsServlet.service unexpectedly received a null request. Request not processed");
             return;
         }
+        if (resp == null) {
+            return;
+        }
+
+        logger.info("SmartthingsServlet:service");
         String path = req.getRequestURI();
 
-        if (!path.contains("/smartthings/cb")) {
+        if (path != null && !path.contains("/smartthings/cb")) {
             String template = "";
             if (path.contains("index")) {
                 template = indexTemplate;
@@ -161,7 +153,7 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                 template = indexTemplate;
             }
 
-            if (selectLocationTemplate.equals(template)) {
+            if (selectLocationTemplate != null && selectLocationTemplate.equals(template)) {
                 SetupApp();
 
                 try {
@@ -173,13 +165,13 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                     optionBuffer.append("Unable to retrieve locations !!");
                 }
                 setupInProgress = true;
-            } else if (poolTemplate.equals(template)) {
+            } else if (poolTemplate != null && poolTemplate.equals(template)) {
                 if (setupInProgress) {
                     replaceMap.put(KEY_POOL_STATUS, "false");
                 } else {
                     replaceMap.put(KEY_POOL_STATUS, "true");
                 }
-            } else if (confirmationTemplate.equals(template)) {
+            } else if (confirmationTemplate != null && confirmationTemplate.equals(template)) {
                 replaceMap.put(KEY_LOCATION, installedLocation);
                 replaceMap.put(KEY_APP_ID, installedAppId);
             }
@@ -224,7 +216,7 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
 
                 } else if (resultObj.lifecycle.equals("INSTALL")) {
                     logger.info("");
-                    String token = resultObj.installData.authToken;
+                    // String token = resultObj.installData.authToken;
                     installedAppId = resultObj.installData.installedApp.installedAppId;
 
                     try {
@@ -243,24 +235,21 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                     String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
                             + "/subscriptions";
 
-                    JsonObject res = networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, "",
-                            HttpMethod.GET);
+                    networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, "", HttpMethod.GET);
 
                     SMEvent evt = new SMEvent();
                     evt.sourceType = "DEVICE";
                     evt.device = new device("97806abc-ce85-4b28-9df2-31e33323cf62", "main", true, null);
 
                     String body = gson.toJson(evt);
-                    JsonObject res2 = networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, body,
-                            HttpMethod.POST);
+                    networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
 
                     evt = new SMEvent();
                     evt.sourceType = "DEVICE";
                     evt.device = new device("ee87617f-0c84-40a3-be25-e70e53f3fc6a", "main", true, null);
 
                     body = gson.toJson(evt);
-                    res2 = networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, body,
-                            HttpMethod.POST);
+                    networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
 
                     logger.info("UPDATE");
                 } else if (resultObj.lifecycle.equals("EXECUTE")) {
