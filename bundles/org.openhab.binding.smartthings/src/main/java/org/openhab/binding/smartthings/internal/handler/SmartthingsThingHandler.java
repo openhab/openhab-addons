@@ -128,8 +128,8 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
             // try {
 
             if (command instanceof OnOffType) {
-                OnOffType OnOff = (OnOffType) command;
-                String val = OnOff.toString().toLowerCase();
+                OnOffType onOff = (OnOffType) command;
+                String val = onOff.toString().toLowerCase();
                 jsonMsg = String
                         .format("{'commands': [{'component': 'main', 'capability': 'switch', 'command': '%s'}]}", val);
 
@@ -145,7 +145,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                     logger.error("Unable to send command: {}", ex.getMessage());
                 }
 
-                updateState(channelUID, OnOff);
+                updateState(channelUID, onOff);
             }
 
             else if (command instanceof PercentType) {

@@ -101,7 +101,6 @@ public class SmartthingsApi {
             String uri = baseUrl + capabilitiesEndPoint;
             SmartthingsCapabilitie[] listCapabilities = doRequest(SmartthingsCapabilitie[].class, uri);
             return listCapabilities;
-
         } catch (final Exception e) {
             throw new SmartthingsException("SmartthingsApi : Unable to retrieve capabilities", e);
         }
@@ -112,7 +111,6 @@ public class SmartthingsApi {
             String uri = baseUrl + capabilitiesEndPoint + "/" + capabilityId + "/" + version;
             SmartthingsCapabilitie capabilitie = doRequest(SmartthingsCapabilitie.class, uri);
             return capabilitie;
-
         } catch (final Exception e) {
             throw new SmartthingsException("SmartthingsApi : Unable to retrieve capability", e);
         }
@@ -123,7 +121,6 @@ public class SmartthingsApi {
             String uri = baseUrl + locationEndPoint;
             SmartthingsLocation[] listLocations = doRequest(SmartthingsLocation[].class, uri);
             return listLocations;
-
         } catch (final Exception e) {
             throw new SmartthingsException("SmartthingsApi : Unable to retrieve locations", e);
         }
@@ -146,7 +143,6 @@ public class SmartthingsApi {
             String uri = baseUrl + locationEndPoint + "/" + locationId + roomsEndPoint;
             SmartthingsRoom[] listRooms = doRequest(SmartthingsRoom[].class, uri);
             return listRooms;
-
         } catch (final Exception e) {
             throw new SmartthingsException("SmartthingsApi : Unable to retrieve rooms", e);
         }
@@ -172,7 +168,6 @@ public class SmartthingsApi {
 
             logger.info("");
             return listApps;
-
         } catch (final Exception e) {
             throw new SmartthingsException("SmartthingsApi : Unable to retrieve apps", e);
         }
@@ -249,7 +244,6 @@ public class SmartthingsApi {
 
     public void sendCommand(String deviceId, String jsonMsg) throws SmartthingsException {
         try {
-
             String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/commands";
             doRequest(JsonObject.class, uri, jsonMsg, false);
         } catch (final Exception e) {

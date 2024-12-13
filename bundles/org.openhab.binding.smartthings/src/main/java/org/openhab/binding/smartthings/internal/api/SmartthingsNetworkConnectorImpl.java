@@ -50,7 +50,7 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsNetworkConnectorImpl.class);
 
-    private final static @NotNull Gson gson;
+    private static final @NotNull Gson Gson;
 
     protected final HttpClientFactory httpClientFactory;
 
@@ -62,7 +62,7 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
 
     static {
         GsonBuilder builder = new GsonBuilder();
-        gson = builder.setPrettyPrinting().create();
+        Gson = builder.setPrettyPrinting().create();
     }
 
     @Activate
@@ -149,7 +149,6 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
                 try {
                     startedRequest++;
                     logger.info("StartedRequest : {}", startedRequest - completedRequest);
-
                 } finally {
                     lockObj.unlock();
                 }
@@ -165,12 +164,12 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
         return response;
     }
 
-    public @Nullable String DoBasicRequest(String uri, String accessToken, @Nullable String data, HttpMethod method)
+    public @Nullable String doBasicRequest(String uri, String accessToken, @Nullable String data, HttpMethod method)
             throws Exception {
         return doBasicRequest(uri, null, accessToken, data, method);
     }
 
-    public @Nullable String DoBasicRequestAsync(String uri, @Nullable SmartthingsNetworkCallback callback,
+    public @Nullable String doBasicRequestAsync(String uri, @Nullable SmartthingsNetworkCallback callback,
             String accessToken, @Nullable String data, HttpMethod method) throws Exception {
         return doBasicRequest(uri, callback, accessToken, data, method);
     }
@@ -198,7 +197,7 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
                 } else if (statusCode == HttpStatus.UNPROCESSABLE_ENTITY_422) {
                     String result = response.getContentAsString();
 
-                    ErrorObject err = gson.fromJson(result, ErrorObject.class);
+                    ErrorObject err = Gson.fromJson(result, ErrorObject.class);
                     if (err != null) {
                         throw new SmartthingsException("Error occured during request:", err);
                     } else {
@@ -290,7 +289,7 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
     }
 
     public static Gson getGson() {
-        return gson;
+        return Gson;
     }
 
     /*

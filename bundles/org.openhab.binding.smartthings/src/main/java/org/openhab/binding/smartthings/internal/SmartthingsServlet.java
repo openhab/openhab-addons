@@ -32,8 +32,8 @@ import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnector;
 import org.openhab.binding.smartthings.internal.dto.AppResponse;
 import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse;
-import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.configurationData.Page;
-import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.configurationData.initialize;
+import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.ConfigurationData.Initialize;
+import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.ConfigurationData.Page;
 import org.openhab.binding.smartthings.internal.dto.LifeCycle;
 import org.openhab.binding.smartthings.internal.dto.LifeCycle.Data;
 import org.openhab.binding.smartthings.internal.dto.SMEvent;
@@ -253,9 +253,9 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                 } else if (resultObj.lifecycle.equals("CONFIGURATION")
                         && resultObj.configurationData.phase().equals("INITIALIZE")) {
                     ConfigurationResponse response = new ConfigurationResponse();
-                    response.configurationData = response.new configurationData();
+                    response.configurationData = response.new ConfigurationData();
 
-                    initialize init = response.configurationData.new initialize();
+                    Initialize init = response.configurationData.new Initialize();
                     response.configurationData.initialize = init;
                     init.name = "Openhab";
                     init.description = "Openhab";
@@ -270,7 +270,7 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                 } else if (resultObj.lifecycle.equals("CONFIGURATION")
                         && resultObj.configurationData.phase().equals("PAGE")) {
                     ConfigurationResponse response = new ConfigurationResponse();
-                    response.configurationData = response.new configurationData();
+                    response.configurationData = response.new ConfigurationData();
 
                     Page page1 = response.configurationData.new Page();
                     response.configurationData.page = page1;

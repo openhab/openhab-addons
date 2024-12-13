@@ -18,8 +18,8 @@ package org.openhab.binding.smartthings.internal.dto;
  * @author Laurent ARNAL - Initial contribution
  */
 public class ConfigurationResponse {
-    public class configurationData {
-        public class initialize {
+    public class ConfigurationData {
+        public class Initialize {
             public String name;
             public String description;
             public String id;
@@ -28,7 +28,7 @@ public class ConfigurationResponse {
             public String firstPageId;
         }
 
-        public initialize initialize;
+        public Initialize initialize;
 
         public class Page {
             public String pageId;
@@ -62,5 +62,5 @@ public class ConfigurationResponse {
         public Page page;
     }
 
-    public configurationData configurationData;
+    public ConfigurationData configurationData;
 }

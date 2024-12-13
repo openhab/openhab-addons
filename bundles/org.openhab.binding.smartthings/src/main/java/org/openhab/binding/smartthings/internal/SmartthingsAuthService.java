@@ -82,10 +82,10 @@ public class SmartthingsAuthService {
         }
     }
 
-    private HttpServlet createServlet() throws Exception {
+    private HttpServlet createServlet() throws SmartthingsException {
         SmartthingsBridgeHandler bridgeHandler = (SmartthingsBridgeHandler) accountHandler;
         if (bridgeHandler == null) {
-            throw new Exception("BridgeHandler is null");
+            throw new SmartthingsException("BridgeHandler is null");
         }
 
         SmartthingsNetworkConnector networkConnector = bridgeHandler.getNetworkConnector();
