@@ -123,7 +123,6 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
             logger.debug("SmartthingsHandlerFactory created CloudBridgeHandler for {}", thingTypeUID.getAsString());
             return bridgeHandler;
         } else if (SmartthingsBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
-
             // Everything but the bridge is handled by this one handler
             // Make sure this thing belongs to the registered Bridge
             if (bridgeUID != null && !bridgeUID.equals(thing.getBridgeUID())) {
@@ -152,27 +151,6 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     @Override
     public void sendDeviceCommand(String path, int timeout, String data)
             throws InterruptedException, TimeoutException, ExecutionException {
-
-        /*
-         * if (bridgeHandler instanceof SmartthingsHubBridgeHandler) {
-         * SmartthingsHubBridgeHandler hubBridgeHandler = (SmartthingsHubBridgeHandler) bridgeHandler;
-         * ContentResponse response = httpClient
-         * .newRequest(hubBridgeHandler.getSmartthingsIp(), hubBridgeHandler.getSmartthingsPort())
-         * .timeout(timeout, TimeUnit.SECONDS).path(path).method(HttpMethod.POST)
-         * .content(new StringContentProvider(data), "application/json").send();
-         *
-         * int status = response.getStatus();
-         * if (status == 202) {
-         * logger.debug(
-         * "Sent message \"{}\" with path \"{}\" to the Smartthings hub, received HTTP status {} (This is the normal code from Smartthings)"
-         * ,
-         * data, path, status);
-         * } else {
-         * logger.warn("Sent message \"{}\" with path \"{}\" to the Smartthings hub, received HTTP status {}",
-         * data, path, status);
-         * }
-         * }
-         */
     }
 
     /**

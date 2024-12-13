@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
 @Component(immediate = true)
 public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
-    private static final Logger logger = LoggerFactory.getLogger(SmartthingsTypeRegistryImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsTypeRegistryImpl.class);
 
     private @Nullable SmartthingsThingTypeProvider thingTypeProvider;
     private @Nullable SmartthingsChannelTypeProvider channelTypeProvider;
@@ -75,19 +75,19 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     }
 
     @Override
-    public void RegisterCapabilities(SmartthingsCapabilitie capa) {
+    public void registerCapabilities(SmartthingsCapabilitie capa) {
         if (capa.status.equals("deprecated")) {
             return;
         }
-        if (capa.id.indexOf("switch") < 0) {
-            // return;
-        }
+        // if (capa.id.indexOf("switch") < 0) {
+        // return;
+        // }
 
         capabilitiesDict.put(capa.id, capa);
-        CreateChannelDefinition(capa);
+        createChannelDefinition(capa);
     }
 
-    public void CreateChannelDefinition(SmartthingsCapabilitie capa) {
+    public void createChannelDefinition(SmartthingsCapabilitie capa) {
         SmartthingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
 
         for (String key : capa.attributes.keySet()) {
@@ -256,7 +256,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     }
 
     @Override
-    public void Register(String deviceType, SmartthingsDevice device) {
+    public void register(String deviceType, SmartthingsDevice device) {
         try {
             generateThingsType(device.deviceId, device.label, deviceType, device);
         } catch (Exception ex) {
@@ -265,7 +265,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     }
 
     private void generateThingsType(String deviceId, String deviceLabel, String deviceType, SmartthingsDevice device) {
-
         SmartthingsThingTypeProvider lcThingTypeProvider = thingTypeProvider;
 
         if (lcThingTypeProvider != null) {
@@ -285,7 +284,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                 for (SmartthingsComponent component : device.components) {
                     String compId = component.id;
 
-                    if (!compId.equals("main")) {
+                    if (!"main".equals(compId)) {
                         continue;
                     }
 
@@ -321,7 +320,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     private void addChannel(String deviceType, List<ChannelGroupType> groupTypes,
             List<ChannelDefinition> channelDefinitions, SmartthingsCapabilitie capa, String key,
             @Nullable SmartthingsAttribute attr) {
-
         Map<String, String> props = new Hashtable<String, String>();
         SmartthingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         SmartthingsChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;

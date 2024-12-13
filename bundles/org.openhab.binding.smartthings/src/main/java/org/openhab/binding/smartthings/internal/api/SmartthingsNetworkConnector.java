@@ -23,15 +23,15 @@ import org.eclipse.jetty.http.HttpMethod;
 @NonNullByDefault
 public interface SmartthingsNetworkConnector {
 
-    public <T> T DoRequest(Class<T> resultClass, String req, @Nullable SmartthingsNetworkCallback callback,
+    public <T> T doRequest(Class<T> resultClass, String req, @Nullable SmartthingsNetworkCallback callback,
             String accessToken, @Nullable String data, HttpMethod method);
 
-    public @Nullable String DoBasicRequest(String uri, @Nullable SmartthingsNetworkCallback callback,
+    public @Nullable String doBasicRequest(String uri, @Nullable SmartthingsNetworkCallback callback,
             String accessToken, @Nullable String data, HttpMethod method) throws Exception;
 
-    public void WaitAllPendingRequest();
+    public void waitAllPendingRequest();
 
-    public void WaitNoNewRequest();
+    public void waitNoNewRequest();
 
     public void onComplete(Request request);
 

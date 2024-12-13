@@ -30,14 +30,11 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 public class UidUtils {
 
     public static String sanetizeId(String st) {
-
         StringBuffer buffer = new StringBuffer();
 
         for (int i = 0; i < st.length(); i++) {
             char c = st.charAt(i);
-            if (c == 130) {
-
-            } else if (c >= 232 && c <= 234) {
+            if (c >= 232 && c <= 234) {
                 c = 'e';
             } else if (c >= 200 && c <= 202) {
                 c = 'E';

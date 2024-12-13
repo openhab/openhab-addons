@@ -37,7 +37,7 @@ import com.google.gson.JsonObject;
 public class SmartthingsNetworkRequestListener extends BufferingResponseListener
         implements SuccessListener, FailureListener, ContentListener, CompleteListener, QueuedListener, BeginListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(SmartthingsNetworkRequestListener.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsNetworkRequestListener.class);
     private SmartthingsNetworkConnector hvacConnector;
 
     /**
@@ -136,7 +136,6 @@ public class SmartthingsNetworkRequestListener extends BufferingResponseListener
                             logger.debug("error");
                             hvacConnector.onError(result.getRequest(), callback);
                         }
-
                     } else {
                         logger.debug("error");
                         hvacConnector.onError(result.getRequest(), callback);

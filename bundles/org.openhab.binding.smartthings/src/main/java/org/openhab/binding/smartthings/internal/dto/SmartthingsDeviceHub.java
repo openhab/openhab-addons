@@ -27,7 +27,7 @@ public class SmartthingsDeviceHub {
 
     public hubDrivers[] hubDrivers;
 
-    public class hubData {
+    public class HubData {
         public String zwaveStaticDsk;
         public Boolean zwaveS2;
 
@@ -78,5 +78,5 @@ public class SmartthingsDeviceHub {
         public Boolean zwaveRadioDetected;
     }
 
-    public hubData hubData;
+    public HubData hubData;
 }

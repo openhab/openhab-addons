@@ -53,7 +53,6 @@ public class SmartthingsBaseServlet extends HttpServlet {
 
     public SmartthingsBaseServlet(SmartthingsBridgeHandler bridgeHandler, HttpService httpService,
             SmartthingsNetworkConnector networkConnector, String token) {
-
         this.bridgeHandler = bridgeHandler;
         this.httpService = httpService;
         this.networkConnector = networkConnector;

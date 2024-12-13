@@ -110,7 +110,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         SmartthingsApi api = bridge.getSmartthingsApi();
 
         try {
-            SmartthingsDevice[] devices = api.GetAllDevices();
+            SmartthingsDevice[] devices = api.getAllDevices();
 
             for (SmartthingsDevice device : devices) {
 
@@ -124,10 +124,10 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
                 }
 
                 Boolean enabled = false;
-                if (label.equals("Four")) {
+                if ("Four".equals(label)) {
                     // enabled = true;
                 }
-                if (label.equals("Petrole")) {
+                if ("Petrole".equals(label)) {
                     enabled = true;
                 }
 
@@ -141,14 +141,11 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
                 for (SmartthingsComponent component : device.components) {
                     String compId = component.id;
 
-                    if (component.capabilities != null && component.capabilities.length > 0) {
-                    }
-
                     if (component.categories != null && component.categories.length > 0) {
                         for (SmartthingsCategory cat : component.categories) {
                             String catId = cat.name;
 
-                            if (compId.equals("main")) {
+                            if ("main".equals(compId)) {
                                 deviceType = catId;
                             }
 
@@ -162,13 +159,13 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
                     continue;
                 }
 
-                if (name.equals("white-and-color-ambiance")) {
+                if ("white-and-color-ambiance".equals(name)) {
                     continue;
                 }
 
                 deviceType = deviceType.toLowerCase();
                 if (this.typeRegistry != null) {
-                    this.typeRegistry.Register(deviceType, device);
+                    this.typeRegistry.register(deviceType, device);
                 }
                 if (addDevice) {
                     createDevice(deviceType, Objects.requireNonNull(device));

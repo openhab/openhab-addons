@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnector;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
+import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -100,13 +101,13 @@ public class SmartthingsAuthService {
      * @param code The Spotify returned code value
      * @return returns the name of the Spotify user that is authorized
      */
-    public String authorize(String servletBaseURL, String state, String code) {
+    public String authorize(String servletBaseURL, String state, String code) throws SmartthingsException {
         SmartthingsAccountHandler accountHandler = getSmartthingsAccountHandler();
         if (accountHandler == null) {
             logger.debug(
                     "Smartthings redirected with state '{}' but no matching bridge was found. Possible bridge has been removed.",
                     state);
-            throw new RuntimeException(ERROR_UKNOWN_BRIDGE);
+            throw new SmartthingsException(ERROR_UKNOWN_BRIDGE);
         } else {
             return accountHandler.authorize(servletBaseURL, code);
         }

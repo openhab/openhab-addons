@@ -13,6 +13,7 @@
 package org.openhab.binding.smartthings.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.openhab.core.thing.binding.ThingHandler;
 
 /**
@@ -35,7 +36,7 @@ public interface SmartthingsAccountHandler extends ThingHandler {
      * @param reqCode The unique code passed by Smartthings to obtain the refresh and access tokens
      * @return returns the name of the Smartthings user that is authorized
      */
-    String authorize(String redirectUrl, String reqCode);
+    String authorize(String redirectUrl, String reqCode) throws SmartthingsException;
 
     /**
      * Formats the Url to use to call Smartthings to authorize the application.

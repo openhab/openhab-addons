@@ -86,7 +86,6 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
 
     public SmartthingsServlet(SmartthingsBridgeHandler bridgeHandler, HttpService httpService,
             SmartthingsNetworkConnector networkConnector, String token) {
-
         super(bridgeHandler, httpService, networkConnector, token);
     }
 
@@ -154,10 +153,10 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
             }
 
             if (selectLocationTemplate != null && selectLocationTemplate.equals(template)) {
-                SetupApp();
+                setupApp();
 
                 try {
-                    SmartthingsLocation[] locationList = api.GetAllLocations();
+                    SmartthingsLocation[] locationList = api.getAllLocations();
                     for (SmartthingsLocation loc : locationList) {
                         optionBuffer.append("<option value=\"" + loc.locationId + "\">" + loc.name + "</option>");
                     }
@@ -197,7 +196,6 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                 resp.getWriter().close();
             }
         } else {
-
             BufferedReader rdr = new BufferedReader(req.getReader());
             String s = rdr.lines().collect(Collectors.joining());
 
@@ -213,14 +211,13 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                     String value = data.events[0].deviceEvent.value;
 
                     logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, atttr, value);
-
                 } else if (resultObj.lifecycle.equals("INSTALL")) {
                     logger.info("");
                     // String token = resultObj.installData.authToken;
                     installedAppId = resultObj.installData.installedApp.installedAppId;
 
                     try {
-                        SmartthingsLocation loc = api.GetLocation(resultObj.installData.installedApp.locationId);
+                        SmartthingsLocation loc = api.getLocation(resultObj.installData.installedApp.locationId);
                         installedLocation = loc.name;
                     } catch (SmartthingsException ex) {
                         installedLocation = "Unable to retrieve location!!";
@@ -228,33 +225,31 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
 
                     setupInProgress = false;
                     logger.info("");
-
                 } else if (resultObj.lifecycle.equals("UPDATE")) {
                     String token = resultObj.updateData.authToken;
                     String installedAppId = resultObj.updateData.installedApp.installedAppId;
                     String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
                             + "/subscriptions";
 
-                    networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, "", HttpMethod.GET);
+                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, "", HttpMethod.GET);
 
                     SMEvent evt = new SMEvent();
                     evt.sourceType = "DEVICE";
                     evt.device = new device("97806abc-ce85-4b28-9df2-31e33323cf62", "main", true, null);
 
                     String body = gson.toJson(evt);
-                    networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
+                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
 
                     evt = new SMEvent();
                     evt.sourceType = "DEVICE";
                     evt.device = new device("ee87617f-0c84-40a3-be25-e70e53f3fc6a", "main", true, null);
 
                     body = gson.toJson(evt);
-                    networkConnector.DoRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
+                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
 
                     logger.info("UPDATE");
                 } else if (resultObj.lifecycle.equals("EXECUTE")) {
                     logger.info("EXCUTE");
-
                 } else if (resultObj.lifecycle.equals("CONFIGURATION")
                         && resultObj.configurationData.phase().equals("INITIALIZE")) {
                     ConfigurationResponse response = new ConfigurationResponse();
@@ -274,7 +269,6 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                     resp.getWriter().print(responseSt);
                 } else if (resultObj.lifecycle.equals("CONFIGURATION")
                         && resultObj.configurationData.phase().equals("PAGE")) {
-
                     ConfigurationResponse response = new ConfigurationResponse();
                     response.configurationData = response.new configurationData();
 
@@ -302,13 +296,13 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
 
                     try {
                         Thread.sleep(2000);
-                        this.networkConnector.DoBasicRequest(confirmUrl, null, "", "", HttpMethod.GET);
+                        this.networkConnector.doBasicRequest(confirmUrl, null, "", "", HttpMethod.GET);
                     } catch (Exception ex) {
                         logger.error("error during confirmation {}", confirmUrl);
                     }
 
                     try {
-                        api.CreateAppOAuth(appId);
+                        api.createAppOAuth(appId);
                     } catch (SmartthingsException ex) {
                         logger.error("Unable to setup app oauth settings!!");
                     }
@@ -320,11 +314,11 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
         logger.trace("Smartthings servlet returning.");
     }
 
-    protected void SetupApp() {
+    protected void setupApp() {
         SmartthingsApi api = bridgeHandler.getSmartthingsApi();
 
         try {
-            AppResponse appResponse = api.SetupApp();
+            AppResponse appResponse = api.setupApp();
             if (appResponse.oauthClientId != null && appResponse.oauthClientSecret != null) {
                 bridgeHandler.updateConfig(appResponse.oauthClientId, appResponse.oauthClientSecret);
             }

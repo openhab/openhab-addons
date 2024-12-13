@@ -28,7 +28,7 @@ public interface SmartthingsTypeRegistry {
      */
     void initialize();
 
-    void Register(String deviceType, SmartthingsDevice device);
+    void register(String deviceType, SmartthingsDevice device);
 
-    void RegisterCapabilities(SmartthingsCapabilitie capa);
+    void registerCapabilities(SmartthingsCapabilitie capa);
 }

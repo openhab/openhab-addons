@@ -48,10 +48,9 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnector {
 
-    private static final Logger logger = LoggerFactory.getLogger(SmartthingsNetworkConnectorImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsNetworkConnectorImpl.class);
 
     private final static @NotNull Gson gson;
-    // private final static @NotNull Gson gsonWithAdpter;
 
     protected final HttpClientFactory httpClientFactory;
 
@@ -64,15 +63,6 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
     static {
         GsonBuilder builder = new GsonBuilder();
         gson = builder.setPrettyPrinting().create();
-
-        /*
-         * RuntimeTypeAdapterFactory<networkMetadata> adapter = RuntimeTypeAdapterFactory.of(networkMetadata.class);
-         * adapter.registerSubtype(networkMetadataMenu.class);
-         * adapter.registerSubtype(networkMetadataDataPoint.class);
-         *
-         * gsonWithAdpter = new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();
-         */
-
     }
 
     @Activate
@@ -169,7 +159,7 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
                 response = request.send();
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new Exception(
+            throw new SmartthingsException(
                     "network:Exception by executing request: " + request.getQuery() + " ; " + e.getLocalizedMessage());
         }
         return response;
@@ -177,22 +167,21 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
 
     public @Nullable String DoBasicRequest(String uri, String accessToken, @Nullable String data, HttpMethod method)
             throws Exception {
-        return DoBasicRequest(uri, null, accessToken, data, method);
+        return doBasicRequest(uri, null, accessToken, data, method);
     }
 
     public @Nullable String DoBasicRequestAsync(String uri, @Nullable SmartthingsNetworkCallback callback,
             String accessToken, @Nullable String data, HttpMethod method) throws Exception {
-        return DoBasicRequest(uri, callback, accessToken, data, method);
+        return doBasicRequest(uri, callback, accessToken, data, method);
     }
 
     @Override
-    public @Nullable String DoBasicRequest(String uri, @Nullable SmartthingsNetworkCallback callback,
+    public @Nullable String doBasicRequest(String uri, @Nullable SmartthingsNetworkCallback callback,
             String accessToken, @Nullable String data, HttpMethod method) throws Exception {
-
         try {
             logger.debug("Execute request: {}", uri);
             Request request = httpClient.newRequest(uri).method(method);
-            if (!accessToken.equals("")) {
+            if (!"".equals(accessToken)) {
                 request = request.header("Authorization", "Bearer " + accessToken);
             }
             if (method == HttpMethod.POST || method == HttpMethod.PUT) {
@@ -221,17 +210,15 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
             }
         } catch (Exception ex) {
             logger.error("network:DoRequest:Exception by executing Request: {} ; {} ", uri, ex.getLocalizedMessage());
-        } finally {
         }
-
         return null;
     }
 
     @Override
-    public <T> T DoRequest(Class<T> resultClass, String req, @Nullable SmartthingsNetworkCallback callback,
+    public <T> T doRequest(Class<T> resultClass, String req, @Nullable SmartthingsNetworkCallback callback,
             String accessToken, @Nullable String data, HttpMethod method) {
         try {
-            String response = DoBasicRequest(req, callback, accessToken, data, method);
+            String response = doBasicRequest(req, callback, accessToken, data, method);
 
             if (response != null) {
                 if (resultClass.isArray()) {
@@ -240,14 +227,13 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
                         T resultObj = getGson().fromJson(obj.get("items"), resultClass);
                         return resultObj;
                     } else {
-                        throw new Exception(
+                        throw new SmartthingsException(
                                 "Requesting a Array result object, but data does not contains array definition");
                     }
                 } else {
                     T resultObj = getGson().fromJson(response, resultClass);
                     return resultObj;
                 }
-
             }
         } catch (Exception e) {
             logger.error("network:DoRequest:Exception by executing jsonRequest: {} ; {} ", req,
@@ -258,7 +244,7 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
     }
 
     @Override
-    public void WaitAllPendingRequest() {
+    public void waitAllPendingRequest() {
         logger.debug("WaitAllPendingRequest:start");
         try {
             Thread.sleep(1000);
@@ -286,7 +272,7 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
     }
 
     @Override
-    public void WaitNoNewRequest() {
+    public void waitNoNewRequest() {
         logger.debug("WaitNoNewRequest:start");
         try {
             int lastRequest = startedRequest;

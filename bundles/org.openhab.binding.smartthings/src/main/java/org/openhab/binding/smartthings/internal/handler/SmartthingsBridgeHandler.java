@@ -27,6 +27,7 @@ import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnector;
 import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnectorImpl;
 import org.openhab.binding.smartthings.internal.discovery.SmartthingsDiscoveryService;
+import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -152,7 +153,6 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
     }
 
     protected boolean validateConfig(SmartthingsBridgeConfig config) {
-
         return true;
     }
 
@@ -190,7 +190,7 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
     }
 
     @Override
-    public String authorize(String redirectUri, String reqCode) {
+    public String authorize(String redirectUri, String reqCode) throws SmartthingsException {
         try {
             OAuthClientService oAuthService = this.oAuthService;
             if (oAuthService == null) {
@@ -204,9 +204,9 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
             return user;
         } catch (RuntimeException | OAuthException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("unable to authorize request", e);
         } catch (final OAuthResponseException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("unable to authorize request", e);
         }
     }
 

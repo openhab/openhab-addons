@@ -93,21 +93,20 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
 
             String jsonMsg = "";
             if (command instanceof RefreshType) {
-
                 SmartthingsApi api = cloudBridge.getSmartthingsApi();
                 Map<String, String> properties = this.getThing().getProperties();
                 String deviceId = properties.get("deviceId");
 
                 if (deviceId != null) {
                     try {
-                        JsonObject res = api.SendStatus(deviceId, jsonMsg);
+                        JsonObject res = api.sendStatus(deviceId, jsonMsg);
                         if (res != null) {
                             JsonObject cp = res.get("components").getAsJsonObject();
                             JsonObject main = cp.get("main").getAsJsonObject();
                             JsonObject sw = main.get("switch").getAsJsonObject();
                             JsonObject sw2 = sw.get("switch").getAsJsonObject();
                             String value = sw2.get("value").getAsString();
-                            if (value.equals("on")) {
+                            if (("on".equals(value))) {
                                 updateState(channelUID, OnOffType.ON);
                             } else {
                                 updateState(channelUID, OnOffType.OFF);
@@ -119,7 +118,6 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                         logger.error("Unable to update device : {}", deviceId);
                     }
                 }
-
             } else {
                 // @todo : review this
                 if (converter != null) {
@@ -132,7 +130,6 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
             if (command instanceof OnOffType) {
                 OnOffType OnOff = (OnOffType) command;
                 String val = OnOff.toString().toLowerCase();
-
                 jsonMsg = String
                         .format("{'commands': [{'component': 'main', 'capability': 'switch', 'command': '%s'}]}", val);
 
@@ -140,12 +137,15 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                 Map<String, String> properties = this.getThing().getProperties();
                 String deviceId = properties.get("deviceId");
 
-                if (deviceId != null) {
-                    api.SendCommand(deviceId, jsonMsg);
+                try {
+                    if (deviceId != null) {
+                        api.sendCommand(deviceId, jsonMsg);
+                    }
+                } catch (SmartthingsException ex) {
+                    logger.error("Unable to send command: {}", ex.getMessage());
                 }
 
                 updateState(channelUID, OnOff);
-
             }
 
             else if (command instanceof PercentType) {
@@ -160,12 +160,15 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                 Map<String, String> properties = this.getThing().getProperties();
                 String deviceId = properties.get("deviceId");
 
-                if (deviceId != null) {
-                    api.SendCommand(deviceId, jsonMsg);
+                try {
+                    if (deviceId != null) {
+                        api.sendCommand(deviceId, jsonMsg);
+                    }
+                } catch (SmartthingsException ex) {
+                    logger.error("Unable to send command: {}", ex.getMessage());
                 }
 
                 updateState(channelUID, pt);
-
             }
         }
     }

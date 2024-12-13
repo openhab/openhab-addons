@@ -63,14 +63,12 @@ public class SmartthingsAuthServlet extends SmartthingsBaseServlet {
     public SmartthingsAuthServlet(SmartthingsBridgeHandler bridgeHandler, SmartthingsAuthService smartthingsAuthService,
             HttpService httpService, SmartthingsNetworkConnector networkConnector, String token)
             throws SmartthingsException {
-
         super(bridgeHandler, httpService, networkConnector, token);
 
         this.smartthingsAuthService = smartthingsAuthService;
 
         try {
             this.indexTemplate = readTemplate("index-oauth.html");
-
         } catch (IOException e) {
             throw new SmartthingsException("unable to initialize auth servlet", e);
         }
@@ -79,7 +77,6 @@ public class SmartthingsAuthServlet extends SmartthingsBaseServlet {
     @Override
     protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
-
         if (req == null) {
             return;
         }
@@ -141,7 +138,7 @@ public class SmartthingsAuthServlet extends SmartthingsBaseServlet {
                 try {
                     replaceMap.put(KEY_AUTHORIZED_USER, String.format(HTML_USER_AUTHORIZED,
                             smartthingsAuthService.authorize(servletBaseURL, reqState, reqCode)));
-                } catch (RuntimeException e) {
+                } catch (SmartthingsException e) {
                     logger.debug("Exception during authorizaton: ", e);
                     replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, e.getMessage()));
                 }

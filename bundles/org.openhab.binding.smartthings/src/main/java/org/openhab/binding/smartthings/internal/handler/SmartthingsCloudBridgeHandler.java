@@ -74,13 +74,13 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
         SmartthingsApi api = this.getSmartthingsApi();
 
         try {
-            SmartthingsCapabilitie[] capabilitiesList = api.GetAllCapabilities();
+            SmartthingsCapabilitie[] capabilitiesList = api.getAllCapabilities();
 
             for (SmartthingsCapabilitie cap : capabilitiesList) {
                 String capId = cap.id;
                 String capVersion = cap.version;
-                SmartthingsCapabilitie capa = api.GetCapabilitie(capId, capVersion);
-                typeRegistry.RegisterCapabilities(capa);
+                SmartthingsCapabilitie capa = api.getCapabilitie(capId, capVersion);
+                typeRegistry.registerCapabilities(capa);
             }
         } catch (SmartthingsException ex) {
             logger.error("Error during initCapabilities!!");

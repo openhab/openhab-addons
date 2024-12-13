@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class SmartthingsBridgeChannelDefinitions {
-    private final static SmartthingsBridgeChannelDefinitions instance = new SmartthingsBridgeChannelDefinitions();
+    private static final SmartthingsBridgeChannelDefinitions Instance = new SmartthingsBridgeChannelDefinitions();
 
     private final Hashtable<String, SmartthingsBridgeChannelDef> channelDefs = new Hashtable<String, SmartthingsBridgeChannelDef>();
 
@@ -38,7 +38,7 @@ public class SmartthingsBridgeChannelDefinitions {
     }
 
     public static @Nullable SmartthingsBridgeChannelDef getChannelDefs(String key) {
-        return instance.getChannelDef(key);
+        return Instance.getChannelDef(key);
     }
 
     public @Nullable SmartthingsBridgeChannelDef getChannelDef(String key) {
@@ -50,7 +50,6 @@ public class SmartthingsBridgeChannelDefinitions {
     }
 
     public SmartthingsBridgeChannelDefinitions() {
-
         channelDefs.put("switch", new SmartthingsBridgeChannelDef("Switch"));
         channelDefs.put("level", new SmartthingsBridgeChannelDef("Dimmer"));
         channelDefs.put("color", new SmartthingsBridgeChannelDef("Color"));

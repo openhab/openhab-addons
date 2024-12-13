@@ -18,12 +18,10 @@ package org.openhab.binding.smartthings.internal.dto;
  * @author Laurent ARNAL - Initial contribution
  */
 public class SmartthingsDeviceViper {
-    public class viper {
-        public String uniqueIdentifier;
-        public String manufacturerName;
-        public String modelName;
-        public String swVersion;
-        public String hwVersion;
-        public String endpointAppId;
-    }
+    public String uniqueIdentifier;
+    public String manufacturerName;
+    public String modelName;
+    public String swVersion;
+    public String hwVersion;
+    public String endpointAppId;
 }
