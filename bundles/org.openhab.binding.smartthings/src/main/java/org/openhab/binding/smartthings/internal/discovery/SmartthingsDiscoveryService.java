@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
-import org.openhab.binding.smartthings.internal.SmartthingsHubCommand;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCategory;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsComponent;
@@ -56,7 +55,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsDiscoveryService.class);
 
-    private @Nullable SmartthingsHubCommand smartthingsHubCommand;
+    private @Nullable SmartthingsHandlerFactory smartthingsHandlerFactory;
     private @Nullable SmartthingsTypeRegistry typeRegistry;
 
     /*
@@ -79,15 +78,15 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
     }
 
     @Reference
-    protected void setSmartthingsHubCommand(SmartthingsHubCommand hubCommand) {
-        smartthingsHubCommand = hubCommand;
-        ((SmartthingsHandlerFactory) hubCommand).setSmartthingsDiscoveryService(this);
+    protected void setSmartthingsHubCommand(SmartthingsHandlerFactory handlerFactory) {
+        smartthingsHandlerFactory = handlerFactory;
+        smartthingsHandlerFactory.setSmartthingsDiscoveryService(this);
     }
 
-    protected void unsetSmartthingsHubCommand(SmartthingsHubCommand hubCommand) {
+    protected void unsetSmartthingsHubCommand(SmartthingsHandlerFactory handlerFactory) {
         // Make sure it is this handleFactory that should be unset
-        if (Objects.equals(hubCommand, smartthingsHubCommand)) {
-            this.smartthingsHubCommand = null;
+        if (Objects.equals(handlerFactory, smartthingsHandlerFactory)) {
+            this.smartthingsHandlerFactory = null;
         }
     }
 
@@ -101,8 +100,8 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     public void doScan(Boolean addDevice) {
         SmartthingsBridgeHandler bridge = null;
-        if (smartthingsHubCommand != null) {
-            bridge = smartthingsHubCommand.getBridgeHandler();
+        if (smartthingsHandlerFactory != null) {
+            bridge = smartthingsHandlerFactory.getBridgeHandler();
         }
         if (bridge == null) {
             return;
@@ -197,8 +196,8 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         }
         String deviceNameNoSpaces = name.replaceAll("\\s", "_");
         String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
-        if (smartthingsHubCommand != null) {
-            ThingUID bridgeUid = smartthingsHubCommand.getBridgeUID();
+        if (smartthingsHandlerFactory != null) {
+            ThingUID bridgeUid = smartthingsHandlerFactory.getBridgeUID();
             String bridgeId = bridgeUid.getId();
             String uidStr = String.format("smartthings:%s:%s:%s", deviceType, bridgeId, smartthingsDeviceName);
 

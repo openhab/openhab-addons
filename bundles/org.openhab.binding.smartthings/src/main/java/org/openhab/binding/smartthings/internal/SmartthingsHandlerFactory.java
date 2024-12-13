@@ -17,13 +17,10 @@ import static org.openhab.binding.smartthings.internal.SmartthingsBindingConstan
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.discovery.SmartthingsDiscoveryService;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsCloudBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsThingHandler;
@@ -31,7 +28,6 @@ import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -41,13 +37,9 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link SmartthingsHandlerFactory} is responsible for creating things and thing
@@ -56,16 +48,14 @@ import com.google.gson.Gson;
  * @author Bob Raker - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { ThingHandlerFactory.class, SmartthingsHubCommand.class,
-        EventHandler.class }, configurationPid = "binding.smarthings", property = "event.topics=org/openhab/binding/smartthings/state")
-public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
-        implements ThingHandlerFactory, EventHandler, SmartthingsHubCommand {
+@Component(service = {
+        ThingHandlerFactory.class }, configurationPid = "binding.smarthings", property = "event.topics=org/openhab/binding/smartthings/state")
+public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implements ThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsHandlerFactory.class);
 
     private @Nullable SmartthingsBridgeHandler bridgeHandler = null;
     private @Nullable ThingUID bridgeUID;
-    private Gson gson;
     private List<SmartthingsThingHandler> thingHandlers = Collections.synchronizedList(new ArrayList<>());
     private @NonNullByDefault({}) HttpService httpService;
     private final HttpClientFactory httpClientFactory;
@@ -84,8 +74,6 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
             final @Reference SmartthingsAuthService authService, final @Reference OAuthFactory oAuthFactory,
             final @Reference HttpClientFactory httpClientFactory,
             final @Reference SmartthingsTypeRegistry typeRegistery) {
-        // Get a Gson instance
-        gson = new Gson();
         this.httpService = httpService;
         this.authService = authService;
         this.httpClientFactory = httpClientFactory;
@@ -139,69 +127,11 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
         return null;
     }
 
-    /**
-     * Send a command to the Smartthings Hub
-     *
-     * @param path http path which tells Smartthings what to execute
-     * @param data data to send
-     * @throws InterruptedException
-     * @throws TimeoutException
-     * @throws ExecutionException
-     */
-    @Override
-    public void sendDeviceCommand(String path, int timeout, String data)
-            throws InterruptedException, TimeoutException, ExecutionException {
-    }
-
-    /**
-     * Messages sent to the Smartthings binding from the hub via the SmartthingsServlet arrive here and are then
-     * dispatched to the correct thing's handleStateMessage function
-     *
-     * @param event The event sent
-     */
-    @Override
-    public synchronized void handleEvent(@Nullable Event event) {
-        if (event != null) {
-            String data = (String) event.getProperty("data");
-            SmartthingsStateData stateData = new SmartthingsStateData();
-            stateData = gson.fromJson(data, stateData.getClass());
-            if (stateData == null) {
-                return;
-            }
-            SmartthingsThingHandler handler = findHandler(stateData);
-            if (handler != null) {
-                handler.handleStateMessage(stateData);
-            }
-        }
-    }
-
-    private @Nullable SmartthingsThingHandler findHandler(SmartthingsStateData stateData) {
-        synchronized (thingHandlers) {
-            for (SmartthingsThingHandler handler : thingHandlers) {
-                if (handler.getSmartthingsName().equals(stateData.deviceDisplayName)) {
-                    for (Channel ch : handler.getThing().getChannels()) {
-                        String chId = ch.getUID().getId();
-                        if (chId.equals(stateData.capabilityAttribute)) {
-                            return handler;
-                        }
-                    }
-                }
-            }
-        }
-
-        logger.warn(
-                "Unable to locate handler for display name: {} with attribute: {}. If this thing is included in your OpenHabAppV2 SmartApp in the Smartthings App on your phone it must also be configured in openHAB",
-                stateData.deviceDisplayName, stateData.capabilityAttribute);
-        return null;
-    }
-
-    @Override
     @Nullable
     public SmartthingsBridgeHandler getBridgeHandler() {
         return bridgeHandler;
     }
 
-    @Override
     @Nullable
     public ThingUID getBridgeUID() {
         if (bridgeHandler != null) {
