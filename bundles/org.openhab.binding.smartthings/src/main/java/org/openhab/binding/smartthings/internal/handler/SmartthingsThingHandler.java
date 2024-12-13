@@ -17,16 +17,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.converter.SmartthingsConverter;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsStatus;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsStatusCapabilities;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsStatusComponent;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsStatusProperties;
 import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.library.types.OnOffType;
@@ -40,12 +45,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ConfigStatusThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonObject;
 
 /**
  * @author Bob Raker - Initial contribution
@@ -93,39 +94,13 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
 
             String jsonMsg = "";
             if (command instanceof RefreshType) {
-                SmartthingsApi api = cloudBridge.getSmartthingsApi();
-                Map<String, String> properties = this.getThing().getProperties();
-                String deviceId = properties.get("deviceId");
-
-                if (deviceId != null) {
-                    try {
-                        JsonObject res = api.sendStatus(deviceId, jsonMsg);
-                        if (res != null) {
-                            JsonObject cp = res.get("components").getAsJsonObject();
-                            JsonObject main = cp.get("main").getAsJsonObject();
-                            JsonObject sw = main.get("switch").getAsJsonObject();
-                            JsonObject sw2 = sw.get("switch").getAsJsonObject();
-                            String value = sw2.get("value").getAsString();
-                            if (("on".equals(value))) {
-                                updateState(channelUID, OnOffType.ON);
-                            } else {
-                                updateState(channelUID, OnOffType.OFF);
-                            }
-
-                            logger.trace("");
-                        }
-                    } catch (SmartthingsException ex) {
-                        logger.error("Unable to update device : {}", deviceId);
-                    }
-                }
+                refreshDevice();
             } else {
                 // @todo : review this
                 if (converter != null) {
                     jsonMsg = converter.convertToSmartthings(channelUID, command);
                 }
             }
-
-            // try {
 
             if (command instanceof OnOffType) {
                 OnOffType onOff = (OnOffType) command;
@@ -173,39 +148,65 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         }
     }
 
-    /**
-     * State messages sent from the hub arrive here, are processed and the openHab state is updated.
-     *
-     * @param stateData
-     */
-    public void handleStateMessage(SmartthingsStateData stateData) {
-        // First locate the channel
-        Channel matchingChannel = null;
-        for (Channel ch : thing.getChannels()) {
-            if (ch.getUID().getAsString().endsWith(stateData.capabilityAttribute)) {
-                matchingChannel = ch;
-                break;
+    public void refreshDevice() {
+        Bridge bridge = getBridge();
+
+        SmartthingsCloudBridgeHandler cloudBridge = (SmartthingsCloudBridgeHandler) bridge.getHandler();
+        SmartthingsApi api = cloudBridge.getSmartthingsApi();
+        Map<String, String> properties = this.getThing().getProperties();
+
+        String deviceId = properties.get("deviceId");
+
+        if (deviceId != null) {
+            try {
+                SmartthingsStatus status = api.getStatus(deviceId);
+
+                List<Channel> channels = thing.getChannels();
+
+                if (status != null) {
+
+                    if (status.components.containsKey("main")) {
+                        SmartthingsStatusComponent component = status.components.get("main");
+
+                        for (String capaKey : component.keySet()) {
+                            SmartthingsStatusCapabilities capa = component.get(capaKey);
+
+                            for (String propertyKey : capa.keySet()) {
+                                SmartthingsStatusProperties props = capa.get(propertyKey);
+                                Object value = props.value;
+                                String timestamp = props.timestamp;
+
+                                String channelName = (StringUtils
+                                        .join(StringUtils.splitByCharacterTypeCamelCase(propertyKey), '-') + "-channel")
+                                        .toLowerCase();
+
+                                ChannelUID chanUid = new ChannelUID(this.getThing().getUID(), "light_default",
+                                        channelName);
+                                Channel chan = thing.getChannel(chanUid);
+
+                                if (chan != null) {
+                                    if (propertyKey.equals("switch")) {
+                                        if (("on".equals(value))) {
+                                            updateState(chanUid, OnOffType.ON);
+                                        } else {
+                                            updateState(chanUid, OnOffType.OFF);
+                                        }
+                                    }
+                                    if (propertyKey.equals("level")) {
+                                        updateState(chanUid, new PercentType(((Double) value).intValue()));
+                                    }
+                                }
+                                logger.info("");
+                            }
+
+                        }
+                    }
+                }
+            } catch (SmartthingsException ex) {
+                logger.error("Unable to update device : {}", deviceId);
             }
         }
-        if (matchingChannel == null) {
-            return;
-        }
 
-        SmartthingsConverter converter = converters.get(matchingChannel.getUID());
-
-        // If value from Smartthings is null then stop here
-        State state;
-        if (converter != null) {
-            if (stateData.value != null) {
-                state = converter.convertToOpenHab(matchingChannel.getAcceptedItemType(), stateData);
-            } else {
-                state = UnDefType.NULL;
-            }
-
-            updateState(matchingChannel.getUID(), state);
-            logger.trace("Smartthings updated State for channel: {} to {}", matchingChannel.getUID().getAsString(),
-                    state.toString());
-        }
     }
 
     @Override
@@ -238,6 +239,8 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                 converters.put(ch.getUID(), cvtr);
             }
         }
+
+        refreshDevice();
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 5, TimeUnit.SECONDS);
 
@@ -307,14 +310,6 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
     }
 
     private boolean validateConfig(SmartthingsThingConfig config) {
-        /*
-         * String name = config.smartthingsName;
-         * if (name.isEmpty()) {
-         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-         * "Smartthings device name is missing");
-         * return false;
-         * }
-         */
         return true;
     }
 

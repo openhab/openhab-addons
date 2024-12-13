@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.smartthings.internal.discovery.SmartthingsDiscoveryService;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsCloudBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsThingHandler;
@@ -62,7 +61,6 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
     private final SmartthingsAuthService authService;
     private final OAuthFactory oAuthFactory;
     private final SmartthingsTypeRegistry typeRegistry;
-    private @NonNullByDefault({}) SmartthingsDiscoveryService discoService;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

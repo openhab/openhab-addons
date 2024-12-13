@@ -26,6 +26,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsLocation;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsRoom;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsStatus;
 import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
@@ -251,11 +252,11 @@ public class SmartthingsApi {
         }
     }
 
-    public @Nullable JsonObject sendStatus(String deviceId, String jsonMsg) throws SmartthingsException {
+    public @Nullable SmartthingsStatus getStatus(String deviceId) throws SmartthingsException {
         try {
             String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/status";
 
-            JsonObject res = doRequest(JsonObject.class, uri, jsonMsg, false);
+            SmartthingsStatus res = doRequest(SmartthingsStatus.class, uri, null, false);
             return res;
         } catch (final Exception e) {
             throw new SmartthingsException("SmartthingsApi : Unable to send status", e);
