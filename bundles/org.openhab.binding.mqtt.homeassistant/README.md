@@ -51,18 +51,21 @@ Base64 encoding is not supported
 
 ### [Climate](https://www.home-assistant.io/integrations/climate.mqtt/)
 
-| Channel ID          | Type   | R/W | Description                                                                   |
-|---------------------|--------|-----|-------------------------------------------------------------------------------|
-| action              | String | RO  | The current operating state of the HVAC device.                               |
-| current-temperature | Number | RO  | The current temperature                                                       |
-| fan-mode            | String | R/W | The desired fan speed. Inspect the state description for allowed values.      |
-| mode                | String | R/W | The desired operating mode. Inspect the state description for allowed values. |
-| swing               | String | R/W | The desired swing mode. Inspect the state description for allowed values.     |
-| temperature         | Number | R/W | The desired temperature.                                                      |
-| temperature-high    | Number | R/W | The desired maximum temperature.                                              |
-| temperature-low     | Number | R/W | The desired minimum temperature.                                              |
-| power               | Switch | WO  | Use to turn the HVAC on or off, regardless of mode.                           |
-| json-attributes     | String | RO  | Additional attributes, as a serialized JSON string.                           |
+| Channel ID          | Type                 | R/W | Description                                                                              |
+|---------------------|----------------------|-----|------------------------------------------------------------------------------------------|
+| action              | String               | RO  | The current operating state of the HVAC device.                                          |
+| current-temperature | Number               | RO  | The current temperature.                                                                 |
+| fan-mode            | String               | R/W | The desired fan speed. Inspect the state description for allowed values.                 |
+| current-humidity    | Number:Dimensionless | RO  | The current relative humidity.                                                           |
+| target-humidity     | Number:Dimensionless | RO  | The desired relative humidity.                                                           |
+| mode                | String               | R/W | The desired operating mode. Inspect the state description for allowed values.            |
+| preset-mode         | String               | R/W | The current preset mode (such as `eco`, `away`, `boost`, `comfort`, `home`, or `sleep`.) |
+| swing               | String               | R/W | The desired swing mode. Inspect the state description for allowed values.                |
+| temperature         | Number               | R/W | The desired temperature.                                                                 |
+| temperature-high    | Number               | R/W | The desired maximum temperature.                                                         |
+| temperature-low     | Number               | R/W | The desired minimum temperature.                                                         |
+| power               | Switch               | WO  | Use to turn the HVAC on or off, regardless of mode.                                      |
+| json-attributes     | String               | RO  | Additional attributes, as a serialized JSON string.                                      |
 
 ### [Cover](https://www.home-assistant.io/integrations/cover.mqtt/)
 
