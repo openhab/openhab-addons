@@ -252,5 +252,4 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
     public SmartthingsNetworkConnector getNetworkConnector() {
         return this.networkConnector;
     }
-
 }

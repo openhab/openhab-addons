@@ -326,5 +326,4 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
             bridgeHandler.updateConfig(appResponse.oauthClientId, appResponse.oauthClientSecret);
         }
     }
-
 }

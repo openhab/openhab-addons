@@ -58,7 +58,6 @@ public class SmartthingsBaseServlet extends HttpServlet {
         this.httpService = httpService;
         this.networkConnector = networkConnector;
         this.token = token;
-
     }
 
     /**
@@ -104,5 +103,4 @@ public class SmartthingsBaseServlet extends HttpServlet {
             }
         }
     }
-
 }

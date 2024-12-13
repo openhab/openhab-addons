@@ -141,5 +141,4 @@ public class SmartthingsAuthServlet extends SmartthingsBaseServlet {
             }
         }
     }
-
 }

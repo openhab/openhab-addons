@@ -79,7 +79,6 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SmartthingsBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId());
-
     }
 
     @Activate
