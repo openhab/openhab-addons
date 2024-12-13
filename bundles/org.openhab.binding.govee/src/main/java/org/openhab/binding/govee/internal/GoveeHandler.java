@@ -105,7 +105,7 @@ public class GoveeHandler extends BaseThingHandler {
     private int maxKelvin;
 
     private static final int REFRESH_SECONDS_MIN = 2;
-    private static final int INTER_COMMAND_DELAY_MILLISEC = 100;
+    private static final int INTER_COMMAND_DELAY_MILLISEC = 200;
 
     /**
      * This thing related job <i>thingRefreshSender</i> triggers an update to the Govee device.
