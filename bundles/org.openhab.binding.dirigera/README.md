@@ -228,7 +228,7 @@ Air cleaning device with particle filter.
 
 There are several `Number:Time` which are delivered in minutes as default.
 Note you can change the unit when connecting an item e.g. to `d` (days) for readability.
-So you can check in a rule if your remaining filter time is going below 7 days instead of calculating minutes. 
+So you can check in a rule if your remaining filter time is going below 7 days instead of calculating minutes.
 
 ### Air Purifier Channel Mappings
 
