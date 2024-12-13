@@ -23,5 +23,4 @@ import java.util.Hashtable;
 
 public class SmartthingsStatusCapabilities extends Hashtable<String, SmartthingsStatusProperties> {
     private static final long serialVersionUID = -4719613645562518233L;
-
 }

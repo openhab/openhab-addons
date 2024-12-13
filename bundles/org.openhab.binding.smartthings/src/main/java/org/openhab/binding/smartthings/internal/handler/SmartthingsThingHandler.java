@@ -172,7 +172,6 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                 }
             }
         }
-
     }
 
     public void refreshDevice() {
@@ -214,7 +213,6 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                 logger.error("Unable to update device : {}", deviceId);
             }
         }
-
     }
 
     @Override
