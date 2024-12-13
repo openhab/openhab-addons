@@ -12,19 +12,14 @@
  */
 package org.openhab.binding.smartthings.internal.handler;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartthingsAuthService;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
-import org.openhab.binding.smartthings.internal.discovery.SmartthingsDiscoveryService;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
 import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -48,10 +43,9 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
 
     public SmartthingsCloudBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
             SmartthingsAuthService authService, BundleContext bundleContext, HttpService httpService,
-            OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry,
-            SmartthingsDiscoveryService disco) {
+            OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry) {
         super(bridge, smartthingsHandlerFactory, authService, bundleContext, httpService, oAuthFactory,
-                httpClientFactory, typeRegistry, disco);
+                httpClientFactory, typeRegistry);
     }
 
     @Override
@@ -132,10 +126,4 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
         return config.clientSecret;
     }
 
-    @Override
-    public Collection<ConfigStatusMessage> getConfigStatus() {
-        Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<ConfigStatusMessage>();
-
-        return configStatusMessages;
-    }
 }

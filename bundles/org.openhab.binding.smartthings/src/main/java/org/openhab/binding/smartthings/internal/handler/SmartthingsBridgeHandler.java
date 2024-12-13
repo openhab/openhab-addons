@@ -14,7 +14,7 @@ package org.openhab.binding.smartthings.internal.handler;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,13 +35,13 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
-import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Reference;
@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Bob Raker - Initial contribution
  */
 @NonNullByDefault
-public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
+public abstract class SmartthingsBridgeHandler extends BaseBridgeHandler
         implements SmartthingsAccountHandler, AccessTokenRefreshListener {
     private final Logger logger = LoggerFactory.getLogger(SmartthingsBridgeHandler.class);
 
@@ -79,8 +79,7 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
 
     public SmartthingsBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
             SmartthingsAuthService authService, BundleContext bundleContext, HttpService httpService,
-            OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry,
-            SmartthingsDiscoveryService disco) {
+            OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry) {
         super(bridge);
 
         this.smartthingsHandlerFactory = smartthingsHandlerFactory;
@@ -90,7 +89,6 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
         this.authService = authService;
         this.httpClientFactory = httpClientFactory;
         this.typeRegistry = typeRegistry;
-        this.discoService = disco;
 
         config = getThing().getConfiguration().as(SmartthingsBridgeConfig.class);
     }
@@ -101,9 +99,9 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
     }
 
     @Reference
-    protected void setSmartthingsDiscoveryService(SmartthingsDiscoveryService disco) {
+    public void registerDiscoveryListener(SmartthingsDiscoveryService disco) {
         this.discoService = disco;
-        logger.info("disco");
+        this.discoService.setSmartthingsTypeRegistry(typeRegistry);
     }
 
     @Override
@@ -162,13 +160,6 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
 
     public BundleContext getBundleContext() {
         return bundleContext;
-    }
-
-    @Override
-    public Collection<ConfigStatusMessage> getConfigStatus() {
-        Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<>();
-
-        return configStatusMessages;
     }
 
     @Override
@@ -251,5 +242,10 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
 
     public SmartthingsNetworkConnector getNetworkConnector() {
         return this.networkConnector;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(SmartthingsDiscoveryService.class);
     }
 }

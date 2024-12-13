@@ -81,11 +81,6 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
         this.typeRegistry = typeRegistery;
     }
 
-    public void setSmartthingsDiscoveryService(SmartthingsDiscoveryService disco) {
-        logger.info("disco");
-        this.discoService = disco;
-    }
-
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -101,7 +96,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
             }
 
             bridgeHandler = new SmartthingsCloudBridgeHandler((Bridge) thing, this, authService, bundleContext,
-                    httpService, oAuthFactory, httpClientFactory, typeRegistry, discoService);
+                    httpService, oAuthFactory, httpClientFactory, typeRegistry);
 
             SmartthingsAccountHandler accountHandler = bridgeHandler;
             authService.setSmartthingsAccountHandler(accountHandler);
@@ -127,16 +122,4 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
         return null;
     }
 
-    @Nullable
-    public SmartthingsBridgeHandler getBridgeHandler() {
-        return bridgeHandler;
-    }
-
-    @Nullable
-    public ThingUID getBridgeUID() {
-        if (bridgeHandler != null) {
-            return bridgeHandler.getThing().getUID();
-        }
-        return null;
-    }
 }

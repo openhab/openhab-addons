@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
-import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCategory;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsComponent;
@@ -33,10 +32,8 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,16 +43,16 @@ import org.slf4j.LoggerFactory;
  * @author Bob Raker - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { DiscoveryService.class,
-        EventHandler.class }, configurationPid = "discovery.smartthings", property = "event.topics=org/openhab/binding/smartthings/discovery")
-public class SmartthingsDiscoveryService extends AbstractDiscoveryService implements EventHandler {
+public class SmartthingsDiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService {
+
     private static final int DISCOVERY_TIMEOUT_SEC = 30;
 
     private final Pattern findIllegalChars = Pattern.compile("[^A-Za-z0-9_-]");
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsDiscoveryService.class);
 
-    private @Nullable SmartthingsHandlerFactory smartthingsHandlerFactory;
+    private @Nullable SmartthingsBridgeHandler smartthingsBridgeHandler;
     private @Nullable SmartthingsTypeRegistry typeRegistry;
 
     /*
@@ -65,29 +62,8 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         super(SmartthingsBindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SEC);
     }
 
-    @Reference
-    protected void setSmartthingsTypeRegistry(SmartthingsTypeRegistry typeRegistry) {
+    public void setSmartthingsTypeRegistry(SmartthingsTypeRegistry typeRegistry) {
         this.typeRegistry = typeRegistry;
-    }
-
-    protected void unsetSmartthingsTypeRegistry(SmartthingsTypeRegistry typeRegistry) {
-        // Make sure it is this handleFactory that should be unset
-        if (Objects.equals(this.typeRegistry, typeRegistry)) {
-            this.typeRegistry = null;
-        }
-    }
-
-    @Reference
-    protected void setSmartthingsHubCommand(SmartthingsHandlerFactory handlerFactory) {
-        smartthingsHandlerFactory = handlerFactory;
-        smartthingsHandlerFactory.setSmartthingsDiscoveryService(this);
-    }
-
-    protected void unsetSmartthingsHubCommand(SmartthingsHandlerFactory handlerFactory) {
-        // Make sure it is this handleFactory that should be unset
-        if (Objects.equals(handlerFactory, smartthingsHandlerFactory)) {
-            this.smartthingsHandlerFactory = null;
-        }
     }
 
     /**
@@ -99,10 +75,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
     }
 
     public void doScan(Boolean addDevice) {
-        SmartthingsBridgeHandler bridge = null;
-        if (smartthingsHandlerFactory != null) {
-            bridge = smartthingsHandlerFactory.getBridgeHandler();
-        }
+        SmartthingsBridgeHandler bridge = smartthingsBridgeHandler;
         if (bridge == null) {
             return;
         }
@@ -147,8 +120,6 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
                             if ("main".equals(compId)) {
                                 deviceType = catId;
                             }
-
-                            logger.info("");
                         }
                     }
                 }
@@ -196,8 +167,8 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         }
         String deviceNameNoSpaces = name.replaceAll("\\s", "_");
         String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
-        if (smartthingsHandlerFactory != null) {
-            ThingUID bridgeUid = smartthingsHandlerFactory.getBridgeUID();
+        if (smartthingsBridgeHandler != null) {
+            ThingUID bridgeUid = smartthingsBridgeHandler.getThing().getUID();
             String bridgeId = bridgeUid.getId();
             String uidStr = String.format("smartthings:%s:%s:%s", deviceType, bridgeId, smartthingsDeviceName);
 
@@ -238,34 +209,20 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
     protected void stopBackgroundDiscovery() {
     }
 
-    /**
-     * Handle discovery data returned from the Smartthings hub.
-     * The data is delivered into the SmartthingServlet. From there it is sent here via the Event service
-     */
     @Override
-    public void handleEvent(@Nullable Event event) {
-        if (event == null) {
-            logger.info("SmartthingsDiscoveryService.handleEvent: event is uexpectedly null");
-            return;
-        }
-        String topic = event.getTopic();
-        String data = (String) event.getProperty("data");
-        if (data == null) {
-            logger.debug("Event received on topic: {} but the data field is null", topic);
-            return;
-        } else {
-            logger.trace("Event received on topic: {}", topic);
-        }
+    public void deactivate() {
+    }
 
-        // The data returned from the Smartthings hub is a list of strings where each
-        // element is the data for one device. That device string is another json object
-        /*
-         * List<String> devices = new ArrayList<>();
-         * devices = gson.fromJson(data, devices.getClass());
-         * for (String device : devices) {
-         * SmartthingsDeviceData deviceData = gson.fromJson(device, SmartthingsDeviceData.class);
-         * createDevice(Objects.requireNonNull(deviceData));
-         * }
-         */
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof SmartthingsBridgeHandler smartthingsBridgeHandler) {
+            this.smartthingsBridgeHandler = smartthingsBridgeHandler;
+            this.smartthingsBridgeHandler.registerDiscoveryListener(this);
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return smartthingsBridgeHandler;
     }
 }
