@@ -148,6 +148,33 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         }
     }
 
+    public void refreshDevice(String componentId, String capa, String attr, Object value) {
+        String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attr), '-') + "-channel")
+                .toLowerCase();
+
+        ChannelUID chanUid = new ChannelUID(this.getThing().getUID(), "light_default", channelName);
+        Channel chan = thing.getChannel(chanUid);
+
+        if (chan != null) {
+            if (attr.equals("switch")) {
+                if (("on".equals(value))) {
+                    updateState(chanUid, OnOffType.ON);
+                } else {
+                    updateState(chanUid, OnOffType.OFF);
+                }
+            }
+            if (attr.equals("level")) {
+                if (value instanceof String) {
+                    int val = java.lang.Integer.parseInt(((String) value));
+                    updateState(chanUid, new PercentType(val));
+                } else {
+                    updateState(chanUid, new PercentType(((Double) value).intValue()));
+                }
+            }
+        }
+
+    }
+
     public void refreshDevice() {
         Bridge bridge = getBridge();
 
@@ -176,26 +203,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                                 Object value = props.value;
                                 String timestamp = props.timestamp;
 
-                                String channelName = (StringUtils
-                                        .join(StringUtils.splitByCharacterTypeCamelCase(propertyKey), '-') + "-channel")
-                                        .toLowerCase();
-
-                                ChannelUID chanUid = new ChannelUID(this.getThing().getUID(), "light_default",
-                                        channelName);
-                                Channel chan = thing.getChannel(chanUid);
-
-                                if (chan != null) {
-                                    if (propertyKey.equals("switch")) {
-                                        if (("on".equals(value))) {
-                                            updateState(chanUid, OnOffType.ON);
-                                        } else {
-                                            updateState(chanUid, OnOffType.OFF);
-                                        }
-                                    }
-                                    if (propertyKey.equals("level")) {
-                                        updateState(chanUid, new PercentType(((Double) value).intValue()));
-                                    }
-                                }
+                                refreshDevice("main", "capa", propertyKey, value);
                                 logger.info("");
                             }
 
@@ -276,6 +284,8 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                 return;
             }
         }
+
+        // refreshDevice();
     }
 
     private @Nullable SmartthingsConverter getConverter(String converterName) {

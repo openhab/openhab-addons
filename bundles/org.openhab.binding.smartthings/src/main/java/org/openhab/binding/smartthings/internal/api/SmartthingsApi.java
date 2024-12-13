@@ -48,7 +48,7 @@ public class SmartthingsApi {
     private final SmartthingsNetworkConnector networkConnector;
     private final String token;
 
-    private static final String APP_NAME = "openhabnew024";
+    private static final String APP_NAME = "openhabnew025";
     private Gson gson = new Gson();
     private String baseUrl = "https://api.smartthings.com/v1";
     private String deviceEndPoint = "/devices";

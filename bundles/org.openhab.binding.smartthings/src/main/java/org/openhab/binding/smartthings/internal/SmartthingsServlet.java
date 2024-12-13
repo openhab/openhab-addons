@@ -17,7 +17,9 @@ import java.io.IOException;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletConfig;
@@ -40,7 +42,11 @@ import org.openhab.binding.smartthings.internal.dto.SMEvent;
 import org.openhab.binding.smartthings.internal.dto.SMEvent.device;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsLocation;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsThingHandler;
 import org.openhab.binding.smartthings.internal.type.SmartthingsException;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.http.HttpService;
@@ -207,14 +213,31 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                     String deviceId = data.events[0].deviceEvent.deviceId;
                     String componentId = data.events[0].deviceEvent.componentId;
                     String capa = data.events[0].deviceEvent.capability;
-                    String atttr = data.events[0].deviceEvent.attribute;
+                    String attr = data.events[0].deviceEvent.attribute;
                     String value = data.events[0].deviceEvent.value;
 
-                    logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, atttr, value);
+                    Bridge bridge = bridgeHandler.getThing();
+                    List<Thing> things = bridge.getThings();
+
+                    Optional<Thing> theThingOpt = things.stream().filter(x -> x.getProperties().containsValue(deviceId))
+                            .findFirst();
+                    if (theThingOpt.isPresent()) {
+                        Thing theThing = theThingOpt.get();
+
+                        ThingHandler handler = theThing.getHandler();
+                        SmartthingsThingHandler smarthingsHandler = (SmartthingsThingHandler) handler;
+                        smarthingsHandler.refreshDevice(componentId, capa, attr, value);
+
+                        logger.info("aa");
+                    }
+
+                    logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr, value);
                 } else if (resultObj.lifecycle.equals("INSTALL")) {
                     logger.info("");
-                    // String token = resultObj.installData.authToken;
+                    String token = resultObj.installData.authToken;
                     installedAppId = resultObj.installData.installedApp.installedAppId;
+                    String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
+                            + "/subscriptions";
 
                     try {
                         SmartthingsLocation loc = api.getLocation(resultObj.installData.installedApp.locationId);
@@ -223,11 +246,27 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                         installedLocation = "Unable to retrieve location!!";
                     }
 
+                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, "", HttpMethod.GET);
+
+                    SMEvent evt = new SMEvent();
+                    evt.sourceType = "DEVICE";
+                    evt.device = new device("97806abc-ce85-4b28-9df2-31e33323cf62", "main", true, null);
+
+                    String body = gson.toJson(evt);
+                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
+
+                    evt = new SMEvent();
+                    evt.sourceType = "DEVICE";
+                    evt.device = new device("ee87617f-0c84-40a3-be25-e70e53f3fc6a", "main", true, null);
+
+                    body = gson.toJson(evt);
+                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
+
                     setupInProgress = false;
-                    logger.info("");
+                    logger.info("INSTALL");
                 } else if (resultObj.lifecycle.equals("UPDATE")) {
                     String token = resultObj.updateData.authToken;
-                    String installedAppId = resultObj.updateData.installedApp.installedAppId;
+                    installedAppId = resultObj.updateData.installedApp.installedAppId;
                     String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
                             + "/subscriptions";
 
