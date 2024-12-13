@@ -82,7 +82,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
     public SmartthingsTypeRegistryImpl() {
         this.bundleContext = FrameworkUtil.getBundle(SmartthingsTypeRegistryImpl.class).getBundleContext();
-        logger.info("SmartthingsTypeRegistryImpl()");
     }
 
     @Override
@@ -109,7 +108,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                 continue;
             }
 
-            logger.info("capa:" + capa.id + " <> " + key);
+            logger.info("capa: {} <> {}", capa.id, key);
 
             if (attr.schema == null) {
                 logger.info("no schema");
@@ -134,23 +133,23 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
             if (channelDef != null) {
                 channelTp = channelDef.tp;
             } else {
-                if (tpSmart.equals("integer")) {
+                if ("integer".equals(tpSmart)) {
                     channelTp = "Number";
-                } else if (tpSmart.equals("string")) {
+                } else if ("string".equals(tpSmart)) {
                     channelTp = "String";
-                } else if (tpSmart.equals("object")) {
-                    if (prop.title != null && prop.title.equals("JsonObject")) {
+                } else if ("object".equals(tpSmart)) {
+                    if (prop.title != null && "JsonObject".equals(prop.title)) {
                         channelTp = "String";
                     } else {
                         channelTp = "";
                     }
-                } else if (tpSmart.equals("array")) {
+                } else if ("array".equals(tpSmart)) {
                     channelTp = "";
-                } else if (tpSmart.equals("string")) {
+                } else if ("string".equals(tpSmart)) {
                     channelTp = "String";
-                } else if (tpSmart.equals("number")) {
+                } else if ("number".equals(tpSmart)) {
                     channelTp = "Number";
-                } else if (tpSmart.equals("boolean")) {
+                } else if ("boolean".equals(tpSmart)) {
                     channelTp = "String";
                 } else {
                     logger.info("need review");
@@ -165,10 +164,10 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
             Boolean display = false;
 
             if (display) {
-                logger.info("<channel-type id=\"" + channelName + "\">");
-                logger.info("  <item-type>" + channelTp + "</item-type>");
-                logger.info("  <label>" + label + "</label>");
-                logger.info("  <category>" + category + "</category>");
+                logger.info("<channel-type id=\"{}\">", channelName);
+                logger.info("  <item-type>{}</item-type>", channelTp);
+                logger.info("  <label>{}</label>", label);
+                logger.info("  <category>{}</category>", category);
 
                 if (prop.enumeration != null && channelDef == null) {
                     logger.info("  <state>");
@@ -177,7 +176,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                         String optValue = opt;
                         String optName = StringUtils.capitalize(
                                 StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(opt), StringUtils.SPACE));
-                        logger.info("      <option value=\"" + optValue + "\">" + optName + "</option>");
+                        logger.info("      <option value=\"{}\">{}</option>", optValue, optName);
                     }
                     logger.info("    </options>");
                     logger.info("  </state>");
@@ -186,7 +185,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                 logger.info("");
             }
 
-            if (channelTp == null || channelTp.equals("")) {
+            if (channelTp == null || "".equals(channelTp)) {
                 continue;
             }
 
@@ -284,7 +283,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
         try {
             generateThingsType(device.deviceId, device.label, deviceType, device);
         } catch (Exception ex) {
-            logger.info("wrong:" + ex.toString());
+            logger.info("wrong: {}", ex.toString());
         }
     }
 
@@ -329,7 +328,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                         SmartthingsCapabilitie capa = capabilitiesDict.get(capId);
 
                         if (capa != null) {
-                            logger.info("capa:" + cap.id);
+                            logger.info("capa: {}", cap.id);
                             for (String key : capa.attributes.keySet()) {
                                 if (key.indexOf("range") >= 0) {
                                     continue;

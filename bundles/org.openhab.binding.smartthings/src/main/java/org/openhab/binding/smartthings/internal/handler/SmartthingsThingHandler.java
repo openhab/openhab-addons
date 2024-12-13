@@ -28,6 +28,7 @@ import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.converter.SmartthingsConverter;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
+import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -106,20 +107,24 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                 String deviceId = properties.get("deviceId");
 
                 if (deviceId != null) {
-                    JsonObject res = api.SendStatus(deviceId, jsonMsg);
-                    if (res != null) {
-                        JsonObject cp = res.get("components").getAsJsonObject();
-                        JsonObject main = cp.get("main").getAsJsonObject();
-                        JsonObject sw = main.get("switch").getAsJsonObject();
-                        JsonObject sw2 = sw.get("switch").getAsJsonObject();
-                        String value = sw2.get("value").getAsString();
-                        if (value.equals("on")) {
-                            updateState(channelUID, OnOffType.ON);
-                        } else {
-                            updateState(channelUID, OnOffType.OFF);
-                        }
+                    try {
+                        JsonObject res = api.SendStatus(deviceId, jsonMsg);
+                        if (res != null) {
+                            JsonObject cp = res.get("components").getAsJsonObject();
+                            JsonObject main = cp.get("main").getAsJsonObject();
+                            JsonObject sw = main.get("switch").getAsJsonObject();
+                            JsonObject sw2 = sw.get("switch").getAsJsonObject();
+                            String value = sw2.get("value").getAsString();
+                            if (value.equals("on")) {
+                                updateState(channelUID, OnOffType.ON);
+                            } else {
+                                updateState(channelUID, OnOffType.OFF);
+                            }
 
-                        logger.trace("");
+                            logger.trace("");
+                        }
+                    } catch (SmartthingsException ex) {
+                        logger.error("Unable to update device : {}", deviceId);
                     }
                 }
 

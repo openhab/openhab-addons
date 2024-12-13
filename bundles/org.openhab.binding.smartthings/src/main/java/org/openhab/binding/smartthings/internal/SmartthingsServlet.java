@@ -41,6 +41,7 @@ import org.openhab.binding.smartthings.internal.dto.SMEvent;
 import org.openhab.binding.smartthings.internal.dto.SMEvent.device;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsLocation;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
+import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -160,21 +161,25 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                 template = indexTemplate;
             }
 
-            if (template == selectLocationTemplate) {
+            if (selectLocationTemplate.equals(template)) {
                 SetupApp();
 
-                SmartthingsLocation[] locationList = api.GetAllLocations();
-                for (SmartthingsLocation loc : locationList) {
-                    optionBuffer.append("<option value=\"" + loc.locationId + "\">" + loc.name + "</option>");
+                try {
+                    SmartthingsLocation[] locationList = api.GetAllLocations();
+                    for (SmartthingsLocation loc : locationList) {
+                        optionBuffer.append("<option value=\"" + loc.locationId + "\">" + loc.name + "</option>");
+                    }
+                } catch (SmartthingsException ex) {
+                    optionBuffer.append("Unable to retrieve locations !!");
                 }
                 setupInProgress = true;
-            } else if (template == poolTemplate) {
+            } else if (poolTemplate.equals(template)) {
                 if (setupInProgress) {
                     replaceMap.put(KEY_POOL_STATUS, "false");
                 } else {
                     replaceMap.put(KEY_POOL_STATUS, "true");
                 }
-            } else if (template == confirmationTemplate) {
+            } else if (confirmationTemplate.equals(template)) {
                 replaceMap.put(KEY_LOCATION, installedLocation);
                 replaceMap.put(KEY_APP_ID, installedAppId);
             }
@@ -222,8 +227,12 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                     String token = resultObj.installData.authToken;
                     installedAppId = resultObj.installData.installedApp.installedAppId;
 
-                    SmartthingsLocation loc = api.GetLocation(resultObj.installData.installedApp.locationId);
-                    installedLocation = loc.name;
+                    try {
+                        SmartthingsLocation loc = api.GetLocation(resultObj.installData.installedApp.locationId);
+                        installedLocation = loc.name;
+                    } catch (SmartthingsException ex) {
+                        installedLocation = "Unable to retrieve location!!";
+                    }
 
                     setupInProgress = false;
                     logger.info("");
@@ -309,7 +318,11 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                         logger.error("error during confirmation {}", confirmUrl);
                     }
 
-                    api.CreateAppOAuth(appId);
+                    try {
+                        api.CreateAppOAuth(appId);
+                    } catch (SmartthingsException ex) {
+                        logger.error("Unable to setup app oauth settings!!");
+                    }
 
                     logger.trace("CONFIRMATION {}", confirmUrl);
                 }
@@ -321,9 +334,13 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
     protected void SetupApp() {
         SmartthingsApi api = bridgeHandler.getSmartthingsApi();
 
-        AppResponse appResponse = api.SetupApp();
-        if (appResponse.oauthClientId != null && appResponse.oauthClientSecret != null) {
-            bridgeHandler.updateConfig(appResponse.oauthClientId, appResponse.oauthClientSecret);
+        try {
+            AppResponse appResponse = api.SetupApp();
+            if (appResponse.oauthClientId != null && appResponse.oauthClientSecret != null) {
+                bridgeHandler.updateConfig(appResponse.oauthClientId, appResponse.oauthClientSecret);
+            }
+        } catch (SmartthingsException ex) {
+            logger.info("Unable to setup Smartthings app !!");
         }
     }
 }

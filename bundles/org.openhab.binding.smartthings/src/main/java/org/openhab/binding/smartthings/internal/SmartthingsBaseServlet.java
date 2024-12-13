@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class SmartthingsBaseServlet extends HttpServlet {
 
     private static final long serialVersionUID = -4719613645562518231L;
-    private final Logger logger = LoggerFactory.getLogger(SmartthingsAuthServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsBaseServlet.class);
 
     protected final SmartthingsBridgeHandler bridgeHandler;
     protected final HttpService httpService;

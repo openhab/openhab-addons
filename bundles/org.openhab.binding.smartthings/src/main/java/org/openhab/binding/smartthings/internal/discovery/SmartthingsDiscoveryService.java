@@ -35,6 +35,7 @@ import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler
 import org.openhab.binding.smartthings.internal.type.SmartthingsChannelGroupTypeProvider;
 import org.openhab.binding.smartthings.internal.type.SmartthingsChannelTypeProvider;
 import org.openhab.binding.smartthings.internal.type.SmartthingsConfigDescriptionProvider;
+import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.openhab.binding.smartthings.internal.type.SmartthingsThingTypeProvider;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -173,80 +174,85 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         SmartthingsBridgeHandler bridge = smartthingsHubCommand.getBridgeHandler();
         SmartthingsApi api = bridge.getSmartthingsApi();
 
-        SmartthingsDevice[] devices = api.GetAllDevices();
+        try {
+            SmartthingsDevice[] devices = api.GetAllDevices();
 
-        for (SmartthingsDevice device : devices) {
+            for (SmartthingsDevice device : devices) {
 
-            String name = device.name;
-            String id = device.deviceId;
-            String label = device.label;
-            String manufacturerName = device.manufacturerName;
-            String locationId = device.locationId;
-            String roomId = device.roomId;
+                String name = device.name;
+                String id = device.deviceId;
+                String label = device.label;
+                String manufacturerName = device.manufacturerName;
+                String locationId = device.locationId;
+                String roomId = device.roomId;
 
-            logger.debug("Device");
+                logger.debug("Device");
 
-            if (device.components == null || device.components.length == 0) {
-                return;
-            }
+                if (device.components == null || device.components.length == 0) {
+                    return;
+                }
 
-            Boolean enabled = false;
-            if (label.equals("Four")) {
+                Boolean enabled = false;
+                if (label.equals("Four")) {
+                    // enabled = true;
+                }
+                if (label.equals("Petrole")) {
+                    enabled = true;
+                }
+
                 // enabled = true;
-            }
-            if (label.equals("Petrole")) {
-                enabled = true;
-            }
 
-            // enabled = true;
-
-            if (!enabled) {
-                continue;
-            }
-
-            String deviceType = null;
-            for (SmartthingsComponent component : device.components) {
-                String compId = component.id;
-                String compLabel = component.label;
-
-                if (component.capabilities != null && component.capabilities.length > 0) {
-                    for (SmartthingsCapabilitie cap : component.capabilities) {
-                        String capId = cap.id;
-                        String capVersion = cap.version;
-
-                        logger.info("");
-                    }
+                if (!enabled) {
+                    continue;
                 }
 
-                if (component.categories != null && component.categories.length > 0) {
-                    for (SmartthingsCategory cat : component.categories) {
-                        String catId = cat.name;
-                        String catType = cat.categoryType;
+                String deviceType = null;
+                for (SmartthingsComponent component : device.components) {
+                    String compId = component.id;
+                    String compLabel = component.label;
 
-                        if (compId.equals("main")) {
-                            deviceType = catId;
+                    if (component.capabilities != null && component.capabilities.length > 0) {
+                        for (SmartthingsCapabilitie cap : component.capabilities) {
+                            String capId = cap.id;
+                            String capVersion = cap.version;
+
+                            logger.info("");
                         }
+                    }
 
-                        logger.info("");
+                    if (component.categories != null && component.categories.length > 0) {
+                        for (SmartthingsCategory cat : component.categories) {
+                            String catId = cat.name;
+                            String catType = cat.categoryType;
+
+                            if (compId.equals("main")) {
+                                deviceType = catId;
+                            }
+
+                            logger.info("");
+                        }
                     }
                 }
-            }
 
-            if (deviceType == null) {
-                logger.info("unknow device, bypass");
-                continue;
-            }
+                if (deviceType == null) {
+                    logger.info("unknow device, bypass");
+                    continue;
+                }
 
-            if (name.equals("white-and-color-ambiance")) {
-                continue;
-            }
+                if (name.equals("white-and-color-ambiance")) {
+                    continue;
+                }
 
-            deviceType = deviceType.toLowerCase();
-            this.typeRegistry.Register(deviceType, device);
-            if (addDevice) {
-                createDevice(deviceType, Objects.requireNonNull(device));
-            }
+                deviceType = deviceType.toLowerCase();
+                this.typeRegistry.Register(deviceType, device);
+                if (addDevice) {
+                    createDevice(deviceType, Objects.requireNonNull(device));
+                }
 
+            }
+        } catch (SmartthingsException ex) {
+            logger.error("Unable to get devices !!");
+            return;
         }
 
         logger.debug("End Discovery");

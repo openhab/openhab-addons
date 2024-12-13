@@ -21,6 +21,7 @@ import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.discovery.SmartthingsDiscoveryService;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
+import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
@@ -73,13 +74,18 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
     public void initCapabilites() {
         logger.info("Start init capa");
         SmartthingsApi api = this.getSmartthingsApi();
-        SmartthingsCapabilitie[] capabilitiesList = api.GetAllCapabilities();
 
-        for (SmartthingsCapabilitie cap : capabilitiesList) {
-            String capId = cap.id;
-            String capVersion = cap.version;
-            SmartthingsCapabilitie capa = api.GetCapabilitie(capId, capVersion);
-            typeRegistry.RegisterCapabilities(capa);
+        try {
+            SmartthingsCapabilitie[] capabilitiesList = api.GetAllCapabilities();
+
+            for (SmartthingsCapabilitie cap : capabilitiesList) {
+                String capId = cap.id;
+                String capVersion = cap.version;
+                SmartthingsCapabilitie capa = api.GetCapabilitie(capId, capVersion);
+                typeRegistry.RegisterCapabilities(capa);
+            }
+        } catch (SmartthingsException ex) {
+            logger.error("Error during initCapabilities!!");
         }
         logger.info("End init capa");
     }

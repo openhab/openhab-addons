@@ -26,6 +26,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsLocation;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsRoom;
+import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
@@ -73,12 +74,12 @@ public class SmartthingsApi {
         this.networkConnector = networkConnector;
     }
 
-    public SmartthingsDevice[] GetAllDevices() {
+    public SmartthingsDevice[] GetAllDevices() throws SmartthingsException {
         SmartthingsDevice[] devices = DoRequest(SmartthingsDevice[].class, baseUrl + deviceEndPoint);
         return devices;
     }
 
-    public AppResponse SetupApp() {
+    public AppResponse SetupApp() throws SmartthingsException {
         SmartthingsApp[] appList = GetAllApps();
 
         Optional<SmartthingsApp> appOptional = Arrays.stream(appList).filter(x -> APP_NAME.equals(x.appName))
@@ -100,40 +101,40 @@ public class SmartthingsApi {
         }
     }
 
-    public SmartthingsCapabilitie[] GetAllCapabilities() {
+    public SmartthingsCapabilitie[] GetAllCapabilities() throws SmartthingsException {
         try {
             String uri = baseUrl + capabilitiesEndPoint;
             SmartthingsCapabilitie[] listCapabilities = DoRequest(SmartthingsCapabilitie[].class, uri);
             return listCapabilities;
 
         } catch (final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("SmartthingsApi : Unable to retrieve capabilities", e);
         }
     }
 
-    public SmartthingsCapabilitie GetCapabilitie(String capabilityId, String version) {
+    public SmartthingsCapabilitie GetCapabilitie(String capabilityId, String version) throws SmartthingsException {
         try {
             String uri = baseUrl + capabilitiesEndPoint + "/" + capabilityId + "/" + version;
             SmartthingsCapabilitie capabilitie = DoRequest(SmartthingsCapabilitie.class, uri);
             return capabilitie;
 
         } catch (final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("SmartthingsApi : Unable to retrieve capability", e);
         }
     }
 
-    public SmartthingsLocation[] GetAllLocations() {
+    public SmartthingsLocation[] GetAllLocations() throws SmartthingsException {
         try {
             String uri = baseUrl + locationEndPoint;
             SmartthingsLocation[] listLocations = DoRequest(SmartthingsLocation[].class, uri);
             return listLocations;
 
         } catch (final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("SmartthingsApi : Unable to retrieve locations", e);
         }
     }
 
-    public SmartthingsLocation GetLocation(String locationId) {
+    public SmartthingsLocation GetLocation(String locationId) throws SmartthingsException {
         try {
             String uri = baseUrl + locationEndPoint + "/" + locationId;
 
@@ -141,22 +142,22 @@ public class SmartthingsApi {
 
             return loc;
         } catch (final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("SmartthingsApi : Unable to retrieve location", e);
         }
     }
 
-    public SmartthingsRoom[] GetRooms(String locationId) {
+    public SmartthingsRoom[] GetRooms(String locationId) throws SmartthingsException {
         try {
             String uri = baseUrl + locationEndPoint + "/" + locationId + roomsEndPoint;
             SmartthingsRoom[] listRooms = DoRequest(SmartthingsRoom[].class, uri);
             return listRooms;
 
         } catch (final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("SmartthingsApi : Unable to retrieve rooms", e);
         }
     }
 
-    public SmartthingsRoom GetRoom(String locationId, String roomId) {
+    public SmartthingsRoom GetRoom(String locationId, String roomId) throws SmartthingsException {
         try {
             String uri = baseUrl + locationEndPoint + "/" + locationId + roomsEndPoint + "/" + roomId;
 
@@ -164,11 +165,11 @@ public class SmartthingsApi {
 
             return loc;
         } catch (final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("SmartthingsApi : Unable to retrieve room", e);
         }
     }
 
-    public SmartthingsApp[] GetAllApps() {
+    public SmartthingsApp[] GetAllApps() throws SmartthingsException {
         try {
             String uri = baseUrl + appEndPoint;
 
@@ -178,11 +179,11 @@ public class SmartthingsApi {
             return listApps;
 
         } catch (final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("SmartthingsApi : Unable to retrieve apps", e);
         }
     }
 
-    public SmartthingsApp GetApp(String appId) {
+    public SmartthingsApp GetApp(String appId) throws SmartthingsException {
         try {
             String uri = baseUrl + appEndPoint + "/" + appId;
 
@@ -190,11 +191,11 @@ public class SmartthingsApi {
 
             return app;
         } catch (final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("SmartthingsApi : Unable to retrieve app", e);
         }
     }
 
-    public AppResponse CreateApp() {
+    public AppResponse CreateApp() throws SmartthingsException {
         try {
             String uri = baseUrl + appEndPoint + "?signatureType=ST_PADLOCK&requireConfirmation=true";
 
@@ -215,11 +216,11 @@ public class SmartthingsApi {
         } catch (
 
         final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("SmartthingsApi : Unable to create app", e);
         }
     }
 
-    public void CreateAppOAuth(String appId) {
+    public void CreateAppOAuth(String appId) throws SmartthingsException {
         try {
             String uri = baseUrl + appEndPoint + "/" + appId + "/oauth";
 
@@ -238,7 +239,7 @@ public class SmartthingsApi {
 
             // return appResponse;
         } catch (final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("SmartthingsApi : Unable to create oauth settings", e);
         }
     }
 
@@ -260,26 +261,27 @@ public class SmartthingsApi {
             String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/commands";
             DoRequest(JsonObject.class, uri, jsonMsg, false);
         } catch (final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new RuntimeException("SmartthingsApi : Unable to send command", e);
         }
     }
 
-    public @Nullable JsonObject SendStatus(String deviceId, String jsonMsg) {
+    public @Nullable JsonObject SendStatus(String deviceId, String jsonMsg) throws SmartthingsException {
         try {
             String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/status";
 
             JsonObject res = DoRequest(JsonObject.class, uri, jsonMsg, false);
             return res;
         } catch (final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("SmartthingsApi : Unable to send status", e);
         }
     }
 
-    public <T> T DoRequest(Class<T> resultClass, String uri) {
+    public <T> T DoRequest(Class<T> resultClass, String uri) throws SmartthingsException {
         return DoRequest(resultClass, uri, null, false);
     }
 
-    public <T> T DoRequest(Class<T> resultClass, String uri, @Nullable String body, Boolean update) {
+    public <T> T DoRequest(Class<T> resultClass, String uri, @Nullable String body, Boolean update)
+            throws SmartthingsException {
         try {
             HttpMethod httpMethod = HttpMethod.GET;
             if (body != null) {
@@ -292,7 +294,7 @@ public class SmartthingsApi {
             T res = networkConnector.DoRequest(resultClass, uri, null, getToken(), body, httpMethod);
             return res;
         } catch (final Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new SmartthingsException("SmartthingsApi : Unable to do request", e);
         }
     }
 }
