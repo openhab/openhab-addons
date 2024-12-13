@@ -125,5 +125,4 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
     public String getClientSecret() {
         return config.clientSecret;
     }
-
 }

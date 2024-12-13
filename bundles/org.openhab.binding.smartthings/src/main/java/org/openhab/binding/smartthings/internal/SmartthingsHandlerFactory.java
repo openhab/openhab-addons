@@ -121,5 +121,4 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
         }
         return null;
     }
-
 }
