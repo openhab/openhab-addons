@@ -14,7 +14,6 @@ package org.openhab.binding.smartthings.internal.type;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -69,7 +68,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     private @Nullable SmartthingsChannelGroupTypeProvider channelGroupTypeProvider;
     private @Nullable SmartthingsConfigDescriptionProvider configDescriptionProvider;
 
-    private Dictionary<String, SmartthingsCapabilitie> capabilitiesDict = new Hashtable<String, SmartthingsCapabilitie>();
+    private Hashtable<String, SmartthingsCapabilitie> capabilitiesDict = new Hashtable<String, SmartthingsCapabilitie>();
 
     public SmartthingsTypeRegistryImpl() {
     }
@@ -297,17 +296,18 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
                         capId = capId.replace('.', '_');
 
-                        SmartthingsCapabilitie capa = capabilitiesDict.get(capId);
+                        if (capabilitiesDict.containsKey(capId)) {
+                            SmartthingsCapabilitie capa = capabilitiesDict.get(capId);
 
-                        logger.info("capa: {}", cap.id);
-                        for (String key : capa.attributes.keySet()) {
-                            if (key.indexOf("range") >= 0) {
-                                continue;
+                            logger.info("capa: {}", cap.id);
+                            for (String key : capa.attributes.keySet()) {
+                                if (key.indexOf("range") >= 0) {
+                                    continue;
+                                }
+                                SmartthingsAttribute attr = capa.attributes.get(key);
+                                addChannel(deviceType, groupTypes, channelDefinitions, capa, key, attr);
                             }
-                            SmartthingsAttribute attr = capa.attributes.get(key);
-                            addChannel(deviceType, groupTypes, channelDefinitions, capa, key, attr);
                         }
-
                     }
                 }
 
