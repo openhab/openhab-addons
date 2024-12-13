@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-${pageRefresh}
 <title>Authorize openHAB binding for Smartthings</title>
 <link rel="icon" href="img/favicon.ico" type="image/vnd.microsoft.icon">
 <link>
@@ -89,9 +88,9 @@ html {
 	
 	
 	function doPoll(){
-	    $.get('/connectsmartthings/pool.ajax', function(data) {
+	    $.get('/smartthings/pool.ajax', function(data) {
 	        if (data=='true')
-	            window.location.replace("/connectsmartthings/confirmation.html");
+	            window.location.replace("/smartthings/confirmation.html");
 	        setTimeout(doPoll,1000);
 	    });
 	}

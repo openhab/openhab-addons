@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnector;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
@@ -57,15 +58,6 @@ public class SmartthingsAuthService {
     }
 
     protected void initialize() {
-        try {
-            httpService.registerServlet(SmartthingsBindingConstants.SMARTTHINGS_ALIAS, createServlet(),
-                    new Hashtable<>(), httpService.createDefaultHttpContext());
-            httpService.registerResources(
-                    SmartthingsBindingConstants.SMARTTHINGS_ALIAS + SmartthingsBindingConstants.SMARTTHINGS_IMG_ALIAS,
-                    "web", null);
-        } catch (Exception e) {
-            logger.warn("Error during spotify servlet startup", e);
-        }
     }
 
     @Deactivate
@@ -81,10 +73,24 @@ public class SmartthingsAuthService {
      * @return the newly created servlet
      * @throws IOException thrown when an HTML template could not be read
      */
+
+    public void registerServlet() {
+        try {
+            httpService.registerServlet(SmartthingsBindingConstants.SMARTTHINGS_ALIAS, createServlet(),
+                    new Hashtable<>(), httpService.createDefaultHttpContext());
+            httpService.registerResources(
+                    SmartthingsBindingConstants.SMARTTHINGS_ALIAS + SmartthingsBindingConstants.SMARTTHINGS_IMG_ALIAS,
+                    "web", null);
+        } catch (Exception e) {
+            logger.warn("Error during spotify servlet startup", e);
+        }
+    }
+
     private HttpServlet createServlet() throws Exception {
         SmartthingsBridgeHandler bridgeHandler = (SmartthingsBridgeHandler) accountHandler;
+        SmartthingsNetworkConnector networkConnector = bridgeHandler.getNetworkConnector();
         if (bridgeHandler != null) {
-            return new SmartthingsAuthServlet(bridgeHandler, this);
+            return new SmartthingsAuthServlet(bridgeHandler, this, httpService, networkConnector, "");
         } else {
 
             throw new Exception("BridgeHandler is null");

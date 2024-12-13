@@ -50,7 +50,7 @@ public class SmartthingsApi {
     private final SmartthingsNetworkConnector networkConnector;
     private final String token;
 
-    private static final String APP_NAME = "openhabnew018";
+    private static final String APP_NAME = "openhabnew024";
     private Gson gson = new Gson();
     private String baseUrl = "https://api.smartthings.com/v1";
     private String deviceEndPoint = "/devices";
@@ -79,7 +79,6 @@ public class SmartthingsApi {
     }
 
     public AppResponse SetupApp() {
-
         SmartthingsApp[] appList = GetAllApps();
 
         Optional<SmartthingsApp> appOptional = Arrays.stream(appList).filter(x -> APP_NAME.equals(x.appName))
@@ -99,12 +98,6 @@ public class SmartthingsApi {
             AppResponse result = CreateApp();
             return result;
         }
-
-        // SmartthingsLocation[] locList = GetAllLocations();
-        // SmartthingsLocation loc = GetLocation(locList[0].locationId);
-
-        // SmartthingsRoom[] roomList = GetRooms(loc.locationId);
-        // SmartthingsRoom room = GetRoom(loc.locationId, roomList[0].roomId);
     }
 
     public SmartthingsCapabilitie[] GetAllCapabilities() {

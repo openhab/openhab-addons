@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsAccountHandler;
+import org.openhab.binding.smartthings.internal.SmartthingsAuthService;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.SmartthingsServlet;
@@ -65,6 +66,7 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
     private @NonNullByDefault({}) HttpService httpService;
     private @NonNullByDefault({}) HttpClientFactory httpClientFactory;
     private @NonNullByDefault({}) SmartthingsApi smartthingsApi;
+    private @NonNullByDefault({}) SmartthingsAuthService authService;
     protected @NonNullByDefault({}) SmartthingsTypeRegistry typeRegistry;
     protected @NonNullByDefault({}) SmartthingsDiscoveryService discoService;
 
@@ -75,8 +77,8 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
     private String appId = "";
 
     public SmartthingsBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
-            BundleContext bundleContext, HttpService httpService, OAuthFactory oAuthFactory,
-            HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry,
+            SmartthingsAuthService authService, BundleContext bundleContext, HttpService httpService,
+            OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry,
             SmartthingsDiscoveryService disco) {
         super(bridge);
 
@@ -84,6 +86,7 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
         this.bundleContext = bundleContext;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
+        this.authService = authService;
         this.httpClientFactory = httpClientFactory;
         this.typeRegistry = typeRegistry;
         this.discoService = disco;
@@ -117,6 +120,8 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
         this.oAuthService = oAuthService;
         oAuthService.addAccessTokenRefreshListener(SmartthingsBridgeHandler.this);
         this.networkConnector = new SmartthingsNetworkConnectorImpl(httpClientFactory, oAuthService);
+
+        authService.registerServlet();
 
         smartthingsApi = new SmartthingsApi(httpClientFactory, networkConnector, oAuthService, config.token);
 
@@ -243,4 +248,9 @@ public abstract class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler
     public String getAppId() {
         return this.appId;
     }
+
+    public SmartthingsNetworkConnector getNetworkConnector() {
+        return this.networkConnector;
+    }
+
 }

@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.smartthings.internal.SmartthingsAuthService;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.discovery.SmartthingsDiscoveryService;
@@ -45,11 +46,11 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SmartthingsCloudBridgeHandler.class);
 
     public SmartthingsCloudBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
-            BundleContext bundleContext, HttpService httpService, OAuthFactory oAuthFactory,
-            HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry,
+            SmartthingsAuthService authService, BundleContext bundleContext, HttpService httpService,
+            OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory, SmartthingsTypeRegistry typeRegistry,
             SmartthingsDiscoveryService disco) {
-        super(bridge, smartthingsHandlerFactory, bundleContext, httpService, oAuthFactory, httpClientFactory,
-                typeRegistry, disco);
+        super(bridge, smartthingsHandlerFactory, authService, bundleContext, httpService, oAuthFactory,
+                httpClientFactory, typeRegistry, disco);
     }
 
     @Override
