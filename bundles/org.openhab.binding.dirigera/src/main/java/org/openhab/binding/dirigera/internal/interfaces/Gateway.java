@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
+import org.openhab.binding.dirigera.internal.exception.ApiException;
+import org.openhab.binding.dirigera.internal.exception.ModelException;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.core.thing.Thing;
 import org.osgi.framework.BundleContext;
@@ -165,7 +167,7 @@ public interface Gateway {
      * @throws ApiMissingException
      * @return DirigeraAPI
      */
-    DirigeraAPI api() throws RuntimeException;
+    DirigeraAPI api() throws ApiException;
 
     /**
      * Comfort access towards Model which is only present after initialization.
@@ -173,7 +175,7 @@ public interface Gateway {
      * @throws ModelMissingException
      * @return Model
      */
-    Model model() throws RuntimeException;
+    Model model() throws ModelException;
 
     /**
      * Comfort access towards DirigeraDiscoveryManager.
