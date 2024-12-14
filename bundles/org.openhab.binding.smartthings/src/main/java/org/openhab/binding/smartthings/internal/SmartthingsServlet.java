@@ -345,7 +345,6 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
         } catch (SmartthingsException ex) {
             logger.error("Unable to register subscriptions");
         }
-
     }
 
     protected void setupApp() {
