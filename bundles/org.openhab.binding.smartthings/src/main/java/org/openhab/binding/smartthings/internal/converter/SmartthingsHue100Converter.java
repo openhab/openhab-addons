@@ -54,7 +54,7 @@ public class SmartthingsHue100Converter extends SmartthingsConverter {
                     hsbCommand.getBrightness().intValue());
             jsonMsg = String.format(
                     "{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"capabilityAttribute\": \"%s\", \"value\": %s}",
-                    thingTypeId, smartthingsName, channelUid.getId(), value);
+                    thingTypeId, "smartthingsName", channelUid.getId(), value);
         } else {
             jsonMsg = defaultConvertToSmartthings(thing, channelUid, command);
         }

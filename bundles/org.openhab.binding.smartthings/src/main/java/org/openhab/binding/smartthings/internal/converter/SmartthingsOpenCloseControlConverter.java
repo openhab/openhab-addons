@@ -42,7 +42,7 @@ public class SmartthingsOpenCloseControlConverter extends SmartthingsConverter {
         smartthingsValue = surroundWithQuotes(smartthingsValue);
 
         return String.format("{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"value\": %s}", thingTypeId,
-                smartthingsName, smartthingsValue);
+                "smartthingsName", smartthingsValue);
     }
 
     @Override

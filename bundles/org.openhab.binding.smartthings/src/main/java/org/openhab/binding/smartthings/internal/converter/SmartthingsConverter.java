@@ -21,7 +21,6 @@ import org.openhab.binding.smartthings.internal.dto.SmartthingsAttribute;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCommand;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
-import org.openhab.binding.smartthings.internal.handler.SmartthingsThingConfig;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -60,12 +59,10 @@ public abstract class SmartthingsConverter {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsConverter.class);
 
-    protected String smartthingsName;
     protected String thingTypeId;
     protected SmartthingsTypeRegistry typeRegistry;
 
     SmartthingsConverter(SmartthingsTypeRegistry typeRegistry, Thing thing) {
-        smartthingsName = thing.getConfiguration().as(SmartthingsThingConfig.class).smartthingsName;
         thingTypeId = thing.getThingTypeUID().getId();
         this.typeRegistry = typeRegistry;
     }
@@ -103,8 +100,8 @@ public abstract class SmartthingsConverter {
             value = command.toString();
         } else if (command instanceof PointType) { // There is not a comparable type in Smartthings, log and send value
             logger.warn(
-                    "Warning - PointType Command is not supported by Smartthings. Please configure to use a different command type. CapabilityKey: {}, displayName: {}, capabilityAttribute {}",
-                    thingTypeId, smartthingsName, channelUid.getId());
+                    "Warning - PointType Command is not supported by Smartthings. Please configure to use a different command type. CapabilityKey: {}, capabilityAttribute {}",
+                    thingTypeId, channelUid.getId());
             value = command.toFullString();
         } else if (command instanceof RefreshType) { // Need to surround with double quotes
             value = command.toString().toLowerCase();
@@ -122,8 +119,8 @@ public abstract class SmartthingsConverter {
             value = command.toString().toLowerCase();
         } else {
             logger.warn(
-                    "Warning - The Smartthings converter does not know how to handle the {} command. The Smartthingsonverter class should be updated.  CapabilityKey: {}, displayName: {}, capabilityAttribute {}",
-                    command.getClass().getName(), thingTypeId, smartthingsName, channelUid.getId());
+                    "Warning - The Smartthings converter does not know how to handle the {} command. The Smartthingsonverter class should be updated.  CapabilityKey: {},  capabilityAttribute {}",
+                    command.getClass().getName(), thingTypeId, channelUid.getId());
             value = command.toString().toLowerCase();
         }
 

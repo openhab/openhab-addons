@@ -14,9 +14,7 @@ package org.openhab.binding.smartthings.internal.handler;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -25,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.converter.SmartthingsConverter;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStatus;
@@ -34,7 +31,6 @@ import org.openhab.binding.smartthings.internal.dto.SmartthingsStatusComponent;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStatusProperties;
 import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
-import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
@@ -43,7 +39,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.ConfigStatusThingHandler;
+import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -53,11 +49,10 @@ import org.slf4j.LoggerFactory;
  * @author Bob Raker - Initial contribution
  */
 @NonNullByDefault
-public class SmartthingsThingHandler extends ConfigStatusThingHandler {
+public class SmartthingsThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsThingHandler.class);
 
-    private SmartthingsThingConfig config;
     private String smartthingsName;
     private Map<ChannelUID, SmartthingsConverter> converters = new HashMap<>();
 
@@ -67,7 +62,6 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
     public SmartthingsThingHandler(Thing thing) {
         super(thing);
         smartthingsName = ""; // Initialize here so it can be NonNull but it should always get a value in initialize()
-        config = new SmartthingsThingConfig();
     }
 
     /**
@@ -192,11 +186,6 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
 
     @Override
     public void initialize() {
-        config = getThing().getConfiguration().as(SmartthingsThingConfig.class);
-        if (!validateConfig(config)) {
-            return;
-        }
-        smartthingsName = config.smartthingsName;
 
         // Create converters for each channel
         for (Channel ch : thing.getChannels()) {
@@ -294,29 +283,6 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                     e.getMessage());
         }
         return null;
-    }
-
-    private boolean validateConfig(SmartthingsThingConfig config) {
-        return true;
-    }
-
-    @Override
-    public Collection<ConfigStatusMessage> getConfigStatus() {
-        Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<>();
-
-        // The name must be provided
-        String stName = config.smartthingsName;
-        if (stName.isEmpty()) {
-            configStatusMessages.add(ConfigStatusMessage.Builder.error(SmartthingsBindingConstants.SMARTTHINGS_NAME)
-                    .withMessageKeySuffix(SmartthingsThingConfigStatusMessage.SMARTTHINGS_NAME_MISSING)
-                    .withArguments(SmartthingsBindingConstants.SMARTTHINGS_NAME).build());
-        }
-
-        return configStatusMessages;
-    }
-
-    public String getSmartthingsName() {
-        return smartthingsName;
     }
 
     @Override
