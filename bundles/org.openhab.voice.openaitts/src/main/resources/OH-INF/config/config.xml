@@ -28,6 +28,11 @@
 			<label>Model</label>
 			<required>true</required>
 			<description>ID of the model to use.</description>
+			<options>
+				<option value="tts-1">tts-1</option>
+				<option value="tts-1-hd">tts-1-hd</option>
+			</options>
+			<limitToOptions>false</limitToOptions>
 			<default>tts-1</default>
 		</parameter>
 		<parameter name="voice" type="text" groupName="tts">
@@ -35,6 +40,15 @@
 			<required>true</required>
 			<description>The voice to use when generating the audio. Previews of the voices are available in the text to speech
 				guide. https://platform.openai.com/docs/guides/text-to-speech/voice-options</description>
+			<options>
+				<option value="alloy">Alloy</option>
+				<option value="echo">Echo</option>
+				<option value="fable">Fable</option>
+				<option value="nova">Nova</option>
+				<option value="shimmer">Shimmer</option>
+				<option value="onyx">Onyx</option>
+			</options>
+			<limitToOptions>false</limitToOptions>
 			<default>nova</default>
 		</parameter>
 		<parameter name="speed" type="decimal" min="0.25" max="4" groupName="tts">
