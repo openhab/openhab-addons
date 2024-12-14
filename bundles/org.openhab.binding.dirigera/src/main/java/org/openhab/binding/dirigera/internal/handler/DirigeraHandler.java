@@ -278,10 +278,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             model = Optional.of(houseModel);
             modelUpdate(); // initialize model
             websocket.initialize();
-            connectGateway(); // chacks API access and starts websocket
+            connectGateway(); // checks API access and starts websocket
             // start watchdog to check gateway connection and start recovery if necessary
             watchdog = Optional.of(scheduler.scheduleWithFixedDelay(this::watchdog, 15, 15, TimeUnit.SECONDS));
-            // unfrequent updates for gateway itsself
+            // infrequent updates for gateway itself
             updater = Optional.of(scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES));
         } else {
             updateStatus(ThingStatus.OFFLINE);
@@ -302,6 +302,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
 
     @Override
     public void handleRemoval() {
+        storage.remove(config.ipAddress);
         super.handleRemoval();
     }
 

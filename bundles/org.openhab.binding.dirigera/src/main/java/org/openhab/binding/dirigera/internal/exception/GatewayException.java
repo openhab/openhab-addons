@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.dirigera.internal.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * {@link ApiException} thrown in case of problems accessing DIRIGERA gateway
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class GatewayException extends RuntimeException {
 
     private static final long serialVersionUID = -9187744844610930469L;
