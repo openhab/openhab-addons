@@ -31,8 +31,6 @@ import org.openhab.binding.smartthings.internal.dto.SmartthingsStatusComponent;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStatusProperties;
 import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -42,6 +40,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,31 +115,13 @@ public class SmartthingsThingHandler extends BaseThingHandler {
         String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attr), '-') + "-channel")
                 .toLowerCase();
 
-        ChannelUID chanUid = new ChannelUID(this.getThing().getUID(), "default", channelName);
-        Channel chan = thing.getChannel(chanUid);
+        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), "default", channelName);
+        Channel chan = thing.getChannel(channelUID);
+        SmartthingsConverter converter = converters.get(channelUID);
 
-        if (converters.containsKey(chanUid)) {
-            SmartthingsConverter converter = converters.get(chanUid);
-
-            // converter.convertToOpenHab(channelName, value);
-
-            if (chan != null) {
-                if (attr.equals("switch")) {
-                    if (("on".equals(value))) {
-                        updateState(chanUid, OnOffType.ON);
-                    } else {
-                        updateState(chanUid, OnOffType.OFF);
-                    }
-                }
-                if (attr.equals("level")) {
-                    if (value instanceof String) {
-                        int val = java.lang.Integer.parseInt(((String) value));
-                        updateState(chanUid, new PercentType(val));
-                    } else {
-                        updateState(chanUid, new PercentType(((Double) value).intValue()));
-                    }
-                }
-            }
+        if (converters.containsKey(channelUID)) {
+            State state = converter.convertToOpenHab(thing, channelUID, value);
+            updateState(channelUID, state);
         }
     }
 

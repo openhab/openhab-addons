@@ -15,11 +15,10 @@ package org.openhab.binding.smartthings.internal.converter;
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -63,40 +62,43 @@ public class SmartthingsHue100Converter extends SmartthingsConverter {
     }
 
     @Override
-    public State convertToOpenHab(@Nullable String acceptedChannelType, SmartthingsStateData dataFromSmartthings) {
+    public State convertToOpenHab(Thing thing, ChannelUID channelUid, Object dataFromSmartthings) {
         // Here we have to multiply the value from Smartthings by 3.6 to convert from 0-100 to 0-360
-        String deviceType = dataFromSmartthings.capabilityAttribute;
-        Object deviceValue = dataFromSmartthings.value;
-
-        if (deviceValue == null) {
-            logger.warn("Failed to convert Number {} because Smartthings returned a null value.", deviceType);
+        if (dataFromSmartthings == null) {
+            logger.warn("Failed to convert Number because Smartthings returned a null value.");
             return UnDefType.UNDEF;
         }
 
+        Channel channel = thing.getChannel(channelUid);
+        String acceptedChannelType = channel.getAcceptedItemType();
+        if (acceptedChannelType == null) {
+            return UnDefType.NULL;
+        }
+
         if (acceptedChannelType != null && "Number".contentEquals(acceptedChannelType)) {
-            if (deviceValue instanceof String stringCommand) {
+            if (dataFromSmartthings instanceof String stringCommand) {
                 double d = Double.parseDouble(stringCommand);
                 d *= 3.6;
                 return new DecimalType(d);
-            } else if (deviceValue instanceof Long) {
-                double d = ((Long) deviceValue).longValue();
+            } else if (dataFromSmartthings instanceof Long) {
+                double d = ((Long) dataFromSmartthings).longValue();
                 d *= 3.6;
                 return new DecimalType(d);
-            } else if (deviceValue instanceof BigDecimal decimalValue) {
+            } else if (dataFromSmartthings instanceof BigDecimal decimalValue) {
                 double d = decimalValue.doubleValue();
                 d *= 3.6;
                 return new DecimalType(d);
-            } else if (deviceValue instanceof Number numberValue) {
+            } else if (dataFromSmartthings instanceof Number numberValue) {
                 double d = numberValue.doubleValue();
                 d *= 3.6;
                 return new DecimalType(d);
             } else {
-                logger.warn("Failed to convert Number {} with a value of {} from class {} to an appropriate type.",
-                        deviceType, deviceValue, deviceValue.getClass().getName());
+                logger.warn("Failed to convert Number with a value of {} from class {} to an appropriate type.",
+                        dataFromSmartthings, dataFromSmartthings.getClass().getName());
                 return UnDefType.UNDEF;
             }
         } else {
-            return defaultConvertToOpenHab(acceptedChannelType, dataFromSmartthings);
+            return defaultConvertToOpenHab(thing, channelUid, dataFromSmartthings);
         }
     }
 }
