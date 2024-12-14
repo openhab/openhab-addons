@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mihome.internal.socket;
 
+import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.BINDING_ID;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -71,7 +73,7 @@ public abstract class XiaomiSocket {
      */
     public XiaomiSocket(int port, String owner) {
         this.port = port;
-        socketReceiveThread.setName("XiaomiSocketReceiveThread(" + port + ", " + owner + ")");
+        socketReceiveThread.setName("OH-binding-" + BINDING_ID + "-XiaomiSocket(" + port + ", " + owner + ")");
     }
 
     public void initialize() {

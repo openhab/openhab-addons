@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTO;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTODeserializer;
@@ -440,7 +441,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         private boolean terminate = false;
 
         public SqueezeServerListener() {
-            super("Squeeze Server Listener");
+            super(String.format("OH-binding-%s-%s", SqueezeBoxBindingConstants.BINDING_ID, "ServerListener"));
         }
 
         public void terminate() {

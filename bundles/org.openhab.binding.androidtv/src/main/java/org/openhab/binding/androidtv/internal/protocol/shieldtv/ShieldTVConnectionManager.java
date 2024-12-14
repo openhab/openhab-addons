@@ -443,12 +443,14 @@ public class ShieldTVConnectionManager {
 
                 setStatus(false, "offline.initializing");
 
-                Thread readerThread = new Thread(this::readerThreadJob, "ShieldTV reader " + handler.getThingID());
+                Thread readerThread = new Thread(this::readerThreadJob,
+                        "OH-binding-" + handler.getThingUID() + "-ShieldTVReader");
                 readerThread.setDaemon(true);
                 readerThread.start();
                 this.readerThread = readerThread;
 
-                Thread senderThread = new Thread(this::senderThreadJob, "ShieldTV sender " + handler.getThingID());
+                Thread senderThread = new Thread(this::senderThreadJob,
+                        "OH-binding-" + handler.getThingUID() + "-ShieldTVSender");
                 senderThread.setDaemon(true);
                 senderThread.start();
                 this.senderThread = senderThread;
@@ -513,13 +515,13 @@ public class ShieldTVConnectionManager {
                     this.shimServerSocket = serverSocket;
 
                     Thread readerThread = new Thread(this::shimReaderThreadJob,
-                            "ShieldTV shim reader " + handler.getThingID());
+                            "OH-binding-" + handler.getThingUID() + "-ShieldTVShimReader");
                     readerThread.setDaemon(true);
                     readerThread.start();
                     this.shimReaderThread = readerThread;
 
                     Thread senderThread = new Thread(this::shimSenderThreadJob,
-                            "ShieldTV shim sender" + handler.getThingID());
+                            "OH-binding-" + handler.getThingUID() + "-ShieldTVShimSender");
                     senderThread.setDaemon(true);
                     senderThread.start();
                     this.shimSenderThread = senderThread;

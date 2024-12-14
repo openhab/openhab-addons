@@ -286,6 +286,11 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
      * The thread, which waits for data and submits the unique results addresses to the discovery results
      */
     private class ReceiverThread extends Thread {
+
+        public ReceiverThread() {
+            super(String.format("OH-binding-%s-%s", FineOffsetWeatherStationBindingConstants.BINDING_ID, "Receiver"));
+        }
+
         @Override
         public void run() {
             DatagramSocket socket = getSocket();

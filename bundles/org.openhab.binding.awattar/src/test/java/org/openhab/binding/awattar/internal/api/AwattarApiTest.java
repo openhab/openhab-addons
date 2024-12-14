@@ -45,8 +45,6 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
 import org.openhab.binding.awattar.internal.AwattarPrice;
 import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
-import org.openhab.binding.awattar.internal.handler.AwattarBridgeHandler;
-import org.openhab.binding.awattar.internal.handler.AwattarBridgeHandlerTest;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.test.java.JavaTest;
 

@@ -1045,7 +1045,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (Objects.nonNull(zigbeeStatus)) {
             logger.debug("{} -> updateConnectivityState() thingStatus:{}, zigbeeStatus:{}", resourceId,
                     thing.getStatus(), zigbeeStatus);
-            hasConnectivityIssue = zigbeeStatus != ZigbeeStatus.CONNECTED;
+            hasConnectivityIssue = zigbeeStatus.isConnectivityIssue();
             if (hasConnectivityIssue) {
                 if (thing.getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,

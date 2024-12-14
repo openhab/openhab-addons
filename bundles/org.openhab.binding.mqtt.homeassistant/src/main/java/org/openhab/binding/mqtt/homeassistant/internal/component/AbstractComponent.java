@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,9 @@ import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Stream;
+
+import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,6 +44,8 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Availability;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AvailabilityMode;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.generic.ChannelTransformation;
@@ -53,6 +59,7 @@ import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.StateDescription;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import com.hubspot.jinjava.Jinjava;
 
 /**
@@ -64,6 +71,29 @@ import com.hubspot.jinjava.Jinjava;
  */
 @NonNullByDefault
 public abstract class AbstractComponent<C extends AbstractChannelConfiguration> {
+    public enum TemperatureUnit {
+        @SerializedName("C")
+        CELSIUS(SIUnits.CELSIUS, new BigDecimal("0.1")),
+        @SerializedName("F")
+        FAHRENHEIT(ImperialUnits.FAHRENHEIT, BigDecimal.ONE);
+
+        private final Unit<Temperature> unit;
+        private final BigDecimal defaultPrecision;
+
+        TemperatureUnit(Unit<Temperature> unit, BigDecimal defaultPrecision) {
+            this.unit = unit;
+            this.defaultPrecision = defaultPrecision;
+        }
+
+        public Unit<Temperature> getUnit() {
+            return unit;
+        }
+
+        public BigDecimal getDefaultPrecision() {
+            return defaultPrecision;
+        }
+    }
+
     public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     // Component location fields
@@ -118,7 +148,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
             groupId = null;
             componentId = "";
         }
-        uniqueId = this.haID.getGroupId(channelConfiguration.getUniqueId(), false);
+        uniqueId = haID.component + "_" + haID.getGroupId(channelConfiguration.getUniqueId(), false);
 
         this.configSeen = false;
 
@@ -157,8 +187,10 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     protected void addJsonAttributesChannel() {
         if (channelConfiguration.getJsonAttributesTopic() != null) {
+            ChannelStateUpdateListener listener = (this instanceof ChannelStateUpdateListener localThis) ? localThis
+                    : componentConfiguration.getUpdateListener();
             buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
-                    componentConfiguration.getUpdateListener())
+                    listener)
                     .stateTopic(channelConfiguration.getJsonAttributesTopic(),
                             channelConfiguration.getJsonAttributesTemplate())
                     .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).isAdvanced(true).build();
@@ -182,8 +214,13 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     }
 
     public void resolveConflict() {
-        componentId = this.haID.getGroupId(channelConfiguration.getUniqueId(), newStyleChannels);
-        channels.values().forEach(c -> c.resetUID(buildChannelUID(c.getChannel().getUID().getIdWithoutGroup())));
+        if (newStyleChannels && channels.size() == 1) {
+            componentId = componentId + "_" + haID.component;
+            channels.values().forEach(c -> c.resetUID(buildChannelUID(componentId)));
+        } else {
+            groupId = componentId = componentId + "_" + haID.component;
+            channels.values().forEach(c -> c.resetUID(buildChannelUID(c.getChannel().getUID().getIdWithoutGroup())));
+        }
     }
 
     protected ComponentChannel.Builder buildChannel(String channelID, ComponentChannelType channelType,

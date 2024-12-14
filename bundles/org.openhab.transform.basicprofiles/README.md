@@ -198,20 +198,42 @@ Use cases:
 
 #### State Filter Conditions
 
-The conditions are defined in the format `[ITEM_NAME] OPERATOR VALUE_OR_ITEM_NAME`, e.g. `MyItem EQ OFF`.
+The conditions are defined in the format `[LHS_OPERAND] OPERATOR RHS_OPERAND`, e.g. `MyItem EQ OFF`.
 Multiple conditions can be entered on separate lines in the UI, or in a single line separated with the `separator` character/string.
 
+The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
+
+- An item name, which will be evaluated to its state.
+- A type constant, such as `ON`, `OFF`, `UNDEF`, `NULL`, `OPEN`, `CLOSED`, `PLAY`, `PAUSE`, `UP`, `DOWN`, etc.
+  Note that these are unquoted.
+- A String value, enclosed with single quotes, e.g. `'ON'`.
+  A string value is different to the actual `OnOffType.ON`.
+  To compare against an actual OnOffType, use an unquoted `ON`.
+- A plain number to represent a `DecimalType`.
+- A number with a unit to represent a `QuantityType`, for example `1.2 kW`, or `24 °C`.
+- One of the special functions supported by State Filter:
+  - `$DELTA` to represent the absolute difference between the incoming value and the previously accepted value.
+    The calculated delta value is absolute, i.e. it is always positive.
+    For example, with an initial data of `10`, a new data of `12` or `8` would both result in a $DELTA of `2`.
+  - `$DELTA_PERCENT` to represent the difference in percentage.
+    It is calculated as `($DELTA / current_data) * 100`.
+    Note that this can also be done by omitting the `LHS_OPERAND` and using a number followed with a percent sign `%` as the `RHS_OPERAND`.
+    See the example below.
+  - `$AVERAGE`, or `$AVG` to represent the average of the previous unfiltered incoming values.
+  - `$STDDEV` to represent the _population_ standard deviation of the previous unfiltered incoming values.
+  - `$MEDIAN` to represent the median value of the previous unfiltered incoming values.
+  - `$MIN` to represent the minimum value of the previous unfiltered incoming values.
+  - `$MAX` to represent the maximum value of the previous unfiltered incoming values.
+  These are only applicable to numeric states.
+  By default, 5 samples of the previous values are kept.
+  This can be customized by specifying the "window size" or sample count applicable to the function, e.g. `$MEDIAN(10)` will return the median of the last 10 values.
+  All the functions except `$DELTA` support a custom window size.
+
 The state of one item can be compared against the state of another item by having item names on both sides of the comparison, e.g.: `Item1 > Item2`.
-When `ITEM_NAME` is omitted, e.g. `> 10, < 100`, the comparisons are applied against the input data from the binding.
+When `LHS_OPERAND` is omitted, e.g. `> 10, < 100`, the comparisons are applied against the input data from the binding.
+The `RHS_OPERAND` can be any of the valid values listed above.
 In this case, the value can also be replaced with an item name, which will result in comparing the input state against the state of that item, e.g. `> LowerLimitItem, < UpperLimitItem`.
 This can be used to filter out unwanted data, e.g. to ensure that incoming data are within a reasonable range.
-
-Some tips:
-
-- When dealing with QuantityType data, the unit must be included in the comparison value, e.g.: `PowerItem > 1 kW`.
-- Use single quotes around the `VALUE` to perform a string comparison, e.g. `'UNDEF'` is not equal to `UNDEF` (of type `UnDefType`).
-  This will distinguish between a string literal and an item name or a constant such as `UNDEF`, `ON`/`OFF`, `OPEN`, etc.
-- `VALUE` cannot be on the left hand side of the operator.
 
 ##### State Filter Operators
 
@@ -244,6 +266,27 @@ Check against the incoming state, to discard incoming data outside a fixed range
 ```java
 Number:Power PowerUsage {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions=">= 0 kW", "< 20 kW" ]
+}
+```
+
+Filter out incoming data with very small difference from the previous one:
+
+```java
+Number:Power PowerUsage {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="$DELTA > 10 W" ]
+}
+```
+
+Accept new data only if it's 10% higher or 10% lower than the previously accepted data:
+
+```java
+Number:Temperature BoilerTemperature {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="$DELTA_PERCENT > 10" ]
+}
+
+// Or more succinctly:
+Number:Temperature BoilerTemperature {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="> 10%" ]
 }
 ```
 

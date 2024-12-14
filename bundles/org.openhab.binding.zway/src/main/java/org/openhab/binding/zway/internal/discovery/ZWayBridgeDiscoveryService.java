@@ -14,22 +14,20 @@ package org.openhab.binding.zway.internal.discovery;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.zway.internal.ZWayBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -56,36 +54,11 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
     private void scan() {
         logger.debug("Starting scan for Z-Way Server");
 
-        ValidateIPV4 validator = new ValidateIPV4();
+        List<InetAddress> addressesToScan = NetUtil.getFullRangeOfAddressesToScan();
+        logger.debug("Performing discovery on {} ip addresses", addressesToScan.size());
 
-        try {
-            Enumeration<NetworkInterface> enumNetworkInterface = NetworkInterface.getNetworkInterfaces();
-            while (enumNetworkInterface.hasMoreElements()) {
-                NetworkInterface networkInterface = enumNetworkInterface.nextElement();
-                if (networkInterface.isUp() && !networkInterface.isVirtual() && !networkInterface.isLoopback()) {
-                    for (InterfaceAddress address : networkInterface.getInterfaceAddresses()) {
-                        if (validator.isValidIPV4(address.getAddress().getHostAddress())) {
-                            String ipAddress = address.getAddress().getHostAddress();
-                            Short prefix = address.getNetworkPrefixLength();
-
-                            logger.debug("Scan IP address for Z-Way Server: {}", ipAddress);
-
-                            // Search on localhost first
-                            scheduler.execute(new ZWayServerScan(ipAddress));
-
-                            String subnet = ipAddress + "/" + prefix;
-                            SubnetUtils utils = new SubnetUtils(subnet);
-                            String[] addresses = utils.getInfo().getAllAddresses();
-
-                            for (String addressInSubnet : addresses) {
-                                scheduler.execute(new ZWayServerScan(addressInSubnet));
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            logger.warn("Error occurred while searching Z-Way servers ({})", e.getMessage());
+        for (final InetAddress address : addressesToScan) {
+            scheduler.execute(new ZWayServerScan(address.getHostAddress()));
         }
     }
 

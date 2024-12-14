@@ -1,6 +1,6 @@
-# RadioThermostat Binding
+# Radio Thermostat Binding
 
-This binding connects RadioThermostat/3M Filtrete models CT30, CT50/3M50, CT80, etc. with built-in Wi-Fi module to openHAB.
+This binding connects Radio Thermostat/3M Filtrete models CT30, CT50/3M50, CT80, etc. with built-in Wi-Fi module to openHAB.
 Thermostats using a Z-Wave module are not supported but can be used via the openHAB ZWave binding.
 
 The binding retrieves and periodically updates all basic system information from the thermostat.
@@ -96,6 +96,8 @@ The thermostat information that is retrieved is available as these channels:
 | yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                                                                               |
 | yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                                                                               |
 | message                | String (Write Only)  | Used to display a number in the upper left 'price message' area of the thermostat's screen where the time is normally displayed         |
+| next_temp              | Number:Temperature   | Displays the next scheduled thermostat set point temperature in the heating or cooling schedule                                         |
+| next_time              | DateTime             | Displays the next scheduled thermostat set point time in the heating or cooling schedule                                                |
 
 ## Full Example
 
@@ -152,33 +154,35 @@ radiothermostat:rtherm:mytherm2 "My 2nd floor thermostat" [ hostName="mythermhos
 radiotherm.items:
 
 ```java
-Number:Temperature  Therm_Temp  "Current Temperature [%.1f °F] " <temperature>  { channel="radiothermostat:rtherm:mytherm1:temperature" }
+Number:Temperature Therm_Temp     "Current Temperature [%.1f °F]" <temperature>   { channel="radiothermostat:rtherm:mytherm1:temperature" }
 // Humidity only supported on CT80
-Number Therm_Hum                "Current Humidity [%d %%]" <humidity>           { channel="radiothermostat:rtherm:mytherm1:humidity" }
-Number Therm_Mode               "Thermostat Mode [MAP(radiotherm.map):%s_mode]" { channel="radiothermostat:rtherm:mytherm1:mode" }
+Number Therm_Hum                  "Current Humidity [%d %%]" <humidity>           { channel="radiothermostat:rtherm:mytherm1:humidity" }
+Number Therm_Mode                 "Thermostat Mode [MAP(radiotherm.map):%s_mode]" { channel="radiothermostat:rtherm:mytherm1:mode" }
 // The Auto/Circulate option will only appear for CT80
-Number Therm_Fmode              "Fan Mode [MAP(radiotherm.map):%s_fan]"         { channel="radiothermostat:rtherm:mytherm1:fan_mode" }
+Number Therm_Fmode                "Fan Mode [MAP(radiotherm.map):%s_fan]"         { channel="radiothermostat:rtherm:mytherm1:fan_mode" }
 // Program Mode only supported on CT80 Rev B
-Number Therm_Pmode              "Program Mode [MAP(radiotherm.map):%s_pgm]"     { channel="radiothermostat:rtherm:mytherm1:program_mode" }
-Number:Temperature Therm_Setpt  "Set Point [%d]" <temperature>                  { channel="radiothermostat:rtherm:mytherm1:set_point" }
-Number Therm_Status             "Status [MAP(radiotherm.map):%s_stus]"          { channel="radiothermostat:rtherm:mytherm1:status" }
-Number Therm_FanStatus          "Fan Status [MAP(radiotherm.map):%s_fstus]"     { channel="radiothermostat:rtherm:mytherm1:fan_status" }
-Number Therm_Override           "Override [MAP(radiotherm.map):%s_over]"        { channel="radiothermostat:rtherm:mytherm1:override" }
-Switch Therm_Hold               "Hold"                                          { channel="radiothermostat:rtherm:mytherm1:hold" }
+Number Therm_Pmode                "Program Mode [MAP(radiotherm.map):%s_pgm]"     { channel="radiothermostat:rtherm:mytherm1:program_mode" }
+Number:Temperature Therm_Setpt    "Set Point [%d]" <temperature>                  { channel="radiothermostat:rtherm:mytherm1:set_point" }
+Number Therm_Status               "Status [MAP(radiotherm.map):%s_stus]"          { channel="radiothermostat:rtherm:mytherm1:status" }
+Number Therm_FanStatus            "Fan Status [MAP(radiotherm.map):%s_fstus]"     { channel="radiothermostat:rtherm:mytherm1:fan_status" }
+Number Therm_Override             "Override [MAP(radiotherm.map):%s_over]"        { channel="radiothermostat:rtherm:mytherm1:override" }
+Switch Therm_Hold                 "Hold"                                          { channel="radiothermostat:rtherm:mytherm1:hold" }
+Number:Temperature Therm_NextTemp "Next Set Temp [%d %unit%]" <temperature>       { channel="radiothermostat:rtherm:mytherm1:next_temp" }
+DateTime Therm_NextTime           "Next Set Time [%1$tl:%1$tM %1$tp]" <time>      { channel="radiothermostat:rtherm:mytherm1:next_time" }
 
-Number Therm_Day                "Thermostat Day [%d]"                           { channel="radiothermostat:rtherm:mytherm1:day" }
-Number Therm_Hour               "Thermostat Hour [%d]"                          { channel="radiothermostat:rtherm:mytherm1:hour" }
-Number Therm_Minute             "Thermostat Minute [%d]"                        { channel="radiothermostat:rtherm:mytherm1:minute" }
-String Therm_Dstmp              "Thermostat DateStamp [%s]" <time>              { channel="radiothermostat:rtherm:mytherm1:dt_stamp" }
+Number Therm_Day                  "Thermostat Day [%d]"                           { channel="radiothermostat:rtherm:mytherm1:day" }
+Number Therm_Hour                 "Thermostat Hour [%d]"                          { channel="radiothermostat:rtherm:mytherm1:hour" }
+Number Therm_Minute               "Thermostat Minute [%d]"                        { channel="radiothermostat:rtherm:mytherm1:minute" }
+String Therm_Dstmp                "Thermostat DateStamp [%s]" <time>              { channel="radiothermostat:rtherm:mytherm1:dt_stamp" }
 
-Number:Time Therm_todayheat     "Today's Heating Runtime [%d %unit%]"           { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime", unit="min" }
-Number:Time Therm_todaycool     "Today's Cooling Runtime [%d %unit%]"           { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime", unit="min" }
-Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime", unit="min" }
-Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime", unit="min" }
-String Therm_Message            "Message: [%s]"                                 { channel="radiothermostat:rtherm:mytherm1:message" }
+Number:Time Therm_todayheat       "Today's Heating Runtime [%d %unit%]"           { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime", unit="min" }
+Number:Time Therm_todaycool       "Today's Cooling Runtime [%d %unit%]"           { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime", unit="min" }
+Number:Time Therm_yesterdayheat   "Yesterday's Heating Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime", unit="min" }
+Number:Time Therm_yesterdaycool   "Yesterday's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime", unit="min" }
+String Therm_Message              "Message: [%s]"                                 { channel="radiothermostat:rtherm:mytherm1:message" }
 
 // Override the thermostat's temperature reading with a value from an external sensor, set to -1 to revert to internal temperature mode
-Number:Temperature Therm_Rtemp  "Remote Temperature [%d]" <temperature>         { channel="radiothermostat:rtherm:mytherm1:remote_temp" }
+Number:Temperature Therm_Rtemp    "Remote Temperature [%d]" <temperature>         { channel="radiothermostat:rtherm:mytherm1:remote_temp" }
 
 // A virtual switch used to trigger a rule to send a json command to the thermostat
 Switch Therm_mysetting   "Send my preferred setting"
@@ -201,6 +205,8 @@ sitemap radiotherm label="My Thermostat" {
         Text item=Therm_FanStatus icon="flow"
         Text item=Therm_Override icon="smoke"
         Switch item=Therm_Hold icon="smoke"
+        Text item=Therm_NextTemp icon="temperature"
+        Text item=Therm_NextTime icon="time"
 
         // Example of overriding the thermostat's temperature reading
         Switch item=Therm_Rtemp label="Remote Temp" icon="temperature" mappings=[60="60", 75="75", 80="80", -1="Reset"]

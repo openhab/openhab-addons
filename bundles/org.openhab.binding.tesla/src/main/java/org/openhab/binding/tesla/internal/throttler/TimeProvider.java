@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.tesla.internal.throttler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link TimeProvider} provides time stamps
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public interface TimeProvider {
     static final TimeProvider SYSTEM_PROVIDER = new TimeProvider() {
         @Override

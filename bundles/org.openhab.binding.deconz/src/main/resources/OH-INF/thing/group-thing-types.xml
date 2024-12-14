@@ -15,12 +15,12 @@
 			<channel typeId="any_on" id="any_on"/>
 			<channel typeId="alert" id="alert"/>
 			<channel typeId="system.color" id="color"/>
-			<channel typeId="ct" id="color_temperature"/>
+			<channel typeId="system.color-temperature-abs" id="color_temperature"/>
 			<channel typeId="scene" id="scene"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>uid</representation-property>
