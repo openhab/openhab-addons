@@ -315,7 +315,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
                                 && args[1].equals(t.getConfiguration().get("userName")))
                         .map(t -> t.getHandler()).findAny().get();
                 List<VehicleBase> vehicles = handler != null ? handler.getMyBmwProxy().get().requestVehiclesBase()
-                        : new ArrayList<>();
+                        : List.of();
                 return new StringsCompleter(
                         vehicles.stream().map(v -> v.getVin()).filter(Objects::nonNull).collect(Collectors.toList()),
                         false).complete(args, cursorArgumentIndex, cursorPosition, candidates);
