@@ -8,7 +8,7 @@ The DIRIGERA `bridge` is providing the connection to all devices and scenes.
 
 Refer to below sections which devices are supported and are covered by `things` connected to the DIRIGERA bridge.
 
-| ThingTypeUUID         | Description                                                | Tested       | Section                                   | Products                                  |
+| ThingTypeUID          | Description                                                | Tested       | Section                                   | Products                                  |
 |-----------------------|------------------------------------------------------------|--------------|-------------------------------------------|-------------------------------------------|
 | `gateway`             | IKEA Gateway for smart products                            | personally   | [Gateway](#gateway-channels)              | DIRIGERA                                  |
 | `air-purifier`        | Air cleaning device with particle filter                   | no           | [Air Purifier](#air-purifier)             | STARKVIND                                 |
@@ -24,15 +24,15 @@ Refer to below sections which devices are supported and are covered by `things` 
 | `motion-light-sensor` | Sensor detecting motion events and measures light level    | personally   | [Sensors](#motion-light-sensor)           | VALLHORN                                  |
 | `single-shortcut`     | Shortcut controller with one button                        | no           | [Controller](#single-shortcut-controller) | TRÅDFRI                                   |
 | `double-shortcut`     | Shortcut controller with two buttons                       | personally   | [Controller](#double-shortcut-controller) | SOMRIG                                    |
-| `simple-plug`         | Switchable power plug                                      | no           | [Plugs](#simple-plug)                     | TRÅDFRI, ÅSKVÄDER                         |
-| `power-plug`          | Switchable power plug with status light and child lock     | personally   | [Plugs](#power-plug)                      | TRETAKT                                   |
-| `smart-plug`          | Switchable plug with electricity measurements              | personally   | [Plugs](#smart-power-plug)                | INSPELNING                                |
+| `simple-plug`         | Power plug                                                 | no           | [Plugs](#simple-plug)                     | TRÅDFRI, ÅSKVÄDER                         |
+| `power-plug`          | Power plug with status light and child lock                | personally   | [Plugs](#power-plug)                      | TRETAKT                                   |
+| `smart-plug`          | Power plug with electricity measurements                   | personally   | [Plugs](#smart-power-plug)                | INSPELNING                                |
 | `speaker`             | Speaker with player activities                             | personally   | [Speaker](#speaker)                       | SYMFONISK                                 |
 | `sound-controller`    | Controller for speakers                                    | no           | [Controller](#sound-controller)           | SYMFONISK, TRÅDFRI                        |
 | `contact-sensor`      | Sensor tracking if windows or doors are open               | personally   | [Sensors](#contact-sensor)                | PARASOLL                                  |
 | `water-sensor`        | Sensor to detect water leaks                               | no           | [Sensors](#water-sensor)                  | BADRING                                   |
 | `repeater`            | Repeater to strengthen signal                              | personally   | [Repeater](#repeater)                     | TRÅDFRI                                   |
-| `scene`               | Scene from IKEA home smart App which can be triggered      | personally   | [Scenes](#scenes)                         | -                                         |
+| `scene`               | Scene from IKEA Home smart app which can be triggered      | personally   | [Scenes](#scenes)                         | -                                         |
 
 ## Discovery
 
@@ -67,7 +67,7 @@ Let's start pairing
 1. Add the bridge found in discovery 
 2. Pairing started automatically after creation!
 3. Press the button on the DIRIGERA rear side
-4. Your brdige shall switch to ONLINE 
+4. Your bridge shall switch to ONLINE 
 
 ### Gateway Channels
 
@@ -80,14 +80,14 @@ Let's start pairing
 | `statistics`    | String    | R          | Several statistics about gateway activities  |          |
 
 Channel `location` can overwrite GPS position with openHAB location, but it's not possible to delete GPS data.
-See [Gateway Limitations](#gateway-limitations) for further infomration.
+See [Gateway Limitations](#gateway-limitations) for further information.
 
 ### Follow Sun
 
 <img align="right" height="150" src="doc/follow-sun.png">
 
 [Motion Sensors](#motion-sensor) can be active all the time or follow a schedule.
-One schedule is follow the sun which needs to be activated in the IKEA Smarthome App in _Hub Settings_.
+One schedule is follow the sun which needs to be activated in the IKEA Home smart app in _Hub Settings_.
 
 ## Things
 
@@ -152,7 +152,7 @@ Mappings for `ota-state`
 
 Devices can be connected directly e.g. sensors or controllers with lights, plugs, blinds or speakers.
 It's detected during runtime if a device is capable to support links _and_ if devices are available in your system to support this connection.
-The channels are declered advanced and can be used for setup procedure.
+The channels are declared advanced and can be used for setup procedure.
 
 | Channel               | Type                  | Read/Write | Description                                      | Advanced |
 |-----------------------|-----------------------|------------|--------------------------------------------------|----------|
@@ -181,7 +181,7 @@ In this case it's possible not all links are shown in the UI, but the present on
 | Channel               | Type              | Read/Write | Description                                  | Advanced |
 |-----------------------|-------------------|------------|----------------------------------------------|----------|
 | `startup`             | Number            | RW         | Startup behavior after power cutoff          |          |
-| `custom-name`         | String            | RW         | Name given from IKEA home smart              |          |
+| `custom-name`         | String            | RW         | Name given from IKEA home smart app          |          |
 
 `startup` defines how the device shall behave after a power cutoff.
 If there's a dedicated hardwired light switch which cuts power towards the bulb it makes sense to switch them on every time the switch is pressed.
@@ -194,20 +194,20 @@ Mappings for `startup`
 - 2 : Off
 - 3 : Switch
 
-Option 3 is offered in IKEA Smart home app to control ligths with using your normal light switch _slowly and smooth_.
+Option 3 is offered in IKEA Home smart app to control lights with using your normal light switch _slowly and smooth_.
 With this the light shall stay online.
 I wasn't able to reproduce this behavior.
 Maybe somebody has more success.
 
 
-`custom-name` is declared e.g. in your IKEA Homesmart App.
+`custom-name` is declared e.g. in your IKEA Home smart app.
 This name is reflected in the discovery and if thing is created this name will be the thing label.
 If `custom-name` is changed via openHAB API or a rule the label will not change.
 
 ### Unknown Devices
 
-Filter your traces regarding 'DIRIGERA MODEL Unsuppoerted Device'. 
-The trace cotains a json object at the end which is needed to implememnt a corresponding hanlder.
+Filter your traces regarding 'DIRIGERA MODEL Unsupported Device'. 
+The trace contains a JSON object at the end which is needed to implement a corresponding handler.
 
 ## Air Purifier
 
@@ -293,11 +293,11 @@ During power OFF the lights will preserve some values until next power ON.
 |-----------------------|---------------|---------------------------------------------------------------------------|
 | `power`               | ON            | Switch ON, apply last / stored values                                     |
 | `brightness`          | ON            | Switch ON, apply last / stored values                                     |
-| `brightness`          | value > 0     | Switch ON, apply this brighness, apply last / stored values               |
+| `brightness`          | value > 0     | Switch ON, apply this brightness, apply last / stored values              |
 | `color-temperature`   | ON            | Switch ON, apply last / stored values                                     |
 | `color-temperature`   | any           | Store value, brightness stays at previous level                           |
 | `color`               | ON            | Switch ON, apply last / stored values                                     |
-| `color`               | value > 0     | Switch ON, apply this brighness, apply last / stored values               |
+| `color`               | value > 0     | Switch ON, apply this brightness, apply last / stored values              |
 | `color`               | h,s,b         | Store color and brightness for next ON                                    |
 | outside               |               | Switch ON, apply last / stored values                                     |
 
@@ -421,7 +421,7 @@ Mappings for `schedule`
 - 1 : Follow sun, sensor gets active at sunset and deactivates at sunrise 
 - 2 : Schedule, custom schedule with manual start and end time
 
-If option 1, follow sun is selected ensure you gave the permission in the IKEA smart home app to use your GPS position to calculate times for sunrise and sunset.
+If option 1, follow sun is selected ensure you gave the permission in the IKEA Home smart app to use your GPS position to calculate times for sunrise and sunset.
 
 See [Light Controller](#light-controller) for light-preset`.
 
@@ -507,7 +507,7 @@ Controller to handle light attributes.
 
 Channel `light-preset` provides a JSON array with time an light settings for different times.
 If light is switched on by the controller the light attributes for the configured time section is used.
-This only works for connected devices schown in channel `links`.
+This only works for connected devices shown in channel `links`.
 
 IKEA provided some presets which can be selected but it's also possible to generate a custom schedule.
 They are provided as options as strings
@@ -517,7 +517,7 @@ They are provided as options as strings
 - Smooth
 - Bright
 
-This feature is from IKEA test center and not officially present in the IKEA Smart home app now.
+This feature is from IKEA test center and not officially present in the IKEA Home smart app now.
 
 ## Blind Controller
 
@@ -560,35 +560,35 @@ Sadly there's no further information like _signal strength_ available so only [O
  
 ## Scenes
 
-Scene from IKEA home smart App which can be triggered.
+Scene from IKEA home smart app which can be triggered.
  
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `trigger`             | Number                | RW         | Trigger / undo scene execution               |          |
 | `last-trigger`        | DateTime              | R          | Date and time when last trigger occurred     |    X     |
 
-Scenes are defined in IKEA home samrt App and can be perfomred via `trigger` channel.
+Scenes are defined in IKEA Home smart app and can be performed via `trigger` channel.
 Two commands are defined:
 
 - 0 : Trigger
 - 1 : Undo
 
 If command 0 (Trigger) is sent scene will be executed.
-There's a 30 seconds timeslot to send command 1 (Undo). 
+There's a 30 seconds time slot to send command 1 (Undo). 
 The countdown is updating `trigger` channel state which can be evaluated if an undo operation is still possible.
 State will switch to `Undef` after countdown.
 
-## Known Limitatios
+## Known Limitations
 
 ### Gateway Limitations
 
-Gateway channel `location` is reflecting the state correctly but isn't writeable.
+Gateway channel `location` is reflecting the state correctly but isn't writable.
 The Model says it `canReceive` command `coordinates` but in fact sending responds `http status 400`.
 Channel will stay in this binding hoping a DIRIGERA software update will resolve this issue.
 
 ### Speaker Limitations
 
-Speaker channel `mute` is reflecting the state correctly but isn't writeable.
+Speaker channel `mute` is reflecting the state correctly but isn't writable.
 The Model says it `canReceive` command `isMuted` but in fact sending responds `http status 400`.
 If mute is performed on Sonos App the channel is updating correctly, but sending the command fails!
 Channel will stay in this binding hoping a DIRIGERA software update will resolve this issue.
@@ -648,7 +648,7 @@ The token can be obtained from any thing connected to DIRIGERA gateway.
     logInfo("DIRIGERA","Token {}",token)
 ```
 
-With token available you can test also your devices vai curl commands.
+With token available you can test your devices e.g. via curl commands.
 
 ```java
 curl -X PATCH https://$YOUR_IP:8443/v1/devices/$DEVICE -H 'Authorization: Bearer $TOKEN' -H 'Content-Type: application/json' -d '[{"attributes":{"colorHue":280,"colorSaturation":1}}]' --insecure
@@ -656,14 +656,14 @@ curl -X PATCH https://$YOUR_IP:8443/v1/devices/$DEVICE -H 'Authorization: Bearer
 
 Replace content in curl command with following variables:
 
-- $YOUR_IP - ip address of DIRIGERA gateway
+- $YOUR_IP - IP address of DIRIGERA gateway
 - $DEVICE - bulb id you want to control, take it from configuration
 - $TOKEN - shortly stop / start DIRIGERA bridge and search for obtained token
 
 ### `getJSON`
 
-Dumps the current JSON with attributes and capabilities of one device.
-If thing UID from gateway is given dumo contains all devices connected to gateway.
+Gets current JSON with attributes and capabilities of one device.
+If thing UID from gateway is given returned String contains all devices connected to gateway.
 
 ```java
     val gatewayActions = getActions("dirigera","dirigera:gateway:myhome")  
@@ -721,7 +721,6 @@ Number                      Table_Lamp_Startup          { channel="dirigera:temp
 Number                      Table_Lamp_OTA_Status       { channel="dirigera:temperature-light:myhome:living-room-bulb:ota-status" }
 Number                      Table_Lamp_OTA_State        { channel="dirigera:temperature-light:myhome:living-room-bulb:ota-state" }
 Number                      Table_Lamp_OTA_Progress     { channel="dirigera:temperature-light:myhome:living-room-bulb:ota-progress" }
-String                      Table_Lamp_JSON             { channel="dirigera:temperature-light:myhome:living-room-bulb:json" }
 
 Switch                      Dishwasher_Power_State      { channel="dirigera:smart-plug:myhome:dishwasher:power" }
 Switch                      Dishwasher_Child_lock       { channel="dirigera:smart-plug:myhome:dishwasher:child-lock" }
@@ -735,7 +734,6 @@ Number                      Dishwasher_Startup          { channel="dirigera:smar
 Number                      Dishwasher_OTA_Status       { channel="dirigera:smart-plug:myhome:dishwasher:ota-status" }
 Number                      Dishwasher_OTA_State        { channel="dirigera:smart-plug:myhome:dishwasher:ota-state" }
 Number                      Dishwasher_OTA_Progress     { channel="dirigera:smart-plug:myhome:dishwasher:ota-progress" }
-String                      Dishwasher_JSON             { channel="dirigera:smart-plug:myhome:dishwasher:json" }
 ```
 
 ### Rule Examples
@@ -763,7 +761,7 @@ rule "Sensor configuration"
 when
     System started
 then
-    logInfo("DIRIGERA","Configuring Ikea sensors")
+    logInfo("DIRIGERA","Configuring IKEA sensors")
     // active duration = 180 seconds
     Bedroom_Motion_Active_Duration.sendCommand(180)
     // active duration = 3 minutes aka 180 seconds
