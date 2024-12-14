@@ -86,6 +86,16 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
         createChannelDefinition(capa);
     }
 
+    @Override
+    @Nullable
+    public SmartthingsCapabilitie getCapabilities(String capaKey) {
+        if (capabilitiesDict.containsKey(capaKey)) {
+            return capabilitiesDict.get(capaKey);
+        }
+
+        return null;
+    }
+
     public void createChannelDefinition(SmartthingsCapabilitie capa) {
         SmartthingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
 
@@ -301,11 +311,11 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
                             logger.info("capa: {}", cap.id);
                             for (String key : capa.attributes.keySet()) {
-                                if (key.indexOf("range") >= 0) {
+                                if (key.indexOf("Range") >= 0) {
                                     continue;
                                 }
                                 SmartthingsAttribute attr = capa.attributes.get(key);
-                                addChannel(deviceType, groupTypes, channelDefinitions, capa, key, attr);
+                                addChannel(deviceType, groupTypes, channelDefinitions, component, capa, key, attr);
                             }
                         }
                     }
@@ -318,13 +328,13 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     }
 
     private void addChannel(String deviceType, List<ChannelGroupType> groupTypes,
-            List<ChannelDefinition> channelDefinitions, SmartthingsCapabilitie capa, String key,
-            @Nullable SmartthingsAttribute attr) {
+            List<ChannelDefinition> channelDefinitions, SmartthingsComponent component, SmartthingsCapabilitie capa,
+            String attrKey, @Nullable SmartthingsAttribute attr) {
         Map<String, String> props = new Hashtable<String, String>();
         SmartthingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         SmartthingsChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
 
-        String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-') + "-channel")
+        String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attrKey), '-') + "-channel")
                 .toLowerCase();
 
         ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(channelName);
@@ -334,6 +344,11 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
             channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
         }
 
+        props.put("component", component.id);
+        props.put("capability", capa.id);
+        props.put("attribute", attrKey);
+
+        // capa.commands
         if (channelType != null) {
             ChannelDefinition channelDef = new ChannelDefinitionBuilder(channelName, channelType.getUID())
                     .withLabel(channelName).withDescription("description").withProperties(props).build();
@@ -406,5 +421,11 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
             lcConfigDescriptionProvider.addConfigDescription(ConfigDescriptionBuilder.create(configDescriptionURI)
                     .withParameters(parms).withParameterGroups(groups).build());
         }
+    }
+
+    @Override
+    @Nullable
+    public SmartthingsChannelTypeProvider getSmartthingsChannelTypeProvider() {
+        return this.channelTypeProvider;
     }
 }

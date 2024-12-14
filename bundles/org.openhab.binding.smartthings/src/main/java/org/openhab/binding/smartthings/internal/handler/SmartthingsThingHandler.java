@@ -33,6 +33,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartthingsStatusCapabilitie
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStatusComponent;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStatusProperties;
 import org.openhab.binding.smartthings.internal.type.SmartthingsException;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -98,53 +99,22 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
             } else {
                 // @todo : review this
                 if (converter != null) {
-                    jsonMsg = converter.convertToSmartthings(channelUID, command);
+                    jsonMsg = converter.convertToSmartthings(thing, channelUID, command);
                 }
             }
 
-            if (command instanceof OnOffType) {
-                OnOffType onOff = (OnOffType) command;
-                String val = onOff.toString().toLowerCase();
-                jsonMsg = String
-                        .format("{'commands': [{'component': 'main', 'capability': 'switch', 'command': '%s'}]}", val);
+            SmartthingsApi api = cloudBridge.getSmartthingsApi();
+            Map<String, String> properties = this.getThing().getProperties();
+            String deviceId = properties.get("deviceId");
 
-                SmartthingsApi api = cloudBridge.getSmartthingsApi();
-                Map<String, String> properties = this.getThing().getProperties();
-                String deviceId = properties.get("deviceId");
-
-                try {
-                    if (deviceId != null) {
-                        api.sendCommand(deviceId, jsonMsg);
-                    }
-                } catch (SmartthingsException ex) {
-                    logger.error("Unable to send command: {}", ex.getMessage());
+            try {
+                if (deviceId != null) {
+                    api.sendCommand(deviceId, jsonMsg);
                 }
-
-                updateState(channelUID, onOff);
+            } catch (SmartthingsException ex) {
+                logger.error("Unable to send command: {}", ex.getMessage());
             }
 
-            else if (command instanceof PercentType) {
-                PercentType pt = (PercentType) command;
-                String val = "" + pt.intValue();
-
-                jsonMsg = String.format(
-                        "{'commands': [{'component': 'main', 'capability': 'switchLevel', 'command': 'setLevel', 'arguments': [%s, 2]}]}",
-                        val);
-
-                SmartthingsApi api = cloudBridge.getSmartthingsApi();
-                Map<String, String> properties = this.getThing().getProperties();
-                String deviceId = properties.get("deviceId");
-
-                try {
-                    if (deviceId != null) {
-                        api.sendCommand(deviceId, jsonMsg);
-                    }
-                } catch (SmartthingsException ex) {
-                    logger.error("Unable to send command: {}", ex.getMessage());
-                }
-
-                updateState(channelUID, pt);
-            }
         }
     }
 
@@ -155,20 +125,26 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         ChannelUID chanUid = new ChannelUID(this.getThing().getUID(), "default", channelName);
         Channel chan = thing.getChannel(chanUid);
 
-        if (chan != null) {
-            if (attr.equals("switch")) {
-                if (("on".equals(value))) {
-                    updateState(chanUid, OnOffType.ON);
-                } else {
-                    updateState(chanUid, OnOffType.OFF);
+        if (converters.containsKey(chanUid)) {
+            SmartthingsConverter converter = converters.get(chanUid);
+
+            // converter.convertToOpenHab(channelName, value);
+
+            if (chan != null) {
+                if (attr.equals("switch")) {
+                    if (("on".equals(value))) {
+                        updateState(chanUid, OnOffType.ON);
+                    } else {
+                        updateState(chanUid, OnOffType.OFF);
+                    }
                 }
-            }
-            if (attr.equals("level")) {
-                if (value instanceof String) {
-                    int val = java.lang.Integer.parseInt(((String) value));
-                    updateState(chanUid, new PercentType(val));
-                } else {
-                    updateState(chanUid, new PercentType(((Double) value).intValue()));
+                if (attr.equals("level")) {
+                    if (value instanceof String) {
+                        int val = java.lang.Integer.parseInt(((String) value));
+                        updateState(chanUid, new PercentType(val));
+                    } else {
+                        updateState(chanUid, new PercentType(((Double) value).intValue()));
+                    }
                 }
             }
         }
@@ -203,7 +179,6 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                                 String timestamp = props.timestamp;
 
                                 refreshDevice("main", "capa", propertyKey, value);
-                                logger.info("");
                             }
 
                         }
@@ -295,9 +270,13 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         converterClassName.append(converterName.substring(1));
         converterClassName.append("Converter");
         try {
-            Constructor<?> constr = Class.forName(converterClassName.toString()).getDeclaredConstructor(Thing.class);
+            Constructor<?> constr = Class.forName(converterClassName.toString())
+                    .getDeclaredConstructor(SmartthingsTypeRegistry.class, Thing.class);
             constr.setAccessible(true);
-            return (SmartthingsConverter) constr.newInstance(thing);
+            Bridge bridge = getBridge();
+            SmartthingsCloudBridgeHandler cloudBridge = (SmartthingsCloudBridgeHandler) bridge.getHandler();
+            SmartthingsTypeRegistry typeRegistry = cloudBridge.getSmartthingsTypeRegistry();
+            return (SmartthingsConverter) constr.newInstance(typeRegistry, thing);
         } catch (ClassNotFoundException e) {
             // Most of the time there is no channel specific converter, the default converter is all that is needed.
             logger.trace("No Custom converter exists for {} ({})", converterName, converterClassName);

@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.ChannelUID;
@@ -39,12 +40,12 @@ public class SmartthingsHue100Converter extends SmartthingsConverter {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsHue100Converter.class);
 
-    public SmartthingsHue100Converter(Thing thing) {
-        super(thing);
+    public SmartthingsHue100Converter(SmartthingsTypeRegistry typeRegistry, Thing thing) {
+        super(typeRegistry, thing);
     }
 
     @Override
-    public String convertToSmartthings(ChannelUID channelUid, Command command) {
+    public String convertToSmartthings(Thing thing, ChannelUID channelUid, Command command) {
         String jsonMsg;
 
         if (command instanceof HSBType hsbCommand) {
@@ -55,7 +56,7 @@ public class SmartthingsHue100Converter extends SmartthingsConverter {
                     "{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"capabilityAttribute\": \"%s\", \"value\": %s}",
                     thingTypeId, smartthingsName, channelUid.getId(), value);
         } else {
-            jsonMsg = defaultConvertToSmartthings(channelUid, command);
+            jsonMsg = defaultConvertToSmartthings(thing, channelUid, command);
         }
 
         return jsonMsg;

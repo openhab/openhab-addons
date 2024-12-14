@@ -16,8 +16,13 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsArgument;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsAttribute;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsCommand;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsThingConfig;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -33,6 +38,7 @@ import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -56,13 +62,15 @@ public abstract class SmartthingsConverter {
 
     protected String smartthingsName;
     protected String thingTypeId;
+    protected SmartthingsTypeRegistry typeRegistry;
 
-    SmartthingsConverter(Thing thing) {
+    SmartthingsConverter(SmartthingsTypeRegistry typeRegistry, Thing thing) {
         smartthingsName = thing.getConfiguration().as(SmartthingsThingConfig.class).smartthingsName;
         thingTypeId = thing.getThingTypeUID().getId();
+        this.typeRegistry = typeRegistry;
     }
 
-    public abstract String convertToSmartthings(ChannelUID channelUid, Command command);
+    public abstract String convertToSmartthings(Thing thing, ChannelUID channelUid, Command command);
 
     public abstract State convertToOpenHab(@Nullable String acceptedChannelType,
             SmartthingsStateData dataFromSmartthings);
@@ -73,7 +81,7 @@ public abstract class SmartthingsConverter {
      * @param command
      * @return The json string to send to Smartthings
      */
-    protected String defaultConvertToSmartthings(ChannelUID channelUid, Command command) {
+    protected String defaultConvertToSmartthings(Thing thing, ChannelUID channelUid, Command command) {
         String value;
 
         if (command instanceof DateTimeType dateTimeCommand) {
@@ -84,13 +92,13 @@ public abstract class SmartthingsConverter {
         } else if (command instanceof DecimalType) {
             value = command.toString();
         } else if (command instanceof IncreaseDecreaseType) { // Need to surround with double quotes
-            value = surroundWithQuotes(command.toString().toLowerCase());
+            value = command.toString().toLowerCase();
         } else if (command instanceof NextPreviousType) { // Need to surround with double quotes
-            value = surroundWithQuotes(command.toString().toLowerCase());
+            value = command.toString().toLowerCase();
         } else if (command instanceof OnOffType) { // Need to surround with double quotes
-            value = surroundWithQuotes(command.toString().toLowerCase());
+            value = command.toString().toLowerCase();
         } else if (command instanceof OpenClosedType) { // Need to surround with double quotes
-            value = surroundWithQuotes(command.toString().toLowerCase());
+            value = command.toString().toLowerCase();
         } else if (command instanceof PercentType) {
             value = command.toString();
         } else if (command instanceof PointType) { // There is not a comparable type in Smartthings, log and send value
@@ -99,19 +107,19 @@ public abstract class SmartthingsConverter {
                     thingTypeId, smartthingsName, channelUid.getId());
             value = command.toFullString();
         } else if (command instanceof RefreshType) { // Need to surround with double quotes
-            value = surroundWithQuotes(command.toString().toLowerCase());
+            value = command.toString().toLowerCase();
         } else if (command instanceof RewindFastforwardType) { // Need to surround with double quotes
-            value = surroundWithQuotes(command.toString().toLowerCase());
+            value = command.toString().toLowerCase();
         } else if (command instanceof StopMoveType) { // Need to surround with double quotes
-            value = surroundWithQuotes(command.toString().toLowerCase());
+            value = command.toString().toLowerCase();
         } else if (command instanceof PlayPauseType) { // Need to surround with double quotes
-            value = surroundWithQuotes(command.toString().toLowerCase());
+            value = command.toString().toLowerCase();
         } else if (command instanceof StringListType) {
-            value = surroundWithQuotes(command.toString());
+            value = command.toString();
         } else if (command instanceof StringType) {
-            value = surroundWithQuotes(command.toString());
+            value = command.toString();
         } else if (command instanceof UpDownType) { // Need to surround with double quotes
-            value = surroundWithQuotes(command.toString().toLowerCase());
+            value = command.toString().toLowerCase();
         } else {
             logger.warn(
                     "Warning - The Smartthings converter does not know how to handle the {} command. The Smartthingsonverter class should be updated.  CapabilityKey: {}, displayName: {}, capabilityAttribute {}",
@@ -119,9 +127,71 @@ public abstract class SmartthingsConverter {
             value = command.toString().toLowerCase();
         }
 
-        return String.format(
-                "{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"capabilityAttribute\": \"%s\", \"value\": %s}",
-                thingTypeId, smartthingsName, channelUid.getId(), value);
+        String jsonMsg = "";
+
+        Channel channel = thing.getChannel(channelUid);
+        Map<String, String> properties = channel.getProperties();
+        String componentKey = properties.get("component");
+        String capaKey = properties.get("capability");
+        String attrKey = properties.get("attribute");
+
+        SmartthingsCapabilitie capa = null;
+        SmartthingsAttribute attr = null;
+        if (capaKey != null) {
+            capa = typeRegistry.getCapabilities(capaKey);
+        }
+        if (attrKey != null) {
+            attr = capa.attributes.get(attrKey);
+        }
+
+        Boolean extendedFormat = false;
+        String cmdName = "";
+        String arguments = "[ ";
+
+        if (capa != null && attr != null) {
+            if (attrKey.equals("color")) {
+                attr.setter = "setColor";
+            }
+
+            if (attr.setter != null) {
+                SmartthingsCommand cmd = capa.commands.get(attr.setter);
+                cmdName = cmd.name;
+                int i = 0;
+                for (SmartthingsArgument arg : cmd.arguments) {
+                    if (arg.optional) {
+                        continue;
+                    }
+                    if (i > 0) {
+                        arguments = arguments + " ,";
+                    }
+                    arguments += value;
+                    i++;
+                }
+                arguments = arguments + "]";
+                extendedFormat = true;
+            }
+        }
+
+        if (extendedFormat) {
+            jsonMsg = String.format(
+                    "{'commands': [{'component': '%s', 'capability': '%s', 'command': '%s', 'arguments': %s }]}",
+                    componentKey, capaKey, cmdName, arguments);
+        } else {
+            jsonMsg = String.format("{'commands': [{'component': '%s', 'capability': '%s', 'command': '%s'}]}",
+                    componentKey, capaKey, value);
+        }
+
+        // switchLevel
+        // setLevel
+        // jsonMsg = String.format(
+        // "{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"capabilityAttribute\": \"%s\", \"value\": %s}",
+        // thingTypeId, smartthingsName, channelUid.getId(), value);
+
+        // "{'commands': [{'component': '%s', 'capability': '%s', 'command': 'setLevel', 'arguments': [%s, 2]}]}",
+        // jsonMsg = String.format("{'commands': [{'component': 'main', 'capability': 'switch', 'command': '%s'}]}",
+        // value);
+
+        return jsonMsg;
     }
 
     protected String surroundWithQuotes(String param) {

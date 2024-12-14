@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -41,13 +42,13 @@ public class SmartthingsColorConverter extends SmartthingsConverter {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsColorConverter.class);
 
-    public SmartthingsColorConverter(Thing thing) {
-        super(thing);
+    public SmartthingsColorConverter(SmartthingsTypeRegistry typeRegistry, Thing thing) {
+        super(typeRegistry, thing);
     }
 
     @Override
-    public String convertToSmartthings(ChannelUID channelUid, Command command) {
-        return defaultConvertToSmartthings(channelUid, command);
+    public String convertToSmartthings(Thing thing, ChannelUID channelUid, Command command) {
+        return defaultConvertToSmartthings(thing, channelUid, command);
     }
 
     /*

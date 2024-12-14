@@ -13,6 +13,7 @@
 package org.openhab.binding.smartthings.internal.type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 
@@ -31,4 +32,10 @@ public interface SmartthingsTypeRegistry {
     void register(String deviceType, SmartthingsDevice device);
 
     void registerCapabilities(SmartthingsCapabilitie capa);
+
+    @Nullable
+    SmartthingsCapabilitie getCapabilities(String capaKey);
+
+    @Nullable
+    public SmartthingsChannelTypeProvider getSmartthingsChannelTypeProvider();
 }

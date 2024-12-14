@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.ChannelUID;
@@ -43,12 +44,12 @@ public class SmartthingsColor100Converter extends SmartthingsConverter {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsColor100Converter.class);
 
-    public SmartthingsColor100Converter(Thing thing) {
-        super(thing);
+    public SmartthingsColor100Converter(SmartthingsTypeRegistry typeRegistry, Thing thing) {
+        super(typeRegistry, thing);
     }
 
     @Override
-    public String convertToSmartthings(ChannelUID channelUid, Command command) {
+    public String convertToSmartthings(Thing thing, ChannelUID channelUid, Command command) {
         String jsonMsg;
         // The command should be of HSBType. The hue component needs to be divided by 3.6 to convert 0-360 degrees to
         // 0-100 percent
@@ -59,9 +60,9 @@ public class SmartthingsColor100Converter extends SmartthingsConverter {
             HSBType hsb100 = new HSBType(new DecimalType(hueInt), hsbCommand.getSaturation(),
                     hsbCommand.getBrightness());
             // now use the default converter to convert to a JSON string
-            jsonMsg = defaultConvertToSmartthings(channelUid, hsb100);
+            jsonMsg = defaultConvertToSmartthings(thing, channelUid, hsb100);
         } else {
-            jsonMsg = defaultConvertToSmartthings(channelUid, command);
+            jsonMsg = defaultConvertToSmartthings(thing, channelUid, command);
         }
         return jsonMsg;
     }

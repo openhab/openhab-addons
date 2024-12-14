@@ -248,4 +248,8 @@ public abstract class SmartthingsBridgeHandler extends BaseBridgeHandler
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(SmartthingsDiscoveryService.class);
     }
+
+    public SmartthingsTypeRegistry getSmartthingsTypeRegistry() {
+        return this.typeRegistry;
+    }
 }

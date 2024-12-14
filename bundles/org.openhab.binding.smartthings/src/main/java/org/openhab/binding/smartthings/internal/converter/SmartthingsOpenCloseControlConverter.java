@@ -15,6 +15,7 @@ package org.openhab.binding.smartthings.internal.converter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -31,12 +32,12 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class SmartthingsOpenCloseControlConverter extends SmartthingsConverter {
 
-    public SmartthingsOpenCloseControlConverter(Thing thing) {
-        super(thing);
+    public SmartthingsOpenCloseControlConverter(SmartthingsTypeRegistry typeRegistry, Thing thing) {
+        super(typeRegistry, thing);
     }
 
     @Override
-    public String convertToSmartthings(ChannelUID channelUid, Command command) {
+    public String convertToSmartthings(Thing thing, ChannelUID channelUid, Command command) {
         String smartthingsValue = ("open".equals(command.toString().toLowerCase())) ? "open" : "close";
         smartthingsValue = surroundWithQuotes(smartthingsValue);
 
