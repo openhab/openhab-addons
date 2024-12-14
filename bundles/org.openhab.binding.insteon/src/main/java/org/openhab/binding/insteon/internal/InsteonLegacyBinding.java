@@ -36,8 +36,6 @@ import org.openhab.binding.insteon.internal.device.LegacyDevice.DeviceStatus;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceFeature;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceType;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceTypeLoader;
-import org.openhab.binding.insteon.internal.device.LegacyPollManager;
-import org.openhab.binding.insteon.internal.device.LegacyRequestManager;
 import org.openhab.binding.insteon.internal.device.X10Address;
 import org.openhab.binding.insteon.internal.device.database.LegacyModemDBEntry;
 import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureListener;
@@ -269,7 +267,7 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
             int ndev = checkIfInModemDatabase(device);
             if (device.hasModemDBEntry()) {
                 device.setStatus(DeviceStatus.POLLING);
-                LegacyPollManager.instance().startPolling(device, ndev);
+                driver.getPollManager().startPolling(device, ndev);
             }
         }
         devices.put(address, device);
@@ -286,7 +284,7 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
         }
 
         if (device.getStatus() == DeviceStatus.POLLING) {
-            LegacyPollManager.instance().stopPolling(device);
+            driver.getPollManager().stopPolling(device);
         }
     }
 
@@ -350,8 +348,6 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
         logger.debug("shutting down Insteon bridge");
         driver.stop();
         devices.clear();
-        LegacyRequestManager.destroyInstance();
-        LegacyPollManager.instance().stop();
         isActive = false;
     }
 
@@ -427,7 +423,7 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
 
     public void logDeviceStatistics() {
         String msg = String.format("devices: %3d configured, %3d polling, msgs received: %5d", devices.size(),
-                LegacyPollManager.instance().getSizeOfQueue(), messagesReceived);
+                driver.getPollManager().getSizeOfQueue(), messagesReceived);
         logger.debug("{}", msg);
         messagesReceived = 0;
         for (LegacyDevice device : devices.values()) {
@@ -485,7 +481,7 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
                             device.setHasModemDBEntry(true);
                         }
                         if (device.getStatus() != DeviceStatus.POLLING) {
-                            LegacyPollManager.instance().startPolling(device, dbes.size());
+                            driver.getPollManager().startPolling(device, dbes.size());
                         }
                     }
                 }
