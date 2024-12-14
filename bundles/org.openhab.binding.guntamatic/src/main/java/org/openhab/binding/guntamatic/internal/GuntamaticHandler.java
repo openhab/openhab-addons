@@ -137,7 +137,6 @@ public class GuntamaticHandler extends BaseThingHandler {
                         } else {
                             map = MAP_COMMAND_PARAM_PROG_WOMANU;
                         }
-
                         break;
                     case CHANNEL_CONTROLHEATCIRCPROGRAM0:
                     case CHANNEL_CONTROLHEATCIRCPROGRAM1:
@@ -197,8 +196,9 @@ public class GuntamaticHandler extends BaseThingHandler {
             String channel = channels.get(i);
             Unit<?> unit = units.get(i);
             if ((channel != null) && (i < daqdata.length)) {
+                String channelId = String.format("%03d", i) + "_" + channel;
                 String value = daqdata[i];
-                Channel chn = thing.getChannel(channel);
+                Channel chn = thing.getChannel(channelId);
                 if ((chn != null) && (value != null)) {
                     value = value.trim();
                     String typeName = chn.getAcceptedItemType();
@@ -234,7 +234,7 @@ public class GuntamaticHandler extends BaseThingHandler {
                             }
                         }
                         if (newState != null) {
-                            updateState(channel, newState);
+                            updateState(channelId, newState);
                         } else {
                             logger.warn("Data for unknown typeName '{}' or unknown unit received", typeName);
                         }
@@ -291,61 +291,59 @@ public class GuntamaticHandler extends BaseThingHandler {
                 String unitStr = ((param.length == 1) || param[1].isBlank()) ? "" : param[1].trim();
                 Unit<?> unit = guessUnit(unitStr);
 
-                boolean channelInitialized = channels.containsValue(channel);
-                if (!channelInitialized) {
-                    String itemType;
-                    String pattern;
-                    String type = types.get(i);
-                    if (type == null) {
-                        type = "";
-                    }
+                String itemType;
+                String pattern;
+                String type = types.get(i);
+                if (type == null) {
+                    type = "";
+                }
 
-                    if ("boolean".equals(type)) {
-                        itemType = CoreItemFactory.SWITCH;
-                        pattern = "";
-                    } else if ("integer".equals(type)) {
-                        itemType = guessItemType(unit);
-                        pattern = "%d";
-                        if (unit != null) {
-                            pattern += " %unit%";
-                        }
-                    } else if ("float".equals(type)) {
+                if ("boolean".equals(type)) {
+                    itemType = CoreItemFactory.SWITCH;
+                    pattern = "";
+                } else if ("integer".equals(type)) {
+                    itemType = guessItemType(unit);
+                    pattern = "%d";
+                    if (unit != null) {
+                        pattern += " %unit%";
+                    }
+                } else if ("float".equals(type)) {
+                    itemType = guessItemType(unit);
+                    pattern = "%.2f";
+                    if (unit != null) {
+                        pattern += " %unit%";
+                    }
+                } else if ("string".equals(type)) {
+                    itemType = CoreItemFactory.STRING;
+                    pattern = "%s";
+                } else {
+                    if (unitStr.isBlank()) {
+                        itemType = CoreItemFactory.STRING;
+                        pattern = "%s";
+                    } else {
                         itemType = guessItemType(unit);
                         pattern = "%.2f";
                         if (unit != null) {
                             pattern += " %unit%";
                         }
-                    } else if ("string".equals(type)) {
-                        itemType = CoreItemFactory.STRING;
-                        pattern = "%s";
-                    } else {
-                        if (unitStr.isBlank()) {
-                            itemType = CoreItemFactory.STRING;
-                            pattern = "%s";
-                        } else {
-                            itemType = guessItemType(unit);
-                            pattern = "%.2f";
-                            if (unit != null) {
-                                pattern += " %unit%";
-                            }
-                        }
                     }
-
-                    ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channel);
-                    guntamaticChannelTypeProvider.addChannelType(channelTypeUID, channel, itemType,
-                            "Guntamatic " + label, false, pattern);
-                    Channel newChannel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channel), itemType)
-                            .withType(channelTypeUID).withKind(ChannelKind.STATE).withLabel(label).build();
-                    channelList.add(newChannel);
-                    channels.put(i, channel);
-                    if (unit != null) {
-                        units.put(i, unit);
-                    }
-
-                    logger.debug(
-                            "Supported Channel: Idx: '{}', Name: '{}'/'{}', Type: '{}'/'{}', Unit: '{}', Pattern '{}' ",
-                            String.format("%03d", i), label, channel, type, itemType, unitStr, pattern);
                 }
+
+                String channelId = String.format("%03d", i) + "_" + channel;
+                ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
+                guntamaticChannelTypeProvider.addChannelType(channelTypeUID, channel, itemType, "Guntamatic " + label,
+                        false, pattern);
+                Channel newChannel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), itemType)
+                        .withType(channelTypeUID).withKind(ChannelKind.STATE).withLabel(label).build();
+                channelList.add(newChannel);
+                channels.put(i, channel);
+                if (unit != null) {
+                    units.put(i, unit);
+                }
+
+                logger.debug(
+                        "Supported Channel: Idx: '{}', Name: '{}'/'{}', Type: '{}'/'{}', Unit: '{}', Pattern '{}' ",
+                        String.format("%03d", i), label, channelId, type, itemType, unitStr, pattern);
             }
         }
         ThingBuilder thingBuilder = editThing();
