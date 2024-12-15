@@ -246,10 +246,13 @@ public abstract class SmartthingsConverter {
                 return "open".equals(dataFromSmartthings) ? UpDownType.DOWN : UpDownType.UP;
             case "String":
                 // temp fixes, need review
-                if (!(dataFromSmartthings instanceof LinkedTreeMap)) {
-                    return new StringType((String) dataFromSmartthings);
+                if (dataFromSmartthings instanceof LinkedTreeMap) {
+                    return new StringType("");
                 }
-                return new StringType("");
+                if (dataFromSmartthings instanceof Double) {
+                    return new StringType("");
+                }
+                return new StringType((String) dataFromSmartthings);
             case "Switch":
                 return OnOffType.from("on".equals(dataFromSmartthings));
 

@@ -94,18 +94,18 @@ public class SmartthingsThingHandler extends BaseThingHandler {
                 if (converter != null) {
                     jsonMsg = converter.convertToSmartthings(thing, channelUID, command);
                 }
-            }
 
-            SmartthingsApi api = cloudBridge.getSmartthingsApi();
-            Map<String, String> properties = this.getThing().getProperties();
-            String deviceId = properties.get("deviceId");
+                SmartthingsApi api = cloudBridge.getSmartthingsApi();
+                Map<String, String> properties = this.getThing().getProperties();
+                String deviceId = properties.get("deviceId");
 
-            try {
-                if (deviceId != null) {
-                    api.sendCommand(deviceId, jsonMsg);
+                try {
+                    if (deviceId != null) {
+                        api.sendCommand(deviceId, jsonMsg);
+                    }
+                } catch (SmartthingsException ex) {
+                    logger.error("Unable to send command: {}", ex.getMessage());
                 }
-            } catch (SmartthingsException ex) {
-                logger.error("Unable to send command: {}", ex.getMessage());
             }
 
         }
