@@ -164,7 +164,6 @@ public class SmartthingsThingHandler extends BaseThingHandler {
                 logger.error("Unable to update device : {}", deviceId);
             }
         }
-
     }
 
     @Override
