@@ -18,11 +18,13 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
+import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsAttribute;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsComponent;
@@ -30,6 +32,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsProperty;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeChannelDefinitions;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeChannelDefinitions.SmartthingsBridgeChannelDef;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsCloudBridgeHandler;
 import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionParameterGroup;
@@ -67,6 +70,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     private @Nullable SmartthingsChannelTypeProvider channelTypeProvider;
     private @Nullable SmartthingsChannelGroupTypeProvider channelGroupTypeProvider;
     private @Nullable SmartthingsConfigDescriptionProvider configDescriptionProvider;
+    private @Nullable SmartthingsCloudBridgeHandler bridgeHandler;
 
     private Hashtable<String, SmartthingsCapabilitie> capabilitiesDict = new Hashtable<String, SmartthingsCapabilitie>();
 
@@ -75,13 +79,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
     @Override
     public void registerCapabilities(SmartthingsCapabilitie capa) {
-        if (capa.status.equals("deprecated")) {
-            return;
-        }
-        // if (capa.id.indexOf("switch") < 0) {
-        // return;
-        // }
-
         capabilitiesDict.put(capa.id, capa);
         createChannelDefinition(capa);
     }
@@ -94,6 +91,11 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
         }
 
         return null;
+    }
+
+    @Override
+    public void setCloudBridgeHandler(SmartthingsCloudBridgeHandler bridgeHandler) {
+        this.bridgeHandler = bridgeHandler;
     }
 
     public void createChannelDefinition(SmartthingsCapabilitie capa) {
@@ -155,7 +157,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                     } else if ("number".equals(tpSmart)) {
                         channelTp = "Number";
                     } else if ("boolean".equals(tpSmart)) {
-                        channelTp = "String";
+                        channelTp = "Contact";
                     } else {
                         logger.info("need review");
                     }
@@ -163,8 +165,8 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
                 String label = capa.name;
                 String category = capa.id;
-                String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-')
-                        + "-channel").toLowerCase();
+                String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-'))
+                        .toLowerCase();
 
                 Boolean display = false;
 
@@ -199,7 +201,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                 if (lcChannelTypeProvider != null) {
                     channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
                     if (channelType == null) {
-                        channelType = createChannelType(channelName, category, label, channelTp, channelTypeUID);
+                        channelType = createChannelType(capa, channelName, category, label, channelTp, channelTypeUID);
                         lcChannelTypeProvider.addChannelType(channelType);
                     }
                 }
@@ -208,8 +210,8 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
         }
     }
 
-    private ChannelType createChannelType(String channelName, String category, String description, String channelTp,
-            ChannelTypeUID channelTypeUID) {
+    private ChannelType createChannelType(SmartthingsCapabilitie capa, String channelName, String category,
+            String description, String channelTp, ChannelTypeUID channelTypeUID) {
         ChannelType channelType;
 
         StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
@@ -217,7 +219,13 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
         final StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder
                 .state(channelTypeUID, channelName, channelTp).withStateDescriptionFragment(stateFragment.build());
 
-        channelType = channelTypeBuilder.isAdvanced(false).withDescription(description).withCategory(category).build();
+        Boolean isAdvanced = false;
+        if (capa.id.contains("ocf")) {
+            isAdvanced = true;
+        }
+
+        channelType = channelTypeBuilder.isAdvanced(isAdvanced).withDescription(description).withCategory(category)
+                .build();
 
         return channelType;
     }
@@ -293,10 +301,6 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                 for (SmartthingsComponent component : device.components) {
                     String compId = component.id;
 
-                    if (!"main".equals(compId)) {
-                        continue;
-                    }
-
                     if (component.capabilities == null || component.capabilities.length == 0) {
                         continue;
                     }
@@ -306,17 +310,27 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
                         capId = capId.replace('.', '_');
 
-                        if (capabilitiesDict.containsKey(capId)) {
-                            SmartthingsCapabilitie capa = capabilitiesDict.get(capId);
+                        SmartthingsCapabilitie capa = null;
 
-                            logger.info("capa: {}", cap.id);
-                            for (String key : capa.attributes.keySet()) {
-                                if (key.indexOf("Range") >= 0) {
-                                    continue;
-                                }
-                                SmartthingsAttribute attr = capa.attributes.get(key);
-                                addChannel(deviceType, groupTypes, channelDefinitions, component, capa, key, attr);
+                        if (capabilitiesDict.containsKey(capId)) {
+                            capa = capabilitiesDict.get(capId);
+                        } else {
+                            SmartthingsApi api = this.bridgeHandler.getSmartthingsApi();
+                            try {
+                                capa = api.getCapabilitie(cap.id, "1");
+                                registerCapabilities(capa);
+                            } catch (SmartthingsException ex) {
+
                             }
+                        }
+
+                        logger.info("capa: {}", cap.id);
+                        for (String key : capa.attributes.keySet()) {
+                            if (key.indexOf("Range") >= 0) {
+                                continue;
+                            }
+                            SmartthingsAttribute attr = capa.attributes.get(key);
+                            addChannel(deviceType, groupTypes, channelDefinitions, component, capa, key, attr);
                         }
                     }
                 }
@@ -334,8 +348,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
         SmartthingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         SmartthingsChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
 
-        String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attrKey), '-') + "-channel")
-                .toLowerCase();
+        String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attrKey), '-')).toLowerCase();
 
         ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(channelName);
 
@@ -351,11 +364,17 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
         // capa.commands
         if (channelType != null) {
             ChannelDefinition channelDef = new ChannelDefinitionBuilder(channelName, channelType.getUID())
-                    .withLabel(channelName).withDescription("description").withProperties(props).build();
-            channelDefinitions.add(channelDef);
+                    .withLabel(StringUtils.capitalize(channelName)).withDescription("description").withProperties(props)
+                    .build();
+
+            Optional<ChannelDefinition> previous = channelDefinitions.stream()
+                    .filter(x -> x.getId().equals(channelName)).findFirst();
+            if (previous.isEmpty()) {
+                channelDefinitions.add(channelDef);
+            }
         }
         // generate group
-        String groupdId = "default";
+        String groupdId = deviceType + "_" + component.id;
         ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(groupdId);
         ChannelGroupType groupType = null;
 
@@ -363,10 +382,10 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
             groupType = lcChannelGroupTypeProvider.getInternalChannelGroupType(groupTypeUID);
 
             if (groupType == null) {
-                String groupLabel = groupdId + "Label";
+                String groupLabel = StringUtils.capitalize(deviceType + " " + component.id);
                 groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
-                        .withChannelDefinitions(channelDefinitions).withCategory("").withDescription(groupdId + "Desc")
-                        .build();
+                        .withChannelDefinitions(channelDefinitions).withCategory("")
+                        .withDescription(StringUtils.capitalize(deviceType)).build();
                 lcChannelGroupTypeProvider.addChannelGroupType(groupType);
                 groupTypes.add(groupType);
             }

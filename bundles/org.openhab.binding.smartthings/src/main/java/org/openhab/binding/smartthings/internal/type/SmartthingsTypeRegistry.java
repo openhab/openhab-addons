@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsCloudBridgeHandler;
 
 /**
  *
@@ -38,4 +39,6 @@ public interface SmartthingsTypeRegistry {
 
     @Nullable
     public SmartthingsChannelTypeProvider getSmartthingsChannelTypeProvider();
+
+    public void setCloudBridgeHandler(SmartthingsCloudBridgeHandler bridgeHandler);
 }

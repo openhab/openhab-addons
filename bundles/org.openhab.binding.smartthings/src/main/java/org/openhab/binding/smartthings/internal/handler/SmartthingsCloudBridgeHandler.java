@@ -66,6 +66,7 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
     public void initCapabilites() {
         logger.info("Start init capa");
         SmartthingsApi api = this.getSmartthingsApi();
+        typeRegistry.setCloudBridgeHandler(this);
 
         try {
             SmartthingsCapabilitie[] capabilitiesList = api.getAllCapabilities();

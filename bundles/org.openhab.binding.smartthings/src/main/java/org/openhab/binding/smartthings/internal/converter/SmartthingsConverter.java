@@ -45,6 +45,8 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.internal.LinkedTreeMap;
+
 /**
  * Base converter class.
  * The converter classes are responsible for converting "state" messages from the smartthings hub into openHAB States.
@@ -243,7 +245,11 @@ public abstract class SmartthingsConverter {
             case "Rollershutter":
                 return "open".equals(dataFromSmartthings) ? UpDownType.DOWN : UpDownType.UP;
             case "String":
-                return new StringType((String) dataFromSmartthings);
+                // temp fixes, need review
+                if (!(dataFromSmartthings instanceof LinkedTreeMap)) {
+                    return new StringType((String) dataFromSmartthings);
+                }
+                return new StringType("");
             case "Switch":
                 return OnOffType.from("on".equals(dataFromSmartthings));
 

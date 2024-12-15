@@ -102,7 +102,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService
                 // if ("Petrole".equals(label)) {
                 // enabled = true;
                 // }
-                if (label.contains("Plug ")) {
+                if (label.contains("cuisson")) {
                     enabled = true;
                 }
 

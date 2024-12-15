@@ -227,7 +227,7 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
 
                         ThingHandler handler = theThing.getHandler();
                         SmartthingsThingHandler smarthingsHandler = (SmartthingsThingHandler) handler;
-                        smarthingsHandler.refreshDevice(componentId, capa, attr, value);
+                        smarthingsHandler.refreshDevice("", componentId, capa, attr, value);
 
                         logger.info("aa");
                     }

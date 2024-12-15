@@ -111,11 +111,11 @@ public class SmartthingsThingHandler extends BaseThingHandler {
         }
     }
 
-    public void refreshDevice(String componentId, String capa, String attr, Object value) {
-        String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attr), '-') + "-channel")
-                .toLowerCase();
+    public void refreshDevice(String deviceType, String componentId, String capa, String attr, Object value) {
+        String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attr), '-')).toLowerCase();
 
-        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), "default", channelName);
+        String groupId = deviceType + "_" + componentId;
+        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), groupId, channelName);
         Channel chan = thing.getChannel(channelUID);
         SmartthingsConverter converter = converters.get(channelUID);
 
@@ -142,8 +142,8 @@ public class SmartthingsThingHandler extends BaseThingHandler {
 
                 if (status != null) {
 
-                    if (status.components.containsKey("main")) {
-                        SmartthingsStatusComponent component = status.components.get("main");
+                    for (String componentKey : status.components.keySet()) {
+                        SmartthingsStatusComponent component = status.components.get(componentKey);
 
                         for (String capaKey : component.keySet()) {
                             SmartthingsStatusCapabilities capa = component.get(capaKey);
@@ -153,7 +153,8 @@ public class SmartthingsThingHandler extends BaseThingHandler {
                                 Object value = props.value;
                                 String timestamp = props.timestamp;
 
-                                refreshDevice("main", "capa", propertyKey, value);
+                                refreshDevice(this.thing.getThingTypeUID().getId(), componentKey, capaKey, propertyKey,
+                                        value);
                             }
 
                         }
@@ -163,11 +164,15 @@ public class SmartthingsThingHandler extends BaseThingHandler {
                 logger.error("Unable to update device : {}", deviceId);
             }
         }
+
     }
 
     @Override
     public void initialize() {
 
+        if (thing.getLabel().indexOf("Petrole") >= 0) {
+            logger.info("toto");
+        }
         // Create converters for each channel
         for (Channel ch : thing.getChannels()) {
             @Nullable
@@ -175,11 +180,14 @@ public class SmartthingsThingHandler extends BaseThingHandler {
             // Will be null if no explicit converter was specified
             if (converterName == null || converterName.isEmpty()) {
                 // A converter was Not specified so use the channel id
-                converterName = ch.getUID().getId();
+                converterName = ch.getProperties().get("attribute");
             }
 
-            // Try to get the converter
-            SmartthingsConverter cvtr = getConverter(converterName);
+            SmartthingsConverter cvtr = null;
+            if (converterName != null) {
+                // Try to get the converter
+                cvtr = getConverter(converterName);
+            }
             if (cvtr == null) {
                 // If there is no channel specific converter the get the "default" converter
                 cvtr = getConverter("default");
