@@ -19,7 +19,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
@@ -60,17 +59,17 @@ public class MyBMWFileProxy implements MyBMWProxy {
 
     public MyBMWFileProxy(HttpClientFactory httpClientFactory, MyBMWBridgeConfiguration bridgeConfiguration) {
         logger.trace("MyBMWFileProxy - initialize");
-        vehicleToBeTested = bridgeConfiguration.password;
+        vehicleToBeTested = bridgeConfiguration.getPassword();
     }
 
     public void setBridgeConfiguration(MyBMWBridgeConfiguration bridgeConfiguration) {
         logger.trace("MyBMWFileProxy - update bridge");
-        vehicleToBeTested = bridgeConfiguration.password;
+        vehicleToBeTested = bridgeConfiguration.getPassword();
     }
 
-    public List<@NonNull Vehicle> requestVehicles() throws NetworkException {
-        List<@NonNull Vehicle> vehicles = new ArrayList<>();
-        List<@NonNull VehicleBase> vehiclesBase = requestVehiclesBase();
+    public List<Vehicle> requestVehicles() throws NetworkException {
+        List<Vehicle> vehicles = new ArrayList<>();
+        List<VehicleBase> vehiclesBase = requestVehiclesBase();
 
         for (VehicleBase vehicleBase : vehiclesBase) {
             VehicleStateContainer vehicleState = requestVehicleState(vehicleBase.getVin(),

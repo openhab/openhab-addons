@@ -36,6 +36,8 @@ import org.openhab.binding.mybmw.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleBase;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleStateContainer;
+import org.openhab.binding.mybmw.internal.handler.auth.MyBMWTokenController;
+import org.openhab.binding.mybmw.internal.handler.auth.Token;
 import org.openhab.binding.mybmw.internal.handler.enums.RemoteService;
 import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
@@ -196,8 +198,13 @@ public class MyBMWHttpProxyTest {
         HttpClientFactory httpClientFactoryMock = Mockito.mock(HttpClientFactory.class);
         HttpClient httpClientMock = Mockito.mock(HttpClient.class);
         Request requestMock = Mockito.mock(Request.class);
+        MyBMWTokenController bmwTokenControllerMock = Mockito.mock(MyBMWTokenController.class);
         Mockito.when(httpClientMock.newRequest(Mockito.anyString())).thenReturn(requestMock);
         Mockito.when(httpClientMock.POST(Mockito.anyString())).thenReturn(requestMock);
+
+        Token token = Mockito.mock(Token.class);
+        Mockito.when(token.getBearerToken()).thenReturn("blah");
+        Mockito.when(bmwTokenControllerMock.getToken()).thenReturn(token);
         MyBMWBridgeConfiguration myBMWBridgeConfiguration = new MyBMWBridgeConfiguration();
         Mockito.when(httpClientFactoryMock.getCommonHttpClient()).thenReturn(httpClientMock);
 
@@ -216,6 +223,8 @@ public class MyBMWHttpProxyTest {
             logger.error(e1.getMessage(), e1);
         }
 
-        return new MyBMWHttpProxy(httpClientFactoryMock, myBMWBridgeConfiguration);
+        MyBMWHttpProxy proxy = new MyBMWHttpProxy(httpClientFactoryMock, myBMWBridgeConfiguration);
+        proxy.myBMWTokenController = bmwTokenControllerMock;
+        return proxy;
     }
 }

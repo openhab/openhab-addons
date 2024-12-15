@@ -30,19 +30,21 @@ import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
 public class MyBMWConfigurationCheckerTest {
     @Test
     void testCheckConfiguration() {
-        MyBMWBridgeConfiguration cdc = new MyBMWBridgeConfiguration();
-        assertFalse(MyBMWConfigurationChecker.checkConfiguration(cdc));
-        cdc.userName = "a";
-        assertFalse(MyBMWConfigurationChecker.checkConfiguration(cdc));
-        cdc.password = "b";
-        assertFalse(MyBMWConfigurationChecker.checkConfiguration(cdc));
-        cdc.region = "c";
-        assertFalse(MyBMWConfigurationChecker.checkConfiguration(cdc));
-        cdc.region = BimmerConstants.REGION_NORTH_AMERICA;
-        assertTrue(MyBMWConfigurationChecker.checkConfiguration(cdc));
-        cdc.region = BimmerConstants.REGION_ROW;
-        assertTrue(MyBMWConfigurationChecker.checkConfiguration(cdc));
-        cdc.region = BimmerConstants.REGION_CHINA;
-        assertTrue(MyBMWConfigurationChecker.checkConfiguration(cdc));
+        MyBMWBridgeConfiguration myBMWBridgeConfiguration = new MyBMWBridgeConfiguration();
+        assertFalse(MyBMWConfigurationChecker.checkInitialConfiguration(myBMWBridgeConfiguration));
+        myBMWBridgeConfiguration.setUserName("a");
+        assertFalse(MyBMWConfigurationChecker.checkInitialConfiguration(myBMWBridgeConfiguration));
+        myBMWBridgeConfiguration.setPassword("b");
+        assertFalse(MyBMWConfigurationChecker.checkInitialConfiguration(myBMWBridgeConfiguration));
+        myBMWBridgeConfiguration.setHcaptchatoken("d");
+        assertFalse(MyBMWConfigurationChecker.checkInitialConfiguration(myBMWBridgeConfiguration));
+        myBMWBridgeConfiguration.setRegion("c");
+        assertFalse(MyBMWConfigurationChecker.checkInitialConfiguration(myBMWBridgeConfiguration));
+        myBMWBridgeConfiguration.setRegion(BimmerConstants.REGION_NORTH_AMERICA);
+        assertTrue(MyBMWConfigurationChecker.checkInitialConfiguration(myBMWBridgeConfiguration));
+        myBMWBridgeConfiguration.setRegion(BimmerConstants.REGION_ROW);
+        assertTrue(MyBMWConfigurationChecker.checkInitialConfiguration(myBMWBridgeConfiguration));
+        myBMWBridgeConfiguration.setRegion(BimmerConstants.REGION_CHINA);
+        assertTrue(MyBMWConfigurationChecker.checkInitialConfiguration(myBMWBridgeConfiguration));
     }
 }
