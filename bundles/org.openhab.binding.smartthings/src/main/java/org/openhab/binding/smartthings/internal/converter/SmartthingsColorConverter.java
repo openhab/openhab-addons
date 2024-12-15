@@ -46,7 +46,26 @@ public class SmartthingsColorConverter extends SmartthingsConverter {
 
     @Override
     public String convertToSmartthings(Thing thing, ChannelUID channelUid, Command command) {
-        return defaultConvertToSmartthings(thing, channelUid, command);
+        String jsonMsg;
+
+        if (command instanceof HSBType hsbCommand) {
+            double hue = hsbCommand.getHue().doubleValue() / 3.60;
+
+            String componentKey = "main";
+            String capaKey = "colorControl";
+            String cmdName = "setColor";
+            String arguments = String.format("[ { 'hue':%s, 'saturation':%s }]", hue,
+                    hsbCommand.getSaturation().intValue());
+
+            jsonMsg = String.format(
+                    "{'commands': [{'component': '%s', 'capability': '%s', 'command': '%s', 'arguments': %s }]}",
+                    componentKey, capaKey, cmdName, arguments);
+
+        } else {
+            jsonMsg = defaultConvertToSmartthings(thing, channelUid, command);
+        }
+
+        return jsonMsg;
     }
 
     /*
