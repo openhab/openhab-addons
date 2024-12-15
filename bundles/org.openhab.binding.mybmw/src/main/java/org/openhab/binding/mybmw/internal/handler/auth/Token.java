@@ -19,15 +19,20 @@ import org.openhab.binding.mybmw.internal.utils.Constants;
  * The {@link Token} MyBMW Token storage
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Martin Grassl - extracted to own class
  */
 @NonNullByDefault
 public class Token {
     private String token = Constants.EMPTY;
     private String tokenType = Constants.EMPTY;
+    private String refreshToken = Constants.EMPTY;
+    private String gcid = Constants.EMPTY;
+
     private long expiration = 0;
 
     public String getBearerToken() {
-        return new StringBuilder(tokenType).append(Constants.SPACE).append(token).toString();
+        return token.equals(Constants.EMPTY) ? Constants.EMPTY
+                : new StringBuilder(tokenType).append(Constants.SPACE).append(token).toString();
     }
 
     public void setToken(String token) {
@@ -46,9 +51,25 @@ public class Token {
         tokenType = type;
     }
 
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public String getGcid() {
+        return gcid;
+    }
+
+    public void setGcid(String gcid) {
+        this.gcid = gcid;
+    }
+
     public boolean isValid() {
         return (!token.equals(Constants.EMPTY) && !tokenType.equals(Constants.EMPTY)
-                && (this.expiration - System.currentTimeMillis() / 1000) > 1);
+                && !refreshToken.equals(Constants.EMPTY) && (this.expiration - System.currentTimeMillis() / 1000) > 1);
     }
 
     @Override
