@@ -42,6 +42,7 @@ public interface HTTPConstants {
     static final String CREDENTIALS = "Credentials";
     static final String USERNAME = "username";
     static final String PASSWORD = "password";
+    static final String HCAPTCHA_TOKEN = "hcaptchatoken";
     static final String CONTENT_LENGTH = "Content-Length";
     static final String CODE_CHALLENGE = "code_challenge";
     static final String CODE_CHALLENGE_METHOD = "code_challenge_method";

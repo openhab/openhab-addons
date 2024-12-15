@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.MyBMWConstants;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
@@ -80,7 +79,7 @@ public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMW
         myBMWProxy = thingHandler.getMyBmwProxy();
 
         try {
-            Optional<List<@NonNull Vehicle>> vehicleList = myBMWProxy.map(prox -> {
+            Optional<List<Vehicle>> vehicleList = myBMWProxy.map(prox -> {
                 try {
                     return prox.requestVehicles();
                 } catch (NetworkException e) {
@@ -88,8 +87,13 @@ public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMW
                 }
             });
             vehicleList.ifPresentOrElse(vehicles -> {
-                thingHandler.vehicleDiscoverySuccess();
-                processVehicles(vehicles);
+                if (vehicles.size() > 0) {
+                    thingHandler.vehicleDiscoverySuccess();
+                    processVehicles(vehicles);
+                } else {
+                    logger.warn("no vehicle found, maybe because of network error");
+                    thingHandler.vehicleDiscoveryError();
+                }
             }, () -> thingHandler.vehicleDiscoveryError());
         } catch (IllegalStateException ex) {
             thingHandler.vehicleDiscoveryError();

@@ -59,17 +59,18 @@ public interface BimmerConstants {
     static final String CHINA_LOGIN = "/eadrax-coas/v2/login/pwd";
 
     // Http variables
-    static final String APP_VERSION_NORTH_AMERICA = "2.12.0(19883)";
-    static final String APP_VERSION_ROW = "2.12.0(19883)";
-    static final String APP_VERSION_CHINA = "2.3.0(13603)";
+    static final String APP_VERSION_NORTH_AMERICA = "4.9.2(36892)";
+    static final String APP_VERSION_ROW = "4.9.2(36892)";
+    static final String APP_VERSION_CHINA = "4.9.2(36892)";
     static final Map<String, String> APP_VERSIONS = Map.of(REGION_NORTH_AMERICA, APP_VERSION_NORTH_AMERICA, REGION_ROW,
             APP_VERSION_ROW, REGION_CHINA, APP_VERSION_CHINA);
     static final String USER_AGENT = "Dart/2.16 (dart:io)";
     // see const.py of bimmer_constants: user-agent; brand; app_version; region
-    static final String X_USER_AGENT = "android(SP1A.210812.016.C1);%s;%s;%s";
+    static final String X_USER_AGENT = "android(AP2A.240605.024);%s;%s;%s";
 
     static final String LOGIN_NONCE = "login_nonce";
     static final String AUTHORIZATION_CODE = "authorization_code";
+    static final String REFRESH_TOKEN = "refresh_token";
 
     // Parameters for API Requests
     static final String TIRE_GUARD_MODE = "tireGuardMode";
