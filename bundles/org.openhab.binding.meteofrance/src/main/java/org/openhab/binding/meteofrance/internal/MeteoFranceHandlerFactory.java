@@ -68,6 +68,6 @@ public class MeteoFranceHandlerFactory extends BaseThingHandlerFactory {
 
         return BRIDGE_TYPE_API.equals(thingTypeUID) ? new MeteoFranceBridgeHandler((Bridge) thing, deserializer)
                 : THING_TYPE_VIGILANCE.equals(thingTypeUID) ? new VigilanceHandler(thing, zoneId, iconProvider)
-                        : THING_TYPE_RAIN_FORECAST.equals(thingTypeUID) ? new RainForecastHandler(thing, zoneId) : null;
+                        : THING_TYPE_RAIN_FORECAST.equals(thingTypeUID) ? new RainForecastHandler(thing) : null;
     }
 }
