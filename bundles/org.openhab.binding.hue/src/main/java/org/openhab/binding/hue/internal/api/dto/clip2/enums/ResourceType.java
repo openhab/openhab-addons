@@ -41,6 +41,7 @@ public enum ResourceType {
     GEOFENCE_CLIENT,
     GEOLOCATION,
     GROUPED_LIGHT,
+    GROUPED_MOTION,
     HOMEKIT,
     LIGHT,
     LIGHT_LEVEL,
