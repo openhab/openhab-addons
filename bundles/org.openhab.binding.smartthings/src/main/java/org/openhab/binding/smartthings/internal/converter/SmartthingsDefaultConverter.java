@@ -156,7 +156,6 @@ public class SmartthingsDefaultConverter extends SmartthingsConverter {
         }
 
         pushCommand(componentKey, capaKey, cmdName, arguments);
-
     }
 
     @Override
