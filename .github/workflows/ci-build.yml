@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '17', '21', 'profile-j21' ]
+        java: [ '21' ]
         maven: [ '3.9.9' ]
         os: [ 'ubuntu-24.04' ]
     name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
@@ -46,17 +46,9 @@ jobs:
 
       - name: Set up Java ${{ matrix.java }}
         uses: actions/setup-java@v4
-        if: ${{ matrix.java != 'profile-j21' }}
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
-
-      - name: Set up Java ${{ matrix.java }}
-        uses: actions/setup-java@v4
-        if: ${{ matrix.java == 'profile-j21' }}
-        with:
-          distribution: 'temurin'
-          java-version: ${{ 21 }}
 
       - name: Set up Maven ${{ matrix.maven }}
         uses: stCarolas/setup-maven@v5
@@ -64,7 +56,7 @@ jobs:
           maven-version: ${{ matrix.maven }}
 
       - name: Register Problem Matchers
-        if: ${{ matrix.java == '17' }}
+        if: ${{ matrix.java == '21' }}
         id: problem_matchers
         run: |
           echo "::add-matcher::.github/openhab-compile-problems.json"
@@ -77,7 +69,6 @@ jobs:
           format: 'csv'
 
       - name: Build
-        if: ${{ matrix.java != 'profile-j21' }}
         id: build
         run: './.github/scripts/maven-build'
         env:
@@ -88,34 +79,22 @@ jobs:
             -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
             -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-      - name: Build
-        if: ${{ matrix.java == 'profile-j21' }}
-        id: build-j21
-        run: './.github/scripts/maven-build clean verify -B -T 1.5C -U -Pj21'
-        env:
-          CHANGED_FILES: ${{ steps.files.outputs.all }}
-          MAVEN_OPTS: >-
-            -Xmx2g
-            -Dmaven.wagon.http.retryHandler.count=5
-            -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
-            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
       - name: Upload Build Log
-        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure') || (steps.build-j21.outcome == 'success') || (steps.build-j21.outcome == 'failure')) }}
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
         uses: actions/upload-artifact@v4
         with:
           name: build-log-java-${{ matrix.java }}-${{ matrix.os }}
           path: build.log
 
       - name: Upload SAT Summary Report
-        if: ${{ matrix.java == '17' && always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
         uses: actions/upload-artifact@v4
         with:
           name: sat-summary-report
           path: target/summary_report.html
 
       - name: Report SAT Errors as Annotations
-        if: ${{ matrix.java == '17' && always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        if: ${{ matrix.java == '21' && always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
         uses: ghys/checkstyle-github-action@main
         with:
           title: CheckStyle Violations
