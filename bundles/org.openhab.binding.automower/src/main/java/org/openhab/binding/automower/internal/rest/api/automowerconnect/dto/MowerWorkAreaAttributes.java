@@ -13,16 +13,25 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
- * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - Initial contribution
  */
-public class Battery {
-    private byte batteryPercent;
+public class MowerWorkAreaAttributes {
+    private byte cuttingHeight;
+    private boolean enable;
 
-    public byte getBatteryPercent() {
-        return batteryPercent;
+    public byte getCuttingHeight() {
+        return cuttingHeight;
     }
 
-    public void setBatteryPercent(byte batteryPercent) {
-        this.batteryPercent = batteryPercent;
+    public void setCuttingHeight(byte cuttingHeight) {
+        this.cuttingHeight = cuttingHeight;
+    }
+
+    public boolean getEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 }

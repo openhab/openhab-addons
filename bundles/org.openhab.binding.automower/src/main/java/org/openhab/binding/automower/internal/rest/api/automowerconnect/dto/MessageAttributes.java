@@ -12,17 +12,16 @@
  */
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - Initial contribution
  */
-public class Battery {
-    private byte batteryPercent;
+public class MessageAttributes {
+    List<Message> messages = new ArrayList<>();
 
-    public byte getBatteryPercent() {
-        return batteryPercent;
-    }
-
-    public void setBatteryPercent(byte batteryPercent) {
-        this.batteryPercent = batteryPercent;
+    public List<Message> getMessages() {
+        return this.messages;
     }
 }
