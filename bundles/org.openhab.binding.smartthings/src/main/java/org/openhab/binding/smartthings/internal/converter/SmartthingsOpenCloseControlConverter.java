@@ -30,21 +30,21 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class SmartthingsOpenCloseControlConverter extends SmartthingsConverter {
 
-    public SmartthingsOpenCloseControlConverter(SmartthingsTypeRegistry typeRegistry, Thing thing) {
-        super(typeRegistry, thing);
+    public SmartthingsOpenCloseControlConverter(SmartthingsTypeRegistry typeRegistry) {
+        super(typeRegistry);
     }
 
     @Override
-    public String convertToSmartthings(Thing thing, ChannelUID channelUid, Command command) {
+    public void convertToSmartthingsInternal(Thing thing, ChannelUID channelUid, Command command) {
         String smartthingsValue = ("open".equals(command.toString().toLowerCase())) ? "open" : "close";
         smartthingsValue = surroundWithQuotes(smartthingsValue);
 
-        return String.format("{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"value\": %s}", thingTypeId,
-                "smartthingsName", smartthingsValue);
+        String msg = String.format("{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"value\": %s}",
+                thing.getThingTypeUID(), "smartthingsName", smartthingsValue);
     }
 
     @Override
-    public State convertToOpenHab(Thing thing, ChannelUID channelUid, Object dataFromSmartthings) {
+    public State convertToOpenHabInternal(Thing thing, ChannelUID channelUid, Object dataFromSmartthings) {
         return defaultConvertToOpenHab(thing, channelUid, dataFromSmartthings);
     }
 }

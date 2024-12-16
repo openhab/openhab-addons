@@ -12,12 +12,38 @@
  */
 package org.openhab.binding.smartthings.internal.converter;
 
+import java.util.Map;
+import java.util.Stack;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsArgument;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsAttribute;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsCommand;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.NextPreviousType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.RewindFastforwardType;
+import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.StringListType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This "Converter" is assigned to a channel when a special converter is not needed.
@@ -33,18 +59,108 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class SmartthingsDefaultConverter extends SmartthingsConverter {
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsConverter.class);
 
-    public SmartthingsDefaultConverter(SmartthingsTypeRegistry typeRegistry, Thing thing) {
-        super(typeRegistry, thing);
+    public SmartthingsDefaultConverter(SmartthingsTypeRegistry typeRegistry) {
+        super(typeRegistry);
     }
 
     @Override
-    public String convertToSmartthings(Thing thing, ChannelUID channelUid, Command command) {
-        return defaultConvertToSmartthings(thing, channelUid, command);
+    public void convertToSmartthingsInternal(Thing thing, ChannelUID channelUid, Command command) {
+        Object value;
+
+        if (command instanceof DateTimeType dateTimeCommand) {
+            value = dateTimeCommand.format("%m/%d/%Y %H.%M.%S");
+        } else if (command instanceof HSBType hsbCommand) {
+            value = String.format("[%d, %d, %d ]", hsbCommand.getHue().intValue(),
+                    hsbCommand.getSaturation().intValue(), hsbCommand.getBrightness().intValue());
+        } else if (command instanceof DecimalType) {
+            DecimalType dc = (DecimalType) command;
+            value = dc.intValue();
+        } else if (command instanceof IncreaseDecreaseType) {
+            value = command.toString().toLowerCase();
+        } else if (command instanceof NextPreviousType) {
+            value = command.toString().toLowerCase();
+        } else if (command instanceof OnOffType) {
+            value = command.toString().toLowerCase();
+        } else if (command instanceof OpenClosedType) {
+            value = command.toString().toLowerCase();
+        } else if (command instanceof PercentType) {
+            value = command.toString();
+        } else if (command instanceof PointType) {
+            logger.warn(
+                    "Warning - PointType Command is not supported by Smartthings. Please configure to use a different command type. CapabilityKey: {}, capabilityAttribute {}",
+                    thing.getThingTypeUID(), channelUid.getId());
+            value = command.toFullString();
+        } else if (command instanceof RefreshType) {
+            value = command.toString().toLowerCase();
+        } else if (command instanceof RewindFastforwardType) {
+            value = command.toString().toLowerCase();
+        } else if (command instanceof StopMoveType) {
+            value = command.toString().toLowerCase();
+        } else if (command instanceof PlayPauseType) {
+            value = command.toString().toLowerCase();
+        } else if (command instanceof StringListType) {
+            value = command.toString();
+        } else if (command instanceof StringType) {
+            value = command.toString();
+        } else if (command instanceof UpDownType) {
+            value = command.toString().toLowerCase();
+        } else {
+            logger.warn(
+                    "Warning - The Smartthings converter does not know how to handle the {} command. The Smartthingsonverter class should be updated.  CapabilityKey: {},  capabilityAttribute {}",
+                    command.getClass().getName(), thing.getThingTypeUID(), channelUid.getId());
+            value = command.toString().toLowerCase();
+        }
+
+        String jsonMsg = "";
+
+        Channel channel = thing.getChannel(channelUid);
+        Map<String, String> properties = channel.getProperties();
+        String componentKey = properties.get("component");
+        String capaKey = properties.get("capability");
+        String attrKey = properties.get("attribute");
+
+        SmartthingsCapabilitie capa = null;
+        SmartthingsAttribute attr = null;
+        if (capaKey != null) {
+            capa = typeRegistry.getCapabilities(capaKey);
+        }
+        if (attrKey != null) {
+            attr = capa.attributes.get(attrKey);
+        }
+
+        String cmdName = "";
+        Object[] arguments = null;
+
+        if (capa != null && attr != null) {
+            if (attrKey.equals("color")) {
+                attr.setter = "setColor";
+            }
+
+            if (attr.setter != null) {
+                SmartthingsCommand cmd = capa.commands.get(attr.setter);
+                cmdName = cmd.name;
+
+                Stack<Object> stack = new Stack<Object>();
+                for (SmartthingsArgument arg : cmd.arguments) {
+                    if (arg.optional) {
+                        continue;
+                    }
+                    stack.push(value);
+                }
+                arguments = stack.toArray();
+            } else {
+                cmdName = value.toString();
+            }
+        }
+
+        pushCommand(componentKey, capaKey, cmdName, arguments);
+
     }
 
     @Override
-    public State convertToOpenHab(Thing thing, ChannelUID channelUid, Object dataFromSmartthings) {
+    public State convertToOpenHabInternal(Thing thing, ChannelUID channelUid, Object dataFromSmartthings) {
         return defaultConvertToOpenHab(thing, channelUid, dataFromSmartthings);
     }
 }

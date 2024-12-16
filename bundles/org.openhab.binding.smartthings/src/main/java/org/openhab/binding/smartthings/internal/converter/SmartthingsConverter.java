@@ -12,39 +12,29 @@
  */
 package org.openhab.binding.smartthings.internal.converter;
 
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsArgument;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsAttribute;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsCapabilitie;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsCommand;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.HSBType;
-import org.openhab.core.library.types.IncreaseDecreaseType;
-import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.PlayPauseType;
-import org.openhab.core.library.types.PointType;
-import org.openhab.core.library.types.RewindFastforwardType;
-import org.openhab.core.library.types.StopMoveType;
-import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 
 /**
@@ -59,135 +49,68 @@ public abstract class SmartthingsConverter {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsConverter.class);
 
-    protected String thingTypeId;
     protected SmartthingsTypeRegistry typeRegistry;
+    private Gson gson = new Gson();
 
-    SmartthingsConverter(SmartthingsTypeRegistry typeRegistry, Thing thing) {
-        thingTypeId = thing.getThingTypeUID().getId();
+    SmartthingsConverter(SmartthingsTypeRegistry typeRegistry) {
         this.typeRegistry = typeRegistry;
     }
 
-    public abstract String convertToSmartthings(Thing thing, ChannelUID channelUid, Command command);
-
-    public abstract State convertToOpenHab(Thing thing, ChannelUID channelUid, Object dataFromSmartthings);
-
-    /**
-     * Provide a default converter in the base call so it can be used in sub-classes if needed
-     *
-     * @param command
-     * @return The json string to send to Smartthings
-     */
-    protected String defaultConvertToSmartthings(Thing thing, ChannelUID channelUid, Command command) {
-        String value;
-
-        if (command instanceof DateTimeType dateTimeCommand) {
-            value = dateTimeCommand.format("%m/%d/%Y %H.%M.%S");
-        } else if (command instanceof HSBType hsbCommand) {
-            value = String.format("[%d, %d, %d ]", hsbCommand.getHue().intValue(),
-                    hsbCommand.getSaturation().intValue(), hsbCommand.getBrightness().intValue());
-        } else if (command instanceof DecimalType) {
-            value = command.toString();
-        } else if (command instanceof IncreaseDecreaseType) { // Need to surround with double quotes
-            value = command.toString().toLowerCase();
-        } else if (command instanceof NextPreviousType) { // Need to surround with double quotes
-            value = command.toString().toLowerCase();
-        } else if (command instanceof OnOffType) { // Need to surround with double quotes
-            value = command.toString().toLowerCase();
-        } else if (command instanceof OpenClosedType) { // Need to surround with double quotes
-            value = command.toString().toLowerCase();
-        } else if (command instanceof PercentType) {
-            value = command.toString();
-        } else if (command instanceof PointType) { // There is not a comparable type in Smartthings, log and send value
-            logger.warn(
-                    "Warning - PointType Command is not supported by Smartthings. Please configure to use a different command type. CapabilityKey: {}, capabilityAttribute {}",
-                    thingTypeId, channelUid.getId());
-            value = command.toFullString();
-        } else if (command instanceof RefreshType) { // Need to surround with double quotes
-            value = command.toString().toLowerCase();
-        } else if (command instanceof RewindFastforwardType) { // Need to surround with double quotes
-            value = command.toString().toLowerCase();
-        } else if (command instanceof StopMoveType) { // Need to surround with double quotes
-            value = command.toString().toLowerCase();
-        } else if (command instanceof PlayPauseType) { // Need to surround with double quotes
-            value = command.toString().toLowerCase();
-        } else if (command instanceof StringListType) {
-            value = command.toString();
-        } else if (command instanceof StringType) {
-            value = command.toString();
-        } else if (command instanceof UpDownType) { // Need to surround with double quotes
-            value = command.toString().toLowerCase();
-        } else {
-            logger.warn(
-                    "Warning - The Smartthings converter does not know how to handle the {} command. The Smartthingsonverter class should be updated.  CapabilityKey: {},  capabilityAttribute {}",
-                    command.getClass().getName(), thingTypeId, channelUid.getId());
-            value = command.toString().toLowerCase();
-        }
-
-        String jsonMsg = "";
-
-        Channel channel = thing.getChannel(channelUid);
-        Map<String, String> properties = channel.getProperties();
-        String componentKey = properties.get("component");
-        String capaKey = properties.get("capability");
-        String attrKey = properties.get("attribute");
-
-        SmartthingsCapabilitie capa = null;
-        SmartthingsAttribute attr = null;
-        if (capaKey != null) {
-            capa = typeRegistry.getCapabilities(capaKey);
-        }
-        if (attrKey != null) {
-            attr = capa.attributes.get(attrKey);
-        }
-
-        Boolean extendedFormat = false;
-        String cmdName = "";
-        String arguments = "[ ";
-
-        if (capa != null && attr != null) {
-            if (attrKey.equals("color")) {
-                attr.setter = "setColor";
-            }
-
-            if (attr.setter != null) {
-                SmartthingsCommand cmd = capa.commands.get(attr.setter);
-                cmdName = cmd.name;
-                int i = 0;
-                for (SmartthingsArgument arg : cmd.arguments) {
-                    if (arg.optional) {
-                        continue;
-                    }
-                    if (i > 0) {
-                        arguments = arguments + " ,";
-                    }
-                    arguments += value;
-                    i++;
-                }
-                arguments = arguments + "]";
-                extendedFormat = true;
-            }
-        }
-
-        if (extendedFormat) {
-            jsonMsg = String.format(
-                    "{'commands': [{'component': '%s', 'capability': '%s', 'command': '%s', 'arguments': %s }]}",
-                    componentKey, capaKey, cmdName, arguments);
-        } else {
-            jsonMsg = String.format("{'commands': [{'component': '%s', 'capability': '%s', 'command': '%s'}]}",
-                    componentKey, capaKey, value);
-        }
-
-        // switchLevel
-        // setLevel
-        // jsonMsg = String.format(
-        // "{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"capabilityAttribute\": \"%s\", \"value\": %s}",
-        // thingTypeId, smartthingsName, channelUid.getId(), value);
-
-        // "{'commands': [{'component': '%s', 'capability': '%s', 'command': 'setLevel', 'arguments': [%s, 2]}]}",
-        // jsonMsg = String.format("{'commands': [{'component': 'main', 'capability': 'switch', 'command': '%s'}]}",
-        // value);
-
+    public String convertToSmartthings(Thing thing, ChannelUID channelUid, Command command) {
+        convertToSmartthingsInternal(thing, channelUid, command);
+        String jsonMsg = getJSonCommands();
         return jsonMsg;
+    }
+
+    public State convertToOpenHab(Thing thing, ChannelUID channelUid, Object dataFromSmartthings) {
+        State result = convertToOpenHabInternal(thing, channelUid, dataFromSmartthings);
+        return result;
+    }
+
+    public abstract void convertToSmartthingsInternal(Thing thing, ChannelUID channelUid, Command command);
+
+    public abstract State convertToOpenHabInternal(Thing thing, ChannelUID channelUid, Object dataFromSmartthings);
+
+    private SmartthingsActions smartthingsActions = new SmartthingsActions();
+
+    private class SmartthingsActions {
+        Queue<SmartthingsAction> commands = new LinkedList<SmartthingsAction>();
+
+        public void pushCommand(@Nullable String component, @Nullable String capability, @Nullable String cmdName,
+                Object @Nullable [] arguments) {
+            commands.add(new SmartthingsAction(component, capability, cmdName, arguments));
+        }
+    }
+
+    private class SmartthingsAction {
+        @Nullable
+        public String component;
+        @Nullable
+        public String capability;
+        @Nullable
+        public String command;
+        @Nullable
+        public Object @Nullable [] arguments;
+
+        public SmartthingsAction(@Nullable String component, @Nullable String capability, @Nullable String command,
+                Object @Nullable [] arguments) {
+            this.component = component;
+            this.capability = capability;
+            this.command = command;
+            this.arguments = arguments;
+        }
+    }
+
+    public void pushCommand(@Nullable String component, @Nullable String capability, @Nullable String command,
+            Object @Nullable [] arguments) {
+        smartthingsActions.pushCommand(component, capability, command, arguments);
+    }
+
+    private String getJSonCommands() {
+
+        String result = gson.toJson(smartthingsActions);
+        smartthingsActions.commands.clear();
+        return result;
     }
 
     protected String surroundWithQuotes(String param) {

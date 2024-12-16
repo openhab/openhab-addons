@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.smartthings.internal.handler;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
 import org.openhab.binding.smartthings.internal.converter.SmartthingsConverter;
+import org.openhab.binding.smartthings.internal.converter.SmartthingsConverterFactory;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStatus;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStatusCapabilities;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStatusComponent;
@@ -117,9 +116,10 @@ public class SmartthingsThingHandler extends BaseThingHandler {
         String groupId = deviceType + "_" + componentId;
         ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), groupId, channelName);
         Channel chan = thing.getChannel(channelUID);
-        SmartthingsConverter converter = converters.get(channelUID);
 
         if (converters.containsKey(channelUID)) {
+            SmartthingsConverter converter = converters.get(channelUID);
+
             State state = converter.convertToOpenHab(thing, channelUID, value);
             updateState(channelUID, state);
         }
@@ -130,6 +130,7 @@ public class SmartthingsThingHandler extends BaseThingHandler {
 
         SmartthingsCloudBridgeHandler cloudBridge = (SmartthingsCloudBridgeHandler) bridge.getHandler();
         SmartthingsApi api = cloudBridge.getSmartthingsApi();
+        SmartthingsTypeRegistry typeRegistry = cloudBridge.getSmartthingsTypeRegistry();
         Map<String, String> properties = this.getThing().getProperties();
 
         String deviceId = properties.get("deviceId");
@@ -168,17 +169,20 @@ public class SmartthingsThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
-        if (thing.getLabel().indexOf("Petrole") >= 0) {
-            logger.info("toto");
-        }
         // Create converters for each channel
+
+        Bridge bridge = getBridge();
+        SmartthingsCloudBridgeHandler cloudBridge = (SmartthingsCloudBridgeHandler) bridge.getHandler();
+        SmartthingsTypeRegistry typeRegistry = cloudBridge.getSmartthingsTypeRegistry();
+
+        SmartthingsConverterFactory.registerConverters(typeRegistry);
+
         for (Channel ch : thing.getChannels()) {
             @Nullable
             String converterName = ch.getProperties().get(smartthingsConverterName);
             // Will be null if no explicit converter was specified
             if (converterName == null || converterName.isEmpty()) {
-                // A converter was Not specified so use the channel id
+                // A converter was Not specified so usef the channel id
                 converterName = ch.getProperties().get("attribute");
             }
 
@@ -239,38 +243,7 @@ public class SmartthingsThingHandler extends BaseThingHandler {
     }
 
     private @Nullable SmartthingsConverter getConverter(String converterName) {
-        // Converter name will be a name such as "switch" which has to be converted into the full class name such as
-        // org.openhab.binding.smartthings.internal.converter.SmartthingsSwitchConveter
-        StringBuffer converterClassName = new StringBuffer(
-                "org.openhab.binding.smartthings.internal.converter.Smartthings");
-        converterClassName.append(Character.toUpperCase(converterName.charAt(0)));
-        converterClassName.append(converterName.substring(1));
-        converterClassName.append("Converter");
-        try {
-            Constructor<?> constr = Class.forName(converterClassName.toString())
-                    .getDeclaredConstructor(SmartthingsTypeRegistry.class, Thing.class);
-            constr.setAccessible(true);
-            Bridge bridge = getBridge();
-            SmartthingsCloudBridgeHandler cloudBridge = (SmartthingsCloudBridgeHandler) bridge.getHandler();
-            SmartthingsTypeRegistry typeRegistry = cloudBridge.getSmartthingsTypeRegistry();
-            return (SmartthingsConverter) constr.newInstance(typeRegistry, thing);
-        } catch (ClassNotFoundException e) {
-            // Most of the time there is no channel specific converter, the default converter is all that is needed.
-            logger.trace("No Custom converter exists for {} ({})", converterName, converterClassName);
-        } catch (NoSuchMethodException e) {
-            logger.warn("NoSuchMethodException occurred for {} ({}) {}", converterName, converterClassName,
-                    e.getMessage());
-        } catch (InvocationTargetException e) {
-            logger.warn("InvocationTargetException occurred for {} ({}) {}", converterName, converterClassName,
-                    e.getMessage());
-        } catch (IllegalAccessException e) {
-            logger.warn("IllegalAccessException occurred for {} ({}) {}", converterName, converterClassName,
-                    e.getMessage());
-        } catch (InstantiationException e) {
-            logger.warn("InstantiationException occurred for {} ({}) {}", converterName, converterClassName,
-                    e.getMessage());
-        }
-        return null;
+        return SmartthingsConverterFactory.getConverter(converterName);
     }
 
     @Override
