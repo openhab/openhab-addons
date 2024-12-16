@@ -14,8 +14,7 @@ package org.openhab.binding.weatherunderground.internal.json;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 /**
  * The {@link WeatherUndergroundJsonForecastDay} is the Java class used
@@ -66,8 +65,8 @@ public class WeatherUndergroundJsonForecastDay {
      *
      * @return the forecast date and time or null if not defined
      */
-    public ZonedDateTime getForecastTime(ZoneId zoneId) {
-        return WeatherUndergroundJsonUtils.convertToZonedDateTime((date == null) ? null : date.getEpoch(), zoneId);
+    public Instant getForecastTime() {
+        return WeatherUndergroundJsonUtils.convertToInstant((date == null) ? null : date.getEpoch());
     }
 
     /**
