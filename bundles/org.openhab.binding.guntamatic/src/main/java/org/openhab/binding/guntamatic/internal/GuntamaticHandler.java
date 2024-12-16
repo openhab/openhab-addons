@@ -405,6 +405,8 @@ public class GuntamaticHandler extends BaseThingHandler {
     }
 
     private @Nullable String sendGetRequest(String url, String... params) {
+        logger.trace("sendGetRequest '{}'", url);
+
         String errorReason = "";
         String req = "http://" + config.hostname + url;
 
@@ -434,10 +436,10 @@ public class GuntamaticHandler extends BaseThingHandler {
                     String response = new String(contentResponse.getContent(), Charset.forName(config.encoding));
                     if (url.equals(DAQEXTDESC_URL)) {
                         parseAndJsonInit(response);
-                    } else if (url.equals(DAQDATA_URL)) {
-                        parseAndUpdate(response);
                     } else if (url.equals(DAQDESC_URL)) {
                         parseAndInit(response);
+                    } else if (url.equals(DAQDATA_URL)) {
+                        parseAndUpdate(response);
                     } else {
                         logger.debug(req);
                         // PARSET_URL via return
@@ -469,7 +471,10 @@ public class GuntamaticHandler extends BaseThingHandler {
                 sendGetRequest(DAQEXTDESC_URL);
             }
             sendGetRequest(DAQDESC_URL);
-        } else {
+        }
+
+        // above intialization usually changes channelsInitialized to TRUE
+        if (channelsInitialized) {
             sendGetRequest(DAQDATA_URL);
         }
     }
@@ -481,6 +486,7 @@ public class GuntamaticHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid hostname configuration");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
+            logger.trace("scheduleWithFixedDelay(pollGuntamatic, 1, {}, TimeUnit.SECONDS)", config.refreshInterval);
             pollingFuture = scheduler.scheduleWithFixedDelay(this::pollGuntamatic, 1, config.refreshInterval,
                     TimeUnit.SECONDS);
         }
