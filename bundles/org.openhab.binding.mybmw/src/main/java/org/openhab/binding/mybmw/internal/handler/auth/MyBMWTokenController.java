@@ -23,6 +23,7 @@ import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.EADRAX_SE
 import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.LOGIN_NONCE;
 import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.OAUTH_ENDPOINT;
 import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.OCP_APIM_KEYS;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REFRESH_TOKEN;
 import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_CHINA;
 import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_NORTH_AMERICA;
 import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_ROW;
@@ -36,6 +37,7 @@ import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE_CHALLE
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE_VERIFIER;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CONTENT_TYPE_URL_ENCODED;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.GRANT_TYPE;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HCAPTCHA_TOKEN;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_ACP_SUBSCRIPTION_KEY;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_BMW_CORRELATION_ID;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_X_CORRELATION_ID;
@@ -57,6 +59,8 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import javax.crypto.Cipher;
 
@@ -86,7 +90,8 @@ import org.slf4j.LoggerFactory;
  *
  * requests the tokens for MyBMW API authorization
  *
- * thanks to bimmer_connected https://github.com/bimmerconnected/bimmer_connected
+ * thanks to bimmer_connected
+ * https://github.com/bimmerconnected/bimmer_connected
  *
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - extracted from myBmwProxy
@@ -97,12 +102,16 @@ public class MyBMWTokenController {
     private final Logger logger = LoggerFactory.getLogger(MyBMWTokenController.class);
 
     private Token token = new Token();
-    private MyBMWBridgeConfiguration configuration;
+    private MyBMWBridgeConfiguration bridgeConfiguration;
     private HttpClient httpClient;
 
     public MyBMWTokenController(MyBMWBridgeConfiguration configuration, HttpClient httpClient) {
-        this.configuration = configuration;
+        this.bridgeConfiguration = configuration;
         this.httpClient = httpClient;
+    }
+
+    public void setBridgeConfiguration(MyBMWBridgeConfiguration bridgeConfiguration) {
+        this.bridgeConfiguration = bridgeConfiguration;
     }
 
     /**
@@ -114,18 +123,31 @@ public class MyBMWTokenController {
      * @return token
      */
     public Token getToken() {
-        if (!token.isValid()) {
+        if (!bridgeConfiguration.getHcaptchatoken().isBlank()) {
+            // if the hcaptchastring is available, then a new login is triggered
+            boolean tokenCreationSuccess = getInitialToken();
+
+            if (!tokenCreationSuccess) {
+                this.token = new Token();
+                logger.warn(
+                        "initial Authentication failed, maybe request a new captcha token, see https://bimmer-connected.readthedocs.io/en/latest/captcha/rest_of_world.html!");
+            }
+
+            // reset the token as it times out
+            bridgeConfiguration.setHcaptchatoken(Constants.EMPTY);
+        } else if (!token.isValid() && !Constants.EMPTY.equals(token.getRefreshToken())) {
+            // if the token is invalid, try to refresh the token
             boolean tokenUpdateSuccess = false;
-            switch (configuration.region) {
+            switch (bridgeConfiguration.getRegion()) {
                 case REGION_CHINA:
-                    tokenUpdateSuccess = updateTokenChina();
+                    tokenUpdateSuccess = getAndUpdateTokenChina();
                     break;
                 case REGION_NORTH_AMERICA:
                 case REGION_ROW:
-                    tokenUpdateSuccess = updateToken();
+                    tokenUpdateSuccess = getUpdatedToken();
                     break;
                 default:
-                    logger.warn("Region {} not supported", configuration.region);
+                    logger.warn("Region {} not supported", bridgeConfiguration.getRegion());
                     break;
             }
             if (!tokenUpdateSuccess) {
@@ -143,32 +165,12 @@ public class MyBMWTokenController {
      *
      * @return true if the token was successfully updated
      */
-    private synchronized boolean updateToken() {
+    private synchronized boolean getInitialToken() {
         try {
             /*
              * Step 1) Get basic values for further queries
              */
-            String uuidString = UUID.randomUUID().toString();
-
-            String authValuesUrl = "https://" + EADRAX_SERVER_MAP.get(configuration.region) + API_OAUTH_CONFIG;
-            Request authValuesRequest = httpClient.newRequest(authValuesUrl);
-            authValuesRequest.header(HEADER_ACP_SUBSCRIPTION_KEY, OCP_APIM_KEYS.get(configuration.region));
-            authValuesRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW,
-                    APP_VERSIONS.get(configuration.region), configuration.region));
-            authValuesRequest.header(HEADER_X_IDENTITY_PROVIDER, AUTH_PROVIDER);
-            authValuesRequest.header(HEADER_X_CORRELATION_ID, uuidString);
-            authValuesRequest.header(HEADER_BMW_CORRELATION_ID, uuidString);
-
-            ContentResponse authValuesResponse = authValuesRequest.send();
-            if (authValuesResponse.getStatus() != 200) {
-                throw new HttpResponseException("URL: " + authValuesRequest.getURI() + ", Error: "
-                        + authValuesResponse.getStatus() + ", Message: " + authValuesResponse.getContentAsString(),
-                        authValuesResponse);
-            }
-            AuthQueryResponse aqr = JsonStringDeserializer.deserializeString(authValuesResponse.getContentAsString(),
-                    AuthQueryResponse.class);
-
-            logger.trace("authQueryResponse: {}", aqr);
+            AuthQueryResponse aqr = getBasicAuthenticationValues();
 
             /*
              * Step 2) Calculate values for oauth base parameters
@@ -188,17 +190,19 @@ public class MyBMWTokenController {
             baseParams.put(CODE_CHALLENGE_METHOD, "S256");
 
             /**
-             * Step 3) Authorization with username and password
+             * Step 3) Authentication with username and password
              */
             String loginUrl = aqr.gcdmBaseUrl + OAUTH_ENDPOINT;
             Request loginRequest = httpClient.POST(loginUrl);
 
             loginRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
+            loginRequest.header(HCAPTCHA_TOKEN, bridgeConfiguration.getHcaptchatoken());
 
             MultiMap<@Nullable String> loginParams = new MultiMap<>(baseParams);
             loginParams.put(GRANT_TYPE, AUTHORIZATION_CODE);
-            loginParams.put(USERNAME, configuration.userName);
-            loginParams.put(PASSWORD, configuration.password);
+            loginParams.put(USERNAME, bridgeConfiguration.getUserName());
+            loginParams.put(PASSWORD, bridgeConfiguration.getPassword());
+            logger.trace("loginParams {}", loginParams);
             loginRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
                     UrlEncoded.encode(loginParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
             ContentResponse loginResponse = loginRequest.send();
@@ -207,10 +211,11 @@ public class MyBMWTokenController {
                         + loginResponse.getStatus() + ", Message: " + loginResponse.getContentAsString(),
                         loginResponse);
             }
+
             String authCode = getAuthCode(loginResponse.getContentAsString());
 
             /**
-             * Step 4) Authorize with code
+             * Step 4) Authenticate with code
              */
             Request authRequest = httpClient.POST(loginUrl).followRedirects(false);
             MultiMap<@Nullable String> authParams = new MultiMap<>(baseParams);
@@ -248,14 +253,92 @@ public class MyBMWTokenController {
             }
             AuthResponse ar = JsonStringDeserializer.deserializeString(codeResponse.getContentAsString(),
                     AuthResponse.class);
+
             token.setType(ar.tokenType);
             token.setToken(ar.accessToken);
             token.setExpiration(ar.expiresIn);
+            token.setRefreshToken(ar.refreshToken);
+            token.setGcid(ar.gcid);
+
             return true;
         } catch (Exception e) {
             logger.warn("Authorization Exception: {}", e.getMessage());
         }
         return false;
+    }
+
+    /**
+     * refresh the existing token
+     * 
+     * @return true if token has successfully been refreshed
+     */
+    private synchronized boolean getUpdatedToken() {
+        try {
+            /*
+             * Step 1) Get basic values for further queries
+             */
+            AuthQueryResponse aqr = getBasicAuthenticationValues();
+
+            /**
+             * Step 2) Request token
+             */
+            Request codeRequest = httpClient.POST(aqr.tokenEndpoint);
+            String basicAuth = "Basic "
+                    + Base64.getUrlEncoder().encodeToString((aqr.clientId + ":" + aqr.clientSecret).getBytes());
+            codeRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
+            codeRequest.header(AUTHORIZATION, basicAuth);
+
+            MultiMap<@Nullable String> codeParams = new MultiMap<>();
+            codeParams.put(SCOPE, String.join(Constants.SPACE, aqr.scopes));
+            codeParams.put(REDIRECT_URI, aqr.returnUrl);
+            codeParams.put(GRANT_TYPE, REFRESH_TOKEN);
+            codeParams.put(REFRESH_TOKEN, token.getRefreshToken());
+            codeRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
+                    UrlEncoded.encode(codeParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
+            ContentResponse codeResponse = codeRequest.send();
+            if (codeResponse.getStatus() != 200) {
+                throw new HttpResponseException("URL: " + codeRequest.getURI() + ", Error: " + codeResponse.getStatus()
+                        + ", Message: " + codeResponse.getContentAsString(), codeResponse);
+            }
+            AuthResponse ar = JsonStringDeserializer.deserializeString(codeResponse.getContentAsString(),
+                    AuthResponse.class);
+
+            token.setToken(ar.accessToken);
+            token.setExpiration(ar.expiresIn);
+            token.setRefreshToken(ar.refreshToken);
+            token.setGcid(ar.gcid);
+
+            return true;
+        } catch (Exception e) {
+            logger.warn("Refresh Exception: {}", e.getMessage());
+        }
+        return false;
+    }
+
+    private AuthQueryResponse getBasicAuthenticationValues()
+            throws InterruptedException, TimeoutException, ExecutionException {
+        String uuidString = UUID.randomUUID().toString();
+
+        String authValuesUrl = "https://" + EADRAX_SERVER_MAP.get(bridgeConfiguration.getRegion()) + API_OAUTH_CONFIG;
+        Request authValuesRequest = httpClient.newRequest(authValuesUrl);
+        authValuesRequest.header(HEADER_ACP_SUBSCRIPTION_KEY, OCP_APIM_KEYS.get(bridgeConfiguration.getRegion()));
+        authValuesRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW,
+                APP_VERSIONS.get(bridgeConfiguration.getRegion()), bridgeConfiguration.getRegion()));
+        authValuesRequest.header(HEADER_X_IDENTITY_PROVIDER, AUTH_PROVIDER);
+        authValuesRequest.header(HEADER_X_CORRELATION_ID, uuidString);
+        authValuesRequest.header(HEADER_BMW_CORRELATION_ID, uuidString);
+
+        ContentResponse authValuesResponse = authValuesRequest.send();
+        if (authValuesResponse.getStatus() != 200) {
+            throw new HttpResponseException("URL: " + authValuesRequest.getURI() + ", Error: "
+                    + authValuesResponse.getStatus() + ", Message: " + authValuesResponse.getContentAsString(),
+                    authValuesResponse);
+        }
+        AuthQueryResponse aqr = JsonStringDeserializer.deserializeString(authValuesResponse.getContentAsString(),
+                AuthQueryResponse.class);
+
+        logger.trace("authQueryResponse: {}", aqr);
+        return aqr;
     }
 
     private String generateState() {
@@ -301,7 +384,7 @@ public class MyBMWTokenController {
         return codeFound.toString();
     }
 
-    private synchronized boolean updateTokenChina() {
+    private synchronized boolean getAndUpdateTokenChina() {
         try {
             /**
              * Step 1) get public key
@@ -310,7 +393,7 @@ public class MyBMWTokenController {
             Request oauthQueryRequest = httpClient.newRequest(publicKeyUrl);
             oauthQueryRequest.header(HttpHeader.USER_AGENT, USER_AGENT);
             oauthQueryRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW,
-                    APP_VERSIONS.get(configuration.region), configuration.region));
+                    APP_VERSIONS.get(bridgeConfiguration.getRegion()), bridgeConfiguration.getRegion()));
             ContentResponse publicKeyResponse = oauthQueryRequest.send();
             if (publicKeyResponse.getStatus() != 200) {
                 throw new HttpResponseException("URL: " + oauthQueryRequest.getURI() + ", Error: "
@@ -335,7 +418,7 @@ public class MyBMWTokenController {
             // https://www.thexcoders.net/java-ciphers-rsa/
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            byte[] encryptedBytes = cipher.doFinal(configuration.password.getBytes());
+            byte[] encryptedBytes = cipher.doFinal(bridgeConfiguration.getPassword().getBytes());
             String encodedPassword = Base64.getEncoder().encodeToString(encryptedBytes);
 
             /**
@@ -344,9 +427,9 @@ public class MyBMWTokenController {
             String tokenUrl = "https://" + EADRAX_SERVER_MAP.get(REGION_CHINA) + CHINA_LOGIN;
             Request loginRequest = httpClient.POST(tokenUrl);
             loginRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW,
-                    APP_VERSIONS.get(configuration.region), configuration.region));
-            String jsonContent = "{ \"mobile\":\"" + configuration.userName + "\", \"password\":\"" + encodedPassword
-                    + "\"}";
+                    APP_VERSIONS.get(bridgeConfiguration.getRegion()), bridgeConfiguration.getRegion()));
+            String jsonContent = "{ \"mobile\":\"" + bridgeConfiguration.getUserName() + "\", \"password\":\""
+                    + encodedPassword + "\"}";
             loginRequest.content(new StringContentProvider(jsonContent));
             ContentResponse tokenResponse = loginRequest.send();
             if (tokenResponse.getStatus() != 200) {
