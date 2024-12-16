@@ -183,7 +183,7 @@ public class VigilanceHandler extends BaseThingHandler implements MeteoFranceChi
 
     private void updateDate(String channelId, ZonedDateTime zonedDateTime) {
         if (isLinked(channelId)) {
-            updateState(channelId, new DateTimeType(zonedDateTime.withZoneSameInstant(systemZoneId)));
+            updateState(channelId, new DateTimeType(zonedDateTime));
         }
     }
 }
