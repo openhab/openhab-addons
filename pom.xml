@@ -63,7 +63,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <oh.java.version>17</oh.java.version>
+    <oh.java.version>21</oh.java.version>
     <maven.compiler.release>${oh.java.version}</maven.compiler.release>
 
     <ohc.version>5.0.0-SNAPSHOT</ohc.version>
@@ -639,7 +639,7 @@ Import-Package: \\
                   <version>3.6.3</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
-                  <version>[17.0,18.0),[21.0,22.0)</version>
+                  <version>[21.0,22.0)</version>
                 </requireJavaVersion>
               </rules>
             </configuration>
@@ -825,9 +825,9 @@ Import-Package: \\
       </build>
     </profile>
     <profile>
-      <id>j21</id>
+      <id>j17</id>
       <properties>
-        <oh.java.version>21</oh.java.version>
+        <oh.java.version>17</oh.java.version>
         <maven.compiler.release>${oh.java.version}</maven.compiler.release>
       </properties>
     </profile>
