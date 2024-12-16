@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SmartthingsDefaultConverter extends SmartthingsConverter {
-    private final Logger logger = LoggerFactory.getLogger(SmartthingsConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsDefaultConverter.class);
 
     public SmartthingsDefaultConverter(SmartthingsTypeRegistry typeRegistry) {
         super(typeRegistry);
