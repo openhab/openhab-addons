@@ -129,6 +129,7 @@ public class EnedisHttpApi {
             if (result.getStatus() != 200) {
                 throw new LinkyException("Error requesting '%s': %s", url, result.getContentAsString());
             }
+
             String content = result.getContentAsString();
             logger.trace("getContent returned {}", content);
             return content;

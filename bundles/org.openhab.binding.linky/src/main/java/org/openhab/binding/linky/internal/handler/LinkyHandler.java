@@ -116,13 +116,10 @@ public class LinkyHandler extends BaseThingHandler {
             LocalDate today = LocalDate.now();
             MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
             meterReading = getMeterReadingAfterChecks(meterReading);
-            /*
-             * if (consumption != null) {
-             * logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
-             * logData(consumption.aggregats.weeks, "Week", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
-             *
-             * }
-             */
+            if (meterReading != null) {
+                logData(meterReading.dayValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
+                logData(meterReading.weekValue, "Week", DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
+            }
             return meterReading;
         });
 
@@ -790,14 +787,6 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     /*
-     * private @Nullable Consumption getConsumptionAfterChecks(Consumption consumption, Target target) {
-     *
-     *
-     *
-     * return consumption;
-     * }
-     *
-     *
      *
      * private boolean isDataFirstDayAvailable(Consumption consumption) {
      * Aggregate days = consumption.aggregats.days;
@@ -810,41 +799,6 @@ public class LinkyHandler extends BaseThingHandler {
      * logData(days, "Last day", false, DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
      * return days.datas != null && !days.datas.isEmpty() && !days.datas.get(days.datas.size() - 1).isNaN();
      * }
-     *
-     *
-     * private void logData(Aggregate aggregate, String title, boolean withDateFin, DateTimeFormatter dateTimeFormatter,
-     * Target target) {
-     * if (logger.isDebugEnabled()) {
-     * int size = (aggregate.datas == null || aggregate.periodes == null) ? 0
-     * : (aggregate.datas.size() <= aggregate.periodes.size() ? aggregate.datas.size()
-     * : aggregate.periodes.size());
-     * if (target == Target.FIRST) {
-     * if (size > 0) {
-     * logData(aggregate, 0, title, withDateFin, dateTimeFormatter);
-     * }
-     * } else if (target == Target.LAST) {
-     * if (size > 0) {
-     * logData(aggregate, size - 1, title, withDateFin, dateTimeFormatter);
-     * }
-     * } else {
-     * for (int i = 0; i < size; i++) {
-     * logData(aggregate, i, title, withDateFin, dateTimeFormatter);
-     * }
-     * }
-     * }
-     * }
-     *
-     * private void logData(Aggregate aggregate, int index, String title, boolean withDateFin,
-     * DateTimeFormatter dateTimeFormatter) {
-     * if (withDateFin) {
-     * logger.debug("{} {} {} value {}", title, aggregate.periodes.get(index).dateDebut.format(dateTimeFormatter),
-     * aggregate.periodes.get(index).dateFin.format(dateTimeFormatter), aggregate.datas.get(index));
-     * } else {
-     * logger.debug("{} {} value {}", title, aggregate.periodes.get(index).dateDebut.format(dateTimeFormatter),
-     * aggregate.datas.get(index));
-     * }
-     * }
-     *
      */
 
     private void logData(IntervalReading[] ivArray, String title, DateTimeFormatter dateTimeFormatter, Target target) {
