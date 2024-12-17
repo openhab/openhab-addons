@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wiz.internal.handler.WizHandler;
 import org.openhab.binding.wiz.internal.handler.WizMediator;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -43,15 +42,12 @@ public class WizHandlerFactory extends BaseThingHandlerFactory {
 
     private final WizMediator mediator;
     private final WizStateDescriptionProvider stateDescriptionProvider;
-    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public WizHandlerFactory(@Reference WizMediator mediator,
-            @Reference WizStateDescriptionProvider stateDescriptionProvider,
-            @Reference TimeZoneProvider timeZoneProvider) {
+            @Reference WizStateDescriptionProvider stateDescriptionProvider) {
         this.mediator = mediator;
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -66,7 +62,7 @@ public class WizHandlerFactory extends BaseThingHandlerFactory {
         if (supportsThingType(thing.getThingTypeUID())) {
             WizHandler handler;
 
-            handler = new WizHandler(thing, mediator, stateDescriptionProvider, timeZoneProvider);
+            handler = new WizHandler(thing, mediator, stateDescriptionProvider);
 
             mediator.registerThingAndWizBulbHandler(thing, handler);
             return handler;
