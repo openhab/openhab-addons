@@ -13,7 +13,15 @@ Discovery is supported by the Smartthings binding and is run automatically on st
 
 ## Smartthings Configuration
 
-Prior to running the binding the Smartthings hub must have the required openHAB software installed. [Follow these instructions](doc/SmartthingsInstallation.md)
+You will need to get a token before setup the binding.
+For this, go to the following ULR : https://account.smartthings.com/tokens/new
+Then login with you smartthings account / password.
+On the next page, give a token name (arbitrary), select all the Oauth scope.
+On the last page, the token will be displayed. Make a copy of it, and fill it on the openhab Smarthings Cloud Hub device.
+
+
+
+
 
 **The binding will not work until this part has been completed, do not skip this part of the setup.**
 
