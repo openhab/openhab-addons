@@ -151,9 +151,7 @@ public class HandlerColorTemperatureController extends HandlerBase {
                 }
             }
         }
-        if (channelId.equals(COLOR_TEMPERATURE_NAME.channelId))
-
-        {
+        if (channelId.equals(COLOR_TEMPERATURE_NAME.channelId)) {
             if (containsCapabilityProperty(capabilities, COLOR_TEMPERATURE_IN_KELVIN.propertyName)) {
                 if (command instanceof StringType) {
                     String colorTemperatureName = command.toFullString();

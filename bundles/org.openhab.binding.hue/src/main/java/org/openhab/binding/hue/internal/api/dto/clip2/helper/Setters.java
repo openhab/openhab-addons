@@ -95,13 +95,13 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setColorTemperatureAbsolute(Resource target, Command command, @Nullable Resource source) {
-        QuantityType<?> miredQuantity = null;
+        QuantityType<?> mirekQuantity = null;
         if (command instanceof QuantityType<?> genericQuantity) {
-            miredQuantity = genericQuantity.toInvertibleUnit(Units.MIRED);
+            mirekQuantity = genericQuantity.toInvertibleUnit(Units.MIRED);
         } else if (command instanceof DecimalType decimal) {
-            miredQuantity = QuantityType.valueOf(decimal.intValue(), Units.KELVIN).toInvertibleUnit(Units.MIRED);
+            mirekQuantity = QuantityType.valueOf(decimal.intValue(), Units.KELVIN).toInvertibleUnit(Units.MIRED);
         }
-        if (Objects.nonNull(miredQuantity)) {
+        if (Objects.nonNull(mirekQuantity)) {
             MirekSchema schema = target.getMirekSchema();
             schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
             schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
@@ -109,7 +109,7 @@ public class Setters {
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
             double min = schema.getMirekMinimum();
             double max = schema.getMirekMaximum();
-            double val = Math.max(min, Math.min(max, miredQuantity.doubleValue()));
+            double val = Math.max(min, Math.min(max, mirekQuantity.doubleValue()));
             target.setColorTemperature(colorTemperature.setMirek(val));
         }
         return target;
