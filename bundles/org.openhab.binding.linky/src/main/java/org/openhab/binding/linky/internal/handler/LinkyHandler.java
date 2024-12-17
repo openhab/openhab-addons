@@ -471,10 +471,15 @@ public class LinkyHandler extends BaseThingHandler {
 
         for (int i = 0; i < iv.length; i++) {
             try {
+                if (iv[i].date == null) {
+                    continue;
+                }
+
+                Instant timestamp = iv[i].date.toInstant(ZoneOffset.UTC);
+
                 if (Double.isNaN(iv[i].value)) {
                     continue;
                 }
-                Instant timestamp = iv[i].date.toInstant(ZoneOffset.UTC);
                 timeSeries.add(timestamp, new DecimalType(iv[i].value));
             } catch (Exception ex) {
                 logger.debug("aa");
@@ -482,7 +487,10 @@ public class LinkyHandler extends BaseThingHandler {
         }
 
         sendTimeSeries(groupId, channelId, timeSeries);
-        updateState(groupId, channelId, new DecimalType(iv[iv.length - 1].value));
+
+        if (!Double.isNaN(iv[iv.length - 1].value)) {
+            updateState(groupId, channelId, new DecimalType(iv[iv.length - 1].value));
+        }
     }
 
     private synchronized void updateConsumptionTimeSeries(String groupId, String channelId, IntervalReading[] iv) {
@@ -494,11 +502,17 @@ public class LinkyHandler extends BaseThingHandler {
             }
 
             Instant timestamp = iv[i].date.toInstant(ZoneOffset.UTC);
+
+            if (Double.isNaN(iv[i].value)) {
+                continue;
+            }
             timeSeries.add(timestamp, new DecimalType(iv[i].value));
         }
 
         sendTimeSeries(groupId, channelId, timeSeries);
-        updateState(groupId, channelId, new DecimalType(iv[iv.length - 1].value));
+        if (!Double.isNaN(iv[iv.length - 1].value)) {
+            updateState(groupId, channelId, new DecimalType(iv[iv.length - 1].value));
+        }
     }
 
     private void updateKwhChannel(String groupId, String channelId, double consumption) {
