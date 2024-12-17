@@ -42,6 +42,8 @@ import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingRegistry;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -162,6 +164,23 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
     @Override
     public DateTimeFormatter getApiDateFormatYearsFirst() {
         return API_DATE_FORMAT_YEAR_FIRST;
+    }
+
+    @Override
+    public void disconnect() {
+        if (connected) {
+            try {
+                httpClient.getCookieStore().removeAll();
+                String location = enedisApi.getLocation(httpClient.GET(BASE_URL + "/logout"));
+                location = enedisApi.getLocation(httpClient.GET(location));
+                enedisApi.getLocation(httpClient.GET(location));
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Error while disconnecting from Enedis webservice");
+            }
+        }
+        super.disconnect();
+
     }
 
     @Override
