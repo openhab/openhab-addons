@@ -52,10 +52,13 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,16 +104,16 @@ public class GuntamaticHandler extends BaseThingHandler {
     private List<String> staticChannelIDs;
     private GuntamaticConfiguration config = new GuntamaticConfiguration();
     private Boolean channelsInitialized = false;
-    private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
+    private GuntamaticDynamicTypeProvider typeProvider;
     private Map<Integer, String> channels = new HashMap<>();
     private Map<Integer, String> types = new HashMap<>();
     private Map<Integer, Unit<?>> units = new HashMap<>();
 
-    public GuntamaticHandler(Thing thing, HttpClient httpClient,
-            GuntamaticChannelTypeProvider guntamaticChannelTypeProvider, List<String> staticChannelIDs) {
+    public GuntamaticHandler(Thing thing, HttpClient httpClient, GuntamaticDynamicTypeProvider typeProvider,
+            List<String> staticChannelIDs) {
         super(thing);
         this.httpClient = httpClient;
-        this.guntamaticChannelTypeProvider = guntamaticChannelTypeProvider;
+        this.typeProvider = typeProvider;
         this.staticChannelIDs = staticChannelIDs;
     }
 
@@ -331,8 +334,18 @@ public class GuntamaticHandler extends BaseThingHandler {
 
                 String channelId = String.format("%03d", i) + "_" + channel;
                 ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
-                guntamaticChannelTypeProvider.addChannelType(channelTypeUID, channel, itemType, "Guntamatic " + label,
-                        false, pattern);
+                StateDescriptionFragmentBuilder stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder
+                        .create().withReadOnly(true);
+                if (!pattern.isEmpty()) {
+                    stateDescriptionFragmentBuilder.withPattern(pattern);
+                }
+
+                ChannelType channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
+                        .withDescription("Guntamatic " + label)
+                        .withStateDescriptionFragment(stateDescriptionFragmentBuilder.build()).build();
+
+                typeProvider.putChannelType(channelType);
+
                 Channel newChannel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), itemType)
                         .withType(channelTypeUID).withKind(ChannelKind.STATE).withLabel(label).build();
                 channelList.add(newChannel);
@@ -500,5 +513,11 @@ public class GuntamaticHandler extends BaseThingHandler {
             pollingFuture = null;
         }
         channelsInitialized = false;
+    }
+
+    @Override
+    public void handleRemoval() {
+        typeProvider.removeChannelTypesForThing(getThing().getUID());
+        super.handleRemoval();
     }
 }
