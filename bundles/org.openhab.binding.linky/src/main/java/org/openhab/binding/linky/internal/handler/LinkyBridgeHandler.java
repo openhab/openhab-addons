@@ -153,7 +153,6 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
         if (connected) {
             logger.debug("Logout process");
             connected = false;
-            httpClient.getCookieStore().removeAll();
         }
     }
 

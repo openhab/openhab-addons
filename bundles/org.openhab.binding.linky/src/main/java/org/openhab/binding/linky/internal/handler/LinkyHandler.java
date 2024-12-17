@@ -213,6 +213,15 @@ public class LinkyHandler extends BaseThingHandler {
                     return;
                 }
 
+                LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) lcBridge.getHandler();
+                if (bridgeHandler == null) {
+                    return;
+                }
+
+                if (!bridgeHandler.isConnected()) {
+                    bridgeHandler.connectionInit();
+                }
+
                 if (supportNewApiFormat()) {
                     Identity identity = api.getIdentity(this, config.prmId);
                     Contact contact = api.getContact(this, config.prmId);
@@ -273,8 +282,6 @@ public class LinkyHandler extends BaseThingHandler {
 
     private synchronized void updateMetaData(Identity identity, Contact contact, Contract contract,
             UsagePoint usagePoint) {
-        EnedisHttpApi api = this.enedisApi;
-
         String title = identity.title;
         String firstName = identity.firstname;
         String lastName = identity.lastname;
@@ -678,6 +685,13 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     private void disconnect() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
+            if (bridgeHandler != null) {
+                bridgeHandler.disconnect();
+            }
+        }
     }
 
     @Override
@@ -748,7 +762,6 @@ public class LinkyHandler extends BaseThingHandler {
                 int size = meterReading.dayValue.length;
                 int baseYear = meterReading.dayValue[0].date.getYear();
                 int baseMonth = meterReading.dayValue[0].date.getMonthValue();
-                int baseDayOfYear = meterReading.dayValue[0].date.getDayOfYear();
                 int baseWeek = meterReading.dayValue[0].date.get(WeekFields.of(Locale.FRANCE).weekOfYear());
 
                 for (int idx = 0; idx < size; idx++) {
