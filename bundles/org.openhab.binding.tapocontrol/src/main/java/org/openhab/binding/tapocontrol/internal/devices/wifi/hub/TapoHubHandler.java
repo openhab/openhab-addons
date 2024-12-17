@@ -283,7 +283,7 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
 
     public TapoChildDeviceData getChild(String deviceSerial) {
         List<TapoChildDeviceData> childDeviceList = tapoChildsList.getChildDeviceList();
-        for (int i = 0; i <= childDeviceList.size(); i++) {
+        for (int i = 0; i < childDeviceList.size(); i++) {
             TapoChildDeviceData child = childDeviceList.get(i);
             if (child.getDeviceId().equals(deviceSerial)) {
                 return child;
