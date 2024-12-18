@@ -236,7 +236,7 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                     logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr, value);
                 } else if (resultObj.lifecycle.equals("INSTALL")) {
                     logger.info("");
-                    String token = resultObj.installData.authToken;
+                    String tokenInstallUpdate = resultObj.installData.authToken;
                     installedAppId = resultObj.installData.installedApp.installedAppId;
 
                     try {
@@ -246,17 +246,17 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                         installedLocation = "Unable to retrieve location!!";
                     }
 
-                    registerSubscriptions();
+                    registerSubscriptions(tokenInstallUpdate);
 
                     setupInProgress = false;
                     logger.info("INSTALL");
                 } else if (resultObj.lifecycle.equals("UPDATE")) {
-                    String token = resultObj.updateData.authToken;
+                    String tokenInstallUpdate = resultObj.updateData.authToken;
                     installedAppId = resultObj.updateData.installedApp.installedAppId;
                     String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
                             + "/subscriptions";
 
-                    registerSubscriptions();
+                    registerSubscriptions(tokenInstallUpdate);
 
                     logger.info("UPDATE");
                 } else if (resultObj.lifecycle.equals("EXECUTE")) {
@@ -325,26 +325,35 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
         logger.trace("Smartthings servlet returning.");
     }
 
-    protected void registerSubscriptions() {
+    protected void registerSubscriptions(String tokenInstallUpdate) {
         try {
             String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
                     + "/subscriptions";
 
-            networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, "", HttpMethod.GET);
+            // Remove old subscriptions before recreating them
+            networkConnector.doRequest(JsonObject.class, subscriptionUri, null, tokenInstallUpdate, "",
+                    HttpMethod.DELETE);
+
+            networkConnector.doRequest(JsonObject.class, subscriptionUri, null, tokenInstallUpdate, "", HttpMethod.GET);
 
             SmartthingsApi api = bridgeHandler.getSmartthingsApi();
             SmartthingsDevice[] devices = api.getAllDevices();
 
             for (SmartthingsDevice dev : devices) {
-                SMEvent evt = new SMEvent();
-                evt.sourceType = "DEVICE";
-                evt.device = new device(dev.deviceId, "main", true, null);
+                try {
+                    SMEvent evt = new SMEvent();
+                    evt.sourceType = "DEVICE";
+                    evt.device = new device(dev.deviceId, "main", true, null);
 
-                String body = gson.toJson(evt);
-                networkConnector.doRequest(JsonObject.class, subscriptionUri, null, token, body, HttpMethod.POST);
+                    String body = gson.toJson(evt);
+                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, tokenInstallUpdate, body,
+                            HttpMethod.POST);
+                } catch (SmartthingsException ex) {
+                    logger.error("Unable to register subscriptions: " + ex.getMessage() + " " + dev.deviceId);
+                }
             }
         } catch (SmartthingsException ex) {
-            logger.error("Unable to register subscriptions");
+            logger.error("Unable to register subscriptions: " + ex.getMessage());
         }
     }
 
