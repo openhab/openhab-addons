@@ -20,20 +20,4 @@
 		<config-description-ref uri="thing-type:velbus:temperatureSensorDevice"/>
 	</thing-type>
 
-	<thing-type id="vmb6in">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
-			<bridge-type-ref id="networkbridge"/>
-		</supported-bridge-type-refs>
-
-		<label>VMB6IN</label>
-		<description>6-channel input module</description>
-		<channel-groups>
-			<channel-group id="input" typeId="6channelInputModule"/>
-			<channel-group id="button" typeId="6channelButtonModule"/>
-		</channel-groups>
-
-		<config-description-ref uri="thing-type:velbus:6channelDevice"/>
-	</thing-type>
-
 </thing:thing-descriptions>
