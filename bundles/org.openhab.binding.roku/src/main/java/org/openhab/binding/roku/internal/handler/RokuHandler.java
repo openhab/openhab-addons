@@ -73,6 +73,7 @@ public class RokuHandler extends BaseThingHandler {
     private DeviceInfo deviceInfo = new DeviceInfo();
     private int refreshInterval = DEFAULT_REFRESH_PERIOD_SEC;
     private boolean tvActive = false;
+    private int limitedMode = -1;
     private Map<String, String> appMap = new HashMap<>();
 
     private Object sequenceLock = new Object();
@@ -175,18 +176,20 @@ public class RokuHandler extends BaseThingHandler {
                     }
                     tvActive = false;
                 }
-                updateStatus(ThingStatus.ONLINE);
             } catch (RokuHttpException e) {
                 logger.debug("Unable to retrieve Roku active-app info. Exception: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return;
             }
 
             // On the home app and when using the TV or TV inputs, do not update the play mode or time channels
-            if (!ROKU_HOME_ID.equals(activeAppId) && !activeAppId.contains(TV_INPUT)) {
+            // if in limitedMode, keep checking getPlayerInfo to see if the error goes away
+            if ((!ROKU_HOME_ID.equals(activeAppId) && !activeAppId.contains(TV_INPUT)) || limitedMode != 0) {
                 try {
                     Player playerInfo = communicator.getPlayerInfo();
+                    limitedMode = 0;
                     // When nothing playing, 'close' is reported, replace with 'stop'
-                    updateState(PLAY_MODE, new StringType(playerInfo.getState().replaceAll(CLOSE, STOP)));
+                    updateState(PLAY_MODE, new StringType(playerInfo.getState().replace(CLOSE, STOP)));
                     updateState(CONTROL,
                             PLAY.equalsIgnoreCase(playerInfo.getState()) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
@@ -209,8 +212,13 @@ public class RokuHandler extends BaseThingHandler {
                 } catch (NumberFormatException e) {
                     logger.debug("Unable to parse playerInfo integer value. Exception: {}", e.getMessage());
                 } catch (RokuHttpException e) {
-                    logger.debug("Unable to retrieve Roku media-player info. Exception: {}", e.getMessage(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    if (isLimitedModeResponse(e)) {
+                        limitedMode = 1;
+                    } else {
+                        logger.debug("Unable to retrieve Roku media-player info. Exception: {}", e.getMessage(), e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        return;
+                    }
                 }
             } else {
                 updateState(PLAY_MODE, UnDefType.UNDEF);
@@ -221,6 +229,7 @@ public class RokuHandler extends BaseThingHandler {
             if (thingTypeUID.equals(THING_TYPE_ROKU_TV) && tvActive) {
                 try {
                     TvChannel tvChannel = communicator.getActiveTvChannel();
+                    limitedMode = 0;
                     updateState(ACTIVE_CHANNEL, new StringType(tvChannel.getChannel().getNumber()));
                     updateState(SIGNAL_MODE, new StringType(tvChannel.getChannel().getSignalMode()));
                     updateState(SIGNAL_QUALITY,
@@ -230,10 +239,33 @@ public class RokuHandler extends BaseThingHandler {
                     updateState(PROGRAM_DESCRIPTION, new StringType(tvChannel.getChannel().getProgramDescription()));
                     updateState(PROGRAM_RATING, new StringType(tvChannel.getChannel().getProgramRatings()));
                 } catch (RokuHttpException e) {
-                    logger.debug("Unable to retrieve Roku tv-active-channel info. Exception: {}", e.getMessage(), e);
+                    if (isLimitedModeResponse(e)) {
+                        limitedMode = 1;
+                    } else {
+                        logger.debug("Unable to retrieve Roku tv-active-channel. Exception: {}", e.getMessage(), e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        return;
+                    }
                 }
             }
+
+            if (limitedMode < 1) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.limited");
+            }
         }
+    }
+
+    /**
+     * Determines if the Roku is configured for Limited mode by examining the exception message
+     *
+     * @param ex the RokuHttpException
+     * @return boolean indicating if the Roku is configured for Limited Mode
+     */
+    private boolean isLimitedModeResponse(RokuHttpException ex) {
+        final String message = ex.getMessage();
+        return message != null && message.contains(LIMITED_MODE_RESPONSE);
     }
 
     /**

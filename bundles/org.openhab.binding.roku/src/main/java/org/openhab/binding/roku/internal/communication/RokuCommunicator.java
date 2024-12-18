@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.roku.internal.communication;
 
+import static org.openhab.binding.roku.internal.RokuBindingConstants.*;
+
 import java.io.StringReader;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -283,8 +285,12 @@ public class RokuCommunicator {
      */
     private String getCommand(String url) throws RokuHttpException {
         try {
-            return httpClient.newRequest(url).method(HttpMethod.GET).timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS)
-                    .send().getContentAsString();
+            final String response = httpClient.newRequest(url).method(HttpMethod.GET)
+                    .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send().getContentAsString();
+            if (response != null && response.contains(LIMITED_MODE_RESPONSE)) {
+                throw new RokuHttpException(LIMITED_MODE_RESPONSE);
+            }
+            return response != null ? response : EMPTY;
         } catch (TimeoutException | ExecutionException e) {
             throw new RokuHttpException("Error executing GET command for URL: " + url, e);
         } catch (InterruptedException e) {
