@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.roku.internal.RokuConfiguration;
 import org.openhab.binding.roku.internal.RokuHttpException;
+import org.openhab.binding.roku.internal.RokuLimitedModeException;
 import org.openhab.binding.roku.internal.RokuStateDescriptionOptionProvider;
 import org.openhab.binding.roku.internal.communication.RokuCommunicator;
 import org.openhab.binding.roku.internal.dto.Apps.App;
@@ -211,14 +212,13 @@ public class RokuHandler extends BaseThingHandler {
                     }
                 } catch (NumberFormatException e) {
                     logger.debug("Unable to parse playerInfo integer value. Exception: {}", e.getMessage());
+                } catch (RokuLimitedModeException e) {
+                    logger.debug("RokuLimitedModeException: {}", e.getMessage());
+                    limitedMode = 1;
                 } catch (RokuHttpException e) {
-                    if (isLimitedModeResponse(e)) {
-                        limitedMode = 1;
-                    } else {
-                        logger.debug("Unable to retrieve Roku media-player info. Exception: {}", e.getMessage(), e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                        return;
-                    }
+                    logger.debug("Unable to retrieve Roku media-player info. Exception: {}", e.getMessage(), e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    return;
                 }
             } else {
                 updateState(PLAY_MODE, UnDefType.UNDEF);
@@ -238,14 +238,13 @@ public class RokuHandler extends BaseThingHandler {
                     updateState(PROGRAM_TITLE, new StringType(tvChannel.getChannel().getProgramTitle()));
                     updateState(PROGRAM_DESCRIPTION, new StringType(tvChannel.getChannel().getProgramDescription()));
                     updateState(PROGRAM_RATING, new StringType(tvChannel.getChannel().getProgramRatings()));
+                } catch (RokuLimitedModeException e) {
+                    logger.debug("RokuLimitedModeException: {}", e.getMessage());
+                    limitedMode = 1;
                 } catch (RokuHttpException e) {
-                    if (isLimitedModeResponse(e)) {
-                        limitedMode = 1;
-                    } else {
-                        logger.debug("Unable to retrieve Roku tv-active-channel. Exception: {}", e.getMessage(), e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                        return;
-                    }
+                    logger.debug("Unable to retrieve Roku tv-active-channel info. Exception: {}", e.getMessage(), e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    return;
                 }
             }
 
@@ -255,17 +254,6 @@ public class RokuHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.limited");
             }
         }
-    }
-
-    /**
-     * Determines if the Roku is configured for Limited mode by examining the exception message
-     *
-     * @param ex the RokuHttpException
-     * @return boolean indicating if the Roku is configured for Limited Mode
-     */
-    private boolean isLimitedModeResponse(RokuHttpException ex) {
-        final String message = ex.getMessage();
-        return message != null && message.contains(LIMITED_MODE_RESPONSE);
     }
 
     /**
