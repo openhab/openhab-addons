@@ -78,11 +78,12 @@ Properties will be attached to predefined vehicles if the VIN is matching.
 
 ### Bridge Configuration
 
-| Parameter       | Type    | Description                                                        |
-|-----------------|---------|--------------------------------------------------------------------|
-| userName        | text    | MyBMW Username                                                     |
-| password        | text    | MyBMW Password                                                     |
-| region          | text    | Select region in order to connect to the appropriate BMW server.   |
+| Parameter       | Type    | Description                                                                                            |
+|-----------------|---------|--------------------------------------------------------------------------------------------------------|
+| userName        | text    | MyBMW Username                                                                                         |
+| password        | text    | MyBMW Password                                                                                         |
+| hcaptchatoken   | text    | HCaptcha-Token for initial login (see https://bimmer-connected.readthedocs.io/en/latest/captcha.html)  |
+| region          | text    | Select region in order to connect to the appropriate BMW server.                                       |
 
 The region Configuration has 3 different options
 
@@ -849,4 +850,4 @@ sitemap BMW label="BMW" {
 
 ## Credits
 
-This work is based on the project of [Bimmer Connected](https://github.com/bimmerconnected/bimmer_connected).
+This work is based on the great work of the project of [Bimmer Connected](https://github.com/bimmerconnected/bimmer_connected).
