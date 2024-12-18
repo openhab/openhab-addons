@@ -181,7 +181,7 @@ public class RequestManager {
                     }
                 }
             } catch (InterruptedException e) {
-                logger.debug("request queue thread interrupted!");
+                logger.trace("request queue thread interrupted!");
             }
             logger.debug("exiting request queue thread!");
         }

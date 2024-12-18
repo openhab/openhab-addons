@@ -263,11 +263,9 @@ public class LegacyDevice {
                 mrequestQueue.add(qe);
             }
         }
-        LegacyRequestManager instance = LegacyRequestManager.instance();
-        if (instance != null) {
-            instance.addQueue(this, now + delay);
-        } else {
-            logger.warn("request queue manager is null");
+        LegacyDriver driver = this.driver;
+        if (driver != null) {
+            driver.getRequestManager().addQueue(this, now + delay);
         }
 
         if (!list.isEmpty()) {
@@ -388,11 +386,9 @@ public class LegacyDevice {
             msg.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
         }
         logger.trace("enqueing direct message with delay {}", delay);
-        LegacyRequestManager instance = LegacyRequestManager.instance();
-        if (instance != null) {
-            instance.addQueue(this, now + delay);
-        } else {
-            logger.warn("request queue manger instance is null");
+        LegacyDriver driver = this.driver;
+        if (driver != null) {
+            driver.getRequestManager().addQueue(this, now + delay);
         }
     }
 

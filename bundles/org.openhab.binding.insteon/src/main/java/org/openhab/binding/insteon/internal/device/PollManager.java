@@ -224,7 +224,7 @@ public class PollManager {
                     }
                 }
             } catch (InterruptedException e) {
-                logger.debug("poll queue thread interrupted!");
+                logger.trace("poll queue thread interrupted!");
             }
             logger.debug("exiting poll queue thread!");
         }
