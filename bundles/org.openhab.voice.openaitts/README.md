@@ -3,6 +3,7 @@
 The OpenAI TTS (Text-to-Speech) add-on for openHAB allows you to integrate OpenAI's Text-to-Speech capabilities into your openHAB system.
 The advantage of this service over others is that one selected voice can speak different languages.
 This is useful, for example, in conjunction with ChatGPT binding, which will help in learning foreign languages.
+You can find the price for this service here - https://openai.com/api/pricing/
 
 ## Configuration
 
@@ -11,7 +12,6 @@ To configure the OpenAI TTS, **Settings / Other Services - OpenAI Text-to-Speech
 * **apiKey** - The API key to be used for the requests.
 * **apiUrl** - The server API where to reach the AI TTS service.
 * **model**  - The ID of the model to use for TTS.
-* **voice**  - The voice to use when generating the audio. Previews of the voices are available in the [text to speech guide](https://platform.openai.com/docs/guides/text-to-speech/voice-options).
 
 ### Default Text-to-Speech and Voice Configuration
 

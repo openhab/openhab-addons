@@ -17,6 +17,7 @@
 			<label>API key</label>
 			<required>true</required>
 			<description>OpenAI API key.</description>
+			<context>password</context>
 		</parameter>
 		<parameter name="apiUrl" type="text" required="true" groupName="authentication">
 			<label>API URL</label>
@@ -34,22 +35,6 @@
 			</options>
 			<limitToOptions>false</limitToOptions>
 			<default>tts-1</default>
-		</parameter>
-		<parameter name="voice" type="text" groupName="tts">
-			<label>Voice</label>
-			<required>true</required>
-			<description>The voice to use when generating the audio. Previews of the voices are available in the text to speech
-				guide. https://platform.openai.com/docs/guides/text-to-speech/voice-options</description>
-			<options>
-				<option value="alloy">Alloy</option>
-				<option value="echo">Echo</option>
-				<option value="fable">Fable</option>
-				<option value="nova">Nova</option>
-				<option value="shimmer">Shimmer</option>
-				<option value="onyx">Onyx</option>
-			</options>
-			<limitToOptions>false</limitToOptions>
-			<default>nova</default>
 		</parameter>
 		<parameter name="speed" type="decimal" min="0.25" max="4" groupName="tts">
 			<label>Speed</label>

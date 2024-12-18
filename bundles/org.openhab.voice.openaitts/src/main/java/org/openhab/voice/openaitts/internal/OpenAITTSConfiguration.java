@@ -23,6 +23,5 @@ public class OpenAITTSConfiguration {
     public String apiKey = "";
     public String apiUrl = "https://api.openai.com/v1/audio/speech";
     public String model = "tts-1";
-    public String voice = "nova";
     public String speed = "1";
 }

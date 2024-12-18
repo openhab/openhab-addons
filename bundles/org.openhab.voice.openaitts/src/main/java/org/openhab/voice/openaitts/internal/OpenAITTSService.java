@@ -123,7 +123,7 @@ public class OpenAITTSService extends AbstractCachedTTSService {
         JsonObject content = new JsonObject();
         content.addProperty("model", config.model);
         content.addProperty("input", text);
-        content.addProperty("voice", config.voice);
+        content.addProperty("voice", voice.getLabel());
         content.addProperty("speed", config.speed);
 
         String queryJson = gson.toJson(content);
