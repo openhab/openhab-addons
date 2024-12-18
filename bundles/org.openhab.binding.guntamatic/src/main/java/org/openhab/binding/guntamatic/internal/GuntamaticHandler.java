@@ -272,7 +272,7 @@ public class GuntamaticHandler extends BaseThingHandler {
         String[] daqdesc = html.split("\\n");
         List<Channel> channelList = new ArrayList<>();
         for (Channel chn : thing.getChannels()) {
-            logger.trace("Static Channel '{}' present", chn.getUID());
+            logger.debug("Static Channel '{}' present", chn.getUID());
         }
 
         // make sure that static channels are present
@@ -422,7 +422,7 @@ public class GuntamaticHandler extends BaseThingHandler {
     }
 
     private @Nullable String sendGetRequest(String url, String... params) {
-        logger.trace("sendGetRequest '{}'", url);
+        logger.debug("sendGetRequest '{}'", url);
 
         String errorReason = "";
         String req = "http://" + config.hostname + url;
@@ -458,8 +458,8 @@ public class GuntamaticHandler extends BaseThingHandler {
                     } else if (url.equals(DAQDATA_URL)) {
                         parseAndUpdate(response);
                     } else {
-                        logger.debug(req);
-                        // PARSET_URL via return
+                        logger.debug("parset request: {}", req);
+                        // PARSET_URL request is handled via return value only
                     }
                     return response;
                 } catch (IllegalArgumentException e) {
@@ -503,7 +503,7 @@ public class GuntamaticHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid hostname configuration");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
-            logger.trace("scheduleWithFixedDelay(pollGuntamatic, 1, {}, TimeUnit.SECONDS)", config.refreshInterval);
+            logger.debug("scheduleWithFixedDelay(pollGuntamatic, 1, {}, TimeUnit.SECONDS)", config.refreshInterval);
             pollingFuture = scheduler.scheduleWithFixedDelay(this::pollGuntamatic, 1, config.refreshInterval,
                     TimeUnit.SECONDS);
         }
