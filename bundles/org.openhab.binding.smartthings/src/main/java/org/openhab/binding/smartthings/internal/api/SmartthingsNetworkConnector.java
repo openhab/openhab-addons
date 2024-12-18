@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.smartthings.internal.type.SmartthingsException;
 
 /**
  * @author Laurent Arnal - Initial contribution
@@ -24,10 +25,10 @@ import org.eclipse.jetty.http.HttpMethod;
 public interface SmartthingsNetworkConnector {
 
     public <T> T doRequest(Class<T> resultClass, String req, @Nullable SmartthingsNetworkCallback callback,
-            String accessToken, @Nullable String data, HttpMethod method);
+            String accessToken, @Nullable String data, HttpMethod method) throws SmartthingsException;
 
     public @Nullable String doBasicRequest(String uri, @Nullable SmartthingsNetworkCallback callback,
-            String accessToken, @Nullable String data, HttpMethod method) throws Exception;
+            String accessToken, @Nullable String data, HttpMethod method) throws SmartthingsException;
 
     public void waitAllPendingRequest();
 

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.smartthings.internal.api;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -130,7 +131,7 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
     }
 
     private @Nullable ContentResponse executeRequest(final Request request,
-            @Nullable SmartthingsNetworkCallback callback) throws Exception {
+            @Nullable SmartthingsNetworkCallback callback) throws SmartthingsException {
         request.timeout(240, TimeUnit.SECONDS);
 
         ContentResponse response = null;
@@ -176,67 +177,59 @@ public class SmartthingsNetworkConnectorImpl implements SmartthingsNetworkConnec
 
     @Override
     public @Nullable String doBasicRequest(String uri, @Nullable SmartthingsNetworkCallback callback,
-            String accessToken, @Nullable String data, HttpMethod method) throws Exception {
-        try {
-            logger.debug("Execute request: {}", uri);
-            Request request = httpClient.newRequest(uri).method(method);
-            if (!"".equals(accessToken)) {
-                request = request.header("Authorization", "Bearer " + accessToken);
-            }
-            if (method == HttpMethod.POST || method == HttpMethod.PUT) {
-                request = request.content(new StringContentProvider(data), "application/json");
-            }
+            String accessToken, @Nullable String data, HttpMethod method) throws SmartthingsException {
+        logger.debug("Execute request: {}", uri);
+        Request request = httpClient.newRequest(uri).method(method);
+        if (!"".equals(accessToken)) {
+            request = request.header("Authorization", "Bearer " + accessToken);
+        }
+        if (method == HttpMethod.POST || method == HttpMethod.PUT) {
+            request = request.content(new StringContentProvider(data), "application/json");
+        }
 
-            ContentResponse response = executeRequest(request, callback);
-            if (callback == null && response != null) {
-                int statusCode = response.getStatus();
+        ContentResponse response = executeRequest(request, callback);
+        if (callback == null && response != null) {
+            int statusCode = response.getStatus();
 
-                if (statusCode == HttpStatus.OK_200) {
-                    String result = response.getContentAsString();
-                    return result;
-                } else if (statusCode == HttpStatus.UNPROCESSABLE_ENTITY_422) {
-                    String result = response.getContentAsString();
+            if (statusCode == HttpStatus.OK_200) {
+                String result = response.getContentAsString();
+                return result;
+            } else if (statusCode == HttpStatus.UNPROCESSABLE_ENTITY_422) {
+                String result = response.getContentAsString();
 
-                    ErrorObject err = Gson.fromJson(result, ErrorObject.class);
-                    if (err != null) {
-                        throw new SmartthingsException("Error occured during request:", err);
-                    } else {
-                        throw new SmartthingsException("Error occured during request");
-                    }
-                } else {
-                    throw new SmartthingsException("Unexepected return code : " + statusCode);
-                }
+                ErrorObject err = Gson.fromJson(result, ErrorObject.class);
+                throw new SmartthingsException("Error occured during request:", Objects.requireNonNull(err));
+            } else if (statusCode == HttpStatus.TOO_MANY_REQUESTS_429) {
+                String result = response.getContentAsString();
+
+                ErrorObject err = Gson.fromJson(result, ErrorObject.class);
+                throw new SmartthingsException("Two many request", Objects.requireNonNull(err));
+            } else {
+                throw new SmartthingsException("Unexepected return code : " + statusCode);
             }
-        } catch (Exception ex) {
-            logger.error("network:DoRequest:Exception by executing Request: {} ; {} ", uri, ex.getLocalizedMessage());
         }
         return null;
     }
 
     @Override
     public <T> T doRequest(Class<T> resultClass, String req, @Nullable SmartthingsNetworkCallback callback,
-            String accessToken, @Nullable String data, HttpMethod method) {
-        try {
-            String response = doBasicRequest(req, callback, accessToken, data, method);
+            String accessToken, @Nullable String data, HttpMethod method) throws SmartthingsException {
+        String response = doBasicRequest(req, callback, accessToken, data, method);
 
-            if (response != null) {
-                if (resultClass.isArray()) {
-                    JsonObject obj = getGson().fromJson(response, JsonObject.class);
-                    if (obj != null && obj.has("items")) {
-                        T resultObj = getGson().fromJson(obj.get("items"), resultClass);
-                        return resultObj;
-                    } else {
-                        throw new SmartthingsException(
-                                "Requesting a Array result object, but data does not contains array definition");
-                    }
-                } else {
-                    T resultObj = getGson().fromJson(response, resultClass);
+        if (response != null) {
+            if (resultClass.isArray()) {
+                JsonObject obj = getGson().fromJson(response, JsonObject.class);
+                if (obj != null && obj.has("items")) {
+                    T resultObj = getGson().fromJson(obj.get("items"), resultClass);
                     return resultObj;
+                } else {
+                    throw new SmartthingsException(
+                            "Requesting a Array result object, but data does not contains array definition");
                 }
+            } else {
+                T resultObj = getGson().fromJson(response, resultClass);
+                return resultObj;
             }
-        } catch (Exception e) {
-            logger.error("network:DoRequest:Exception by executing jsonRequest: {} ; {} ", req,
-                    e.getLocalizedMessage());
         }
 
         return null;
