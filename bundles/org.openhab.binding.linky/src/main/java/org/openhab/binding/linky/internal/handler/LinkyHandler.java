@@ -350,15 +350,15 @@ public class LinkyHandler extends BaseThingHandler {
                 }
             });
 
-            int tomorrowDayIdx = values.size();
+            int size = values.size();
             Object[] tempoValues = values.values().toArray();
 
-            updateTempoChannel(TEMPO_GROUP, TEMPO_TODAY_INFO, getTempoIdx((String) tempoValues[tomorrowDayIdx - 2]));
-            updateTempoChannel(TEMPO_GROUP, TEMPO_TOMORROW_INFO, getTempoIdx((String) tempoValues[tomorrowDayIdx - 1]));
+            updateTempoChannel(TEMPO_GROUP, TEMPO_TODAY_INFO, getTempoIdx((String) tempoValues[size - 2]));
+            updateTempoChannel(TEMPO_GROUP, TEMPO_TOMORROW_INFO, getTempoIdx((String) tempoValues[size - 1]));
 
             sendTimeSeries(TEMPO_GROUP, TEMPO_TEMPO_INFO_TIME_SERIES, timeSeries);
             updateState(TEMPO_GROUP, TEMPO_TEMPO_INFO_TIME_SERIES,
-                    new DecimalType(getTempoIdx((String) tempoValues[tomorrowDayIdx - 2])));
+                    new DecimalType(getTempoIdx((String) tempoValues[size - 2])));
         }, () -> {
             updateTempoChannel(TEMPO_GROUP, TEMPO_TODAY_INFO, -1);
             updateTempoChannel(TEMPO_GROUP, TEMPO_TOMORROW_INFO, -1);
@@ -494,10 +494,6 @@ public class LinkyHandler extends BaseThingHandler {
         }
 
         sendTimeSeries(groupId, channelId, timeSeries);
-
-        if (!Double.isNaN(iv[iv.length - 1].value)) {
-            updateState(groupId, channelId, new DecimalType(iv[iv.length - 1].value));
-        }
     }
 
     private synchronized void updateConsumptionTimeSeries(String groupId, String channelId, IntervalReading[] iv) {
@@ -517,9 +513,6 @@ public class LinkyHandler extends BaseThingHandler {
         }
 
         sendTimeSeries(groupId, channelId, timeSeries);
-        if (!Double.isNaN(iv[iv.length - 1].value)) {
-            updateState(groupId, channelId, new DecimalType(iv[iv.length - 1].value));
-        }
     }
 
     private void updateKwhChannel(String groupId, String channelId, double consumption) {
@@ -666,7 +659,7 @@ public class LinkyHandler extends BaseThingHandler {
                 ResponseTempo result = api.getTempoData(this, from, to);
                 return result;
             } catch (LinkyException e) {
-                logger.debug("Exception when getting power data: {}", e.getMessage(), e);
+                logger.debug("Exception when getting tempo data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
