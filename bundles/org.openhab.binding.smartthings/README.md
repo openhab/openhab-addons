@@ -4,7 +4,9 @@ This binding integrates the Samsung Smartthings Hub into openHAB.
 
 ## Supported things
 
-This binding supports most of the Smartthings devices that are defined in the [Smartthings Capabilities list](https://developer-preview.smartthings.com/docs/devices/capabilities/capabilities-reference/). If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release.
+This binding supports most of the Smartthings devices that are defined in the [Smartthings Capabilities list](https://developer-preview.smartthings.com/docs/devices/capabilities/capabilities-reference/). 
+
+If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release.
 
 ## Discovery
 
@@ -14,14 +16,23 @@ Discovery is supported by the Smartthings binding and is run automatically on st
 ## Smartthings Configuration
 
 You will need to get a token before setup the binding.
-For this, go to the following ULR : https://account.smartthings.com/tokens/new
-Then login with you smartthings account / password.
-On the next page, give a token name (arbitrary), select all the Oauth scope.
-On the last page, the token will be displayed. Make a copy of it, and fill it on the openhab Smarthings Cloud Hub device.
+
+- For this, go to the following ULR : https://account.smartthings.com/tokens/new
 
 
+- Then login with you smartthings account / password.
 
 
+- On the next page, give a token name (arbitrary), select all the Oauth scope.
+
+  ![](doc/TokenCreate.png)
+
+
+- On the last page, the token will be displayed. 
+
+  ![](doc/TokenConfirmation.png)
+
+- Make a copy of this token, and fill it on the openhab Smarthings Cloud Hub device.
 
 **The binding will not work until this part has been completed, do not skip this part of the setup.**
 
