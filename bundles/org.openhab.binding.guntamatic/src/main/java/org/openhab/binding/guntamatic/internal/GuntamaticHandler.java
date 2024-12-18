@@ -199,7 +199,7 @@ public class GuntamaticHandler extends BaseThingHandler {
             String channel = channels.get(i);
             Unit<?> unit = units.get(i);
             if ((channel != null) && (i < daqdata.length)) {
-                String channelId = String.format("%03d", i) + "_" + channel;
+                String channelId = GROUP_STATUS + String.format("%03d", i) + "_" + channel;
                 String value = daqdata[i];
                 Channel chn = thing.getChannel(channelId);
                 if ((chn != null) && (value != null)) {
@@ -271,6 +271,9 @@ public class GuntamaticHandler extends BaseThingHandler {
     private void parseAndInit(String html) {
         String[] daqdesc = html.split("\\n");
         List<Channel> channelList = new ArrayList<>();
+        for (Channel chn : thing.getChannels()) {
+            logger.trace("Static Channel '{}' present", chn.getUID());
+        }
 
         // make sure that static channels are present
         for (String channelID : staticChannelIDs) {
@@ -346,7 +349,8 @@ public class GuntamaticHandler extends BaseThingHandler {
 
                 typeProvider.putChannelType(channelType);
 
-                Channel newChannel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), itemType)
+                Channel newChannel = ChannelBuilder
+                        .create(new ChannelUID(thing.getUID(), GROUP_STATUS + channelId), itemType)
                         .withType(channelTypeUID).withKind(ChannelKind.STATE).withLabel(label).build();
                 channelList.add(newChannel);
                 channels.put(i, channel);
@@ -356,7 +360,7 @@ public class GuntamaticHandler extends BaseThingHandler {
 
                 logger.debug(
                         "Supported Channel: Idx: '{}', Name: '{}'/'{}', Type: '{}'/'{}', Unit: '{}', Pattern '{}' ",
-                        String.format("%03d", i), label, channelId, type, itemType, unitStr, pattern);
+                        String.format("%03d", i), label, GROUP_STATUS + channelId, type, itemType, unitStr, pattern);
             }
         }
         ThingBuilder thingBuilder = editThing();

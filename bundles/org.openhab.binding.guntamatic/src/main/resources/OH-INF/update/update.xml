@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="guntamatic:biostar">
+		<instruction-set targetVersion="1">
+			<remove-channel id="controlBoilerApproval"/>
+			<remove-channel id="controlProgram"/>
+			<remove-channel id="controlHeatCircProgram0"/>
+			<remove-channel id="controlHeatCircProgram1"/>
+			<remove-channel id="controlHeatCircProgram2"/>
+			<remove-channel id="controlHeatCircProgram3"/>
+			<remove-channel id="controlHeatCircProgram4"/>
+			<remove-channel id="controlHeatCircProgram5"/>
+			<remove-channel id="controlHeatCircProgram6"/>
+			<remove-channel id="controlHeatCircProgram7"/>
+			<remove-channel id="controlHeatCircProgram8"/>
+			<remove-channel id="controlWwHeat0"/>
+			<remove-channel id="controlWwHeat1"/>
+			<remove-channel id="controlWwHeat2"/>
+			<remove-channel id="controlExtraWwHeat0"/>
+			<remove-channel id="controlExtraWwHeat1"/>
+			<remove-channel id="controlExtraWwHeat2"/>
+
+			<add-channel id="boilerApproval" groupIds="control">
+				<type>guntamatic:controlBoilerApproval</type>
+			</add-channel>
+			<add-channel id="program" groupIds="control">
+				<type>guntamatic:controlProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram0" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram1" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram2" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram3" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram4" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram5" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram6" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram7" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram8" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="wwHeat0" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat1" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat2" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat0" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat1" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat2" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="guntamatic:biosmart">
+		<instruction-set targetVersion="1">
+			<remove-channel id="controlProgram"/>
+			<remove-channel id="controlHeatCircProgram0"/>
+			<remove-channel id="controlHeatCircProgram1"/>
+			<remove-channel id="controlHeatCircProgram2"/>
+			<remove-channel id="controlHeatCircProgram3"/>
+			<remove-channel id="controlHeatCircProgram4"/>
+			<remove-channel id="controlHeatCircProgram5"/>
+			<remove-channel id="controlHeatCircProgram6"/>
+			<remove-channel id="controlHeatCircProgram7"/>
+			<remove-channel id="controlHeatCircProgram8"/>
+			<remove-channel id="controlWwHeat0"/>
+			<remove-channel id="controlWwHeat1"/>
+			<remove-channel id="controlWwHeat2"/>
+			<remove-channel id="controlExtraWwHeat0"/>
+			<remove-channel id="controlExtraWwHeat1"/>
+			<remove-channel id="controlExtraWwHeat2"/>
+
+			<add-channel id="program" groupIds="control">
+				<type>guntamatic:controlProgramWOManu</type>
+			</add-channel>
+			<add-channel id="heatCircProgram0" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram1" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram2" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram3" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram4" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram5" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram6" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram7" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram8" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="wwHeat0" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat1" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat2" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat0" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat1" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat2" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="guntamatic:powerchip">
+		<instruction-set targetVersion="1">
+			<remove-channel id="controlBoilerApproval"/>
+			<remove-channel id="controlProgram"/>
+			<remove-channel id="controlHeatCircProgram0"/>
+			<remove-channel id="controlHeatCircProgram1"/>
+			<remove-channel id="controlHeatCircProgram2"/>
+			<remove-channel id="controlHeatCircProgram3"/>
+			<remove-channel id="controlHeatCircProgram4"/>
+			<remove-channel id="controlHeatCircProgram5"/>
+			<remove-channel id="controlHeatCircProgram6"/>
+			<remove-channel id="controlHeatCircProgram7"/>
+			<remove-channel id="controlHeatCircProgram8"/>
+			<remove-channel id="controlWwHeat0"/>
+			<remove-channel id="controlWwHeat1"/>
+			<remove-channel id="controlWwHeat2"/>
+			<remove-channel id="controlExtraWwHeat0"/>
+			<remove-channel id="controlExtraWwHeat1"/>
+			<remove-channel id="controlExtraWwHeat2"/>
+
+			<add-channel id="boilerApproval" groupIds="control">
+				<type>guntamatic:controlBoilerApproval</type>
+			</add-channel>
+			<add-channel id="program" groupIds="control">
+				<type>guntamatic:controlProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram0" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram1" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram2" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram3" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram4" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram5" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram6" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram7" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram8" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="wwHeat0" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat1" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat2" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat0" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat1" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat2" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="guntamatic:powercorn">
+		<instruction-set targetVersion="1">
+			<remove-channel id="controlBoilerApproval"/>
+			<remove-channel id="controlProgram"/>
+			<remove-channel id="controlHeatCircProgram0"/>
+			<remove-channel id="controlHeatCircProgram1"/>
+			<remove-channel id="controlHeatCircProgram2"/>
+			<remove-channel id="controlHeatCircProgram3"/>
+			<remove-channel id="controlHeatCircProgram4"/>
+			<remove-channel id="controlHeatCircProgram5"/>
+			<remove-channel id="controlHeatCircProgram6"/>
+			<remove-channel id="controlHeatCircProgram7"/>
+			<remove-channel id="controlHeatCircProgram8"/>
+			<remove-channel id="controlWwHeat0"/>
+			<remove-channel id="controlWwHeat1"/>
+			<remove-channel id="controlWwHeat2"/>
+			<remove-channel id="controlExtraWwHeat0"/>
+			<remove-channel id="controlExtraWwHeat1"/>
+			<remove-channel id="controlExtraWwHeat2"/>
+
+			<add-channel id="boilerApproval" groupIds="control">
+				<type>guntamatic:controlBoilerApproval</type>
+			</add-channel>
+			<add-channel id="program" groupIds="control">
+				<type>guntamatic:controlProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram0" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram1" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram2" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram3" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram4" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram5" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram6" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram7" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram8" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="wwHeat0" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat1" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat2" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat0" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat1" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat2" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="guntamatic:biocom">
+		<instruction-set targetVersion="1">
+			<remove-channel id="controlBoilerApproval"/>
+			<remove-channel id="controlProgram"/>
+			<remove-channel id="controlHeatCircProgram0"/>
+			<remove-channel id="controlHeatCircProgram1"/>
+			<remove-channel id="controlHeatCircProgram2"/>
+			<remove-channel id="controlHeatCircProgram3"/>
+			<remove-channel id="controlHeatCircProgram4"/>
+			<remove-channel id="controlHeatCircProgram5"/>
+			<remove-channel id="controlHeatCircProgram6"/>
+			<remove-channel id="controlHeatCircProgram7"/>
+			<remove-channel id="controlHeatCircProgram8"/>
+			<remove-channel id="controlWwHeat0"/>
+			<remove-channel id="controlWwHeat1"/>
+			<remove-channel id="controlWwHeat2"/>
+			<remove-channel id="controlExtraWwHeat0"/>
+			<remove-channel id="controlExtraWwHeat1"/>
+			<remove-channel id="controlExtraWwHeat2"/>
+
+			<add-channel id="boilerApproval" groupIds="control">
+				<type>guntamatic:controlBoilerApproval</type>
+			</add-channel>
+			<add-channel id="program" groupIds="control">
+				<type>guntamatic:controlProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram0" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram1" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram2" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram3" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram4" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram5" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram6" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram7" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram8" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="wwHeat0" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat1" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat2" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat0" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat1" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat2" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="guntamatic:pro">
+		<instruction-set targetVersion="1">
+			<remove-channel id="controlBoilerApproval"/>
+			<remove-channel id="controlProgram"/>
+			<remove-channel id="controlHeatCircProgram0"/>
+			<remove-channel id="controlHeatCircProgram1"/>
+			<remove-channel id="controlHeatCircProgram2"/>
+			<remove-channel id="controlHeatCircProgram3"/>
+			<remove-channel id="controlHeatCircProgram4"/>
+			<remove-channel id="controlHeatCircProgram5"/>
+			<remove-channel id="controlHeatCircProgram6"/>
+			<remove-channel id="controlHeatCircProgram7"/>
+			<remove-channel id="controlHeatCircProgram8"/>
+			<remove-channel id="controlWwHeat0"/>
+			<remove-channel id="controlWwHeat1"/>
+			<remove-channel id="controlWwHeat2"/>
+			<remove-channel id="controlExtraWwHeat0"/>
+			<remove-channel id="controlExtraWwHeat1"/>
+			<remove-channel id="controlExtraWwHeat2"/>
+
+			<add-channel id="boilerApproval" groupIds="control">
+				<type>guntamatic:controlBoilerApproval</type>
+			</add-channel>
+			<add-channel id="program" groupIds="control">
+				<type>guntamatic:controlProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram0" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram1" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram2" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram3" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram4" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram5" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram6" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram7" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram8" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="wwHeat0" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat1" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat2" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat0" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat1" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat2" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="guntamatic:therm">
+		<instruction-set targetVersion="1">
+			<remove-channel id="controlBoilerApproval"/>
+			<remove-channel id="controlProgram"/>
+			<remove-channel id="controlHeatCircProgram0"/>
+			<remove-channel id="controlHeatCircProgram1"/>
+			<remove-channel id="controlHeatCircProgram2"/>
+			<remove-channel id="controlHeatCircProgram3"/>
+			<remove-channel id="controlHeatCircProgram4"/>
+			<remove-channel id="controlHeatCircProgram5"/>
+			<remove-channel id="controlHeatCircProgram6"/>
+			<remove-channel id="controlHeatCircProgram7"/>
+			<remove-channel id="controlHeatCircProgram8"/>
+			<remove-channel id="controlWwHeat0"/>
+			<remove-channel id="controlWwHeat1"/>
+			<remove-channel id="controlWwHeat2"/>
+			<remove-channel id="controlExtraWwHeat0"/>
+			<remove-channel id="controlExtraWwHeat1"/>
+			<remove-channel id="controlExtraWwHeat2"/>
+
+			<add-channel id="boilerApproval" groupIds="control">
+				<type>guntamatic:controlBoilerApproval</type>
+			</add-channel>
+			<add-channel id="program" groupIds="control">
+				<type>guntamatic:controlProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram0" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram1" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram2" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram3" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram4" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram5" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram6" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram7" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram8" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="wwHeat0" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat1" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat2" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat0" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat1" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat2" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="guntamatic:generic">
+		<instruction-set targetVersion="1">
+			<remove-channel id="controlProgram"/>
+			<remove-channel id="controlHeatCircProgram0"/>
+			<remove-channel id="controlHeatCircProgram1"/>
+			<remove-channel id="controlHeatCircProgram2"/>
+			<remove-channel id="controlHeatCircProgram3"/>
+			<remove-channel id="controlHeatCircProgram4"/>
+			<remove-channel id="controlHeatCircProgram5"/>
+			<remove-channel id="controlHeatCircProgram6"/>
+			<remove-channel id="controlHeatCircProgram7"/>
+			<remove-channel id="controlHeatCircProgram8"/>
+			<remove-channel id="controlWwHeat0"/>
+			<remove-channel id="controlWwHeat1"/>
+			<remove-channel id="controlWwHeat2"/>
+			<remove-channel id="controlExtraWwHeat0"/>
+			<remove-channel id="controlExtraWwHeat1"/>
+			<remove-channel id="controlExtraWwHeat2"/>
+
+			<add-channel id="program" groupIds="control">
+				<type>guntamatic:controlProgramWOManu</type>
+			</add-channel>
+			<add-channel id="heatCircProgram0" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram1" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram2" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram3" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram4" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram5" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram6" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram7" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="heatCircProgram8" groupIds="control">
+				<type>guntamatic:controlHeatCircProgram</type>
+			</add-channel>
+			<add-channel id="wwHeat0" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat1" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="wwHeat2" groupIds="control">
+				<type>guntamatic:controlWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat0" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat1" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+			<add-channel id="extraWwHeat2" groupIds="control">
+				<type>guntamatic:controlExtraWwHeat</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>
