@@ -14,11 +14,11 @@
 				<label>Toeken</label>
 				<description>A smartthings token</description>
 			</parameter>
-			<parameter name="clientId" type="text" required="true">
+			<parameter name="clientId" type="text" required="false">
 				<label>Client ID</label>
-				<description>The apps oauth client Id</description>
+				<description>The apps oauth client Id)</description>
 			</parameter>
-			<parameter name="clientSecret" type="text" required="true">
+			<parameter name="clientSecret" type="text" required="false">
 				<label>Client Secret</label>
 				<description>The apps oauth client Secret</description>
 			</parameter>
