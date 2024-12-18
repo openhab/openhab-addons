@@ -14,8 +14,6 @@ package org.openhab.binding.linky.internal.dto;
 
 import java.time.LocalDateTime;
 
-import org.eclipse.jetty.jaas.spi.UserInfo;
-
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *

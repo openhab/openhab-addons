@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
-import org.eclipse.jetty.jaas.spi.UserInfo;
-
 /**
  * The {@link UserInfo} holds ids of existing Prms
  *

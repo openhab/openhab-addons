@@ -16,8 +16,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import org.eclipse.jetty.jaas.spi.UserInfo;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
