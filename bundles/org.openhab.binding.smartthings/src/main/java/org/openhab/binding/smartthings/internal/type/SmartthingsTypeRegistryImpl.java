@@ -51,6 +51,7 @@ import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.StateOption;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -80,7 +81,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     @Override
     public void registerCapabilities(SmartthingsCapabilitie capa) {
         capabilitiesDict.put(capa.id, capa);
-        createChannelDefinition(capa);
+        createChannelTypes(capa);
     }
 
     @Override
@@ -98,7 +99,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
         this.bridgeHandler = bridgeHandler;
     }
 
-    public void createChannelDefinition(SmartthingsCapabilitie capa) {
+    public void createChannelTypes(SmartthingsCapabilitie capa) {
         SmartthingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
 
         for (String key : capa.attributes.keySet()) {
@@ -170,6 +171,19 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
 
                 Boolean display = false;
 
+                List<StateOption> options = new ArrayList<StateOption>();
+
+                if (prop.enumeration != null && channelDef == null) {
+                    for (String opt : prop.enumeration) {
+                        String optValue = opt;
+                        String optName = StringUtils.capitalize(
+                                StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(opt), StringUtils.SPACE));
+
+                        StateOption option = new StateOption(optValue, optName);
+                        options.add(option);
+                    }
+                }
+
                 if (display) {
                     logger.info("<channel-type id=\"{}\">", channelName);
                     logger.info("  <item-type>{}</item-type>", channelTp);
@@ -201,7 +215,8 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                 if (lcChannelTypeProvider != null) {
                     channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
                     if (channelType == null) {
-                        channelType = createChannelType(capa, channelName, category, label, channelTp, channelTypeUID);
+                        channelType = createChannelType(capa, channelName, category, label, channelTp, channelTypeUID,
+                                options);
                         lcChannelTypeProvider.addChannelType(channelType);
                     }
                 }
@@ -211,10 +226,14 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
     }
 
     private ChannelType createChannelType(SmartthingsCapabilitie capa, String channelName, String category,
-            String description, String channelTp, ChannelTypeUID channelTypeUID) {
+            String description, String channelTp, ChannelTypeUID channelTypeUID, List<StateOption> options) {
         ChannelType channelType;
 
         StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
+
+        if (!options.isEmpty()) {
+            stateFragment = stateFragment.withOptions(options);
+        }
 
         final StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder
                 .state(channelTypeUID, channelName, channelTp).withStateDescriptionFragment(stateFragment.build());
