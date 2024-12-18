@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import java.time.LocalDateTime;
+
 /**
- * The {@link UserInfo} holds ids of existing Prms
+ * The {@link UserInfo} holds informations about energy delivery point
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class PrmInfo {
-    public String idPrm;
+public class IntervalReading {
+    public double value;
+    public LocalDateTime date;
 }

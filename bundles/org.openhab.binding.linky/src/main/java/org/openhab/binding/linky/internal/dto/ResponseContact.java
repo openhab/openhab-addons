@@ -12,13 +12,18 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link UserInfo} holds ids of existing Prms
+ * The {@link UserInfo} holds informations about energy delivery point
  *
- * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API
+ * @author Laurent Arnal - Initial contribution - Rewrite addon to use official dataconect API
  */
 
-public class PrmInfo {
-    public String idPrm;
+public class ResponseContact {
+    @SerializedName("customer_id")
+    public String customerId;
+
+    @SerializedName("contact_data")
+    public Contact contact;
 }

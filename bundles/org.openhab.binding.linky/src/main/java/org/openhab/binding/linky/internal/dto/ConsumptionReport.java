@@ -52,6 +52,9 @@ public class ConsumptionReport {
         public String grandeurMetier;
         public String grandeurPhysique;
         public String unite;
+        public String mesuresPasEnum;
+        public List<String> labels;
+        public List<Double> data;
     }
 
     public class FirstLevel {
