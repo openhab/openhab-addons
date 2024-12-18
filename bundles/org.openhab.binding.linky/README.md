@@ -25,7 +25,6 @@ There is one supported thing : the `linky` thing is retrieving the consumption o
 
 You can have multiple linky thing in your setup if you have different house / linky linked to your account.
 
-
 ## Discovery
 
 This binding does not provide discovery service.
