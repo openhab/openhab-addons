@@ -233,9 +233,9 @@ public class Port {
                     }
                 }
             } catch (InterruptedException e) {
-                logger.debug("reader thread got interrupted!");
+                logger.trace("reader thread got interrupted!");
             } catch (IOException e) {
-                logger.debug("reader thread got an io exception", e);
+                logger.trace("reader thread got an io exception", e);
                 disconnected();
             }
             logger.debug("exiting reader thread!");
@@ -333,9 +333,9 @@ public class Port {
                     Thread.sleep(WRITE_WAIT_TIME);
                 }
             } catch (InterruptedException e) {
-                logger.debug("writer thread got interrupted!");
+                logger.trace("writer thread got interrupted!");
             } catch (IOException e) {
-                logger.debug("writer thread got an io exception", e);
+                logger.trace("writer thread got an io exception", e);
                 disconnected();
             }
             logger.debug("exiting writer thread!");
