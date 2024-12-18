@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>5.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.automation.pythonscripting</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: Automation :: Jython Scripting</name>
+
+  <properties>
+    <bnd.fixupmessages><![CDATA["Classes found in the wrong directory","The default package '.' is not permitted by the Import-Package syntax"; restrict:=error; is:=warning]]></bnd.fixupmessages>
+    <bnd.importpackage>*blockhound*;resolution:=optional,com.cloudius.util;resolution:=optional,com.github.luben.zstd;resolution:=optional,com.informix.jdbc;resolution:=optional,com.jcraft.jzlib;resolution:=optional,com.ning.compress.*;resolution:=optional,com.oracle.svm.core.annotate;resolution:=optional,com.sun.management;resolution:=optional,custom_proxymaker.tests;resolution:=optional,jnr.*;resolution;resolution:=optional,*jpountz*;resolution:=optional,junit.framework;resolution:=optional,lzma.sdk.*;resolution:=optional,oracle.*;resolution:=optional,org.antlr.stringtemplate;resolution:=optional,org.apache.tools.*;resolution:=optional,org.brotli.dec;resolution:=optional,org.checkerframework.*;resolution:=optional,org.conscrypt;resolution:=optional,org.eclipse.jetty.*;resolution:=optional,org.hamcrest;resolution:=optional,org.jboss.marshalling;resolution:=optional,org.junit.*;resolution:=optional,org.python.apache.xml.resolver.*;resolution:=optional,org.python.google.*;resolution:=optional,org.python.netty.internal.tcnative;resolution:=optional,org.python.objectweb.asm.tree.*;resolution:=optional,org.python.proxies;resolution:=optional,org.tukaani.xz;resolution:=optional,sun.*;resolution:=optional,com.aayushatharva.brotli4j.*;resolution:=optional,javax.annotation.meta;resolution:=optional,org.python.bouncycastle.*;resolution:=optional</bnd.importpackage>
+
+    <graalpy.version>24.1.1</graalpy.version>
+    <graalpy.edition>python-community</graalpy.edition>
+  </properties>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.graalvm.python</groupId>
+        <artifactId>graalpy-maven-plugin</artifactId>
+        <version>${graalpy.version}</version>
+        <executions>
+            <execution>
+                <configuration>
+                    <packages>
+                        <package>termcolor</package>
+                    </packages>
+                    <pythonHome>
+                        <includes>
+                            <include>.*</include>
+                        </includes>
+                        <excludes></excludes>
+                    </pythonHome>
+                </configuration>
+                <goals>
+                    <goal>process-graalpy-resources</goal>
+                </goals>
+            </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.graalvm.polyglot</groupId>
+      <artifactId>polyglot</artifactId>
+      <version>${graalpy.version}</version>
+    </dependency>    
+    <dependency>
+      <groupId>org.graalvm.sdk</groupId>
+      <artifactId>collections</artifactId>
+      <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.graalvm.sdk</groupId>
+      <artifactId>nativeimage</artifactId>
+      <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.graalvm.sdk</groupId>
+      <artifactId>word</artifactId>
+      <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.graalvm.polyglot</groupId>
+      <artifactId>${graalpy.edition}</artifactId>
+      <version>${graalpy.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.graalvm.python</groupId>
+      <artifactId>python-embedding</artifactId>
+      <version>${graalpy.version}</version>
+    </dependency>
+<!--    <dependency>
+      <groupId>org.graalvm.sdk</groupId>
+      <artifactId>graal-sdk</artifactId>
+      <version>${graal.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.graalvm.truffle</groupId>
+      <artifactId>truffle-api</artifactId>
+      <version>${graal.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.graalvm.llvm</groupId>
+      <artifactId>llvm-api</artifactId>
+      <version>${graal.version}</version>
+    </dependency>   
+    <dependency>
+      <groupId>org.graalvm.regex</groupId>
+      <artifactId>regex</artifactId>
+      <version>${graal.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.graalvm.python</groupId>
+        <artifactId>python-language</artifactId>
+        <version>${graal.version}</version>
+    </dependency>-->
+  </dependencies>
+</project>
