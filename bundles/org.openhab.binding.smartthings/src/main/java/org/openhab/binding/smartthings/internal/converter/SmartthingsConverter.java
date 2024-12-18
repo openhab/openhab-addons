@@ -150,8 +150,13 @@ public abstract class SmartthingsConverter {
                     return UnDefType.UNDEF;
                 }
             case "Number":
-                if (dataFromSmartthings instanceof String stringCommand2) {
-                    return new DecimalType(Double.parseDouble(stringCommand2));
+                if (dataFromSmartthings instanceof String stringCommand) {
+                    // review this, oven return a bad value of format 00:00:00
+                    try {
+                        return new DecimalType(Double.parseDouble(stringCommand));
+                    } catch (NumberFormatException ex) {
+                        return new DecimalType(0.00);
+                    }
                 } else if (dataFromSmartthings instanceof Double) {
                     return new DecimalType((Double) dataFromSmartthings);
                 } else if (dataFromSmartthings instanceof Long) {
