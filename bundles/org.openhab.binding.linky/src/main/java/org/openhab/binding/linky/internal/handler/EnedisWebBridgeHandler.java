@@ -180,7 +180,6 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             }
         }
         super.disconnect();
-
     }
 
     @Override
