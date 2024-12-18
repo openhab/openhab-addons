@@ -19,6 +19,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link ScheduledChannelThrottler} implements a throttler that maintains a
  * single execution rates, and does not maintain order of calls (thus has to
@@ -26,6 +29,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public final class ScheduledChannelThrottler extends AbstractChannelThrottler {
 
     public ScheduledChannelThrottler(Rate totalRate) {
@@ -53,13 +57,13 @@ public final class ScheduledChannelThrottler extends AbstractChannelThrottler {
     }
 
     @Override
-    public Future<?> submit(Runnable task) {
+    public @Nullable Future<?> submit(Runnable task) {
         long delay = callTime(null) - timeProvider.getCurrentTimeInMillis();
         return scheduler.schedule(task, delay < 0 ? 0 : delay, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public Future<?> submit(Object channelKey, Runnable task) {
+    public @Nullable Future<?> submit(Object channelKey, Runnable task) {
         return scheduler.schedule(task, getThrottleDelay(channelKey), TimeUnit.MILLISECONDS);
     }
 }

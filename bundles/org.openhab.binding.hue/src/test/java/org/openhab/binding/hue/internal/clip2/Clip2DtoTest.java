@@ -914,4 +914,21 @@ class Clip2DtoTest {
         assertNotNull(list);
         assertEquals(2, list.size());
     }
+
+    @Test
+    void testGroupedMotion() {
+        String json = load(ResourceType.GROUPED_MOTION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.GROUPED_MOTION, item.getType());
+        Boolean enabled = item.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
+        assertEquals(OnOffType.ON, item.getMotionState());
+        assertEquals(new DateTimeType("2024-12-13T11:01:25.156Z"), item.getMotionLastUpdatedState(ZoneId.of("UTC")));
+    }
 }

@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import org.openhab.binding.yeelight.internal.YeelightBindingConstants;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceFactory;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
@@ -98,7 +99,7 @@ public class DeviceManager {
                 } finally {
                     stopDiscovery();
                 }
-            }).start();
+            }, "OH-binding-" + YeelightBindingConstants.BINDING_ID + "-DeviceManager").start();
         }
     }
 

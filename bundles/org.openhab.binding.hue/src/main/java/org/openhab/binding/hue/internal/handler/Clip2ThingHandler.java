@@ -765,7 +765,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param fullResources the full list of resources of the given type.
      */
     public void onResourcesList(ResourceType resourceType, List<Resource> fullResources) {
-        if (resourceType == ResourceType.SCENE) {
+        if (SUPPORTED_SCENE_TYPES.contains(resourceType)) {
             updateSceneContributors(fullResources);
         } else {
             fullResources.stream().filter(r -> resourceId.equals(r.getId())).findAny()
@@ -1045,7 +1045,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (Objects.nonNull(zigbeeStatus)) {
             logger.debug("{} -> updateConnectivityState() thingStatus:{}, zigbeeStatus:{}", resourceId,
                     thing.getStatus(), zigbeeStatus);
-            hasConnectivityIssue = zigbeeStatus != ZigbeeStatus.CONNECTED;
+            hasConnectivityIssue = zigbeeStatus.isConnectivityIssue();
             if (hasConnectivityIssue) {
                 if (thing.getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
