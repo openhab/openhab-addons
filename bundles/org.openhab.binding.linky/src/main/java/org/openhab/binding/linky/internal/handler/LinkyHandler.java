@@ -232,7 +232,6 @@ public class LinkyHandler extends BaseThingHandler {
 
                     updateProperties(
                             Map.of(USER_ID, "", PUISSANCE, contract.subscribedPower, PRM_ID, usagePoint.usagePointId));
-
                 } else {
                     UserInfo userInfo = api.getUserInfo(this);
                     PrmInfo prmInfo = api.getPrmInfo(this, userInfo.userProperties.internId, config.prmId);

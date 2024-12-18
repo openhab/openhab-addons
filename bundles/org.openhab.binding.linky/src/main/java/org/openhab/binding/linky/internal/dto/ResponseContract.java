@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
-import org.eclipse.jetty.jaas.spi.UserInfo;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link UserInfo} holds informations about energy delivery point
+ * The {@link ResponseContract} holds informations about the contract
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API

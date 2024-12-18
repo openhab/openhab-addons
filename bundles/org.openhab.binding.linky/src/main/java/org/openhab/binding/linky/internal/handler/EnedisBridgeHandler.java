@@ -106,10 +106,7 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     @Override
     public boolean getIsSandbox() {
         LinkyConfiguration lcConfig = config;
-        if (lcConfig != null) {
-            return lcConfig.isSandbox;
-        }
-        return false;
+        return (lcConfig != null) ? lcConfig.isSandbox : false;
     }
 
     @Override
