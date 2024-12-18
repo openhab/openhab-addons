@@ -10,18 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.smartthings.internal.dto;
 
 /**
- * Smartthings Bridge messages
+ * Data object for smartthings app creation response
  *
- * @author Bob Raker - Initial contribution
+ * @author Laurent ARNAL - Initial contribution
  */
-@NonNullByDefault
-public interface SmartthingsBridgeConfigStatusMessage {
-
-    static final String IP_MISSING = "missing-ip-configuration";
-    static final String PORT_MISSING = "missing-port-configuration";
+public class AppResponse {
+    public SmartthingsApp app;
+    public String oauthClientId;
+    public String oauthClientSecret;
 }
