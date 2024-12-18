@@ -225,7 +225,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     private void commandSwitchSiren(Command command, String notificationSound, LivisiBridgeHandler bridgeHandler) {
-        if (command instanceof OnOffType && OnOffType.ON.equals(command)) {
+        if (OnOffType.ON.equals(command)) {
             bridgeHandler.commandSwitchSiren(deviceId, notificationSound);
         } else {
             bridgeHandler.commandSwitchSiren(deviceId, SIREN_NONE);
