@@ -3,6 +3,10 @@
 This binding connects Roku streaming media players and Roku TVs to openHAB.
 The Roku device must support the Roku ECP protocol REST API.
 
+In order for the binding to control the Roku, the following setting:
+**Settings-> System-> Advanced system settings-> Control by mobile apps**
+must be configured as `Enabled` or `Permissive`.
+
 ## Supported Things
 
 There are two supported thing types, which represent either a standalone Roku device or a Roku TV.
