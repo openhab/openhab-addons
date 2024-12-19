@@ -294,7 +294,10 @@ public class HubIOStream extends IOStream {
                 default:
                     throw new IOException("GET " + request.getURI() + " failed with status code: " + statusCode);
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("GET " + request.getURI() + " interrupted");
+        } catch (TimeoutException | ExecutionException e) {
             throw new IOException("GET " + request.getURI() + " failed with error: " + e.getMessage());
         }
     }
