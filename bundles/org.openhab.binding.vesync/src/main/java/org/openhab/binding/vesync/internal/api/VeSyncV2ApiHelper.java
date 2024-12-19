@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.vesync.internal.api;
 
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
+import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.V1_LOGIN_ENDPOINT;
+import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.V1_MANAGED_DEVICES_ENDPOINT;
 
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
