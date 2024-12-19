@@ -128,7 +128,7 @@ public final class LifxMessageUtil {
                 temperatureRange.getMaximum() - (temperature.floatValue() * (temperatureRange.getRange() / 100)));
     }
 
-    public static int quantityTypeToKelvin(QuantityType temperature, TemperatureRange temperatureRange) {
+    public static int quantityTypeToKelvin(QuantityType<?> temperature, TemperatureRange temperatureRange) {
         QuantityType<?> asKelvin = temperature.toInvertibleUnit(Units.KELVIN);
         if (asKelvin == null) {
             throw new IllegalStateException(
