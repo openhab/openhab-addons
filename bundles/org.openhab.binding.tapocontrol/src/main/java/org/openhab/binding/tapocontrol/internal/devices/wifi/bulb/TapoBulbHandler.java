@@ -25,6 +25,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -147,8 +148,14 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
     }
 
     private void handleColorTempCommand(Command command) {
-        if (command instanceof DecimalType decimalCommand) {
-            setColorTemp(decimalCommand.intValue());
+        QuantityType<?> kelvinQuantity = null;
+        if (command instanceof QuantityType<?> genericQuantity) {
+            kelvinQuantity = genericQuantity.toInvertibleUnit(Units.KELVIN);
+        } else if (command instanceof DecimalType decimal) {
+            kelvinQuantity = QuantityType.valueOf(decimal.intValue(), Units.KELVIN);
+        }
+        if (kelvinQuantity != null) {
+            setColorTemp(kelvinQuantity.intValue());
         }
     }
 
