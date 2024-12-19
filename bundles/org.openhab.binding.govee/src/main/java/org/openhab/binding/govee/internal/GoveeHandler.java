@@ -15,9 +15,9 @@ package org.openhab.binding.govee.internal;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.*;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
@@ -79,23 +79,24 @@ import com.google.gson.JsonSyntaxException;
  * https://app-h5.govee.com/user-manual/wlan-guide
  *
  * @author Stefan Höhn - Initial contribution
+ * @author Andrew Fiddian-Green - Added sequential task processing
  */
 @NonNullByDefault
 public class GoveeHandler extends BaseThingHandler {
 
-    /*
-     * Messages to be sent to the Govee devices
-     */
     private static final Gson GSON = new Gson();
+    private static final int REFRESH_SECONDS_MIN = 2;
+    private static final int INTER_COMMAND_DELAY_MILLISEC = 100;
 
     private final Logger logger = LoggerFactory.getLogger(GoveeHandler.class);
+
     protected ScheduledExecutorService executorService = scheduler;
-    @Nullable
-    private ScheduledFuture<?> triggerStatusJob; // send device status update job
+    private @Nullable ScheduledFuture<?> thingTaskSenderTask;
     private GoveeConfiguration goveeConfiguration = new GoveeConfiguration();
 
     private final CommunicationManager communicationManager;
     private final GoveeStateDescriptionProvider stateDescriptionProvider;
+    private final List<Callable<Boolean>> taskQueue = new ArrayList<>();
 
     private OnOffType lastSwitch = OnOffType.OFF;
     private HSBType lastColor = new HSBType();
@@ -104,22 +105,39 @@ public class GoveeHandler extends BaseThingHandler {
     private int minKelvin;
     private int maxKelvin;
 
-    private static final int REFRESH_SECONDS_MIN = 2;
-    private static final int INTER_COMMAND_DELAY_MILLISEC = 200;
+    private int refreshIntervalSeconds;
+    private Instant nextRefreshDueTime = Instant.EPOCH;
 
     /**
-     * This thing related job <i>thingRefreshSender</i> triggers an update to the Govee device.
-     * The device sends it back to the common port and the response is
-     * then received by the common #refreshStatusReceiver
+     * This thing related job <i>thingTaskSender</i> sends the next queued command (if any)
+     * to the Govee device. If there is no queued command and a regular refresh is due then
+     * sends the command to trigger a status refresh.
+     *
+     * The device may send a reply to the common port and if so the response is received by
+     * the refresh status receiver.
      */
-    private final Runnable thingRefreshSender = () -> {
-        try {
-            triggerDeviceStatusRefresh();
-            updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
-                            + "\"]");
+    private final Runnable thingTaskSender = () -> {
+        synchronized (taskQueue) {
+            if (taskQueue.isEmpty() && Instant.now().isBefore(nextRefreshDueTime)) {
+                return; // no queued command nor pending refresh
+            }
+            if (taskQueue.isEmpty()) {
+                taskQueue.add(() -> triggerDeviceStatusRefresh());
+                nextRefreshDueTime = Instant.now().plusSeconds(refreshIntervalSeconds);
+            } else if (taskQueue.size() > 20) {
+                logger.info("Command task queue size:{} exceeds limit:20", taskQueue.size());
+            }
+            try {
+                if (taskQueue.remove(0).call()) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } catch (IndexOutOfBoundsException e) {
+                logger.warn("Unexpected List.remove() exception:{}", e.getMessage());
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
+                                + "\"]");
+            }
         }
     };
 
@@ -153,35 +171,37 @@ public class GoveeHandler extends BaseThingHandler {
                     "@text/offline.configuration-error.invalid-color-temperature-range");
             return;
         }
+
         thing.setProperty(PROPERTY_COLOR_TEMPERATURE_MIN, Integer.toString(minKelvin));
         thing.setProperty(PROPERTY_COLOR_TEMPERATURE_MAX, Integer.toString(maxKelvin));
         stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
                 minKelvin, maxKelvin);
 
-        int refreshSecs = goveeConfiguration.refreshInterval;
-        if (refreshSecs < REFRESH_SECONDS_MIN) {
-            logger.warn("Config Param refreshInterval={} too low, minimum={}", refreshSecs, REFRESH_SECONDS_MIN);
-            refreshSecs = REFRESH_SECONDS_MIN;
+        refreshIntervalSeconds = goveeConfiguration.refreshInterval;
+        if (refreshIntervalSeconds < REFRESH_SECONDS_MIN) {
+            logger.warn("Config Param refreshInterval={} too low, minimum={}", refreshIntervalSeconds,
+                    REFRESH_SECONDS_MIN);
+            refreshIntervalSeconds = REFRESH_SECONDS_MIN;
         }
 
         updateStatus(ThingStatus.UNKNOWN);
         communicationManager.registerHandler(this);
 
-        if (triggerStatusJob == null) {
+        if (thingTaskSenderTask == null) {
             logger.debug("Starting refresh trigger job for thing {} ", thing.getLabel());
-            triggerStatusJob = executorService.scheduleWithFixedDelay(thingRefreshSender, 100, refreshSecs,
-                    TimeUnit.SECONDS);
+            thingTaskSenderTask = executorService.scheduleWithFixedDelay(thingTaskSender, INTER_COMMAND_DELAY_MILLISEC,
+                    INTER_COMMAND_DELAY_MILLISEC, TimeUnit.MILLISECONDS);
         }
     }
 
     @Override
     public void dispose() {
         super.dispose();
-
-        ScheduledFuture<?> triggerStatusJobFuture = triggerStatusJob;
-        if (triggerStatusJobFuture != null) {
-            triggerStatusJobFuture.cancel(true);
-            triggerStatusJob = null;
+        taskQueue.clear();
+        ScheduledFuture<?> job = thingTaskSenderTask;
+        if (job != null) {
+            job.cancel(true);
+            thingTaskSenderTask = null;
         }
         communicationManager.unregisterHandler(this);
     }
@@ -190,93 +210,51 @@ public class GoveeHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command commandParam) {
         Command command = commandParam;
 
-        logger.debug("handleCommand({}, {})", channelUID, command);
+        synchronized (taskQueue) {
+            logger.debug("handleCommand({}, {})", channelUID, command);
 
-        List<Callable<?>> communicationTasks = new ArrayList<>();
-        boolean mustRefresh = false;
-
-        if (command instanceof RefreshType) {
-            // we are refreshing all channels at once, as we get all information at the same time
-            mustRefresh = true;
-        } else {
-            switch (channelUID.getId()) {
-                case CHANNEL_COLOR:
-                    if (command instanceof HSBType hsb) {
-                        communicationTasks.add(() -> sendColor(hsb));
-                        command = hsb.getBrightness(); // fall through
-                    }
-                    if (command instanceof PercentType percent) {
-                        communicationTasks.add(() -> sendBrightness(percent));
-                        command = OnOffType.from(percent.intValue() > 0); // fall through
-                    }
-                    if (command instanceof OnOffType onOff) {
-                        communicationTasks.add(() -> sendOnOff(onOff));
-                    }
-                    break;
-
-                case CHANNEL_COLOR_TEMPERATURE:
-                    if (command instanceof PercentType percent) {
-                        communicationTasks.add(() -> sendKelvin(percentToKelvin(percent)));
-                    }
-                    break;
-
-                case CHANNEL_COLOR_TEMPERATURE_ABS:
-                    if (command instanceof QuantityType<?> genericQuantity) {
-                        QuantityType<?> kelvin = genericQuantity.toInvertibleUnit(Units.KELVIN);
-                        if (kelvin == null) {
-                            logger.warn("handleCommand() invalid QuantityType:{}", genericQuantity);
-                            break;
+            if (command instanceof RefreshType) {
+                taskQueue.add(() -> triggerDeviceStatusRefresh());
+            } else {
+                switch (channelUID.getId()) {
+                    case CHANNEL_COLOR:
+                        if (command instanceof HSBType hsb) {
+                            taskQueue.add(() -> sendColor(hsb));
+                            command = hsb.getBrightness(); // fall through
                         }
-                        communicationTasks.add(() -> sendKelvin(kelvin.intValue()));
-                    } else if (command instanceof DecimalType kelvin) {
-                        communicationTasks.add(() -> sendKelvin(kelvin.intValue()));
-                    }
-                    break;
-            }
+                        if (command instanceof PercentType percent) {
+                            taskQueue.add(() -> sendBrightness(percent));
+                            command = OnOffType.from(percent.intValue() > 0); // fall through
+                        }
+                        if (command instanceof OnOffType onOff) {
+                            taskQueue.add(() -> sendOnOff(onOff));
+                            taskQueue.add(() -> triggerDeviceStatusRefresh());
+                        }
+                        break;
 
-            if (mustRefresh || !communicationTasks.isEmpty()) {
-                communicationTasks.add(() -> triggerDeviceStatusRefresh());
-            }
+                    case CHANNEL_COLOR_TEMPERATURE:
+                        if (command instanceof PercentType percent) {
+                            taskQueue.add(() -> sendKelvin(percentToKelvin(percent)));
+                            taskQueue.add(() -> triggerDeviceStatusRefresh());
+                        }
+                        break;
 
-            if (!communicationTasks.isEmpty()) {
-                scheduler.submit(() -> runCallableTasks(communicationTasks));
+                    case CHANNEL_COLOR_TEMPERATURE_ABS:
+                        if (command instanceof QuantityType<?> genericQuantity) {
+                            QuantityType<?> kelvin = genericQuantity.toInvertibleUnit(Units.KELVIN);
+                            if (kelvin == null) {
+                                logger.warn("handleCommand() invalid QuantityType:{}", genericQuantity);
+                                break;
+                            }
+                            taskQueue.add(() -> sendKelvin(kelvin.intValue()));
+                            taskQueue.add(() -> triggerDeviceStatusRefresh());
+                        } else if (command instanceof DecimalType kelvin) {
+                            taskQueue.add(() -> sendKelvin(kelvin.intValue()));
+                            taskQueue.add(() -> triggerDeviceStatusRefresh());
+                        }
+                        break;
+                }
             }
-        }
-    }
-
-    /**
-     * Iterate over the given list of {@link Callable} tasks and run them with a delay between each. Reason for the
-     * delay is that Govee lamps cannot process multiple commands in short succession. Update the thing status depending
-     * on whether any of the tasks encountered an exception.
-     *
-     * @param callables a list of Callable tasks (which shall not be empty)
-     */
-    @SuppressWarnings("null")
-    private void runCallableTasks(List<Callable<?>> callables) {
-        boolean exception = false;
-        ListIterator<Callable<?>> tasks = callables.listIterator();
-        while (true) { // don't check hasNext() (we do it below)
-            try {
-                tasks.next().call();
-            } catch (Exception e) {
-                exception = true;
-                break;
-            }
-            if (!tasks.hasNext()) {
-                break;
-            }
-            try {
-                Thread.sleep(INTER_COMMAND_DELAY_MILLISEC);
-            } catch (InterruptedException e) {
-                return;
-            }
-        }
-        if (!exception) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
-                            + "\"]");
         }
     }
 
@@ -353,7 +331,7 @@ public class GoveeHandler extends BaseThingHandler {
         return new HSBType(normalColor.getHue(), normalColor.getSaturation(), brightness);
     }
 
-    void handleIncomingStatus(String response) {
+    public void handleIncomingStatus(String response) {
         if (response.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.empty-response");

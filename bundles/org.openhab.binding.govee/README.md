@@ -128,6 +128,7 @@ Here is a list of the supported devices (the ones marked with * have been tested
 - H706A Permanent Outdoor Lights Pro 30M
 - H706B Permanent Outdoor Lights Pro 45M
 - H706C Permanent Outdoor Lights Pro 60M
+- H7070 Outdoor Projector Light (*)
 - H7075 Outdoor Wall Light
 - H70B1 520 LED Curtain Lights
 - H70BC 400 LED Curtain Lights
