@@ -40,4 +40,7 @@ public class VeSyncBridgeConfiguration {
      */
     @Nullable
     public Integer airPurifierPollInterval;
+
+    @Nullable
+    public Integer outletPollInterval;
 }
