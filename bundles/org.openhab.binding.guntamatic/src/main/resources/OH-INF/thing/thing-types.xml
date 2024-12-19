@@ -166,55 +166,55 @@
 	<channel-group-type id="controlGroupType">
 		<label>Control</label>
 		<channels>
-			<channel id="boilerApproval" typeId="controlBoilerApproval">
+			<channel id="boiler-approval" typeId="controlBoilerApproval">
 				<label>Set Boiler Approval</label>
 			</channel>
 			<channel id="program" typeId="controlProgram">
 				<label>Set Program</label>
 			</channel>
-			<channel id="heatCircProgram0" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-0" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 0 Program</label>
 			</channel>
-			<channel id="heatCircProgram1" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-1" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 1 Program</label>
 			</channel>
-			<channel id="heatCircProgram2" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-2" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 2 Program</label>
 			</channel>
-			<channel id="heatCircProgram3" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-3" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 3 Program</label>
 			</channel>
-			<channel id="heatCircProgram4" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-4" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 4 Program</label>
 			</channel>
-			<channel id="heatCircProgram5" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-5" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 5 Program</label>
 			</channel>
-			<channel id="heatCircProgram6" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-6" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 6 Program</label>
 			</channel>
-			<channel id="heatCircProgram7" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-7" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 7 Program</label>
 			</channel>
-			<channel id="heatCircProgram8" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-8" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 8 Program</label>
 			</channel>
-			<channel id="wwHeat0" typeId="controlWwHeat">
+			<channel id="ww-heat-0" typeId="controlWwHeat">
 				<label>Trigger Warm Water Circle 0</label>
 			</channel>
-			<channel id="wwHeat1" typeId="controlWwHeat">
+			<channel id="ww-heat-1" typeId="controlWwHeat">
 				<label>Trigger Warm Water Circle 1</label>
 			</channel>
-			<channel id="wwHeat2" typeId="controlWwHeat">
+			<channel id="ww-heat-2" typeId="controlWwHeat">
 				<label>Trigger Warm Water Circle 2</label>
 			</channel>
-			<channel id="extraWwHeat0" typeId="controlExtraWwHeat">
+			<channel id="extra-ww-heat-0" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Water Circle 0</label>
 			</channel>
-			<channel id="extraWwHeat1" typeId="controlExtraWwHeat">
+			<channel id="extra-ww-heat-1" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Water Circle 1</label>
 			</channel>
-			<channel id="extraWwHeat2" typeId="controlExtraWwHeat">
+			<channel id="extra-ww-heat-2" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Water Circle 2</label>
 			</channel>
 		</channels>
@@ -226,49 +226,49 @@
 			<channel id="program" typeId="controlProgramWOManu">
 				<label>Set Program</label>
 			</channel>
-			<channel id="heatCircProgram0" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-0" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 0 Program</label>
 			</channel>
-			<channel id="heatCircProgram1" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-1" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 1 Program</label>
 			</channel>
-			<channel id="heatCircProgram2" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-2" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 2 Program</label>
 			</channel>
-			<channel id="heatCircProgram3" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-3" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 3 Program</label>
 			</channel>
-			<channel id="heatCircProgram4" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-4" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 4 Program</label>
 			</channel>
-			<channel id="heatCircProgram5" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-5" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 5 Program</label>
 			</channel>
-			<channel id="heatCircProgram6" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-6" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 6 Program</label>
 			</channel>
-			<channel id="heatCircProgram7" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-7" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 7 Program</label>
 			</channel>
-			<channel id="heatCircProgram8" typeId="controlHeatCircProgram">
+			<channel id="heat-circ-program-8" typeId="controlHeatCircProgram">
 				<label>Set Heat Circle 8 Program</label>
 			</channel>
-			<channel id="wwHeat0" typeId="controlWwHeat">
+			<channel id="ww-heat-0" typeId="controlWwHeat">
 				<label>Trigger Warm Water Circle 0</label>
 			</channel>
-			<channel id="wwHeat1" typeId="controlWwHeat">
+			<channel id="ww-heat-1" typeId="controlWwHeat">
 				<label>Trigger Warm Water Circle 1</label>
 			</channel>
-			<channel id="wwHeat2" typeId="controlWwHeat">
+			<channel id="ww-heat-2" typeId="controlWwHeat">
 				<label>Trigger Warm Water Circle 2</label>
 			</channel>
-			<channel id="extraWwHeat0" typeId="controlExtraWwHeat">
+			<channel id="extra-ww-heat-0" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Water Circle 0</label>
 			</channel>
-			<channel id="extraWwHeat1" typeId="controlExtraWwHeat">
+			<channel id="extra-ww-heat-1" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Water Circle 1</label>
 			</channel>
-			<channel id="extraWwHeat2" typeId="controlExtraWwHeat">
+			<channel id="extra-ww-heat-2" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Water Circle 2</label>
 			</channel>
 		</channels>
