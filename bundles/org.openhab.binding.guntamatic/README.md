@@ -51,21 +51,21 @@ The Guntamatic Heating System can be controlled using the following channels:
 | --------------------- | ------------------------------------------------------------------------------- | -------- | :--: | :-------------------: | :------: | :------: |
 | `boiler-approval`     | Set Boiler Approval (`AUTO`, `OFF`, `ON`)<sup id="a1">[1](#f1)</sup>)           | `String` |      |        🔐 W1         |   R/W    |   true   |
 | `program`             | Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`<sup id="a2">[2](#f2)</sup>) | `String` |      |        🔐 W1         |   R/W    |  false   |
-| `heat-circ-program-0` | Set Heat Circle 0 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `heat-circ-program-1` | Set Heat Circle 1 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `heat-circ-program-2` | Set Heat Circle 2 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `heat-circ-program-3` | Set Heat Circle 3 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `heat-circ-program-4` | Set Heat Circle 4 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `heat-circ-program-5` | Set Heat Circle 5 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `heat-circ-program-6` | Set Heat Circle 6 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `heat-circ-program-7` | Set Heat Circle 7 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `heat-circ-program-8` | Set Heat Circle 8 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `ww-heat-0`           | Trigger Warm Water Circle 0 (`RECHARGE`)                                        | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `ww-heat-1`           | Trigger Warm Water Circle 1 (`RECHARGE`)                                        | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `ww-heat-2`           | Trigger Warm Water Circle 2 (`RECHARGE`)                                        | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `extra-ww-heat-0`     | Trigger Extra Warm Water Circle 0 (`RECHARGE`)                                  | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `extra-ww-heat-1`     | Trigger Extra Warm Water Circle 1 (`RECHARGE`)                                  | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `extra-ww-heat-2`     | Trigger Extra Warm Water Circle 2 (`RECHARGE`)                                  | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-0` | Set Heat Circuit 0 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-1` | Set Heat Circuit 1 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-2` | Set Heat Circuit 2 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-3` | Set Heat Circuit 3 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-4` | Set Heat Circuit 4 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-5` | Set Heat Circuit 5 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-6` | Set Heat Circuit 6 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-7` | Set Heat Circuit 7 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-8` | Set Heat Circuit 8 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `ww-heat-0`           | Trigger Warm Water Circuit 0 (`RECHARGE`)                                       | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `ww-heat-1`           | Trigger Warm Water Circuit 1 (`RECHARGE`)                                       | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `ww-heat-2`           | Trigger Warm Water Circuit 2 (`RECHARGE`)                                       | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `extra-ww-heat-0`     | Trigger Extra Warm Water Circuit 0 (`RECHARGE`)                                 | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `extra-ww-heat-1`     | Trigger Extra Warm Water Circuit 1 (`RECHARGE`)                                 | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `extra-ww-heat-2`     | Trigger Extra Warm Water Circuit 2 (`RECHARGE`)                                 | `String` |      |        🔐 W1         |   R/W    |   true   |
 
 - <b id="f1">1)</b> ... Channel is supported by Biostar, Powerchip, Powercorn, Biocom, Pro as well as Therm only [↩](#a1)
 - <b id="f2">2)</b> ... `MANUAL` is supported by Biostar, Powerchip, Powercorn, Biocom, Pro as well as Therm only [↩](#a2)
