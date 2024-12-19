@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.InsteonLegacyBinding;
 import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfiguration;
@@ -67,6 +68,7 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> reconnectJob = null;
     private @Nullable ScheduledFuture<?> settleJob = null;
     private long lastInsteonDeviceCreatedTimestamp = 0;
+    private HttpClient httpClient;
     private SerialPortManager serialPortManager;
     private ThingManager thingManager;
     private ThingRegistry thingRegistry;
@@ -74,9 +76,10 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
     private Map<String, String> channelInfo = new ConcurrentHashMap<>();
     private Map<ChannelUID, Configuration> channelConfigs = new ConcurrentHashMap<>();
 
-    public InsteonLegacyNetworkHandler(Bridge bridge, SerialPortManager serialPortManager, ThingManager thingManager,
-            ThingRegistry thingRegistry) {
+    public InsteonLegacyNetworkHandler(Bridge bridge, HttpClient httpClient, SerialPortManager serialPortManager,
+            ThingManager thingManager, ThingRegistry thingRegistry) {
         super(bridge);
+        this.httpClient = httpClient;
         this.serialPortManager = serialPortManager;
         this.thingManager = thingManager;
         this.thingRegistry = thingRegistry;
@@ -105,7 +108,7 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
             return;
         }
 
-        insteonBinding = new InsteonLegacyBinding(this, config, serialPortManager, scheduler);
+        insteonBinding = new InsteonLegacyBinding(this, config, httpClient, scheduler, serialPortManager);
         updateStatus(ThingStatus.UNKNOWN);
 
         // hold off on starting to poll until devices that already are defined as things are added.
@@ -136,7 +139,7 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
                                 this.driverInitializedJob = null;
                             }
                         } else {
-                            logger.debug("driver is not initialized yet");
+                            logger.trace("driver is not initialized yet");
                         }
                     }, 0, DRIVER_INITIALIZED_TIME_IN_SECONDS, TimeUnit.SECONDS);
                 } else {
