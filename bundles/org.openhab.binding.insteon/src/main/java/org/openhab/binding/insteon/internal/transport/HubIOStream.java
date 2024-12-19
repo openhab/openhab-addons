@@ -51,6 +51,7 @@ public class HubIOStream extends IOStream {
 
     private static final String BS_START = "<BS>";
     private static final String BS_END = "</BS>";
+    private static final int REQUEST_TIMEOUT = 30; // in seconds
 
     private String host;
     private int port;
@@ -278,7 +279,7 @@ public class HubIOStream extends IOStream {
      */
     private String getURL(String path) throws IOException {
         Request request = httpClient.newRequest(host, port).path(path).header(HttpHeader.AUTHORIZATION, "Basic " + auth)
-                .timeout(30, TimeUnit.SECONDS);
+                .timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
         logger.trace("getting {}", request.getURI());
 
         try {
