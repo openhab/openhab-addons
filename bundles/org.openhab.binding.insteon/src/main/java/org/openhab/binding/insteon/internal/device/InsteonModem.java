@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
 import org.openhab.binding.insteon.internal.device.database.DatabaseManager;
 import org.openhab.binding.insteon.internal.device.database.ModemDB;
@@ -53,10 +54,10 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     private boolean initialized = false;
     private int msgsReceived = 0;
 
-    public InsteonModem(InsteonBridgeConfiguration config, ScheduledExecutorService scheduler,
+    public InsteonModem(InsteonBridgeConfiguration config, HttpClient httpClient, ScheduledExecutorService scheduler,
             SerialPortManager serialPortManager) {
         super(InsteonAddress.UNKNOWN);
-        this.port = new Port(config, scheduler, serialPortManager);
+        this.port = new Port(config, httpClient, scheduler, serialPortManager);
         this.modemDB = new ModemDB(this);
         this.dbm = new DatabaseManager(this, scheduler);
         this.linker = new LinkManager(this, scheduler);
@@ -509,13 +510,14 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
      *
      * @param handler the bridge handler
      * @param config the bridge config
+     * @param httpClient the http client
      * @param scheduler the scheduler service
      * @param serialPortManager the serial port manager
      * @return the newly created InsteonModem
      */
     public static InsteonModem makeModem(InsteonBridgeHandler handler, InsteonBridgeConfiguration config,
-            ScheduledExecutorService scheduler, SerialPortManager serialPortManager) {
-        InsteonModem modem = new InsteonModem(config, scheduler, serialPortManager);
+            HttpClient httpClient, ScheduledExecutorService scheduler, SerialPortManager serialPortManager) {
+        InsteonModem modem = new InsteonModem(config, httpClient, scheduler, serialPortManager);
         modem.setHandler(handler);
         return modem;
     }

@@ -12,23 +12,27 @@
  */
 package org.openhab.binding.insteon.internal.transport;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,11 +51,13 @@ public class HubIOStream extends IOStream {
 
     private static final String BS_START = "<BS>";
     private static final String BS_END = "</BS>";
+    private static final int REQUEST_TIMEOUT = 30; // in seconds
 
     private String host;
     private int port;
     private String auth;
     private int pollInterval;
+    private HttpClient httpClient;
     private ScheduledExecutorService scheduler;
     private @Nullable ScheduledFuture<?> job;
     // index of the last byte we have read in the buffer
@@ -65,14 +71,16 @@ public class HubIOStream extends IOStream {
      * @param username hub user name
      * @param password hub password
      * @param pollInterval hub poll interval (in milliseconds)
+     * @param httpClient the http client
      * @param scheduler the scheduler
      */
-    public HubIOStream(String host, int port, String username, String password, int pollInterval,
+    public HubIOStream(String host, int port, String username, String password, int pollInterval, HttpClient httpClient,
             ScheduledExecutorService scheduler) {
         this.host = host;
         this.port = port;
         this.auth = Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
         this.pollInterval = pollInterval;
+        this.httpClient = httpClient;
         this.scheduler = scheduler;
     }
 
@@ -265,54 +273,33 @@ public class HubIOStream extends IOStream {
     /**
      * Helper method to fetch url from http server
      *
-     * @param resource the url
+     * @param path the url path
      * @return contents returned by http server
      * @throws IOException
      */
-    private String getURL(String resource) throws IOException {
-        String url = "http://" + host + ":" + port + resource;
+    private String getURL(String path) throws IOException {
+        Request request = httpClient.newRequest(host, port).path(path).header(HttpHeader.AUTHORIZATION, "Basic " + auth)
+                .timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
+        logger.trace("getting {}", request.getURI());
 
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         try {
-            connection.setConnectTimeout(30000);
-            connection.setReadTimeout(10000);
-            connection.setUseCaches(false);
-            connection.setDoInput(true);
-            connection.setDoOutput(false);
-            connection.setRequestProperty("Authorization", "Basic " + auth);
+            ContentResponse response = request.send();
 
-            logger.trace("getting {}", url);
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode != 200) {
-                if (responseCode == 401) {
+            int statusCode = response.getStatus();
+            switch (statusCode) {
+                case HttpStatus.OK_200:
+                    return response.getContentAsString();
+                case HttpStatus.UNAUTHORIZED_401:
                     throw new IOException(
                             "Bad username or password. See the label on the bottom of the hub for the correct login information.");
-                } else {
-                    throw new IOException(url + " failed with the response code: " + responseCode);
-                }
+                default:
+                    throw new IOException("GET " + request.getURI() + " failed with status code: " + statusCode);
             }
-
-            return getData(connection.getInputStream());
-        } finally {
-            connection.disconnect();
-        }
-    }
-
-    private String getData(InputStream is) throws IOException {
-        BufferedInputStream bis = new BufferedInputStream(is);
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int length = 0;
-            while ((length = bis.read(buffer)) != -1) {
-                baos.write(buffer, 0, length);
-            }
-
-            String s = baos.toString();
-            return s;
-        } finally {
-            bis.close();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("GET " + request.getURI() + " interrupted");
+        } catch (TimeoutException | ExecutionException e) {
+            throw new IOException("GET " + request.getURI() + " failed with error: " + e.getMessage());
         }
     }
 

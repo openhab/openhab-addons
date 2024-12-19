@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonHub1Configuration;
 import org.openhab.binding.insteon.internal.config.InsteonHub2Configuration;
@@ -63,13 +64,15 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> resetJob;
     private @Nullable ScheduledFuture<?> statisticsJob;
+    private HttpClient httpClient;
     private SerialPortManager serialPortManager;
     private Storage<DeviceCache> storage;
     private ThingRegistry thingRegistry;
 
-    public InsteonBridgeHandler(Bridge bridge, SerialPortManager serialPortManager, StorageService storageService,
-            ThingRegistry thingRegistry) {
+    public InsteonBridgeHandler(Bridge bridge, HttpClient httpClient, SerialPortManager serialPortManager,
+            StorageService storageService, ThingRegistry thingRegistry) {
         super(bridge);
+        this.httpClient = httpClient;
         this.serialPortManager = serialPortManager;
         this.storage = storageService.getStorage(bridge.getUID().toString(), DeviceCache.class.getClassLoader());
         this.thingRegistry = thingRegistry;
@@ -164,7 +167,7 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
             legacyHandler.disable();
         }
 
-        InsteonModem modem = InsteonModem.makeModem(this, config, scheduler, serialPortManager);
+        InsteonModem modem = InsteonModem.makeModem(this, config, httpClient, scheduler, serialPortManager);
         this.modem = modem;
 
         if (isInitialized()) {

@@ -27,6 +27,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyChannelConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.DeviceAddress;
@@ -119,13 +120,13 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
     private InsteonLegacyNetworkHandler handler;
 
     public InsteonLegacyBinding(InsteonLegacyNetworkHandler handler, InsteonLegacyNetworkConfiguration config,
-            SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
+            HttpClient httpClient, ScheduledExecutorService scheduler, SerialPortManager serialPortManager) {
         this.handler = handler;
 
         String port = config.getRedactedPort();
         logger.debug("port = '{}'", port);
 
-        driver = new LegacyDriver(config, this, serialPortManager, scheduler);
+        driver = new LegacyDriver(config, this, httpClient, scheduler, serialPortManager);
         driver.addPortListener(this);
 
         Integer devicePollIntervalSeconds = config.getDevicePollIntervalSeconds();
