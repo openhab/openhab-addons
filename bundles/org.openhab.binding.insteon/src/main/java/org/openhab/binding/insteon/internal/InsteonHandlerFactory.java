@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.discovery.InsteonDiscoveryService;
 import org.openhab.binding.insteon.internal.discovery.InsteonLegacyDiscoveryService;
 import org.openhab.binding.insteon.internal.handler.InsteonBridgeHandler;
@@ -29,6 +30,7 @@ import org.openhab.binding.insteon.internal.handler.InsteonLegacyNetworkHandler;
 import org.openhab.binding.insteon.internal.handler.InsteonSceneHandler;
 import org.openhab.binding.insteon.internal.handler.X10DeviceHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
@@ -56,6 +58,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.insteon", service = ThingHandlerFactory.class)
 public class InsteonHandlerFactory extends BaseThingHandlerFactory {
 
+    private final HttpClient httpClient;
     private final SerialPortManager serialPortManager;
     private final InsteonStateDescriptionProvider stateDescriptionProvider;
     private final StorageService storageService;
@@ -64,10 +67,12 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Activate
-    public InsteonHandlerFactory(final @Reference SerialPortManager serialPortManager,
+    public InsteonHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference SerialPortManager serialPortManager,
             final @Reference InsteonStateDescriptionProvider stateDescriptionProvider,
             final @Reference StorageService storageService, final @Reference ThingManager thingManager,
             final @Reference ThingRegistry thingRegistry) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
         this.serialPortManager = serialPortManager;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.storageService = storageService;
@@ -86,14 +91,14 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_HUB1.equals(thingTypeUID) || THING_TYPE_HUB2.equals(thingTypeUID)
                 || THING_TYPE_PLM.equals(thingTypeUID)) {
-            InsteonBridgeHandler handler = new InsteonBridgeHandler((Bridge) thing, serialPortManager, storageService,
-                    thingRegistry);
+            InsteonBridgeHandler handler = new InsteonBridgeHandler((Bridge) thing, httpClient, serialPortManager,
+                    storageService, thingRegistry);
             InsteonDiscoveryService service = new InsteonDiscoveryService(handler);
             registerDiscoveryService(handler, service);
             return handler;
         } else if (THING_TYPE_LEGACY_NETWORK.equals(thingTypeUID)) {
-            InsteonLegacyNetworkHandler handler = new InsteonLegacyNetworkHandler((Bridge) thing, serialPortManager,
-                    thingManager, thingRegistry);
+            InsteonLegacyNetworkHandler handler = new InsteonLegacyNetworkHandler((Bridge) thing, httpClient,
+                    serialPortManager, thingManager, thingRegistry);
             InsteonLegacyDiscoveryService service = new InsteonLegacyDiscoveryService(handler);
             registerDiscoveryService(handler, service);
             return handler;
