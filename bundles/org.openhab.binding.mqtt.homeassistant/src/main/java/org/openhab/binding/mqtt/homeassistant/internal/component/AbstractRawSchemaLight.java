@@ -33,8 +33,8 @@ abstract class AbstractRawSchemaLight extends Light {
     protected ComponentChannel rawChannel;
     protected TextValue colorModeValue;
 
-    public AbstractRawSchemaLight(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
-        super(builder, newStyleChannels);
+    public AbstractRawSchemaLight(ComponentFactory.ComponentConfiguration builder) {
+        super(builder);
         hiddenChannels.add(rawChannel = buildChannel(RAW_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(),
                 "Raw state", this).stateTopic(channelConfiguration.stateTopic)
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),

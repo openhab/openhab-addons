@@ -187,18 +187,8 @@ public class HaID {
      *
      * @return group id
      */
-    public String getGroupId(@Nullable final String uniqueId, boolean newStyleChannels) {
+    public String getGroupId(@Nullable final String uniqueId) {
         String result = uniqueId;
-
-        // newStyleChannels are auto-discovered things with openHAB >= 4.3.0
-        // assuming the topic has both a node ID and an object ID, simply use
-        // the component type and object ID - without encoding(!)
-        // since the only character allowed in object IDs but not allowed in UID
-        // is `-`. It also doesn't need to be reversible, so it's okay to just
-        // collapse `-` to `_`.
-        if (!nodeID.isBlank() && newStyleChannels) {
-            return component + "_" + objectID.replace('-', '_');
-        }
 
         // the null test is only here so the compile knows, result is not null afterwards
         if (result == null || result.isBlank()) {
