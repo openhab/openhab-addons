@@ -18,7 +18,6 @@ import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.g
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.rf.TapoChildDeviceHandler;
-import org.openhab.binding.tapocontrol.internal.devices.rf.smartcontact.TapoSmartContactHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TapoSmartSwitchHandler extends TapoChildDeviceHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(TapoSmartContactHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TapoSmartSwitchHandler.class);
 
     /**
      * Constructor
