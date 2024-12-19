@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
+import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceOutletHandler;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -45,7 +46,7 @@ import org.osgi.service.component.annotations.Reference;
 public class VeSyncHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
-            THING_TYPE_AIR_PURIFIER, THING_TYPE_AIR_HUMIDIFIER);
+            THING_TYPE_AIR_PURIFIER, THING_TYPE_AIR_HUMIDIFIER, THING_TYPE_OUTLET);
 
     private final HttpClientFactory httpClientFactory;
     private final TranslationProvider translationProvider;
@@ -73,6 +74,8 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory {
             return new VeSyncDeviceAirPurifierHandler(thing, translationProvider, localeProvider);
         } else if (VeSyncDeviceAirHumidifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new VeSyncDeviceAirHumidifierHandler(thing, translationProvider, localeProvider);
+        } else if (VeSyncDeviceOutletHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            return new VeSyncDeviceOutletHandler(thing, translationProvider, localeProvider);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new VeSyncBridgeHandler((Bridge) thing, httpClientFactory, translationProvider, localeProvider);
         }
