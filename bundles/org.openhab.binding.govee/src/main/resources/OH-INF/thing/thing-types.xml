@@ -11,22 +11,14 @@
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="color-temperature" typeId="system.color-temperature"/>
-			<channel id="color-temperature-abs" typeId="color-temperature-abs"/>
+			<channel id="color-temperature-abs" typeId="system.color-temperature-abs"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:govee:govee-light"/>
 	</thing-type>
-
-
-	<channel-type id="color-temperature-abs" advanced="true">
-		<item-type unitHint="K">Number:Temperature</item-type>
-		<label>Color Temperature</label>
-		<description>Controls the color temperature of the light in Kelvin</description>
-		<category>ColorLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
-		<state min="2000" max="9000" pattern="%.0f K"/>
-	</channel-type>
 
 </thing:thing-descriptions>
