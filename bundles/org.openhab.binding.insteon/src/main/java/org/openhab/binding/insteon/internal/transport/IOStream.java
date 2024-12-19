@@ -20,6 +20,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonHub1Configuration;
 import org.openhab.binding.insteon.internal.config.InsteonHub2Configuration;
@@ -113,16 +114,17 @@ public abstract class IOStream {
      * Creates an IOStream from an insteon bridge config object
      *
      * @param config
+     * @param httpClient
      * @param scheduler
      * @param serialPortManager
      * @return reference to IOStream
      */
-    public static IOStream create(InsteonBridgeConfiguration config, ScheduledExecutorService scheduler,
-            SerialPortManager serialPortManager) {
+    public static IOStream create(InsteonBridgeConfiguration config, HttpClient httpClient,
+            ScheduledExecutorService scheduler, SerialPortManager serialPortManager) {
         if (config instanceof InsteonHub1Configuration hub1Config) {
             return makeTcpIOStream(hub1Config);
         } else if (config instanceof InsteonHub2Configuration hub2Config) {
-            return makeHubIOStream(hub2Config, scheduler);
+            return makeHubIOStream(hub2Config, httpClient, scheduler);
         } else if (config instanceof InsteonPLMConfiguration plmConfig) {
             return makeSerialIOStream(plmConfig, serialPortManager);
         } else {
@@ -130,13 +132,14 @@ public abstract class IOStream {
         }
     }
 
-    private static HubIOStream makeHubIOStream(InsteonHub2Configuration config, ScheduledExecutorService scheduler) {
+    private static HubIOStream makeHubIOStream(InsteonHub2Configuration config, HttpClient httpClient,
+            ScheduledExecutorService scheduler) {
         String host = config.getHostname();
         int port = config.getPort();
         String user = config.getUsername();
         String pass = config.getPassword();
         int pollInterval = config.getHubPollInterval();
-        return new HubIOStream(host, port, user, pass, pollInterval, scheduler);
+        return new HubIOStream(host, port, user, pass, pollInterval, httpClient, scheduler);
     }
 
     private static SerialIOStream makeSerialIOStream(InsteonPLMConfiguration config,
