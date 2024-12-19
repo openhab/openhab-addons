@@ -30,65 +30,8 @@ import org.slf4j.LoggerFactory;
 /**
  * TAPO Smart-Contact-Device.
  *
- * @author Manfred Krämer - Initial contributio * Copyright (c) 2010-2024 Contributors to the openHAB project
- */
-package org.openhab.binding.tapocontrol.internal.devices.rf.smartswitch;
-
-import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
-
-/**
- * TAPO Smart-Contact-Device.
- *
  * @author Manfred Krämer - Initial contribution
  */
-
-@NonNullByDefault
-public class TapoSmartSwitchHandler extends TapoChildDeviceHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(TapoSmartContactHandler.class);
-
-    /**
-     * Constructor
-     *
-     * @param thing Thing object representing device
-     */
-    public TapoSmartSwitchHandler(Thing thing) {
-        super(thing);
-    }
-
-    /**
-     * Update properties
-     */
-    @Override
-    protected void devicePropertiesChanged(TapoChildDeviceData deviceInfo) {
-        super.devicePropertiesChanged(deviceInfo);
-        updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_OUTPUT), getOnOffType(deviceInfo.isOn()));
-    }
-
-    /**
-     * handle command sent to device
-     *
-     * @param channelUID channelUID command is sent to
-     * @param command command to be sent
-     */
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        /* perform actions */
-        if (command instanceof RefreshType) {
-            setDeviceData();
-        } else if (command instanceof OnOffType) {
-            if (command == OnOffType.ON) {
-                deviceInfo.setDeviceOn(true);
-            } else {
-                deviceInfo.setDeviceOn(false);
-            }
-
-            hub.sendCommandToChild(deviceInfo);
-        } else {
-            logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command, channelUID.getId());
-        }
-    }
-}
 
 @NonNullByDefault
 public class TapoSmartSwitchHandler extends TapoChildDeviceHandler {
