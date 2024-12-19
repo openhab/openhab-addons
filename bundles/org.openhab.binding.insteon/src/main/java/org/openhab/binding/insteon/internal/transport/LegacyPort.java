@@ -205,9 +205,7 @@ public class LegacyPort {
             mdbb.stop();
         }
 
-        if (ioStream.isOpen()) {
-            ioStream.close();
-        }
+        ioStream.close();
 
         ScheduledFuture<?> readJob = this.readJob;
         if (readJob != null) {

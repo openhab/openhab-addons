@@ -78,7 +78,7 @@ public class MsgFactory {
         end += l;
         // copy the incoming data to the end of the buffer
         if (logger.isTraceEnabled()) {
-            logger.trace("read buffer: len {} data: {}", end, HexUtils.getHexString(buf, end, false));
+            logger.trace("read buffer: len {} data: {}", end, HexUtils.getHexString(buf, end));
         }
     }
 
@@ -136,7 +136,7 @@ public class MsgFactory {
             done = true;
         }
         if (logger.isTraceEnabled()) {
-            logger.trace("keeping buffer len {} data: {}", end, HexUtils.getHexString(buf, end, false));
+            logger.trace("keeping buffer len {} data: {}", end, HexUtils.getHexString(buf, end));
         }
         return msg;
     }
