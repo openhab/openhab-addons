@@ -4,7 +4,7 @@ The Guntamatic Binding can be used to monitor and control [Guntamatic Heating Sy
 
 ## Supported Things
 
-The Guntamatic Binding was developed and tested using Guntamatic Biostar 15kW Pellets Heating System, running Firmware 3.2d.
+The Guntamatic Binding was developed and tested using Guntamatic Biostar 15kW Pellets Heating System, running Firmware 3.3d.
 It should work for all other Guntamatic Heating Systems as well, that support the same web interface (Pellets, WoodChips, EnergyGrain as well as Log Heating Systems).
 
 ## Things
@@ -13,13 +13,13 @@ Guntamatic Heating Systems supported as Thing Types:
 
 | Name      | Thing Type ID | Heating System Type  | Binding Development Status                       |
 | --------- | ------------- | -------------------- | ------------------------------------------------ |
-| Biostar   | `biostar`     | Pellets              | tested via 15kW, firmware 3.2d, German & English |
+| Biostar   | `biostar`     | Pellets              | tested via 15kW, firmware 3.3d, German & English |
 | Biosmart  | `biosmart`    | Logs                 | tested via 22kW, firmware 3.2f, German           |
 | Powerchip | `powerchip`   | WoodChips            | tested via 100kW, firmware 3.2d, French          |
-| Powercorn | `powercorn`   | EnergyGrain          | untested                                         |
-| Biocom    | `biocom`      | Pellets              | untested                                         |
-| Pro       | `pro`         | Pellets or WoodChips | untested                                         |
-| Therm     | `therm`       | Pellets              | untested                                         |
+| Powercorn | `powercorn`   | EnergyGrain          | untested (no user feedback)                      |
+| Biocom    | `biocom`      | Pellets              | untested (no user feedback)                      |
+| Pro       | `pro`         | Pellets or WoodChips | untested (no user feedback)                      |
+| Therm     | `therm`       | Pellets              | untested (no user feedback)                      |
 | Generic   | `generic`     | -                    | use, if none from above                          |
 
 ### Thing Configuration
@@ -33,13 +33,13 @@ Guntamatic Heating Systems supported as Thing Types:
 
 ### Properties
 
-| Property          | Description                                         | Supported                                         |
-| ----------------- | --------------------------------------------------- | ------------------------------------------------- |
-| `extraWwHeat`     | Parameter used by `controlExtraWwHeat` channels     | all                                               |
-| `boilerApproval`  | Parameter used by `controlBoilerApproval` channel   | Biostar, Powerchip, Powercorn, Biocom, Pro, Therm |
-| `heatCircProgram` | Parameter used by `controlHeatCircProgram` channels | all                                               |
-| `program`         | Parameter used by `controlProgram` channel          | all                                               |
-| `wwHeat`          | Parameter used by `controlWwHeat` channels          | all                                               |
+| Property          | Description                                    | Supported                                         |
+| ----------------- | ---------------------------------------------- | ------------------------------------------------- |
+| `extraWwHeat`     | Parameter used by `extra-ww-heat` channels     | all                                               |
+| `boilerApproval`  | Parameter used by `boiler-approval` channel    | Biostar, Powerchip, Powercorn, Biocom, Pro, Therm |
+| `heatCircProgram` | Parameter used by `heat-circ-program` channels | all                                               |
+| `program`         | Parameter used by `program` channel            | all                                               |
+| `wwHeat`          | Parameter used by `ww-heat` channels           | all                                               |
 
 ## Channels
 
@@ -47,151 +47,153 @@ Guntamatic Heating Systems supported as Thing Types:
 
 The Guntamatic Heating System can be controlled using the following channels:
 
-| Channel                   | Description                                                                     | Type     | Unit | Security Access Level | ReadOnly | Advanced |
-| ------------------------- | ------------------------------------------------------------------------------- | -------- | :--: | :-------------------: | :------: | :------: |
-| `controlBoilerApproval`   | Set Boiler Approval (`AUTO`, `OFF`, `ON`)                                       | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlProgram`          | Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`<sup id="a1">[1](#f1)</sup>) | `String` |      |        🔐 W1         |   R/W    |  false   |
-| `controlHeatCircProgram0` | Set Heat Circle 0 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlHeatCircProgram1` | Set Heat Circle 1 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlHeatCircProgram2` | Set Heat Circle 2 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlHeatCircProgram3` | Set Heat Circle 3 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlHeatCircProgram4` | Set Heat Circle 4 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlHeatCircProgram5` | Set Heat Circle 5 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlHeatCircProgram6` | Set Heat Circle 6 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlHeatCircProgram7` | Set Heat Circle 7 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlHeatCircProgram8` | Set Heat Circle 8 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                    | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlWwHeat0`          | Trigger Warm Water Circle 0 (`RECHARGE`)                                        | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlWwHeat1`          | Trigger Warm Water Circle 1 (`RECHARGE`)                                        | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlWwHeat2`          | Trigger Warm Water Circle 2 (`RECHARGE`)                                        | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlExtraWwHeat0`     | Trigger Extra Warm Water Circle 0 (`RECHARGE`)                                  | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlExtraWwHeat1`     | Trigger Extra Warm Water Circle 1 (`RECHARGE`)                                  | `String` |      |        🔐 W1         |   R/W    |   true   |
-| `controlExtraWwHeat2`     | Trigger Extra Warm Water Circle 2 (`RECHARGE`)                                  | `String` |      |        🔐 W1         |   R/W    |   true   |
+| Channel               | Description                                                                     | Type     | Unit | Security Access Level | ReadOnly | Advanced |
+| --------------------- | ------------------------------------------------------------------------------- | -------- | :--: | :-------------------: | :------: | :------: |
+| `boiler-approval`     | Set Boiler Approval (`AUTO`, `OFF`, `ON`)<sup id="a1">[1](#f1)</sup>)           | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `program`             | Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`<sup id="a2">[2](#f2)</sup>) | `String` |      |        🔐 W1         |   R/W    |  false   |
+| `heat-circ-program-0` | Set Heat Circuit 0 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-1` | Set Heat Circuit 1 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-2` | Set Heat Circuit 2 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-3` | Set Heat Circuit 3 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-4` | Set Heat Circuit 4 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-5` | Set Heat Circuit 5 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-6` | Set Heat Circuit 6 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-7` | Set Heat Circuit 7 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `heat-circ-program-8` | Set Heat Circuit 8 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)                   | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `ww-heat-0`           | Trigger Warm Water Circuit 0 (`RECHARGE`)                                       | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `ww-heat-1`           | Trigger Warm Water Circuit 1 (`RECHARGE`)                                       | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `ww-heat-2`           | Trigger Warm Water Circuit 2 (`RECHARGE`)                                       | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `extra-ww-heat-0`     | Trigger Extra Warm Water Circuit 0 (`RECHARGE`)                                 | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `extra-ww-heat-1`     | Trigger Extra Warm Water Circuit 1 (`RECHARGE`)                                 | `String` |      |        🔐 W1         |   R/W    |   true   |
+| `extra-ww-heat-2`     | Trigger Extra Warm Water Circuit 2 (`RECHARGE`)                                 | `String` |      |        🔐 W1         |   R/W    |   true   |
 
-- <b id="f1">1)</b> ... `MANUAL` is supported by Biostar, Powerchip, Powercorn, Biocom, Pro as well as Therm only [↩](#a1)
+- <b id="f1">1)</b> ... Channel is supported by Biostar, Powerchip, Powercorn, Biocom, Pro as well as Therm only [↩](#a1)
+- <b id="f2">2)</b> ... `MANUAL` is supported by Biostar, Powerchip, Powercorn, Biocom, Pro as well as Therm only [↩](#a2)
 
 #### Response of Control Channels
 
 - `{"ack":"confirmation message"}` ... in case of success
 - `{"err":"error message"}`        ... in case of error
 
-The reaction of the Guntamatic Heating System can be monitored via the corresponding data channel. E.g. `programHc1` if you triggered `controlHeatCircProgram1`. The data channel gets updated with the next cyclic update (according to the `refreshInterval` configuration).
+The reaction of the Guntamatic Heating System can be monitored via the corresponding data channel. E.g. `program-hc-1` if you triggered `heat-circ-program-1`. The data channel gets updated with the next cyclic update (according to the `refreshInterval` configuration).
 
-### Monitoring Channels
+### Status Channels
 
 The Binding dynamically generates Channels, derived from the data provided from the actual Guntamatic Heating System.
 
 Example list of Channels using a Guntamatic Biostar 15kW Pellets Heating System running firmware 3.2d and Guntamatic System Language configured to English:
 
-| Channel              | Description            | Type                   | Unit | Security Access Level | ReadOnly | Advanced |
-| -------------------- | ---------------------- | ---------------------- | :--: | :-------------------: | :------: | :------: |
-| `running`            | Running                | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `outsideTemp`        | Outside Temp.          | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `blrTargetTemp`      | Blr.Target Temp        | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `boilerTemperature`  | Boiler Temperature     | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `flueGasUtilisation` | Flue gas utilisation   | `Number:Dimensionless` | `%`  |        🔐 W1         |   R/O    |  false   |
-| `output`             | Output                 | `Number:Dimensionless` | `%`  |        🔓 W0         |   R/O    |  false   |
-| `returnTemp`         | Return temp            | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `co2Target`          | CO2 Target             | `Number:Dimensionless` | `%`  |        🔐 W1         |   R/O    |  false   |
-| `co2Content`         | CO2 Content            | `Number:Dimensionless` | `%`  |        🔓 W0         |   R/O    |  false   |
-| `returnTempTarget`   | Return temp target     | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `statusCode`         | Status code            | `Number`               |      |        🔐 W1         |   R/O    |  false   |
-| `efficiency`         | Efficiency             | `Number:Dimensionless` | `%`  |        🔐 W1         |   R/O    |  false   |
-| `extractorSystem`    | Extractor System       | `Number:Dimensionless` | `%`  |        🔓 W0         |   R/O    |  false   |
-| `feedTurbine`        | Feed Turbine           | `String`               |      |        🔐 W1         |   R/O    |  false   |
-| `dischargeMotor`     | Discharge motor        | `Number:Dimensionless` | `%`  |        🔓 W0         |   R/O    |  false   |
-| `g1Target`           | G1 Target              | `Number:Dimensionless` | `%`  |        🔓 W0         |   R/O    |  false   |
-| `bufferTop`          | Buffer Top             | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `bufferMid`          | Buffer Mid             | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `bufferBtm`          | Buffer Btm             | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `pumpHp0`            | Pump HP0               | `Switch`               |      |        🔓 W0         |   R/O    |  false   |
-| `dhw0`               | DHW 0                  | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `bDhw0`              | B DHW 0                | `Switch`               |      |        🔓 W0         |   R/O    |  false   |
-| `dhw1`               | DHW 1                  | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `bDhw1`              | B DHW 1                | `Switch`               |      |        🔓 W0         |   R/O    |  false   |
-| `dhw2`               | DHW 2                  | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `bDhw2`              | B DHW 2                | `Switch`               |      |        🔓 W0         |   R/O    |  false   |
-| `roomTempHc0`        | Room Temp:HC 0         | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `heatCirc0`          | Heat Circ. 0           | `Switch`               |      |        🔓 W0         |   R/O    |  false   |
-| `roomTempHc1`        | Room Temp:HC 1         | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `flowTarget1`        | Flow Target 1          | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `flowIs1`            | Flow is 1              | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `mixer1`             | Mixer 1                | `String`               |      |        🔐 W1         |   R/O    |  false   |
-| `heatCirc1`          | Heat Circ. 1           | `Switch`               |      |        🔐 W1         |   R/O    |  false   |
-| `roomTempHc2`        | Room Temp:HC 2         | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `flowTarget2`        | Flow Target 2          | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `flowIs2`            | Flow is 2              | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `mixer2`             | Mixer 2                | `String`               |      |        🔐 W1         |   R/O    |  false   |
-| `heatCirc2`          | Heat Circ. 2           | `Switch`               |      |        🔓 W0         |   R/O    |  false   |
-| `roomTempHc3`        | Room Temp:HC 3         | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `heatCirc3`          | Heat Circ. 3           | `Switch`               |      |        🔓 W0         |   R/O    |  false   |
-| `roomTempHc4`        | Room Temp:HC 4         | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `flowTarget4`        | Flow Target 4          | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `flowIs4`            | Flow is 4              | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `mixer4`             | Mixer 4                | `String`               |      |        🔐 W1         |   R/O    |  false   |
-| `heatCirc4`          | Heat Circ. 4           | `Switch`               |      |        🔓 W0         |   R/O    |  false   |
-| `roomTempHc5`        | Room Temp:HC 5         | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `flowTarget5`        | Flow Target 5          | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `flowIs5`            | Flow is 5              | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `mixer5`             | Mixer 5                | `String`               |      |        🔐 W1         |   R/O    |  false   |
-| `heatCirc5`          | Heat Circ. 5           | `Switch`               |      |        🔓 W0         |   R/O    |  false   |
-| `roomTempHc6`        | Room Temp:HC 6         | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `heatCirc6`          | Heat Circ. 6           | `Switch`               |      |        🔓 W0         |   R/O    |  false   |
-| `roomTempHc7`        | Room Temp:HC 7         | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `flowTarget7`        | Flow Target 7          | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `flowIs7`            | Flow is 7              | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `mixer7`             | Mixer 7                | `String`               |      |        🔐 W1         |   R/O    |  false   |
-| `heatCirc7`          | Heat Circ. 7           | `Switch`               |      |        🔓 W0         |   R/O    |  false   |
-| `roomTempHc8`        | Room Temp:HC 8         | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `flowTarget8`        | Flow Target 8          | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `flowIs8`            | Flow is 8              | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `mixer8`             | Mixer 8                | `String`               |      |        🔐 W1         |   R/O    |  false   |
-| `heatCirc8`          | Heat Circ. 8           | `Switch`               |      |        🔓 W0         |   R/O    |  false   |
-| `fuelLevel`          | Fuel Level             | `String`               |      |        🔐 W1         |   R/O    |  false   |
-| `stb`                | STB                    | `String`               |      |        🔐 W1         |   R/O    |  false   |
-| `tks`                | TKS                    | `String`               |      |        🔐 W1         |   R/O    |  false   |
-| `boilerApproval`     | Boiler approval        | `Switch`               |      |        🔐 W1         |   R/O    |  false   |
-| `programme`          | Programme              | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `programHc0`         | Program HC0            | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `programHc1`         | Program HC1            | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `programHc2`         | Program HC2            | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `programHc3`         | Program HC3            | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `programHc4`         | Program HC4            | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `programHc5`         | Program HC5            | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `programHc6`         | Program HC6            | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `programHc7`         | Program HC7            | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `programHc8`         | Program HC8            | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `interuption0`       | Interuption 0          | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `interuption1`       | Interuption 1          | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `serial`             | Serial                 | `Number`               |      |        🔓 W0         |   R/O    |  false   |
-| `version`            | Version                | `String`               |      |        🔓 W0         |   R/O    |  false   |
-| `runningTime`        | Running Time           | `Number:Time`          | `h`  |        🔓 W0         |   R/O    |  false   |
-| `serviceHrs`         | Service Hrs            | `Number:Time`          | `d`  |        🔓 W0         |   R/O    |  false   |
-| `emptyAshIn`         | Empty ash in           | `Number:Time`          | `h`  |        🔓 W0         |   R/O    |  false   |
-| `flowIs0`            | Flow is 0              | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `flowIs3`            | Flow is 3              | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `flowIs6`            | Flow is 6              | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `fuelCounter`        | Fuel counter           | `Number:Volume`        | `m³` |        🔐 W1         |   R/O    |  false   |
-| `bufferLoad`         | Buffer load.           | `Number:Dimensionless` | `%`  |        🔓 W0         |   R/O    |  false   |
-| `bufferTop0`         | Buffer Top 0           | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `bufferBtm0`         | Buffer Btm 0           | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `bufferTop1`         | Buffer Top 1           | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `bufferBtm1`         | Buffer Btm 1           | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `bufferTop2`         | Buffer Top 2           | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `bufferBtm2`         | Buffer Btm 2           | `Number:Temperature`   | `°C` |        🔐 W1         |   R/O    |  false   |
-| `bExtraWw0`          | B extra-WW. 0          | `Switch`               |      |        🔐 W1         |   R/O    |  false   |
-| `bExtraWw1`          | B extra-WW. 1          | `Switch`               |      |        🔐 W1         |   R/O    |  false   |
-| `bExtraWw2`          | B extra-WW. 2          | `Switch`               |      |        🔐 W1         |   R/O    |  false   |
-| `auxiliaryPump0`     | Auxiliary pump 0       | `Switch`               |      |        🔐 W1         |   R/O    |  false   |
-| `auxiliaryPump1`     | Auxiliary pump 1       | `Switch`               |      |        🔐 W1         |   R/O    |  false   |
-| `auxiliaryPump2`     | Auxiliary pump 2       | `Switch`               |      |        🔐 W1         |   R/O    |  false   |
-| `boilersConditionNo` | Boiler´s condition no. | `String`               |      |        🔐 W1         |   R/O    |  false   |
-| `bufferT5`           | Buffer T5              | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `bufferT6`           | Buffer T6              | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `bufferT7`           | Buffer T7              | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `extraWw0`           | Extra-WW. 0            | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `extraWw1`           | Extra-WW. 1            | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `extraWw2`           | Extra-WW. 2            | `Number:Temperature`   | `°C` |        🔓 W0         |   R/O    |  false   |
-| `grate`              | Grate                  | `Number:Dimensionless` | `%`  |        🔓 W0         |   R/O    |  false   |
+| Channel                    | Description            | Type                   | Unit | Security Access Level | ReadOnly | Advanced |
+|----------------------------|------------------------|------------------------|-:--:-|-:-------------------:-|-:------:-|-:------:-|
+| `000-running`              | Running                | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `001-outside-temp`         | Outside Temp.          | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `002-blr-target-temp`      | Blr.Target Temp        | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `003-boiler-temperature`   | Boiler Temperature     | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `004-flue-gas-utilisation` | Flue gas utilisation   | `Number:Dimensionless` | `%`  | 🔐 W1                 | R/O      | false    |
+| `005-output`               | Output                 | `Number:Dimensionless` | `%`  | 🔓 W0                 | R/O      | false    |
+| `006-return-temp`          | Return temp            | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `007-co2-target`           | CO2 Target             | `Number:Dimensionless` | `%`  | 🔐 W1                 | R/O      | false    |
+| `008-co2-content`          | CO2 Content            | `Number:Dimensionless` | `%`  | 🔓 W0                 | R/O      | false    |
+| `009-return-temp-target`   | Return temp target     | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `010-status-code`          | Status code            | `Number`               |      | 🔐 W1                 | R/O      | false    |
+| `011-efficiency`           | Efficiency             | `Number:Dimensionless` | `%`  | 🔐 W1                 | R/O      | false    |
+| `012-output`               | Output                 | `Number:Dimensionless` | `%`  | 🔐 W1                 | R/O      | false    |
+| `013-extractor-system`     | Extractor System       | `Number:Dimensionless` | `%`  | 🔓 W0                 | R/O      | false    |
+| `014-feed-turbine`         | Feed Turbine           | `String`               |      | 🔐 W1                 | R/O      | false    |
+| `015-discharge-motor`      | Discharge motor        | `Number:Dimensionless` | `%`  | 🔓 W0                 | R/O      | false    |
+| `016-g1-target`            | G1 Target              | `Number:Dimensionless` | `%`  | 🔓 W0                 | R/O      | false    |
+| `017-buffer-top`           | Buffer Top             | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `018-buffer-mid`           | Buffer Mid             | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `019-buffer-btm`           | Buffer Btm             | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `020-pump-hp0`             | Pump HP0               | `Switch`               |      | 🔓 W0                 | R/O      | false    |
+| `021-dhw-0`                | DHW 0                  | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `022-b-dhw-0`              | B DHW 0                | `Switch`               |      | 🔓 W0                 | R/O      | false    |
+| `023-dhw-1`                | DHW 1                  | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `024-b-dhw-1`              | B DHW 1                | `Switch`               |      | 🔓 W0                 | R/O      | false    |
+| `025-dhw-2`                | DHW 2                  | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `026-b-dhw-2`              | B DHW 2                | `Switch`               |      | 🔓 W0                 | R/O      | false    |
+| `027-room-temp-hc-0`       | Room Temp:HC 0         | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `028-heat-circ-0`          | Heat Circ. 0           | `Switch`               |      | 🔓 W0                 | R/O      | false    |
+| `029-room-temp-hc-1`       | Room Temp:HC 1         | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `030-flow-target-1`        | Flow Target 1          | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `031-flow-is-1`            | Flow is 1              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `032-mixer-1`              | Mixer 1                | `String`               |      | 🔐 W1                 | R/O      | false    |
+| `033-heat-circ-1`          | Heat Circ. 1           | `Switch`               |      | 🔐 W1                 | R/O      | false    |
+| `034-room-temp-hc-2`       | Room Temp:HC 2         | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `035-flow-target-2`        | Flow Target 2          | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `036-flow-is-2`            | Flow is 2              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `037-mixer-2`              | Mixer 2                | `String`               |      | 🔐 W1                 | R/O      | false    |
+| `038-heat-circ-2`          | Heat Circ. 2           | `Switch`               |      | 🔓 W0                 | R/O      | false    |
+| `039-room-temp-hc-3`       | Room Temp:HC 3         | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `040-heat-circ-3`          | Heat Circ. 3           | `Switch`               |      | 🔓 W0                 | R/O      | false    |
+| `041-room-temp-hc-4`       | Room Temp:HC 4         | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `042-flow-target-4`        | Flow Target 4          | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `043-flow-is-4`            | Flow is 4              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `044-mixer-4`              | Mixer 4                | `String`               |      | 🔐 W1                 | R/O      | false    |
+| `045-heat-circ-4`          | Heat Circ. 4           | `Switch`               |      | 🔓 W0                 | R/O      | false    |
+| `046-room-temp-hc-5`       | Room Temp:HC 5         | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `047-flow-target-5`        | Flow Target 5          | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `048-flow-is-5`            | Flow is 5              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `049-mixer-5`              | Mixer 5                | `String`               |      | 🔐 W1                 | R/O      | false    |
+| `050-heat-circ-5`          | Heat Circ. 5           | `Switch`               |      | 🔓 W0                 | R/O      | false    |
+| `051-room-temp-hc-6`       | Room Temp:HC 6         | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `052-heat-circ-6`          | Heat Circ. 6           | `Switch`               |      | 🔓 W0                 | R/O      | false    |
+| `053-room-temp-hc-7`       | Room Temp:HC 7         | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `054-flow-target-7`        | Flow Target 7          | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `055-flow-is-7`            | Flow is 7              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `056-mixer-7`              | Mixer 7                | `String`               |      | 🔐 W1                 | R/O      | false    |
+| `057-heat-circ-7`          | Heat Circ. 7           | `Switch`               |      | 🔓 W0                 | R/O      | false    |
+| `058-room-temp-hc-8`       | Room Temp:HC 8         | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `059-flow-target-8`        | Flow Target 8          | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `060-flow-is-8`            | Flow is 8              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `061-mixer-8`              | Mixer 8                | `String`               |      | 🔐 W1                 | R/O      | false    |
+| `062-heat-circ-8`          | Heat Circ. 8           | `Switch`               |      | 🔓 W0                 | R/O      | false    |
+| `065-fuel-level`           | Fuel Level             | `String`               |      | 🔐 W1                 | R/O      | false    |
+| `066-stb`                  | STB                    | `String`               |      | 🔐 W1                 | R/O      | false    |
+| `067-tks`                  | TKS                    | `String`               |      | 🔐 W1                 | R/O      | false    |
+| `068-boiler-approval`      | Boiler approval        | `Switch`               |      | 🔐 W1                 | R/O      | false    |
+| `069-programme`            | Programme              | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `070-program-hc0`          | Program HC0            | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `071-program-hc1`          | Program HC1            | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `072-program-hc2`          | Program HC2            | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `073-program-hc3`          | Program HC3            | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `074-program-hc4`          | Program HC4            | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `075-program-hc5`          | Program HC5            | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `076-program-hc6`          | Program HC6            | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `077-program-hc7`          | Program HC7            | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `078-program-hc8`          | Program HC8            | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `079-interuption-0`        | Interuption 0          | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `080-interuption-1`        | Interuption 1          | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `081-serial`               | Serial                 | `Number`               |      | 🔓 W0                 | R/O      | false    |
+| `082-version`              | Version                | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `083-running-time`         | Running Time           | `Number:Time`          | `h`  | 🔓 W0                 | R/O      | false    |
+| `084-service-hrs`          | Service Hrs            | `Number:Time`          | `d`  | 🔓 W0                 | R/O      | false    |
+| `085-empty-ash-in`         | Empty ash in           | `Number:Time`          | `h`  | 🔓 W0                 | R/O      | false    |
+| `086-flow-is-0`            | Flow is 0              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `087-flow-is-3`            | Flow is 3              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `088-flow-is-6`            | Flow is 6              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `089-fuel-counter`         | Fuel counter           | `Number:Volume`        | `m³` | 🔐 W1                 | R/O      | false    |
+| `090-buffer-load`          | Buffer load.           | `Number:Dimensionless` | `%`  | 🔓 W0                 | R/O      | false    |
+| `091-buffer-top-0`         | Buffer Top 0           | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `092-buffer-btm-0`         | Buffer Btm 0           | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `093-buffer-top-1`         | Buffer Top 1           | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `094-buffer-btm-1`         | Buffer Btm 1           | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `095-buffer-top-2`         | Buffer Top 2           | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `096-buffer-btm-2`         | Buffer Btm 2           | `Number:Temperature`   | `°C` | 🔐 W1                 | R/O      | false    |
+| `097-b-extra-ww-0`         | B extra-WW. 0          | `Switch`               |      | 🔐 W1                 | R/O      | false    |
+| `098-b-extra-ww-1`         | B extra-WW. 1          | `Switch`               |      | 🔐 W1                 | R/O      | false    |
+| `099-b-extra-ww-2`         | B extra-WW. 2          | `Switch`               |      | 🔐 W1                 | R/O      | false    |
+| `100-auxiliary-pump-0`     | Auxiliary pump 0       | `Switch`               |      | 🔐 W1                 | R/O      | false    |
+| `101-auxiliary-pump-1`     | Auxiliary pump 1       | `Switch`               |      | 🔐 W1                 | R/O      | false    |
+| `102-auxiliary-pump-2`     | Auxiliary pump 2       | `Switch`               |      | 🔐 W1                 | R/O      | false    |
+| `104-boilers-condition-no` | Boiler´s condition no. | `String`               |      | 🔐 W1                 | R/O      | false    |
+| `108-buffer-t5`            | Buffer T5              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `109-buffer-t6`            | Buffer T6              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `110-buffer-t7`            | Buffer T7              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `111-extra-ww-0`           | Extra-WW. 0            | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `112-extra-ww-1`           | Extra-WW. 1            | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `113-extra-ww-2`           | Extra-WW. 2            | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
+| `114-grate`                | Grate                  | `Number:Dimensionless` | `%`  | 🔓 W0                 | R/O      | false    |
 
 #### Security Access Levels
 
@@ -210,131 +212,117 @@ Thing   guntamatic:biostar:mybiostar   "Guntamatic Biostar"    [ hostname="192.1
 ### Item File
 
 ```java
-String               Biostar_ControlBoilerApproval   "Set Boiler Approval"                { channel="guntamatic:biostar:mybiostar:controlBoilerApproval" }
-String               Biostar_ControlProgram          "Set Program"                        { channel="guntamatic:biostar:mybiostar:controlProgram" }
-String               Biostar_ControlHeatCircProgram0 "Set Heat Circle 0 Program"          { channel="guntamatic:biostar:mybiostar:controlHeatCircProgram0" }
-String               Biostar_ControlHeatCircProgram1 "Set Heat Circle 1 Program"          { channel="guntamatic:biostar:mybiostar:controlHeatCircProgram1" }
-String               Biostar_ControlHeatCircProgram2 "Set Heat Circle 2 Program"          { channel="guntamatic:biostar:mybiostar:controlHeatCircProgram2" }
-String               Biostar_ControlHeatCircProgram3 "Set Heat Circle 3 Program"          { channel="guntamatic:biostar:mybiostar:controlHeatCircProgram3" }
-String               Biostar_ControlHeatCircProgram4 "Set Heat Circle 4 Program"          { channel="guntamatic:biostar:mybiostar:controlHeatCircProgram4" }
-String               Biostar_ControlHeatCircProgram5 "Set Heat Circle 5 Program"          { channel="guntamatic:biostar:mybiostar:controlHeatCircProgram5" }
-String               Biostar_ControlHeatCircProgram6 "Set Heat Circle 6 Program"          { channel="guntamatic:biostar:mybiostar:controlHeatCircProgram6" }
-String               Biostar_ControlHeatCircProgram7 "Set Heat Circle 7 Program"          { channel="guntamatic:biostar:mybiostar:controlHeatCircProgram7" }
-String               Biostar_ControlHeatCircProgram8 "Set Heat Circle 8 Program"          { channel="guntamatic:biostar:mybiostar:controlHeatCircProgram8" }
-String               Biostar_ControlWwHeat0          "Trigger Warm Water Circle 0"        { channel="guntamatic:biostar:mybiostar:controlWwHeat0" }
-String               Biostar_ControlWwHeat1          "Trigger Warm Water Circle 1"        { channel="guntamatic:biostar:mybiostar:controlWwHeat1" }
-String               Biostar_ControlWwHeat2          "Trigger Warm Water Circle 2"        { channel="guntamatic:biostar:mybiostar:controlWwHeat2" }
-String               Biostar_ControlExtraWwHeat0     "Trigger Extra Warm Water Circle 0"  { channel="guntamatic:biostar:mybiostar:controlExtraWwHeat0" }
-String               Biostar_ControlExtraWwHeat1     "Trigger Extra Warm Water Circle 1"  { channel="guntamatic:biostar:mybiostar:controlExtraWwHeat1" }
-String               Biostar_ControlExtraWwHeat2     "Trigger Extra Warm Water Circle 2"  { channel="guntamatic:biostar:mybiostar:controlExtraWwHeat2" }
-String               Biostar_Running                 "Running"                            { channel="guntamatic:biostar:mybiostar:running" }
-Number:Temperature   Biostar_OutsideTemp             "Outside Temp."                      { channel="guntamatic:biostar:mybiostar:outsideTemp" }
-Number:Temperature   Biostar_BlrTargetTemp           "Blr.Target Temp"                    { channel="guntamatic:biostar:mybiostar:blrTargetTemp" }
-Number:Temperature   Biostar_BoilerTemperature       "Boiler Temperature"                 { channel="guntamatic:biostar:mybiostar:boilerTemperature" }
-Number:Dimensionless Biostar_FlueGasUtilisation      "Flue gas utilisation"               { channel="guntamatic:biostar:mybiostar:flueGasUtilisation" }
-Number:Dimensionless Biostar_Output                  "Output"                             { channel="guntamatic:biostar:mybiostar:output" }
-Number:Temperature   Biostar_ReturnTemp              "Return temp"                        { channel="guntamatic:biostar:mybiostar:returnTemp" }
-Number:Dimensionless Biostar_Co2Target               "CO2 Target"                         { channel="guntamatic:biostar:mybiostar:co2Target" }
-Number:Dimensionless Biostar_Co2Content              "CO2 Content"                        { channel="guntamatic:biostar:mybiostar:co2Content" }
-Number:Temperature   Biostar_ReturnTempTarget        "Return temp target"                 { channel="guntamatic:biostar:mybiostar:returnTempTarget" }
-Number               Biostar_StatusCode              "Status code"                        { channel="guntamatic:biostar:mybiostar:statusCode" }
-Number:Dimensionless Biostar_Efficiency              "Efficiency"                         { channel="guntamatic:biostar:mybiostar:efficiency" }
-Number:Dimensionless Biostar_ExtractorSystem         "Extractor System"                   { channel="guntamatic:biostar:mybiostar:extractorSystem" }
-String               Biostar_FeedTurbine             "Feed Turbine"                       { channel="guntamatic:biostar:mybiostar:feedTurbine" }
-Number:Dimensionless Biostar_DischargeMotor          "Discharge motor"                    { channel="guntamatic:biostar:mybiostar:dischargeMotor" }
-Number:Dimensionless Biostar_G1Target                "G1 Target"                          { channel="guntamatic:biostar:mybiostar:g1Target" }
-Number:Temperature   Biostar_BufferTop               "Buffer Top"                         { channel="guntamatic:biostar:mybiostar:bufferTop" }
-Number:Temperature   Biostar_BufferMid               "Buffer Mid"                         { channel="guntamatic:biostar:mybiostar:bufferMid" }
-Number:Temperature   Biostar_BufferBtm               "Buffer Btm"                         { channel="guntamatic:biostar:mybiostar:bufferBtm" }
-Switch               Biostar_PumpHp0                 "Pump HP0"                           { channel="guntamatic:biostar:mybiostar:pumpHp0" }
-Number:Temperature   Biostar_Dhw0                    "DHW 0"                              { channel="guntamatic:biostar:mybiostar:dhw0" }
-Switch               Biostar_BDhw0                   "B DHW 0"                            { channel="guntamatic:biostar:mybiostar:bDhw0" }
-Number:Temperature   Biostar_Dhw1                    "DHW 1"                              { channel="guntamatic:biostar:mybiostar:dhw1" }
-Switch               Biostar_BDhw1                   "B DHW 1"                            { channel="guntamatic:biostar:mybiostar:bDhw1" }
-Number:Temperature   Biostar_Dhw2                    "DHW 2"                              { channel="guntamatic:biostar:mybiostar:dhw2" }
-Switch               Biostar_BDhw2                   "B DHW 2"                            { channel="guntamatic:biostar:mybiostar:bDhw2" }
-Number:Temperature   Biostar_RoomTempHc0             "Room Temp:HC 0"                     { channel="guntamatic:biostar:mybiostar:roomTempHc0" }
-Switch               Biostar_HeatCirc0               "Heat Circ. 0"                       { channel="guntamatic:biostar:mybiostar:heatCirc0" }
-Number:Temperature   Biostar_RoomTempHc1             "Room Temp:HC 1"                     { channel="guntamatic:biostar:mybiostar:roomTempHc1" }
-Number:Temperature   Biostar_FlowTarget1             "Flow Target 1"                      { channel="guntamatic:biostar:mybiostar:flowTarget1" }
-Number:Temperature   Biostar_FlowIs1                 "Flow is 1"                          { channel="guntamatic:biostar:mybiostar:flowIs1" }
-String               Biostar_Mixer1                  "Mixer 1"                            { channel="guntamatic:biostar:mybiostar:mixer1" }
-Switch               Biostar_HeatCirc1               "Heat Circ. 1"                       { channel="guntamatic:biostar:mybiostar:heatCirc1" }
-Number:Temperature   Biostar_RoomTempHc2             "Room Temp:HC 2"                     { channel="guntamatic:biostar:mybiostar:roomTempHc2" }
-Number:Temperature   Biostar_FlowTarget2             "Flow Target 2"                      { channel="guntamatic:biostar:mybiostar:flowTarget2" }
-Number:Temperature   Biostar_FlowIs2                 "Flow is 2"                          { channel="guntamatic:biostar:mybiostar:flowIs2" }
-String               Biostar_Mixer2                  "Mixer 2"                            { channel="guntamatic:biostar:mybiostar:mixer2" }
-Switch               Biostar_HeatCirc2               "Heat Circ. 2"                       { channel="guntamatic:biostar:mybiostar:heatCirc2" }
-Number:Temperature   Biostar_RoomTempHc3             "Room Temp:HC 3"                     { channel="guntamatic:biostar:mybiostar:roomTempHc3" }
-Switch               Biostar_HeatCirc3               "Heat Circ. 3"                       { channel="guntamatic:biostar:mybiostar:heatCirc3" }
-Number:Temperature   Biostar_RoomTempHc4             "Room Temp:HC 4"                     { channel="guntamatic:biostar:mybiostar:roomTempHc4" }
-Number:Temperature   Biostar_FlowTarget4             "Flow Target 4"                      { channel="guntamatic:biostar:mybiostar:flowTarget4" }
-Number:Temperature   Biostar_FlowIs4                 "Flow is 4"                          { channel="guntamatic:biostar:mybiostar:flowIs4" }
-String               Biostar_Mixer4                  "Mixer 4"                            { channel="guntamatic:biostar:mybiostar:mixer4" }
-Switch               Biostar_HeatCirc4               "Heat Circ. 4"                       { channel="guntamatic:biostar:mybiostar:heatCirc4" }
-Number:Temperature   Biostar_RoomTempHc5             "Room Temp:HC 5"                     { channel="guntamatic:biostar:mybiostar:roomTempHc5" }
-Number:Temperature   Biostar_FlowTarget5             "Flow Target 5"                      { channel="guntamatic:biostar:mybiostar:flowTarget5" }
-Number:Temperature   Biostar_FlowIs5                 "Flow is 5"                          { channel="guntamatic:biostar:mybiostar:flowIs5" }
-String               Biostar_Mixer5                  "Mixer 5"                            { channel="guntamatic:biostar:mybiostar:mixer5" }
-Switch               Biostar_HeatCirc5               "Heat Circ. 5"                       { channel="guntamatic:biostar:mybiostar:heatCirc5" }
-Number:Temperature   Biostar_RoomTempHc6             "Room Temp:HC 6"                     { channel="guntamatic:biostar:mybiostar:roomTempHc6" }
-Switch               Biostar_HeatCirc6               "Heat Circ. 6"                       { channel="guntamatic:biostar:mybiostar:heatCirc6" }
-Number:Temperature   Biostar_RoomTempHc7             "Room Temp:HC 7"                     { channel="guntamatic:biostar:mybiostar:roomTempHc7" }
-Number:Temperature   Biostar_FlowTarget7             "Flow Target 7"                      { channel="guntamatic:biostar:mybiostar:flowTarget7" }
-Number:Temperature   Biostar_FlowIs7                 "Flow is 7"                          { channel="guntamatic:biostar:mybiostar:flowIs7" }
-String               Biostar_Mixer7                  "Mixer 7"                            { channel="guntamatic:biostar:mybiostar:mixer7" }
-Switch               Biostar_HeatCirc7               "Heat Circ. 7"                       { channel="guntamatic:biostar:mybiostar:heatCirc7" }
-Number:Temperature   Biostar_RoomTempHc8             "Room Temp:HC 8"                     { channel="guntamatic:biostar:mybiostar:roomTempHc8" }
-Number:Temperature   Biostar_FlowTarget8             "Flow Target 8"                      { channel="guntamatic:biostar:mybiostar:flowTarget8" }
-Number:Temperature   Biostar_FlowIs8                 "Flow is 8"                          { channel="guntamatic:biostar:mybiostar:flowIs8" }
-String               Biostar_Mixer8                  "Mixer 8"                            { channel="guntamatic:biostar:mybiostar:mixer8" }
-Switch               Biostar_HeatCirc8               "Heat Circ. 8"                       { channel="guntamatic:biostar:mybiostar:heatCirc8" }
-String               Biostar_FuelLevel               "Fuel Level"                         { channel="guntamatic:biostar:mybiostar:fuelLevel" }
-String               Biostar_Stb                     "STB"                                { channel="guntamatic:biostar:mybiostar:stb" }
-String               Biostar_Tks                     "TKS"                                { channel="guntamatic:biostar:mybiostar:tks" }
-Switch               Biostar_BoilerApproval          "Boiler approval"                    { channel="guntamatic:biostar:mybiostar:boilerApproval" }
-String               Biostar_Programme               "Programme"                          { channel="guntamatic:biostar:mybiostar:programme" }
-String               Biostar_ProgramHc0              "Program HC0"                        { channel="guntamatic:biostar:mybiostar:programHc0" }
-String               Biostar_ProgramHc1              "Program HC1"                        { channel="guntamatic:biostar:mybiostar:programHc1" }
-String               Biostar_ProgramHc2              "Program HC2"                        { channel="guntamatic:biostar:mybiostar:programHc2" }
-String               Biostar_ProgramHc3              "Program HC3"                        { channel="guntamatic:biostar:mybiostar:programHc3" }
-String               Biostar_ProgramHc4              "Program HC4"                        { channel="guntamatic:biostar:mybiostar:programHc4" }
-String               Biostar_ProgramHc5              "Program HC5"                        { channel="guntamatic:biostar:mybiostar:programHc5" }
-String               Biostar_ProgramHc6              "Program HC6"                        { channel="guntamatic:biostar:mybiostar:programHc6" }
-String               Biostar_ProgramHc7              "Program HC7"                        { channel="guntamatic:biostar:mybiostar:programHc7" }
-String               Biostar_ProgramHc8              "Program HC8"                        { channel="guntamatic:biostar:mybiostar:programHc8" }
-String               Biostar_Interuption0            "Interuption 0"                      { channel="guntamatic:biostar:mybiostar:interuption0" }
-String               Biostar_Interuption1            "Interuption 1"                      { channel="guntamatic:biostar:mybiostar:interuption1" }
-Number               Biostar_Serial                  "Serial"                             { channel="guntamatic:biostar:mybiostar:serial" }
-String               Biostar_Version                 "Version"                            { channel="guntamatic:biostar:mybiostar:version" }
-Number:Time          Biostar_RunningTime             "Running Time"                       { channel="guntamatic:biostar:mybiostar:runningTime" }
-Number:Time          Biostar_ServiceHrs              "Service Hrs"                        { channel="guntamatic:biostar:mybiostar:serviceHrs" }
-Number:Time          Biostar_EmptyAshIn              "Empty ash in"                       { channel="guntamatic:biostar:mybiostar:emptyAshIn" }
-Number:Temperature   Biostar_FlowIs0                 "Flow is 0"                          { channel="guntamatic:biostar:mybiostar:flowIs0" }
-Number:Temperature   Biostar_FlowIs3                 "Flow is 3"                          { channel="guntamatic:biostar:mybiostar:flowIs3" }
-Number:Temperature   Biostar_FlowIs6                 "Flow is 6"                          { channel="guntamatic:biostar:mybiostar:flowIs6" }
-Number:Volume        Biostar_FuelCounter             "Fuel counter"                       { channel="guntamatic:biostar:mybiostar:fuelCounter" }
-Number:Dimensionless Biostar_BufferLoad              "Buffer load."                       { channel="guntamatic:biostar:mybiostar:bufferLoad" }
-Number:Temperature   Biostar_BufferTop0              "Buffer Top 0"                       { channel="guntamatic:biostar:mybiostar:bufferTop0" }
-Number:Temperature   Biostar_BufferBtm0              "Buffer Btm 0"                       { channel="guntamatic:biostar:mybiostar:bufferBtm0" }
-Number:Temperature   Biostar_BufferTop1              "Buffer Top 1"                       { channel="guntamatic:biostar:mybiostar:bufferTop1" }
-Number:Temperature   Biostar_BufferBtm1              "Buffer Btm 1"                       { channel="guntamatic:biostar:mybiostar:bufferBtm1" }
-Number:Temperature   Biostar_BufferTop2              "Buffer Top 2"                       { channel="guntamatic:biostar:mybiostar:bufferTop2" }
-Number:Temperature   Biostar_BufferBtm2              "Buffer Btm 2"                       { channel="guntamatic:biostar:mybiostar:bufferBtm2" }
-Switch               Biostar_BExtraWw0               "B extra-WW. 0"                      { channel="guntamatic:biostar:mybiostar:bExtraWw0" }
-Switch               Biostar_BExtraWw1               "B extra-WW. 1"                      { channel="guntamatic:biostar:mybiostar:bExtraWw1" }
-Switch               Biostar_BExtraWw2               "B extra-WW. 2"                      { channel="guntamatic:biostar:mybiostar:bExtraWw2" }
-Switch               Biostar_AuxiliaryPump0          "Auxiliary pump 0"                   { channel="guntamatic:biostar:mybiostar:auxiliaryPump0" }
-Switch               Biostar_AuxiliaryPump1          "Auxiliary pump 1"                   { channel="guntamatic:biostar:mybiostar:auxiliaryPump1" }
-Switch               Biostar_AuxiliaryPump2          "Auxiliary pump 2"                   { channel="guntamatic:biostar:mybiostar:auxiliaryPump2" }
-String               Biostar_BoilersConditionNo      "Boiler´s condition no."             { channel="guntamatic:biostar:mybiostar:boilersConditionNo" }
-Number:Temperature   Biostar_BufferT5                "Buffer T5"                          { channel="guntamatic:biostar:mybiostar:bufferT5" }
-Number:Temperature   Biostar_BufferT6                "Buffer T6"                          { channel="guntamatic:biostar:mybiostar:bufferT6" }
-Number:Temperature   Biostar_BufferT7                "Buffer T7"                          { channel="guntamatic:biostar:mybiostar:bufferT7" }
-Number:Temperature   Biostar_ExtraWw0                "Extra-WW. 0"                        { channel="guntamatic:biostar:mybiostar:extraWw0" }
-Number:Temperature   Biostar_ExtraWw1                "Extra-WW. 1"                        { channel="guntamatic:biostar:mybiostar:extraWw1" }
-Number:Temperature   Biostar_ExtraWw2                "Extra-WW. 2"                        { channel="guntamatic:biostar:mybiostar:extraWw2" }
-Number:Dimensionless Biostar_Grate                   "Grate"                              { channel="guntamatic:biostar:mybiostar:grate" }
+String               Biostar_ControlProgram          "Control Program"                    { channel="guntamatic:biostar:mybiostar:control#program" }
+
+String               Biostar_Running                 "Running"                            { channel="guntamatic:biostar:mybiostar:status#000-running" }
+Number:Temperature   Biostar_OutsideTemp             "Outside Temp."                      { channel="guntamatic:biostar:mybiostar:status#001-outside-temp" }
+Number:Temperature   Biostar_BlrTargetTemp           "Blr.Target Temp"                    { channel="guntamatic:biostar:mybiostar:status#002-blr-target-temp" }
+Number:Temperature   Biostar_BoilerTemperature       "Boiler Temperature"                 { channel="guntamatic:biostar:mybiostar:status#003-boiler-temperature" }
+Number:Dimensionless Biostar_FlueGasUtilisation      "Flue gas utilisation"               { channel="guntamatic:biostar:mybiostar:status#004-flue-gas-utilisation" }
+Number:Dimensionless Biostar_Output                  "Output"                             { channel="guntamatic:biostar:mybiostar:status#005-output" }
+Number:Temperature   Biostar_ReturnTemp              "Return temp"                        { channel="guntamatic:biostar:mybiostar:status#006-return-temp" }
+Number:Dimensionless Biostar_Co2Target               "CO2 Target"                         { channel="guntamatic:biostar:mybiostar:status#007-co2-target" }
+Number:Dimensionless Biostar_Co2Content              "CO2 Content"                        { channel="guntamatic:biostar:mybiostar:status#008-co2-content" }
+Number:Temperature   Biostar_ReturnTempTarget        "Return temp target"                 { channel="guntamatic:biostar:mybiostar:status#009-return-temp-target" }
+Number               Biostar_StatusCode              "Status code"                        { channel="guntamatic:biostar:mybiostar:status#010-status-code" }
+Number:Dimensionless Biostar_Efficiency              "Efficiency"                         { channel="guntamatic:biostar:mybiostar:status#011-efficiency" }
+Number:Dimensionless Biostar_Output2                 "Output"                             { channel="guntamatic:biostar:mybiostar:status#012-output" }
+Number:Dimensionless Biostar_ExtractorSystem         "Extractor System"                   { channel="guntamatic:biostar:mybiostar:status#013-extractor-system" }
+String               Biostar_FeedTurbine             "Feed Turbine"                       { channel="guntamatic:biostar:mybiostar:status#014-feed-turbine" }
+Number:Dimensionless Biostar_DischargeMotor          "Discharge motor"                    { channel="guntamatic:biostar:mybiostar:status#015-discharge-motor" }
+Number:Dimensionless Biostar_G1Target                "G1 Target"                          { channel="guntamatic:biostar:mybiostar:status#016-g1-target" }
+Number:Temperature   Biostar_BufferTop               "Buffer Top"                         { channel="guntamatic:biostar:mybiostar:status#017-buffer-top" }
+Number:Temperature   Biostar_BufferMid               "Buffer Mid"                         { channel="guntamatic:biostar:mybiostar:status#018-buffer-mid" }
+Number:Temperature   Biostar_BufferBtm               "Buffer Btm"                         { channel="guntamatic:biostar:mybiostar:status#019-buffer-btm" }
+Switch               Biostar_PumpHp0                 "Pump HP0"                           { channel="guntamatic:biostar:mybiostar:status#020-pump-hp0" }
+Number:Temperature   Biostar_Dhw0                    "DHW 0"                              { channel="guntamatic:biostar:mybiostar:status#021-dhw-0" }
+Switch               Biostar_BDhw0                   "B DHW 0"                            { channel="guntamatic:biostar:mybiostar:status#022-b-dhw-0" }
+Number:Temperature   Biostar_Dhw1                    "DHW 1"                              { channel="guntamatic:biostar:mybiostar:status#023-dhw-1" }
+Switch               Biostar_BDhw1                   "B DHW 1"                            { channel="guntamatic:biostar:mybiostar:status#024-b-dhw-1" }
+Number:Temperature   Biostar_Dhw2                    "DHW 2"                              { channel="guntamatic:biostar:mybiostar:status#025-dhw-2" }
+Switch               Biostar_BDhw2                   "B DHW 2"                            { channel="guntamatic:biostar:mybiostar:status#026-b-dhw-2" }
+Number:Temperature   Biostar_RoomTempHc0             "Room Temp:HC 0"                     { channel="guntamatic:biostar:mybiostar:status#027-room-temp-hc-0" }
+Switch               Biostar_HeatCirc0               "Heat Circ. 0"                       { channel="guntamatic:biostar:mybiostar:status#028-heat-circ-0" }
+Number:Temperature   Biostar_RoomTempHc1             "Room Temp:HC 1"                     { channel="guntamatic:biostar:mybiostar:status#029-room-temp-hc-1" }
+Number:Temperature   Biostar_FlowTarget1             "Flow Target 1"                      { channel="guntamatic:biostar:mybiostar:status#030-flow-target-1" }
+Number:Temperature   Biostar_FlowIs1                 "Flow is 1"                          { channel="guntamatic:biostar:mybiostar:status#031-flow-is-1" }
+String               Biostar_Mixer1                  "Mixer 1"                            { channel="guntamatic:biostar:mybiostar:status#032-mixer-1" }
+Switch               Biostar_HeatCirc1               "Heat Circ. 1"                       { channel="guntamatic:biostar:mybiostar:status#033-heat-circ-1" }
+Number:Temperature   Biostar_RoomTempHc2             "Room Temp:HC 2"                     { channel="guntamatic:biostar:mybiostar:status#034-room-temp-hc-2" }
+Number:Temperature   Biostar_FlowTarget2             "Flow Target 2"                      { channel="guntamatic:biostar:mybiostar:status#035-flow-target-2" }
+Number:Temperature   Biostar_FlowIs2                 "Flow is 2"                          { channel="guntamatic:biostar:mybiostar:status#036-flow-is-2" }
+String               Biostar_Mixer2                  "Mixer 2"                            { channel="guntamatic:biostar:mybiostar:status#037-mixer-2" }
+Switch               Biostar_HeatCirc2               "Heat Circ. 2"                       { channel="guntamatic:biostar:mybiostar:status#038-heat-circ-2" }
+Number:Temperature   Biostar_RoomTempHc3             "Room Temp:HC 3"                     { channel="guntamatic:biostar:mybiostar:status#039-room-temp-hc-3" }
+Switch               Biostar_HeatCirc3               "Heat Circ. 3"                       { channel="guntamatic:biostar:mybiostar:status#040-heat-circ-3" }
+Number:Temperature   Biostar_RoomTempHc4             "Room Temp:HC 4"                     { channel="guntamatic:biostar:mybiostar:status#041-room-temp-hc-4" }
+Number:Temperature   Biostar_FlowTarget4             "Flow Target 4"                      { channel="guntamatic:biostar:mybiostar:status#042-flow-target-4" }
+Number:Temperature   Biostar_FlowIs4                 "Flow is 4"                          { channel="guntamatic:biostar:mybiostar:status#043-flow-is-4" }
+String               Biostar_Mixer4                  "Mixer 4"                            { channel="guntamatic:biostar:mybiostar:status#044-mixer-4" }
+Switch               Biostar_HeatCirc4               "Heat Circ. 4"                       { channel="guntamatic:biostar:mybiostar:status#045-heat-circ-4" }
+Number:Temperature   Biostar_RoomTempHc5             "Room Temp:HC 5"                     { channel="guntamatic:biostar:mybiostar:status#046-room-temp-hc-5" }
+Number:Temperature   Biostar_FlowTarget5             "Flow Target 5"                      { channel="guntamatic:biostar:mybiostar:status#047-flow-target-5" }
+Number:Temperature   Biostar_FlowIs5                 "Flow is 5"                          { channel="guntamatic:biostar:mybiostar:status#048-flow-is-5" }
+String               Biostar_Mixer5                  "Mixer 5"                            { channel="guntamatic:biostar:mybiostar:status#049-mixer-5" }
+Switch               Biostar_HeatCirc5               "Heat Circ. 5"                       { channel="guntamatic:biostar:mybiostar:status#050-heat-circ-5" }
+Number:Temperature   Biostar_RoomTempHc6             "Room Temp:HC 6"                     { channel="guntamatic:biostar:mybiostar:status#051-room-temp-hc-6" }
+Switch               Biostar_HeatCirc6               "Heat Circ. 6"                       { channel="guntamatic:biostar:mybiostar:status#052-heat-circ-6" }
+Number:Temperature   Biostar_RoomTempHc7             "Room Temp:HC 7"                     { channel="guntamatic:biostar:mybiostar:status#053-room-temp-hc-7" }
+Number:Temperature   Biostar_FlowTarget7             "Flow Target 7"                      { channel="guntamatic:biostar:mybiostar:status#054-flow-target-7" }
+Number:Temperature   Biostar_FlowIs7                 "Flow is 7"                          { channel="guntamatic:biostar:mybiostar:status#055-flow-is-7" }
+String               Biostar_Mixer7                  "Mixer 7"                            { channel="guntamatic:biostar:mybiostar:status#056-mixer-7" }
+Switch               Biostar_HeatCirc7               "Heat Circ. 7"                       { channel="guntamatic:biostar:mybiostar:status#057-heat-circ-7" }
+Number:Temperature   Biostar_RoomTempHc8             "Room Temp:HC 8"                     { channel="guntamatic:biostar:mybiostar:status#058-room-temp-hc-8" }
+Number:Temperature   Biostar_FlowTarget8             "Flow Target 8"                      { channel="guntamatic:biostar:mybiostar:status#059-flow-target-8" }
+Number:Temperature   Biostar_FlowIs8                 "Flow is 8"                          { channel="guntamatic:biostar:mybiostar:status#060-flow-is-8" }
+String               Biostar_Mixer8                  "Mixer 8"                            { channel="guntamatic:biostar:mybiostar:status#061-mixer-8" }
+Switch               Biostar_HeatCirc8               "Heat Circ. 8"                       { channel="guntamatic:biostar:mybiostar:status#062-heat-circ-8" }
+String               Biostar_FuelLevel               "Fuel Level"                         { channel="guntamatic:biostar:mybiostar:status#065-fuel-level" }
+String               Biostar_Stb                     "STB"                                { channel="guntamatic:biostar:mybiostar:status#066-stb" }
+String               Biostar_Tks                     "TKS"                                { channel="guntamatic:biostar:mybiostar:status#067-tks" }
+Switch               Biostar_BoilerApproval          "Boiler approval"                    { channel="guntamatic:biostar:mybiostar:status#068-boiler-approval" }
+String               Biostar_Programme               "Programme"                          { channel="guntamatic:biostar:mybiostar:status#069-programme" }
+String               Biostar_ProgramHc0              "Program HC0"                        { channel="guntamatic:biostar:mybiostar:status#070-program-hc0" }
+String               Biostar_ProgramHc1              "Program HC1"                        { channel="guntamatic:biostar:mybiostar:status#071-program-hc1" }
+String               Biostar_ProgramHc2              "Program HC2"                        { channel="guntamatic:biostar:mybiostar:status#072-program-hc2" }
+String               Biostar_ProgramHc3              "Program HC3"                        { channel="guntamatic:biostar:mybiostar:status#073-program-hc3" }
+String               Biostar_ProgramHc4              "Program HC4"                        { channel="guntamatic:biostar:mybiostar:status#074-program-hc4" }
+String               Biostar_ProgramHc5              "Program HC5"                        { channel="guntamatic:biostar:mybiostar:status#075-program-hc5" }
+String               Biostar_ProgramHc6              "Program HC6"                        { channel="guntamatic:biostar:mybiostar:status#076-program-hc6" }
+String               Biostar_ProgramHc7              "Program HC7"                        { channel="guntamatic:biostar:mybiostar:status#077-program-hc7" }
+String               Biostar_ProgramHc8              "Program HC8"                        { channel="guntamatic:biostar:mybiostar:status#078-program-hc8" }
+String               Biostar_Interuption0            "Interuption 0"                      { channel="guntamatic:biostar:mybiostar:status#079-interuption-0" }
+String               Biostar_Interuption1            "Interuption 1"                      { channel="guntamatic:biostar:mybiostar:status#080-interuption-1" }
+Number               Biostar_Serial                  "Serial"                             { channel="guntamatic:biostar:mybiostar:status#081-serial" }
+String               Biostar_Version                 "Version"                            { channel="guntamatic:biostar:mybiostar:status#082-version" }
+Number:Time          Biostar_RunningTime             "Running Time"                       { channel="guntamatic:biostar:mybiostar:status#083-running-time" }
+Number:Time          Biostar_ServiceHrs              "Service Hrs"                        { channel="guntamatic:biostar:mybiostar:status#084-service-hrs" }
+Number:Time          Biostar_EmptyAshIn              "Empty ash in"                       { channel="guntamatic:biostar:mybiostar:status#085-empty-ash-in" }
+Number:Temperature   Biostar_FlowIs0                 "Flow is 0"                          { channel="guntamatic:biostar:mybiostar:status#086-flow-is-0" }
+Number:Temperature   Biostar_FlowIs3                 "Flow is 3"                          { channel="guntamatic:biostar:mybiostar:status#087-flow-is-3" }
+Number:Temperature   Biostar_FlowIs6                 "Flow is 6"                          { channel="guntamatic:biostar:mybiostar:status#088-flow-is-6" }
+Number:Volume        Biostar_FuelCounter             "Fuel counter"                       { channel="guntamatic:biostar:mybiostar:status#089-fuel-counter" }
+Number:Dimensionless Biostar_BufferLoad              "Buffer load."                       { channel="guntamatic:biostar:mybiostar:status#090-buffer-load" }
+Number:Temperature   Biostar_BufferTop0              "Buffer Top 0"                       { channel="guntamatic:biostar:mybiostar:status#091-buffer-top-0" }
+Number:Temperature   Biostar_BufferBtm0              "Buffer Btm 0"                       { channel="guntamatic:biostar:mybiostar:status#092-buffer-btm-0" }
+Number:Temperature   Biostar_BufferTop1              "Buffer Top 1"                       { channel="guntamatic:biostar:mybiostar:status#093-buffer-top-1" }
+Number:Temperature   Biostar_BufferBtm1              "Buffer Btm 1"                       { channel="guntamatic:biostar:mybiostar:status#094-buffer-btm-1" }
+Number:Temperature   Biostar_BufferTop2              "Buffer Top 2"                       { channel="guntamatic:biostar:mybiostar:status#095-buffer-top-2" }
+Number:Temperature   Biostar_BufferBtm2              "Buffer Btm 2"                       { channel="guntamatic:biostar:mybiostar:status#096-buffer-btm-2" }
+Switch               Biostar_BExtraWw0               "B extra-WW. 0"                      { channel="guntamatic:biostar:mybiostar:status#097-b-extra-ww-0" }
+Switch               Biostar_BExtraWw1               "B extra-WW. 1"                      { channel="guntamatic:biostar:mybiostar:status#098-b-extra-ww-1" }
+Switch               Biostar_BExtraWw2               "B extra-WW. 2"                      { channel="guntamatic:biostar:mybiostar:status#099-b-extra-ww-2" }
+Switch               Biostar_AuxiliaryPump0          "Auxiliary pump 0"                   { channel="guntamatic:biostar:mybiostar:status#100-auxiliary-pump-0" }
+Switch               Biostar_AuxiliaryPump1          "Auxiliary pump 1"                   { channel="guntamatic:biostar:mybiostar:status#101-auxiliary-pump-1" }
+Switch               Biostar_AuxiliaryPump2          "Auxiliary pump 2"                   { channel="guntamatic:biostar:mybiostar:status#102-auxiliary-pump-2" }
+String               Biostar_BoilersConditionNo      "Boiler´s condition no."             { channel="guntamatic:biostar:mybiostar:status#104-boilers-condition-no" }
+Number:Temperature   Biostar_BufferT5                "Buffer T5"                          { channel="guntamatic:biostar:mybiostar:status#108-buffer-t5" }
+Number:Temperature   Biostar_BufferT6                "Buffer T6"                          { channel="guntamatic:biostar:mybiostar:status#109-buffer-t6" }
+Number:Temperature   Biostar_BufferT7                "Buffer T7"                          { channel="guntamatic:biostar:mybiostar:status#110-buffer-t7" }
+Number:Temperature   Biostar_ExtraWw0                "Extra-WW. 0"                        { channel="guntamatic:biostar:mybiostar:status#111-extra-ww-0" }
+Number:Temperature   Biostar_ExtraWw1                "Extra-WW. 1"                        { channel="guntamatic:biostar:mybiostar:status#112-extra-ww-1" }
+Number:Temperature   Biostar_ExtraWw2                "Extra-WW. 2"                        { channel="guntamatic:biostar:mybiostar:status#113-extra-ww-2" }
+Number:Dimensionless Biostar_Grate                   "Grate"                              { channel="guntamatic:biostar:mybiostar:status#114-grate" }
 ```
 
 ### Rule
@@ -360,7 +348,7 @@ end
 
 ## Your feedback is required
 
-The Guntamatic Binding was developed and tested using Guntamatic Biostar 15kW Pellets Heating System, running Firmware 3.2d.
+The Guntamatic Binding was developed and tested using Guntamatic Biostar 15kW Pellets Heating System, running Firmware 3.3d.
 Please provide feedback (👍 as well as 👎) when using the Binding for other Guntamatic Heating Systems.
 
 Forum topic for feedback:
