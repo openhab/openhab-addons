@@ -19,4 +19,34 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="amazonechocontrol:echo">
+		<instruction-set targetVersion="1">
+			<add-channel id="doNotDisturb">
+				<type>amazoneechoecontrol:doNotDisturb</type>
+				<label>Do Not Disturb</label>
+				<description>Do Not Disturb mode enabled</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="amazonechocontrol:echospot">
+		<instruction-set targetVersion="1">
+			<add-channel id="doNotDisturb">
+				<type>amazoneechoecontrol:doNotDisturb</type>
+				<label>Do Not Disturb</label>
+				<description>Do Not Disturb mode enabled</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="amazonechocontrol:echoshow">
+		<instruction-set targetVersion="1">
+			<add-channel id="doNotDisturb">
+				<type>amazoneechoecontrol:doNotDisturb</type>
+				<label>Do Not Disturb</label>
+				<description>Do Not Disturb mode enabled</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 </update:update-descriptions>
