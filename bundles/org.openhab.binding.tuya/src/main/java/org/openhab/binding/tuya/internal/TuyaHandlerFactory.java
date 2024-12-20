@@ -69,9 +69,10 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public TuyaHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
             @Reference StorageService storageService) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.dynamicCommandDescriptionProvider = new TuyaDynamicCommandDescriptionProvider();
+        this.dynamicCommandDescriptionProvider = dynamicCommandDescriptionProvider;
         this.eventLoopGroup = new NioEventLoopGroup();
         this.udpDiscoveryListener = new UdpDiscoveryListener(eventLoopGroup);
         this.storage = storageService.getStorage("org.openhab.binding.tuya.Schema");

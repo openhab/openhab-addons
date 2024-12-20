@@ -13,7 +13,14 @@
 package org.openhab.binding.tuya.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.binding.BaseDynamicCommandDescriptionProvider;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
+import org.openhab.core.thing.type.DynamicCommandDescriptionProvider;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * This class provides the list of valid commands for dynamic channels.
@@ -22,5 +29,14 @@ import org.openhab.core.thing.binding.BaseDynamicCommandDescriptionProvider;
  *
  */
 @NonNullByDefault
+@Component(service = { DynamicCommandDescriptionProvider.class, TuyaDynamicCommandDescriptionProvider.class })
 class TuyaDynamicCommandDescriptionProvider extends BaseDynamicCommandDescriptionProvider {
+    @Activate
+    public TuyaDynamicCommandDescriptionProvider(final @Reference EventPublisher eventPublisher, //
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
+            final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.eventPublisher = eventPublisher;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
+    }
 }
