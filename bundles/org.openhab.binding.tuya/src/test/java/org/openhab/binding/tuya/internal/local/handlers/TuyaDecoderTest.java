@@ -39,7 +39,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.Attribute;
 
 /**
- * The {@link TuyaDecoderTest} is a
+ * The {@link TuyaDecoderTest} is a test class for the {@link TuyaDecoder} class
  *
  * @author Jan N. Klug - Initial contribution
  */

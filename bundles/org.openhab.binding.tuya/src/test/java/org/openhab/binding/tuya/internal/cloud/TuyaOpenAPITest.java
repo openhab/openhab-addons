@@ -34,7 +34,7 @@ import org.openhab.core.test.java.JavaTest;
 import com.google.gson.Gson;
 
 /**
- * The {@link TuyaOpenAPITest} is a
+ * The {@link TuyaOpenAPITest} is atest class for the {@link TuyaOpenAPI} class
  *
  * @author Jan N. Klug - Initial contribution
  */
