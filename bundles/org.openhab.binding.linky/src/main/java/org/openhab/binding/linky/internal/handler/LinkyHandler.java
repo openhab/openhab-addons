@@ -252,8 +252,6 @@ public class LinkyHandler extends BaseThingHandler {
 
                 updateData();
 
-                disconnect();
-
                 final LocalDateTime now = LocalDateTime.now();
                 final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
                         .truncatedTo(ChronoUnit.HOURS);
@@ -321,16 +319,10 @@ public class LinkyHandler extends BaseThingHandler {
      * Request new data and updates channels
      */
     private synchronized void updateData() {
-        boolean connectedBefore = isConnected();
-
         updateEnergyData();
         updatePowerData();
         updateTempoTimeSeries();
         updateLoadCurveData();
-
-        if (!connectedBefore && isConnected()) {
-            disconnect();
-        }
     }
 
     private synchronized void updateTempoTimeSeries() {
@@ -551,7 +543,6 @@ public class LinkyHandler extends BaseThingHandler {
 
     public synchronized List<String> reportValues(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
         List<String> report = buildReport(startDay, endDay, separator);
-        disconnect();
         return report;
     }
 
@@ -681,16 +672,6 @@ public class LinkyHandler extends BaseThingHandler {
         return false;
     }
 
-    private void disconnect() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
-            if (bridgeHandler != null) {
-                bridgeHandler.disconnect();
-            }
-        }
-    }
-
     @Override
     public void dispose() {
         logger.debug("Disposing the Linky handler.");
@@ -705,7 +686,6 @@ public class LinkyHandler extends BaseThingHandler {
             lcPollingJob.cancel(true);
             pollingJob = null;
         }
-        disconnect();
         enedisApi = null;
     }
 
@@ -713,13 +693,7 @@ public class LinkyHandler extends BaseThingHandler {
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             logger.debug("Refreshing channel {}", channelUID.getId());
-            boolean connectedBefore = isConnected();
-
             updateData();
-
-            if (!connectedBefore && isConnected()) {
-                disconnect();
-            }
         } else {
             logger.debug("The Linky binding is read-only and can not handle command {}", command);
         }

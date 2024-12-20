@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
@@ -24,31 +23,37 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 public class ConsumptionReport {
-    public class Period {
-        public String grandeurPhysiqueEnum;
-        public ZonedDateTime dateDebut;
-        public ZonedDateTime dateFin;
+
+    public class Data {
+        public String dateDebut;
+        public String dateFin;
+        public String valeur;
     }
 
-    public class Aggregate {
-        public List<String> labels;
-        public List<Period> periodes;
-        public List<Double> datas;
+    public class Datas {
+        @SerializedName("donnees")
+        public List<Data> data;
     }
 
     public class ChronoData {
-        @SerializedName("JOUR")
-        public Aggregate days;
-        @SerializedName("SEMAINE")
-        public Aggregate weeks;
-        @SerializedName("MOIS")
-        public Aggregate months;
-        @SerializedName("ANNEE")
-        public Aggregate years;
+        @SerializedName("jour")
+        public Datas days;
+
+        /*
+         * @SerializedName("SEMAINE")
+         * public Aggregate weeks;
+         *
+         * @SerializedName("MOIS")
+         * public Aggregate months;
+         *
+         * @SerializedName("ANNEE")
+         * public Aggregate years;
+         */
     }
 
     public class Consumption {
         public ChronoData aggregats;
+
         public String grandeurMetier;
         public String grandeurPhysique;
         public String unite;
@@ -57,11 +62,7 @@ public class ConsumptionReport {
         public List<Double> data;
     }
 
-    public class FirstLevel {
-        @SerializedName("CONS")
-        public Consumption consumptions;
-    }
+    @SerializedName("cons")
+    public Consumption consumptions;
 
-    @SerializedName("1")
-    public FirstLevel firstLevel;
 }

@@ -149,13 +149,6 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
         return connected;
     }
 
-    public void disconnect() {
-        if (connected) {
-            logger.debug("Logout process");
-            connected = false;
-        }
-    }
-
     public @Nullable EnedisHttpApi getEnedisApi() {
         return enedisApi;
     }
@@ -163,7 +156,6 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("Shutting down Linky API bridge handler.");
-        disconnect();
         super.dispose();
     }
 
