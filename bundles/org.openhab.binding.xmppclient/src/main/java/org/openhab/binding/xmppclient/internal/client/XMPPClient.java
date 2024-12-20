@@ -62,7 +62,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     private @Nullable HttpFileUploadManager httpFileUploadManager;
     private Set<XMPPClientMessageSubscriber> subscribers = new HashSet<>();
     private final XMPPClientEventlistener eventListener;
-    private String username = "";
+    private String nickname = "";
 
     public XMPPClient(XMPPClientEventlistener eventListener) {
         this.eventListener = eventListener;
@@ -78,7 +78,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         subscribers.remove(channel);
     }
 
-    public void connect(String host, Integer port, String login, String domain, String password,
+    public void connect(String host, Integer port, String login, String nick, String domain, String password,
             SecurityMode securityMode) throws XMPPClientConfigException, XMPPClientException {
         disconnect();
         String serverHost = domain;
@@ -86,7 +86,12 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
             serverHost = host;
         }
 
-        username = login;
+        if (!nick.isBlank()) {
+            nickname = nick;
+        } else {
+            nickname = login;
+        }
+
         XMPPTCPConnectionConfiguration config;
         try {
             config = XMPPTCPConnectionConfiguration.builder() //
@@ -171,7 +176,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
             MultiUserChat chat = multiUserChatManager.getMultiUserChat(jid);
 
             if (!chat.isJoined()) {
-                chat.join(Resourcepart.from(username));
+                chat.join(Resourcepart.from(nickname));
             }
 
             chat.sendMessage(message);
