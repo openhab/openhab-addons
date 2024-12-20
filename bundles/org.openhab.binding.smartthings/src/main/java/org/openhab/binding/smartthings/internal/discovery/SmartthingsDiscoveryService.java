@@ -71,83 +71,82 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService
      */
     @Override
     public void startScan() {
-        doScan(true);
+        try {
+            doScan(true);
+        } catch (SmartthingsException ex) {
+            logger.error("Error during device scan:", ex.toString());
+        }
     }
 
-    public void doScan(Boolean addDevice) {
+    public void doScan(Boolean addDevice) throws SmartthingsException {
         SmartthingsBridgeHandler bridge = smartthingsBridgeHandler;
         if (bridge == null) {
             return;
         }
         SmartthingsApi api = bridge.getSmartthingsApi();
 
-        try {
-            SmartthingsDevice[] devices = api.getAllDevices();
+        SmartthingsDevice[] devices = api.getAllDevices();
 
-            for (SmartthingsDevice device : devices) {
+        for (SmartthingsDevice device : devices) {
 
-                String name = device.name;
-                String label = device.label;
+            String name = device.name;
+            String label = device.label;
 
-                logger.debug("Device");
+            logger.debug("Device");
 
-                if (device.components == null || device.components.length == 0) {
-                    return;
-                }
+            if (device.components == null || device.components.length == 0) {
+                return;
+            }
 
-                Boolean enabled = false;
-                // if ("Four".equals(label)) {
-                // enabled = true;
-                // }
-                // if ("Petrole".equals(label)) {
-                // enabled = true;
-                // }
-                if (label.contains("cuisson")) {
-                    enabled = true;
-                }
-
+            Boolean enabled = false;
+            // if ("Four".equals(label)) {
+            // enabled = true;
+            // }
+            // if ("Petrole".equals(label)) {
+            // enabled = true;
+            // }
+            if (label.contains("cuisson")) {
                 enabled = true;
+            }
 
-                if (!enabled) {
-                    continue;
-                }
+            enabled = true;
 
-                String deviceType = null;
-                for (SmartthingsComponent component : device.components) {
-                    String compId = component.id;
+            if (!enabled) {
+                continue;
+            }
 
-                    if (component.categories != null && component.categories.length > 0) {
-                        for (SmartthingsCategory cat : component.categories) {
-                            String catId = cat.name;
+            String deviceType = null;
+            for (SmartthingsComponent component : device.components) {
+                String compId = component.id;
 
-                            if ("main".equals(compId)) {
-                                deviceType = catId;
-                            }
+                if (component.categories != null && component.categories.length > 0) {
+                    for (SmartthingsCategory cat : component.categories) {
+                        String catId = cat.name;
+
+                        if ("main".equals(compId)) {
+                            deviceType = catId;
                         }
                     }
                 }
-
-                if (deviceType == null) {
-                    logger.info("unknow device, bypass");
-                    continue;
-                }
-
-                if ("white-and-color-ambiance".equals(name)) {
-                    continue;
-                }
-
-                deviceType = deviceType.toLowerCase();
-                if (this.typeRegistry != null) {
-                    this.typeRegistry.register(deviceType, device);
-                }
-                if (addDevice) {
-                    createDevice(deviceType, Objects.requireNonNull(device));
-                }
-
             }
-        } catch (SmartthingsException ex) {
-            logger.error("Unable to get devices !!");
-            return;
+
+            if (deviceType == null) {
+                logger.info("unknow device, bypass");
+                continue;
+            }
+
+            if ("white-and-color-ambiance".equals(name)) {
+                continue;
+            }
+
+            deviceType = deviceType.toLowerCase();
+            if (this.typeRegistry != null) {
+                this.typeRegistry.register(deviceType, device);
+            }
+            if (addDevice) {
+                createDevice(deviceType, Objects.requireNonNull(device));
+            }
+
         }
 
         logger.debug("End Discovery");

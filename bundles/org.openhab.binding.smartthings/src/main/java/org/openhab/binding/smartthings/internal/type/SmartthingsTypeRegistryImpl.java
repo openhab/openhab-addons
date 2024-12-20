@@ -109,7 +109,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                 continue;
             }
 
-            logger.info("capa: {} <> {}", capa.id, key);
+            logger.trace("capa: {} <> {}", capa.id, key);
 
             if (attr == null) {
                 continue;
@@ -343,7 +343,7 @@ public class SmartthingsTypeRegistryImpl implements SmartthingsTypeRegistry {
                             }
                         }
 
-                        logger.info("capa: {}", cap.id);
+                        logger.trace("capa: {}", cap.id);
                         for (String key : capa.attributes.keySet()) {
                             if (key.indexOf("Range") >= 0) {
                                 continue;

@@ -57,29 +57,37 @@ public class SmartthingsCloudBridgeHandler extends SmartthingsBridgeHandler {
     public void initialize() {
         super.initialize();
 
-        initCapabilites();
-        discoService.doScan(false);
+        updateStatus(ThingStatus.UNKNOWN);
 
-        updateStatus(ThingStatus.ONLINE);
+        scheduler.submit(() -> {
+            try {
+                initRegistry();
+                updateStatus(ThingStatus.ONLINE);
+            } catch (SmartthingsException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        });
     }
 
-    public void initCapabilites() {
+    public void initRegistry() throws SmartthingsException {
+        initCapabilites();
+        discoService.doScan(false);
+    }
+
+    public void initCapabilites() throws SmartthingsException {
         logger.info("Start init capa");
         SmartthingsApi api = this.getSmartthingsApi();
         typeRegistry.setCloudBridgeHandler(this);
 
-        try {
-            SmartthingsCapabilitie[] capabilitiesList = api.getAllCapabilities();
+        SmartthingsCapabilitie[] capabilitiesList = api.getAllCapabilities();
 
-            for (SmartthingsCapabilitie cap : capabilitiesList) {
-                String capId = cap.id;
-                String capVersion = cap.version;
-                SmartthingsCapabilitie capa = api.getCapabilitie(capId, capVersion);
-                typeRegistry.registerCapabilities(capa);
-            }
-        } catch (SmartthingsException ex) {
-            logger.error("Error during initCapabilities!!");
+        for (SmartthingsCapabilitie cap : capabilitiesList) {
+            String capId = cap.id;
+            String capVersion = cap.version;
+            SmartthingsCapabilitie capa = api.getCapabilitie(capId, capVersion);
+            typeRegistry.registerCapabilities(capa);
         }
+
         logger.info("End init capa");
     }
 
