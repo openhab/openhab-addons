@@ -21,7 +21,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +54,6 @@ import org.openhab.binding.wiz.internal.enums.WizMethodType;
 import org.openhab.binding.wiz.internal.utils.ValidationUtils;
 import org.openhab.binding.wiz.internal.utils.WizPacketConverter;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -100,7 +98,6 @@ public class WizHandler extends BaseThingHandler {
 
     private final WizPacketConverter converter = new WizPacketConverter();
     private final WizStateDescriptionProvider stateDescriptionProvider;
-    private final TimeZoneProvider timeZoneProvider;
     private final ChannelUID colorTempChannelUID;
     private @Nullable ScheduledFuture<?> keepAliveJob;
     private long latestUpdate = -1;
@@ -121,7 +118,7 @@ public class WizHandler extends BaseThingHandler {
      * @param stateDescriptionProvider A state description provider
      */
     public WizHandler(final Thing thing, final WizMediator mediator,
-            WizStateDescriptionProvider stateDescriptionProvider, TimeZoneProvider timeZoneProvider) {
+            WizStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         try {
             registrationRequestParam = mediator.getRegistrationParams();
@@ -129,7 +126,6 @@ public class WizHandler extends BaseThingHandler {
             registrationRequestParam = null;
         }
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.timeZoneProvider = timeZoneProvider;
         this.mostRecentState = new WizSyncState();
         this.isFan = thing.getThingTypeUID().equals(THING_TYPE_FAN)
                 || thing.getThingTypeUID().equals(THING_TYPE_FAN_WITH_DIMMABLE_BULB);
@@ -738,8 +734,7 @@ public class WizHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
         latestUpdate = System.currentTimeMillis();
         latestOfflineRefresh = System.currentTimeMillis();
-        final ZonedDateTime zonedDateTime = ZonedDateTime.now(timeZoneProvider.getTimeZone());
-        updateDeviceState(CHANNEL_LAST_UPDATE, new DateTimeType(zonedDateTime));
+        updateDeviceState(CHANNEL_LAST_UPDATE, new DateTimeType());
     }
 
     /**

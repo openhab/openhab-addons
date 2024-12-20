@@ -20,7 +20,6 @@ import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANN
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_REMAINING;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_START;
 import static org.openhab.binding.awattar.internal.AwattarUtil.getCalendarForHour;
-import static org.openhab.binding.awattar.internal.AwattarUtil.getDateTimeType;
 import static org.openhab.binding.awattar.internal.AwattarUtil.getDuration;
 import static org.openhab.binding.awattar.internal.AwattarUtil.getMillisToNextMinute;
 
@@ -41,6 +40,7 @@ import org.openhab.binding.awattar.internal.AwattarConsecutiveBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarNonConsecutiveBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarPrice;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -166,10 +166,10 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                 state = OnOffType.from(result.isActive());
                 break;
             case CHANNEL_START:
-                state = getDateTimeType(result.getStart(), timeZoneProvider);
+                state = new DateTimeType(Instant.ofEpochMilli(result.getStart()));
                 break;
             case CHANNEL_END:
-                state = getDateTimeType(result.getEnd(), timeZoneProvider);
+                state = new DateTimeType(Instant.ofEpochMilli(result.getEnd()));
                 break;
             case CHANNEL_COUNTDOWN:
                 diff = result.getStart() - Instant.now().toEpochMilli();
