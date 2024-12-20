@@ -53,11 +53,11 @@ public class HomeAssistantChannelTransformation extends ChannelTransformation {
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantChannelTransformation.class);
 
     private final Jinjava jinjava;
-    private final AbstractComponent component;
+    private final AbstractComponent<?> component;
     private final String template;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public HomeAssistantChannelTransformation(Jinjava jinjava, AbstractComponent component, String template) {
+    public HomeAssistantChannelTransformation(Jinjava jinjava, AbstractComponent<?> component, String template) {
         super((String) null);
         this.jinjava = jinjava;
         this.component = component;
