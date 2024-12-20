@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.tuya.internal.util.JoiningMapCollector;
 
 /**
- * The {@link JoiningMapCollectorTest} is a
+ * The {@link JoiningMapCollectorTest} is a test class for the {@link JoiningMapCollector} class
  *
  * @author Jan N. Klug - Initial contribution
  */

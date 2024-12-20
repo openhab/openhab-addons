@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.util.HexUtils;
 
 /**
- * The {@link CryptoUtilTest} is a
+ * The {@link CryptoUtilTest} is a test class for the {@link CryptoUtil} class
  *
  * @author Jan N. Klug - Initial contribution
  */
