@@ -218,11 +218,11 @@ public class EnedisHttpApi {
         return contactResponse.contact;
     }
 
-    private MeterReading getMeasures(LinkyHandler handler, String apiUrl, String prmId, LocalDate from, LocalDate to)
-            throws LinkyException {
+    private MeterReading getMeasures(LinkyHandler handler, String apiUrl, String mps, String prmId, LocalDate from,
+            LocalDate to) throws LinkyException {
         String dtStart = from.format(linkyBridgeHandler.getApiDateFormat());
         String dtEnd = to.format(linkyBridgeHandler.getApiDateFormat());
-        String url = String.format(apiUrl, prmId, dtStart, dtEnd);
+        String url = String.format(apiUrl, mps, prmId, dtStart, dtEnd);
 
         if (handler.supportNewApiFormat()) {
             ResponseMeter meterResponse = getData(handler, url, ResponseMeter.class);
@@ -235,17 +235,20 @@ public class EnedisHttpApi {
 
     public MeterReading getEnergyData(LinkyHandler handler, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
-        return getMeasures(handler, linkyBridgeHandler.getDailyConsumptionUrl(), prmId, from, to);
+        String mps = "MPS172TIB";
+        return getMeasures(handler, linkyBridgeHandler.getDailyConsumptionUrl(), mps, prmId, from, to);
     }
 
     public MeterReading getLoadCurveData(LinkyHandler handler, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
-        return getMeasures(handler, linkyBridgeHandler.getLoadCurveUrl(), prmId, from, to);
+        String mps = "MPS172TIB";
+        return getMeasures(handler, linkyBridgeHandler.getLoadCurveUrl(), mps, prmId, from, to);
     }
 
     public MeterReading getPowerData(LinkyHandler handler, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
-        return getMeasures(handler, linkyBridgeHandler.getMaxPowerUrl(), prmId, from, to);
+        String mps = "MPS172TIB";
+        return getMeasures(handler, linkyBridgeHandler.getMaxPowerUrl(), mps, prmId, from, to);
     }
 
     public ResponseTempo getTempoData(LinkyHandler handler, LocalDate from, LocalDate to) throws LinkyException {

@@ -42,8 +42,6 @@ import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingRegistry;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -73,17 +71,17 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
 
     private static final String USER_INFO_CONTRACT_URL = BASE_URL + "/mon-compte-client/api/private/v1/userinfos";
     private static final String USER_INFO_URL = BASE_URL + "/userinfos";
-    private static final String PRM_INFO_BASE_URL = BASE_URL + "/mes-mesures/api/private/v1/personnes/";
+    private static final String PRM_INFO_BASE_URL = BASE_URL + "/mes-mesures-prm/api/private/v1/personnes/";
     private static final String PRM_INFO_URL = BASE_URL + "/mes-prms-part/api/private/v2/personnes/%s/prms";
 
     private static final String MEASURE_DAILY_CONSUMPTION_URL = PRM_INFO_BASE_URL
-            + "undefined/prms/%s/donnees-energie?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=ENERGIE&mesuresCorrigees=false&typeDonnees=CONS";
 
     private static final String MEASURE_MAX_POWER_URL = PRM_INFO_BASE_URL
-            + "undefined/prms/%s/donnees-pmax?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=PMAX&mesuresCorrigees=false&typeDonnees=CONS";
 
     private static final String LOAD_CURVE_CONSUMPTION_URL = PRM_INFO_BASE_URL
-            + "undefined/prms/%s/courbe-de-charge?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=COURBE&mesuresCorrigees=false&typeDonnees=CONS&dateDebut=%s";
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private static final DateTimeFormatter API_DATE_FORMAT_YEAR_FIRST = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -164,22 +162,6 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
     @Override
     public DateTimeFormatter getApiDateFormatYearsFirst() {
         return API_DATE_FORMAT_YEAR_FIRST;
-    }
-
-    @Override
-    public void disconnect() {
-        if (connected) {
-            try {
-                httpClient.getCookieStore().removeAll();
-                String location = enedisApi.getLocation(httpClient.GET(BASE_URL + "/logout"));
-                location = enedisApi.getLocation(httpClient.GET(location));
-                enedisApi.getLocation(httpClient.GET(location));
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error while disconnecting from Enedis webservice");
-            }
-        }
-        super.disconnect();
     }
 
     @Override
