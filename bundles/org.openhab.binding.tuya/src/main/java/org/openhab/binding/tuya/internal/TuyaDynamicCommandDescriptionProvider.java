@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @NonNullByDefault
 @Component(service = { DynamicCommandDescriptionProvider.class, TuyaDynamicCommandDescriptionProvider.class })
-class TuyaDynamicCommandDescriptionProvider extends BaseDynamicCommandDescriptionProvider {
+public class TuyaDynamicCommandDescriptionProvider extends BaseDynamicCommandDescriptionProvider {
     @Activate
     public TuyaDynamicCommandDescriptionProvider(final @Reference EventPublisher eventPublisher, //
             final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
