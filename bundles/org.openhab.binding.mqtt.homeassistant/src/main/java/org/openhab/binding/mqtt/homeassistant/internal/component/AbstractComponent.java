@@ -225,7 +225,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     protected ComponentChannel.Builder buildChannel(String channelID, ComponentChannelType channelType,
             Value valueState, String label, ChannelStateUpdateListener channelStateUpdateListener) {
-        if (groupId == null) {
+        if (groupId == null && newStyleChannels) {
             channelID = componentId;
         }
         return new ComponentChannel.Builder(this, channelID, channelType.getChannelTypeUID(), valueState, label,
@@ -304,12 +304,15 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      */
     public String getName() {
         String result = channelConfiguration.getName();
+        if (result.isBlank()) {
+            result = null;
+        }
 
         Device device = channelConfiguration.getDevice();
         if (result == null && device != null) {
             result = device.getName();
         }
-        if (result == null) {
+        if (result == null || result.isBlank()) {
             result = haID.objectID;
         }
         return result;
