@@ -16,6 +16,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.openhab.binding.linky.internal.dto.ConsumptionReport.Data;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -49,34 +51,28 @@ public class MeterReading {
     public static MeterReading convertFromComsumptionReport(ConsumptionReport comsumptionReport) {
         MeterReading result = new MeterReading();
         result.readingType = new ReadingType();
-        /*
-         * if (comsumptionReport.firstLevel.consumptions.aggregats != null) {
-         * result.dayValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.days);
-         * result.weekValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.weeks);
-         * result.monthValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.months);
-         * result.yearValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.years);
-         * } else {
-         * result.dayValue = fromLabelsAndDatas(comsumptionReport.firstLevel.consumptions.labels,
-         * comsumptionReport.firstLevel.consumptions.data);
-         * }
-         */
+
+        if (comsumptionReport.consumptions.aggregats != null) {
+            result.dayValue = fromAgregat(comsumptionReport.consumptions.aggregats.days);
+        } else {
+            // result.dayValue = fromLabelsAndDatas(comsumptionReport.consumptions.labels,
+            // comsumptionReport.consumptions.data);
+        }
+
         return result;
     }
 
-    public static IntervalReading[] fromAgregat(ConsumptionReport agregat) {
-        IntervalReading[] result = new IntervalReading[1];
-        /*
-         * int size = agregat.datas.size();
-         *
-         * for (int i = 0; i < size; i++) {
-         * Double data = agregat.datas.get(i);
-         * ConsumptionReport.Period period = agregat.periodes.get(i);
-         *
-         * result[i] = new IntervalReading();
-         * result[i].value = data;
-         * result[i].date = period.dateDebut.toLocalDateTime();
-         * }
-         */
+    public static IntervalReading[] fromAgregat(ConsumptionReport.Datas agregat) {
+        int size = agregat.datas.size();
+        IntervalReading[] result = new IntervalReading[size];
+
+        for (int i = 0; i < size; i++) {
+            Data dataObj = agregat.datas.get(i);
+            result[i] = new IntervalReading();
+            result[i].value = Double.valueOf(dataObj.valeur);
+            result[i].date = dataObj.dateDebut;
+        }
+
         return result;
     }
 

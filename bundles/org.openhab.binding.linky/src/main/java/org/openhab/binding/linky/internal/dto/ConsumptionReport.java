@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
@@ -25,30 +27,23 @@ import com.google.gson.annotations.SerializedName;
 public class ConsumptionReport {
 
     public class Data {
-        public String dateDebut;
-        public String dateFin;
+        public LocalDateTime dateDebut;
+        public LocalDateTime dateFin;
         public String valeur;
     }
 
     public class Datas {
         @SerializedName("donnees")
-        public List<Data> data;
+        public List<Data> datas;
+        public String unite;
     }
 
     public class ChronoData {
         @SerializedName("jour")
         public Datas days;
 
-        /*
-         * @SerializedName("SEMAINE")
-         * public Aggregate weeks;
-         *
-         * @SerializedName("MOIS")
-         * public Aggregate months;
-         *
-         * @SerializedName("ANNEE")
-         * public Aggregate years;
-         */
+        @SerializedName("heure")
+        public Datas heure;
     }
 
     public class Consumption {
@@ -56,10 +51,8 @@ public class ConsumptionReport {
 
         public String grandeurMetier;
         public String grandeurPhysique;
-        public String unite;
-        public String mesuresPasEnum;
-        public List<String> labels;
-        public List<Double> data;
+        public LocalDate dateDebut;
+        public LocalDate dateFin;
     }
 
     @SerializedName("cons")
