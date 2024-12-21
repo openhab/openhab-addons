@@ -61,8 +61,8 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
         protected String stateTopic = "";
     }
 
-    public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         Value value;
         String uom = channelConfiguration.unitOfMeasurement;
