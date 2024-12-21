@@ -23,6 +23,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -43,7 +44,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * Constructor
-     * 
+     *
      * @param thing Thing object representing device
      */
     public TapoLightStripHandler(Thing thing) {
@@ -53,7 +54,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
     /**
      * Function called by {@link org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector} if new data were
      * received
-     * 
+     *
      * @param queryCommand command where new data belong to
      */
     @Override
@@ -71,7 +72,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * handle command sent to device
-     * 
+     *
      * @param channelUID channelUID command is sent to
      * @param command command to be sent
      */
@@ -128,8 +129,14 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
     }
 
     private void handleColorTempCommand(Command command) {
-        if (command instanceof DecimalType decimalCommand) {
-            setColorTemp(decimalCommand.intValue());
+        QuantityType<?> kelvinQuantity = null;
+        if (command instanceof QuantityType<?> genericQuantity) {
+            kelvinQuantity = genericQuantity.toInvertibleUnit(Units.KELVIN);
+        } else if (command instanceof DecimalType decimal) {
+            kelvinQuantity = QuantityType.valueOf(decimal.intValue(), Units.KELVIN);
+        }
+        if (kelvinQuantity != null) {
+            setColorTemp(kelvinQuantity.intValue());
         }
     }
 
@@ -164,7 +171,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * Switch device On or Off
-     * 
+     *
      * @param on if true device will switch on. Otherwise switch off
      */
     protected void switchOnOff(boolean on) {
@@ -174,7 +181,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * Set Britghtness of device
-     * 
+     *
      * @param newBrightness percentage 0-100 of new brightness
      */
     protected void setBrightness(Integer newBrightness) {
@@ -190,7 +197,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * Set Color of Device
-     * 
+     *
      * @param command HSBType
      */
     protected void setColor(HSBType command) {
@@ -203,7 +210,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * Set ColorTemp
-     * 
+     *
      * @param colorTemp (Integer) in Kelvin
      */
     protected void setColorTemp(Integer colorTemp) {
@@ -214,7 +221,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
 
     /**
      * Set light effect
-     * 
+     *
      * @param lightEffect TapoLightEffect
      */
     protected void setLightEffect(TapoLightEffect lightEffect) {
