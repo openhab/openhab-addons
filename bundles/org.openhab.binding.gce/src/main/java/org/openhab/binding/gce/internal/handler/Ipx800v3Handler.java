@@ -15,8 +15,7 @@ package org.openhab.binding.gce.internal.handler;
 import static org.openhab.binding.gce.internal.GCEBindingConstants.*;
 
 import java.time.Duration;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,7 +81,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     private final Map<String, PortData> portDatas = new HashMap<>();
 
     private class LongPressEvaluator implements Runnable {
-        private final ZonedDateTime referenceTime;
+        private final Instant referenceTime;
         private final String port;
         private final String eventChannelId;
 
@@ -121,7 +120,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         }
 
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
-        PortDefinition.asStream().forEach(portDefinition -> {
+        PortDefinition.AS_STREAM.forEach(portDefinition -> {
             int nbElements = statusFile.getMaxNumberofNodeType(portDefinition);
             for (int i = 0; i < nbElements; i++) {
                 ChannelUID portChannelUID = createChannels(portDefinition, i, channels);
@@ -150,9 +149,12 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         connector.ifPresent(Ipx800DeviceConnector::dispose);
         connector = Optional.empty();
 
+        parser.ifPresent(M2MMessageParser::dispose);
         parser = Optional.empty();
 
         portDatas.values().stream().forEach(PortData::dispose);
+        portDatas.clear();
+
         super.dispose();
     }
 
@@ -209,7 +211,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     }
 
     private boolean ignoreCondition(double newValue, PortData portData, Configuration configuration,
-            PortDefinition portDefinition, ZonedDateTime now) {
+            PortDefinition portDefinition, Instant now) {
         if (!portData.isInitializing()) { // Always accept if portData is not initialized
             double prevValue = portData.getValue();
             if (newValue == prevValue) { // Always reject if the value did not change
@@ -237,7 +239,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
             String groupId = channel.getUID().getGroupId();
             PortData portData = portDatas.get(channelId);
             if (portData != null && groupId != null) {
-                ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
+                Instant now = Instant.now();
                 long sinceLastChange = Duration.between(portData.getTimestamp(), now).toMillis();
                 Configuration configuration = channel.getConfiguration();
                 PortDefinition portDefinition = PortDefinition.fromGroupId(groupId);

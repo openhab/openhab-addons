@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.gce.internal.model;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PortData {
     private double value = -1;
-    private ZonedDateTime timestamp = ZonedDateTime.now();
+    private Instant timestamp = Instant.now();
     private Optional<ScheduledFuture<?>> pulsing = Optional.empty();
 
     public void cancelPulsing() {
@@ -38,7 +38,7 @@ public class PortData {
         cancelPulsing();
     }
 
-    public void setData(double value, ZonedDateTime timestamp) {
+    public void setData(double value, Instant timestamp) {
         this.value = value;
         this.timestamp = timestamp;
     }
@@ -47,7 +47,7 @@ public class PortData {
         return value;
     }
 
-    public ZonedDateTime getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
