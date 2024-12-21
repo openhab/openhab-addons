@@ -133,7 +133,7 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
         });
     }
 
-    protected abstract void connectionInit() throws LinkyException;
+    public abstract void connectionInit() throws LinkyException;
 
     public void registerNewPrmId(String prmId) {
         if (!registeredPrmId.contains(prmId)) {
