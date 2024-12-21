@@ -33,8 +33,6 @@ import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -222,7 +220,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             case CHANNEL_LAST_SEEN:
                 // mgb: we don't check clientOnline as lastSeen is also included in the Insights data
                 if (client.getLastSeen() != null) {
-                    state = new DateTimeType(ZonedDateTime.ofInstant(client.getLastSeen(), ZoneId.systemDefault()));
+                    state = new DateTimeType(client.getLastSeen());
                 }
                 break;
 

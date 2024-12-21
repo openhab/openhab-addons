@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.InsteonLegacyBindingConstants;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
@@ -74,10 +75,10 @@ public class LegacyPort {
 
     private IOStream ioStream;
     private String name;
-    private Modem modem;
+    private Modem modem = new Modem();
     private ScheduledExecutorService scheduler;
-    private IOStreamReader reader;
-    private IOStreamWriter writer;
+    private IOStreamReader reader = new IOStreamReader();
+    private IOStreamWriter writer = new IOStreamWriter();
     private @Nullable ScheduledFuture<?> readJob;
     private @Nullable ScheduledFuture<?> writeJob;
     private boolean running = false;
@@ -94,19 +95,16 @@ public class LegacyPort {
      *
      * @param config the network bridge config
      * @param driver the driver that manages this port
-     * @param serialPortManager the serial port manager
+     * @param httpClient the http client
      * @param scheduler the scheduler
+     * @param serialPortManager the serial port manager
      */
-    public LegacyPort(InsteonLegacyNetworkConfiguration config, LegacyDriver driver,
-            SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
+    public LegacyPort(InsteonLegacyNetworkConfiguration config, LegacyDriver driver, HttpClient httpClient,
+            ScheduledExecutorService scheduler, SerialPortManager serialPortManager) {
         this.name = config.getRedactedPort();
         this.driver = driver;
         this.scheduler = scheduler;
-        this.modem = new Modem();
-        addListener(modem);
-        this.ioStream = IOStream.create(config.parse(), scheduler, serialPortManager);
-        this.reader = new IOStreamReader();
-        this.writer = new IOStreamWriter();
+        this.ioStream = IOStream.create(config.parse(), httpClient, scheduler, serialPortManager);
         this.mdbb = new LegacyModemDBBuilder(this, scheduler);
     }
 
@@ -115,7 +113,7 @@ public class LegacyPort {
     }
 
     public synchronized boolean isModemDBComplete() {
-        return (modemDBComplete);
+        return modemDBComplete;
     }
 
     public boolean isRunning() {
@@ -496,6 +494,7 @@ public class LegacyPort {
         public void initialize() {
             try {
                 Msg msg = Msg.makeMessage("GetIMInfo");
+                addListener(this);
                 writeMessage(msg);
             } catch (IOException e) {
                 logger.warn("modem init failed!", e);

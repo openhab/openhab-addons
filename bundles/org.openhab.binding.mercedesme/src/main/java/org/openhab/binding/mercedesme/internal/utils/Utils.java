@@ -107,8 +107,7 @@ public class Utils {
      * @return openHAB DateTimeType according to configured TimeZone
      */
     public static DateTimeType getDateTimeType(long ms) {
-        Instant timestamp = Instant.ofEpochMilli(ms);
-        return new DateTimeType(timestamp.atZone(timeZoneProvider.getTimeZone()));
+        return new DateTimeType(Instant.ofEpochMilli(ms));
     }
 
     /**
