@@ -26,7 +26,9 @@ import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHan
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -130,15 +132,21 @@ public class HandlerColorTemperatureController extends HandlerBase {
         if (channelId.equals(COLOR_TEMPERATURE_IN_KELVIN.channelId)) {
             // WRITING TO THIS CHANNEL DOES CURRENTLY NOT WORK, BUT WE LEAVE THE CODE FOR FUTURE USE!
             if (containsCapabilityProperty(capabilities, COLOR_TEMPERATURE_IN_KELVIN.propertyName)) {
-                if (command instanceof DecimalType) {
-                    int intValue = ((DecimalType) command).intValue();
-                    if (intValue < 1000) {
-                        intValue = 1000;
+                QuantityType<?> kelvinQuantity = null;
+                if (command instanceof QuantityType<?> genericQuantity) {
+                    kelvinQuantity = genericQuantity.toInvertibleUnit(Units.KELVIN);
+                } else if (command instanceof DecimalType decimal) {
+                    kelvinQuantity = QuantityType.valueOf(decimal.intValue(), Units.KELVIN);
+                }
+                if (kelvinQuantity != null) {
+                    int kelvin = kelvinQuantity.intValue();
+                    if (kelvin < 1000) {
+                        kelvin = 1000;
                     }
-                    if (intValue > 10000) {
-                        intValue = 10000;
+                    if (kelvin > 10000) {
+                        kelvin = 10000;
                     }
-                    connection.smartHomeCommand(entityId, "setColorTemperature", "colorTemperatureInKelvin", intValue);
+                    connection.smartHomeCommand(entityId, "setColorTemperature", "colorTemperatureInKelvin", kelvin);
                     return true;
                 }
             }
