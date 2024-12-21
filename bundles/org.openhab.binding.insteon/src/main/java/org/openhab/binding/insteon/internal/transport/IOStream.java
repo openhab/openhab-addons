@@ -26,6 +26,8 @@ import org.openhab.binding.insteon.internal.config.InsteonHub1Configuration;
 import org.openhab.binding.insteon.internal.config.InsteonHub2Configuration;
 import org.openhab.binding.insteon.internal.config.InsteonPLMConfiguration;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class for implementation for I/O stream with anything that looks
@@ -38,6 +40,7 @@ import org.openhab.core.io.transport.serial.SerialPortManager;
  */
 @NonNullByDefault
 public abstract class IOStream {
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected @Nullable InputStream in;
     protected @Nullable OutputStream out;
@@ -47,20 +50,17 @@ public abstract class IOStream {
      *
      * @param b byte array (output)
      * @return number of bytes read
+     * @throws InterruptedException
+     * @throws IOException
      */
     public int read(byte @Nullable [] b) throws InterruptedException, IOException {
+        InputStream in = this.in;
+        if (in == null) {
+            throw new IOException("input stream not defined");
+        }
         int len = 0;
         while (len == 0) {
-            if (!isOpen()) {
-                throw new IOException("io stream not open");
-            }
-
-            InputStream in = this.in;
-            if (in != null) {
-                len = in.read(b);
-            } else {
-                throw new IOException("input stream not defined");
-            }
+            len = in.read(b);
 
             if (Thread.interrupted()) {
                 throw new InterruptedException();
@@ -77,26 +77,15 @@ public abstract class IOStream {
      * Writes data to IOStream
      *
      * @param b byte array to write
+     * @throws IOException
      */
-    public void write(byte @Nullable [] b) throws InterruptedException, IOException {
-        if (!isOpen()) {
-            throw new IOException("io stream not open");
-        }
-
+    public void write(byte @Nullable [] b) throws IOException {
         OutputStream out = this.out;
-        if (out != null) {
-            out.write(b);
-        } else {
+        if (out == null) {
             throw new IOException("output stream not defined");
         }
+        out.write(b);
     }
-
-    /**
-     * Returns if IOStream is open
-     *
-     * @return true if stream is open, false if not
-     */
-    public abstract boolean isOpen();
 
     /**
      * Opens the IOStream
@@ -108,7 +97,27 @@ public abstract class IOStream {
     /**
      * Closes the IOStream
      */
-    public abstract void close();
+    public void close() {
+        InputStream in = this.in;
+        if (in != null) {
+            try {
+                in.close();
+            } catch (IOException e) {
+                logger.debug("failed to close input stream", e);
+            }
+            this.in = null;
+        }
+
+        OutputStream out = this.out;
+        if (out != null) {
+            try {
+                out.close();
+            } catch (IOException e) {
+                logger.debug("failed to close output stream", e);
+            }
+            this.out = null;
+        }
+    }
 
     /**
      * Creates an IOStream from an insteon bridge config object

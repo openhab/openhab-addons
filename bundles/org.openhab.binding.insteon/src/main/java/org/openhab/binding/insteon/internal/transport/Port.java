@@ -135,9 +135,7 @@ public class Port {
 
         connected.set(false);
 
-        if (ioStream.isOpen()) {
-            ioStream.close();
-        }
+        ioStream.close();
 
         ScheduledFuture<?> readJob = this.readJob;
         if (readJob != null) {
