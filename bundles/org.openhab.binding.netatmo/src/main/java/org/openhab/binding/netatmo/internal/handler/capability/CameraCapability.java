@@ -73,7 +73,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
             List<ChannelHelper> channelHelpers) {
         super(handler, descriptionProvider, channelHelpers);
         this.personChannelUID = new ChannelUID(thingUID, GROUP_LAST_EVENT, CHANNEL_EVENT_PERSON_ID);
-        this.cameraHelper = (CameraChannelHelper) channelHelpers.stream().filter(c -> c instanceof CameraChannelHelper)
+        this.cameraHelper = (CameraChannelHelper) channelHelpers.stream().filter(CameraChannelHelper.class::isInstance)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(
                         "CameraCapability must find a CameraChannelHelper, please file a bug report."));
     }
