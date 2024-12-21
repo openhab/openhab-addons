@@ -106,7 +106,7 @@ Switch invertedSwitch { channel="xxx" [profile="basic-profiles:invert"] }
 ## Round Profile
 
 The Round Profile scales the State to a specific number of decimal places based on the power of ten.
-Optionally the [Rounding mode](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/math/RoundingMode.html) can be set.
+Optionally the [Rounding mode](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/RoundingMode.html) can be set.
 Source Channels should accept Item Type `Number`.
 
 ### Round Profile Configuration
