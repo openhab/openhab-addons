@@ -254,21 +254,18 @@ public class EnedisHttpApi {
         }
     }
 
-    public MeterReading getEnergyData(LinkyHandler handler, String prmId, LocalDate from, LocalDate to)
+    public MeterReading getEnergyData(LinkyHandler handler, String mps, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
-        String mps = "MPS172TIB";
         return getMeasures(handler, linkyBridgeHandler.getDailyConsumptionUrl(), mps, prmId, from, to);
     }
 
-    public MeterReading getLoadCurveData(LinkyHandler handler, String prmId, LocalDate from, LocalDate to)
+    public MeterReading getLoadCurveData(LinkyHandler handler, String mps, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
-        String mps = "MPS172TIB";
         return getMeasures(handler, linkyBridgeHandler.getLoadCurveUrl(), mps, prmId, from, to);
     }
 
-    public MeterReading getPowerData(LinkyHandler handler, String prmId, LocalDate from, LocalDate to)
+    public MeterReading getPowerData(LinkyHandler handler, String mps, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
-        String mps = "MPS172TIB";
         return getMeasures(handler, linkyBridgeHandler.getMaxPowerUrl(), mps, prmId, from, to);
     }
 

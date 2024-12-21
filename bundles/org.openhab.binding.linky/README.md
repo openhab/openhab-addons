@@ -17,17 +17,25 @@ You can use :
 
 There is advantage and disadvantage for each method.
 
--  enedis-web bridge is the old way to go.
+- Enedis-web bridge is the old way to go.
+- MyelectricalData and enedis bridge both use new API format, less prone to change of the web site architecture.
+- MyelectricalData bridge is handle by third party provider, but is stable.
+- Enedis bridge use direct connection to Enedis, but currently required complex registration step with Enedis.
+  this limitation would certainly go away in near feature, that will make Enedis Bridge the preffered way to go.
 
 ## Supported Things
 
 There is one supported thing : the `linky` thing is retrieving the consumption of your home from the [Linky electric meter](https://www.enedis.fr/linky-compteur-communicant).
 
 You can have multiple linky thing in your setup if you have different house / linky linked to your account.
+You can switch the thing from one bridge to another if you experience troubles with one bridge.
+Data will be the quite the same ever bridge you use. 
+Only a few items from contract are not the same between web bridge and api bridge.
 
 ## Discovery
 
-This binding does not provide discovery service.
+This binding currently does not provide discovery service.
+Perhaps will add auto linky discovery in a future version.
 
 ## Binding Configuration
 
