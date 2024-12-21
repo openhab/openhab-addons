@@ -72,5 +72,4 @@ public class MeterReading {
 
         return result;
     }
-
 }
