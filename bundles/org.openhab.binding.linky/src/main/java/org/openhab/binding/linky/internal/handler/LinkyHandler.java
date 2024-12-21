@@ -117,7 +117,7 @@ public class LinkyHandler extends BaseThingHandler {
             MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
             meterReading = getMeterReadingAfterChecks(meterReading);
             if (meterReading != null) {
-                logData(meterReading.dayValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
+                logData(meterReading.baseValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
                 logData(meterReading.weekValue, "Week", DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
             }
             return meterReading;
@@ -135,7 +135,7 @@ public class LinkyHandler extends BaseThingHandler {
                     MeterReading meterReading = getPowerData(today.minusDays(1095), today);
                     meterReading = getMeterReadingAfterChecks(meterReading);
                     if (meterReading != null) {
-                        logData(meterReading.dayValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
+                        logData(meterReading.baseValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
                     }
                     return meterReading;
                 });
@@ -154,7 +154,7 @@ public class LinkyHandler extends BaseThingHandler {
             MeterReading meterReading = getLoadCurveConsumption(today.minusDays(6), today);
             meterReading = getMeterReadingAfterChecks(meterReading);
             if (meterReading != null) {
-                logData(meterReading.dayValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
+                logData(meterReading.baseValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
             }
             return meterReading;
         });
@@ -373,21 +373,21 @@ public class LinkyHandler extends BaseThingHandler {
 
     private synchronized void updatePowerData() {
         dailyConsumptionMaxPower.getValue().ifPresentOrElse(values -> {
-            int dSize = values.dayValue.length;
+            int dSize = values.baseValue.length;
 
-            updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_1, values.dayValue[dSize - 1].value);
+            updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_1, values.baseValue[dSize - 1].value);
             updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_1,
-                    new DateTimeType(values.dayValue[dSize - 1].date.atZone(ZoneId.systemDefault())));
+                    new DateTimeType(values.baseValue[dSize - 1].date.atZone(ZoneId.systemDefault())));
 
-            updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_2, values.dayValue[dSize - 2].value);
+            updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_2, values.baseValue[dSize - 2].value);
             updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_2,
-                    new DateTimeType(values.dayValue[dSize - 2].date.atZone(ZoneId.systemDefault())));
+                    new DateTimeType(values.baseValue[dSize - 2].date.atZone(ZoneId.systemDefault())));
 
-            updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_3, values.dayValue[dSize - 3].value);
+            updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_3, values.baseValue[dSize - 3].value);
             updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_3,
-                    new DateTimeType(values.dayValue[dSize - 3].date.atZone(ZoneId.systemDefault())));
+                    new DateTimeType(values.baseValue[dSize - 3].date.atZone(ZoneId.systemDefault())));
 
-            updatePowerTimeSeries(DAILY_GROUP, MAX_POWER_CHANNEL, values.dayValue);
+            updatePowerTimeSeries(DAILY_GROUP, MAX_POWER_CHANNEL, values.baseValue);
             updatePowerTimeSeries(WEEKLY_GROUP, MAX_POWER_CHANNEL, values.weekValue);
             updatePowerTimeSeries(MONTHLY_GROUP, MAX_POWER_CHANNEL, values.monthValue);
             updatePowerTimeSeries(YEARLY_GROUP, MAX_POWER_CHANNEL, values.yearValue);
@@ -411,9 +411,9 @@ public class LinkyHandler extends BaseThingHandler {
         dailyConsumption.getValue().ifPresentOrElse(values -> {
             int dSize = values.dayValue.length;
 
-            updateKwhChannel(DAILY_GROUP, DAY_MINUS_1, values.dayValue[dSize - 1].value);
-            updateKwhChannel(DAILY_GROUP, DAY_MINUS_2, values.dayValue[dSize - 2].value);
-            updateKwhChannel(DAILY_GROUP, DAY_MINUS_3, values.dayValue[dSize - 3].value);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_1, values.baseValue[dSize - 1].value);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_2, values.baseValue[dSize - 2].value);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_3, values.baseValue[dSize - 3].value);
 
             int idxCurrentYear = values.yearValue.length - 1;
             int idxCurrentWeek = values.weekValue.length - 1;
@@ -709,8 +709,8 @@ public class LinkyHandler extends BaseThingHandler {
 
         if (meterReading != null) {
             if (meterReading.weekValue == null) {
-                LocalDate startDate = meterReading.dayValue[0].date.toLocalDate();
-                LocalDate endDate = meterReading.dayValue[meterReading.dayValue.length - 1].date.toLocalDate();
+                LocalDate startDate = meterReading.baseValue[0].date.toLocalDate();
+                LocalDate endDate = meterReading.baseValue[meterReading.dayValue.length - 1].date.toLocalDate();
 
                 int weeksNum = Weeks.between(startDate, endDate).getAmount() + 2;
                 int monthsNum = Months.between(startDate, endDate).getAmount() + 2;
@@ -730,13 +730,13 @@ public class LinkyHandler extends BaseThingHandler {
                     meterReading.yearValue[idx] = new IntervalReading();
                 }
 
-                int size = meterReading.dayValue.length;
-                int baseYear = meterReading.dayValue[0].date.getYear();
-                int baseMonth = meterReading.dayValue[0].date.getMonthValue();
-                int baseWeek = meterReading.dayValue[0].date.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+                int size = meterReading.baseValue.length;
+                int baseYear = meterReading.baseValue[0].date.getYear();
+                int baseMonth = meterReading.baseValue[0].date.getMonthValue();
+                int baseWeek = meterReading.baseValue[0].date.get(WeekFields.of(Locale.FRANCE).weekOfYear());
 
                 for (int idx = 0; idx < size; idx++) {
-                    IntervalReading ir = meterReading.dayValue[idx];
+                    IntervalReading ir = meterReading.baseValue[idx];
                     LocalDateTime dt = ir.date;
                     double value = ir.value;
                     value = value / divider;
@@ -778,7 +778,7 @@ public class LinkyHandler extends BaseThingHandler {
 
     private void checkData(@Nullable MeterReading meterReading) throws LinkyException {
         if (meterReading != null) {
-            if (meterReading.dayValue.length == 0) {
+            if (meterReading.baseValue.length == 0) {
                 throw new LinkyException("Invalid meterReading data: no day period");
             }
         }

@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Data;
 
 import com.google.gson.annotations.SerializedName;
@@ -43,7 +39,7 @@ public class MeterReading {
     public ReadingType readingType;
 
     @SerializedName("interval_reading")
-    public IntervalReading[] dayValue;
+    public IntervalReading[] baseValue;
     public IntervalReading[] weekValue;
     public IntervalReading[] monthValue;
     public IntervalReading[] yearValue;
@@ -53,10 +49,11 @@ public class MeterReading {
         result.readingType = new ReadingType();
 
         if (comsumptionReport.consumptions.aggregats != null) {
-            result.dayValue = fromAgregat(comsumptionReport.consumptions.aggregats.days);
-        } else {
-            // result.dayValue = fromLabelsAndDatas(comsumptionReport.consumptions.labels,
-            // comsumptionReport.consumptions.data);
+            if (comsumptionReport.consumptions.aggregats.days != null) {
+                result.baseValue = fromAgregat(comsumptionReport.consumptions.aggregats.days);
+            } else if (comsumptionReport.consumptions.aggregats.heure != null) {
+                result.baseValue = fromAgregat(comsumptionReport.consumptions.aggregats.heure);
+            }
         }
 
         return result;
@@ -76,21 +73,4 @@ public class MeterReading {
         return result;
     }
 
-    public static IntervalReading[] fromLabelsAndDatas(List<String> labels, List<Double> datas) {
-        int size = datas.size();
-        IntervalReading[] result = new IntervalReading[size];
-
-        for (int i = 0; i < size; i++) {
-            Double data = datas.get(i);
-            String label = labels.get(i);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS[X]");
-            ZonedDateTime dt = ZonedDateTime.parse(label, formatter);
-
-            result[i] = new IntervalReading();
-            result[i].value = data;
-            result[i].date = dt.toLocalDateTime();
-        }
-
-        return result;
-    }
 }
