@@ -68,6 +68,13 @@ public class BulbDevice extends SmartHomeDevice {
             response = handleOnOffType(channelId, onOffCommand, transitionPeriod);
         } else if (command instanceof HSBType hsbCommand && CHANNEL_COLOR.equals(channelId)) {
             response = handleHSBType(channelId, hsbCommand, transitionPeriod);
+        } else if (command instanceof QuantityType<?> genericQuantity
+                && CHANNEL_COLOR_TEMPERATURE_ABS.equals(channelId)) {
+            QuantityType<?> kelvinQuantity = genericQuantity.toInvertibleUnit(Units.KELVIN);
+            if (kelvinQuantity == null) {
+                return false;
+            }
+            response = handleDecimalType(channelId, new DecimalType(kelvinQuantity.intValue()), transitionPeriod);
         } else if (command instanceof DecimalType decimalCommand) {
             response = handleDecimalType(channelId, decimalCommand, transitionPeriod);
         } else {
