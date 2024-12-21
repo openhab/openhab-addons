@@ -222,12 +222,13 @@ public class EnedisHttpApi {
             LocalDate to) throws LinkyException {
         String dtStart = from.format(linkyBridgeHandler.getApiDateFormat());
         String dtEnd = to.format(linkyBridgeHandler.getApiDateFormat());
-        String url = String.format(apiUrl, mps, prmId, dtStart, dtEnd);
 
         if (handler.supportNewApiFormat()) {
+            String url = String.format(apiUrl, prmId, dtStart, dtEnd);
             ResponseMeter meterResponse = getData(handler, url, ResponseMeter.class);
             return meterResponse.meterReading;
         } else {
+            String url = String.format(apiUrl, mps, prmId, dtStart, dtEnd);
             ConsumptionReport consomptionReport = getData(handler, url, ConsumptionReport.class);
             return MeterReading.convertFromComsumptionReport(consomptionReport);
         }
