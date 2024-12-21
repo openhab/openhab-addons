@@ -14,6 +14,7 @@ package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 import static org.openhab.binding.deconz.internal.Util.constrainToRange;
+import static org.openhab.binding.deconz.internal.Util.kelvinToMired;
 
 import java.util.Collection;
 import java.util.Map;
@@ -35,9 +36,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -140,15 +139,9 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
                 }
             }
             case CHANNEL_COLOR_TEMPERATURE -> {
-                QuantityType<?> miredQuantity = null;
-                if (command instanceof QuantityType<?> genericQuantity) {
-                    miredQuantity = genericQuantity.toInvertibleUnit(Units.MIRED);
-                } else if (command instanceof DecimalType decimal) {
-                    miredQuantity = QuantityType.valueOf(decimal.intValue(), Units.KELVIN)
-                            .toInvertibleUnit(Units.MIRED);
-                }
-                if (miredQuantity != null) {
-                    newGroupAction.ct = constrainToRange(miredQuantity.intValue(), ZCL_CT_MIN, ZCL_CT_MAX);
+                if (command instanceof DecimalType decimalCommand) {
+                    int miredValue = kelvinToMired(decimalCommand.intValue());
+                    newGroupAction.ct = constrainToRange(miredValue, ZCL_CT_MIN, ZCL_CT_MAX);
                     newGroupAction.on = true;
                 }
             }

@@ -38,7 +38,6 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -188,12 +187,6 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     } else if (command instanceof DecimalType decimalCommand) {
                         temp = decimalCommand.intValue();
                         logger.debug("{}: Set color temp to {}K (Integer)", thingName, temp);
-                    } else if (command instanceof QuantityType<?> genericQuantity) {
-                        QuantityType<?> kelvinQuantity = genericQuantity.toInvertibleUnit(Units.KELVIN);
-                        if (kelvinQuantity != null) {
-                            temp = kelvinQuantity.intValue();
-                            logger.debug("{}: Set color temp to {}K (Integer)", thingName, temp);
-                        }
                     }
                     validateRange(CHANNEL_COLOR_TEMP, temp, col.minTemp, col.maxTemp);
                     col.setTemp(temp);
