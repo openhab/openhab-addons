@@ -62,7 +62,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class EnedisHttpApi {
-    private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String ENEDIS_DOMAIN = ".enedis.fr";
     private static final String URL_APPS_LINCS = "https://alex.microapplications" + ENEDIS_DOMAIN;
     private static final String URL_MON_COMPTE = "https://mon-compte" + ENEDIS_DOMAIN;
@@ -70,10 +70,10 @@ public class EnedisHttpApi {
     private static final String URL_ENEDIS_AUTHENTICATE = URL_APPS_LINCS + "/authenticate?target=" + URL_COMPTE_PART;
     private static final String USER_INFO_CONTRACT_URL = URL_APPS_LINCS + "/mon-compte-client/api/private/v1/userinfos";
     private static final String USER_INFO_URL = URL_APPS_LINCS + "/userinfos";
-    private static final String PRM_INFO_BASE_URL = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/";
+    private static final String PRM_INFO_BASE_URL = URL_APPS_LINCS + "/mes-mesures-prm/api/private/v1/personnes/";
     private static final String PRM_INFO_URL = URL_APPS_LINCS + "/mes-prms-part/api/private/v2/personnes/%s/prms";
     private static final String MEASURE_URL = PRM_INFO_BASE_URL
-            + "%s/prms/%s/donnees-%s?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=%s&mesuresCorrigees=false&typeDonnees=CONS&dateDebut=%s";
     private static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
     private static final Pattern REQ_PATTERN = Pattern.compile("ReqID%(.*?)%26");
 
@@ -289,17 +289,16 @@ public class EnedisHttpApi {
 
     private Consumption getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)
             throws LinkyException {
-        String url = String.format(MEASURE_URL, userId, prmId, request, from.format(API_DATE_FORMAT),
-                to.format(API_DATE_FORMAT));
+        String url = String.format(MEASURE_URL, userId, prmId, request, from.format(API_DATE_FORMAT));
         ConsumptionReport report = getData(url, ConsumptionReport.class);
-        return report.firstLevel.consumptions;
+        return report.consumptions;
     }
 
     public Consumption getEnergyData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(userId, prmId, from, to, "energie");
+        return getMeasures(userId, prmId, from, to, "ENERGIE");
     }
 
     public Consumption getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(userId, prmId, from, to, "pmax");
+        return getMeasures(userId, prmId, from, to, "PMAX");
     }
 }
