@@ -165,7 +165,7 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
     }
 
     @Override
-    protected synchronized void connectionInit() throws LinkyException {
+    public synchronized void connectionInit() throws LinkyException {
         LinkyConfiguration lcConfig = config;
         if (lcConfig == null) {
             return;

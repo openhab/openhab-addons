@@ -99,6 +99,26 @@ public class EnedisHttpApi {
 
     private static String getContent(Logger logger, LinkyBridgeHandler linkyBridgeHandler, String url,
             HttpClient httpClient, String token) throws LinkyException {
+        int numberRetry = 0;
+        LinkyException lastException = null;
+
+        while (numberRetry < 3) {
+            try {
+                return getContentInternal(logger, linkyBridgeHandler, url, httpClient, token);
+            } catch (LinkyException ex) {
+                lastException = ex;
+
+                // try to reinit connection, fail after 3 attemps
+                linkyBridgeHandler.connectionInit();
+            }
+            numberRetry++;
+        }
+
+        throw Objects.requireNonNull(lastException);
+    }
+
+    private static String getContentInternal(Logger logger, LinkyBridgeHandler linkyBridgeHandler, String url,
+            HttpClient httpClient, String token) throws LinkyException {
         try {
             Request request = httpClient.newRequest(url);
 
