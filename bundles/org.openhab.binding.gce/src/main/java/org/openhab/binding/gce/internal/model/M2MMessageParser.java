@@ -44,6 +44,10 @@ public class M2MMessageParser {
         connector.setParser(this);
     }
 
+    public void dispose() {
+        connector.releaseParser();
+    }
+
     /**
      *
      * @param data
@@ -67,7 +71,7 @@ public class M2MMessageParser {
                         portNumShift = 0; // Align counters on 1 based array
                     case ANALOG: {
                         int portNumber = Integer.parseInt(statusPart[0].substring(1)) + portNumShift;
-                        setStatus(portDefinition.getPortName() + portNumber, Double.parseDouble(statusPart[1]));
+                        setStatus(portDefinition.portName + portNumber, Double.parseDouble(statusPart[1]));
                     }
                 }
             }
@@ -80,7 +84,7 @@ public class M2MMessageParser {
 
     private void decodeDataLine(PortDefinition portDefinition, String data) {
         for (int count = 0; count < data.length(); count++) {
-            setStatus(portDefinition.getPortName() + (count + 1), (double) data.charAt(count) - '0');
+            setStatus(portDefinition.portName + (count + 1), (double) data.charAt(count) - '0');
         }
     }
 
@@ -94,7 +98,7 @@ public class M2MMessageParser {
             this.expectedResponse = expectedResponse;
         } else { // GetAnx or GetCountx
             PortDefinition portType = PortDefinition.fromM2MCommand(expectedResponse);
-            this.expectedResponse = expectedResponse.replaceAll(portType.getM2mCommand(), portType.getPortName());
+            this.expectedResponse = expectedResponse.replaceAll(portType.m2mCommand, portType.portName);
         }
     }
 
