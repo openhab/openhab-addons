@@ -23,32 +23,37 @@ import com.google.gson.annotations.SerializedName;
  * returned by API calls
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent ARNAL - fix to handle new Dto format after enedis site modifications
  */
 public class ConsumptionReport {
 
     public class Data {
         public LocalDateTime dateDebut;
         public LocalDateTime dateFin;
-        public String valeur;
+        public Double valeur;
     }
 
-    public class Datas {
+    public class Aggregate {
         @SerializedName("donnees")
         public List<Data> datas;
         public String unite;
     }
 
     public class ChronoData {
-        @SerializedName("jour")
-        public Datas days;
-
         @SerializedName("heure")
-        public Datas heure;
+        public Aggregate heure;
+        @SerializedName("jour")
+        public Aggregate days;
+        @SerializedName("semaine")
+        public Aggregate weeks;
+        @SerializedName("mois")
+        public Aggregate months;
+        @SerializedName("annee")
+        public Aggregate years;
     }
 
     public class Consumption {
         public ChronoData aggregats;
-
         public String grandeurMetier;
         public String grandeurPhysique;
         public LocalDate dateDebut;
@@ -57,5 +62,4 @@ public class ConsumptionReport {
 
     @SerializedName("cons")
     public Consumption consumptions;
-
 }

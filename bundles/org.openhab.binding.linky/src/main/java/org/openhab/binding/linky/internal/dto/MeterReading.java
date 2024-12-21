@@ -59,7 +59,7 @@ public class MeterReading {
         return result;
     }
 
-    public static IntervalReading[] fromAgregat(ConsumptionReport.Datas agregat) {
+    public static IntervalReading[] fromAgregat(ConsumptionReport.Aggregate agregat) {
         int size = agregat.datas.size();
         IntervalReading[] result = new IntervalReading[size];
 
