@@ -120,6 +120,7 @@ public class Ipx800DeviceConnector extends Thread {
     public void dispose() {
         interrupt();
         disconnect();
+        releaseParser();
     }
 
     /**
@@ -185,6 +186,10 @@ public class Ipx800DeviceConnector extends Thread {
     }
 
     public void setParser(M2MMessageParser parser) {
-        this.messageParser = Optional.of(parser);
+        messageParser = Optional.of(parser);
+    }
+
+    public void releaseParser() {
+        messageParser = Optional.empty();
     }
 }
