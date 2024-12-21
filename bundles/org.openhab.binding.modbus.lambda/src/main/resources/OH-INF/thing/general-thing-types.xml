@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="lambda-general">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+		<label>Lambda General Group</label>
+		<description> Ambient and E-Manager groups connected through modbus</description>
+
+		<channel-groups>
+
+			<channel-group id="ambient-group" typeId="ambient-type"/>
+			<channel-group id="emanager-group" typeId="emanager-type"/>
+
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:lambda-general:modbusconfig"/>
+
+	</thing-type>
+
+</thing:thing-descriptions>
