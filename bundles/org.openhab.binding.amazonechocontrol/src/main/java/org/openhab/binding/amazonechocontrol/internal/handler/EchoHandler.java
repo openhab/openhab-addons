@@ -48,6 +48,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPu
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushVolumeChange;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDoNotDisturb.DoNotDisturbDeviceStatus;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEqualizer;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState.QueueEntry;
@@ -124,6 +125,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     private boolean updateStartCommand = true;
     private @Nullable Integer notificationVolumeLevel;
     private @Nullable Boolean ascendingAlarm;
+    private @Nullable Boolean doNotDisturb;
     private @Nullable JsonPlaylists playLists;
     private List<JsonNotificationSound> alarmSounds = List.of();
     private List<JsonMusicProvider> musicProviders = List.of();
@@ -314,6 +316,14 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     waitForUpdate = -1;
                     account.forceCheckData();
                 }
+            }
+            // Do Not Disturb command
+            if (channelId.equals(CHANNEL_DO_NOT_DISTURB) && command instanceof OnOffType) {
+                boolean newDnd = OnOffType.ON.equals(command);
+                connection.doNotDisturb(device, newDnd);
+                this.doNotDisturb = true;
+                waitForUpdate = -1;
+                account.forceCheckData();
             }
             // Media progress commands
             Long mediaPosition = null;
@@ -652,7 +662,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     }
                 }
 
-                updateState(account, device, state, null, null, null, null, null);
+                updateState(account, device, state, null, null, null, null, null, null);
             };
             if (command instanceof RefreshType) {
                 waitForUpdate = 0;
@@ -791,7 +801,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
     public void updateState(AccountHandler accountHandler, @Nullable Device device,
             @Nullable BluetoothState bluetoothState, @Nullable DeviceNotificationState deviceNotificationState,
-            @Nullable AscendingAlarmModel ascendingAlarmModel, @Nullable JsonPlaylists playlists,
+            @Nullable AscendingAlarmModel ascendingAlarmModel,
+            @Nullable DoNotDisturbDeviceStatus doNotDisturbDeviceStatus, @Nullable JsonPlaylists playlists,
             @Nullable List<JsonNotificationSound> alarmSounds, @Nullable List<JsonMusicProvider> musicProviders) {
         try {
             this.logger.debug("Handle updateState {}", this.getThing().getUID());
@@ -801,6 +812,9 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
             if (ascendingAlarmModel != null) {
                 ascendingAlarm = ascendingAlarmModel.ascendingAlarmEnabled;
+            }
+            if (doNotDisturbDeviceStatus != null) {
+                doNotDisturb = doNotDisturbDeviceStatus.enabled;
             }
             if (playlists != null) {
                 this.playLists = playlists;
@@ -1119,6 +1133,9 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             updateState(CHANNEL_ASCENDING_ALARM,
                     ascendingAlarm != null ? OnOffType.from(ascendingAlarm) : UnDefType.UNDEF);
 
+            updateState(CHANNEL_DO_NOT_DISTURB,
+                    doNotDisturb != null ? (doNotDisturb ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF);
+
             final Integer notificationVolumeLevel = this.notificationVolumeLevel;
             if (notificationVolumeLevel != null) {
                 updateState(CHANNEL_NOTIFICATION_VOLUME, new PercentType(notificationVolumeLevel));
@@ -1260,7 +1277,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 Device device = this.device;
                 if (account != null && device != null) {
                     this.disableUpdate = false;
-                    updateState(account, device, null, null, null, null, null, null);
+                    updateState(account, device, null, null, null, null, null, null, null);
                 }
         }
     }
