@@ -559,6 +559,7 @@ Currently the miio binding supports more than 360 different models.
 | Xiaomi Smart Air Purifier 4 Compact | miio:basic       | [zhimi.airp.cpa4](#zhimi-airp-cpa4) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Air Purifier 3C                 | miio:basic       | [zhimi.airp.mb4a](#zhimi-airp-mb4a) | Yes          |            |
 | Xiaomi Smart Air Purifier 4        | miio:basic       | [zhimi.airp.mb5](#zhimi-airp-mb5) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Air Purifier 4 Lite   | miio:basic       | [zhimi.airp.rmb1](#zhimi-airp-rmb1) | Experimental | This device may not work with direct connection hence require cloud connection<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Air Purifier 4 Pro    | miio:basic       | [zhimi.airp.vb4](#zhimi-airp-vb4) | Yes          |            |
 | Mi Air Purifier 2 (mini)           | miio:basic       | [zhimi.airpurifier.m1](#zhimi-airpurifier-m1) | Yes          |            |
 | Mi Air Purifier 2                  | miio:basic       | [zhimi.airpurifier.m2](#zhimi-airpurifier-m2) | Yes          |            |
@@ -1682,7 +1683,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  |            |
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Vacuum Start Sweep","vacuum-stop-sweeping"="Vacuum Stop Sweeping","vacuum-start-room-sweep"="Vacuum Start Room Sweep","battery-start-charge"="Battery Start Charge","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer","collect-dust-start-collect"="Collect Dust Start Collect"]` |
 | status                     | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping","11"="Building","13"="Charging Completed"]` |
 | fault                      | Number               | Robot Cleaner - Device Fault             |            |
 | mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Silent","1"="Basic","2"="Strong","3"="Full Speed"]` |
@@ -5458,6 +5459,29 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | purify_volume              | Number               | Aqi - Purify Volume                      |            |
 | average_aqi                | Number               | Aqi - Average Aqi                        |            |
 | aqi_state                  | Number               | Aqi - Aqi State                          | Value mapping `["0"="AQI-GOOD-L","1"="AQI-GOOD-H","2"="AQI-MID-L","3"="AQI-MID-H","4"="AQI-BAD-L","5"="AQI-BAD-H"]` |
+
+### Xiaomi Smart Air Purifier 4 Lite (<a name="zhimi-airp-rmb1">zhimi.airp.rmb1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["air-purifier-toggle"="Air Purifier Toggle","filter-reset-filter-life"="Filter Reset Filter Life","custom-service-toggle-mode"="Custom Service Toggle Mode"]` |
+| on                         | Switch               | Air Purifier - Switch Status             |            |
+| fault                      | Number               | Air Purifier - Device Fault              | Value mapping `["0"="No Faults","2"="Motor Stop","3"="Sensor Lost"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite"]` |
+| relative_humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
+| pm2_5_density              | Number               | Environment - PM2 5 Density              |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter_used_time           | Number:Time          | Filter - Filter Used Time                |            |
+| filter_left_time           | Number:Time          | Filter - Filter Left Time                |            |
+| alarm                      | Switch               | Alarm - Alarm                            |            |
+| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
+| brightness                 | Number               | Screen - Brightness                      | Value mapping `["0"="Close","1"="Bright","2"="Brightest"]` |
+| temperature_display_unit   | Number               | Device Display Unit - Temperature Display Unit | Value mapping `["1"="Celsius","2"="Fahrenheit"]` |
+| moto_speed_rpm             | Number               | Custom Service - Moto Speed Rpm          |            |
+| country_code               | Number               | Custom Service - Country Code            | Value mapping `["2"="EU","1"="US","82"="KR","886"="TW","66"="TH","44"="UK","91"="IN"]` |
+| favorite_level             | Number               | Custom Service - Favorite Level          |            |
+| aqi_updata_heartbeat       | Number               | Aqi - Aqi Updata Heartbeat               |            |
 
 ### Xiaomi Smart Air Purifier 4 Pro (<a name="zhimi-airp-vb4">zhimi.airp.vb4</a>) Channels
 
@@ -12066,6 +12090,32 @@ Number:Time filter_used_debug "Filter Time - Filter Used Debug" (G_airp) {channe
 Number purify_volume "Aqi - Purify Volume" (G_airp) {channel="miio:basic:airp:purify_volume"}
 Number average_aqi "Aqi - Average Aqi" (G_airp) {channel="miio:basic:airp:average_aqi"}
 Number aqi_state "Aqi - Aqi State" (G_airp) {channel="miio:basic:airp:aqi_state"}
+```
+
+### Xiaomi Smart Air Purifier 4 Lite (zhimi.airp.rmb1) item file lines
+
+note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_airp "Xiaomi Smart Air Purifier 4 Lite" <status>
+String actions "Actions" (G_airp) {channel="miio:basic:airp:actions"}
+Switch on "Air Purifier - Switch Status" (G_airp) {channel="miio:basic:airp:on"}
+Number fault "Air Purifier - Device Fault" (G_airp) {channel="miio:basic:airp:fault"}
+Number mode "Mode" (G_airp) {channel="miio:basic:airp:mode"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airp) {channel="miio:basic:airp:relative_humidity"}
+Number pm2_5_density "Environment - PM2 5 Density" (G_airp) {channel="miio:basic:airp:pm2_5_density"}
+Number:Temperature temperature "Temperature" (G_airp) {channel="miio:basic:airp:temperature"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airp) {channel="miio:basic:airp:filter_life_level"}
+Number:Time filter_used_time "Filter - Filter Used Time" (G_airp) {channel="miio:basic:airp:filter_used_time"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_airp) {channel="miio:basic:airp:filter_left_time"}
+Switch alarm "Alarm - Alarm" (G_airp) {channel="miio:basic:airp:alarm"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airp) {channel="miio:basic:airp:physical_controls_locked"}
+Number brightness "Screen - Brightness" (G_airp) {channel="miio:basic:airp:brightness"}
+Number temperature_display_unit "Device Display Unit - Temperature Display Unit" (G_airp) {channel="miio:basic:airp:temperature_display_unit"}
+Number moto_speed_rpm "Custom Service - Moto Speed Rpm" (G_airp) {channel="miio:basic:airp:moto_speed_rpm"}
+Number country_code "Custom Service - Country Code" (G_airp) {channel="miio:basic:airp:country_code"}
+Number favorite_level "Custom Service - Favorite Level" (G_airp) {channel="miio:basic:airp:favorite_level"}
+Number aqi_updata_heartbeat "Aqi - Aqi Updata Heartbeat" (G_airp) {channel="miio:basic:airp:aqi_updata_heartbeat"}
 ```
 
 ### Xiaomi Smart Air Purifier 4 Pro (zhimi.airp.vb4) item file lines
