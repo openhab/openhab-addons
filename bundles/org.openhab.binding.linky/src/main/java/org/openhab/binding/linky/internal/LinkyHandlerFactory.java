@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.linky.internal;
 
+import static java.time.temporal.ChronoField.*;
 import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,8 +58,22 @@ import com.google.gson.JsonDeserializer;
 public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private static final DateTimeFormatter LINKY_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
     private static final DateTimeFormatter LINKY_LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
-    private static final DateTimeFormatter LINKY_LOCALDATETIME_FORMATTER = DateTimeFormatter
-            .ofPattern("uuuu-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter LINKY_LOCALDATETIME_FORMATTER = new DateTimeFormatterBuilder()
+            .appendPattern("uuuu-MM-dd'T'HH:mm").optionalStart().appendLiteral(':').appendValue(SECOND_OF_MINUTE, 2)
+            .optionalStart().appendFraction(NANO_OF_SECOND, 0, 9, true).toFormatter();
+
+    /*
+     * ;
+     *
+     * DateTimeFormatter formatter1 = new DateTimeFormatterBuilder()
+     * .appendPattern(DATE_TIME_FORMAT_PATTERN)
+     * // optional decimal point followed by 1 to 6 digits
+     * .optionalStart()
+     * .appendPattern(".")
+     * .appendFraction(ChronoField.MICRO_OF_SECOND, 1, 6, false)
+     * .optionalEnd()
+     * .toFormatter();
+     */
 
     private final HttpClientFactory httpClientFactory;
     private final OAuthFactory oAuthFactory;
