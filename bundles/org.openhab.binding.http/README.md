@@ -159,7 +159,7 @@ All values that are not `upValue`, `downValue`, `stopValue`, `moveValue` are int
 
 ## URL Formatting
 
-After concatenation of the `baseURL` and the `commandExtension` or the `stateExtension` (if provided) the URL is formatted using the [java.util.Formatter](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html).
+After concatenation of the `baseURL` and the `commandExtension` or the `stateExtension` (if provided) the URL is formatted using the [java.util.Formatter](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Formatter.html).
 The URL is used as format string and two parameters are added:
 
 - the current date (referenced as `%1$`)
