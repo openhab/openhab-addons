@@ -99,6 +99,8 @@ public class LinkyHandler extends BaseThingHandler {
     private @Nullable EnedisHttpApi enedisApi;
     private double divider = 1.00;
 
+    public String userId = "";
+
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
     private enum Target {
@@ -241,6 +243,8 @@ public class LinkyHandler extends BaseThingHandler {
                     Contact contact = Contact.convertFromUserInfo(userInfo);
                     Contract contract = Contract.convertFromPrmDetail(details);
                     UsagePoint usagePoint = UsagePoint.convertFromPrmDetail(prmInfo, details);
+
+                    this.userId = userInfo.userProperties.internId;
 
                     updateMetaData(identity, contact, contract, usagePoint);
 
@@ -598,7 +602,7 @@ public class LinkyHandler extends BaseThingHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                MeterReading meterReading = api.getEnergyData(this, config.prmId, from, to);
+                MeterReading meterReading = api.getEnergyData(this, this.userId, config.prmId, from, to);
                 return meterReading;
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
@@ -616,7 +620,7 @@ public class LinkyHandler extends BaseThingHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                MeterReading meterReading = api.getLoadCurveData(this, config.prmId, from, to);
+                MeterReading meterReading = api.getLoadCurveData(this, this.userId, config.prmId, from, to);
                 return meterReading;
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
@@ -634,7 +638,7 @@ public class LinkyHandler extends BaseThingHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                MeterReading meterReading = api.getPowerData(this, config.prmId, from, to);
+                MeterReading meterReading = api.getPowerData(this, this.userId, config.prmId, from, to);
                 return meterReading;
             } catch (LinkyException e) {
                 logger.debug("Exception when getting power data: {}", e.getMessage(), e);
