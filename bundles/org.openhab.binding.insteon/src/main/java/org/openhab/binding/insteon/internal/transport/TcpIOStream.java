@@ -13,15 +13,11 @@
 package org.openhab.binding.insteon.internal.transport;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implements IOStream for an Insteon Legacy Hub
@@ -33,8 +29,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TcpIOStream extends IOStream {
-    private final Logger logger = LoggerFactory.getLogger(TcpIOStream.class);
-
     private String host;
     private int port;
     private @Nullable Socket socket;
@@ -51,13 +45,8 @@ public class TcpIOStream extends IOStream {
     }
 
     @Override
-    public boolean isOpen() {
-        return socket != null;
-    }
-
-    @Override
     public boolean open() {
-        if (isOpen()) {
+        if (socket != null) {
             logger.warn("socket is already open");
             return false;
         }
@@ -79,25 +68,7 @@ public class TcpIOStream extends IOStream {
 
     @Override
     public void close() {
-        InputStream in = this.in;
-        if (in != null) {
-            try {
-                in.close();
-            } catch (IOException e) {
-                logger.debug("failed to close input stream", e);
-            }
-            this.in = null;
-        }
-
-        OutputStream out = this.out;
-        if (out != null) {
-            try {
-                out.close();
-            } catch (IOException e) {
-                logger.debug("failed to close output stream", e);
-            }
-            this.out = null;
-        }
+        super.close();
 
         Socket socket = this.socket;
         if (socket != null) {
