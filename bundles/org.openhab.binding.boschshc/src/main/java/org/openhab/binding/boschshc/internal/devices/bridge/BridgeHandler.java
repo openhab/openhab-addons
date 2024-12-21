@@ -17,6 +17,7 @@ import static org.eclipse.jetty.http.HttpMethod.POST;
 import static org.eclipse.jetty.http.HttpMethod.PUT;
 
 import java.lang.reflect.Type;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,6 +55,7 @@ import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
 import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.binding.boschshc.internal.services.dto.JsonRestExceptionResponse;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -88,6 +90,8 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     private static final String HTTP_CLIENT_NOT_INITIALIZED = "HttpClient not initialized";
 
+    private static final Duration ROOM_CACHE_DURATION = Duration.ofMinutes(2);
+
     private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
 
     /**
@@ -107,12 +111,21 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     /**
      * SHC thing/device discovery service instance.
-     * Registered and unregistered if service is actived/deactived.
+     * Registered and unregistered if service is activated/deactivated.
      * Used to scan for things after bridge is paired with SHC.
      */
     private @Nullable ThingDiscoveryService thingDiscoveryService;
 
     private final ScenarioHandler scenarioHandler;
+
+    private ExpiringCache<List<Room>> roomCache = new ExpiringCache<>(ROOM_CACHE_DURATION, () -> {
+        try {
+            return getRooms();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        }
+    });
 
     public BridgeHandler(Bridge bridge) {
         super(bridge);
@@ -435,6 +448,24 @@ public class BridgeHandler extends BaseBridgeHandler {
         } else {
             return emptyRooms;
         }
+    }
+
+    public @Nullable List<Room> getRoomsWithCache() {
+        return roomCache.getValue();
+    }
+
+    public @Nullable String resolveRoomId(@Nullable String roomId) {
+        if (roomId == null) {
+            return null;
+        }
+
+        @Nullable
+        List<Room> rooms = getRoomsWithCache();
+        if (rooms != null) {
+            return rooms.stream().filter(r -> r.id.equals(roomId)).map(r -> r.name).findAny().orElse(null);
+        }
+
+        return null;
     }
 
     /**

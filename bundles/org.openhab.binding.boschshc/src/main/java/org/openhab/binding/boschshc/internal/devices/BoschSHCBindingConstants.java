@@ -128,4 +128,8 @@ public class BoschSHCBindingConstants {
 
     // static device/service names
     public static final String SERVICE_INTRUSION_DETECTION = "intrusionDetectionSystem";
+
+    // thing properties
+    public static final String PROPERTY_LOCATION_LEGACY = "Location";
+    public static final String PROPERTY_LOCATION = "location";
 }
