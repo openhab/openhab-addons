@@ -245,9 +245,15 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 }
             }
             case CHANNEL_COLOR_TEMPERATURE -> {
-                if (command instanceof DecimalType) {
-                    int miredValue = kelvinToMired(((DecimalType) command).intValue());
-                    newLightState.ct = constrainToRange(miredValue, ctMin, ctMax);
+                QuantityType<?> miredQuantity = null;
+                if (command instanceof QuantityType<?> genericQuantity) {
+                    miredQuantity = genericQuantity.toInvertibleUnit(Units.MIRED);
+                } else if (command instanceof DecimalType decimal) {
+                    miredQuantity = QuantityType.valueOf(decimal.intValue(), Units.KELVIN)
+                            .toInvertibleUnit(Units.MIRED);
+                }
+                if (miredQuantity != null) {
+                    newLightState.ct = constrainToRange(miredQuantity.intValue(), ctMin, ctMax);
                     newLightState.on = true;
                 }
             }
