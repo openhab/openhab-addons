@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.awattar.internal.handler;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_MARKET_NET;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_TOTAL_NET;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.SortedSet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -197,14 +200,13 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
         // do not refresh before 15:00, since the prices for the next day are available
         // only after 14:00
-        Instant now = clock.instant();
-        if (now.isBefore(clock.instant().truncatedTo(java.time.temporal.ChronoUnit.DAYS).plus(15,
-                java.time.temporal.ChronoUnit.HOURS))) {
+        ZonedDateTime now = ZonedDateTime.now(clock);
+        if (now.getHour() < 15) {
             return false;
         }
 
-        // refresh then every 3 hours, if the last refresh was more than an hour ago
-        if (lastRefresh.plus(3, java.time.temporal.ChronoUnit.HOURS).isBefore(now)) {
+        // refresh at 15:00, 18:00 and 21:00 if the last refresh was more than an hour ago
+        if (now.getHour() % 3 == 0 && lastRefresh.getEpochSecond() < now.minusHours(1).toEpochSecond()) {
             // update the last refresh time
             lastRefresh = Instant.now();
 
