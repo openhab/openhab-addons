@@ -10,24 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.insteon.internal.device;
+package org.openhab.binding.dirigera.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Interface for classes that represent a device address
+ * The {@link DirigeraConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Jeremy Setton - Initial contribution
+ * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public interface DeviceAddress {
-    @Override
-    public String toString();
+public class DirigeraConfiguration extends BaseDeviceConfiguration {
+
+    public String ipAddress = "";
+    public boolean discovery = true;
 
     @Override
-    public boolean equals(@Nullable Object obj);
-
-    @Override
-    public int hashCode();
+    public String toString() {
+        return "IP: " + ipAddress + ", ID: " + id;
+    }
 }
