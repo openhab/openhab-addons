@@ -75,6 +75,16 @@
 				<label>Shut Time</label>
 				<description>Time (in seconds) to completely close the rollershutter</description>
 			</parameter>
+			<parameter name="swapTime" type="integer">
+				<label>Swap Time</label>
+				<description>Only for Eltako FSB14 and statemachine: Time (in 100ms) to turn slats</description>
+			</parameter>
+			<parameter name="configMode" type="text">
+				<label>Configuration mode</label>
+				<description>Only for Eltako FSB14: Enables the statemachine. Options are rollershutter,blinds or leave empty for legacy mode</description>
+				<default></default>
+			</parameter>
+			
 		</config-description>
 	</channel-type>
 
@@ -252,6 +262,15 @@
 			</options>
 		</state>
 	</channel-type>
+	
+    <channel-type id="statemachine">
+        <item-type>String</item-type>
+        <label>Status of statemachine</label>
+        <description>Status of statemachine</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+	
 
 	<channel-type id="windowSashState">
 		<item-type>String</item-type>

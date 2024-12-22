@@ -20,10 +20,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
+import org.openhab.binding.enocean.internal.statemachine.STMAction;
+import org.openhab.binding.enocean.internal.statemachine.STMStateMachine;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -31,6 +36,7 @@ import org.openhab.core.types.UnDefType;
 /**
  *
  * @author Daniel Weber - Initial contribution
+ * @author Sven Schad - added state machine for blinds/rollershutter, see A5_3F_7F_EltakoFSB.class
  */
 @NonNullByDefault
 public class PTM200Message extends _RPSMessage {
@@ -50,18 +56,57 @@ public class PTM200Message extends _RPSMessage {
     }
 
     @Override
-    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
+    protected void convertFromCommandImpl(Thing thing, ChannelUID channelUID, Command command,
+            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine STM) {
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config,
+            @Nullable STMStateMachine STM) {
         switch (channelId) {
             case CHANNEL_GENERAL_SWITCHING:
                 return OnOffType.from(bytes[0] == SWITCH_ON);
             case CHANNEL_ROLLERSHUTTER:
-                return bytes[0] == UP ? PercentType.ZERO : (bytes[0] == DOWN ? PercentType.HUNDRED : UnDefType.UNDEF);
+                switch (bytes[0]) {
+                    case UP:
+                        if (STM != null) {
+                            switch (STM.getState()) {
+                                case INVALID:
+                                    // command is coming from elsewhere (e.g. local switch) and not from stm
+                                    // can be used for pushing stm into calibrated state
+                                    STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                    STM.apply(STMAction.CALIBRATION_REQUEST_UP);
+                                case MOVEMENT_POSITION_UP:
+                                    // StopMoveType.MOVE is used as command for adjustment of slats
+                                    STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                default:
+                            }
+                            STM.apply(STMAction.CALIBRATION_DONE);
+                            STM.apply(STMAction.POSITION_DONE);
+                        }
+                        return PercentType.ZERO;
+                    case DOWN:
+                        if (STM != null) {
+                            switch (STM.getState()) {
+                                case INVALID:
+                                    // command is coming from elsewhere (e.g. local switch) and not from stm
+                                    // can be used for pushing stm into calibrated state
+                                    STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                    STM.apply(STMAction.CALIBRATION_REQUEST_DOWN);
+                                case MOVEMENT_POSITION_DOWN:
+                                    // StopMoveType.MOVE is used as command for adjustment of slats
+                                    STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                default:
+                            }
+                            STM.apply(STMAction.CALIBRATION_DONE);
+                            STM.apply(STMAction.POSITION_DONE);
+                        }
+                        return PercentType.HUNDRED;
+                    default:
+                        return UnDefType.UNDEF;
+                }
+
             case CHANNEL_CONTACT:
                 EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
                 if (c.inverted) {
@@ -74,6 +119,7 @@ public class PTM200Message extends _RPSMessage {
         }
 
         return UnDefType.UNDEF;
+
     }
 
     @Override

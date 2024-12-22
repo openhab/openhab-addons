@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import java.security.InvalidParameterException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
@@ -21,9 +24,47 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class EnOceanChannelRollershutterConfig {
 
+    public enum ConfigMode {
+        LEGACY(""),
+        ROLLERSHUTTER("rollershutter"),
+        BLINDS("blinds");
+
+        private String value;
+
+        ConfigMode(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static ConfigMode getConfigMode(@Nullable String value) {
+            if (value == null) {
+                return ConfigMode.LEGACY;
+            }
+
+            for (ConfigMode t : ConfigMode.values()) {
+                if (t.value.equals(value)) {
+                    return t;
+                }
+            }
+
+            throw new InvalidParameterException("Unknown ConfigMode");
+        }
+    }
+
     public int shutTime;
+    public int swapTime;
+    public String configMode;
 
     public EnOceanChannelRollershutterConfig() {
         shutTime = 255;
+        swapTime = 255;
+        configMode = "";
+    }
+
+    public ConfigMode getConfigMode() {
+        return ConfigMode.getConfigMode(configMode);
     }
 }
