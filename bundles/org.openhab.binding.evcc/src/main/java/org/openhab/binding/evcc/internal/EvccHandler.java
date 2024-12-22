@@ -444,7 +444,7 @@ public class EvccHandler extends BaseThingHandler {
             statePollingJob.cancel(true);
             this.statePollingJob = null;
         }
-        // typeProvider.removeChannelTypesForThing(getThing().getUID());
+        typeProvider.removeChannelGroupTypesForThing(getThing().getUID());
         super.handleRemoval();
     }
 
@@ -641,6 +641,8 @@ public class EvccHandler extends BaseThingHandler {
             } else {
                 channelGroup = loadpointName + CHANNEL_GROUP_ID_CURRENT;
             }
+
+            createChannelGroup(channelGroup);
 
             createChannel(CHANNEL_VEHICLE_MIN_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_MIN_SOC,
                     "Number:Dimensionless");
@@ -1006,7 +1008,7 @@ public class EvccHandler extends BaseThingHandler {
         ChannelGroupTypeBuilder builder = ChannelGroupTypeBuilder.instance(channelGroupTypeUID, channelGroupTypeId);
         ChannelGroupType channelGroupType = builder.build();
         typeProvider.putChannelGroupType(channelGroupType);
-        logger.info("channelGroupTypeId: {}; channelGroupTypeUID: {}; channelGroupType: {}", channelGroupTypeId,
+        logger.debug("channelGroupTypeId: {}; channelGroupTypeUID: {}; channelGroupType: {}", channelGroupTypeId,
                 channelGroupTypeUID, channelGroupType);
     }
 

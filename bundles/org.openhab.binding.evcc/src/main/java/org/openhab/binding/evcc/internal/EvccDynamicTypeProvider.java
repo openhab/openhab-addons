@@ -14,8 +14,10 @@ package org.openhab.binding.evcc.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.storage.StorageService;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.AbstractStorageBasedTypeProvider;
-import org.openhab.core.thing.type.ChannelTypeProvider;
+import org.openhab.core.thing.type.ChannelGroupType;
+import org.openhab.core.thing.type.ChannelGroupTypeProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -26,12 +28,18 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author MikeTheTux - Initial contribution
  */
-@Component(service = { EvccDynamicTypeProvider.class, ChannelTypeProvider.class })
+@Component(service = { EvccDynamicTypeProvider.class, ChannelGroupTypeProvider.class })
 @NonNullByDefault
 public class EvccDynamicTypeProvider extends AbstractStorageBasedTypeProvider {
 
     @Activate
     public EvccDynamicTypeProvider(@Reference StorageService storageService) {
         super(storageService);
+    }
+
+    public void removeChannelGroupTypesForThing(ThingUID uid) {
+        String thingUid = uid.getAsString() + ":";
+        getChannelGroupTypes(null).stream().map(ChannelGroupType::getUID)
+                .filter(c -> c.getAsString().startsWith(thingUid)).forEach(this::removeChannelGroupType);
     }
 }
