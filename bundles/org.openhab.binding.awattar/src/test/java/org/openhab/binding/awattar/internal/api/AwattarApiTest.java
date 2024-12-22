@@ -45,7 +45,6 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
 import org.openhab.binding.awattar.internal.AwattarPrice;
 import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.test.java.JavaTest;
 
 /**
@@ -60,7 +59,6 @@ import org.openhab.core.test.java.JavaTest;
 class AwattarApiTest extends JavaTest {
     // API Mocks
     private @Mock @NonNullByDefault({}) HttpClient httpClientMock;
-    private @Mock @NonNullByDefault({}) TimeZoneProvider timeZoneProviderMock;
     private @Mock @NonNullByDefault({}) Request requestMock;
     private @Mock @NonNullByDefault({}) ContentResponse contentResponseMock;
     private @Mock @NonNullByDefault({}) AwattarBridgeConfiguration config;
@@ -85,8 +83,6 @@ class AwattarApiTest extends JavaTest {
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
         when(requestMock.timeout(10, TimeUnit.SECONDS)).thenReturn(requestMock);
         when(requestMock.send()).thenReturn(contentResponseMock);
-
-        when(timeZoneProviderMock.getTimeZone()).thenReturn(ZoneId.of("GMT+2"));
 
         config.basePrice = 0.0;
         config.vatPercent = 0.0;

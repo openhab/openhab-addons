@@ -23,6 +23,7 @@ import static org.openhab.binding.awattar.internal.AwattarUtil.getCalendarForHou
 import static org.openhab.binding.awattar.internal.AwattarUtil.getDuration;
 import static org.openhab.binding.awattar.internal.AwattarUtil.getMillisToNextMinute;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -67,17 +68,17 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AwattarBestPriceHandler extends BaseThingHandler {
+    private final Clock clock;
+
     private static final int THING_REFRESH_INTERVAL = 60;
 
     private final Logger logger = LoggerFactory.getLogger(AwattarBestPriceHandler.class);
 
     private @Nullable ScheduledFuture<?> thingRefresher;
 
-    private final TimeZoneProvider timeZoneProvider;
-
-    public AwattarBestPriceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public AwattarBestPriceHandler(Thing thing, Clock clock) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
+        this.clock = clock;
     }
 
     @Override
@@ -97,7 +98,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                  * here
                  */
                 thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
-                        getMillisToNextMinute(1, timeZoneProvider), THING_REFRESH_INTERVAL * 1000L,
+                        getMillisToNextMinute(1, clock.getZone()), THING_REFRESH_INTERVAL * 1000L,
                         TimeUnit.MILLISECONDS);
             }
         }
@@ -163,7 +164,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         long diff;
         switch (channelId) {
             case CHANNEL_ACTIVE:
-                state = OnOffType.from(result.isActive(getNow()));
+                state = OnOffType.from(result.isActive(clock.instant()));
                 break;
             case CHANNEL_START:
                 state = new DateTimeType(Instant.ofEpochMilli(result.getStart()));
@@ -172,7 +173,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                 state = new DateTimeType(Instant.ofEpochMilli(result.getEnd()));
                 break;
             case CHANNEL_COUNTDOWN:
-                diff = result.getStart() - getNow().toEpochMilli();
+                diff = result.getStart() - clock.instant().toEpochMilli();
                 if (diff >= 0) {
                     state = getDuration(diff);
                 } else {
@@ -180,8 +181,8 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_REMAINING:
-                if (result.isActive(getNow())) {
-                    diff = result.getEnd() - getNow().toEpochMilli();
+                if (result.isActive(clock.instant())) {
+                    diff = result.getEnd() - clock.instant().toEpochMilli();
                     state = getDuration(diff);
                 } else {
                     state = QuantityType.valueOf(0, Units.MINUTE);
@@ -227,7 +228,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
     protected TimeRange getRange(int start, int duration, ZoneId zoneId) {
         ZonedDateTime startTime = getStartTime(start, zoneId);
         ZonedDateTime endTime = startTime.plusHours(duration);
-        ZonedDateTime now = getNow().atZone(zoneId);
+        ZonedDateTime now = clock.instant().atZone(zoneId);
         if (now.getHour() < start) {
             // we are before the range, so we might be still within the last range
             startTime = startTime.minusDays(1);
@@ -250,15 +251,5 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
      */
     protected ZonedDateTime getStartTime(int start, ZoneId zoneId) {
         return getCalendarForHour(start, zoneId);
-    }
-
-    /**
-     * Returns the current time.
-     *
-     * @param zoneId the time zone
-     * @return the current time
-     */
-    protected Instant getNow() {
-        return Instant.now();
     }
 }

@@ -15,13 +15,13 @@ package org.openhab.binding.awattar.internal.handler;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_MARKET_NET;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_TOTAL_NET;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.SortedSet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 
 import javax.measure.Unit;
 
@@ -32,7 +32,6 @@ import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
 import org.openhab.binding.awattar.internal.AwattarPrice;
 import org.openhab.binding.awattar.internal.api.AwattarApi;
 import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.CurrencyUnits;
 import org.openhab.core.thing.Bridge;
@@ -65,20 +64,20 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AwattarBridgeHandler.class);
     private final HttpClient httpClient;
+    private final Clock clock;
 
     private @Nullable ScheduledFuture<?> dataRefresher;
     private Instant lastRefresh = Instant.EPOCH;
 
     // This cache stores price data for up to two days
     private @Nullable SortedSet<AwattarPrice> prices;
-    private ZoneId zone;
 
     private @Nullable AwattarApi awattarApi;
 
-    public AwattarBridgeHandler(Bridge thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
+    public AwattarBridgeHandler(Bridge thing, HttpClient httpClient, Clock clock) {
         super(thing);
         this.httpClient = httpClient;
-        zone = timeZoneProvider.getTimeZone();
+        this.clock = clock;
     }
 
     @Override
@@ -87,7 +86,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         AwattarBridgeConfiguration config = getConfigAs(AwattarBridgeConfiguration.class);
 
         try {
-            awattarApi = new AwattarApi(httpClient, zone, config);
+            awattarApi = new AwattarApi(httpClient, clock.getZone(), config);
 
             dataRefresher = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, DATA_REFRESH_INTERVAL * 1000L,
                     TimeUnit.MILLISECONDS);
@@ -154,17 +153,15 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         return priceUnit;
     }
 
-    private void createAndSendTimeSeries(String channelId, Function<AwattarPrice, Double> valueFunction) {
+    private void createAndSendTimeSeries(String channelId, ToDoubleFunction<AwattarPrice> valueFunction) {
         SortedSet<AwattarPrice> locPrices = getPrices();
         Unit<?> priceUnit = getPriceUnit();
         if (locPrices == null) {
             return;
         }
         TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
-        locPrices.forEach(p -> {
-            timeSeries.add(Instant.ofEpochMilli(p.timerange().start()),
-                    new QuantityType<>(valueFunction.apply(p) / 100.0, priceUnit));
-        });
+        locPrices.forEach(p -> timeSeries.add(Instant.ofEpochMilli(p.timerange().start()),
+                new QuantityType<>(valueFunction.applyAsDouble(p) / 100.0, priceUnit)));
         sendTimeSeries(channelId, timeSeries);
     }
 
@@ -200,13 +197,14 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
         // do not refresh before 15:00, since the prices for the next day are available
         // only after 14:00
-        ZonedDateTime now = ZonedDateTime.now(zone);
-        if (now.getHour() < 15) {
+        Instant now = clock.instant();
+        if (now.isBefore(clock.instant().truncatedTo(java.time.temporal.ChronoUnit.DAYS).plus(15,
+                java.time.temporal.ChronoUnit.HOURS))) {
             return false;
         }
 
         // refresh then every 3 hours, if the last refresh was more than an hour ago
-        if (now.getHour() % 3 == 0 && lastRefresh.getEpochSecond() < now.minusHours(1).toEpochSecond()) {
+        if (lastRefresh.plus(3, java.time.temporal.ChronoUnit.HOURS).isBefore(now)) {
             // update the last refresh time
             lastRefresh = Instant.now();
 
@@ -218,7 +216,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     }
 
     public ZoneId getTimeZone() {
-        return zone;
+        return clock.getZone();
     }
 
     @Nullable
@@ -261,6 +259,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_MARKET_NET -> createAndSendTimeSeries(CHANNEL_MARKET_NET, AwattarPrice::netPrice);
                 case CHANNEL_TOTAL_NET -> createAndSendTimeSeries(CHANNEL_TOTAL_NET, AwattarPrice::netTotal);
+                default -> logger.warn("Channel {} not supported", channelUID.getId());
             }
         }
     }

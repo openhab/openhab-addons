@@ -23,6 +23,7 @@ import static org.openhab.binding.awattar.internal.AwattarUtil.getMillisToNextMi
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.awattar.internal.AwattarPrice;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -55,15 +55,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AwattarPriceHandler extends BaseThingHandler {
+    private final Clock clock;
+
     private static final int THING_REFRESH_INTERVAL = 60;
     private final Logger logger = LoggerFactory.getLogger(AwattarPriceHandler.class);
 
-    private final TimeZoneProvider timeZoneProvider;
     private @Nullable ScheduledFuture<?> thingRefresher;
 
-    public AwattarPriceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public AwattarPriceHandler(Thing thing, Clock clock) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
+        this.clock = clock;
     }
 
     @Override
@@ -90,7 +91,7 @@ public class AwattarPriceHandler extends BaseThingHandler {
                  * here
                  */
                 thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
-                        getMillisToNextMinute(1, timeZoneProvider), THING_REFRESH_INTERVAL * 1000,
+                        getMillisToNextMinute(1, clock.getZone()), THING_REFRESH_INTERVAL * 1000L,
                         TimeUnit.MILLISECONDS);
             }
         }
@@ -153,7 +154,7 @@ public class AwattarPriceHandler extends BaseThingHandler {
         AwattarPrice price = bridgeHandler.getPriceFor(target.toInstant().toEpochMilli());
 
         if (price == null) {
-            logger.trace("No price found for hour {}", target.toString());
+            logger.trace("No price found for hour {}", target);
             updateState(channelUID, state);
             return;
         }

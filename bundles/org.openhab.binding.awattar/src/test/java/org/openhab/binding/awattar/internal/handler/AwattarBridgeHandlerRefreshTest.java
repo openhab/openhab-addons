@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.time.ZoneId;
+import java.time.Clock;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,7 +36,6 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.awattar.internal.AwattarBindingConstants;
 import org.openhab.binding.awattar.internal.api.AwattarApi;
 import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -62,7 +61,7 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
     private @Mock @NonNullByDefault({}) Bridge bridgeMock;
     private @Mock @NonNullByDefault({}) ThingHandlerCallback bridgeCallbackMock;
     private @Mock @NonNullByDefault({}) HttpClient httpClientMock;
-    private @Mock @NonNullByDefault({}) TimeZoneProvider timeZoneProviderMock;
+    private @Mock @NonNullByDefault({}) Clock clockMock;
     private @Mock @NonNullByDefault({}) AwattarApi awattarApiMock;
 
     // best price handler mocks
@@ -73,10 +72,8 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
 
     @BeforeEach
     public void setUp() throws IllegalArgumentException, IllegalAccessException {
-        when(timeZoneProviderMock.getTimeZone()).thenReturn(ZoneId.of("GMT+2"));
-
         when(bridgeMock.getUID()).thenReturn(BRIDGE_UID);
-        bridgeHandler = new AwattarBridgeHandler(bridgeMock, httpClientMock, timeZoneProviderMock);
+        bridgeHandler = new AwattarBridgeHandler(bridgeMock, httpClientMock, clockMock);
         bridgeHandler.setCallback(bridgeCallbackMock);
 
         List<Field> fields = ReflectionSupport.findFields(AwattarBridgeHandler.class,

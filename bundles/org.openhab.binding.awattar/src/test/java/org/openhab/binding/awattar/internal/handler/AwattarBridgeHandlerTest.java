@@ -30,6 +30,7 @@ import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANN
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -61,7 +62,6 @@ import org.openhab.binding.awattar.internal.api.AwattarApi;
 import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
 import org.openhab.binding.awattar.internal.dto.AwattarApiData;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -91,7 +91,6 @@ public class AwattarBridgeHandlerTest extends JavaTest {
     private @Mock @NonNullByDefault({}) Bridge bridgeMock;
     private @Mock @NonNullByDefault({}) ThingHandlerCallback bridgeCallbackMock;
     private @Mock @NonNullByDefault({}) HttpClient httpClientMock;
-    private @Mock @NonNullByDefault({}) TimeZoneProvider timeZoneProviderMock;
     private @Mock @NonNullByDefault({}) AwattarApi awattarApiMock;
 
     // best price handler mocks
@@ -116,10 +115,10 @@ public class AwattarBridgeHandlerTest extends JavaTest {
             when(awattarApiMock.getData()).thenReturn(result);
         }
 
-        when(timeZoneProviderMock.getTimeZone()).thenReturn(ZoneId.of("GMT+2"));
+        Clock clock = Clock.fixed(Instant.parse("2024-06-15T12:00:00Z"), ZoneId.of("GMT+2"));
 
         when(bridgeMock.getUID()).thenReturn(BRIDGE_UID);
-        bridgeHandler = new AwattarBridgeHandler(bridgeMock, httpClientMock, timeZoneProviderMock);
+        bridgeHandler = new AwattarBridgeHandler(bridgeMock, httpClientMock, clock);
         bridgeHandler.setCallback(bridgeCallbackMock);
 
         // mock the private field awattarApi
@@ -202,13 +201,10 @@ public class AwattarBridgeHandlerTest extends JavaTest {
                 consecutive);
         when(bestpriceMock.getConfiguration()).thenReturn(new Configuration(config));
 
-        AwattarBestPriceHandler handler = new AwattarBestPriceHandler(bestpriceMock, timeZoneProviderMock) {
+        AwattarBestPriceHandler handler = new AwattarBestPriceHandler(bestpriceMock,
+                Clock.fixed(Instant.parse("2024-06-15T12:00:00Z"), ZoneId.of("GMT+2"))) {
             protected ZonedDateTime getStartTime(int start, ZoneId zoneId) {
                 return ZonedDateTime.of(2024, 6, 15, 12, 0, 0, 0, zoneId);
-            }
-
-            protected Instant getNow() {
-                return ZonedDateTime.of(2024, 6, 15, 12, 0, 0, 0, ZoneId.of("GMT+2")).toInstant();
             }
         };
 
@@ -258,13 +254,13 @@ public class AwattarBridgeHandlerTest extends JavaTest {
                 consecutive);
         when(bestpriceMock.getConfiguration()).thenReturn(new Configuration(config));
 
-        AwattarBestPriceHandler handler = new AwattarBestPriceHandler(bestpriceMock, timeZoneProviderMock) {
-            protected ZonedDateTime getStartTime(int start, ZoneId zoneId) {
-                return ZonedDateTime.of(2024, 6, 15, 0, 0, 0, 0, zoneId);
-            }
+        Clock clock = Clock.fixed(
+                ZonedDateTime.of(2024, 6, 15, currentHour, currentMinute, 0, 0, ZoneId.of("GMT+2")).toInstant(),
+                ZoneId.of("GMT+2"));
 
-            protected Instant getNow() {
-                return ZonedDateTime.of(2024, 6, 15, currentHour, currentMinute, 0, 0, ZoneId.of("GMT+2")).toInstant();
+        AwattarBestPriceHandler handler = new AwattarBestPriceHandler(bestpriceMock, clock) {
+            protected ZonedDateTime getStartTime(int start, ZoneId zoneId) {
+                return ZonedDateTime.of(2024, 6, 15, 0, 0, 0, 0, clock.getZone());
             }
         };
 
