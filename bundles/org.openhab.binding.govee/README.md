@@ -141,7 +141,7 @@ Here is a list of the supported devices (the ones marked with * have been tested
 ## Firewall
 
 Govee devices communicate via multicast and unicast messages over the LAN.
-So you must ensure that any firewall on your OpenHAB server is configured to pass the following traffic:
+So you must ensure that any firewall on your openHAB server is configured to pass the following traffic:
 
 - Multicast UDP on 239.255.255.250 port 4001
 - Incoming unicast UDP on port 4002
