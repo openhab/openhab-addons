@@ -196,15 +196,10 @@ public class CommunicationManager {
                                 }
                             } catch (ClosedByInterruptException e) {
                                 // thrown if 'Thread.interrupt()' is called during 'channel.receive()'
-                                logger.trace(
-                                        "Receive exception=ClosedByInterruptException, isInterrupted={}, serverStopFlag={}",
+                                logger.debug("Receive ClosedByInterruptException, isInterrupted={}, serverStopFlag={}",
                                         Thread.currentThread().isInterrupted(), serverStopFlag);
                                 Thread.interrupted(); // clear 'interrupted' flag
-                                if (serverStopFlag) {
-                                    return;
-                                } else {
-                                    break;
-                                }
+                                break;
                             } catch (IOException e) {
                                 logger.debug("Receive unexpected exception={}", e.getMessage());
                                 break;
@@ -239,11 +234,11 @@ public class CommunicationManager {
                             logger.warn(
                                     "Unhandled message with sourceIp={}, devStatus={}, handler={}, discoveryListener={}",
                                     sourceIp, devStatus, handler, discoveryListener);
-                        }
+                        } // end of inner while loop
                     } catch (IOException e) {
                         logger.debug("Datagram channel create exception={}", e.getMessage());
                     }
-                }
+                } // end of outer while loop
             } finally {
                 serverThread = null;
                 serverStopFlag = false;
