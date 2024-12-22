@@ -291,20 +291,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         if (dpg == null) {
             logger.debug("Handle command for device (but invalid datapointgroup) {} - at channel {} - full command {}",
                     device.getDeviceId(), channelUID.getAsString(), command.toFullString());
-
-            logger.debug("Try to find channelUID in dpg: {}", channelUID.getAsString());
-            logger.debug("dpg: ");
-            mapChannelUID.forEach((k, v) -> {
-                if (v.getOutputDatapoint() != null) {
-                    logger.debug("key: {} - input value: {}", k, v.getOutputDatapoint().getChannelIdforDatapoint() + " "
-                            + v.getOutputDatapoint().getDatapointId());
-                }
-                if (v.getInputDatapoint() != null) {
-                    logger.debug("key: {} - output value: {}", k, v.getInputDatapoint().getChannelIdforDatapoint() + " "
-                            + v.getInputDatapoint().getDatapointId());
-                }
-            });
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/conf-error.invalid-deviceconfig");
         } else {
@@ -602,7 +588,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
     }
 
     // Create a channel UID. Makes sure that the channel UID is unique and generated the same way every time
-    private ChannelUID createChannelUID(ThingUID thingUID,String channelID, String dpgLabel) {
+    private ChannelUID createChannelUID(ThingUID thingUID, String channelID, String dpgLabel) {
         ChannelUID channelUID = new ChannelUID(thingUID, channelID, dpgLabel.substring(4));
         return channelUID;
     }
