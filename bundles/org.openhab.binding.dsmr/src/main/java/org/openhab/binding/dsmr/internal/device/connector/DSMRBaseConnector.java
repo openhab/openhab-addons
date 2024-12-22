@@ -15,7 +15,7 @@ package org.openhab.binding.dsmr.internal.device.connector;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -125,7 +125,7 @@ class DSMRBaseConnector {
             }
         } catch (final IOException e) {
             dsmrConnectorListener.handleError(DSMRErrorStatus.SERIAL_DATA_READ_ERROR,
-                    Optional.ofNullable(e.getMessage()).orElse(""));
+                    Objects.requireNonNullElse(e.getMessage(), ""));
             logger.debug("Exception on read data", e);
         }
     }

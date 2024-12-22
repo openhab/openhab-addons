@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.Value;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.OffDelayUpdateStateListener;
@@ -33,7 +32,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfiguration> {
-    public static final String SENSOR_CHANNEL_ID = "sensor"; // Randomly chosen channel "ID"
+    public static final String SENSOR_CHANNEL_ID = "sensor";
 
     /**
      * Configuration class for MQTT component
@@ -58,23 +57,19 @@ public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfigur
         protected String payloadOn = "ON";
         @SerializedName("payload_off")
         protected String payloadOff = "OFF";
-
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
-        @SerializedName("json_attributes")
-        protected @Nullable List<String> jsonAttributes;
     }
 
-    public BinarySensor(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public BinarySensor(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
 
-        buildChannel(SENSOR_CHANNEL_ID, value, "value", getListener(componentConfiguration, value))
+        buildChannel(SENSOR_CHANNEL_ID, ComponentChannelType.SWITCH, value, getName(),
+                getListener(componentConfiguration, value))
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+
+        finalizeChannels();
     }
 
     private ChannelStateUpdateListener getListener(ComponentFactory.ComponentConfiguration componentConfiguration,

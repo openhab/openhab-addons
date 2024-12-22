@@ -28,6 +28,7 @@ public class ActionParamsDTO {
     private IntegerActionParamDTO shutterLevel;
     private StringActionParamDTO operationMode;
     private StringActionParamDTO rampDirection;
+    private StringActionParamDTO activeChannel;
 
     /**
      * @return the onState
@@ -125,5 +126,19 @@ public class ActionParamsDTO {
      */
     public void setRampDirection(StringActionParamDTO rampDirection) {
         this.rampDirection = rampDirection;
+    }
+
+    /**
+     * @return the activeChannel
+     */
+    public StringActionParamDTO getActiveChannel() {
+        return activeChannel;
+    }
+
+    /**
+     * @param activeChannel the operationMode to set
+     */
+    public void setActiveChannel(StringActionParamDTO activeChannel) {
+        this.activeChannel = activeChannel;
     }
 }

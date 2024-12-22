@@ -25,6 +25,7 @@ public class IntesisHomeJSonDTO {
     public static class Response {
         public boolean success;
         public JsonElement data;
+        public JsonElement error;
     }
 
     public static class Data {
@@ -34,6 +35,11 @@ public class IntesisHomeJSonDTO {
         public JsonElement config;
         public JsonElement dp;
         public JsonElement dpval;
+    }
+
+    public static class ResponseError {
+        public int code;
+        public String message;
     }
 
     public static class Id {

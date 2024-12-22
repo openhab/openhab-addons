@@ -14,6 +14,7 @@ package org.openhab.binding.dwdpollenflug.internal.handler;
 
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -153,7 +154,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
                         f.completeExceptionally(new DWDPollingException("Request failed", e));
                     }
                 } else if (response.getStatus() != 200) {
-                    f.completeExceptionally(new DWDPollingException(getContentAsString()));
+                    f.completeExceptionally(new DWDPollingException(Objects.requireNonNull(getContentAsString())));
                 } else {
                     try {
                         DWDPollenflug pollenflugJSON = gson.fromJson(getContentAsString(), DWDPollenflug.class);

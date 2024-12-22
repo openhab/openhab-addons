@@ -23,14 +23,14 @@ marytts:bits1hsmm bits1-hsmm (de)
 
 You can setup your preferred default Text-to-Speech and default voice in the UI:
 
-* Go to **Settings**.
-* Edit **System Services - Voice**.
-* Set **MaryTTS** as **Default Text-to-Speech**.
-* Choose your preferred **Default Voice** for your setup.
+- Go to **Settings**.
+- Edit **System Services - Voice**.
+- Set **MaryTTS** as **Default Text-to-Speech**.
+- Choose your preferred **Default Voice** for your setup.
 
 In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
 
-```
+```ini
 org.openhab.voice:defaultTTS=marytts
 org.openhab.voice:defaultVoice=marytts:cmuslthsmm
 ```
@@ -47,4 +47,3 @@ The log messages of Mary TTS are not bundled with the openHAB log messages in th
 ## Caching
 
 The MaryTTS service uses the openHAB TTS cache to cache audio files produced from the most recent queries in order to reduce traffic, improve performance and reduce number of requests.
-

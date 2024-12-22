@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -92,6 +94,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private Set<String> networkInterfaceNames = Set.of();
     private @Nullable ScheduledFuture<?> refreshJob;
     protected @Nullable ExecutorService detectionExecutorService;
+    protected @Nullable ExecutorService waitForResultExecutorService;
     private String dhcpState = "off";
     int detectionChecks;
     private String lastReachableNetworkInterfaceName = "";
@@ -295,6 +298,21 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         }
     }
 
+    private void stopDetection() {
+        ExecutorService detectionExecutorService = this.detectionExecutorService;
+        if (detectionExecutorService != null) {
+            logger.debug("Shutting down detectionExecutorService");
+            detectionExecutorService.shutdownNow();
+            this.detectionExecutorService = null;
+        }
+        ExecutorService waitForResultExecutorService = this.waitForResultExecutorService;
+        if (waitForResultExecutorService != null) {
+            logger.debug("Shutting down waitForResultExecutorService");
+            waitForResultExecutorService.shutdownNow();
+            this.waitForResultExecutorService = null;
+        }
+    }
+
     /**
      * Perform a presence detection with ICMP-, ARP ping and TCP connection attempts simultaneously.
      * A fixed thread pool will be created with as many threads as necessary to perform all tests at once.
@@ -333,50 +351,61 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             return CompletableFuture.completedFuture(pdv);
         }
 
+        stopDetection();
+
         ExecutorService detectionExecutorService = getThreadsFor(detectionChecks);
         this.detectionExecutorService = detectionExecutorService;
+        ExecutorService waitForResultExecutorService = getThreadsFor(1);
+        this.waitForResultExecutorService = waitForResultExecutorService;
 
         List<CompletableFuture<Void>> completableFutures = new ArrayList<>();
 
         for (Integer tcpPort : tcpPorts) {
-            completableFutures.add(CompletableFuture.runAsync(() -> {
+            addAsyncDetection(completableFutures, () -> {
                 Thread.currentThread().setName("presenceDetectionTCP_" + hostname + " " + tcpPort);
                 performServicePing(pdv, tcpPort);
-            }, detectionExecutorService));
+            }, detectionExecutorService);
         }
 
         // ARP ping for IPv4 addresses. Use single executor for Windows tool and
         // each own executor for each network interface for other tools
         if (arpPingMethod == ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
-            completableFutures.add(CompletableFuture.runAsync(() -> {
+            addAsyncDetection(completableFutures, () -> {
                 Thread.currentThread().setName("presenceDetectionARP_" + hostname + " ");
                 // arp-ping.exe tool capable of handling multiple interfaces by itself
                 performArpPing(pdv, "");
-            }, detectionExecutorService));
+            }, detectionExecutorService);
         } else if (interfaceNames != null) {
             for (final String interfaceName : interfaceNames) {
-                completableFutures.add(CompletableFuture.runAsync(() -> {
+                addAsyncDetection(completableFutures, () -> {
                     Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
                     performArpPing(pdv, interfaceName);
-                }, detectionExecutorService));
+                }, detectionExecutorService);
             }
         }
 
         // ICMP ping
         if (pingMethod != null) {
-            completableFutures.add(CompletableFuture.runAsync(() -> {
+            addAsyncDetection(completableFutures, () -> {
                 Thread.currentThread().setName("presenceDetectionICMP_" + hostname);
                 if (pingMethod == IpPingMethodEnum.JAVA_PING) {
                     performJavaPing(pdv);
                 } else {
                     performSystemPing(pdv);
                 }
-            }, detectionExecutorService));
+            }, detectionExecutorService);
         }
 
         return CompletableFuture.supplyAsync(() -> {
+            Thread.currentThread().setName("presenceDetectionResult_" + hostname);
             logger.debug("Waiting for {} detection futures for {} to complete", completableFutures.size(), hostname);
-            completableFutures.forEach(CompletableFuture::join);
+            completableFutures.forEach(completableFuture -> {
+                try {
+                    completableFuture.join();
+                } catch (CancellationException | CompletionException e) {
+                    logger.debug("Detection future failed to complete", e);
+                }
+            });
             logger.debug("All {} detection futures for {} have completed", completableFutures.size(), hostname);
 
             if (!pdv.isReachable()) {
@@ -392,7 +421,13 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             detectionChecks = 0;
 
             return pdv;
-        }, scheduledExecutorService);
+        }, waitForResultExecutorService);
+    }
+
+    private void addAsyncDetection(List<CompletableFuture<Void>> completableFutures, Runnable detectionRunnable,
+            ExecutorService executorService) {
+        completableFutures.add(CompletableFuture.runAsync(detectionRunnable, executorService)
+                .orTimeout(timeout.plusSeconds(3).toMillis(), TimeUnit.MILLISECONDS));
     }
 
     /**

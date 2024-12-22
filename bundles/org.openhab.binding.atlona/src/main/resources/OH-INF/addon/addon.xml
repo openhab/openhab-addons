@@ -8,4 +8,20 @@
 	<description>Binding for Atlona PRO3 HDBaseT Matrix switches.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>sddp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i).*atlona.*</regex>
+				</match-property>
+				<match-property>
+					<name>model</name>
+					<regex>(?i).*(AT-UHD-PRO3|AT-PRO3HD).*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

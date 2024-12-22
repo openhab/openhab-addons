@@ -17,9 +17,11 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toRawT
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
@@ -51,25 +53,23 @@ public class SecurityChannelHelper extends ChannelHelper {
         super.setNewData(data);
         if (data instanceof HomeData.Security securityData) {
             knownIds = securityData.getKnownPersons().stream().map(HomeDataPerson::getId).toList();
-        } else if (data instanceof HomeStatus securityStatus) {
-            List<HomeStatusPerson> present = securityStatus.getPersons().values().stream()
-                    .filter(HomeStatusPerson::atHome).toList();
+        } else if (data instanceof HomeStatus status && status.appliesTo(FeatureArea.SECURITY)) {
+            List<String> present = status.getPersons().values().stream().filter(HomeStatusPerson::atHome)
+                    .map(HomeStatusPerson::getId).toList();
 
             persons = present.size();
-            unknowns = present.stream().filter(person -> !knownIds.contains(person.getId())).count();
+            unknowns = present.stream().filter(Predicate.not(knownIds::contains)).count();
         }
     }
 
     @Override
     protected @Nullable State internalGetOther(String channelId) {
-        switch (channelId) {
-            case CHANNEL_PERSON_COUNT:
-                return persons != -1 ? new DecimalType(persons) : UnDefType.NULL;
-            case CHANNEL_UNKNOWN_PERSON_COUNT:
-                return unknowns != -1 ? new DecimalType(unknowns) : UnDefType.NULL;
-            case CHANNEL_UNKNOWN_PERSON_PICTURE:
-                return unknownSnapshot != null ? toRawType(unknownSnapshot) : UnDefType.NULL;
-        }
-        return null;
+        return switch (channelId) {
+            case CHANNEL_PERSON_COUNT -> persons != -1 ? new DecimalType(persons) : UnDefType.NULL;
+            case CHANNEL_UNKNOWN_PERSON_COUNT -> unknowns != -1 ? new DecimalType(unknowns) : UnDefType.NULL;
+            case CHANNEL_UNKNOWN_PERSON_PICTURE ->
+                unknownSnapshot != null ? toRawType(unknownSnapshot) : UnDefType.NULL;
+            default -> null;
+        };
     }
 }

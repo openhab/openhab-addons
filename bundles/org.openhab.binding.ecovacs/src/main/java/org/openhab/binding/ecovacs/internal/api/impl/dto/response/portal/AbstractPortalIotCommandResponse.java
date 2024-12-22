@@ -24,14 +24,12 @@ public class AbstractPortalIotCommandResponse {
     @SerializedName("errno")
     private final int errorCode;
     @SerializedName("error")
-    private final String errorMessage;
+    private final Object errorObject; // might be a string or a JSON object
 
-    // unused field: 'id' (string)
-
-    public AbstractPortalIotCommandResponse(String result, int errorCode, String errorMessage) {
+    public AbstractPortalIotCommandResponse(String result, int errorCode, Object errorObject) {
         this.result = result;
         this.errorCode = errorCode;
-        this.errorMessage = errorMessage;
+        this.errorObject = errorObject;
     }
 
     public boolean wasSuccessful() {
@@ -39,13 +37,22 @@ public class AbstractPortalIotCommandResponse {
     }
 
     public boolean failedDueToAuthProblem() {
-        return "fail".equals(result) && errorMessage != null && errorMessage.toLowerCase().contains("auth error");
+        if (!"fail".equals(result)) {
+            return false;
+        }
+        if (errorCode == 3) {
+            // Error 3 is 'OAuth error'
+            return true;
+        }
+        String errorMessage = errorObject != null ? errorObject.toString().toLowerCase() : "";
+        return errorMessage.contains("auth error") || errorMessage.contains("token error");
     }
 
     public String getErrorMessage() {
         if (wasSuccessful()) {
             return null;
         }
+        String errorMessage = errorObject != null ? errorObject.toString() : null;
         return "result=" + result + ", errno=" + errorCode + ", error=" + errorMessage;
     }
 }

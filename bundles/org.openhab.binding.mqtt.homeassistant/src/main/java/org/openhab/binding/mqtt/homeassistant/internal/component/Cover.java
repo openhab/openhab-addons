@@ -17,10 +17,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.RollershutterValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -46,6 +48,8 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
         ChannelConfiguration() {
             super("MQTT Cover");
         }
+
+        protected @Nullable Boolean optimistic;
 
         @SerializedName("state_topic")
         protected @Nullable String stateTopic;
@@ -84,9 +88,15 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
     @Nullable
     ComponentChannel stateChannel = null;
 
-    public Cover(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Cover(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
+        boolean optimistic = false;
+        Boolean localOptimistic = channelConfiguration.optimistic;
+        if (localOptimistic != null && localOptimistic == true
+                || channelConfiguration.stateTopic == null && channelConfiguration.positionTopic == null) {
+            optimistic = true;
+        }
         String stateTopic = channelConfiguration.stateTopic;
 
         // State can indicate additional information than just
@@ -95,13 +105,13 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
             TextValue value = new TextValue(new String[] { channelConfiguration.stateClosed,
                     channelConfiguration.stateClosing, channelConfiguration.stateOpen,
                     channelConfiguration.stateOpening, channelConfiguration.stateStopped });
-            buildChannel(STATE_CHANNEL_ID, value, "State", componentConfiguration.getUpdateListener())
-                    .stateTopic(stateTopic).isAdvanced(true).build();
+            buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, value, "State",
+                    componentConfiguration.getUpdateListener()).stateTopic(stateTopic).isAdvanced(true).build();
         }
 
         if (channelConfiguration.commandTopic != null) {
-            hiddenChannels.add(stateChannel = buildChannel(STATE_CHANNEL_ID, new TextValue(), "State",
-                    componentConfiguration.getUpdateListener())
+            hiddenChannels.add(stateChannel = buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING,
+                    new TextValue(), "State", componentConfiguration.getUpdateListener())
                     .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
                     .build(false));
@@ -132,8 +142,8 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
                 channelConfiguration.payloadClose, channelConfiguration.payloadStop, channelConfiguration.stateOpen,
                 channelConfiguration.stateClosed, inverted, channelConfiguration.setPositionTopic == null);
 
-        buildChannel(COVER_CHANNEL_ID, value, "Cover", componentConfiguration.getUpdateListener())
-                .stateTopic(rollershutterStateTopic, stateTemplate)
+        buildChannel(COVER_CHANNEL_ID, ComponentChannelType.ROLLERSHUTTER, value, "Cover",
+                componentConfiguration.getUpdateListener()).stateTopic(rollershutterStateTopic, stateTemplate)
                 .commandTopic(rollershutterCommandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos())
                 .commandFilter(command -> {
                     if (stateChannel == null) {
@@ -148,6 +158,8 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
                         return false;
                     }
                     return true;
-                }).build();
+                }).withAutoUpdatePolicy(optimistic ? AutoUpdatePolicy.RECOMMEND : null).build();
+
+        finalizeChannels();
     }
 }

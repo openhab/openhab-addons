@@ -211,4 +211,68 @@ public class InMemoryPersistenceTests {
         assertThat(storedStates.last().getState(), is(historicState3));
         assertThat(storedStates.last().getTimestamp(), is(expectedTime.plusHours(4)));
     }
+
+    @Test
+    public void endDateProperlyObserved() {
+        TreeSet<HistoricItem> storedStates = new TreeSet<>(Comparator.comparing(HistoricItem::getTimestamp));
+
+        State historicState1 = new StringType("value1");
+        State historicState2 = new StringType("value2");
+
+        ZonedDateTime historicTime1 = ZonedDateTime.of(2022, 05, 31, 10, 0, 0, 0, ZoneId.systemDefault());
+        ZonedDateTime historicTime2 = historicTime1.plusHours(2);
+        service.store(item, historicTime1, historicState1);
+        service.store(item, historicTime2, historicState2);
+
+        // end date is between first and second date, only return one dataset
+        filterCriteria = new FilterCriteria();
+        filterCriteria.setItemName(ITEM_NAME);
+        filterCriteria.setEndDate(historicTime1.plusHours(1));
+
+        service.query(filterCriteria).forEach(storedStates::add);
+        assertThat(storedStates.size(), is(1));
+
+        // end date is exactly second date, return both dataset
+        storedStates.clear();
+        filterCriteria = new FilterCriteria();
+        filterCriteria.setItemName(ITEM_NAME);
+        filterCriteria.setEndDate(historicTime2);
+
+        service.query(filterCriteria).forEach(storedStates::add);
+        assertThat(storedStates.size(), is(2));
+
+        // end date is after second date is already covered by case #1
+    }
+
+    @Test
+    public void beginDateProperlyObserved() {
+        TreeSet<HistoricItem> storedStates = new TreeSet<>(Comparator.comparing(HistoricItem::getTimestamp));
+
+        State historicState1 = new StringType("value1");
+        State historicState2 = new StringType("value2");
+
+        ZonedDateTime historicTime1 = ZonedDateTime.of(2022, 05, 31, 10, 0, 0, 0, ZoneId.systemDefault());
+        ZonedDateTime historicTime2 = historicTime1.plusHours(2);
+        service.store(item, historicTime1, historicState1);
+        service.store(item, historicTime2, historicState2);
+
+        // begin date is between first and second date, only return one dataset
+        filterCriteria = new FilterCriteria();
+        filterCriteria.setItemName(ITEM_NAME);
+        filterCriteria.setEndDate(historicTime2.minusHours(1));
+
+        service.query(filterCriteria).forEach(storedStates::add);
+        assertThat(storedStates.size(), is(1));
+
+        // begin date is exactly first date, return both dataset
+        storedStates.clear();
+        filterCriteria = new FilterCriteria();
+        filterCriteria.setItemName(ITEM_NAME);
+        filterCriteria.setBeginDate(historicTime1);
+
+        service.query(filterCriteria).forEach(storedStates::add);
+        assertThat(storedStates.size(), is(2));
+
+        // begin date is before first date is already covered by case #1
+    }
 }

@@ -1,0 +1,796 @@
+# KSTAR Hybrid Inverter
+# Modbus information taken from "MODBUS RS485 Communication Protocol V2.5" document provided by KSTAR
+
+# This inverter exposes its data in the following registers (although not all of them are used by this definition file):
+#
+#  - INPUT_REGISTERS   3000 - 3660 decimal, 0x0BB8 - 0x0E4C hexadecimal
+#  - HOLDING_REGISTERS 3200 - 3237 decimal. 0x0C80 - 0x0C9B  hexadecimal
+#
+# Each request can get a maximum of 125 registers as per modbus protocol (start and end included), so we need to
+# split up the list of used registers into multiple requests of maximum 125 registers each.
+
+requests:
+  # Start requesting from the first needed register (3000)
+  - start: 3000
+    end: 3124
+    mb_functioncode: 0x04
+
+  # Input registers 3200 - 3227 can't be read as they would clash with holding registers of same number
+  - start: 3125
+    end: 3199
+    mb_functioncode: 0x04
+
+  # Change to holding registers 3200 - 3237 (mb_functioncode 3) for the inverter system information.
+  - start: 3200
+    end: 3217
+    mb_functioncode: 0x03
+
+  # Continue with the needed input registers
+  - start: 3228
+    end: 3249
+    mb_functioncode: 0x04
+
+  # Last input register currently used by this definition file is 3301, so we can skip the rest for now.
+  - start: 3250
+    end: 3301
+    mb_functioncode: 0x04
+
+parameters:
+  - group: solar
+    items:
+      - name: "PV1 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [ 3000 ]
+        icon: 'mdi:solar-power'
+
+      - name: "PV2 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [ 3001 ]
+        icon: 'mdi:solar-power'
+
+      - name: "PV1 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.01
+        rule: 2
+        registers: [ 3012 ]
+        icon: 'mdi:solar-power'
+
+      - name: "PV2 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.01
+        rule: 2
+        registers: [ 3013 ]
+        icon: 'mdi:solar-power'
+
+      - name: "PV1 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [ 3024 ]
+        icon: 'mdi:solar-power'
+
+      - name: "PV2 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [ 3025 ]
+        icon: 'mdi:solar-power'
+
+      - name: "Daily Production"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [ 3036 ]
+        icon: 'mdi:solar-power'
+
+      - name: "Monthly Production"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 1
+        rule: 3
+        registers: [ 3038, 3037 ]
+        icon: 'mdi:solar-power'
+
+      - name: "Yearly Production"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 1
+        rule: 3
+        registers: [ 3040, 3039 ]
+        icon: 'mdi:solar-power'
+
+      - name: "Cumulative Production"
+        class: "energy"
+        state_class: "total"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [ 3042, 3041 ]
+        icon: 'mdi:solar-power'
+
+  - group: Power Grid
+    items:
+      # Should this be the sum of the 3 phases "Meter Power"?
+      - name: "Total Grid Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [ 3100 ]
+        icon: 'mdi:transmission-tower'
+
+      - name: "Daily Energy Purchased"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [ 3109 ]
+        icon: 'mdi:transmission-tower-import'
+
+      - name: "Monthly Energy Purchased"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 1
+        rule: 3
+        registers: [ 3111, 3110 ]
+        icon: 'mdi:transmission-tower-import'
+
+      - name: "Yearly Energy Purchased"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 1
+        rule: 3
+        registers: [ 3113, 3112 ]
+        icon: 'mdi:transmission-tower-import'
+
+      - name: "Cumulative Energy Purchased"
+        class: "energy"
+        state_class: "total"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [ 3115, 3114 ]
+        icon: 'mdi:transmission-tower-import'
+
+      - name: "Daily Energy Feed-In"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [ 3116 ]
+        icon: 'mdi:transmission-tower-export'
+
+      - name: "Monthly Energy Feed-In"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 1
+        rule: 3
+        registers: [ 3118, 3117 ]
+        icon: 'mdi:transmission-tower-export'
+
+      - name: "Yearly Energy Feed-In"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 1
+        rule: 3
+        registers: [ 3120, 3119 ]
+        icon: 'mdi:transmission-tower-export'
+
+      - name: "Cumulative Grid Feed-In"
+        class: "energy"
+        state_class: "total"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [ 3122, 3121 ]
+        icon: 'mdi:transmission-tower-export'
+
+  - group: Electricity Consumption
+    items:
+      # Should this be the sum of the 3 phases "Load Power"?
+      - name: "Total Consumption Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [ 3144 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "Daily Consumption"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [ 3147 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "Monthly Consumption"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 1
+        rule: 3
+        registers: [ 3149, 3148 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "Yearly Consumption"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 1
+        rule: 3
+        registers: [ 3151, 3150 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "Cumulative Consumption"
+        class: "energy"
+        state_class: "total"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [ 3153, 3152 ]
+        icon: 'mdi:home-lightning-bolt'
+
+  - group: Battery
+    items:
+      - name: "Battery Type"
+        class: "battery"
+        state_class: "measurement"
+        uom: ''
+        scale: 1
+        rule: 1
+        registers: [ 3062 ]
+        icon: 'mdi:battery'
+        lookup:
+        - key: 1
+          value: "Lead-Acid"
+        - key: 6
+          value: "LFP"
+
+      - name: "Battery Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.01
+        rule: 1
+        registers: [ 3063 ]
+        icon: 'mdi:battery-charging'
+
+      - name: "Battery Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 2
+        registers: [ 3064 ]
+        icon: 'mdi:battery-charging-10'
+
+      - name: "Battery Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [ 3065 ]
+        icon: 'mdi:battery-charging-high'
+
+      - name: "Battery SoC"
+        class: "battery"
+        state_class: "measurement"
+        uom: "%"
+        scale: 0.1
+        rule: 1
+        registers: [ 3066 ]
+        icon: 'mdi:battery'
+
+      - name: "Battery Temperature"
+        class: "temperature"
+        state_class: "measurement"
+        uom: "°C"
+        scale: 0.1
+        rule: 2
+        registers: [ 3067 ]
+        icon: 'mdi:battery-heart-outline'
+
+      - name: "Battery Discharge Capacity Depth"
+        class: "battery"
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        registers: [ 3068 ]
+        icon: 'mdi:battery-20'
+        validation:
+          min: 10
+          max: 95
+
+      - name: "Battery Radiator Temperature"
+        class: "temperature"
+        state_class: "measurement"
+        uom: "°C"
+        scale: 0.1
+        rule: 2
+        registers: [ 3056 ]
+        icon: 'mdi:battery-heart-outline'
+
+      - name: "Battery Total Discharge"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 1
+        rule: 3
+        registers: [ 3293, 3292 ]
+        icon: 'mdi:battery-minus-variant'
+
+      - name: "Battery Daily Discharge"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [ 3294 ]
+        icon: 'mdi:battery-minus-variant'
+
+      - name: "Battery Total Charge"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 1
+        rule: 3
+        registers: [ 3300, 3299 ]
+        icon: 'mdi:battery-minus-variant'
+
+      - name: "Battery Daily Charge"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [ 3301 ]
+        icon: 'mdi:battery-plus-variant'
+
+  - group: Inverter Information
+    items:
+      - name: "Inverter Working Mode"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [3044]
+        lookup:
+        - key: 0
+          value: "Self Consumption"
+        - key: 1
+          value: "Peak Shift"
+        - key: 2
+          value: "Battery Priority"
+        icon: 'mdi:wrench'
+
+      - name: "Inverter Model"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [3045]
+        lookup:
+        # Single-phase models
+        - key: 0
+          value: "KSE-2K-048S"
+        - key: 1
+          value: "KSE-3K-048S"
+        - key: 2
+          value: "KSE-3.6K-048S"
+        - key: 3
+          value: "KSE-4.6K-048S"
+        - key: 4
+          value: "KSE-5K-048S"
+        - key: 5
+          value: "KSE-3.6K-048"
+        - key: 6
+          value: "KSE-4.6K-048"
+        - key: 7
+          value: "KSE-5K-048"
+        - key: 8
+          value: "KSE-6K-048"
+        - key: 9
+          value: "BluE-S 3680D"
+        - key: 11
+          value: "BluE-S 5000D"
+        - key: 12
+          value: "BluE-S 6000D"
+        - key: 14
+          value: "KSE-3K-048S M1"
+        - key: 15
+          value: "BluE-S 3680D M1"
+        - key: 17
+          value: "BluE-S 5000D M1"
+        - key: 18
+          value: "BluE-S 6000D M1"
+        # Three-phase models
+        - key: 32
+          value: "E10KT"
+        - key: 33
+          value: "E8KT"
+        - key: 34
+          value: "E12KT"
+        icon: 'mdi:wrench'
+
+      - name: "System status"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [3046]
+        lookup:
+        - key: 0
+          value: "Initialize"
+        - key: 1
+          value: "Stand-by"
+        - key: 2
+          value: "Hybrid Grid"
+        - key: 3
+          value: "Off-Network"
+        - key: 4
+          value: "Mains Charging"
+        - key: 5
+          value: "PV Charging"
+        - key: 6
+          value: "Mains Bypass"
+        - key: 7
+          value: "Fault"
+        - key: 8
+          value: "Debug"
+        - key: 9
+          value: "Forced Charge"
+        - key: 10
+          value: "Power on the device separately from the"
+        - key: 11
+          value: "DSP Burn"
+        - key: 12
+          value: "MCU Burn"
+        - key: 13
+          value: "Permanent Error"
+        icon: 'mdi:wrench'
+
+      - name: "Inverter status"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [3047]
+        lookup:
+        - key: 0
+          value: "Stand-by"
+        - key: 1
+          value: "Off-Grid"
+        - key: 2
+          value: "On-Grid"
+        - key: 3
+          value: "Off-Grid to On-Grid"
+        - key: 4
+          value: "On-Grid to Off-Grid"
+        icon: 'mdi:wrench'
+
+      - name: "DCDC status"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [3048]
+        lookup:
+        - key: 0
+          value: "Stand-by"
+        - key: 1
+          value: "Soft Boot"
+        - key: 2
+          value: "Charging Mode"
+        - key: 3
+          value: "Discharging Mode"
+        icon: 'mdi:wrench'
+
+      - name: "DSP Alarm Code"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 6
+        registers: [3050, 3049]
+        icon: 'mdi:wrench'
+
+      - name: "DSP Error Code"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 6
+        registers: [3052, 3051]
+        icon: 'mdi:wrench'
+
+      - name: "Grid Standard"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [3193]
+        lookup:
+        - key: 0
+          value: "China"
+        - key: 1
+          value: "Germany"
+        - key: 2
+          value: "Australia"
+        - key: 3
+          value: "Italy"
+        - key: 4
+          value: "Spain"
+        - key: 5
+          value: "UK"
+        - key: 6
+          value: "Hungary"
+        - key: 7
+          value: "Belgium"
+        - key: 8
+          value: "West Australia"
+        - key: 9
+          value: "Greece"
+        - key: 10
+          value: "France"
+        - key: 11
+          value: "Bangkok"
+        - key: 12
+          value: "Thailand"
+        - key: 13
+          value: "South Africa"
+        - key: 14
+          value: "EN50549"
+        - key: 15
+          value: "Brazil"
+        - key: 16
+          value: "VDE0126"
+        - key: 17
+          value: "Ireland"
+        - key: 18
+          value: "Israel"
+        - key: 19
+          value: "Poland"
+        - key: 20
+          value: "Chile"
+        - key: 21
+          value: "Local"
+        icon: 'mdi:wrench'
+
+      - name: "Inverter Model Name"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 5
+        registers: [3200, 3201, 3202, 3203, 3204, 3205, 3206, 3207]
+        icon: 'mdi:wrench'
+
+      - name: "Inverter Battery Name"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 5
+        registers: [3208, 3209, 3210, 3211, 3212, 3213, 3214, 3215]
+        icon: 'mdi:wrench'
+
+      # ARM AND DSP version numbers ("VX.Y.Z") are set in the two bytes on each register. The first byte contains the
+      # X.Y part (scale 0.1), and the second by contains the Z part. How should we transform these values from a number
+      # to a parsed string?
+      - name: "ARM Version Number"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [3216]
+        icon: 'mdi:wrench'
+
+      - name: "DSP Version Number"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [3217]
+        icon: 'mdi:wrench'
+
+      - name: "Inverter SN Number"
+        class: ""
+        state_class: "measurement"
+        uom: ""
+        scale: 1
+        rule: 5
+        registers: [3228, 3229, 3230, 3231, 3232, 3233, 3234, 3235, 3236, 3237, 3238]
+        icon: 'mdi:wrench'
+
+  - group: Inverter
+    items:
+      - name: "Inverter Bus Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [ 3053 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "Inverter DC Bus Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [ 3054 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "Inverter Radiator Temperature"
+        class: "temperature"
+        state_class: "measurement"
+        uom: "°C"
+        scale: 0.1
+        rule: 2
+        registers: [ 3055 ]
+        icon: 'mdi:thermometer'
+
+      - name: "Chassis Internal Temperature"
+        class: "temperature"
+        state_class: "measurement"
+        uom: "°C"
+        scale: 0.1
+        rule: 2
+        registers: [ 3057 ]
+        icon: 'mdi:battery-heart-outline'
+
+  # Different phases for 3-phase inverters. Only some models have 3 phases, see "Inverter Model" item
+  # - R: Referent
+  # - S: Secondary
+  # - T: Tertiary
+  - group: R Phase
+    items:
+      - name: "R-phase Grid Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [ 3097 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "R-phase Grid Frequency"
+        class: "frequency"
+        state_class: "measurement"
+        uom: "Hz"
+        scale: 0.01
+        rule: 1
+        registers: [ 3098 ]
+        icon: 'mdi:sine-wave'
+
+      - name: "R-phase Meter Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.001
+        rule: 2
+        registers: [ 3099 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "R-phase Grid Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [ 3100 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "R-phase Inverter Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [ 3123 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "R-phase Inverter Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.01
+        rule: 2
+        registers: [ 3124 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "R-phase Inverter Frequency"
+        class: "frequency"
+        state_class: "measurement"
+        uom: "Hz"
+        scale: 0.01
+        rule: 1
+        registers: [ 3125 ]
+        icon: 'mdi:sine-wave'
+
+      - name: "R-phase Inverter Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [ 3126 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "R-phase Backup Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [ 3135 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "R-phase Backup Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.01
+        rule: 1
+        registers: [ 3136 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "R-phase Backup Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [ 3137 ]
+        icon: 'mdi:home-lightning-bolt'
+
+      - name: "R-phase Load Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [ 3144 ]
+        icon: 'mdi:home-lightning-bolt'
+

@@ -49,8 +49,8 @@ public class PlayerActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "send a key to player", description = "Sends a given key to the player")
-    public void sendKey(@ActionInput(name = "key") String key) {
+    @RuleAction(label = "@text/action.sendKey.label", description = "@text/action.sendKey.description")
+    public void sendKey(@ActionInput(name = "key", label = "@text/action.input.key.label") String key) {
         logger.debug("Sending key {} to player", key);
         PlayerHandler playerHandler = this.handler;
         if (playerHandler != null) {
@@ -60,8 +60,8 @@ public class PlayerActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "send a long key to player", description = "Sends a given key to the player and keep it pressed")
-    public void sendLongKey(@ActionInput(name = "key") String key) {
+    @RuleAction(label = "@text/action.sendLongKey.label", description = "@text/action.sendLongKey.description")
+    public void sendLongKey(@ActionInput(name = "key", label = "@text/action.input.key.label") String key) {
         logger.debug("Sending long press key {} to player", key);
         PlayerHandler playerHandler = this.handler;
         if (playerHandler != null) {
@@ -71,8 +71,9 @@ public class PlayerActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "send multiple keys to player", description = "Sends multiple keys to the player, comma separated")
-    public void sendMultipleKeys(@ActionInput(name = "keys") String keys) {
+    @RuleAction(label = "@text/action.sendMultipleKeys.label", description = "@text/action.sendMultipleKeys.description")
+    public void sendMultipleKeys(
+            @ActionInput(name = "keys", label = "@text/action.sendMultipleKeys.input.keys.label", description = "@text/action.sendMultipleKeys.input.keys.description") String keys) {
         logger.debug("Sending keys {} to player", keys);
         PlayerHandler playerHandler = this.handler;
         if (playerHandler != null) {
@@ -82,14 +83,47 @@ public class PlayerActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "send repeating key to player", description = "Sends a given key multiple times to the player")
-    public void sendKeyRepeat(@ActionInput(name = "key") String key, @ActionInput(name = "count") int count) {
+    @RuleAction(label = "@text/action.sendKeyRepeat.label", description = "@text/action.sendKeyRepeat.description")
+    public void sendKeyRepeat(@ActionInput(name = "key", label = "@text/action.input.key.label") String key,
+            @ActionInput(name = "count", label = "@text/action.sendKeyRepeat.input.count.label", description = "@text/action.sendKeyRepeat.input.count.description") int count) {
         logger.debug("Sending key {} to player {} times", key, count);
         PlayerHandler playerHandler = this.handler;
         if (playerHandler != null) {
             playerHandler.sendKey(key, false, count);
         } else {
             logger.warn("Freebox Player Action service ThingHandler is null");
+        }
+    }
+
+    public static void sendKey(ThingActions actions, String key) {
+        if (actions instanceof PlayerActions playerActions) {
+            playerActions.sendKey(key);
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a PlayerActions class.");
+        }
+    }
+
+    public static void sendLongKey(ThingActions actions, String key) {
+        if (actions instanceof PlayerActions playerActions) {
+            playerActions.sendLongKey(key);
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a PlayerActions class.");
+        }
+    }
+
+    public static void sendMultipleKeys(ThingActions actions, String keys) {
+        if (actions instanceof PlayerActions playerActions) {
+            playerActions.sendMultipleKeys(keys);
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a PlayerActions class.");
+        }
+    }
+
+    public static void sendKeyRepeat(ThingActions actions, String key, int count) {
+        if (actions instanceof PlayerActions playerActions) {
+            playerActions.sendKeyRepeat(key, count);
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a PlayerActions class.");
         }
     }
 }

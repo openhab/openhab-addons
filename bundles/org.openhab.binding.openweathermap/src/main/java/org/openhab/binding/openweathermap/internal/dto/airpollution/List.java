@@ -15,7 +15,7 @@ package org.openhab.binding.openweathermap.internal.dto.airpollution;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Generated Plain Old Java Objects class for {@link List} from JSON.
+ * Holds the data from the <code>list</code> object of the JSON response of the Air Pollution API.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -54,11 +55,15 @@ public class FMIResponse {
 
         public Builder appendLocationData(Location location, @Nullable Integer capacityHintForValues, String parameter,
                 long epochSecond, @Nullable BigDecimal val) {
-            timestampsByLocationByParameter.computeIfAbsent(location, k -> new HashMap<>()).computeIfAbsent(parameter,
-                    k -> capacityHintForValues == null ? new ArrayList<>() : new ArrayList<>(capacityHintForValues))
+            Objects.requireNonNull(Objects
+                    .requireNonNull(timestampsByLocationByParameter.computeIfAbsent(location, k -> new HashMap<>()))
+                    .computeIfAbsent(parameter, k -> capacityHintForValues == null ? new ArrayList<>()
+                            : new ArrayList<>(capacityHintForValues)))
                     .add(epochSecond);
-            valuesByLocationByParameter.computeIfAbsent(location, k -> new HashMap<>()).computeIfAbsent(parameter,
-                    k -> capacityHintForValues == null ? new ArrayList<>() : new ArrayList<>(capacityHintForValues))
+            Objects.requireNonNull(
+                    Objects.requireNonNull(valuesByLocationByParameter.computeIfAbsent(location, k -> new HashMap<>()))
+                            .computeIfAbsent(parameter, k -> capacityHintForValues == null ? new ArrayList<>()
+                                    : new ArrayList<>(capacityHintForValues)))
                     .add(val);
             return this;
         }
@@ -85,10 +90,11 @@ public class FMIResponse {
                 Entry<String, List<Long>> parameterEntry) {
             String parameter = parameterEntry.getKey();
             long[] timestamps = parameterEntry.getValue().stream().mapToLong(Long::longValue).toArray();
-            BigDecimal[] values = valuesByLocationByParameter.get(location).get(parameter)
+            BigDecimal[] values = Objects
+                    .requireNonNull(Objects.requireNonNull(valuesByLocationByParameter.get(location)).get(parameter))
                     .toArray(new @Nullable BigDecimal[0]);
             Data dataValues = new Data(timestamps, values);
-            out.get(location).put(parameter, dataValues);
+            Objects.requireNonNull(out.get(location)).put(parameter, dataValues);
         }
     }
 

@@ -48,14 +48,22 @@ public class ServerActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "reboot freebox server", description = "Reboots the Freebox Server")
-    public void reboot() {
+    @RuleAction(label = "@text/action.rebootServer.label", description = "@text/action.rebootServer.description")
+    public void rebootServer() {
         logger.debug("Server reboot called");
         ServerHandler serverHandler = this.handler;
         if (serverHandler != null) {
             serverHandler.reboot();
         } else {
-            logger.warn("Freebox Action service ThingHandler is null");
+            logger.warn("Freebox Server Action service ThingHandler is null");
+        }
+    }
+
+    public static void rebootServer(ThingActions actions) {
+        if (actions instanceof ServerActions serverActions) {
+            serverActions.rebootServer();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a ServerActions class.");
         }
     }
 }

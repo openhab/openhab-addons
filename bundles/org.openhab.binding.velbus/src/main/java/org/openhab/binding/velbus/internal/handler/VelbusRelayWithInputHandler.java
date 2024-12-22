@@ -93,8 +93,10 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
+        }
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
@@ -118,5 +120,7 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
                 }
             }
         }
+
+        return true;
     }
 }

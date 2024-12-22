@@ -104,7 +104,6 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_RELAY)) {
             return new HaywardRelayHandler(thing);
-
         }
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_VIRTUALHEATER)) {
             return new HaywardVirtualHeaterHandler(thing);

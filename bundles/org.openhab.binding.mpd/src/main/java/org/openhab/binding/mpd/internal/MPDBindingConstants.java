@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class MPDBindingConstants {
 
-    private static final String BINDING_ID = "mpd";
+    public static final String BINDING_ID = "mpd";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MPD = new ThingTypeUID(BINDING_ID, "mpd");

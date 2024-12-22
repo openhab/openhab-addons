@@ -27,10 +27,11 @@ public final class EcovacsApiUrlFactory {
 
     private static final String MAIN_URL_LOGIN_PATH = "/user/login";
 
-    private static final String PORTAL_USERS_PATH = "/users/user.do";
-    private static final String PORTAL_IOT_PRODUCT_PATH = "/pim/product/getProductIotMap";
-    private static final String PORTAL_IOT_DEVMANAGER_PATH = "/iot/devmanager.do";
-    private static final String PORTAL_LOG_PATH = "/lg/log.do";
+    private static final String PORTAL_USERS_PATH = "/api/users/user.do";
+    private static final String PORTAL_IOT_PRODUCT_PATH = "/api/pim/product/getProductIotMap";
+    private static final String PORTAL_IOT_DEVMANAGER_PATH = "/api/iot/devmanager.do";
+    private static final String PORTAL_LOG_PATH = "/api/lg/log.do";
+    private static final String PORTAL_CLEAN_RESULTS_PATH = "/app/dln/api/log/clean_result/list";
 
     public static String getLoginUrl(EcovacsApiConfiguration config) {
         return getMainUrl(config) + MAIN_URL_LOGIN_PATH;
@@ -57,9 +58,13 @@ public final class EcovacsApiUrlFactory {
         return getPortalUrl(config) + PORTAL_LOG_PATH;
     }
 
+    public static String getPortalCleanResultsLogUrl(EcovacsApiConfiguration config) {
+        return getPortalUrl(config) + PORTAL_CLEAN_RESULTS_PATH;
+    }
+
     private static String getPortalUrl(EcovacsApiConfiguration config) {
         String continentSuffix = "cn".equalsIgnoreCase(config.getCountry()) ? "" : "-" + config.getContinent();
-        return String.format("https://portal%1$s.ecouser.net/api", continentSuffix);
+        return String.format("https://portal%1$s.ecouser.net", continentSuffix);
     }
 
     private static String getMainUrl(EcovacsApiConfiguration config) {

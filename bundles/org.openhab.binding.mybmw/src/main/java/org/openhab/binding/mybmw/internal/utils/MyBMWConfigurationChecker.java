@@ -24,11 +24,11 @@ import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
  */
 @NonNullByDefault
 public final class MyBMWConfigurationChecker {
-    public static boolean checkConfiguration(MyBMWBridgeConfiguration config) {
-        if (config.userName.isBlank() || config.password.isBlank()) {
+    public static boolean checkInitialConfiguration(MyBMWBridgeConfiguration config) {
+        if (config.getUserName().isBlank() || config.getPassword().isBlank() || config.getHcaptchatoken().isBlank()) {
             return false;
         } else {
-            return BimmerConstants.EADRAX_SERVER_MAP.containsKey(config.region);
+            return BimmerConstants.EADRAX_SERVER_MAP.containsKey(config.getRegion());
         }
     }
 }

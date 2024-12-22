@@ -15,7 +15,7 @@ package org.openhab.binding.fsinternetradio.internal.radio;
 /**
  * Internal constants for the frontier silicon radio.
  *
- * @author Markus Rathgeb - Moved the constants to separate class
+ * @author Markus Rathgeb - Initial contribution, moved the constants to separate class
  */
 public class FrontierSiliconRadioConstants {
 

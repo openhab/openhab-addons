@@ -1,0 +1,40 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+io.github.givimad: piper-jni
+* License: Apache 2.0 License
+* Project: https://github.com/GiviMAD/piper-jni
+* Source: https://github.com/GiviMAD/piper-jni
+
+io.github.rhasspy: piper
+* License: MIT License
+* Project: https://github.com/rhasspy/piper
+* Source: https://github.com/rhasspy/piper
+
+io.github.rhasspy: espeak-ng
+* License: GPL version 3, 2-clause BSD
+* Project: https://github.com/rhasspy/espeak-ng
+* Source: https://github.com/rhasspy/espeak-ng
+
+io.github.rhasspy: piper-phonemize
+* License: MIT License
+* Project: https://github.com/rhasspy/piper-phonemize
+* Source: https://github.com/rhasspy/piper-phonemize
+
+io.github.microsoft: onnxruntime
+* License: MIT License
+* Project: https://github.com/microsoft/onnxruntime
+* Source: https://github.com/microsoft/onnxruntime

@@ -86,7 +86,7 @@ public abstract class LxWsSecurity {
                 authenticationLock.unlock();
             }
         };
-        new Thread(init).start();
+        new Thread(init, "OH-binding-" + thingHandler.getThingId() + "-Authenticate").start();
     }
 
     /**

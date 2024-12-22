@@ -20,6 +20,7 @@ import java.io.OutputStreamWriter;
 import javax.net.ssl.SSLSocket;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mynice.internal.MyNiceBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class It4WifiConnector extends Thread {
     private final OutputStreamWriter out;
 
     public It4WifiConnector(It4WifiHandler handler, SSLSocket sslSocket) throws IOException {
-        super(It4WifiConnector.class.getName());
+        super(String.format("OH-binding-%s-%s", MyNiceBindingConstants.BINDING_ID, "WifiConnector"));
         this.handler = handler;
         this.in = new InputStreamReader(sslSocket.getInputStream());
         this.out = new OutputStreamWriter(sslSocket.getOutputStream());

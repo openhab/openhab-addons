@@ -78,11 +78,12 @@ Properties will be attached to predefined vehicles if the VIN is matching.
 
 ### Bridge Configuration
 
-| Parameter       | Type    | Description                                                        |
-|-----------------|---------|--------------------------------------------------------------------|
-| userName        | text    | MyBMW Username                                                     |
-| password        | text    | MyBMW Password                                                     |
-| region          | text    | Select region in order to connect to the appropriate BMW server.   |
+| Parameter       | Type    | Description                                                                                            |
+|-----------------|---------|--------------------------------------------------------------------------------------------------------|
+| userName        | text    | MyBMW Username                                                                                         |
+| password        | text    | MyBMW Password                                                                                         |
+| hcaptchatoken   | text    | HCaptcha-Token for initial login (see https://bimmer-connected.readthedocs.io/en/latest/captcha.html)  |
+| region          | text    | Select region in order to connect to the appropriate BMW server.                                       |
 
 The region Configuration has 3 different options
 
@@ -105,10 +106,10 @@ So if want your UI in english language place _en_ as desired language.
 
 Same configuration is needed for all things
 
-| Parameter       | Type    | Description                           |
-|-----------------|---------|---------------------------------------|
-| vin             | text    | Vehicle Identification Number (VIN)   |
-| refreshInterval | integer | Refresh Interval in Minutes           |
+| Parameter       | Type    | Description                                                                                                             |
+|-----------------|---------|-------------------------------------------------------------------------------------------------------------------------|
+| vin             | text    | Vehicle Identification Number (VIN)                                                                                     |
+| refreshInterval | integer | Refresh Interval in Minutes (by default set to 60; to be set to 0 if no automated refresh should be triggered)          |
 
 #### Advanced Configuration
 
@@ -132,9 +133,10 @@ They differ for each vehicle type, build-in sensors and activated services.
 
 | Channel Group ID                 | Description                                       | conv | phev | bev_rex | bev |
 |----------------------------------|---------------------------------------------------|------|------|---------|-----|
+| [update](#vehicle-update)        | Overall vehicle status                            |  X   |  X   |    X    |  X  |
 | [status](#vehicle-status)        | Overall vehicle status                            |  X   |  X   |    X    |  X  |
+| [doors](#doors-details)          | Details of all doors and windows                  |  X   |  X   |    X    |  X  |
 | [range](#range-data)             | Provides mileage, range and charge / fuel levels  |  X   |  X   |    X    |  X  |
-| [doors](#doors-details)          | Detials of all doors and windows                  |  X   |  X   |    X    |  X  |
 | [check](#check-control)          | Shows current active CheckControl messages        |  X   |  X   |    X    |  X  |
 | [service](#services)             | Future vehicle service schedules                  |  X   |  X   |    X    |  X  |
 | [location](#location)            | Coordinates and heading of the vehicle            |  X   |  X   |    X    |  X  |
@@ -145,6 +147,25 @@ They differ for each vehicle type, build-in sensors and activated services.
 | [tires](#tire-pressure)          | Current and wanted pressure for all tires         |  X   |  X   |    X    |  X  |
 | [image](#image)                  | Provides an image of your vehicle                 |  X   |  X   |    X    |  X  |
 
+#### Vehicle Update
+
+The BMW API has limits in the requests per time period.
+This leads to unexpected errors stating that some quota is reached and the next successful request can be triggered in X minutes.
+In this case the bridge as well as the vehicle things can be set to offline and nothing can be done with them anymore until the next successful refresh.
+To reduce the probability of the error, the default automated API update has been set to 60 Minutes, but this is often not sufficient to retrieve continuous range or charging updates.
+These channels can be used to control the update behavior from openHAB, e.g. via rules.
+
+- Channel Group ID is status
+- Available for all vehicles (charging channel only for xEV)
+- switches which can be triggered by a command
+- if the switches are set to ON, then immediately they will be set to OFF again for being able to trigger the next update
+
+| Channel ID      | Type   | Description                                                                                              | conv | phev | bev_rex | bev |
+|-----------------|--------|----------------------------------------------------------------------------------------------------------|------|------|---------|-----|
+| state-update    | Switch | When set to ON, the state channels of the vehicle will be updated                                        |  X   |  X   |    X    |  X  |
+| charging-update | Switch | When set to ON, the charging statistics and charging sessions channels of the vehicle will be updated    |      |  X   |    X    |  X  |
+| image-update    | Switch | When set to ON, the image of the vehicle will be updated                                                 |  X   |  X   |    X    |  X  |
+
 #### Vehicle Status
 
 Reflects overall status of the vehicle.
@@ -153,19 +174,19 @@ Reflects overall status of the vehicle.
 - Available for all vehicles
 - Read-only values
 
-| Channel Label             | Channel ID          | Type          | Description                                    | conv | phev | bev_rex | bev |
-|---------------------------|---------------------|---------------|------------------------------------------------|------|------|---------|-----|
-| Overall Door Status       | doors               | String        | Combined status for all doors                  |  X   |  X   |    X    |  X  |
-| Overall Window Status     | windows             | String        | Combined status for all windows                |  X   |  X   |    X    |  X  |
-| Doors Locked              | lock                | String        | Status if vehicle is secured                   |  X   |  X   |    X    |  X  |
-| Next Service Date         | service-date        | DateTime      | Date of next upcoming service                  |  X   |  X   |    X    |  X  |
-| Mileage till Next Service | service-mileage     | Number:Length | Mileage till upcoming service                  |  X   |  X   |    X    |  X  |
-| Check Control             | check-control       | String        | Presence of active warning messages            |  X   |  X   |    X    |  X  |
-| Plug Connection Status    | plug-connection     | String        | Plug is _Connected_ or _Not connected_         |      |  X   |    X    |  X  |
-| Charging Status           | charge              | String        | Current charging status                        |      |  X   |    X    |  X  |
-| Remaining Charging Time   | charge-remaining    | Number:Time   | Remaining time for current charging session    |      |  X   |    X    |  X  |
-| Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |  X   |  X   |    X    |  X  |
-| Last Fetched Timestamp    | last-fetched        | DateTime      | Date and time of last time status fetched      |  X   |  X   |    X    |  X  |
+| Channel ID          | Type          | Description                                    | conv | phev | bev_rex | bev |
+|---------------------|---------------|------------------------------------------------|------|------|---------|-----|
+| doors               | String        | Combined status for all doors                  |  X   |  X   |    X    |  X  |
+| windows             | String        | Combined status for all windows                |  X   |  X   |    X    |  X  |
+| lock                | String        | Status if vehicle is secured                   |  X   |  X   |    X    |  X  |
+| service-date        | DateTime      | Date of next upcoming service                  |  X   |  X   |    X    |  X  |
+| service-mileage     | Number:Length | Mileage till upcoming service                  |  X   |  X   |    X    |  X  |
+| check-control       | String        | Presence of active warning messages            |  X   |  X   |    X    |  X  |
+| plug-connection     | String        | Plug is _Connected_ or _Not connected_         |      |  X   |    X    |  X  |
+| charge              | String        | Current charging status                        |      |  X   |    X    |  X  |
+| charge-remaining    | Number:Time   | Remaining time for current charging session    |      |  X   |    X    |  X  |
+| last-update         | DateTime      | Date and time of last status update            |  X   |  X   |    X    |  X  |
+| last-fetched        | DateTime      | Date and time of last time status fetched      |  X   |  X   |    X    |  X  |
 
 Overall Door Status values
 
@@ -208,9 +229,9 @@ The _raw data channel_ is marked as _advanced_ and isn't shown by default.
 Target are advanced users to derive even more data out of BMW API replies.
 As the replies are formatted as JSON use the [JsonPath Transformation Service](https://www.openhab.org/addons/transformations/jsonpath/) to extract data for an item,
 
-| Channel Label             | Channel ID          | Type          | Description                                    |
-|---------------------------|---------------------|---------------|------------------------------------------------|
-| Raw Data                  | raw                 | String        | Unfiltered JSON String of vehicle data         |
+| Channel ID          | Type          | Description                                    |
+|---------------------|---------------|------------------------------------------------|
+| raw                 | String        | Unfiltered JSON String of vehicle data         |
 
 <img align="right" src="./doc/RawData.png" width="400" height="125"/>
 
@@ -239,19 +260,19 @@ See description [Range vs Range Radius](#range-vs-range-radius) to get more info
 - Availability according to table
 - Read-only values
 
-| Channel Label                      | Channel ID                 | Type                 | conv | phev | bev_rex | bev |
-|------------------------------------|----------------------------|----------------------|------|------|---------|-----|
-| Mileage                            | mileage                    | Number:Length        |  X   |  X   |    X    |  X  |
-| Fuel Range                         | range-fuel                 | Number:Length        |  X   |  X   |    X    |     |
-| Electric Range                     | range-electric             | Number:Length        |      |  X   |    X    |  X  |
-| Hybrid Range                       | range-hybrid               | Number:Length        |      |  X   |    X    |     |
-| Battery Charge Level               | soc                        | Number:Dimensionless |      |  X   |    X    |  X  |
-| Remaining Fuel                     | remaining-fuel             | Number:Volume        |  X   |  X   |    X    |     |
-| Estimated Fuel Consumption l/100km | estimated-fuel-l-100km     | Number               |  X   |  X   |    X    |     |
-| Estimated Fuel Consumption mpg     | estimated-fuel-mpg         | Number               |  X   |  X   |    X    |     |
-| Fuel Range Radius                  | range-radius-fuel          | Number:Length        |  X   |  X   |    X    |     |
-| Electric Range Radius              | range-radius-electric      | Number:Length        |      |  X   |    X    |  X  |
-| Hybrid Range Radius                | range-radius-hybrid        | Number:Length        |      |  X   |    X    |     |
+| Channel ID                 | Type                 | Description                                   | conv | phev | bev_rex | bev |
+|----------------------------|----------------------|-----------------------------------------------|------|------|---------|-----|
+| mileage                    | Number:Length        | Current mileage of the vehicle                |  X   |  X   |    X    |  X  |
+| range-fuel                 | Number:Length        | Fuel range                                    |  X   |  X   |    X    |     |
+| range-electric             | Number:Length        | Electric range                                |      |  X   |    X    |  X  |
+| range-hybrid               | Number:Length        | Combined hybrid range                         |      |  X   |    X    |     |
+| soc                        | Number:Dimensionless | State of charge                               |      |  X   |    X    |  X  |
+| remaining-fuel             | Number:Volume        | Remaining fuel in l                           |  X   |  X   |    X    |     |
+| estimated-fuel-l-100km     | Number               | Estimated fuel consumption in l               |  X   |  X   |    X    |     |
+| estimated-fuel-mpg         | Number               | Estimated fuel consumption in mpg             |  X   |  X   |    X    |     |
+| range-radius-fuel          | Number:Length        | The calculated range radius combustion        |  X   |  X   |    X    |     |
+| range-radius-electric      | Number:Length        | The calculated range radius electric          |      |  X   |    X    |  X  |
+| range-radius-hybrid        | Number:Length        | The calculated range radius hybrid combined   |      |  X   |    X    |     |
 
 #### Doors Details
 
@@ -261,20 +282,20 @@ Detailed status of all doors and windows.
 - Available for all vehicles if corresponding sensors are built-in
 - Read-only values
 
-| Channel Label              | Channel ID              | Type          |
-|----------------------------|-------------------------|---------------|
-| Driver Door                | driver-front            | String        |
-| Driver Door Rear           | driver-rear             | String        |
-| Passenger Door             | passenger-front         | String        |
-| Passenger Door Rear        | passenger-rear          | String        |
-| Trunk                      | trunk                   | String        |
-| Hood                       | hood                    | String        |
-| Driver Window              | win-driver-front        | String        |
-| Driver Rear Window         | win-driver-rear         | String        |
-| Passenger Window           | win-passenger-front     | String        |
-| Passenger Rear Window      | win-passenger-rear      | String        |
-| Rear Window                | win-rear                | String        |
-| Sunroof                    | sunroof                 | String        |
+| Channel ID              | Type          | Description                             |
+|-------------------------|---------------|-----------------------------------------|
+| driver-front            | String        | Status of front door driver's side      |
+| driver-rear             | String        | Status of rear door driver's side       |
+| passenger-front         | String        | Status of front door passenger's side   |
+| passenger-rear          | String        | Status of rear door passenger's side    |
+| trunk                   | String        | Status of trunk                         |
+| hood                    | String        | Status of hood                          |
+| win-driver-front        | String        | Status of front window driver's side    |
+| win-driver-rear         | String        | Status of rear window driver's side     |
+| win-passenger-front     | String        | Status of front window passenger's side |
+| win-passenger-rear      | String        | Status of rear window passenger's side  |
+| win-rear                | String        | Status of rear window                   |
+| sunroof                 | String        | Status of sunroof                       |
 
 Possible states
 
@@ -293,11 +314,11 @@ If more than one message is active the channel _name_ contains all active messag
 - Available for all vehicles
 - Read/Write access
 
-| Channel Label                   | Channel ID          | Type           | Access     |
-|---------------------------------|---------------------|----------------|------------|
-| Check Control Description       | name                | String         | Read/Write |
-| Check Control Details           | details             | String         | Read       |
-| Severity Level                  | severity            | String         | Read       |
+| Channel ID          | Type           | Access     |
+|---------------------|----------------|------------|
+| name                | String         | Read/Write |
+| details             | String         | Read       |
+| severity            | String         | Read       |
 
 Severity Levels
 
@@ -314,12 +335,12 @@ If more than one service is scheduled in the future the channel _name_ contains 
 - Available for all vehicles
 - Read/Write access
 
-| Channel Label                  | Channel ID          | Type           | Access     |
-|--------------------------------|---------------------|----------------|------------|
-| Service Name                   | name                | String         | Read/Write |
-| Service Details                | details             | String         | Read       |
-| Service Date                   | date                | DateTime       | Read       |
-| Mileage till Service           | mileage             | Number:Length  | Read       |
+| Channel ID          | Type           | Access     |
+|---------------------|----------------|------------|
+| name                | String         | Read/Write |
+| details             | String         | Read       |
+| date                | DateTime       | Read       |
+| mileage             | Number:Length  | Read       |
 
 #### Location
 
@@ -329,12 +350,12 @@ GPS location and heading of the vehicle.
 - Available for all vehicles with built-in GPS sensor. Function can be enabled/disabled in the head unit
 - Read-only values
 
-| Channel Label       | Channel ID          | Type          |
-|---------------------|---------------------|---------------|
-| GPS Coordinates     | gps                 | Location      |
-| Heading             | heading             | Number:Angle  |
-| Address             | address             | String        |
-| Distance from Home  | home-distance       | Number:Length |
+| Channel ID          | Type          | Description                                                  |
+|---------------------|---------------|--------------------------------------------------------------|
+| gps                 | Location      | Current GPS coordinates of the vehicle                       |
+| heading             | Number:Angle  | Current direction of the vehicle                             |
+| address             | String        | Current address                                              |
+| home-distance       | Number:Length | Calculated distance from configured home position of openHAB |
 
 #### Remote Services
 
@@ -347,10 +368,10 @@ Parallel execution isn't supported.
 - Available for all commands mentioned in _Services Activated_. See [Vehicle Properties](#properties) for further details
 - Read/Write access
 
-| Channel Label           | Channel ID          | Type    | Access |
-|-------------------------|---------------------|---------|--------|
-| Remote Service Command  | command             | String  | Write  |
-| Service Execution State | state               | String  | Read   |
+| Channel ID          | Type    | Access |
+|---------------------|---------|--------|
+| command             | String  | Write  |
+| state               | String  | Read   |
 
 The channel _command_ provides options
 
@@ -361,7 +382,8 @@ The channel _command_ provides options
 - _horn-blow_
 - _climate-now-start_
 - _climate-now-stop_
-- _charge-now_
+- _start-charging_
+- _stop-charging_
 
 The channel _state_ shows the progress of the command execution in the following order
 
@@ -379,25 +401,25 @@ Charging options with date and time for preferred time windows and charging mode
 - Read access for UI.
 - There are 4 timers _T1, T2, T3 and T4_ available. Replace _X_ with number 1,2 or 3 to target the correct timer
 
-| Channel Label              | Channel ID                | Type     |
-|----------------------------|---------------------------|----------|
-| Charge Mode                | mode                      | String   |
-| Charge Preferences         | prefs                     | String   |
-| Charging Plan              | control                   | String   |
-| SoC Target                 | target                    | String   |
-| Charging Energy Limited    | limit                     | Switch   |
-| Window Start Time          | window-start              | DateTime |
-| Window End Time            | window-end                | DateTime |
-| A/C at Departure           | climate                   | Switch   |
-| T_X_ Enabled               | timer_X_-enabled          | Switch   |
-| T_X_ Departure Time        | timer_X_-departure        | DateTime |
-| T_X_ Monday                | timer_X_-day-mon          | Switch   |
-| T_X_ Tuesday               | timer_X_-day-tue          | Switch   |
-| T_X_ Wednesday             | timer_X_-day-wed          | Switch   |
-| T_X_ Thursday              | timer_X_-day-thu          | Switch   |
-| T_X_ Friday                | timer_X_-day-fri          | Switch   |
-| T_X_ Saturday              | timer_X_-day-sat          | Switch   |
-| T_X_ Sunday                | timer_X_-day-sun          | Switch   |
+| Channel ID                | Type     |
+|---------------------------|----------|
+| mode                      | String   |
+| prefs                     | String   |
+| control                   | String   |
+| target                    | String   |
+| limit                     | Switch   |
+| window-start              | DateTime |
+| window-end                | DateTime |
+| climate                   | Switch   |
+| timer_X_-enabled          | Switch   |
+| timer_X_-departure        | DateTime |
+| timer_X_-day-mon          | Switch   |
+| timer_X_-day-tue          | Switch   |
+| timer_X_-day-wed          | Switch   |
+| timer_X_-day-thu          | Switch   |
+| timer_X_-day-fri          | Switch   |
+| timer_X_-day-sat          | Switch   |
+| timer_X_-day-sun          | Switch   |
 
 The channel _profile-mode_ supports
 
@@ -417,11 +439,11 @@ Shows charge statistics of the current month
 - Available for electric and hybrid vehicles
 - Read-only values
 
-| Channel Label              | Channel ID              | Type           |
-|----------------------------|-------------------------|----------------|
-| Charge Statistic Month     | title                   | String         |
-| Energy Charged             | energy                  | Number:Energy  |
-| Charge Sessions            | sessions                | Number         |
+| Channel ID              | Type           | Description             |
+|-------------------------|----------------|-------------------------|
+| title                   | String         | Title of the statistics |
+| energy                  | Number:Energy  | Consumed energy         |
+| sessions                | Number         | Number of sessions      |
 
 #### Charge Sessions
 
@@ -432,13 +454,13 @@ If more than one message is active the channel _name_ contains all active messag
 - Available for electric and hybrid vehicles
 - Read-only values
 
-| Channel Label                   | Channel ID   | Type     |
-|---------------------------------|--------------|----------|
-| Session Title                   | title        | String   |
-| Session Details                 | subtitle     | String   |
-| Charged Energy in Session       | energy       | String   |
-| Issues during Session           | issue        | String   |
-| Session Status                  | status       | String   |
+| Channel ID   | Type     | Description             |
+|--------------|----------|-------------------------|
+| title        | String   | Title of the session    |
+| subtitle     | String   | Subtitle of the session |
+| energy       | String   | Consumed energy         |
+| issue        | String   | If an issue occurred    |
+| status       | String   | Status of the session   |
 
 #### Tire Pressure
 
@@ -448,16 +470,16 @@ Current and target tire pressure values
 - Available for all vehicles if corresponding sensors are built-in
 - Read-only values
 
-| Channel Label              | Channel ID              | Type             |
-|----------------------------|-------------------------|------------------|
-| Front Left                 | fl-current              | Number:Pressure  |
-| Front Left Target          | fl-target               | Number:Pressure  |
-| Front Right                | fr-current              | Number:Pressure  |
-| Front Right Target         | fr-target               | Number:Pressure  |
-| Rear Left                  | rl-current              | Number:Pressure  |
-| Rear Left Target           | rl-target               | Number:Pressure  |
-| Rear Right                 | rr-current              | Number:Pressure  |
-| Rear Right Target          | rr-target               | Number:Pressure  |
+| Channel ID              | Type             | Description                  |
+|-------------------------|------------------|------------------------------|
+| fl-current              | Number:Pressure  | Current pressure front left  |
+| fl-target               | Number:Pressure  | Target pressure front left   |
+| fr-current              | Number:Pressure  | Current pressure front right |
+| fr-target               | Number:Pressure  | Target pressure front right  |
+| rl-current              | Number:Pressure  | Current pressure rear left   |
+| rl-target               | Number:Pressure  | Target pressure rear left    |
+| rr-current              | Number:Pressure  | Current pressure rear right  |
+| rr-target               | Number:Pressure  | Target pressure rear right   |
 
 #### Image
 
@@ -467,10 +489,10 @@ Image representation of the vehicle.
 - Available for all vehicles
 - Read/Write access
 
-| Channel Label              | Channel ID          | Type   |  Access  |
-|----------------------------|---------------------|--------|----------|
-| Rendered Vehicle Image     | png                 | Image  | Read     |
-| Image Viewport             | view                | String | Write    |
+| Channel ID          | Type   |  Access  | Description               |
+|---------------------|--------|----------|---------------------------|
+| png                 | Image  | Read     | The image as png          |
+| view                | String | Write    | The view port of the car  |
 
 Possible view ports:
 
@@ -496,7 +518,7 @@ The channel id _name_ shows the first element as default.
 All other possibilities are attached as options.
 The picture on the right shows the _Session Title_ item and 3 possible options.
 Select the desired service and the corresponding Charge Session with _Energy Charged_, _Session Status_ and
-_Session Issues_ will be shown.  
+_Session Issues_ will be shown.
 
 ### TroubleShooting
 
@@ -576,9 +598,9 @@ Bridge mybmw:account:4711   "MyBMW Account" [userName="YOUR_USERNAME",password="
 ### Items File
 
 ```java
-Number:Length           i3Mileage                 "Odometer [%d %unit%]"                        <line>          (i3)        {channel="mybmw:bev_rex:4711:i3:range#mileage" }                                                                           
+Number:Length           i3Mileage                 "Odometer [%d %unit%]"                        <line>          (i3)        {channel="mybmw:bev_rex:4711:i3:range#mileage" }
 Number:Length           i3Range                   "Range [%d %unit%]"                           <motion>        (i3)        {channel="mybmw:bev_rex:4711:i3:range#hybrid"}
-Number:Length           i3RangeElectric           "Electric Range [%d %unit%]"                  <motion>        (i3,long)   {channel="mybmw:bev_rex:4711:i3:range#electric"}   
+Number:Length           i3RangeElectric           "Electric Range [%d %unit%]"                  <motion>        (i3,long)   {channel="mybmw:bev_rex:4711:i3:range#electric"}
 Number:Length           i3RangeFuel               "Fuel Range [%d %unit%]"                      <motion>        (i3)        {channel="mybmw:bev_rex:4711:i3:range#fuel"}
 Number:Dimensionless    i3BatterySoc              "Battery Charge [%.1f %%]"                    <battery>       (i3,long)   {channel="mybmw:bev_rex:4711:i3:range#soc"}
 Number:Volume           i3Fuel                    "Fuel [%.1f %unit%]"                          <oil>           (i3)        {channel="mybmw:bev_rex:4711:i3:range#remaining-fuel"}
@@ -592,16 +614,16 @@ String                  i3LockStatus              "Lock Status [%s]"            
 DateTime                i3NextServiceDate         "Next Service Date [%1$tb %1$tY]"             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:status#service-date" }
 String                  i3NextServiceMileage      "Next Service Mileage [%d %unit%]"            <line>          (i3)        {channel="mybmw:bev_rex:4711:i3:status#service-mileage" }
 String                  i3CheckControl            "Check Control [%s]"                          <error>         (i3)        {channel="mybmw:bev_rex:4711:i3:status#check-control" }
-String                  i3PlugConnection          "Plug [%s]"                                   <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:status#plug-connection" } 
-String                  i3ChargingStatus          "[%s]"                                        <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:status#charge" } 
-String                  i3ChargingInfo            "[%s]"                                        <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:status#charge-info" } 
+String                  i3PlugConnection          "Plug [%s]"                                   <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:status#plug-connection" }
+String                  i3ChargingStatus          "[%s]"                                        <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:status#charge" }
+String                  i3ChargingInfo            "[%s]"                                        <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:status#charge-info" }
 DateTime                i3LastUpdate              "Update [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]"    <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:status#last-update"}
 
-Location                i3Location                "Location  [%s]"                              <zoom>          (i3)        {channel="mybmw:bev_rex:4711:i3:location#gps" }                                                                           
-Number:Angle            i3Heading                 "Heading [%.1f %unit%]"                       <zoom>          (i3)        {channel="mybmw:bev_rex:4711:i3:location#heading" }  
+Location                i3Location                "Location  [%s]"                              <zoom>          (i3)        {channel="mybmw:bev_rex:4711:i3:location#gps" }
+Number:Angle            i3Heading                 "Heading [%.1f %unit%]"                       <zoom>          (i3)        {channel="mybmw:bev_rex:4711:i3:location#heading" }
 
-String                  i3RemoteCommand           "Command [%s]"                                <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:remote#command" } 
-String                  i3RemoteState             "Remote Execution State [%s]"                 <status>        (i3)        {channel="mybmw:bev_rex:4711:i3:remote#state" } 
+String                  i3RemoteCommand           "Command [%s]"                                <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:remote#command" }
+String                  i3RemoteState             "Remote Execution State [%s]"                 <status>        (i3)        {channel="mybmw:bev_rex:4711:i3:remote#state" }
 
 String                  i3DriverDoor              "Driver Door [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#driver-front" }
 String                  i3DriverDoorRear          "Driver Door Rear [%s]"                       <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#driver-rear" }
@@ -624,51 +646,51 @@ DateTime                i3ServiceDate             "Service Date [%1$tb %1$tY]"  
 String                  i3CCName                  "CheckControl Name [%s]"                      <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:check#name" }
 String                  i3CCDetails               "CheckControl Details [%s]"                   <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:check#details" }
 String                  i3CCSeverity              "CheckControl Severity [%s]"                  <line>          (i3)        {channel="mybmw:bev_rex:4711:i3:check#severity" }
- 
-Switch                  i3ChargeProfileClimate    "Charge Profile Climatization"                <temperature>   (i3)        {channel="mybmw:bev_rex:4711:i3:profile#climate" }  
-String                  i3ChargeProfileMode       "Charge Profile Mode [%s]"                    <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#mode" } 
-String                  i3ChargeProfilePrefs      "Charge Profile Preference [%s]"              <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#prefs" } 
-String                  i3ChargeProfileCtrl       "Charge Profile Control [%s]"                 <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#control" } 
-Number                  i3ChargeProfileTarget     "Charge Profile SoC Target [%s]"              <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#target" } 
-Switch                  i3ChargeProfileLimit      "Charge Profile limited"                      <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#limit" } 
-DateTime                i3ChargeWindowStart       "Charge Window Start [%1$tH:%1$tM]"           <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#window-start" } 
-DateTime                i3ChargeWindowEnd         "Charge Window End [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#window-end" } 
-DateTime                i3Timer1Departure         "Timer 1 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-departure" } 
-String                  i3Timer1Days              "Timer 1 Days [%s]"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-days" } 
-Switch                  i3Timer1DayMon            "Timer 1 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-mon" } 
-Switch                  i3Timer1DayTue            "Timer 1 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-tue" } 
-Switch                  i3Timer1DayWed            "Timer 1 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-wed" } 
-Switch                  i3Timer1DayThu            "Timer 1 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-thu" } 
-Switch                  i3Timer1DayFri            "Timer 1 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-fri" } 
-Switch                  i3Timer1DaySat            "Timer 1 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-sat" } 
-Switch                  i3Timer1DaySun            "Timer 1 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-sun" } 
-Switch                  i3Timer1Enabled           "Timer 1 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-enabled" }  
-DateTime                i3Timer2Departure         "Timer 2 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-departure" } 
-Switch                  i3Timer2DayMon            "Timer 2 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-mon" } 
-Switch                  i3Timer2DayTue            "Timer 2 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-tue" } 
-Switch                  i3Timer2DayWed            "Timer 2 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-wed" } 
-Switch                  i3Timer2DayThu            "Timer 2 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-thu" } 
-Switch                  i3Timer2DayFri            "Timer 2 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-fri" } 
-Switch                  i3Timer2DaySat            "Timer 2 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-sat" } 
-Switch                  i3Timer2DaySun            "Timer 2 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-sun" } 
-Switch                  i3Timer2Enabled           "Timer 2 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-enabled" }  
-DateTime                i3Timer3Departure         "Timer 3 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-departure" } 
-Switch                  i3Timer3DayMon            "Timer 3 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-mon" } 
-Switch                  i3Timer3DayTue            "Timer 3 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-tue" } 
-Switch                  i3Timer3DayWed            "Timer 3 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-wed" } 
-Switch                  i3Timer3DayThu            "Timer 3 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-thu" } 
-Switch                  i3Timer3DayFri            "Timer 3 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-fri" } 
-Switch                  i3Timer3DaySat            "Timer 3 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-sat" } 
-Switch                  i3Timer3DaySun            "Timer 3 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-sun" } 
+
+Switch                  i3ChargeProfileClimate    "Charge Profile Climatization"                <temperature>   (i3)        {channel="mybmw:bev_rex:4711:i3:profile#climate" }
+String                  i3ChargeProfileMode       "Charge Profile Mode [%s]"                    <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#mode" }
+String                  i3ChargeProfilePrefs      "Charge Profile Preference [%s]"              <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#prefs" }
+String                  i3ChargeProfileCtrl       "Charge Profile Control [%s]"                 <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#control" }
+Number                  i3ChargeProfileTarget     "Charge Profile SoC Target [%s]"              <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#target" }
+Switch                  i3ChargeProfileLimit      "Charge Profile limited"                      <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#limit" }
+DateTime                i3ChargeWindowStart       "Charge Window Start [%1$tH:%1$tM]"           <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#window-start" }
+DateTime                i3ChargeWindowEnd         "Charge Window End [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#window-end" }
+DateTime                i3Timer1Departure         "Timer 1 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-departure" }
+String                  i3Timer1Days              "Timer 1 Days [%s]"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-days" }
+Switch                  i3Timer1DayMon            "Timer 1 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-mon" }
+Switch                  i3Timer1DayTue            "Timer 1 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-tue" }
+Switch                  i3Timer1DayWed            "Timer 1 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-wed" }
+Switch                  i3Timer1DayThu            "Timer 1 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-thu" }
+Switch                  i3Timer1DayFri            "Timer 1 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-fri" }
+Switch                  i3Timer1DaySat            "Timer 1 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-sat" }
+Switch                  i3Timer1DaySun            "Timer 1 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-sun" }
+Switch                  i3Timer1Enabled           "Timer 1 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-enabled" }
+DateTime                i3Timer2Departure         "Timer 2 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-departure" }
+Switch                  i3Timer2DayMon            "Timer 2 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-mon" }
+Switch                  i3Timer2DayTue            "Timer 2 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-tue" }
+Switch                  i3Timer2DayWed            "Timer 2 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-wed" }
+Switch                  i3Timer2DayThu            "Timer 2 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-thu" }
+Switch                  i3Timer2DayFri            "Timer 2 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-fri" }
+Switch                  i3Timer2DaySat            "Timer 2 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-sat" }
+Switch                  i3Timer2DaySun            "Timer 2 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-sun" }
+Switch                  i3Timer2Enabled           "Timer 2 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-enabled" }
+DateTime                i3Timer3Departure         "Timer 3 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-departure" }
+Switch                  i3Timer3DayMon            "Timer 3 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-mon" }
+Switch                  i3Timer3DayTue            "Timer 3 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-tue" }
+Switch                  i3Timer3DayWed            "Timer 3 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-wed" }
+Switch                  i3Timer3DayThu            "Timer 3 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-thu" }
+Switch                  i3Timer3DayFri            "Timer 3 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-fri" }
+Switch                  i3Timer3DaySat            "Timer 3 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-sat" }
+Switch                  i3Timer3DaySun            "Timer 3 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-sun" }
 Switch                  i3Timer3Enabled           "Timer 3 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-enabled" }
-DateTime                i3Timer4Departure         "Timer 4 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-departure" } 
-Switch                  i3Timer4DayMon            "Timer 4 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-mon" } 
-Switch                  i3Timer4DayTue            "Timer 4 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-tue" } 
-Switch                  i3Timer4DayWed            "Timer 4 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-wed" } 
-Switch                  i3Timer4DayThu            "Timer 4 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-thu" } 
-Switch                  i3Timer4DayFri            "Timer 4 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-fri" } 
-Switch                  i3Timer4DaySat            "Timer 4 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-sat" } 
-Switch                  i3Timer4DaySun            "Timer 4 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-sun" } 
+DateTime                i3Timer4Departure         "Timer 4 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-departure" }
+Switch                  i3Timer4DayMon            "Timer 4 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-mon" }
+Switch                  i3Timer4DayTue            "Timer 4 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-tue" }
+Switch                  i3Timer4DayWed            "Timer 4 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-wed" }
+Switch                  i3Timer4DayThu            "Timer 4 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-thu" }
+Switch                  i3Timer4DayFri            "Timer 4 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-fri" }
+Switch                  i3Timer4DaySat            "Timer 4 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-sat" }
+Switch                  i3Timer4DaySun            "Timer 4 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-sun" }
 Switch                  i3Timer4Enabled           "Timer 4 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-enabled" }
 
 String                  i3StatisticsTitle         "[%s]"                                        <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:statistic#title" }
@@ -690,8 +712,8 @@ Number:Pressure         i3TireRLTarget            "Tire Rear Left Target [%.1f %
 Number:Pressure         i3TireRRCurrent           "Tire Rear Right [%.1f %unit%]"               <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:tires#rr-current" }
 Number:Pressure         i3TireRRTarget            "Tire Rear Right Target [%.1f %unit%]"        <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:tires#rr-target" }
 
-Image                   i3Image                   "Image"                                                       (i3)        {channel="mybmw:bev_rex:4711:i3:image#png" }  
-String                  i3ImageViewport           "Image Viewport [%s]"                         <zoom>          (i3)        {channel="mybmw:bev_rex:4711:i3:image#view" }  
+Image                   i3Image                   "Image"                                                       (i3)        {channel="mybmw:bev_rex:4711:i3:image#png" }
+String                  i3ImageViewport           "Image Viewport [%s]"                         <zoom>          (i3)        {channel="mybmw:bev_rex:4711:i3:image#view" }
 ```
 
 ### Sitemap File
@@ -699,47 +721,47 @@ String                  i3ImageViewport           "Image Viewport [%s]"         
 ```perl
 sitemap BMW label="BMW" {
   Frame label="BMW i3" {
-    Image  item=i3Image  
-                       
-  } 
+    Image  item=i3Image
+
+  }
   Frame label="Status" {
-    Text    item=i3DoorStatus           
-    Text    item=i3WindowStatus         
-    Text    item=i3LockStatus           
-    Text    item=i3NextServiceDate              
-    Text    item=i3NextServiceMileage       
-    Text    item=i3CheckControl         
-    Text    item=i3ChargingStatus           
-    Text    item=i3LastUpdate               
+    Text    item=i3DoorStatus
+    Text    item=i3WindowStatus
+    Text    item=i3LockStatus
+    Text    item=i3NextServiceDate
+    Text    item=i3NextServiceMileage
+    Text    item=i3CheckControl
+    Text    item=i3ChargingStatus
+    Text    item=i3LastUpdate
   }
   Frame label="Range" {
-    Text    item=i3Mileage           
-    Text    item=i3Range             
-    Text    item=i3RangeElectric     
-    Text    item=i3RangeFuel         
-    Text    item=i3BatterySoc        
-    Text    item=i3Fuel              
-    Text    item=i3RadiusElectric       
-    Text    item=i3RadiusHybrid         
+    Text    item=i3Mileage
+    Text    item=i3Range
+    Text    item=i3RangeElectric
+    Text    item=i3RangeFuel
+    Text    item=i3BatterySoc
+    Text    item=i3Fuel
+    Text    item=i3RadiusElectric
+    Text    item=i3RadiusHybrid
   }
   Frame label="Remote Services" {
-    Selection item=i3RemoteCommand              
-    Text      item=i3RemoteState              
+    Selection item=i3RemoteCommand
+    Text      item=i3RemoteState
   }
   Frame label="Services" {
-    Selection    item=i3ServiceName          
-    Text         item=i3ServiceDetails          
-    Text         item=i3ServiceMileage          
-    Text         item=i3ServiceDate          
+    Selection    item=i3ServiceName
+    Text         item=i3ServiceDetails
+    Text         item=i3ServiceMileage
+    Text         item=i3ServiceDate
   }
   Frame label="CheckControl" {
-    Selection    item=i3CCName          
-    Text         item=i3CCDetails          
-    Text         item=i3CCSeverity          
+    Selection    item=i3CCName
+    Text         item=i3CCDetails
+    Text         item=i3CCSeverity
   }
   Frame label="Door Details" {
     Text    item=i3DriverDoor visibility=[i3DriverDoor!="INVALID"]
-    Text    item=i3DriverDoorRear visibility=[i3DriverDoorRear!="INVALID"]  
+    Text    item=i3DriverDoorRear visibility=[i3DriverDoorRear!="INVALID"]
     Text    item=i3PassengerDoor visibility=[i3PassengerDoor!="INVALID"]
     Text    item=i3PassengerDoorRear visibility=[i3PassengerDoorRear!="INVALID"]
     Text    item=i3Hood visibility=[i3Hood!="INVALID"]
@@ -752,80 +774,80 @@ sitemap BMW label="BMW" {
     Text    item=i3Sunroof visibility=[i3Sunroof!="INVALID"]
   }
   Frame label="Location" {
-    Text    item=i3Location          
-    Text    item=i3Heading             
+    Text    item=i3Location
+    Text    item=i3Heading
   }
-  Frame label="Charge Profile" {    
-    Switch    item=i3ChargeProfileClimate     
-    Selection item=i3ChargeProfileMode        
-    Text      item=i3ChargeWindowStart        
-    Text      item=i3ChargeWindowEnd          
-    Text      item=i3Timer1Departure          
-    Switch    item=i3Timer1DayMon            
-    Switch    item=i3Timer1DayTue            
-    Switch    item=i3Timer1DayWed            
-    Switch    item=i3Timer1DayThu            
-    Switch    item=i3Timer1DayFri            
-    Switch    item=i3Timer1DaySat            
-    Switch    item=i3Timer1DaySun            
-    Switch    item=i3Timer1Enabled            
-    Text      item=i3Timer2Departure          
-    Switch    item=i3Timer2DayMon            
-    Switch    item=i3Timer2DayTue            
-    Switch    item=i3Timer2DayWed            
-    Switch    item=i3Timer2DayThu            
-    Switch    item=i3Timer2DayFri            
-    Switch    item=i3Timer2DaySat            
-    Switch    item=i3Timer2DaySun            
-    Switch    item=i3Timer2Enabled            
-    Text      item=i3Timer3Departure          
-    Switch    item=i3Timer3DayMon            
-    Switch    item=i3Timer3DayTue            
-    Switch    item=i3Timer3DayWed            
-    Switch    item=i3Timer3DayThu            
-    Switch    item=i3Timer3DayFri            
-    Switch    item=i3Timer3DaySat            
-    Switch    item=i3Timer3DaySun            
-    Switch    item=i3Timer3Enabled            
-    Text      item=i3Timer4Departure          
-    Switch    item=i3Timer4DayMon            
-    Switch    item=i3Timer4DayTue            
-    Switch    item=i3Timer4DayWed            
-    Switch    item=i3Timer4DayThu            
-    Switch    item=i3Timer4DayFri            
-    Switch    item=i3Timer4DaySat            
-    Switch    item=i3Timer4DaySun            
-    Switch    item=i3Timer4Enabled            
-  } 
+  Frame label="Charge Profile" {
+    Switch    item=i3ChargeProfileClimate
+    Selection item=i3ChargeProfileMode
+    Text      item=i3ChargeWindowStart
+    Text      item=i3ChargeWindowEnd
+    Text      item=i3Timer1Departure
+    Switch    item=i3Timer1DayMon
+    Switch    item=i3Timer1DayTue
+    Switch    item=i3Timer1DayWed
+    Switch    item=i3Timer1DayThu
+    Switch    item=i3Timer1DayFri
+    Switch    item=i3Timer1DaySat
+    Switch    item=i3Timer1DaySun
+    Switch    item=i3Timer1Enabled
+    Text      item=i3Timer2Departure
+    Switch    item=i3Timer2DayMon
+    Switch    item=i3Timer2DayTue
+    Switch    item=i3Timer2DayWed
+    Switch    item=i3Timer2DayThu
+    Switch    item=i3Timer2DayFri
+    Switch    item=i3Timer2DaySat
+    Switch    item=i3Timer2DaySun
+    Switch    item=i3Timer2Enabled
+    Text      item=i3Timer3Departure
+    Switch    item=i3Timer3DayMon
+    Switch    item=i3Timer3DayTue
+    Switch    item=i3Timer3DayWed
+    Switch    item=i3Timer3DayThu
+    Switch    item=i3Timer3DayFri
+    Switch    item=i3Timer3DaySat
+    Switch    item=i3Timer3DaySun
+    Switch    item=i3Timer3Enabled
+    Text      item=i3Timer4Departure
+    Switch    item=i3Timer4DayMon
+    Switch    item=i3Timer4DayTue
+    Switch    item=i3Timer4DayWed
+    Switch    item=i3Timer4DayThu
+    Switch    item=i3Timer4DayFri
+    Switch    item=i3Timer4DaySat
+    Switch    item=i3Timer4DaySun
+    Switch    item=i3Timer4Enabled
+  }
   Frame label="Charge Statistics" {
-    Text    item=i3StatisticsTitle          
-    Text    item=i3StatisticsEnergy             
-    Text    item=i3StatisticsSessions          
+    Text    item=i3StatisticsTitle
+    Text    item=i3StatisticsEnergy
+    Text    item=i3StatisticsSessions
   }
 
   Frame label="Charge Sessions" {
-    Selection    item=i3SessionTitle          
-    Text         item=i3SessionDetails             
-    Text         item=i3SessionCharged          
-    Text         item=i3SessionProblems             
-    Text         item=i3SessionStatus          
+    Selection    item=i3SessionTitle
+    Text         item=i3SessionDetails
+    Text         item=i3SessionCharged
+    Text         item=i3SessionProblems
+    Text         item=i3SessionStatus
   }
   Frame label="Tires" {
-    Text    item=i3TireFLCurrent          
-    Text    item=i3TireFLTarget             
-    Text    item=i3TireFRCurrent          
-    Text    item=i3TireFRTarget             
-    Text    item=i3TireRLCurrent          
-    Text    item=i3TireRLTarget             
-    Text    item=i3TireRRCurrent          
-    Text    item=i3TireRRTarget             
+    Text    item=i3TireFLCurrent
+    Text    item=i3TireFLTarget
+    Text    item=i3TireFRCurrent
+    Text    item=i3TireFRTarget
+    Text    item=i3TireRLCurrent
+    Text    item=i3TireRLTarget
+    Text    item=i3TireRRCurrent
+    Text    item=i3TireRRTarget
   }
   Frame label="Image Properties" {
     Selection    item=i3ImageViewport
-  } 
+  }
 }
 ```
 
 ## Credits
 
-This work is based on the project of [Bimmer Connected](https://github.com/bimmerconnected/bimmer_connected).
+This work is based on the great work of the project of [Bimmer Connected](https://github.com/bimmerconnected/bimmer_connected).

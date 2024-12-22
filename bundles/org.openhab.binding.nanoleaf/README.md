@@ -26,7 +26,7 @@ You can set the **color** for each panel and in the case of a Nanoleaf Canvas or
 
 | Nanoleaf Name          | Type | Description                                                | supported | touch support |
 | ---------------------- | ---- | ---------------------------------------------------------- | --------- | ------------- |
-| Light Panels           | NL22 | Triangles 1st Generation                                   |     X     |       -       |  
+| Light Panels           | NL22 | Triangles 1st Generation                                   |     X     |       -       |
 | Shapes Hexagon         | NL42 | Hexagons                                                   |     X     |       X       |
 | Shapes Triangles       | NL47 | Triangles                                                  |     X     |       X       |
 | Shapes Mini Triangles  | NL48 | Mini Triangles                                             |     X     |       X       |
@@ -36,7 +36,7 @@ You can set the **color** for each panel and in the case of a Nanoleaf Canvas or
 | Lines                  | NL59 | Lines                                                      |     X     |               |
 | Canvas                 | NL29 | Squares                                                    |     X     |       X       |
 
- x  = Supported  (-) = unknown (no device available to test)
+  x = Supported  (-) = unknown (no device available to test)
 
 ## Discovery
 
@@ -94,22 +94,25 @@ The `thingUID` is an optional parameter. If it is not provided, the command loop
 Compare the following output with the right picture at the beginning of the article
 
 ```text
-            31413                    9162       13276     
+            31413                    9162       13276
 
 55836       56093       48111       38724       17870        5164       64279
 
-                        58086        8134                   39755             
+                        58086        8134                   39755
 
-                                    41451                                     
+                                    41451
 
 ```
+
+As mentioned above this only works for the squared panels.
+It is recommended to instead use the layout-channel described below which works for all designs.
 
 ## State
 
 The state channel shows an image of the panels on the wall.
 You have to configure things for each panel to get the correct color.
 Since the colors of the panels can make it difficult to see the panel ids, please use the layout channel where the background color is always white to identify them.
-For state to work, you need to set static colors to your panel. 
+For state to work, you need to set static colors to your panel.
 This is because Nanoleaf does not return updates on colors for dynamic effects and animations.
 
 ![Image](doc/NanoCanvas_rendered.png)
@@ -128,22 +131,9 @@ The controller thing has the following parameters:
 
 **Important note on the topic of IPV6 ip addresses:**
 
-With firmware version 8.5.2 or newer, panels may change between being OFFLINE and ONLINE.  
-This is due to the fact that if they are discovered with IPv6 addresses, the binding is not able to correctly send API requests to the devices.
-It is therefore recommended to disable IPv6 on the openHAB server.
-
-This can e.g. be achieved on openHABian the following way:
-
-```text
-sudo nano /etc/sysctl.conf`
-
-Add the following at the bottom of the file:
-
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
-
-```
+With firmware version 8.5.2 or newer, panels may change between being OFFLINE and ONLINE.
+This is because if they are discovered with IPv6 addresses, the binding is not able to correctly send API requests to the devices which leads to an unstable behaviour.
+To avoid this, the binding will only discover devices based on their IPv4 address.
 
 Reboot your server after the change.
 
@@ -160,19 +150,19 @@ This discovers all connected panels with their IDs.
 
 The controller bridge has the following channels:
 
-| Channel             | Item Type          | Description                                                                                               | Read Only |
-|---------------------|--------------------|-----------------------------------------------------------------------------------------------------------|-----------|
-| color               | Color              | Color, power and brightness of all light panels                                                           | No        |
-| colorTemperature    | Dimmer             | Color temperature (in percent) of all light panels                                                        | No        |
-| colorTemperatureAbs | Number:Temperature | Color temperature (in Kelvin, 1200 to 6500) of all light panels                                           | No        |
-| colorMode           | String             | Color mode of the light panels                                                                            | Yes       |
-| effect              | String             | Selected effect of the light panels                                                                       | No        |
-| layout              | Image              | Shows the layout of your panels with IDs.                                                                 | Yes       |
-| rhythmState         | Switch             | Connection state of the rhythm module                                                                     | Yes       |
-| rhythmActive        | Switch             | Activity state of the rhythm module                                                                       | Yes       |
-| rhythmMode          | Number             | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                             | No        |
-| state               | Image              | Shows the current state of your panels with colors.                                                       | Yes       |
-| swipe               | Trigger            | [Canvas / Shapes Only] Detects Swipes over the panel. LEFT, RIGHT, UP, DOWN events are supported.         | Yes       |
+| Channel             | Item Type          | Description                                                                                       | Read Only |
+|---------------------|--------------------|---------------------------------------------------------------------------------------------------|-----------|
+| color               | Color              | Color, power and brightness of all light panels                                                   | No        |
+| colorTemperature    | Dimmer             | Color temperature (in percent) of all light panels                                                | No        |
+| colorTemperatureAbs | Number:Temperature | Color temperature (in Kelvin, 1200 to 6500) of all light panels                                   | No        |
+| colorMode           | String             | Color mode of the light panels                                                                    | Yes       |
+| effect              | String             | Selected effect of the light panels                                                               | No        |
+| layout              | Image              | Shows the layout of your panels with IDs.                                                         | Yes       |
+| rhythmState         | Switch             | Connection state of the rhythm module                                                             | Yes       |
+| rhythmActive        | Switch             | Activity state of the rhythm module                                                               | Yes       |
+| rhythmMode          | Number             | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                     | No        |
+| state               | Image              | Shows the current state of your panels with colors.                                               | Yes       |
+| swipe               | Trigger            | [Canvas / Shapes Only] Detects Swipes over the panel. LEFT, RIGHT, UP, DOWN events are supported. | Yes       |
 
 A lightpanel thing has the following channels:
 
@@ -185,7 +175,7 @@ The color channels support full color control with hue, saturation and brightnes
 For example, brightness of _all_ panels at once can be controlled by defining a dimmer item for the color channel of the _controller thing_.
 The same applies to the color channel of an individual lightpanel.
 
-### Limitations assigning specific colors on individual panels:
+### Limitations Assigning Specific Colors on Individual Panels
 
 - Due to the way the API of the nanoleaf is designed, each time a color is assigned to a panel, it will be directly sent to that panel. The result is that if you send colors to several panels more or less at the same time, they will not be set at the same time but one after the other and rather appear like a sequence but as a one shot.
 - Another important limitation is that individual panels cannot be set while a dynamic effect is running on the panel which means that as soon as you set an individual panel the "static effect" is set, which disables the chosen dynamic effect. The nanoleaf app shows that a static effect is now running, too.
@@ -278,11 +268,11 @@ sitemap nanoleaf label="Nanoleaf"
     Frame label="Controller" {
             Switch item=NanoleafPower
             Slider item=NanoleafBrightness
-            Colorpicker item=NanoleafColor           
+            Colorpicker item=NanoleafColor
             Text item=NanoleafHue
             Text item=NanoleafSaturation
-            Slider item=NanoleafColorTemp     
-            Setpoint item=NanoleafColorTempAbs step=100 minValue=1200 maxValue=6500            
+            Slider item=NanoleafColorTemp
+            Setpoint item=NanoleafColorTempAbs step=100 minValue=1200 maxValue=6500
             Text item=NanoleafColorMode
             Selection item=NanoleafEffect
             Text item=NanoleafRhythmState
@@ -308,7 +298,7 @@ sitemap nanoleaf label="Nanoleaf"
 rule "UpdateHueAndSat"
 when Item NanoleafColor changed
 then
-    val hsbValues = NanoleafColor.state as HSBType    
+    val hsbValues = NanoleafColor.state as HSBType
     NanoleafHue.postUpdate(hsbValues.hue.intValue)
     NanoleafSaturation.postUpdate(hsbValues.saturation.intValue)
 end
@@ -323,17 +313,17 @@ then
     var hue = 0
     var direction = 1
 
-    while(NanoleafRainbowScene.state == ON) {        
-        Thread::sleep(pause)        
+    while(NanoleafRainbowScene.state == ON) {
+        Thread::sleep(pause)
         hue = hue + (5 * direction)
         if(hue >= 359) {
             hue = 359
-            direction = direction * -1            
+            direction = direction * -1
         }
         else if (hue < 0) {
             hue = 0
-            direction = direction * -1            
-        }        
+            direction = direction * -1
+        }
         // replace NanoleafColor with Panel1Color to run rainbow on a single panel
         NanoleafColor.sendCommand(new HSBType(new DecimalType(hue), saturation, brightness))
     }
@@ -373,18 +363,18 @@ var oldEffect = null
 /*
 
 The idea behind that rule is to use one panel to switch on / off brightness control for a specific openHAB item.
- 
- - In this case the panel with the id=36604 has been created as a thing. 
+
+ - In this case the panel with the id=36604 has been created as a thing.
  - The controller color item is named SZNanoCanvas_Color
  - The controller effect item that holds the last chosen effect is SZNanoCanvas_Effect
  - Also that thing has channel to control the color of the panel
- 
+
 We use that specific panel to toggle the brightness swipe mode on or off.
 We indicate that mode by  setting the canvas to red. When switching it
 off we make sure we return the effect that was on before.
-Only if the brightness swipe mode is ON we then use this to control the brightness of 
+Only if the brightness swipe mode is ON we then use this to control the brightness of
 another thing which in this case is a lamp. Every swipe changes the brightness by 10.
-By extending it further this would also allow to select different items to control by 
+By extending it further this would also allow to select different items to control by
 tapping different panels before.
 
 */
@@ -400,16 +390,16 @@ then
     } else {
         brightnessMode = OFF
         sendCommand("SZNanoCanvas_Effect", oldEffect)
-    }    
+    }
 end
 
 rule "Swipe Nano to control brightness"
 when
-    Channel "nanoleaf:controller:645E3A484FFF:swipe" triggered 
+    Channel "nanoleaf:controller:645E3A484FFF:swipe" triggered
 then
     // Note: you can even control a rollershutter instead of a light dimmer
     var dimItem = MyLampDimmerItem
-     
+
     // only process the swipe if brightness mode is active
     if (brightnessMode == ON) {
         var currentBrightness = dimItem.state as Number

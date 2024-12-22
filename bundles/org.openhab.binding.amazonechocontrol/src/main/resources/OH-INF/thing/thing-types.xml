@@ -255,6 +255,9 @@
 		</supported-bridge-type-refs>
 		<label>Smart Home Device</label>
 		<description>Smart home device connected to Alexa</description>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text" required="true">
@@ -269,6 +272,9 @@
 		</supported-bridge-type-refs>
 		<label>Smart Home Device Group</label>
 		<description>Group of smart home devices in your amazon account</description>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text" required="true">
@@ -573,11 +579,6 @@
 		<label>Color Temperature Name</label>
 		<description>Color Temperature Name</description>
 	</channel-type>
-	<channel-type id="colorTemperatureInKelvin">
-		<item-type>Number</item-type>
-		<label>Color Temperature In Kelvin</label>
-		<description>Color Temperature In Kelvin</description>
-	</channel-type>
 	<!-- Alexa.PercentageController -->
 	<channel-type id="percentage">
 		<item-type>Dimmer</item-type>
@@ -636,7 +637,7 @@
 	</channel-type>
 	<!-- Alexa.HumiditySensor -->
 	<channel-type id="relativeHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity measured by the thermostat.</description>
 		<category>Humidity</category>

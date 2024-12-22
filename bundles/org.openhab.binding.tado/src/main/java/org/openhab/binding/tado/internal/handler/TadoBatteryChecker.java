@@ -21,9 +21,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tado.internal.api.ApiException;
-import org.openhab.binding.tado.internal.api.model.ControlDevice;
-import org.openhab.binding.tado.internal.api.model.Zone;
+import org.openhab.binding.tado.swagger.codegen.api.ApiException;
+import org.openhab.binding.tado.swagger.codegen.api.model.ControlDevice;
+import org.openhab.binding.tado.swagger.codegen.api.model.Zone;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;

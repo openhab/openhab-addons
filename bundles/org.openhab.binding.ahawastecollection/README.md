@@ -55,7 +55,7 @@ The thing **aha Waste Collection Schedule** provides four channels for the upcom
 wasteCollection.things
 
 ```java
-Thing ahawastecollection:collectionSchedule:wasteCollectionSchedule "aha Abfuhrkalender" [ commune="Isernhagen", street="67269@Rosmarinweg+/+Kirchhorst@Kirchhorst", houseNumber="10", houseNumberAddon="", collectionPlace="67269-0010+" ] 
+Thing ahawastecollection:collectionSchedule:wasteCollectionSchedule "aha Abfuhrkalender" [ commune="Isernhagen", street="67269@Rosmarinweg+/+Kirchhorst@Kirchhorst", houseNumber="10", houseNumberAddon="", collectionPlace="67269-0010+" ]
 ```
 
 wasteCollection.items
@@ -99,7 +99,6 @@ actions:
         var papierDate = items['collectionDay_paper'].getZonedDateTime();
         var restmuellDate = items['collectionDay_generalWaste'].getZonedDateTime();
 
-
         // Check which waste types are collected on the next day
         var biomuellCollection = biomuellDate.equals(tomorrow);
         var leichtverpackungCollection = leichtverpackungDate.equals(tomorrow);
@@ -124,7 +123,6 @@ actions:
         if (restmuellCollection) {
           toBeCollected.push('general waste');
         }
-
 
         // Send message (or something else) if at least one waste type is collected
         if (toBeCollected.length > 0) {

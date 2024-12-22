@@ -20,6 +20,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.core.library.types.OnOffType;
 
 /**
@@ -63,11 +64,13 @@ public class SwitchTests extends AbstractComponentTests {
                 }\
                 """);
 
-        assertThat(component.channels.size(), is(1));
+        assertThat(component.channels.size(), is(2));
         assertThat(component.getName(), is("th1 auto lock"));
 
-        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/auto_lock", "state",
-                OnOffValue.class);
+        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/auto_lock",
+                "th1 auto lock", OnOffValue.class);
+        assertChannel(component, Switch.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
+                TextValue.class);
 
         publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"MANUAL\"}");
         assertState(component, Switch.SWITCH_CHANNEL_ID, OnOffType.OFF);
@@ -108,10 +111,12 @@ public class SwitchTests extends AbstractComponentTests {
                 }\
                 """);
 
-        assertThat(component.channels.size(), is(1));
+        assertThat(component.channels.size(), is(2));
         assertThat(component.getName(), is("th1 auto lock"));
+        assertChannel(component, Switch.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
+                TextValue.class);
 
-        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "zigbee2mqtt/th1", "", "state", OnOffValue.class);
+        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "zigbee2mqtt/th1", "", "th1 auto lock", OnOffValue.class);
 
         publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"MANUAL\"}");
         assertState(component, Switch.SWITCH_CHANNEL_ID, OnOffType.OFF);
@@ -148,11 +153,12 @@ public class SwitchTests extends AbstractComponentTests {
                 }\
                 """);
 
-        assertThat(component.channels.size(), is(1));
+        assertThat(component.channels.size(), is(2));
         assertThat(component.getName(), is("th1 auto lock"));
-
-        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "", "zigbee2mqtt/th1/set/auto_lock", "state",
+        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "", "zigbee2mqtt/th1/set/auto_lock", "th1 auto lock",
                 OnOffValue.class);
+        assertChannel(component, Switch.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
+                TextValue.class);
 
         component.getChannel(Switch.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/th1/set/auto_lock", "MANUAL");

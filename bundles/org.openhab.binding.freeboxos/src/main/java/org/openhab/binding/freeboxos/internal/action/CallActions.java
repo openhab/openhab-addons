@@ -48,14 +48,22 @@ public class CallActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "clear call queue", description = "Delete all call logged in the queue")
-    public void reset() {
+    @RuleAction(label = "@text/action.resetCalls.label", description = "@text/action.resetCalls.description")
+    public void resetCalls() {
         logger.debug("Call log clear called");
         CallHandler localHandler = handler;
         if (localHandler != null) {
             localHandler.emptyQueue();
         } else {
             logger.warn("Call Action service ThingHandler is null");
+        }
+    }
+
+    public static void resetCalls(ThingActions actions) {
+        if (actions instanceof CallActions callActions) {
+            callActions.resetCalls();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a CallActions class.");
         }
     }
 }

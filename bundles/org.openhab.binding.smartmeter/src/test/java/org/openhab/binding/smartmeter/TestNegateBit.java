@@ -14,6 +14,7 @@ package org.openhab.binding.smartmeter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.smartmeter.internal.MeterValue;
 import org.openhab.binding.smartmeter.internal.conformity.negate.NegateBitModel;
@@ -25,6 +26,7 @@ import org.openhab.binding.smartmeter.internal.conformity.negate.NegateHandler;
  * @author Matthias Steigenberger - Initial contribution
  *
  */
+@NonNullByDefault
 public class TestNegateBit {
 
     @Test
@@ -44,6 +46,16 @@ public class TestNegateBit {
                 obis -> new MeterValue<>(obis, "65954", null));
 
         assertTrue(negateState);
+    }
+
+    @Test
+    public void testNegateHandlingDecimalTrue() {
+        String negateProperty = "1-0_16-7-0:31:0";
+
+        boolean negateStateDot = NegateHandler.shouldNegateState(negateProperty,
+                obis -> new MeterValue<>(obis, "49.0", null));
+
+        assertTrue(negateStateDot);
     }
 
     @Test

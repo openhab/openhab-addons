@@ -48,14 +48,22 @@ public class RepeaterActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "reboot free repeater", description = "Reboots the Free Repeater")
-    public void reboot() {
+    @RuleAction(label = "@text/action.rebootRepeater.label", description = "@text/action.rebootRepeater.description")
+    public void rebootRepeater() {
         logger.debug("Repeater reboot called");
         RepeaterHandler localHandler = this.handler;
         if (localHandler != null) {
             localHandler.reboot();
         } else {
             logger.warn("Repeater Action service ThingHandler is null");
+        }
+    }
+
+    public static void rebootRepeater(ThingActions actions) {
+        if (actions instanceof RepeaterActions repeaterActions) {
+            repeaterActions.rebootRepeater();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a RepeaterActions class.");
         }
     }
 }

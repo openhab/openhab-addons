@@ -203,7 +203,6 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                                         Optional<Thing> legacyThingOptional = clip2BridgeHandler.getLegacyThing(idv1);
                                         if (legacyThingOptional.isPresent()) {
                                             Thing legacyThing = legacyThingOptional.get();
-                                            thingId = legacyThing.getUID().getId();
                                             String legacyLabel = legacyThing.getLabel();
                                             thingLabel = Objects.nonNull(legacyLabel) ? legacyLabel : thingLabel;
                                         }

@@ -345,7 +345,6 @@ public class ShellyManagerPage {
                         value = dateTimeState.format(null).replace('T', ' ').replace('-', '/');
                         break;
                     default:
-                        value = getTimestamp(dateTimeState);
                         value = dateTimeState.format(null).replace('T', ' ').replace('-', '/');
                 }
             } else {
@@ -563,6 +562,9 @@ public class ShellyManagerPage {
         String name = getString(properties.get(PROPERTY_DEV_NAME));
         if (name.isEmpty()) {
             name = getString(properties.get(PROPERTY_SERVICE_NAME));
+        }
+        if (name.isEmpty()) {
+            name = getString(properties.get(PROPERTY_MAC_ADDRESS));
         }
         return name;
     }

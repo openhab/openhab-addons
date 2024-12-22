@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -33,9 +34,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -52,11 +55,17 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.transform.TransformationException;
+import org.openhab.core.transform.TransformationHelper;
+import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
 import org.openhab.core.util.ColorUtil;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /**
  * Tests the {@link ChannelState} class.
@@ -129,6 +138,41 @@ public class ChannelStateTests {
         c.config.retained = true;
         c.publishValue(new StringType("UPDATE")).get();
         verify(connectionMock).publish(eq("command"), any(), anyInt(), eq(true));
+
+        c.stop().get();
+        verify(connectionMock).unsubscribe(eq("state"), eq(c));
+    }
+
+    @Test
+    public void publishStopTest() throws Exception {
+        ChannelConfig config = ChannelConfigBuilder.create("state", "command").build();
+        config.stop = "STOP";
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+        c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+        verify(connectionMock).subscribe(eq("state"), eq(c));
+
+        c.publishValue(StopMoveType.STOP).get();
+        verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, "STOP".getBytes())), anyInt(),
+                eq(false));
+
+        c.stop().get();
+        verify(connectionMock).unsubscribe(eq("state"), eq(c));
+    }
+
+    @Test
+    public void publishStopSeparateTopicTest() throws Exception {
+        ChannelConfig config = ChannelConfigBuilder.create("state", "command").withStopCommandTopic("stopCommand")
+                .build();
+        config.stop = "STOP";
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+        c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+        verify(connectionMock).subscribe(eq("state"), eq(c));
+
+        c.publishValue(StopMoveType.STOP).get();
+        verify(connectionMock).publish(eq("stopCommand"), argThat(p -> Arrays.equals(p, "STOP".getBytes())), anyInt(),
+                eq(false));
 
         c.stop().get();
         verify(connectionMock).unsubscribe(eq("state"), eq(c));
@@ -223,7 +267,7 @@ public class ChannelStateTests {
     @Test
     public void receivePercentageTest() {
         PercentageValue value = new PercentageValue(new BigDecimal(-100), new BigDecimal(100), new BigDecimal(10), null,
-                null);
+                null, null);
         ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
@@ -370,5 +414,98 @@ public class ChannelStateTests {
         c.processMessage("state", payload);
         assertThat(value.getChannelState(), is(instanceOf(RawType.class)));
         assertThat(((RawType) value.getChannelState()).getMimeType(), is("image/jpeg"));
+    }
+
+    @Nested
+    public class TransformationTests {
+        // Copied from org.openhab.core.thing.binding.generic.ChannelTransformationTest
+        private static final String T1_NAME = "TRANSFORM1";
+        private static final String T1_PATTERN = "T1Pattern";
+        private static final String T1_INPUT = "T1Input";
+        private static final String T1_RESULT = "T1Result";
+
+        private static final String NULL_INPUT = "nullInput";
+        private static final @Nullable String NULL_RESULT = null;
+
+        private @Mock @NonNullByDefault({}) TransformationService transformationService1Mock;
+
+        private @Mock @NonNullByDefault({}) BundleContext bundleContextMock;
+        private @Mock @NonNullByDefault({}) ServiceReference<TransformationService> serviceRef1Mock;
+
+        private @NonNullByDefault({}) TransformationHelper transformationHelper;
+
+        @BeforeEach
+        public void init() throws TransformationException {
+            Mockito.when(transformationService1Mock.transform(eq(T1_PATTERN), eq(T1_INPUT)))
+                    .thenAnswer(answer -> T1_RESULT);
+            Mockito.when(transformationService1Mock.transform(eq(T1_PATTERN), eq(NULL_INPUT)))
+                    .thenAnswer(answer -> NULL_RESULT);
+
+            Mockito.when(serviceRef1Mock.getProperty(any())).thenReturn("TRANSFORM1");
+
+            Mockito.when(bundleContextMock.getService(serviceRef1Mock)).thenReturn(transformationService1Mock);
+
+            transformationHelper = new TransformationHelper(bundleContextMock);
+            transformationHelper.setTransformationService(serviceRef1Mock);
+        }
+
+        @AfterEach
+        public void tearDown() {
+            transformationHelper.deactivate();
+        }
+
+        @Test
+        public void transformationPatternTest() throws Exception {
+            ChannelConfig config = ChannelConfigBuilder.create("state", "command")
+                    .withTransformationPattern(List.of(T1_NAME + ":" + T1_PATTERN)).build();
+            ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+            CompletableFuture<@Nullable Void> future = c.start(connectionMock, scheduler, 100);
+            c.processMessage("state", T1_INPUT.getBytes());
+            future.get(300, TimeUnit.MILLISECONDS);
+
+            assertThat(textValue.getChannelState().toString(), is(T1_RESULT));
+            verify(channelStateUpdateListenerMock).updateChannelState(eq(channelUIDMock), any());
+        }
+
+        @Test
+        public void transformationPatternReturningNullTest() throws Exception {
+            ChannelConfig config = ChannelConfigBuilder.create("state", "command")
+                    .withTransformationPattern(List.of(T1_NAME + ":" + T1_PATTERN)).build();
+            ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+            // First, test with an input that doesn't get transformed to null
+            CompletableFuture<@Nullable Void> future = c.start(connectionMock, scheduler, 100);
+            c.processMessage("state", T1_INPUT.getBytes());
+            future.get(300, TimeUnit.MILLISECONDS);
+
+            assertThat(textValue.getChannelState().toString(), is(T1_RESULT));
+            verify(channelStateUpdateListenerMock).updateChannelState(eq(channelUIDMock), any());
+
+            clearInvocations(channelStateUpdateListenerMock);
+
+            // now test with an input that gets transformed to null
+            future = c.start(connectionMock, scheduler, 100);
+            c.processMessage("state", NULL_INPUT.getBytes());
+            future.get(300, TimeUnit.MILLISECONDS);
+
+            // textValue should not have been updated
+            assertThat(textValue.getChannelState().toString(), is(T1_RESULT));
+            verify(channelStateUpdateListenerMock, never()).updateChannelState(eq(channelUIDMock), any());
+        }
+
+        @Test
+        public void transformationPatternOutTest() throws Exception {
+            ChannelConfig config = ChannelConfigBuilder.create("state", "command")
+                    .withTransformationPatternOut(List.of(T1_NAME + ":" + T1_PATTERN)).build();
+            ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+            c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+            verify(connectionMock).subscribe(eq("state"), eq(c));
+
+            c.publishValue(new StringType(T1_INPUT)).get();
+            verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, T1_RESULT.getBytes())),
+                    anyInt(), eq(false));
+        }
     }
 }

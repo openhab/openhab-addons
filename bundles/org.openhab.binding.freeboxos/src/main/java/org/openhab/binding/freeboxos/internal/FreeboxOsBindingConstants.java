@@ -71,9 +71,9 @@ public class FreeboxOsBindingConstants {
     public static final Set<ThingTypeUID> THINGS_TYPES_UIDS = Set.of(THING_TYPE_FXS, THING_TYPE_DECT, THING_TYPE_CALL,
             THING_TYPE_HOST, THING_TYPE_VM, THING_TYPE_PLAYER, THING_TYPE_ACTIVE_PLAYER, THING_TYPE_DELTA,
             THING_TYPE_REVOLUTION, THING_TYPE_REPEATER, THING_TYPE_WIFI_HOST, THING_TYPE_FREEPLUG);
-    public static final Set<ThingTypeUID> HOME_TYPES_UIDS = Set.of(Category.BASIC_SHUTTER.getThingTypeUID(),
-            Category.SHUTTER.getThingTypeUID(), Category.KFB.getThingTypeUID(), Category.CAMERA.getThingTypeUID(),
-            Category.ALARM.getThingTypeUID());
+    public static final Set<ThingTypeUID> HOME_TYPES_UIDS = Set.of(Category.BASIC_SHUTTER.thingTypeUID,
+            Category.SHUTTER.thingTypeUID, Category.KFB.thingTypeUID, Category.CAMERA.thingTypeUID,
+            Category.ALARM.thingTypeUID, Category.PIR.thingTypeUID);
 
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(BRIDGE_TYPE_UIDS, THINGS_TYPES_UIDS, HOME_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet());
@@ -86,18 +86,21 @@ public class FreeboxOsBindingConstants {
     public static final String LOCAL = "local";
     public static final String FULL_DUPLEX = "fullDuplex";
 
-    // List of all Group Channel ids
+    // List of all Channel Groups ids
     public static final String GROUP_SENSORS = "sensors";
     public static final String GROUP_FANS = "fans";
-    public static final String CONNECTION_STATUS = "connection-status";
-    public static final String SYS_INFO = "sysinfo";
-    public static final String ACTIONS = "actions";
-    public static final String FILE_SHARING = "file-sharing";
-    public static final String CONNECTIVITY = "connectivity";
-    public static final String DISPLAY = "display";
-    public static final String VM_STATUS = "vmstatus";
+    public static final String GROUP_CONNECTION_STATUS = "connection-status";
+    public static final String GROUP_SYS_INFO = "sysinfo";
+    public static final String GROUP_ACTIONS = "actions";
+    public static final String GROUP_PLAYER_STATUS = "player-status";
+    public static final String GROUP_FILE_SHARING = "file-sharing";
+    public static final String GROUP_CONNECTIVITY = "connectivity";
+    public static final String GROUP_DISPLAY = "display";
+    public static final String GROUP_VM_STATUS = "vmstatus";
     public static final String GROUP_WIFI = "wifi";
-    public static final String REPEATER_MISC = "repeater-misc";
+    public static final String GROUP_REPEATER_MISC = "repeater-misc";
+    public static final String GROUP_XDSL = "xdsl";
+    public static final String GROUP_FTTH = "ftth";
 
     // List of all Channel ids
     public static final String RSSI = "rssi";
@@ -122,6 +125,7 @@ public class FreeboxOsBindingConstants {
     public static final String BYTES_DOWN = "bytes-down";
     public static final String BW = "bandwidth";
     public static final String PCT_BW = "bandwidth-usage";
+    public static final String CONNECTION_STATUS = "connection-status";
     public static final String ONHOOK = "onhook";
     public static final String RINGING = "ringing";
     public static final String HARDWARE_STATUS = "hardware-status";
@@ -155,21 +159,46 @@ public class FreeboxOsBindingConstants {
     public static final String LED = "led";
     public static final String HOST_COUNT = "host-count";
 
+    // FTTH channels ids
+    public static final String SFP_PRESENT = "sfp-present";
+    public static final String SFP_ALIM = "sfp-alim-ok";
+    public static final String SFP_POWER = "sfp-has-power";
+    public static final String SFP_SIGNAL = "sfp-has-signal";
+    public static final String SFP_LINK = "link";
+    public static final String SFP_PWR_TX = "sfp-pwr-tx";
+    public static final String SFP_PWR_RX = "sfp-pwr-rx";
+
+    // xDSL channels ids
+    public static final String XDSL_READY = "ready";
+    public static final String XDSL_STATUS = "status";
+    public static final String XDSL_MODULATION = "modulation";
+    public static final String XDSL_UPTIME = "uptime";
+
     // Home channels
+    public static final String TIMESTAMP_POSTFIX = "-timestamp";
+
     public static final String KEYFOB_ENABLE = "enable";
+    public static final String KEYFOB_PUSHED = "pushed";
+    public static final String KEYFOB_PUSHED_UPDATE = KEYFOB_PUSHED + TIMESTAMP_POSTFIX;
+
     public static final String NODE_BATTERY = "battery";
     public static final String SHUTTER_POSITION = "position-set";
     public static final String SHUTTER_STOP = "stop";
     public static final String BASIC_SHUTTER_STATE = "state";
     public static final String BASIC_SHUTTER_UP = "up";
     public static final String BASIC_SHUTTER_DOWN = "down";
-    // public static final String BASIC_SHUTTER_CMD = "basic-shutter";
     public static final String ALARM_PIN = "pin";
     public static final String ALARM_SOUND = "sound";
     public static final String ALARM_VOLUME = "volume";
     public static final String ALARM_TIMEOUT1 = "timeout1";
     public static final String ALARM_TIMEOUT2 = "timeout2";
     public static final String ALARM_TIMEOUT3 = "timeout3";
+    public static final String ALARM_STATE = "state";
+
+    public static final String PIR_TAMPER = "tamper";
+    public static final String PIR_TRIGGER = "trigger";
+    public static final String PIR_TAMPER_UPDATE = PIR_TAMPER + TIMESTAMP_POSTFIX;
+    public static final String PIR_TRIGGER_UPDATE = PIR_TRIGGER + TIMESTAMP_POSTFIX;
 
     public static final Set<Command> TRUE_COMMANDS = Set.of(OnOffType.ON, UpDownType.UP, OpenClosedType.OPEN);
     public static final Set<Class<?>> ON_OFF_CLASSES = Set.of(OnOffType.class, UpDownType.class, OpenClosedType.class);

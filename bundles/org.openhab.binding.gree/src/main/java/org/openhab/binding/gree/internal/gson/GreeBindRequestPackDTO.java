@@ -14,7 +14,7 @@ package org.openhab.binding.gree.internal.gson;
 
 /**
  *
- * The GreeBindRequestPack4Gson class is used by Gson to hold values to be send to
+ * The GreeBindRequestPackDTO class is used by Gson to hold values to be send to
  * the Air Conditioner during Binding
  *
  * @author John Cunha - Initial contribution

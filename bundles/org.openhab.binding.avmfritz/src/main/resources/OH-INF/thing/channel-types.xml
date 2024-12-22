@@ -122,7 +122,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Current Humidity</label>
 		<description>Current measured humidity.</description>
 		<category>Humidity</category>
@@ -239,6 +239,18 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter Control</label>
 		<description>Controls the rollershutter and states its opening level in percent</description>
+	</channel-type>
+
+	<channel-type id="color-temperature-abs" advanced="true">
+		<item-type unitHint="K">Number:Temperature</item-type>
+		<label>Color Temperature</label>
+		<description>Controls the color temperature of the light in Kelvin</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
+		<state min="2700" max="6500" pattern="%.0f K"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -10,7 +10,6 @@
 		</supported-bridge-type-refs>
 
 		<label>Heater</label>
-		<description>Heater</description>
 		<channels>
 			<channel id="heaterState" typeId="state"/>
 			<channel id="heaterEnable" typeId="enable"/>
@@ -28,7 +27,6 @@
 	<channel-type id="state">
 		<item-type>String</item-type>
 		<label>Heater State</label>
-		<description>Heater State</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -41,7 +39,6 @@
 	<channel-type id="enable">
 		<item-type>Switch</item-type>
 		<label>Heater Enable</label>
-		<description>Heater Enable</description>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -24,6 +24,8 @@
 			<channel id="dHdt" typeId="dhdt"/>
 			<channel id="dewpt" typeId="dewpt"/>
 			<channel id="doorEvent" typeId="door"/>
+			<channel id="h2s" typeId="h2s"/>
+			<channel id="healthIndex" typeId="health_index"/>
 			<channel id="health" typeId="health"/>
 			<channel id="humidityRelative" typeId="humidity"/>
 			<channel id="humidityAbsolute" typeId="humidity_abs"/>
@@ -31,6 +33,7 @@
 			<channel id="no2" typeId="no2"/>
 			<channel id="o3" typeId="o3"/>
 			<channel id="o2" typeId="oxygen"/>
+			<channel id="performanceIndex" typeId="performance_index"/>
 			<channel id="performance" typeId="performance"/>
 			<channel id="fineDustConc01" typeId="pm1"/>
 			<channel id="fineDustConc02_5" typeId="pm2_5"/>
@@ -53,6 +56,7 @@
 			<channel id="co_maxerr" typeId="co_maxerr"/>
 			<channel id="co2_maxerr" typeId="co2_maxerr"/>
 			<channel id="dewpt_maxerr" typeId="dewpt_maxerr"/>
+			<channel id="h2s_maxerr" typeId="h2s_maxerr"/>
 			<channel id="humidityRelative_maxerr" typeId="humidity_maxerr"/>
 			<channel id="humidityAbsolute_maxerr" typeId="humidity_abs_maxerr"/>
 			<channel id="no2_maxerr" typeId="no2_maxerr"/>
@@ -115,6 +119,7 @@
 			<property name="sensorList">Unknown sensor list</property>
 			<property name="sensorInfo">No info about sensors</property>
 			<property name="industry">No industry info</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -139,56 +144,56 @@
 	</channel-type>
 
 	<channel-type id="typps" advanced="false">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="µm">Number:Length</item-type>
 		<label>Average Size of Fine Dust</label>
-		<state readOnly="true" pattern="%.2f μm"></state>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="cnt0_3" advanced="false">
+	<channel-type id="cnt0_3" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust >0,3 μm</label>
+		<label>Fine Dust Count 0.3μm</label>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
-	<channel-type id="cnt0_5" advanced="false">
+	<channel-type id="cnt0_5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust >0,5 μm</label>
+		<label>Fine Dust Count 0.5 μm</label>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
-	<channel-type id="cnt1" advanced="false">
+	<channel-type id="cnt1" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust >1 μm</label>
+		<label>Fine Dust Count 1μm</label>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
-	<channel-type id="cnt2_5" advanced="false">
+	<channel-type id="cnt2_5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust >2,5 μm</label>
+		<label>Fine Dust Count 2.5μm</label>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
-	<channel-type id="cnt5" advanced="false">
+	<channel-type id="cnt5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust >5 μm</label>
+		<label>Fine Dust Count 5μm</label>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
-	<channel-type id="cnt10" advanced="false">
+	<channel-type id="cnt10" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust >10 μm</label>
+		<label>Fine Dust Count 10μm</label>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
 	<channel-type id="co" advanced="false">
-		<item-type>Number</item-type>
-		<label>CO Concentration</label>
-		<state readOnly="true" pattern="%.0f mg/m³"></state>
+		<item-type unitHint="mg/m³">Number:Density</item-type>
+		<label>Carbon Monoxide (CO)</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="co2" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
-		<label>CO₂ Concentration</label>
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>Carbon Dioxide (CO₂)</label>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
@@ -207,7 +212,7 @@
 	<channel-type id="dewpt" advanced="false">
 		<item-type>Number:Temperature</item-type>
 		<label>Dew Point</label>
-		<state readOnly="true" pattern="%.3f %unit%"></state>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="door" advanced="false">
@@ -216,22 +221,34 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="health" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
+	<channel-type id="h2s" advanced="false">
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Hydrogen Sulfide (H₂S)</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="health_index" advanced="false">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Health Index</label>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="health" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Health Index Raw</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="humidity" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<state readOnly="true" pattern="%.2f %%"></state>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="humidity_abs" advanced="false">
-		<item-type>Number</item-type>
+		<item-type unitHint="g/m³">Number:Density</item-type>
 		<label>Absolute Humidity</label>
-		<state readOnly="true" pattern="%.3f g/m³"></state>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="mtime" advanced="true">
@@ -241,51 +258,57 @@
 	</channel-type>
 
 	<channel-type id="no2" advanced="false">
-		<item-type>Number</item-type>
-		<label>NO₂ Concentration</label>
-		<state readOnly="true" pattern="%.2f μg/m³"></state>
+		<item-type unitHint="μg/m³">Number:Density</item-type>
+		<label>Nitrogen Dioxide (NO₂)</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="o3" advanced="false">
-		<item-type>Number</item-type>
-		<label>O₃ Concentration</label>
-		<state readOnly="true" pattern="%.2f μg/m³"></state>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Ozone (O₃)</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="oxygen" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Oxygen Concentration</label>
-		<state readOnly="true" pattern="%.3f %%"></state>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Oxygen (O₂)</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
-	<channel-type id="performance" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
+	<channel-type id="performance_index" advanced="false">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Performance Index</label>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="performance" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Performance Index Raw</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="pm1" advanced="false">
-		<item-type>Number</item-type>
-		<label>Fine Dust Concentr. >1μ</label>
-		<state readOnly="true" pattern="%.0f μg/m³"></state>
+		<item-type unitHint="μg/m³">Number:Density</item-type>
+		<label>Fine Dust 1μm</label>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="pm10" advanced="false">
-		<item-type>Number</item-type>
-		<label>Fine Dust Concentr. >10μ</label>
-		<state readOnly="true" pattern="%.0f μg/m³"></state>
+		<item-type unitHint="μg/m³">Number:Density</item-type>
+		<label>Fine Dust 10μm</label>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="pm2_5" advanced="false">
-		<item-type>Number</item-type>
-		<label>Fine Dust Concentr. >2,5μ</label>
-		<state readOnly="true" pattern="%.0f μg/m³"></state>
+		<item-type unitHint="μg/m³">Number:Density</item-type>
+		<label>Fine Dust 2.5μm</label>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="pressure" advanced="false">
-		<item-type>Number:Pressure</item-type>
-		<label>Pressure</label>
-		<state readOnly="true" pattern="%.2f hPa"></state>
+		<item-type unitHint="hPa">Number:Pressure</item-type>
+		<label>Barometric Pressure</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="so2" advanced="false">
@@ -295,7 +318,7 @@
 	</channel-type>
 
 	<channel-type id="sound" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Noise</label>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
@@ -313,8 +336,8 @@
 	</channel-type>
 
 	<channel-type id="tvoc" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
-		<label>VOC Concentration</label>
+		<item-type unitHint="ppb">Number:Dimensionless</item-type>
+		<label>Volatile Organic Compounds (VOC)</label>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
@@ -379,14 +402,20 @@
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
-	<channel-type id="humidity_maxerr" advanced="true">
+	<channel-type id="h2s_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
+		<label>Max. Error H₂S Conc.</label>
+		<state readOnly="true" pattern="± %.2f %%"></state>
+	</channel-type>
+
+	<channel-type id="humidity_maxerr" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Max. Error Humidity</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="humidity_abs_maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Max. Error Abs. Humidity</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>

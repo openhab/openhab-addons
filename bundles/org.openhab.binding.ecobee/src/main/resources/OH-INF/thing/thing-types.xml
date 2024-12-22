@@ -260,7 +260,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="actualHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Actual Humidity</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -285,12 +285,12 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredHumidity" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Desired Humidity</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredDehumidity" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Desired Dehumidity</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1389,7 +1389,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherRelativeHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1739,7 +1739,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="sensorHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Sensor Humidity</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

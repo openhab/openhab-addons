@@ -33,6 +33,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
@@ -117,6 +118,8 @@ public class WLedSegmentHandler extends BaseThingHandler {
                             localApi.setMasterOn(false, config.segmentIndex);
                             return;
                         }
+                        // do not turn the globalOn in order to allow for configuring this segment for effects that
+                        // start later
                         localApi.setMasterBrightness(percentCommand, config.segmentIndex);
                     }
                     break;
@@ -155,6 +158,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
                         localApi.setMasterOn(OnOffType.ON.equals(command), config.segmentIndex);
                     } else if (command instanceof IncreaseDecreaseType) {
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
+                            localApi.setGlobalOn(true);
                             if (masterBrightness255.intValue() < 240) {
                                 localApi.sendGetRequest("/win&TT=1000&A=~15"); // 255 divided by 15 = 17 levels
                             } else {
@@ -184,6 +188,11 @@ public class WLedSegmentHandler extends BaseThingHandler {
                             localApi.setMasterHSB(hsbCommand, config.segmentIndex);
                         }
                     } else if (command instanceof PercentType percentCommand) {
+                        if (PercentType.ZERO.equals(percentCommand)) {
+                            localApi.setMasterOn(false, config.segmentIndex);
+                            return;
+                        }
+                        localApi.setGlobalOn(true);
                         localApi.setMasterBrightness(percentCommand, config.segmentIndex);
                     }
                     return;
@@ -216,6 +225,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
                     localApi.setPalette(command.toString(), config.segmentIndex);
                     break;
                 case CHANNEL_FX:
+                    localApi.setGlobalOn(true);
                     localApi.setEffect(command.toString(), config.segmentIndex);
                     break;
                 case CHANNEL_SPEED:
@@ -245,10 +255,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
             WledApi localAPI = localBridgeHandler.api;
             if (localAPI != null) {
                 updateStatus(ThingStatus.ONLINE);
-                localBridgeHandler.stateDescriptionProvider
-                        .setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FX), localAPI.getUpdatedFxList());
-                localBridgeHandler.stateDescriptionProvider.setStateOptions(
-                        new ChannelUID(getThing().getUID(), CHANNEL_PALETTES), localAPI.getUpdatedPaletteList());
+                updateStateDescriptionProviders();
                 if (!localBridgeHandler.hasWhite) {
                     logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
                     removeWhiteChannels();
@@ -256,6 +263,33 @@ public class WLedSegmentHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
+        }
+    }
+
+    private void updateStateDescriptionProviders() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            WLedBridgeHandler localBridgeHandler = (WLedBridgeHandler) bridge.getHandler();
+            if (localBridgeHandler != null) {
+                WledApi localAPI = localBridgeHandler.api;
+                if (localAPI != null) {
+                    localBridgeHandler.stateDescriptionProvider.setStateOptions(
+                            new ChannelUID(getThing().getUID(), CHANNEL_FX), localAPI.getUpdatedFxList());
+                    localBridgeHandler.stateDescriptionProvider.setStateOptions(
+                            new ChannelUID(getThing().getUID(), CHANNEL_PALETTES), localAPI.getUpdatedPaletteList());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+
+        if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())) {
+            // if the handler has been started before the WLED controller is available, we have to fill the providers
+            // again once the bridge goes ONLINE
+            updateStateDescriptionProviders();
         }
     }
 }

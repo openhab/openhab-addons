@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,6 +20,7 @@ import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
 import org.openhab.core.types.util.UnitUtils;
@@ -34,7 +34,8 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
-    public static final String SENSOR_CHANNEL_ID = "sensor"; // Randomly chosen channel "ID"
+    public static final String SENSOR_CHANNEL_ID = "sensor";
+
     private static final Pattern TRIGGER_ICONS = Pattern.compile("^mdi:(toggle|gesture).*$");
 
     /**
@@ -58,39 +59,38 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
 
         @SerializedName("state_topic")
         protected String stateTopic = "";
-
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
-        @SerializedName("json_attributes")
-        protected @Nullable List<String> jsonAttributes;
     }
 
-    public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         Value value;
         String uom = channelConfiguration.unitOfMeasurement;
         String sc = channelConfiguration.stateClass;
+        ComponentChannelType type;
 
         if (uom != null && !uom.isBlank()) {
             value = new NumberValue(null, null, null, UnitUtils.parseUnit(uom));
+            type = ComponentChannelType.NUMBER;
         } else if (sc != null && !sc.isBlank()) {
             // see state_class at https://developers.home-assistant.io/docs/core/entity/sensor#properties
             // > If not None, the sensor is assumed to be numerical
             value = new NumberValue(null, null, null, null);
+            type = ComponentChannelType.NUMBER;
         } else {
             value = new TextValue();
+            type = ComponentChannelType.STRING;
         }
 
         String icon = channelConfiguration.getIcon();
 
         boolean trigger = TRIGGER_ICONS.matcher(icon).matches();
 
-        buildChannel(SENSOR_CHANNEL_ID, value, getName(), getListener(componentConfiguration, value))
+        buildChannel(SENSOR_CHANNEL_ID, type, value, getName(), getListener(componentConfiguration, value))
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
                 .trigger(trigger).build();
+
+        finalizeChannels();
     }
 
     private ChannelStateUpdateListener getListener(ComponentFactory.ComponentConfiguration componentConfiguration,

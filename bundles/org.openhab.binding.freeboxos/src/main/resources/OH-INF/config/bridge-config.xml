@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
-        https://openhab.org/schemas/config-description-1.0.0.xsd">
+	https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="bridge-type:freeboxos:api">
 		<parameter name="apiDomain" type="text">
@@ -32,15 +32,15 @@
 		</parameter>
 		<parameter name="httpsAvailable" type="boolean">
 			<label>HTTPS Available</label>
-			<description>Tells if https has been configured on the Freebox</description>
+			<description>Tells if HTTPS has been configured on the Freebox</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="httpsPort" type="integer">
 			<label>HTTPS port</label>
-			<description>Port to use for remote https access to the Freebox Api</description>
+			<description>Port to use for HTTPS access to the Freebox Api</description>
 			<advanced>true</advanced>
-			<default>15682</default>
+			<default>443</default>
 		</parameter>
 		<parameter name="wsReconnectInterval" type="integer" min="0" max="1440" required="false" unit="min">
 			<label>Websocket Reconnect Interval</label>

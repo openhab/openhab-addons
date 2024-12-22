@@ -31,6 +31,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.shelly.internal.ShellyBindingConstants;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
@@ -118,7 +119,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
 
             if ("yes".equalsIgnoreCase(update)) {
                 // do the update
-                th.setThingOffline(ThingStatusDetail.FIRMWARE_UPDATING, "offline.status-error-fwupgrade");
+                th.setThingOfflineAndDisconnect(ThingStatusDetail.FIRMWARE_UPDATING, "offline.status-error-fwupgrade");
                 html += loadHTML(FWUPDATE2_HTML, properties);
 
                 new Thread(() -> { // schedule asynchronous reboot
@@ -134,7 +135,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
                         // maybe the device restarts before returning the http response
                         logger.warn("{}: {}", th.getThingName(), getMessage("fwupdate.initiated", e.toString()));
                     }
-                }).start();
+                }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-scheduleUpdate").start();
             } else {
                 String message = getMessageP("fwupdate.confirm", MCINFO);
                 properties.put(ATTRIBUTE_MESSAGE, message);

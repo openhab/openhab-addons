@@ -31,5 +31,6 @@ public class NetworkHandlerConfiguration {
     public Integer retry = 1;
     public Integer refreshInterval = 60000;
     public Integer timeout = 5000;
+    public boolean useIOSWakeUp = true;
     public Set<String> networkInterfaceNames = Set.of();
 }

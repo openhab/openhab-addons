@@ -244,7 +244,7 @@ public class BondHttpApi {
 
                 logger.debug("HTTP response from request to {}: {}", uri, httpResponse);
                 return httpResponse;
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            } catch (InterruptedException | TimeoutException | ExecutionException | IllegalArgumentException e) {
                 logger.debug("Last request to Bond Bridge failed; {} retries remaining: {}", numRetriesRemaining,
                         e.getMessage());
                 numRetriesRemaining--;

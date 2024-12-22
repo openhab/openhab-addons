@@ -1,6 +1,6 @@
 # radoneye
 
-This extension adds support for [RadonEye](http://radonftlab.com/radon-sensor-product/radon-detector/rd200/) radon bluetooth detector. 
+This extension adds support for [RadonEye](http://radonftlab.com/radon-sensor-product/radon-detector/rd200/) radon bluetooth detector.
 
 ## Supported Things
 
@@ -12,7 +12,7 @@ Following thing types are supported by this extension:
 
 ## Discovery
 
-As any other Bluetooth device, RadonEye devices are discovered automatically by the corresponding bridge. 
+As any other Bluetooth device, RadonEye devices are discovered automatically by the corresponding bridge.
 
 ## Thing Configuration
 
@@ -32,17 +32,16 @@ Following channels are supported for `RadonEye` thing:
 | ------------------ | ------------------------ | ------------------------------------------- |
 | radon              | Number:Density           | The measured radon level                    |
 
-
 ## Example
 
 radoneye.things (assuming you have a Bluetooth bridge with the ID `bluetooth:bluegiga:adapter1`:
 
-```
+```java
 bluetooth:radoneye_rd200:adapter1:sensor1  "radoneye Wave Plus Sensor 1" (bluetooth:bluegiga:adapter1) [ address="12:34:56:78:9A:BC", refreshInterval=300 ]
 ```
 
 radoneye.items:
 
-```
+```java
 Number:Density          radon    "Radon level [%d %unit%]"   { channel="bluetooth:radoneye_rd200:adapter1:sensor1:radon" }
 ```

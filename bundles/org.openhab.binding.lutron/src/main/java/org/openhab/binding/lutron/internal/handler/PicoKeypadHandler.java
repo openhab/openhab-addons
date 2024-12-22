@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.lutron.internal.handler;
 
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
@@ -65,6 +68,10 @@ public class PicoKeypadHandler extends BaseKeypadHandler {
                 buttonList = kp.getComponents("3BRL", ComponentType.BUTTON);
                 leapButtonMap = KeypadConfigPico.LEAPBUTTONS_3BRL;
                 break;
+        }
+        if (getBridgeHandler() instanceof LeapBridgeHandler) {
+            leapButtonInverseMap = leapButtonMap.entrySet().stream()
+                    .collect(Collectors.toMap(Entry::getValue, Entry::getKey));
         }
     }
 }

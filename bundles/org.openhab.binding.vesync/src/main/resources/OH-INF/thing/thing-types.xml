@@ -37,8 +37,54 @@
 				<description>Seconds between fetching background updates about the air purifiers / humidifiers.</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="outletPollInterval" type="integer" min="5" step="1" unit="s">
+				<label>Outlet Poll Rate</label>
+				<description>Seconds between fetching background updates about the outlets.</description>
+				<default>60</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
+
+	<thing-type id="outlet">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Outlet via VeSync</label>
+		<description>An Outlet uplinking to VeSync</description>
+
+		<channels>
+			<channel id="enabled" typeId="deviceEnabledType"/>
+			<channel id="current" typeId="currentType"/>
+			<channel id="energy" typeId="energyType"/>
+			<channel id="power" typeId="powerType"/>
+			<channel id="voltage" typeId="voltageType"/>
+			<channel id="highestVoltage" typeId="highestVoltageType"/>
+			<channel id="voltagePTStatus" typeId="voltagePTStatusType"/>
+			<channel id="energyWeek" typeId="energyWeekType"/>
+			<channel id="energyMonth" typeId="energyMonthType"/>
+			<channel id="energyYear" typeId="energyYearType"/>
+		</channels>
+
+		<properties>
+			<property name="deviceName"/>
+			<property name="deviceType"/>
+			<property name="mac"/>
+			<property name="deviceFamily"/>
+		</properties>
+		<representation-property>mac</representation-property>
+
+		<config-description>
+			<parameter name="mac" type="text">
+				<label>MAC</label>
+				<description>The MAC of the device as reported by the API.</description>
+			</parameter>
+			<parameter name="deviceName" type="text">
+				<label>Device Name</label>
+				<description>The name allocated to the device by the app. (Must be unique if used)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 	<thing-type id="airPurifier">
 		<supported-bridge-type-refs>
@@ -64,6 +110,8 @@
 			<channel id="configAutoRoomSize" typeId="deviceAFConfigAutoPrefRoomSizeType"/>
 			<channel id="schedulesCount" typeId="deviceAFConfigAutoScheduleCountType"/>
 			<channel id="nightLightMode" typeId="deviceAFNightLight"/>
+			<channel id="lightDetection" typeId="deviceAFLightDetection"/>
+			<channel id="lightDetected" typeId="deviceAFLightDetected"/>
 		</channels>
 
 		<properties>
@@ -71,6 +119,7 @@
 			<property name="Device Type"/>
 			<property name="MAC Id"/>
 			<property name="Device Family"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>macId</representation-property>
 
@@ -109,6 +158,8 @@
 			<channel id="humiditySetpoint" typeId="deviceConfigTargetHumidity"/>
 			<channel id="warmEnabled" typeId="warmModeEnabled"/>
 			<channel id="warmLevel" typeId="warmLevel"/>
+			<channel id="schedulesCount" typeId="deviceAFConfigAutoScheduleCountType"/>
+			<channel id="timerExpiry" typeId="deviceAFTimerExpiry"/>
 		</channels>
 
 		<properties>
@@ -116,6 +167,7 @@
 			<property name="Device Type"/>
 			<property name="MAC Id"/>
 			<property name="Device Family"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>macId</representation-property>
 
@@ -131,6 +183,68 @@
 		</config-description>
 
 	</thing-type>
+
+	<channel-type id="currentType">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Actual current in A</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyType">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy</label>
+		<description>Today's energy in kWh</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="powerType">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Power</label>
+		<description>Current power in W</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="voltageType">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Current Voltage</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="highestVoltageType">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Highest Voltage</label>
+		<description>Highest Voltage ever measured by the outlet</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="voltagePTStatusType">
+		<item-type>Switch</item-type>
+		<label>Voltage PT Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="energyWeekType">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy Week</label>
+		<description>Total energy of week in kWh</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyMonthType">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy Month</label>
+		<description>Total energy of month in kWh</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyYearType">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy Year</label>
+		<description>Total energy of year in kWh</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
 
 	<channel-type id="deviceEnabledType">
 		<item-type>Switch</item-type>
@@ -154,10 +268,10 @@
 	</channel-type>
 
 	<channel-type id="deviceFilterLifePercentageType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Filter Life Remaining</label>
 		<description>Indicator of the remaining filter life</description>
-		<state readOnly="true" pattern="%.0f %%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="airPurifierModeType">
@@ -169,6 +283,7 @@
 				<option value="auto">Auto</option>
 				<option value="manual">Manual Fan Control</option>
 				<option value="sleep">Sleeping Auto</option>
+				<option value="pet">Pet Auto</option>
 			</options>
 		</state>
 	</channel-type>
@@ -188,14 +303,14 @@
 
 
 	<channel-type id="airPurifierFanLevelType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Fan Speed</label>
 		<description>Indicator of the current fan speed</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="deviceErrorCodeType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Device Error Code</label>
 		<description>Indicator of the current error code of the device</description>
 		<state readOnly="true" pattern="%.0f"/>
@@ -209,7 +324,7 @@
 	</channel-type>
 
 	<channel-type id="airQualityPM25">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Air Quality PPM2.5</label>
 		<description>Indicator of current air quality</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -219,6 +334,20 @@
 		<item-type>Switch</item-type>
 		<label>Config: Display Forever</label>
 		<description>Configuration: If the devices display is enabled forever</description>
+	</channel-type>
+
+	<channel-type id="deviceAFLightDetection">
+		<item-type>Switch</item-type>
+		<label>Light Detection</label>
+		<description>If the devices light detection is enabled</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="deviceAFLightDetected">
+		<item-type>Switch</item-type>
+		<label>Light Detected</label>
+		<description>Indicator if the device detects light</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="deviceAFConfigAutoPrefType">
@@ -242,14 +371,14 @@
 	</channel-type>
 
 	<channel-type id="deviceAFConfigAutoPrefRoomSizeType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="ft2">Number:Area</item-type>
 		<label>Config: Room size</label>
-		<description>Room size (foot sq) for efficient auto mode</description>
-		<state readOnly="true" pattern="%.0f sq ft"/>
+		<description>Room size for efficient auto mode</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="deviceAFConfigAutoScheduleCountType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Config: Schedules Count</label>
 		<description>The current number of schedules configured</description>
 		<state readOnly="true" pattern="%.0f"/>
@@ -285,21 +414,21 @@
 	</channel-type>
 
 	<channel-type id="deviceHumidityType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity Level</label>
 		<description>System representation of humidity</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="deviceConfigTargetHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity Set Point</label>
 		<description>Humidity Set Point</description>
 		<state readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="deviceMistLevelType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Mist Level</label>
 		<description>System representation of mist level</description>
 		<state readOnly="false" pattern="%.0f"/>
@@ -326,11 +455,10 @@
 	</channel-type>
 
 	<channel-type id="warmLevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Warm Level</label>
 		<description>Warm Level</description>
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
-
 
 </thing:thing-descriptions>

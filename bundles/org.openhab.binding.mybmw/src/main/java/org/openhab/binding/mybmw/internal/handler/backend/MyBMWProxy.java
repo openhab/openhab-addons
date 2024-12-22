@@ -14,7 +14,6 @@ package org.openhab.binding.mybmw.internal.handler.backend;
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
@@ -36,7 +35,7 @@ public interface MyBMWProxy {
 
     void setBridgeConfiguration(MyBMWBridgeConfiguration bridgeConfiguration);
 
-    List<@NonNull Vehicle> requestVehicles() throws NetworkException;
+    List<Vehicle> requestVehicles() throws NetworkException;
 
     /**
      * request all vehicles for one specific brand and their state

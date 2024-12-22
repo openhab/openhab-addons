@@ -28,7 +28,38 @@
 				<label>Power 4</label>
 				<description>Controls the smart plug relay for the 4th channel</description>
 			</channel>
+
+			<!-- Energy Monitor Channels -->
+			<channel id="voltage" typeId="system.electric-voltage"/>
+			<channel id="current" typeId="system.electric-current"/>
+			<channel id="watts" typeId="system.electric-power">
+				<label>Active Power</label>
+				<description>Active Power (W)</description>
+			</channel>
+
+			<channel id="volt-ampere" typeId="volt-ampere"/>
+			<channel id="volt-ampere-reactive" typeId="volt-ampere-reactive"/>
+			<channel id="power-factor" typeId="power-factor"/>
+
+			<channel id="energy-today" typeId="system.electric-energy">
+				<label>Energy Today</label>
+				<description>Energy consumed today (kWh)</description>
+			</channel>
+			<channel id="energy-yesterday" typeId="system.electric-energy">
+				<label>Energy Yesterday</label>
+				<description>Energy consumed yesterday (kWh)</description>
+			</channel>
+			<channel id="energy-total" typeId="system.electric-energy">
+				<label>Energy Total</label>
+				<description>Total energy consumed (kWh)</description>
+			</channel>
+
+			<channel id="energy-total-start" typeId="energy-total-start"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="hostName" type="text" required="true">
@@ -61,5 +92,37 @@
 		</config-description>
 
 	</thing-type>
+
+	<channel-type id="volt-ampere">
+		<item-type>Number:Power</item-type>
+		<label>Apparent Power</label>
+		<description>Apparent Power (VA)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="volt-ampere-reactive">
+		<item-type>Number:Power</item-type>
+		<label>Reactive Power</label>
+		<description>Reactive Power (VAr)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="power-factor">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Power Factor</label>
+		<description>Power Factor (PF)</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energy-total-start">
+		<item-type>DateTime</item-type>
+		<label>Energy Total Start</label>
+		<description>The date/time when the energy total measurement started</description>
+		<category>Time</category>
+		<tags>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
 
 </thing:thing-descriptions>

@@ -73,6 +73,8 @@ public class MediaContainer {
         @XStreamAsAttribute
         private String title;
         @XStreamAsAttribute
+        private String ratingKey;
+        @XStreamAsAttribute
         private String thumb;
         @XStreamAsAttribute
         private String art;
@@ -81,9 +83,13 @@ public class MediaContainer {
         @XStreamAsAttribute
         private String grandparentTitle;
         @XStreamAsAttribute
+        private String grandparentRatingKey;
+        @XStreamAsAttribute
         private String parentThumb;
         @XStreamAsAttribute
         private String parentTitle;
+        @XStreamAsAttribute
+        private String parentRatingKey;
         @XStreamAsAttribute
         private long viewOffset;
         @XStreamAsAttribute
@@ -113,6 +119,14 @@ public class MediaContainer {
             this.grandparentTitle = grandparentTitle;
         }
 
+        public String getGrandparentRatingKey() {
+            return grandparentRatingKey;
+        }
+
+        public void setGrandparentRatingKey(String ratingKey) {
+            this.grandparentRatingKey = ratingKey;
+        }
+
         public String getParentThumb() {
             return this.parentThumb;
         }
@@ -129,6 +143,14 @@ public class MediaContainer {
             this.parentTitle = parentTitle;
         }
 
+        public String getParentRatingKey() {
+            return parentRatingKey;
+        }
+
+        public void setParentRatingKey(String ratingKey) {
+            this.parentRatingKey = ratingKey;
+        }
+
         public Media getMedia() {
             return this.media;
         }
@@ -143,6 +165,14 @@ public class MediaContainer {
 
         public void setTitle(String title) {
             this.title = title;
+        }
+
+        public String getRatingKey() {
+            return ratingKey;
+        }
+
+        public void setRatingKey(String ratingKey) {
+            this.ratingKey = ratingKey;
         }
 
         public long getViewOffset() {

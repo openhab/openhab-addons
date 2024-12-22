@@ -47,7 +47,7 @@ import gnu.io.UnsupportedCommOperationException;
  * Driver for the CM11 X10 interface.
  *
  *
- * @author Anthony Green - Original code
+ * @author Anthony Green - Initial contribution
  * @author Bob Raker - updates to setClock code, adapted code for use in openHAB2
  * @see <a href="http://www.heyu.org/docs/protocol.txt">CM11 Protocol specification</a>
  * @see <a href="http://www.rxtx.org">RXTX Serial API for Java</a>
@@ -243,7 +243,7 @@ public class X10Interface extends Thread implements SerialPortEventListener {
      *
      */
     public X10Interface(String serialPort, Cm11aBridgeHandler bridgeHandler) throws NoSuchPortException {
-        super();
+        super("OH-binding-" + bridgeHandler.getThing().getUID());
         logger.trace("**** Constructing X10Interface for serial port: {} *******", serialPort);
         portId = CommPortIdentifier.getPortIdentifier(serialPort);
         this.bridgeHandler = bridgeHandler;

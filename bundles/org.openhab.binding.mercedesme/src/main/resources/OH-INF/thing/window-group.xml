@@ -7,11 +7,14 @@
 		<label>Detailed Window Status</label>
 		<description>Detailed Status Windows</description>
 		<channels>
-			<channel id="driver-front" typeId="window-driver-front-channel"/>
-			<channel id="driver-rear" typeId="window-driver-rear-channel"/>
-			<channel id="passenger-front" typeId="window-passenger-front-channel"/>
-			<channel id="passenger-rear" typeId="window-passenger-rear-channel"/>
-			<channel id="last-update" typeId="last-windows-update-channel"/>
+			<channel id="front-left" typeId="front-left-window"/>
+			<channel id="front-right" typeId="front-right-window"/>
+			<channel id="rear-left" typeId="rear-left-window"/>
+			<channel id="rear-right" typeId="rear-right-window"/>
+			<channel id="rear-right-blind" typeId="rear-right-blind"/>
+			<channel id="rear-left-blind" typeId="rear-left-blind"/>
+			<channel id="rear-blind" typeId="rear-blind"/>
+			<channel id="flip-window" typeId="flip-window"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

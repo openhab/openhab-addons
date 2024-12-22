@@ -18,7 +18,7 @@ The default update interval is set to 5 seconds. Intervals from 1 to 300 seconds
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:  
+The thing has a few configuration parameters:
 
 | Parameter       | Description                                                           |
 |-----------------|-----------------------------------------------------------------------|
@@ -241,6 +241,6 @@ sitemap mecmeter label="MecMeter"
         Text item=VoltageP2
         Text item=VoltageP3
     }
-    
+
 }
 ```

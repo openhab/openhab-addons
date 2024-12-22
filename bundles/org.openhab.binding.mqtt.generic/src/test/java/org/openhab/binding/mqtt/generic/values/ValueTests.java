@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,7 +36,6 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.openhab.core.types.TypeParser;
 import org.openhab.core.types.UnDefType;
 
@@ -70,18 +70,20 @@ public class ValueTests {
     @Test
     public void colorUpdate() {
         ColorValue v = new ColorValue(ColorMode.RGB, "fancyON", "fancyOFF", 77);
-        v.update((State) v.parseCommand(p(v, "255,255,255")));
+        v.update(v.parseCommand(p(v, "255,255,255")));
 
-        HSBType hsb = (HSBType) v.parseCommand(p(v, "OFF"));
+        HSBType hsb = v.parseCommand(p(v, "OFF"));
         assertThat(hsb.getBrightness().intValue(), is(0));
         v.update(hsb);
-        hsb = (HSBType) v.parseCommand(p(v, "ON"));
+        hsb = v.parseCommand(p(v, "ON"));
         assertThat(hsb.getBrightness().intValue(), is(77));
 
-        hsb = (HSBType) v.parseCommand(p(v, "0"));
+        hsb = v.parseCommand(p(v, "0"));
         assertThat(hsb.getBrightness().intValue(), is(0));
-        hsb = (HSBType) v.parseCommand(p(v, "1"));
+        hsb = v.parseCommand(p(v, "1"));
         assertThat(hsb.getBrightness().intValue(), is(1));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -98,7 +100,7 @@ public class ValueTests {
 
     @Test
     public void illegalPercentCommand() {
-        PercentageValue v = new PercentageValue(null, null, null, null, null);
+        PercentageValue v = new PercentageValue(null, null, null, null, null, null);
         assertThrows(IllegalStateException.class, () -> v.parseCommand(new StringType("demo")));
     }
 
@@ -110,7 +112,7 @@ public class ValueTests {
 
     @Test
     public void illegalPercentUpdate() {
-        PercentageValue v = new PercentageValue(null, null, null, null, null);
+        PercentageValue v = new PercentageValue(null, null, null, null, null, null);
         assertThrows(IllegalArgumentException.class, () -> v.parseCommand(new DecimalType(101.0)));
     }
 
@@ -137,6 +139,8 @@ public class ValueTests {
         // Test custom formatting
         assertThat(v.getMQTTpublishValue(OnOffType.OFF, "=%s"), is("=fancyOff"));
         assertThat(v.getMQTTpublishValue(OnOffType.ON, "=%s"), is("=fancyON"));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -168,6 +172,8 @@ public class ValueTests {
         // Test basic formatting
         assertThat(v.getMQTTpublishValue(OpenClosedType.CLOSED, null), is("fancyOff"));
         assertThat(v.getMQTTpublishValue(OpenClosedType.OPEN, null), is("fancyON"));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -191,6 +197,8 @@ public class ValueTests {
         assertThat(v.parseMessage(new StringType("nan")), is(UnDefType.UNDEF));
         assertThat(v.parseMessage(new StringType("-NaN")), is(UnDefType.UNDEF));
         assertThat(v.parseMessage(new StringType("-nan")), is(UnDefType.UNDEF));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -210,8 +218,13 @@ public class ValueTests {
         assertThat(command, is(new QuantityType<>(20, Units.PERCENT)));
         assertThat(v.getMQTTpublishValue(command, null), is("20"));
 
-        // Test with command without units
-        command = v.parseCommand(new QuantityType<>("20"));
+        // Test with command with units.ONE
+        command = v.parseCommand(new QuantityType<>("0.2"));
+        assertThat(command, is(new QuantityType<>(20, Units.PERCENT)));
+        assertThat(v.getMQTTpublishValue(command, null), is("20"));
+
+        // Test with command with DecimalType
+        command = v.parseCommand(new DecimalType(20));
         assertThat(command, is(new QuantityType<>(20, Units.PERCENT)));
         assertThat(v.getMQTTpublishValue(command, null), is("20"));
     }
@@ -233,7 +246,7 @@ public class ValueTests {
 
         // Test with exact percent
         Command command = new PercentType(27);
-        assertThat(v.parseCommand((Command) command), is(command));
+        assertThat(v.parseCommand(command), is(command));
         assertThat(v.getMQTTpublishValue(command, null), is("27"));
 
         // Test formatting 0/100
@@ -243,6 +256,8 @@ public class ValueTests {
         // Test parsing from MQTT
         assertThat(v.parseMessage(new StringType("fancyON")), is(UpDownType.UP));
         assertThat(v.parseMessage(new StringType("fancyOff")), is(UpDownType.DOWN));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -262,7 +277,7 @@ public class ValueTests {
 
         // Test with exact percent
         Command command = new PercentType(27);
-        assertThat(v.parseCommand((Command) command), is(command));
+        assertThat(v.parseCommand(command), is(command));
         assertThat(v.getMQTTpublishValue(command, null), is("27"));
 
         // Test formatting 0/100
@@ -290,19 +305,34 @@ public class ValueTests {
     @Test
     public void percentCalc() {
         PercentageValue v = new PercentageValue(new BigDecimal(10.0), new BigDecimal(110.0), new BigDecimal(1.0), null,
-                null);
+                null, null);
+        assertThat(v.createStateDescription(false).build().getStep(), is(new BigDecimal(1)));
+
         assertThat(v.parseCommand(new DecimalType("110.0")), is(PercentType.HUNDRED));
         assertThat(v.getMQTTpublishValue(PercentType.HUNDRED, null), is("110"));
         assertThat(v.parseCommand(new DecimalType(10.0)), is(PercentType.ZERO));
         assertThat(v.getMQTTpublishValue(PercentType.ZERO, null), is("10"));
 
-        assertThat(v.parseCommand(OnOffType.ON), is(PercentType.HUNDRED));
-        assertThat(v.parseCommand(OnOffType.OFF), is(PercentType.ZERO));
+        assertThat(v.parseCommand(OnOffType.ON), is(OnOffType.ON));
+        assertThat(v.getMQTTpublishValue(OnOffType.ON, null), is("110"));
+        assertThat(v.parseCommand(OnOffType.OFF), is(OnOffType.OFF));
+        assertThat(v.getMQTTpublishValue(OnOffType.OFF, null), is("10"));
+    }
+
+    @Test
+    public void percentFormatOverride() {
+        PercentageValue v = new PercentageValue(BigDecimal.ZERO, new BigDecimal(3.0), null, null, null, "%.0f");
+        assertThat(v.createStateDescription(false).build().getStep(),
+                is(new BigDecimal(100).divide(new BigDecimal(3), MathContext.DECIMAL128)));
+        assertThat(v.getMQTTpublishValue(PercentType.HUNDRED, null), is("3"));
+        assertThat(v.getMQTTpublishValue(PercentType.valueOf("67"), null), is("2"));
+        assertThat(v.getMQTTpublishValue(PercentType.valueOf("33"), null), is("1"));
+        assertThat(v.getMQTTpublishValue(PercentType.ZERO, null), is("0"));
     }
 
     @Test
     public void percentMQTTValue() {
-        PercentageValue v = new PercentageValue(null, null, null, null, null);
+        PercentageValue v = new PercentageValue(null, null, null, null, null, null);
         assertThat(v.parseCommand(new DecimalType("10.10000")), is(new PercentType("10.1")));
         assertThat(v.getMQTTpublishValue(new PercentType("10.1"), null), is("10.1"));
         Command command;
@@ -310,20 +340,24 @@ public class ValueTests {
             command = v.parseCommand(new DecimalType(i));
             assertThat(v.getMQTTpublishValue(command, null), is("" + i));
         }
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
     public void percentCustomOnOff() {
         PercentageValue v = new PercentageValue(new BigDecimal("0.0"), new BigDecimal("100.0"), new BigDecimal("1.0"),
-                "on", "off");
-        assertThat(v.parseCommand(new StringType("on")), is(PercentType.HUNDRED));
-        assertThat(v.parseCommand(new StringType("off")), is(PercentType.ZERO));
+                "on", "off", null);
+        assertThat(v.parseCommand(new StringType("on")), is(OnOffType.ON));
+        assertThat(v.getMQTTpublishValue(OnOffType.ON, "%s"), is("on"));
+        assertThat(v.parseCommand(new StringType("off")), is(OnOffType.OFF));
+        assertThat(v.getMQTTpublishValue(OnOffType.OFF, "%s"), is("off"));
     }
 
     @Test
     public void decimalCalc() {
         PercentageValue v = new PercentageValue(new BigDecimal("0.1"), new BigDecimal("1.0"), new BigDecimal("0.1"),
-                null, null);
+                null, null, null);
         assertThat(v.parseCommand(new DecimalType(1.0)), is(PercentType.HUNDRED));
         assertThat(v.parseCommand(new DecimalType(0.1)), is(PercentType.ZERO));
         PercentType command = (PercentType) v.parseCommand(new DecimalType(0.2));
@@ -333,7 +367,7 @@ public class ValueTests {
     @Test
     public void increaseDecreaseCalc() {
         PercentageValue v = new PercentageValue(new BigDecimal("1.0"), new BigDecimal("11.0"), new BigDecimal("0.5"),
-                null, null);
+                null, null, null);
 
         // Normal operation.
         PercentType command = (PercentType) v.parseCommand(new DecimalType("6.0"));
@@ -362,7 +396,7 @@ public class ValueTests {
     @Test
     public void upDownCalc() {
         PercentageValue v = new PercentageValue(new BigDecimal("1.0"), new BigDecimal("11.0"), new BigDecimal("0.5"),
-                null, null);
+                null, null, null);
 
         // Normal operation.
         PercentType command = (PercentType) v.parseCommand(new DecimalType("6.0"));
@@ -391,7 +425,23 @@ public class ValueTests {
     @Test
     public void percentCalcInvalid() {
         PercentageValue v = new PercentageValue(new BigDecimal(10.0), new BigDecimal(110.0), new BigDecimal(1.0), null,
-                null);
+                null, null);
         assertThrows(IllegalArgumentException.class, () -> v.parseCommand(new DecimalType(9.0)));
+    }
+
+    @Test
+    public void textUpdate() {
+        TextValue v = new TextValue();
+
+        assertThat(v.parseMessage(new StringType("")), is(new StringType("")));
+        assertThat(v.parseMessage(new StringType("NULL")), is(new StringType("NULL")));
+
+        v.setNullValue("");
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
+        assertThat(v.parseMessage(new StringType("NULL")), is(new StringType("NULL")));
+
+        v.setNullValue("NULL");
+        assertThat(v.parseMessage(new StringType("NULL")), is(UnDefType.NULL));
+        assertThat(v.parseMessage(new StringType("")), is(new StringType("")));
     }
 }

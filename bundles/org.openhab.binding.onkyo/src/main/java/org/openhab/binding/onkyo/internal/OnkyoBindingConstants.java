@@ -75,6 +75,7 @@ public class OnkyoBindingConstants {
     public static final String CHANNEL_LISTENMODE = "player#listenmode";
     public static final String CHANNEL_AUDIOINFO = "player#audioinfo";
     public static final String CHANNEL_PLAY_URI = "player#playuri";
+    public static final String CHANNEL_AUDYSSEYEQ = "player#audysseyeq";
 
     public static final String CHANNEL_NET_MENU_TITLE = "netmenu#title";
     public static final String CHANNEL_NET_MENU_CONTROL = "netmenu#control";

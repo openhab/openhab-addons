@@ -21,10 +21,12 @@
 				<label>Command</label>
 				<description>The command to execute</description>
 			</parameter>
-			<parameter name="transform" type="text" required="false">
+			<parameter name="transform" type="text" required="false" multiple="true">
 				<label>Transform</label>
-				<description>The transformation to apply on the execution result, e.g. REGEX((.*))</description>
-				<default>REGEX((.*))</default>
+				<description>The transformation to apply on the execution result, e.g. REGEX((.*)).
+					You can chain transformations by
+					listing each transformation on a separate line, or
+					by separating them with the intersection character ∩.</description>
 			</parameter>
 			<parameter name="interval" type="integer" required="false">
 				<label>Interval</label>

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.handler;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -23,20 +25,29 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.mqtt.homeassistant.internal.AbstractHomeAssistantTests;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Climate;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Sensor;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Switch;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.UnitProvider;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.types.StateDescription;
+
+import com.hubspot.jinjava.Jinjava;
 
 /**
  * Tests for {@link HomeAssistantThingHandler}
@@ -50,12 +61,11 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     private static final int ATTRIBUTE_RECEIVE_TIMEOUT = 2000;
 
     private static final List<String> CONFIG_TOPICS = Arrays.asList("climate/0x847127fffe11dd6a_climate_zigbee2mqtt",
-            "switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt",
-
-            "sensor/0x1111111111111111_test_sensor_zigbee2mqtt", "camera/0x1111111111111111_test_camera_zigbee2mqtt",
-
-            "cover/0x2222222222222222_test_cover_zigbee2mqtt", "fan/0x2222222222222222_test_fan_zigbee2mqtt",
-            "light/0x2222222222222222_test_light_zigbee2mqtt", "lock/0x2222222222222222_test_lock_zigbee2mqtt");
+            "switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt", "sensor/0x1111111111111111_test_sensor_zigbee2mqtt",
+            "camera/0x1111111111111111_test_camera_zigbee2mqtt", "cover/0x2222222222222222_test_cover_zigbee2mqtt",
+            "fan/0x2222222222222222_test_fan_zigbee2mqtt", "light/0x2222222222222222_test_light_zigbee2mqtt",
+            "lock/0x2222222222222222_test_lock_zigbee2mqtt", "binary_sensor/abc/activeEnergyReports",
+            "number/abc/activeEnergyReports", "sensor/abc/activeEnergyReports");
 
     private static final List<String> MQTT_TOPICS = CONFIG_TOPICS.stream()
             .map(AbstractHomeAssistantTests::configTopicToMqtt).collect(Collectors.toList());
@@ -63,6 +73,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
     private @NonNullByDefault({}) HomeAssistantThingHandler thingHandler;
     private @NonNullByDefault({}) HomeAssistantThingHandler nonSpyThingHandler;
+    private @Mock @NonNullByDefault({}) UnitProvider unitProvider;
 
     @BeforeEach
     public void setup() {
@@ -73,8 +84,12 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
         when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
-        thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, transformationServiceProvider,
-                SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+        setupThingHandler();
+    }
+
+    protected void setupThingHandler() {
+        thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
+                channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         nonSpyThingHandler = thingHandler;
@@ -97,7 +112,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         });
 
         verify(thingHandler, never()).componentDiscovered(any(), any());
-        assertThat(haThing.getChannels().size(), CoreMatchers.is(0));
+        assertThat(haThing.getChannels().size(), is(0));
         // Components discovered after messages in corresponding topics
         var configTopic = "homeassistant/climate/0x847127fffe11dd6a_climate_zigbee2mqtt/config";
         thingHandler.discoverComponents.processMessage(configTopic,
@@ -105,9 +120,9 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         verify(thingHandler, times(1)).componentDiscovered(eq(new HaID(configTopic)), any(Climate.class));
 
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(haThing.getChannels().size(), CoreMatchers.is(6));
-        verify(channelTypeProvider, times(6)).setChannelType(any(), any());
-        verify(channelTypeProvider, times(1)).setChannelGroupType(any(), any());
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(7));
+        verify(stateDescriptionProvider, times(7)).setDescription(any(), any(StateDescription.class));
+        verify(channelTypeProvider, times(1)).putChannelGroupType(any());
 
         configTopic = "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config";
         thingHandler.discoverComponents.processMessage(configTopic,
@@ -116,9 +131,9 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         verify(thingHandler, times(1)).componentDiscovered(eq(new HaID(configTopic)), any(Switch.class));
 
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(haThing.getChannels().size(), CoreMatchers.is(7));
-        verify(channelTypeProvider, times(7)).setChannelType(any(), any());
-        verify(channelTypeProvider, times(2)).setChannelGroupType(any(), any());
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(9));
+        verify(stateDescriptionProvider, atLeast(9)).setDescription(any(), any(StateDescription.class));
+        verify(channelTypeProvider, times(3)).putChannelGroupType(any());
     }
 
     /**
@@ -141,7 +156,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         });
 
         verify(thingHandler, never()).componentDiscovered(any(), any());
-        assertThat(haThing.getChannels().size(), CoreMatchers.is(0));
+        assertThat(haThing.getChannels().size(), is(0));
 
         //
         //
@@ -170,7 +185,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         verify(thingHandler, times(1)).componentDiscovered(eq(new HaID(configTopicTempCorridor)), any(Sensor.class));
         thingHandler.delayedProcessing.forceProcessNow();
         waitForAssert(() -> {
-            assertThat("1 channel created", thingHandler.getThing().getChannels().size() == 1);
+            assertThat("1 channel created", nonSpyThingHandler.getThing().getChannels().size() == 1);
         });
 
         //
@@ -186,7 +201,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         thingHandler.delayedProcessing.forceProcessNow();
         verify(thingHandler, times(1)).componentDiscovered(eq(new HaID(configTopicTempOutside)), any(Sensor.class));
         waitForAssert(() -> {
-            assertThat("2 channel created", thingHandler.getThing().getChannels().size() == 2);
+            assertThat("2 channel created", nonSpyThingHandler.getThing().getChannels().size() == 2);
         });
 
         //
@@ -201,25 +216,25 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         thingHandler.delayedProcessing.forceProcessNow();
 
         waitForAssert(() -> {
-            assertThat("2 channel created", thingHandler.getThing().getChannels().size() == 2);
+            assertThat("2 channel created", nonSpyThingHandler.getThing().getChannels().size() == 2);
         });
 
         //
         // verify that both channels are there and the label corresponds to newer discovery topic payload
         //
         Channel corridorTempChannel = nonSpyThingHandler.getThing().getChannel("tempCorridor_5Fsensor#sensor");
-        assertThat("Corridor temperature channel is created", corridorTempChannel, CoreMatchers.notNullValue());
+        assertThat("Corridor temperature channel is created", corridorTempChannel, notNullValue());
         Objects.requireNonNull(corridorTempChannel); // for compiler
         assertThat("Corridor temperature channel is having the updated label from 2nd discovery topic publish",
-                corridorTempChannel.getLabel(), CoreMatchers.is("CorridorTemp NEW"));
+                corridorTempChannel.getLabel(), is("CorridorTemp NEW"));
 
         Channel outsideTempChannel = nonSpyThingHandler.getThing().getChannel("tempOutside_5Fsensor#sensor");
-        assertThat("Outside temperature channel is created", outsideTempChannel, CoreMatchers.notNullValue());
+        assertThat("Outside temperature channel is created", outsideTempChannel, notNullValue());
 
         verify(thingHandler, times(2)).componentDiscovered(eq(new HaID(configTopicTempCorridor)), any(Sensor.class));
 
         waitForAssert(() -> {
-            assertThat("2 channel created", thingHandler.getThing().getChannels().size() == 2);
+            assertThat("2 channel created", nonSpyThingHandler.getThing().getChannels().size() == 2);
         });
     }
 
@@ -239,8 +254,8 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
                 "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config",
                 getResourceAsByteArray("component/configTS0601AutoLock.json"));
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(haThing.getChannels().size(), CoreMatchers.is(7));
-        verify(channelTypeProvider, times(7)).setChannelType(any(), any());
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(9));
+        verify(stateDescriptionProvider, atLeast(7)).setDescription(any(), any(StateDescription.class));
 
         // When dispose
         thingHandler.dispose();
@@ -249,9 +264,31 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         MQTT_TOPICS.forEach(t -> {
             verify(bridgeConnection, timeout(SUBSCRIBE_TIMEOUT)).unsubscribe(eq(t), any());
         });
+    }
 
-        // Expect channel types removed, 6 for climate and 1 for switch
-        verify(channelTypeProvider, times(7)).removeChannelType(any());
+    @Test
+    public void testRemoveThing() {
+        thingHandler.initialize();
+
+        // Expect subscription on each topic from config
+        CONFIG_TOPICS.forEach(t -> {
+            var fullTopic = HandlerConfiguration.DEFAULT_BASETOPIC + "/" + t + "/config";
+            verify(bridgeConnection, timeout(SUBSCRIBE_TIMEOUT)).subscribe(eq(fullTopic), any());
+        });
+        thingHandler.discoverComponents.processMessage(
+                "homeassistant/climate/0x847127fffe11dd6a_climate_zigbee2mqtt/config",
+                getResourceAsByteArray("component/configTS0601ClimateThermostat.json"));
+        thingHandler.discoverComponents.processMessage(
+                "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config",
+                getResourceAsByteArray("component/configTS0601AutoLock.json"));
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(9));
+
+        // When dispose
+        nonSpyThingHandler.handleRemoval();
+
+        // Expect channel descriptions removed, 7 for climate and 2 for switch
+        verify(stateDescriptionProvider, times(9)).remove(any());
         // Expect channel group types removed, 1 for each component
         verify(channelTypeProvider, times(2)).removeChannelGroupType(any());
     }
@@ -263,7 +300,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
                 "{}".getBytes(StandardCharsets.UTF_8));
         // Ignore unsupported component
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(haThing.getChannels().size(), CoreMatchers.is(0));
+        assertThat(haThing.getChannels().size(), is(0));
     }
 
     @Test
@@ -273,7 +310,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
                 "".getBytes(StandardCharsets.UTF_8));
         // Ignore component with empty config
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(haThing.getChannels().size(), CoreMatchers.is(0));
+        assertThat(haThing.getChannels().size(), is(0));
     }
 
     @Test
@@ -283,6 +320,206 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
                 "{bad format}}".getBytes(StandardCharsets.UTF_8));
         // Ignore component with bad format config
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(haThing.getChannels().size(), CoreMatchers.is(0));
+        assertThat(haThing.getChannels().size(), is(0));
+    }
+
+    @Test
+    public void testRestoreComponentFromChannelConfig() {
+        Configuration thingConfiguration = new Configuration();
+        thingConfiguration.put("topics", List.of("switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/switch"));
+
+        Configuration channelConfiguration = new Configuration();
+        channelConfiguration.put("component", "switch");
+        channelConfiguration.put("objectid", List.of("switch"));
+        channelConfiguration.put("nodeid", "0x847127fffe11dd6a_auto_lock_zigbee2mqtt");
+        channelConfiguration.put("config", List.of("""
+                    {
+                      "command_topic": "zigbee2mqtt/th1/set/auto_lock",
+                      "name": "th1 auto lock",
+                      "state_topic": "zigbee2mqtt/th1",
+                      "unique_id": "0x847127fffe11dd6a_auto_lock_zigbee2mqtt"
+                    }
+                """));
+
+        ChannelBuilder channelBuilder = ChannelBuilder
+                .create(new ChannelUID(haThing.getUID(), "switch"), CoreItemFactory.SWITCH)
+                .withType(ComponentChannelType.SWITCH.getChannelTypeUID()).withConfiguration(channelConfiguration);
+
+        haThing = ThingBuilder.create(HA_TYPE_UID, HA_UID).withBridge(BRIDGE_UID).withChannel(channelBuilder.build())
+                .withConfiguration(thingConfiguration).build();
+        haThing.setProperty("newStyleChannels", "true");
+
+        setupThingHandler();
+        thingHandler.initialize();
+        assertThat(thingHandler.getComponents().size(), is(1));
+        assertThat(thingHandler.getComponents().keySet().iterator().next(), is("switch"));
+        assertThat(thingHandler.getComponents().values().iterator().next().getClass(), is(Switch.class));
+    }
+
+    @Test
+    public void testDuplicateChannelId() {
+        thingHandler.initialize();
+
+        verify(callbackMock).statusUpdated(eq(haThing), any());
+        // Expect a call to the bridge status changed, the start, the propertiesChanged method
+        verify(thingHandler).bridgeStatusChanged(any());
+        verify(thingHandler, timeout(SUBSCRIBE_TIMEOUT)).start(any());
+
+        MQTT_TOPICS.forEach(t -> {
+            verify(bridgeConnection, timeout(SUBSCRIBE_TIMEOUT)).subscribe(eq(t), any());
+        });
+
+        verify(thingHandler, never()).componentDiscovered(any(), any());
+        assertThat(haThing.getChannels().size(), is(0));
+
+        thingHandler.discoverComponents.processMessage("homeassistant/number/abc/activeEnergyReports/config", """
+                {
+                  "name":"ActiveEnergyReports",
+                  "object_id":"mud_room_cans_switch_(garage)_activeEnergyReports",
+                  "state_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)",
+                  "unique_id":"0x04cd15fffedb7f81_activeEnergyReports_zigbee2mqtt",
+                  "value_template":"{{ value_json.activeEnergyReports }}"
+                }
+                """.getBytes(StandardCharsets.UTF_8));
+        thingHandler.discoverComponents.processMessage("homeassistant/sensor/abc/activeEnergyReports/config", """
+                {
+                  "command_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)/set/activeEnergyReports",
+                  "max":32767,
+                  "min":0,
+                  "name":"ActiveEnergyReports",
+                  "object_id":"mud_room_cans_switch_(garage)_activeEnergyReports",
+                  "state_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)",
+                  "unique_id":"0x04cd15fffedb7f81_activeEnergyReports_zigbee2mqtt",
+                  "value_template":"{{ value_json.activeEnergyReports }}"
+                }
+                """.getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+        waitForAssert(() -> {
+            assertThat("2 channels created", nonSpyThingHandler.getThing().getChannels().size() == 2);
+        });
+
+        Channel numberChannel = nonSpyThingHandler.getThing()
+                .getChannel("0x04cd15fffedb7f81_5FactiveEnergyReports_5Fzigbee2mqtt_number#number");
+        assertThat("Number channel is created", numberChannel, notNullValue());
+
+        Channel sensorChannel = nonSpyThingHandler.getThing()
+                .getChannel("0x04cd15fffedb7f81_5FactiveEnergyReports_5Fzigbee2mqtt_sensor#sensor");
+        assertThat("Sensor channel is created", sensorChannel, notNullValue());
+    }
+
+    @Test
+    public void testDuplicateChannelIdNewStyleChannels() {
+        haThing.setProperty("newStyleChannels", "true");
+        thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
+                channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+        thingHandler.setConnection(bridgeConnection);
+        thingHandler.setCallback(callbackMock);
+        nonSpyThingHandler = thingHandler;
+        thingHandler = spy(thingHandler);
+
+        thingHandler.initialize();
+
+        verify(callbackMock).statusUpdated(eq(haThing), any());
+        // Expect a call to the bridge status changed, the start, the propertiesChanged method
+        verify(thingHandler).bridgeStatusChanged(any());
+        verify(thingHandler, timeout(SUBSCRIBE_TIMEOUT)).start(any());
+
+        MQTT_TOPICS.forEach(t -> {
+            verify(bridgeConnection, timeout(SUBSCRIBE_TIMEOUT)).subscribe(eq(t), any());
+        });
+
+        verify(thingHandler, never()).componentDiscovered(any(), any());
+        assertThat(haThing.getChannels().size(), is(0));
+
+        thingHandler.discoverComponents.processMessage("homeassistant/number/abc/activeEnergyReports/config", """
+                {
+                  "name":"ActiveEnergyReports",
+                  "object_id":"mud_room_cans_switch_(garage)_activeEnergyReports",
+                  "state_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)",
+                  "unique_id":"0x04cd15fffedb7f81_activeEnergyReports_zigbee2mqtt",
+                  "value_template":"{{ value_json.activeEnergyReports }}"
+                }
+                """.getBytes(StandardCharsets.UTF_8));
+        thingHandler.discoverComponents.processMessage("homeassistant/sensor/abc/activeEnergyReports/config", """
+                {
+                  "command_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)/set/activeEnergyReports",
+                  "max":32767,
+                  "min":0,
+                  "name":"ActiveEnergyReports",
+                  "object_id":"mud_room_cans_switch_(garage)_activeEnergyReports",
+                  "state_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)",
+                  "unique_id":"0x04cd15fffedb7f81_activeEnergyReports_zigbee2mqtt",
+                  "value_template":"{{ value_json.activeEnergyReports }}"
+                }
+                """.getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+        waitForAssert(() -> {
+            assertThat("2 channels created", nonSpyThingHandler.getThing().getChannels().size() == 2);
+        });
+
+        Channel numberChannel = nonSpyThingHandler.getThing().getChannel("activeEnergyReports_number");
+        assertThat("Number channel is created", numberChannel, notNullValue());
+
+        Channel sensorChannel = nonSpyThingHandler.getThing().getChannel("activeEnergyReports_sensor");
+        assertThat("Sensor channel is created", sensorChannel, notNullValue());
+    }
+
+    @Test
+    public void testDuplicateChannelIdNewStyleChannelsComplex() {
+        haThing.setProperty("newStyleChannels", "true");
+        thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
+                channelTypeRegistry, new Jinjava(), unitProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+        thingHandler.setConnection(bridgeConnection);
+        thingHandler.setCallback(callbackMock);
+        nonSpyThingHandler = thingHandler;
+        thingHandler = spy(thingHandler);
+
+        thingHandler.initialize();
+
+        verify(callbackMock).statusUpdated(eq(haThing), any());
+        // Expect a call to the bridge status changed, the start, the propertiesChanged method
+        verify(thingHandler).bridgeStatusChanged(any());
+        verify(thingHandler, timeout(SUBSCRIBE_TIMEOUT)).start(any());
+
+        MQTT_TOPICS.forEach(t -> {
+            verify(bridgeConnection, timeout(SUBSCRIBE_TIMEOUT)).subscribe(eq(t), any());
+        });
+
+        verify(thingHandler, never()).componentDiscovered(any(), any());
+        assertThat(haThing.getChannels().size(), is(0));
+
+        thingHandler.discoverComponents.processMessage("homeassistant/number/abc/activeEnergyReports/config", """
+                {
+                  "name":"ActiveEnergyReports",
+                  "object_id":"mud_room_cans_switch_(garage)_activeEnergyReports",
+                  "state_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)",
+                  "unique_id":"0x04cd15fffedb7f81_activeEnergyReports_zigbee2mqtt",
+                  "value_template":"{{ value_json.activeEnergyReports }}",
+                  "json_attributes_topic":"somewhere"
+                }
+                """.getBytes(StandardCharsets.UTF_8));
+        thingHandler.discoverComponents.processMessage("homeassistant/sensor/abc/activeEnergyReports/config", """
+                {
+                  "command_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)/set/activeEnergyReports",
+                  "max":32767,
+                  "min":0,
+                  "name":"ActiveEnergyReports",
+                  "object_id":"mud_room_cans_switch_(garage)_activeEnergyReports",
+                  "state_topic":"zigbee2mqtt/Mud Room Cans Switch (Garage)",
+                  "unique_id":"0x04cd15fffedb7f81_activeEnergyReports_zigbee2mqtt",
+                  "value_template":"{{ value_json.activeEnergyReports }}",
+                  "json_attributes_topic":"somewhere"
+                }
+                """.getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+        waitForAssert(() -> {
+            assertThat("4 channels created", nonSpyThingHandler.getThing().getChannels().size() == 4);
+        });
+
+        Channel numberChannel = nonSpyThingHandler.getThing().getChannel("activeEnergyReports_number#number");
+        assertThat("Number channel is created", numberChannel, notNullValue());
+
+        Channel sensorChannel = nonSpyThingHandler.getThing().getChannel("activeEnergyReports_sensor#sensor");
+        assertThat("Sensor channel is created", sensorChannel, notNullValue());
     }
 }

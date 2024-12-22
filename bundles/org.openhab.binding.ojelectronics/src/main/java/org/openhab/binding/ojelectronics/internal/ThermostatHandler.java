@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsThermostatConfiguration;
@@ -195,8 +197,9 @@ public class ThermostatHandler extends BaseThingHandler {
     }
 
     private void updateManualSetpoint(Command command) {
-        if (command instanceof QuantityType<?> quantityCommand) {
-            getCurrentThermostat().manualModeSetpoint = (int) (quantityCommand.floatValue() * 100);
+        QuantityType<?> harmonizedUnit = getHarmonizedQuantityType(command);
+        if (harmonizedUnit != null) {
+            getCurrentThermostat().manualModeSetpoint = (int) (harmonizedUnit.floatValue() * 100);
         } else {
             logger.warn("Unable to set value {}", command);
         }
@@ -209,7 +212,7 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateBoostEndTime(Command command) {
         if (command instanceof DateTimeType dateTimeCommand) {
-            getCurrentThermostat().boostEndTime = Date.from(dateTimeCommand.getZonedDateTime().toInstant());
+            getCurrentThermostat().boostEndTime = Date.from(dateTimeCommand.getInstant());
         } else {
             logger.warn("Unable to set value {}", command);
         }
@@ -222,8 +225,7 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateComfortEndTime(Command command) {
         if (command instanceof DateTimeType dateTimeCommand) {
-            getCurrentThermostat().comfortEndTime = Objects
-                    .requireNonNull(Date.from(dateTimeCommand.getZonedDateTime().toInstant()));
+            getCurrentThermostat().comfortEndTime = Objects.requireNonNull(Date.from(dateTimeCommand.getInstant()));
         } else {
             logger.warn("Unable to set value {}", command);
         }
@@ -235,8 +237,9 @@ public class ThermostatHandler extends BaseThingHandler {
     }
 
     private void updateComfortSetpoint(Command command) {
-        if (command instanceof QuantityType<?> quantityCommand) {
-            getCurrentThermostat().comfortSetpoint = (int) (quantityCommand.floatValue() * 100);
+        QuantityType<?> harmonizedUnit = getHarmonizedQuantityType(command);
+        if (harmonizedUnit != null) {
+            getCurrentThermostat().comfortSetpoint = (int) (harmonizedUnit.floatValue() * 100);
         } else {
             logger.warn("Unable to set value {}", command);
         }
@@ -325,7 +328,7 @@ public class ThermostatHandler extends BaseThingHandler {
     private void updateVacationBeginDay(Command command) {
         if (command instanceof DateTimeType dateTimeCommand) {
             getCurrentThermostat().vacationBeginDay = Date
-                    .from(dateTimeCommand.getZonedDateTime().toInstant().truncatedTo(ChronoUnit.DAYS));
+                    .from(dateTimeCommand.getInstant().truncatedTo(ChronoUnit.DAYS));
         } else {
             logger.warn("Unable to set value {}", command);
         }
@@ -341,7 +344,7 @@ public class ThermostatHandler extends BaseThingHandler {
     private void updateVacationEndDay(Command command) {
         if (command instanceof DateTimeType dateTimeCommand) {
             getCurrentThermostat().vacationEndDay = Date
-                    .from(dateTimeCommand.getZonedDateTime().toInstant().truncatedTo(ChronoUnit.DAYS));
+                    .from(dateTimeCommand.getInstant().truncatedTo(ChronoUnit.DAYS));
         } else {
             logger.warn("Unable to set value {}", command);
         }
@@ -349,6 +352,17 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private @Nullable String getRegulationMode(int regulationMode) {
         return REGULATION_MODES.get(regulationMode);
+    }
+
+    private @Nullable QuantityType<?> getHarmonizedQuantityType(Command command) {
+        QuantityType<?> harmonizedUnit = null;
+
+        if (command instanceof QuantityType<?> quantityCommand) {
+            harmonizedUnit = quantityCommand.toUnit(SIUnits.CELSIUS);
+        } else if (command instanceof Number quantityCommand) {
+            harmonizedUnit = new QuantityType<Temperature>(quantityCommand.floatValue(), SIUnits.CELSIUS);
+        }
+        return harmonizedUnit;
     }
 
     private static Map<Integer, String> createRegulationMap() {

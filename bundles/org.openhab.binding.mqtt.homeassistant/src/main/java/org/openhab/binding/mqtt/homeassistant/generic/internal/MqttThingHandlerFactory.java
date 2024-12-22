@@ -18,21 +18,22 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantJinjaFunctionLibrary;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.openhab.core.transform.TransformationHelper;
-import org.openhab.core.transform.TransformationService;
-import org.osgi.service.component.ComponentContext;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+
+import com.hubspot.jinjava.Jinjava;
 
 /**
  * The {@link MqttThingHandlerFactory} is responsible for creating things and thing
@@ -42,10 +43,27 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(service = ThingHandlerFactory.class)
 @NonNullByDefault
-public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements TransformationServiceProvider {
-    private @NonNullByDefault({}) MqttChannelTypeProvider typeProvider;
+public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
+    private final MqttChannelTypeProvider typeProvider;
+    private final MqttChannelStateDescriptionProvider stateDescriptionProvider;
+    private final ChannelTypeRegistry channelTypeRegistry;
+    private final Jinjava jinjava = new Jinjava();
+    private final UnitProvider unitProvider;
+
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(MqttBindingConstants.HOMEASSISTANT_MQTT_THING).collect(Collectors.toSet());
+
+    @Activate
+    public MqttThingHandlerFactory(final @Reference MqttChannelTypeProvider typeProvider,
+            final @Reference MqttChannelStateDescriptionProvider stateDescriptionProvider,
+            final @Reference ChannelTypeRegistry channelTypeRegistry, final @Reference UnitProvider unitProvider) {
+        this.typeProvider = typeProvider;
+        this.stateDescriptionProvider = stateDescriptionProvider;
+        this.channelTypeRegistry = channelTypeRegistry;
+        this.unitProvider = unitProvider;
+
+        HomeAssistantJinjaFunctionLibrary.register(jinjava.getGlobalContext());
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -57,39 +75,18 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
                 && thingTypeUID.getId().startsWith(MqttBindingConstants.HOMEASSISTANT_MQTT_THING.getId());
     }
 
-    @Activate
-    @Override
-    protected void activate(ComponentContext componentContext) {
-        super.activate(componentContext);
-    }
-
-    @Deactivate
-    @Override
-    protected void deactivate(ComponentContext componentContext) {
-        super.deactivate(componentContext);
-    }
-
-    @Reference
-    protected void setChannelProvider(MqttChannelTypeProvider provider) {
-        this.typeProvider = provider;
-    }
-
-    protected void unsetChannelProvider(MqttChannelTypeProvider provider) {
-        this.typeProvider = null;
-    }
-
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (supportsThingType(thingTypeUID)) {
-            return new HomeAssistantThingHandler(thing, typeProvider, this, 10000, 2000);
+            return new HomeAssistantThingHandler(thing, typeProvider, stateDescriptionProvider, channelTypeRegistry,
+                    jinjava, unitProvider, 10000, 2000);
         }
         return null;
     }
 
-    @Override
-    public @Nullable TransformationService getTransformationService(String type) {
-        return TransformationHelper.getTransformationService(bundleContext, type);
+    public Jinjava getJinjava() {
+        return jinjava;
     }
 }

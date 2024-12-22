@@ -101,8 +101,40 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="airthings_wave_radon">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
+			<bridge-type-ref id="bluegiga"/>
+			<bridge-type-ref id="bluez"/>
+		</supported-bridge-type-refs>
+
+		<label>Airthings Wave Radon / Wave 2</label>
+		<description>Indoor air quality monitor with radon detection</description>
+
+		<channels>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="humidity" typeId="airthings_humidity"/>
+			<channel id="temperature" typeId="airthings_temperature"/>
+			<channel id="radon_st_avg" typeId="airthings_radon_st_avg"/>
+			<channel id="radon_lt_avg" typeId="airthings_radon_lt_avg"/>
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="10">
+				<label>Refresh Interval</label>
+				<description>States how often a refresh shall occur in seconds. This could have impact to battery lifetime</description>
+				<default>300</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
 	<channel-type id="airthings_humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Humidity level</description>
 		<state readOnly="true" pattern="%.1f %%"/>

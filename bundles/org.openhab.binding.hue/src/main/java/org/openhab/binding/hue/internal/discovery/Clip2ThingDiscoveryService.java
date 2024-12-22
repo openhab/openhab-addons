@@ -121,7 +121,6 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
                         if (legacyThingOptional.isPresent()) {
                             Thing legacyThing = legacyThingOptional.get();
                             legacyThingUID = legacyThing.getUID().getAsString();
-                            thingId = legacyThing.getUID().getId();
                             String legacyLabel = legacyThing.getLabel();
                             thingLabel = Objects.nonNull(legacyLabel) ? legacyLabel : thingLabel;
                         }

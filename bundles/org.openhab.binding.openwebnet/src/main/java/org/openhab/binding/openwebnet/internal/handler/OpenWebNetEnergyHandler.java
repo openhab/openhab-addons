@@ -213,8 +213,8 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return Who.ENERGY_MANAGEMENT.value().toString();
+    protected Who getManagedWho() {
+        return Who.ENERGY_MANAGEMENT;
     }
 
     @Override

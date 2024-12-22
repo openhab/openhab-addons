@@ -27,6 +27,8 @@ import org.openhab.core.automation.module.script.action.Timer;
 import org.openhab.core.scheduler.ScheduledCompletableFuture;
 import org.openhab.core.scheduler.Scheduler;
 import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A polyfill implementation of NodeJS timer functionality (<code>setTimeout()</code>, <code>setInterval()</code> and
@@ -36,13 +38,15 @@ import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
  *         Threadsafe reimplementation of the timer creation methods of {@link ScriptExecution}
  */
 public class ThreadsafeTimers {
+    private final Logger logger = LoggerFactory.getLogger(ThreadsafeTimers.class);
+
     private final Lock lock;
     private final Scheduler scheduler;
     private final ScriptExecution scriptExecution;
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
     private final Map<Long, ScheduledCompletableFuture<Object>> idSchedulerMapping = new ConcurrentHashMap<>();
     private AtomicLong lastId = new AtomicLong();
-    private String identifier = "noIdentifier";
+    private String identifier = "javascript";
 
     public ThreadsafeTimers(Lock lock, ScriptExecution scriptExecution, Scheduler scheduler) {
         this.lock = lock;
@@ -81,11 +85,13 @@ public class ThreadsafeTimers {
     public Timer createTimer(@Nullable String identifier, ZonedDateTime instant, Runnable closure) {
         return scriptExecution.createTimer(identifier, instant, () -> {
             lock.lock();
+            logger.debug("Lock acquired before timer execution");
             try {
                 closure.run();
-            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
+            } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid
                         // deadlocks
                 lock.unlock();
+                logger.debug("Lock released after timer execution");
             }
         });
     }
@@ -99,20 +105,26 @@ public class ThreadsafeTimers {
      * @return Positive integer value which identifies the timer created; this value can be passed to
      *         <code>clearTimeout()</code> to cancel the timeout.
      */
-    public long setTimeout(Runnable callback, Long delay) {
+    public long setTimeout(Runnable callback, long delay) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             lock.lock();
+            logger.debug("Lock acquired before timeout execution");
             try {
                 callback.run();
                 idSchedulerMapping.remove(id);
-            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
+            } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid
                         // deadlocks
                 lock.unlock();
+                logger.debug("Lock released after timeout execution");
             }
         }, identifier + ".timeout." + id, Instant.now().plusMillis(delay));
         idSchedulerMapping.put(id, future);
         return id;
+    }
+
+    public long setTimeout(Runnable callback, double delay) {
+        return setTimeout(callback, Math.round(delay));
     }
 
     /**
@@ -138,19 +150,25 @@ public class ThreadsafeTimers {
      * @return Numeric, non-zero value which identifies the timer created; this value can be passed to
      *         <code>clearInterval()</code> to cancel the interval.
      */
-    public long setInterval(Runnable callback, Long delay) {
+    public long setInterval(Runnable callback, long delay) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             lock.lock();
+            logger.debug("Lock acquired before interval execution");
             try {
                 callback.run();
-            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
+            } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid
                         // deadlocks
                 lock.unlock();
+                logger.debug("Lock released after interval execution");
             }
         }, identifier + ".interval." + id, new LoopingAdjuster(Duration.ofMillis(delay)));
         idSchedulerMapping.put(id, future);
         return id;
+    }
+
+    public long setInterval(Runnable callback, double delay) {
+        return setInterval(callback, Math.round(delay));
     }
 
     /**

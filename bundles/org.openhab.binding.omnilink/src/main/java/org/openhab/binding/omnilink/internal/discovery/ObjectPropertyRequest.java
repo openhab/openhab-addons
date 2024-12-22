@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
 import org.openhab.binding.omnilink.internal.handler.OmnilinkBridgeHandler;
@@ -42,14 +43,14 @@ public class ObjectPropertyRequest<T extends ObjectProperties> implements Iterab
     }
 
     private final OmnilinkBridgeHandler bridgeHandler;
-    private final ObjectPropertyRequests<T> request;
+    private final ObjectPropertyRequests<@NonNull T> request;
     private final int objectNumber;
     private final int filter1;
     private final int filter2;
     private final int filter3;
     private final int offset;
 
-    private ObjectPropertyRequest(OmnilinkBridgeHandler bridgeHandler, ObjectPropertyRequests<T> request,
+    private ObjectPropertyRequest(OmnilinkBridgeHandler bridgeHandler, ObjectPropertyRequests<@NonNull T> request,
             int objectNumber, int filter1, int filter2, int filter3, int offset) {
         this.bridgeHandler = bridgeHandler;
         this.request = request;

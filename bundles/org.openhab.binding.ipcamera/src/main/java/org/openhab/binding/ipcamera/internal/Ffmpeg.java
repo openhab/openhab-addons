@@ -63,7 +63,7 @@ public class Ffmpeg {
         ipCameraHandler = handle;
         String altInput = input;
         // Input can be snapshots not just rtsp or http
-        if (!password.isEmpty() && !input.contains("@") && input.contains("rtsp")) {
+        if (!password.isEmpty() && !input.contains("@") && input.toLowerCase().startsWith("rtsp")) {
             String credentials = username + ":" + this.password + "@";
             // will not work for https: but currently binding does not use https
             altInput = input.substring(0, 7) + credentials + input.substring(7);
@@ -103,6 +103,7 @@ public class Ffmpeg {
         public int countOfMotions;
 
         IpCameraFfmpegThread() {
+            super(String.format("OH-binding-%s-%s", IpCameraBindingConstants.BINDING_ID, "Ffmpeg"));
             setDaemon(true);
         }
 

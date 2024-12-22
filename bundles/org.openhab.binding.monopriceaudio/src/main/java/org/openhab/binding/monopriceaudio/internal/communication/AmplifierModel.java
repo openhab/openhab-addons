@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.monopriceaudio.internal.communication;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.monopriceaudio.internal.configuration.MonopriceAudioThingConfiguration;
@@ -82,7 +84,7 @@ public enum AmplifierModel {
             2, false, List.of("1", "2", "3", "4", "5", "6")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
-            MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
+            final MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
 
             Matcher matcher = MONOPRICE70_PATTERN.matcher(newZoneData);
             if (matcher.find()) {
@@ -127,8 +129,8 @@ public enum AmplifierModel {
             false, List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
-            MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
-            Matcher matcher = XANTECH_PATTERN.matcher(newZoneData);
+            final MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
+            final Matcher matcher = XANTECH_PATTERN.matcher(newZoneData);
 
             if (matcher.find()) {
                 zoneData.setZone(matcher.group(1));
@@ -156,8 +158,8 @@ public enum AmplifierModel {
 
     // Used by 10761/DAX66 and DAX88
     private static MonopriceAudioZoneDTO getMonopriceZoneData(String newZoneData) {
-        MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
-        Matcher matcher = MONOPRICE_PATTERN.matcher(newZoneData);
+        final MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
+        final Matcher matcher = MONOPRICE_PATTERN.matcher(newZoneData);
 
         if (matcher.find()) {
             zoneData.setZone(matcher.group(1));
@@ -191,31 +193,31 @@ public enum AmplifierModel {
     private static final Pattern XANTECH_PATTERN = Pattern.compile(
             "^#(\\d{1,2})ZS PR(\\d{1}) SS(\\d{1}) VO(\\d{1,2}) MU(\\d{1}) TR(\\d{1,2}) BS(\\d{1,2}) BA(\\d{1,2}) LS(\\d{1}) PS(\\d{1})+");
 
-    private String cmdPrefix;
-    private String cmdSuffix;
-    private String queryPrefix;
-    private String querySuffix;
-    private String respPrefix;
-    private String powerCmd;
-    private String sourceCmd;
-    private String volumeCmd;
-    private String muteCmd;
-    private String trebleCmd;
-    private String bassCmd;
-    private String balanceCmd;
-    private String dndCmd;
-    private int maxVol;
-    private int minTone;
-    private int maxTone;
-    private int toneOffset;
-    private int minBal;
-    private int maxBal;
-    private int balOffset;
-    private int maxZones;
-    private int numSources;
-    private boolean padNumbers;
-    private List<String> zoneIds;
-    private Map<String, String> zoneIdMap = new HashMap<>();
+    private final String cmdPrefix;
+    private final String cmdSuffix;
+    private final String queryPrefix;
+    private final String querySuffix;
+    private final String respPrefix;
+    private final String powerCmd;
+    private final String sourceCmd;
+    private final String volumeCmd;
+    private final String muteCmd;
+    private final String trebleCmd;
+    private final String bassCmd;
+    private final String balanceCmd;
+    private final String dndCmd;
+    private final int maxVol;
+    private final int minTone;
+    private final int maxTone;
+    private final int toneOffset;
+    private final int minBal;
+    private final int maxBal;
+    private final int balOffset;
+    private final int maxZones;
+    private final int numSources;
+    private final boolean padNumbers;
+    private final List<String> zoneIds;
+    private final Map<String, String> zoneIdMap;
 
     private static final String ON_STR = "1";
     private static final String OFF_STR = "0";
@@ -256,11 +258,10 @@ public enum AmplifierModel {
         this.padNumbers = padNumbers;
         this.zoneIds = zoneIds;
 
-        int i = 1;
-        for (String zoneId : zoneIds) {
-            zoneIdMap.put(zoneId, "zone" + i);
-            i++;
-        }
+        // Build a map between the amp's physical zone IDs and the thing's logical zone names
+        final Map<String, String> zoneIdMap = new HashMap<>();
+        IntStream.range(0, zoneIds.size()).forEach(i -> zoneIdMap.put(zoneIds.get(i), "zone" + (i + 1)));
+        this.zoneIdMap = Collections.unmodifiableMap(zoneIdMap);
     }
 
     public abstract MonopriceAudioZoneDTO getZoneData(String newZoneData);
@@ -269,7 +270,7 @@ public enum AmplifierModel {
 
     public String getZoneIdFromZoneName(String zoneName) {
         for (String zoneId : zoneIdMap.keySet()) {
-            if (zoneIdMap.get(zoneId).equals(zoneName)) {
+            if (zoneName.equals(zoneIdMap.get(zoneId))) {
                 return zoneId;
             }
         }
@@ -277,12 +278,8 @@ public enum AmplifierModel {
     }
 
     public String getZoneName(String zoneId) {
-        String zoneName = zoneIdMap.get(zoneId);
-        if (zoneName != null) {
-            return zoneName;
-        } else {
-            return "";
-        }
+        final String zoneName = zoneIdMap.get(zoneId);
+        return zoneName != null ? zoneName : "";
     }
 
     public String getCmdPrefix() {
@@ -378,26 +375,14 @@ public enum AmplifierModel {
     }
 
     public String getFormattedValue(Integer value) {
-        if (padNumbers) {
-            return String.format("%02d", value);
-        } else {
-            return value.toString();
-        }
+        return padNumbers ? String.format("%02d", value) : value.toString();
     }
 
     public String getOnStr() {
-        if (padNumbers) {
-            return ON_STR_PAD;
-        } else {
-            return ON_STR;
-        }
+        return padNumbers ? ON_STR_PAD : ON_STR;
     }
 
     public String getOffStr() {
-        if (padNumbers) {
-            return OFF_STR_PAD;
-        } else {
-            return OFF_STR;
-        }
+        return padNumbers ? OFF_STR_PAD : OFF_STR;
     }
 }

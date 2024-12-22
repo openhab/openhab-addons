@@ -22,12 +22,14 @@ import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -53,64 +55,73 @@ public class DefaultSchemaLight extends Light {
     protected @Nullable ComponentChannel rgbChannel;
     protected @Nullable ComponentChannel xyChannel;
 
-    public DefaultSchemaLight(ComponentFactory.ComponentConfiguration builder) {
-        super(builder);
+    public DefaultSchemaLight(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
+        super(builder, newStyleChannels);
     }
 
     @Override
     protected void buildChannels() {
+        AutoUpdatePolicy autoUpdatePolicy = optimistic ? AutoUpdatePolicy.RECOMMEND : null;
         ComponentChannel localOnOffChannel;
-        localOnOffChannel = onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, onOffValue, "On/Off State", this)
+        localOnOffChannel = onOffChannel = buildChannel(
+                newStyleChannels ? SWITCH_CHANNEL_ID : SWITCH_CHANNEL_ID_DEPRECATED, ComponentChannelType.SWITCH,
+                onOffValue, "On/Off State", this)
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.stateValueTemplate)
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
-                .commandFilter(this::handleRawOnOffCommand).build(false);
+                .withAutoUpdatePolicy(autoUpdatePolicy).commandFilter(this::handleRawOnOffCommand).build(false);
 
         @Nullable
         ComponentChannel localBrightnessChannel = null;
         if (channelConfiguration.brightnessStateTopic != null || channelConfiguration.brightnessCommandTopic != null) {
-            localBrightnessChannel = brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, brightnessValue,
-                    "Brightness", this)
+            localBrightnessChannel = brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID,
+                    ComponentChannelType.DIMMER, brightnessValue, "Brightness", this)
                     .stateTopic(channelConfiguration.brightnessStateTopic, channelConfiguration.brightnessValueTemplate)
                     .commandTopic(channelConfiguration.brightnessCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
-                    .withFormat("%.0f").commandFilter(this::handleBrightnessCommand).build(false);
+                    .withAutoUpdatePolicy(autoUpdatePolicy).withFormat("%.0f")
+                    .commandFilter(this::handleBrightnessCommand).build(false);
         }
 
         if (channelConfiguration.whiteCommandTopic != null) {
-            buildChannel(WHITE_CHANNEL_ID, brightnessValue, "Go directly to white of a specific brightness", this)
+            buildChannel(WHITE_CHANNEL_ID, ComponentChannelType.DIMMER, brightnessValue,
+                    "Go directly to white of a specific brightness", this)
                     .commandTopic(channelConfiguration.whiteCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
-                    .isAdvanced(true).build();
+                    .withAutoUpdatePolicy(autoUpdatePolicy).isAdvanced(true).build();
         }
 
         if (channelConfiguration.colorModeStateTopic != null) {
-            buildChannel(COLOR_MODE_CHANNEL_ID, new TextValue(), "Current color mode", this)
+            buildChannel(newStyleChannels ? COLOR_MODE_CHANNEL_ID : COLOR_MODE_CHANNEL_ID_DEPRECATED,
+                    ComponentChannelType.STRING, new TextValue(), "Current color mode", this)
                     .stateTopic(channelConfiguration.colorModeStateTopic, channelConfiguration.colorModeValueTemplate)
-                    .build();
+                    .inferOptimistic(channelConfiguration.optimistic).build();
         }
 
         if (channelConfiguration.colorTempStateTopic != null || channelConfiguration.colorTempCommandTopic != null) {
-            buildChannel(COLOR_TEMP_CHANNEL_ID, colorTempValue, "Color Temperature", this)
+            buildChannel(newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED,
+                    ComponentChannelType.NUMBER, colorTempValue, "Color Temperature", this)
                     .stateTopic(channelConfiguration.colorTempStateTopic, channelConfiguration.colorTempValueTemplate)
                     .commandTopic(channelConfiguration.colorTempCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
-                    .build();
+                    .inferOptimistic(channelConfiguration.optimistic).build();
         }
 
         if (effectValue != null
                 && (channelConfiguration.effectStateTopic != null || channelConfiguration.effectCommandTopic != null)) {
-            buildChannel(EFFECT_CHANNEL_ID, Objects.requireNonNull(effectValue), "Lighting Effect", this)
+            buildChannel(EFFECT_CHANNEL_ID, ComponentChannelType.STRING, Objects.requireNonNull(effectValue),
+                    "Lighting Effect", this)
                     .stateTopic(channelConfiguration.effectStateTopic, channelConfiguration.effectValueTemplate)
                     .commandTopic(channelConfiguration.effectCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
-                    .build();
+                    .inferOptimistic(channelConfiguration.optimistic).build();
         }
 
+        boolean hasColorChannel = false;
         if (channelConfiguration.rgbStateTopic != null || channelConfiguration.rgbCommandTopic != null) {
             hasColorChannel = true;
-            hiddenChannels.add(rgbChannel = buildChannel(RGB_CHANNEL_ID, new ColorValue(ColorMode.RGB, null, null, 100),
-                    "RGB state", this)
+            hiddenChannels.add(rgbChannel = buildChannel(RGB_CHANNEL_ID, ComponentChannelType.COLOR,
+                    new ColorValue(ColorMode.RGB, null, null, 100), "RGB state", this)
                     .stateTopic(channelConfiguration.rgbStateTopic, channelConfiguration.rgbValueTemplate)
                     .commandTopic(channelConfiguration.rgbCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
@@ -119,35 +130,38 @@ public class DefaultSchemaLight extends Light {
 
         if (channelConfiguration.rgbwStateTopic != null || channelConfiguration.rgbwCommandTopic != null) {
             hasColorChannel = true;
-            hiddenChannels.add(buildChannel(RGBW_CHANNEL_ID, new TextValue(), "RGBW state", this)
-                    .stateTopic(channelConfiguration.rgbwStateTopic, channelConfiguration.rgbwValueTemplate)
-                    .commandTopic(channelConfiguration.rgbwCommandTopic, channelConfiguration.isRetain(),
-                            channelConfiguration.getQos())
-                    .build(false));
-        }
-
-        if (channelConfiguration.rgbwwStateTopic != null || channelConfiguration.rgbwwCommandTopic != null) {
-            hasColorChannel = true;
-            hiddenChannels.add(buildChannel(RGBWW_CHANNEL_ID, new TextValue(), "RGBWW state", this)
-                    .stateTopic(channelConfiguration.rgbwwStateTopic, channelConfiguration.rgbwwValueTemplate)
-                    .commandTopic(channelConfiguration.rgbwwCommandTopic, channelConfiguration.isRetain(),
-                            channelConfiguration.getQos())
-                    .build(false));
-        }
-
-        if (channelConfiguration.xyStateTopic != null || channelConfiguration.xyCommandTopic != null) {
-            hasColorChannel = true;
-            hiddenChannels.add(
-                    xyChannel = buildChannel(XY_CHANNEL_ID, new ColorValue(ColorMode.XYY, null, null, 100), "XY State",
-                            this).stateTopic(channelConfiguration.xyStateTopic, channelConfiguration.xyValueTemplate)
-                            .commandTopic(channelConfiguration.xyCommandTopic, channelConfiguration.isRetain(),
+            hiddenChannels
+                    .add(buildChannel(RGBW_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "RGBW state", this)
+                            .stateTopic(channelConfiguration.rgbwStateTopic, channelConfiguration.rgbwValueTemplate)
+                            .commandTopic(channelConfiguration.rgbwCommandTopic, channelConfiguration.isRetain(),
                                     channelConfiguration.getQos())
                             .build(false));
         }
 
+        if (channelConfiguration.rgbwwStateTopic != null || channelConfiguration.rgbwwCommandTopic != null) {
+            hasColorChannel = true;
+            hiddenChannels.add(
+                    buildChannel(RGBWW_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "RGBWW state", this)
+                            .stateTopic(channelConfiguration.rgbwwStateTopic, channelConfiguration.rgbwwValueTemplate)
+                            .commandTopic(channelConfiguration.rgbwwCommandTopic, channelConfiguration.isRetain(),
+                                    channelConfiguration.getQos())
+                            .build(false));
+        }
+
+        if (channelConfiguration.xyStateTopic != null || channelConfiguration.xyCommandTopic != null) {
+            hasColorChannel = true;
+            hiddenChannels.add(xyChannel = buildChannel(XY_CHANNEL_ID, ComponentChannelType.COLOR,
+                    new ColorValue(ColorMode.XYY, null, null, 100), "XY State", this)
+                    .stateTopic(channelConfiguration.xyStateTopic, channelConfiguration.xyValueTemplate)
+                    .commandTopic(channelConfiguration.xyCommandTopic, channelConfiguration.isRetain(),
+                            channelConfiguration.getQos())
+                    .build(false));
+        }
+
         if (channelConfiguration.hsStateTopic != null || channelConfiguration.hsCommandTopic != null) {
             hasColorChannel = true;
-            hiddenChannels.add(this.hsChannel = buildChannel(HS_CHANNEL_ID, new TextValue(), "Hue and Saturation", this)
+            hiddenChannels.add(this.hsChannel = buildChannel(HS_CHANNEL_ID, ComponentChannelType.STRING,
+                    new TextValue(), "Hue and Saturation", this)
                     .stateTopic(channelConfiguration.hsStateTopic, channelConfiguration.hsValueTemplate)
                     .commandTopic(channelConfiguration.hsCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
@@ -159,14 +173,14 @@ public class DefaultSchemaLight extends Light {
             if (localBrightnessChannel != null) {
                 hiddenChannels.add(localBrightnessChannel);
             }
-            buildChannel(COLOR_CHANNEL_ID, colorValue, "Color", this)
+            colorChannel = buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
                     .commandTopic(DUMMY_TOPIC, channelConfiguration.isRetain(), channelConfiguration.getQos())
-                    .commandFilter(this::handleColorCommand).build();
+                    .commandFilter(this::handleColorCommand).withAutoUpdatePolicy(autoUpdatePolicy).build();
         } else if (localBrightnessChannel != null) {
             hiddenChannels.add(localOnOffChannel);
             channels.put(BRIGHTNESS_CHANNEL_ID, localBrightnessChannel);
         } else {
-            channels.put(ON_OFF_CHANNEL_ID, localOnOffChannel);
+            channels.put(newStyleChannels ? SWITCH_CHANNEL_ID : SWITCH_CHANNEL_ID_DEPRECATED, localOnOffChannel);
         }
     }
 
@@ -272,74 +286,75 @@ public class DefaultSchemaLight extends Light {
     @Override
     public void updateChannelState(ChannelUID channel, State state) {
         ChannelStateUpdateListener listener = this.channelStateUpdateListener;
-        switch (channel.getIdWithoutGroup()) {
-            case ON_OFF_CHANNEL_ID:
-                if (hasColorChannel) {
-                    HSBType newOnState = colorValue.getChannelState() instanceof HSBType
-                            ? (HSBType) colorValue.getChannelState()
-                            : HSBType.WHITE;
-                    if (state.equals(OnOffType.ON)) {
-                        colorValue.update(newOnState);
-                    }
-
-                    listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID),
-                            state.equals(OnOffType.ON) ? newOnState : HSBType.BLACK);
-                } else if (brightnessChannel != null) {
-                    listener.updateChannelState(new ChannelUID(channel.getThingUID(), BRIGHTNESS_CHANNEL_ID),
-                            state.equals(OnOffType.ON) ? brightnessValue.getChannelState() : PercentType.ZERO);
-                } else {
-                    listener.updateChannelState(channel, state);
-                }
-                return;
-            case BRIGHTNESS_CHANNEL_ID:
-                onOffValue.update(Objects.requireNonNull(state.as(OnOffType.class)));
-                if (hasColorChannel) {
-                    if (colorValue.getChannelState() instanceof HSBType) {
-                        HSBType hsb = (HSBType) (colorValue.getChannelState());
-                        colorValue.update(new HSBType(hsb.getHue(), hsb.getSaturation(),
-                                (PercentType) brightnessValue.getChannelState()));
-                    } else {
-                        colorValue.update(new HSBType(DecimalType.ZERO, PercentType.ZERO,
-                                (PercentType) brightnessValue.getChannelState()));
-                    }
-                    listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
-                } else {
-                    listener.updateChannelState(channel, state);
-                }
-                return;
-            case COLOR_TEMP_CHANNEL_ID:
-            case EFFECT_CHANNEL_ID:
-                // Real channels; pass through
-                listener.updateChannelState(channel, state);
-                return;
-            case HS_CHANNEL_ID:
-            case XY_CHANNEL_ID:
-                if (brightnessValue.getChannelState() instanceof UnDefType) {
-                    brightnessValue.update(PercentType.HUNDRED);
-                }
-                String[] split = state.toString().split(",");
-                if (split.length != 2) {
-                    throw new IllegalArgumentException(state.toString() + " is not a valid string syntax");
-                }
-                float x = Float.parseFloat(split[0]);
-                float y = Float.parseFloat(split[1]);
-                PercentType brightness = (PercentType) brightnessValue.getChannelState();
-                if (channel.getIdWithoutGroup().equals(HS_CHANNEL_ID)) {
-                    colorValue.update(new HSBType(new DecimalType(x), new PercentType(new BigDecimal(y)), brightness));
-                } else {
-                    HSBType xyColor = HSBType.fromXY(x, y);
-                    colorValue.update(new HSBType(xyColor.getHue(), xyColor.getSaturation(), brightness));
-                }
-                listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
-                return;
-            case RGB_CHANNEL_ID:
-                colorValue.update((HSBType) state);
-                listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
-                break;
-            case RGBW_CHANNEL_ID:
-            case RGBWW_CHANNEL_ID:
-                // TODO: update color value
-                break;
+        String id = channel.getIdWithoutGroup();
+        ComponentChannel localBrightnessChannel = brightnessChannel;
+        ComponentChannel localColorChannel = colorChannel;
+        ChannelUID primaryChannelUID;
+        if (localColorChannel != null) {
+            primaryChannelUID = localColorChannel.getChannel().getUID();
+        } else if (localBrightnessChannel != null) {
+            primaryChannelUID = localBrightnessChannel.getChannel().getUID();
+        } else {
+            primaryChannelUID = onOffChannel.getChannel().getUID();
         }
+        // on_off, brightness, and color might exist as a sole channel, which means
+        // they got renamed. they need to be compared against the actual UID of the
+        // channel. all the rest we can just check against the basic ID
+        if (channel.equals(onOffChannel.getChannel().getUID())) {
+            if (localColorChannel != null) {
+                HSBType newOnState = colorValue.getChannelState() instanceof HSBType newOnStateTmp ? newOnStateTmp
+                        : HSBType.WHITE;
+                if (state.equals(OnOffType.ON)) {
+                    colorValue.update(newOnState);
+                }
+
+                listener.updateChannelState(primaryChannelUID, state.equals(OnOffType.ON) ? newOnState : HSBType.BLACK);
+            } else if (brightnessChannel != null) {
+                listener.updateChannelState(primaryChannelUID,
+                        state.equals(OnOffType.ON) ? brightnessValue.getChannelState() : PercentType.ZERO);
+            } else {
+                listener.updateChannelState(primaryChannelUID, state);
+            }
+        } else if (localBrightnessChannel != null && localBrightnessChannel.getChannel().getUID().equals(channel)) {
+            onOffValue.update(Objects.requireNonNull(state.as(OnOffType.class)));
+            if (localColorChannel != null) {
+                if (colorValue.getChannelState() instanceof HSBType hsb) {
+                    colorValue.update(new HSBType(hsb.getHue(), hsb.getSaturation(),
+                            (PercentType) brightnessValue.getChannelState()));
+                } else {
+                    colorValue.update(new HSBType(DecimalType.ZERO, PercentType.ZERO,
+                            (PercentType) brightnessValue.getChannelState()));
+                }
+                listener.updateChannelState(primaryChannelUID, colorValue.getChannelState());
+            } else {
+                listener.updateChannelState(primaryChannelUID, state);
+            }
+        } else if (id.equals(newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED)
+                || channel.getIdWithoutGroup().equals(EFFECT_CHANNEL_ID)) {
+            // Real channels; pass through
+            listener.updateChannelState(channel, state);
+        } else if (id.equals(HS_CHANNEL_ID) || id.equals(XY_CHANNEL_ID)) {
+            if (brightnessValue.getChannelState() instanceof UnDefType) {
+                brightnessValue.update(PercentType.HUNDRED);
+            }
+            String[] split = state.toString().split(",");
+            if (split.length != 2) {
+                throw new IllegalArgumentException(state.toString() + " is not a valid string syntax");
+            }
+            float x = Float.parseFloat(split[0]);
+            float y = Float.parseFloat(split[1]);
+            PercentType brightness = (PercentType) brightnessValue.getChannelState();
+            if (channel.getIdWithoutGroup().equals(HS_CHANNEL_ID)) {
+                colorValue.update(new HSBType(new DecimalType(x), new PercentType(new BigDecimal(y)), brightness));
+            } else {
+                HSBType xyColor = HSBType.fromXY(x, y);
+                colorValue.update(new HSBType(xyColor.getHue(), xyColor.getSaturation(), brightness));
+            }
+            listener.updateChannelState(primaryChannelUID, colorValue.getChannelState());
+        } else if (id.equals(RGB_CHANNEL_ID)) {
+            colorValue.update((HSBType) state);
+            listener.updateChannelState(primaryChannelUID, colorValue.getChannelState());
+        }
+        // else rgbw channel, rgbww channel
     }
 }

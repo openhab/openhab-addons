@@ -122,7 +122,7 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
         String deviceId = config.installId + deviceIdSuffix;
         org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration apiConfig = new org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration(
                 deviceId, config.email, config.password, config.continent, country, "EN", CLIENT_KEY, CLIENT_SECRET,
-                AUTH_CLIENT_KEY, AUTH_CLIENT_SECRET);
+                AUTH_CLIENT_KEY, AUTH_CLIENT_SECRET, APP_KEY);
 
         return EcovacsApi.create(httpClient, apiConfig);
     }

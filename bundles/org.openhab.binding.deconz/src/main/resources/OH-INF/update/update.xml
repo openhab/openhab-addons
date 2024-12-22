@@ -33,6 +33,11 @@
 				<type>system:brightness</type>
 			</update-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="color_temperature">
+				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="deconz:dimmablelight">
@@ -49,12 +54,22 @@
 				<type>system:color</type>
 			</update-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="color_temperature">
+				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="deconz:lightgroup">
 		<instruction-set targetVersion="1">
 			<update-channel id="color">
 				<type>system:color</type>
+			</update-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="color_temperature">
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>

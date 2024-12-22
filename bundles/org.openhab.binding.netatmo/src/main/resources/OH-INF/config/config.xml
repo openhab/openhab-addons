@@ -103,6 +103,31 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="netatmo:weather">
+		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
+			<label>@text/config.equipmentId.label</label>
+			<description>@text/config.equipmentId.description</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="120" unit="s">
+			<label>@text/config.refreshInterval.label</label>
+			<description>@text/config.refreshInterval.description</description>
+			<default>600</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="netatmo:camera">
+		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
+			<label>@text/config.equipmentId.label</label>
+			<description>@text/config.equipmentId.description</description>
+		</parameter>
+		<parameter name="ipAddress" type="text" required="false">
+			<label>@text/config.ipAddress.label</label>
+			<description>@text/config.ipAddress.description</description>
+			<context>network-address</context>
+		</parameter>
+	</config-description>
+
 	<config-description uri="netatmo:virtual">
 		<parameter name="id" type="text" required="true">
 			<label>@text/config.thingId.label</label>
@@ -128,20 +153,7 @@
 			<advanced>true</advanced>
 		</parameter>
 
-		<parameter name="refreshInterval" type="integer" min="20" unit="s">
-			<label>@text/config.refreshInterval.label</label>
-			<description>@text/config.refreshInterval.description</description>
-			<default>180</default>
-		</parameter>
-	</config-description>
-
-	<config-description uri="netatmo:configurable">
-		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
-			<label>@text/config.equipmentId.label</label>
-			<description>@text/config.equipmentId.description</description>
-		</parameter>
-
-		<parameter name="refreshInterval" type="integer" min="20" unit="s">
+		<parameter name="refreshInterval" type="integer" min="60" unit="s">
 			<label>@text/config.refreshInterval.label</label>
 			<description>@text/config.refreshInterval.description</description>
 			<default>180</default>

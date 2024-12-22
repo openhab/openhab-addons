@@ -43,8 +43,9 @@ import org.openhab.core.thing.ThingTypeUID;
 public class TPLinkSmartHomeHandlerFactoryTest {
 
     private static final String SMART_HOME_DEVICE_FIELD = "smartHomeDevice";
+    private @Mock TPLinkStateDescriptionProvider stateDescriptionProvider;
 
-    private final TPLinkSmartHomeHandlerFactory factory = new TPLinkSmartHomeHandlerFactory();
+    private final TPLinkSmartHomeHandlerFactory factory = new TPLinkSmartHomeHandlerFactory(stateDescriptionProvider);
 
     // @formatter:off
     private static final List<Object[]> TESTS = Arrays.asList(new Object[][] {

@@ -22,13 +22,14 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Temperature;
 
-import org.openhab.binding.melcloud.internal.api.json.DeviceStatus;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.melcloud.internal.api.dto.DeviceStatus;
 import org.openhab.binding.melcloud.internal.config.AcDeviceConfig;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudLoginException;
@@ -46,6 +47,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -59,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * @author Luca Calcaterra - Initial contribution
  * @author Pauli Anttila - Refactoring
  */
-
+@NonNullByDefault
 public class MelCloudDeviceHandler extends BaseThingHandler {
 
     private static final int EFFECTIVE_FLAG_POWER = 0x01;
@@ -70,10 +72,10 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
     private static final int EFFECTIVE_FLAG_VANE_HORIZONTAL = 0x100;
 
     private final Logger logger = LoggerFactory.getLogger(MelCloudDeviceHandler.class);
-    private AcDeviceConfig config;
-    private MelCloudAccountHandler melCloudHandler;
-    private DeviceStatus deviceStatus;
-    private ScheduledFuture<?> refreshTask;
+    private AcDeviceConfig config = new AcDeviceConfig();
+    private @Nullable MelCloudAccountHandler melCloudHandler;
+    private @Nullable DeviceStatus deviceStatus;
+    private @Nullable ScheduledFuture<?> refreshTask;
 
     public MelCloudDeviceHandler(Thing thing) {
         super(thing);
@@ -84,7 +86,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         logger.debug("Initializing {} handler.", getThing().getThingTypeUID());
 
         Bridge bridge = getBridge();
-        if (bridge == null) {
+        if (bridge == null || !(bridge.getHandler() instanceof BridgeHandler bridgeHandler)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge Not set");
             return;
         }
@@ -92,15 +94,16 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         config = getConfigAs(AcDeviceConfig.class);
         logger.debug("A.C. device config: {}", config);
 
-        initializeBridge(bridge.getHandler(), bridge.getStatus());
+        initializeBridge(bridgeHandler, bridge.getStatus());
     }
 
     @Override
     public void dispose() {
         logger.debug("Running dispose()");
+        ScheduledFuture<?> refreshTask = this.refreshTask;
         if (refreshTask != null) {
             refreshTask.cancel(true);
-            refreshTask = null;
+            this.refreshTask = null;
         }
         melCloudHandler = null;
     }
@@ -109,25 +112,21 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("bridgeStatusChanged {} for thing {}", bridgeStatusInfo, getThing().getUID());
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            initializeBridge(bridge.getHandler(), bridgeStatusInfo.getStatus());
+        if (bridge != null && bridge.getHandler() instanceof BridgeHandler bridgeHandler) {
+            initializeBridge(bridgeHandler, bridgeStatusInfo.getStatus());
         }
     }
 
     private void initializeBridge(ThingHandler thingHandler, ThingStatus bridgeStatus) {
         logger.debug("initializeBridge {} for thing {}", bridgeStatus, getThing().getUID());
 
-        if (thingHandler != null && bridgeStatus != null) {
-            melCloudHandler = (MelCloudAccountHandler) thingHandler;
+        melCloudHandler = (MelCloudAccountHandler) thingHandler;
 
-            if (bridgeStatus == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-                startAutomaticRefresh();
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            }
+        if (bridgeStatus == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+            startAutomaticRefresh();
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -139,12 +138,12 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
             logger.debug("Refresh command not supported");
             return;
         }
-
+        MelCloudAccountHandler melCloudHandler = this.melCloudHandler;
         if (melCloudHandler == null) {
             logger.warn("No connection to MELCloud available, ignoring command");
             return;
         }
-
+        DeviceStatus deviceStatus = this.deviceStatus;
         if (deviceStatus == null) {
             logger.info("No initial data available, bridge is probably offline. Ignoring command");
             return;
@@ -229,18 +228,19 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
     }
 
     private void startAutomaticRefresh() {
+        ScheduledFuture<?> refreshTask = this.refreshTask;
         if (refreshTask == null || refreshTask.isCancelled()) {
-            refreshTask = scheduler.scheduleWithFixedDelay(this::getDeviceDataAndUpdateChannels, 1,
+            this.refreshTask = scheduler.scheduleWithFixedDelay(this::getDeviceDataAndUpdateChannels, 1,
                     config.pollingInterval, TimeUnit.SECONDS);
         }
     }
 
     private void getDeviceDataAndUpdateChannels() {
-        if (melCloudHandler.isConnected()) {
+        MelCloudAccountHandler melCloudHandler = this.melCloudHandler;
+        if (melCloudHandler != null && melCloudHandler.isConnected()) {
             logger.debug("Update device '{}' channels", getThing().getThingTypeUID());
             try {
-                DeviceStatus newDeviceStatus = melCloudHandler.fetchDeviceStatus(config.deviceID,
-                        Optional.ofNullable(config.buildingID));
+                DeviceStatus newDeviceStatus = melCloudHandler.fetchDeviceStatus(config.deviceID, config.buildingID);
                 updateChannels(newDeviceStatus);
             } catch (MelCloudLoginException e) {
                 logger.debug("Login error occurred during device '{}' polling, reason {}. ",
@@ -255,7 +255,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
     }
 
     private synchronized void updateChannels(DeviceStatus newDeviceStatus) {
-        deviceStatus = newDeviceStatus;
+        DeviceStatus deviceStatus = this.deviceStatus = newDeviceStatus;
         for (Channel channel : getThing().getChannels()) {
             updateChannels(channel.getUID().getId(), deviceStatus);
         }

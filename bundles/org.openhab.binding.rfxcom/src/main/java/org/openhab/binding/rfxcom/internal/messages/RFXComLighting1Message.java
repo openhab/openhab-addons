@@ -33,7 +33,7 @@ import org.openhab.core.types.UnDefType;
  * RFXCOM data class for lighting1 message. See X10, ARC, etc..
  *
  * @author Evert van Es, Cycling Engineer - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migrated to OH2
  */
 public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighting1Message.SubType> {
 

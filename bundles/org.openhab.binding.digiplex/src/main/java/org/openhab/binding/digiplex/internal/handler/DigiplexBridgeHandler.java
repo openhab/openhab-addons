@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.digiplex.internal.DigiplexBindingConstants;
 import org.openhab.binding.digiplex.internal.DigiplexBridgeConfiguration;
 import org.openhab.binding.digiplex.internal.communication.CommunicationStatus;
 import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandler;
@@ -303,13 +304,13 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
         private final InputStream stream;
 
         DigiplexReceiverThread(InputStream stream) {
-            super("DigiplexReceiveThread");
+            super(String.format("OH-binding-%s-%s", DigiplexBindingConstants.BINDING_ID, "Receiver"));
             this.stream = stream;
         }
 
         @Override
         public void run() {
-            logger.debug("Receiver thread started");
+            logger.debug("Starting receiver thread");
             while (!interrupted()) {
                 try {
                     Optional<String> message = readLineBlocking();
@@ -360,7 +361,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
 
         @Override
         public void run() {
-            logger.debug("Sender thread started");
+            logger.debug("Starting sender thread");
             while (!interrupted()) {
                 try {
                     DigiplexRequest request = sendQueue.take();

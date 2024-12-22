@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="ecotouch:geo">
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+		<instruction-set targetVersion="1">
+			<add-channel id="percent_water_limit_min">
+				<type>Number:Dimensionless</type>
+			</add-channel>
+			<add-channel id="percent_water_limit_max">
+				<type>Number:Dimensionless</type>
+			</add-channel>
+			<add-channel id="percent_heating_limit_min">
+				<type>Number:Dimensionless</type>
+			</add-channel>
+			<add-channel id="percent_heating_limit_max">
+				<type>Number:Dimensionless</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="hysteresis_warmwater">
+				<type>ecotouch:hysteresis_warmwater</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="ecotouch:air">
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+		<instruction-set targetVersion="1">
+			<add-channel id="percent_water_limit_min">
+				<type>Number:Dimensionless</type>
+			</add-channel>
+			<add-channel id="percent_water_limit_max">
+				<type>Number:Dimensionless</type>
+			</add-channel>
+			<add-channel id="percent_heating_limit_min">
+				<type>Number:Dimensionless</type>
+			</add-channel>
+			<add-channel id="percent_heating_limit_max">
+				<type>Number:Dimensionless</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="hysteresis_warmwater">
+				<type>ecotouch:hysteresis_warmwater</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

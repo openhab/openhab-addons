@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freeathome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="gateway">
+		<label>free@home Gateway</label>
+		<description>This gateway represents the free@home Gateway</description>
+
+		<config-description>
+			<parameter-group name="identification">
+				<label>SysAP Setting</label>
+				<description>SysAP network address and user settings</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter name="ipAddress" type="text" required="true" groupName="identification">
+				<context>network-address</context>
+				<label>Sysap IP Address</label>
+				<description>IP Address of the Busch-Jaeger Gateway</description>
+			</parameter>
+			<parameter name="username" type="text" required="true" groupName="identification">
+				<label>User Name</label>
+				<description>The login name</description>
+			</parameter>
+			<parameter name="password" type="text" required="true" groupName="identification">
+				<label>Password</label>
+				<context>password</context>
+				<description>Password for gateway</description>
+			</parameter>
+
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

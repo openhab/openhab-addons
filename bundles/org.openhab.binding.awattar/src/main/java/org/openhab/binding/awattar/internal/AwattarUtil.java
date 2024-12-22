@@ -21,7 +21,6 @@ import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
@@ -44,11 +43,7 @@ public class AwattarUtil {
     }
 
     public static ZonedDateTime getCalendarForHour(int hour, ZoneId zone) {
-        return ZonedDateTime.now(zone).truncatedTo(ChronoUnit.DAYS).plus(hour, ChronoUnit.HOURS);
-    }
-
-    public static DateTimeType getDateTimeType(long time, TimeZoneProvider tz) {
-        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), tz.getTimeZone()));
+        return ZonedDateTime.now(zone).truncatedTo(ChronoUnit.DAYS).plusHours(hour);
     }
 
     public static QuantityType<Time> getDuration(long millis) {

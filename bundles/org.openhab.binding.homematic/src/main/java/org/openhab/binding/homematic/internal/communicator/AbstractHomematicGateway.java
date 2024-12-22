@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.communicator;
 
-import static org.openhab.binding.homematic.internal.HomematicBindingConstants.*;
+import static org.openhab.binding.homematic.internal.HomematicBindingConstants.GATEWAY_POOL_NAME;
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.io.IOException;

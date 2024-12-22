@@ -1,0 +1,22 @@
+syntax = "proto3";
+package proto;
+import "acp.proto";
+
+//import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "gogo.proto";
+
+option (gogoproto.goproto_enum_prefix_all) = true;
+option java_package = "com.daimler.mbcarkit.proto";
+
+message EventPushCommand {
+    string vin = 1 [json_name = "vin"];
+    VVA.CommandState state = 2 [json_name = "acpState"];
+    VVA.CommandCondition condition = 3 [json_name = "acpCondition"];
+    ACP.CommandType type = 4 [json_name = "acpCommandType"];
+    int64 process_id = 5 [json_name = "pid"];
+    string tracking_id = 6 [json_name = "trackingId"];
+    string correlation_id = 7 [json_name = "correlationId"];
+    repeated int32 error_codes = 8 [json_name = "errorCodes"];
+    string guid = 9 [json_name = "guid"];
+    int64 timestamp_in_s = 10 [ json_name = "timestamp" ];
+}

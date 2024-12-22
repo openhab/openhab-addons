@@ -48,23 +48,34 @@ public class RepeaterHandler extends HostHandler implements FreeDeviceIntf {
 
     public RepeaterHandler(Thing thing) {
         super(thing);
-        eventChannelUID = new ChannelUID(getThing().getUID(), REPEATER_MISC, BOX_EVENT);
+        eventChannelUID = new ChannelUID(getThing().getUID(), GROUP_REPEATER_MISC, BOX_EVENT);
     }
 
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
-        super.initializeProperties(properties);
-
+        // We need to get and set the MAC address before calling super.initializeProperties
         Repeater repeater = getManager(RepeaterManager.class).getDevice(getClientId());
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, repeater.mainMac().toColonDelimitedString());
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, repeater.sn());
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, repeater.firmwareVersion());
         properties.put(Thing.PROPERTY_MODEL_ID, repeater.model().name());
+        updateProperties(properties);
+        super.initializeProperties(properties);
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
+        poll();
+    }
 
+    @Override
+    protected void internalForcePoll() throws FreeboxException {
+        super.internalForcePoll();
+        poll();
+    }
+
+    private void poll() throws FreeboxException {
         if (!thing.getStatus().equals(ThingStatus.ONLINE)) {
             return;
         }
@@ -73,21 +84,21 @@ public class RepeaterHandler extends HostHandler implements FreeDeviceIntf {
         RepeaterManager repeaterManager = getManager(RepeaterManager.class);
 
         Repeater repeater = repeaterManager.getDevice(getClientId());
-        updateChannelOnOff(REPEATER_MISC, LED, repeater.ledActivated());
-        updateChannelString(REPEATER_MISC, CONNECTION_STATUS, repeater.connection());
+        updateChannelOnOff(GROUP_REPEATER_MISC, LED, repeater.ledActivated());
+        updateChannelString(GROUP_REPEATER_MISC, CONNECTION_STATUS, repeater.connection());
 
         List<LanHost> hosts = repeaterManager.getRepeaterHosts(getClientId());
-        updateChannelDecimal(REPEATER_MISC, HOST_COUNT, hosts.size());
+        updateChannelDecimal(GROUP_REPEATER_MISC, HOST_COUNT, hosts.size());
 
         uptime = checkUptimeAndFirmware(repeater.getUptimeVal(), uptime, repeater.firmwareVersion());
-        updateChannelQuantity(REPEATER_MISC, UPTIME, uptime, Units.SECOND);
+        updateChannelQuantity(GROUP_REPEATER_MISC, UPTIME, uptime, Units.SECOND);
     }
 
     @Override
     protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
         if (ON_OFF_CLASSES.contains(command.getClass()) && LED.equals(channelId)) {
             getManager(RepeaterManager.class).led(getClientId(), TRUE_COMMANDS.contains(command))
-                    .ifPresent(repeater -> updateChannelOnOff(REPEATER_MISC, LED, repeater.ledActivated()));
+                    .ifPresent(repeater -> updateChannelOnOff(GROUP_REPEATER_MISC, LED, repeater.ledActivated()));
         }
         return super.internalHandleCommand(channelId, command);
     }

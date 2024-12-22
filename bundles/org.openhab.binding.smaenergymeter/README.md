@@ -20,12 +20,21 @@ No binding configuration required.
 Usually no manual configuration is required, as the multicast IP address and the port remain on their factory set values.
 Optionally, a refresh interval (in seconds) can be defined.
 
+| Parameter        | Name            | Description                                                | Required | Default         |
+|------------------|-----------------|------------------------------------------------------------|----------|-----------------|
+| `serialNumber`   | Serial number   | Serial number of a meter.                                  | yes      |                 |
+| `mcastGroup`     | Multicast Group | Multicast group used by meter.                             | yes      | 239.12.255.254  |
+| `port`           | Port            | Port number used by meter.                                 | no       | 9522            |
+| `pollingPeriod`  | Polling Period  | Polling period used to publish meter reading (in seconds). | no       | 30              |
+
+The polling period parameter is used to trigger readout of meter. In case if two consecutive readout attempts fail thing will report offline status.
+
 ## Channels
 
 | Channel     | Description            |
 |-------------|------------------------|
 | powerIn     | Purchased power        |
-| powerInL1   | Purchased power L3     |
+| powerInL1   | Purchased power L1     |
 | powerInL2   | Purchased power L2     |
 | powerInL3   | Purchased power L3     |
 | powerOut    | Grid feed-in power     |

@@ -1689,11 +1689,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      */
     protected void saveState() {
         synchronized (stateLock) {
-            savedState = new SonosZonePlayerState();
-            String currentURI = getCurrentURI();
-
+            SonosZonePlayerState savedState = new SonosZonePlayerState();
             savedState.transportState = getTransportState();
             savedState.volume = getVolume();
+            this.savedState = savedState;
+
+            String currentURI = getCurrentURI();
 
             if (currentURI != null) {
                 if (isPlayingStreamOrRadio(currentURI)) {
@@ -2523,7 +2524,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public boolean publicAddress(LineInType lineInType) {
         // check if sourcePlayer has a line-in connected
         if ((lineInType != LineInType.DIGITAL && isAnalogLineInConnected())
@@ -2536,7 +2536,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 for (String player : group.getMembers()) {
                     try {
                         ZonePlayerHandler somePlayer = getHandlerByName(player);
-                        if (somePlayer != this) {
+                        if (!somePlayer.equals(this)) {
                             somePlayer.becomeStandAlonePlayer();
                             somePlayer.stop();
                             addMember(StringType.valueOf(somePlayer.getUDN()));
@@ -3268,13 +3268,13 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     @Override
     public void onStatusChanged(boolean status) {
         if (status) {
-            logger.info("UPnP device {} is present (thing {})", getUDN(), getThing().getUID());
+            logger.debug("UPnP device {} is present (thing {})", getUDN(), getThing().getUID());
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
                 scheduler.execute(this::poll);
             }
         } else {
-            logger.info("UPnP device {} is absent (thing {})", getUDN(), getThing().getUID());
+            logger.debug("UPnP device {} is absent (thing {})", getUDN(), getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
         }
     }

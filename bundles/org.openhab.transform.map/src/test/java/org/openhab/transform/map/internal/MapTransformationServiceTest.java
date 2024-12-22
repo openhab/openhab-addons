@@ -152,4 +152,40 @@ public class MapTransformationServiceTest extends JavaTest {
         // ensure modified configuration is applied
         assertEquals("fermé", processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED));
     }
+
+    @Test
+    public void oneLineInlineMapTest() throws TransformationException {
+        String transformation = "|key1=semicolons_are_the_separators ; key2 = value2";
+        assertEquals("value2", processor.transform(transformation, "key2"));
+    }
+
+    @Test
+    public void defaultInlineTest() throws TransformationException {
+        String transformation = "|key1=value1;key2=value;=default";
+        assertEquals("default", processor.transform(transformation, "nonexistent"));
+    }
+
+    @Test
+    public void defaultSourceInlineTest() throws TransformationException {
+        String transformation = "|key1=value1;key2=value;=_source_";
+        assertEquals("nonexistent", processor.transform(transformation, "nonexistent"));
+    }
+
+    @Test
+    public void customSeparatorTest() throws TransformationException {
+        String transformation = "|?delimiter=,key1=value1;with;semicolons,key2;too=value2,?delimiter=value3";
+        assertEquals("value1;with;semicolons", processor.transform(transformation, "key1"));
+        assertEquals("value2", processor.transform(transformation, "key2;too"));
+        assertEquals("value3", processor.transform(transformation, "?delimiter"));
+
+        transformation = "|?delimiter=||key1=value1;with;semicolons||key2;too=value2||?delimiter=value3";
+        assertEquals("value1;with;semicolons", processor.transform(transformation, "key1"));
+        assertEquals("value2", processor.transform(transformation, "key2;too"));
+        assertEquals("value3", processor.transform(transformation, "?delimiter"));
+
+        transformation = "|key1=value1;key2=value2;?delimiter=value3";
+        assertEquals("value1", processor.transform(transformation, "key1"));
+        assertEquals("value2", processor.transform(transformation, "key2"));
+        assertEquals("value3", processor.transform(transformation, "?delimiter"));
+    }
 }

@@ -31,59 +31,75 @@ xidel -e \
 ```
 -->
 
-| Type        | Description                                                                                |
-|-------------|--------------------------------------------------------------------------------------------|
-| vmb1bl      | 1-channel blind control module for din rail                                                |
-| vmb1bls     | 1-channel blind control module for universal mounting                                      |
-| vmb1dm      | Dimmer module for inductive/resistive and capacitive load                                  |
-| vmb1led     | 1-channel 0-10V controlled PWM dimmer for led strips                                       |
-| vmb1ry      | 1-channel relay module                                                                     |
-| vmb1ryno    | 1-channel relay module with potential-free changeover contact                              |
-| vmb1rynos   | 1-channel relay module with potential-free changeover contact                              |
-| vmb1rys     | 1-channel relay module with input                                                          |
-| vmb1ts      | Temperature Sensor Module                                                                  |
-| vmb2bl      | 2-channel blind control module                                                             |
-| vmb2ble     | 2-channel blind control module with extended possibilities                                 |
-| vmb2pbn     | Push-button interface for Niko 1- or 2-fold push-buttons                                   |
-| vmb4an      | Analog I/O module                                                                          |
-| vmb4dc      | 4-channel 0/1-10V dimmer controller                                                        |
-| vmb4pb      | 4 button interface module                                                                  |
-| vmb4ry      | 4-channel relay module                                                                     |
-| vmb4ryld    | 4-channel relay module with voltage outputs                                                |
-| vmb4ryno    | 4-channel relay module with potential-free contacts                                        |
-| vmb6in      | 6-channel input module                                                                     |
-| vmb6pbn     | Push-button interface module for Niko 4- or 6-fold push-button                             |
-| vmb7in      | 7-channel input module (potentialfree + pulse)                                             |
-| vmb8ir      | Infrared remote control receiver module                                                    |
-| vmb8pb      | 8-Channel Push Button module                                                               |
-| vmb8pbu     | Push-button interface with 8 channels for universal mounting                               |
-| vmbdme      | Dimmer for electronic/resistive load                                                       |
-| vmbdmir     | Single channel triac dimmer for resistive and inductive loads                              |
-| vmbdmi      | Single channel triac dimmer for resistive and inductive loads                              |
-| vmbel1      | Edge-lit one touch button module                                                           |
-| vmbel2      | Edge-lit two touch buttons module                                                          |
-| vmbel4      | Edge-lit four touch buttons module                                                         |
-| vmbelo      | Edge-lit touch panel with Oled display                                                     |
-| vmbelpir    | Edge-lit Motion detector with one touch button                                             |
-| vmbgp1-2    | Glass control module with 1 touch key (Edition 2)                                          |
-| vmbgp1      | Glass control module with 1 touch key                                                      |
-| vmbgp2-2    | Glass control module with 2 touch keys (Edition 2)                                         |
-| vmbgp2      | Glass control module with 2 touch keys                                                     |
-| vmbgp4-2    | Glass control module with 4 touch keys (Edition 2)                                         |
-| vmbgp4      | Glass control module with 4 touch keys                                                     |
-| vmbgp4pir-2 | Glass control module with 4 touch keys and built-in motion and twilight sensor (Edition 2) |
-| vmbgp4pir   | Glass control module with 4 touch keys and built-in motion and twilight sensor             |
-| vmbgpod-2   | Glass control module with oled display and temperature controller (Edition 2)              |
-| vmbgpod     | Glass control module with oled display and temperature controller                          |
-| vmbgpo      | Glass control module with oled display                                                     |
-| vmbin       | 1-channel input module                                                                     |
-| vmbkp       | Keypad interface module                                                                    |
-| vmbmeteo    | Weather station with thermometer, anemometer, rain sensor and light sensor                 |
-| vmbpirc     | Motion and twilight sensor for ceiling mounting                                            |
-| vmbpirm     | Mini motion and twilight sensor for recessed or surface mounting                           |
-| vmbpiro     | Outdoor motion, twilight and temperature sensor, Theben                                    |
-| vmbrfr8s    | 8 channel RF receiver module                                                               |
-| vmbvp1      | Doorbird interface module                                                                  |
+| Type         | Description                                                                                |
+|--------------|--------------------------------------------------------------------------------------------|
+| vmb1bl       | 1-channel blind control module for din rail                                                |
+| vmb1bls      | 1-channel blind control module for universal mounting                                      |
+| vmb1dm       | Dimmer module for inductive/resistive and capacitive load                                  |
+| vmb1led      | 1-channel 0-10V controlled PWM dimmer for led strips                                       |
+| vmb1ry       | 1-channel relay module                                                                     |
+| vmb1ryno     | 1-channel relay module with potential-free changeover contact                              |
+| vmb1rynos    | 1-channel relay module with potential-free changeover contact                              |
+| vmb1rys      | 1-channel relay module with input                                                          |
+| vmb1ts       | Temperature Sensor Module                                                                  |
+| vmb2bl       | 2-channel blind control module                                                             |
+| vmb2ble-10   | 2-channel blind control module with extended possibilities                                 |
+| vmb2ble      | 2-channel blind control module with extended possibilities                                 |
+| vmb2pbn      | Push-button interface for Niko 1- or 2-fold push-buttons                                   |
+| vmb4an       | Analog I/O module                                                                          |
+| vmb4dc       | 4-channel 0/1-10V dimmer controller                                                        |
+| vmb4pb       | 4 button interface module                                                                  |
+| vmb4ry       | 4-channel relay module                                                                     |
+| vmb4ryld-10  | 4-channel relay module with voltage outputs                                                |
+| vmb4ryld     | 4-channel relay module with voltage outputs                                                |
+| vmb4ryno-10  | 4-channel relay module with potential-free contacts                                        |
+| vmb4ryno     | 4-channel relay module with potential-free contacts                                        |
+| vmb6in       | 6-channel input module                                                                     |
+| vmb6pb-20    | 6-channel input module                                                                     |
+| vmb6pbn      | Push-button interface module for Niko 4- or 6-fold push-button                             |
+| vmb7in       | 7-channel input module (potentialfree + pulse)                                             |
+| vmb8ir       | Infrared remote control receiver module                                                    |
+| vmb8pb       | 8-Channel Push Button module                                                               |
+| vmb8pbu      | Push-button interface with 8 channels for universal mounting                               |
+| vmbdali-20   | DALI gateway module                                                                        |
+| vmbdali      | DALI gateway module                                                                        |
+| vmbdme       | Dimmer for electronic/resistive load                                                       |
+| vmbdmir      | Single channel triac dimmer for resistive and inductive loads                              |
+| vmbdmi       | Single channel triac dimmer for resistive and inductive loads                              |
+| vmbel1-20    | Edge-lit one touch button module                                                           |
+| vmbel1       | Edge-lit one touch button module                                                           |
+| vmbel2-20    | Edge-lit two touch buttons module                                                          |
+| vmbel2       | Edge-lit two touch buttons module                                                          |
+| vmbel4pir-20 | Edge-lit Motion detector with four touch buttons                                            |
+| vmbel4-20    | Edge-lit four touch buttons module                                                         |
+| vmbel4       | Edge-lit four touch buttons module                                                         |
+| vmbelo-20    | Edge-lit touch panel with Oled display                                                     |
+| vmbelo       | Edge-lit touch panel with Oled display                                                     |
+| vmbelpir     | Edge-lit Motion detector with one touch button                                             |
+| vmbgp1-20    | Glass control module with 1 touch key                                                      |
+| vmbgp1-2     | Glass control module with 1 touch key (Edition 2)                                          |
+| vmbgp1       | Glass control module with 1 touch key                                                      |
+| vmbgp2-20    | Glass control module with 2 touch keys                                                     |
+| vmbgp2-2     | Glass control module with 2 touch keys (Edition 2)                                         |
+| vmbgp2       | Glass control module with 2 touch keys                                                     |
+| vmbgp4-20    | Glass control module with 4 touch keys                                                     |
+| vmbgp4-2     | Glass control module with 4 touch keys (Edition 2)                                         |
+| vmbgp4       | Glass control module with 4 touch keys                                                     |
+| vmbgp4pir-20 | Glass control module with 4 touch keys and built-in motion and twilight sensor             |
+| vmbgp4pir-2  | Glass control module with 4 touch keys and built-in motion and twilight sensor (Edition 2) |
+| vmbgp4pir    | Glass control module with 4 touch keys and built-in motion and twilight sensor             |
+| vmbgpod-2    | Glass control module with oled display and temperature controller (Edition 2)              |
+| vmbgpod      | Glass control module with oled display and temperature controller                          |
+| vmbgpo-20    | Glass control module with oled display and temperature controller                          |
+| vmbgpo       | Glass control module with oled display                                                     |
+| vmbin        | 1-channel input module                                                                     |
+| vmbkp        | Keypad interface module                                                                    |
+| vmbmeteo     | Weather station with thermometer, anemometer, rain sensor and light sensor                 |
+| vmbpirc      | Motion and twilight sensor for ceiling mounting                                            |
+| vmbpirm      | Mini motion and twilight sensor for recessed or surface mounting                           |
+| vmbpiro      | Outdoor motion, twilight and temperature sensor, Theben                                    |
+| vmbrfr8s     | 8 channel RF receiver module                                                               |
+| vmbvp1       | Doorbird interface module                                                                  |
 
 ## Discovery
 
@@ -153,9 +169,9 @@ Bridge velbus:bridge:1 [ port="COM1", reconnectionInterval="15" ]
 
 Adding Velbus modules to your openHAB configuration follows the conventions of your preferred configuration method.
 
-* **UI-based configuration:** Invoke a manual scan from the Things menu in order to start the [discovery process](#discovery).
+- **UI-based configuration:** Invoke a manual scan from the Things menu in order to start the [discovery process](#discovery).
 Discovered modules can be found in the inbox.
-* **Textual `.thing` configuration** can declare Velbus modules either in a standalone fashion (a bridge is still required):
+- **Textual `.thing` configuration** can declare Velbus modules either in a standalone fashion (a bridge is still required):
 
   ```java
   Thing velbus:<thingType>:<bridgeId>:<thingId> "Label" @ "Location" [ CH1="Kitchen Light", CH2="Living Light" ]
@@ -242,7 +258,28 @@ xidel -e 'let $refs := (
 | `dimspeed`                | `vmb1dm`, `vmb1led`, `vmb4dc`, `vmbdme`, `vmbdmi`, `vmbdmir`                                                                                                                                                      | The time (in seconds) needed for dimming from 0 to 100%.                                                                     |
 | `refresh`                 | `vmb1ts`, `vmb4an`, `vmb7in`, `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbgp1`, `vmbgp1-2`, `vmbgp2`, `vmbgp2-2`, `vmbgp4`, `vmbgp4-2`, `vmbgp4pir`, `vmbgp4pir-2`, `vmbmeteo`, `vmbpirc`, `vmbpirm`, `vmbpiro` | Refresh interval for sensors or counters (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled. |
 
+The `vmbdali` and `vmbdali-20` things have 16 virtual light channels.
+A virtual light combines 3 or 4 VMBDALI module channels into an openHAB channel to control RGB or RGBW lights.
+This is because an RGBW DALI light is configured on the VMBDALI module with 4 channels (Red channel, Green channel, Blue channel, White channel).
+The channels of the virtual light can be identified by a module channel `CH1` ... `CH64` or a DALI address `A0` ... `A63`.
+
+The configuration is set like this:
+
+```java
+Thing velbus:vmbdali:<bridgeId>:<thingId> [VL1="R,G,B,W"]
+```
+
+The white channel is optional.
+
+e.g.:
+
+```java
+Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
+```
+
 ## Channels
+
+The bridges have a number of channels to set the global alarms: `bridgeClockAlarm#clockAlarm1Enabled`,  `bridgeClockAlarm#clockAlarm1WakeupHour`, `bridgeClockAlarm#clockAlarm1WakeupMinute`, `bridgeClockAlarm#clockAlarm1BedtimeHour`, `bridgeClockAlarm#clockAlarm1BedtimeMinute`, `bridgeClockAlarm#clockAlarm2Enabled`,  `bridgeClockAlarm#clockAlarm2WakeupHour`, `bridgeClockAlarm#clockAlarm2WakeupMinute`, `bridgeClockAlarm#clockAlarm2BedtimeHour` and `bridgeClockAlarm#clockAlarm2BedtimeMinute`.
 
 For thing types `vmb1bl` and `vmb1bls` the supported channel is `CH1`.
 UpDown, StopMove and Percent command types are supported.
@@ -257,7 +294,7 @@ OnOff command types are supported.
 For thing type `vmb4ry` 4 channels are available `CH1` ... `CH4`.
 OnOff command types are supported.
 
-For thing types `vmb1ryno`, `vmb1rynos`, `vmb4ryld` and `vmb4ryno` 5 channels are available `CH1` ... `CH5`.
+For thing types `vmb1ryno`, `vmb1rynos`, `vmb4ryld`, `vmb4ryld-10`, `vmb4ryno` and `vmb4ryno-10` 5 channels are available `CH1` ... `CH5`.
 OnOff command types are supported.
 
 For thing types `vmb1rys` 6 channels are available `CH1` ... `CH6`.
@@ -265,9 +302,9 @@ OnOff command types are supported on channels `CH1` ... `CH5`.
 Pressed and Long_Pressed command types are supported on channel `CH6`.
 1 trigger channel on `CH6t`.
 
-The module `vmb1ts` has a number of channels to set the module's thermostat (`thermostat:currentTemperatureSetpoint`, `thermostat:heatingModeComfortTemperatureSetpoint`, `thermostat:heatingModeDayTemperatureSetpoint`, `thermostat:heatingModeNightTemperatureSetpoint`, `thermostat:heatingModeAntiFrostTemperatureSetpoint`, `thermostat:coolingModeComfortTemperatureSetpoint`, `thermostat:coolingModeDayTemperatureSetpoint`, `thermostat:coolingModeNightTemperatureSetpoint`, `thermostat:coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat:mode`) and thermostat trigger channels: `thermostat:heater`, `thermostat:boost`, `thermostat:pump`, `thermostat:cooler`, `thermostat:alarm1`, `thermostat:alarm2`, `thermostat:alarm3`, `thermostat:alarm4`.
+The module `vmb1ts` has a number of channels to set the module's thermostat (`thermostat#currentTemperatureSetpoint`, `thermostat#heatingModeComfortTemperatureSetpoint`, `thermostat#heatingModeDayTemperatureSetpoint`, `thermostat#heatingModeNightTemperatureSetpoint`, `thermostat#heatingModeAntiFrostTemperatureSetpoint`, `thermostat#coolingModeComfortTemperatureSetpoint`, `thermostat#coolingModeDayTemperatureSetpoint`, `thermostat#coolingModeNightTemperatureSetpoint`, `thermostat#coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat#mode`) and thermostat trigger channels: `thermostat#heater`, `thermostat#boost`, `thermostat#pump`, `thermostat#cooler`, `thermostat#alarm1`, `thermostat#alarm2`, `thermostat#alarm3`, `thermostat#alarm4`.
 
-For thing types `vmb2bl` and `vmb2ble` the supported channels are `CH1` and `CH2`. UpDown, StopMove and Percent command types are supported.
+For thing types `vmb2bl`, `vmb2ble` and `vmb2ble-10` the supported channels are `CH1` and `CH2`. UpDown, StopMove and Percent command types are supported.
 
 For thing type `vmb6in` 6 channels are available `CH1` ... `CH6`.
 Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH6`.
@@ -277,17 +314,16 @@ For thing type `vmb7in` 8 channels are available `CH1` ... `CH8`.
 Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH8`.
 8 trigger channels on channels `input#CH1` ... `input#CH8`.
 
-For thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8ir`, `vmb8pb`, `vmb8pbu`, `vmbrfr8s` and `vmbvp1`  8 channels are available `CH1` ... `CH8`.
+For thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8ir`, `vmb8pb`, `vmb8pbu`, `vmbrfr8s`, `vmbvp1` and `vmb6pb-20` 8 channels are available `CH1` ... `CH8`.
 Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH8`.
-8 trigger channels on channels `input:CH1` ... `input:CH8`.
+8 trigger channels on channels `input#CH1` ... `input#CH8`.
+Thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8pb`, `vmb8pbu`, `vmbrfr8s` and `vmbvp1` also have 8 channels to steer the button LED feedback `feedback#CH1` ... `feedback#CH8`.
+Additionally, the modules `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8pbu`, `vmbrfr8s`, `vmbvp1` and `vmb6pb-20` have a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
 
-Thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8pb`, `vmb8pbu`, `vmbrfr8s` and `vmbvp1` also have and 2 channels to steer the button LED feedback (`feedback:CH1` and `feedback:CH2`).
-Additionally, the modules `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8pbu`, `vmbrfr8s` and `vmbvp1` have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
-
-For thing type`vmb4an` 8 trigger channels are avaiable `input:CH1` ... `input:CH8`.
+For thing type`vmb4an` 8 trigger channels are avaiable `input#CH1` ... `input#CH8`.
 These channels will be triggered by the module's alarms.
 Four pairs of channels are available to retrieve the module's analog inputs.
-Each pair has a channel to retrieve the raw analog value (`analogInput:CH9Raw` ... `analogInput:CH12Raw`) and a channel to retrieve the textual analog value (`analogInput:CH9` ... `analogInput:CH12`).
+Each pair has a channel to retrieve the raw analog value (`analoginput#CH9Raw` ... `analoginput#CH12Raw`) and a channel to retrieve the textual analog value (`analoginput#CH9` ... `analoginput#CH12`).
 Four channels are available to set the module's analog outputs `analogOutput:CH13` ... `analogOutput:CH16`.
 
 For thing type `vmb4dc` 4 channels are available `CH1` ... `CH4`.
@@ -297,29 +333,41 @@ Sending an ON command will switch the dimmer to the value stored when last turni
 For thing type `vmb4ry` 4 channels are available `CH1` ... `CH4`.
 OnOff command types are supported.
 
-Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbgp1`, `vmbgp2`, `vmbgp4`, `vmbgp4pir` and `vmbpiro` have 8 trigger channels `input:CH1` ... `input:CH8` and one temperature channel `input:CH9`.
+Thing types `vmbel1`, `vmbel1-20`, `vmbel2`, `vmbel2-20`, `vmbel4`, `vmbel4-20`, `vmbelpir`, `vmbel4pir-20`, `vmbgp1`, `vmbgp2`, `vmbgp4`, `vmbgp4pir`, `vmbgp4pir-20` and `vmbpiro` have 8 trigger channels `input:CH1` ... `input:CH8` and one temperature channel `input:CH9`.
 Pressed and Long_Pressed command types are supported on channels `button#CH1` and `button#CH2` for the thing type `vmbelpir`.
-Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH8` for the thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbgp1`, `vmbgp2`, `vmbgp4`, `vmbgp4pir` and `vmbpiro`.
-The thing types `vmbel1` and `vmbgp1` have one channel to steer the button LED feedback `feedback:CH1`.
-The thing types `vmbel2` and `vmbgp2` have two channels to steer the button LED feedback `feedback:CH1` and `feedback:CH2`.
-The thing types `vmbel4`, `vmbgp4` and `vmbgp4pir` have four channels to steer the button LED feedback `feedback:CH1` ... `feedback:CH4`.
-The thing type `vmbpiro` has a channel `input:LIGHT` indicating the illuminance.
-Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbgp1`, `vmbgp2`, `vmbgp4` and `vmbgp4pir` have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
-Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbgp1`, `vmbgp2`, `vmbgp4` and `vmbgp4pir` also have a number of channels to set the module's thermostat (`thermostat:currentTemperatureSetpoint`, `thermostat:heatingModeComfortTemperatureSetpoint`, `thermostat:heatingModeDayTemperatureSetpoint`, `thermostat:heatingModeNightTemperatureSetpoint`, `thermostat:heatingModeAntiFrostTemperatureSetpoint`, `thermostat:coolingModeComfortTemperatureSetpoint`, `thermostat:coolingModeDayTemperatureSetpoint`, `thermostat:coolingModeNightTemperatureSetpoint`, `thermostat:coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat:mode`) and thermostat trigger channels: `thermostat:heater`, `thermostat:boost`, `thermostat:pump`, `thermostat:cooler`, `thermostat:alarm1`, `thermostat:alarm2`, `thermostat:alarm3`, `thermostat:alarm4`.
+Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH4` for the thing type `vmbel4pir-20`.
+Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH8` for the thing types `vmbel1`, `vmbel1-20`, `vmbel2`, `vmbel2-20`, `vmbel4`, `vmbel4-20`, `vmbgp1`, `vmbgp2`, `vmbgp4`, `vmbgp4pir`, `vmbgp4pir-20` and `vmbpiro`.
+The thing types `vmbel1`, `vmbel1-20` and `vmbgp1` have one channel to steer the button LED feedback `feedback#CH1`.
+The thing types `vmbel2`, `vmbel2-20` and `vmbgp2` have two channels to steer the button LED feedback `feedback#CH1` and `feedback#CH2`.
+The thing types `vmbel4`, `vmbel4-20`, `vmbel4pir-20`, `vmbgp4`, `vmbgp4pir` and `vmbgp4pir-20` have four channels to steer the button LED feedback `feedback#CH1` ... `feedback#CH4`.
+The thing type `vmbpiro` has a channel `input#LIGHT` indicating the illuminance.
+The thing types `vmbel1`, `vmbel1-20`, `vmbel2`, `vmbel2-20`, `vmbel4`, `vmbel4-20`, `vmbelpir` and `vmbel4pir-20` have one output channel `output#output`.
+Thing types `vmbel1`, `vmbel1-20`, `vmbel2`, `vmbel2-20`, `vmbel4`, `vmbel4-20`, `vmbelpir`, `vmbel4pir-20`, `vmbgp1`, `vmbgp2`, `vmbgp4`, `vmbgp4pir` and `vmbgp4pir-20` have a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
+Thing types `vmbel1`, `vmbel1-20`, `vmbel2`, `vmbel2-20`, `vmbel4`, `vmbel4-20`, `vmbelpir`, `vmbel4pir-20`, `vmbgp1`, `vmbgp2`, `vmbgp4`, `vmbgp4pir` and `vmbgp4pir-20` also have a number of channels to set the module's thermostat (`thermostat#currentTemperatureSetpoint`, `thermostat#heatingModeComfortTemperatureSetpoint`, `thermostat#heatingModeDayTemperatureSetpoint`, `thermostat#heatingModeNightTemperatureSetpoint`, `thermostat#heatingModeAntiFrostTemperatureSetpoint`, `thermostat#coolingModeComfortTemperatureSetpoint`, `thermostat#coolingModeDayTemperatureSetpoint`, `thermostat#coolingModeNightTemperatureSetpoint`, `thermostat#coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat#mode`) and thermostat trigger channels: `thermostat#heater`, `thermostat#boost`, `thermostat#pump`, `thermostat#cooler`, `thermostat#alarm1`, `thermostat#alarm2`, `thermostat#alarm3`, `thermostat#alarm4`.
 
-Thing types `vmbelo`, `vmbgpo` and `vmbgpod` have 32 trigger channels `input:CH1` ... `input:CH32` and one temperature channel `input:CH33`.
+Thing types `vmbelo`, `vmbelo-20`, `vmbgpo`, `vmbgpo-20`, `vmbgpod` and `vmbgpod-2` have 32 trigger channels `input#CH1` ... `input#CH32` and one temperature channel `input#CH33`.
 Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH32`.
-They have have 32 channels to steer the button LED feedback `feedback:CH1` ... `feedback:CH32`.
-They have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
-They have a number of channels to set the module's thermostat thermostat (`thermostat:currentTemperatureSetpoint`, `thermostat:heatingModeComfortTemperatureSetpoint`, `thermostat:heatingModeDayTemperatureSetpoint`, `thermostat:heatingModeNightTemperatureSetpoint`, `thermostat:heatingModeAntiFrostTemperatureSetpoint`, `thermostat:coolingModeComfortTemperatureSetpoint`, `thermostat:coolingModeDayTemperatureSetpoint`, `thermostat:coolingModeNightTemperatureSetpoint`, `thermostat:coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat:mode`) and thermostat trigger channels: `thermostat:heater`, `thermostat:boost`, `thermostat:pump`, `thermostat:cooler`, `thermostat:alarm1`, `thermostat:alarm2`, `thermostat:alarm3`, `thermostat:alarm4`.
+They have have 32 channels to steer the button LED feedback `feedback#CH1` ... `feedback#CH32`.
+The thing type `vmbelo` and `vmbelo-20` have one output channel `output#output`.
+They have a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
+They have a number of channels to set the module's thermostat thermostat (`thermostat#currentTemperatureSetpoint`, `thermostat#heatingModeComfortTemperatureSetpoint`, `thermostat#heatingModeDayTemperatureSetpoint`, `thermostat#heatingModeNightTemperatureSetpoint`, `thermostat#heatingModeAntiFrostTemperatureSetpoint`, `thermostat#coolingModeComfortTemperatureSetpoint`, `thermostat#coolingModeDayTemperatureSetpoint`, `thermostat#coolingModeNightTemperatureSetpoint`, `thermostat#coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat#mode`) and thermostat trigger channels: `thermostat#heater`, `thermostat#boost`, `thermostat#pump`, `thermostat#cooler`, `thermostat#alarm1`, `thermostat#alarm2`, `thermostat#alarm3`, `thermostat#alarm4`.
 They also have two channels to control the module's display `oledDisplay:MEMO` and `oledDisplay:SCREENSAVER`.
 
-Thing type `vmbmeteo`has 8 trigger channels (`input:CH1` ... `input:CH8`). These channels will be triggered by the module's alarms.
-It has a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
+Thing type `vmbmeteo`has 8 trigger channels (`input#CH1` ... `input#CH8`). These channels will be triggered by the module's alarms.
+It has a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
 It also has a number of channels to read out the weather station's sensors: `weatherStation:temperature`, `weatherStation:rainfall`, `weatherStation:illuminance` and `weatherStation:windspeed`.
 
-Thing types `vmbpirc` and `vmbpirm` have 7 trigger channels `input:CH1` ... `input:CH7`.
-Additionally, these modules have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
+Thing types `vmbpirc` and `vmbpirm` have 7 trigger channels `input#CH1` ... `input#CH7`.
+Additionally, these modules have a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
+
+Thing types `vmbdali` and `vmbdali-20` have 81 trigger channels `input#CH1` ... `input#CH81`.
+They have 81 channels to steer the button LED feedback `feedback#CH1` ... `feedback#CH81`.
+hsbColor command type is supported on channels `color#CH1` ... `color#CH64` (A1 ... A64), `color#CH65` ... `color#CH80` (G1 ... G16) and `color#CH81` (broadcast). This is to set the color on the channels.
+Percent command type is supported on channels `brightness#CH1` ... `brightness#CH64` (A1 ... A64), `brightness#CH65` ... `brightness#CH80` (G1 ... G16) and `brightness#CH81` (broadcast). This is to set the brightness on the channels.
+Percent command type is supported on channels `white#CH1` ... `white#CH64` (A1 ... A64), `white#CH65` ... `white#CH80` (G1 ... G16) and `white#CH81` (broadcast). This is to set the white on the channels.
+Values 1 to 15 are supported on channels `scene#CH1` ... `scene#CH64` (A1 ... A64), `scene#CH65` ... `scene#CH80` (G1 ... G16) and `scene#CH81` (broadcast). This is to set the scene on the channels.
+hsbColor command type is supported on channels `virtual-light#VL1` ... `virtual-light#VL16`. This is to set the color on the virtual light.
+They have a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
 
 The trigger channels can be used as a trigger to rules. The event message can be `PRESSED`, `RELEASED`or `LONG_PRESSED`.
 
@@ -386,7 +434,7 @@ Example trigger rule:
 ```java
 rule "example trigger rule"
 when
-    Channel 'velbus:vmb7in:1:05:CH5' triggered PRESSED
+    Channel 'velbus:vmb7in:1:05:input#CH5' triggered PRESSED
 then
     var message = receivedEvent.getEvent()
     logInfo("velbusTriggerExample", "Message: {}", message)

@@ -5,12 +5,14 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="lock-values">
 		<label>Lock Status</label>
-		<description>Vehicle Lock Status</description>
+		<description>Door Lock Status</description>
 		<channels>
-			<channel id="doors" typeId="doors-lock-channel"/>
-			<channel id="deck-lid" typeId="deck-lid-lock-channel"/>
-			<channel id="flap" typeId="flap-lock-channel"/>
-			<channel id="last-update" typeId="last-lock-update-channel"/>
+			<channel id="front-left" typeId="front-left-lock"/>
+			<channel id="front-right" typeId="front-right-lock"/>
+			<channel id="rear-left" typeId="rear-left-lock"/>
+			<channel id="rear-right" typeId="rear-right-lock"/>
+			<channel id="deck-lid" typeId="deck-lid-lock"/>
+			<channel id="gas-flap" typeId="gas-flap-lock"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

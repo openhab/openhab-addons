@@ -39,7 +39,7 @@ public class VehiclePropertiesTest {
 
     @Test
     public void testRemoteServiceOptions() {
-        String commandReference = "[CommandOption [command=light-flash, label=Flash Lights], CommandOption [command=vehicle-finder, label=Vehicle Finder], CommandOption [command=door-lock, label=Door Lock], CommandOption [command=door-unlock, label=Door Unlock], CommandOption [command=horn-blow, label=Horn Blow], CommandOption [command=climate-now-start, label=Start Climate], CommandOption [command=climate-now-stop, label=Stop Climate], CommandOption [command=charge-now, label=Charge]]";
+        String commandReference = "[CommandOption [command=light-flash, label=Flash Lights], CommandOption [command=vehicle-finder, label=Vehicle Finder], CommandOption [command=door-lock, label=Door Lock], CommandOption [command=door-unlock, label=Door Unlock], CommandOption [command=horn-blow, label=Horn Blow], CommandOption [command=climate-now-start, label=Start Climate], CommandOption [command=climate-now-stop, label=Stop Climate], CommandOption [command=start-charging, label=Start Charging], CommandOption [command=stop-charging, label=Stop Charging]]";
         List<CommandOption> l = RemoteServiceUtils.getOptions(true);
         assertEquals(commandReference, l.toString(), "Commad Options");
     }

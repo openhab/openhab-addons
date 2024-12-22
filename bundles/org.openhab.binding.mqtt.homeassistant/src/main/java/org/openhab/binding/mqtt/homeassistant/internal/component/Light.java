@@ -55,10 +55,13 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
     protected static final String TEMPLATE_SCHEMA = "template";
 
     protected static final String STATE_CHANNEL_ID = "state";
-    protected static final String ON_OFF_CHANNEL_ID = "on_off";
+    protected static final String SWITCH_CHANNEL_ID = "switch";
+    protected static final String SWITCH_CHANNEL_ID_DEPRECATED = "on_off";
     protected static final String BRIGHTNESS_CHANNEL_ID = "brightness";
-    protected static final String COLOR_MODE_CHANNEL_ID = "color_mode";
-    protected static final String COLOR_TEMP_CHANNEL_ID = "color_temp";
+    protected static final String COLOR_MODE_CHANNEL_ID = "color-mode";
+    protected static final String COLOR_MODE_CHANNEL_ID_DEPRECATED = "color_mode";
+    protected static final String COLOR_TEMP_CHANNEL_ID = "color-temp";
+    protected static final String COLOR_TEMP_CHANNEL_ID_DEPRECATED = "color_temp";
     protected static final String EFFECT_CHANNEL_ID = "effect";
     // This channel is a synthetic channel that may send to other channels
     // underneath
@@ -69,6 +72,8 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
     protected static final String ON_COMMAND_TYPE_FIRST = "first";
     protected static final String ON_COMMAND_TYPE_BRIGHTNESS = "brightness";
     protected static final String ON_COMMAND_TYPE_LAST = "last";
+
+    protected static final String FORMAT_INTEGER = "%.0f";
 
     /**
      * Configuration class for MQTT component
@@ -83,8 +88,6 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
         protected String schema = DEFAULT_SCHEMA;
         protected @Nullable Boolean optimistic; // All schemas
         protected boolean brightness = false; // JSON schema only
-        @SerializedName("color_mode")
-        protected boolean colorMode = false; // JSON schema only
         @SerializedName("supported_color_modes")
         protected @Nullable List<LightColorMode> supportedColorModes; // JSON schema only
         // Defines when on the payload_on is sent. Using last (the default) will send
@@ -230,10 +233,10 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
     }
 
     protected final boolean optimistic;
-    protected boolean hasColorChannel = false;
 
     protected @Nullable ComponentChannel onOffChannel;
     protected @Nullable ComponentChannel brightnessChannel;
+    protected @Nullable ComponentChannel colorChannel;
 
     // State has to be stored here, in order to mux multiple
     // MQTT sources into single OpenHAB channels
@@ -245,21 +248,24 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
 
     protected final ChannelStateUpdateListener channelStateUpdateListener;
 
-    public static Light create(ComponentFactory.ComponentConfiguration builder) throws UnsupportedComponentException {
+    public static Light create(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels)
+            throws UnsupportedComponentException {
         String schema = builder.getConfig(ChannelConfiguration.class).schema;
         switch (schema) {
             case DEFAULT_SCHEMA:
-                return new DefaultSchemaLight(builder);
+                return new DefaultSchemaLight(builder, newStyleChannels);
             case JSON_SCHEMA:
-                return new JSONSchemaLight(builder);
+                return new JSONSchemaLight(builder, newStyleChannels);
+            case TEMPLATE_SCHEMA:
+                return new TemplateSchemaLight(builder, newStyleChannels);
             default:
                 throw new UnsupportedComponentException(
                         "Component '" + builder.getHaID() + "' of schema '" + schema + "' is not supported!");
         }
     }
 
-    protected Light(ComponentFactory.ComponentConfiguration builder) {
-        super(builder, ChannelConfiguration.class);
+    protected Light(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
+        super(builder, ChannelConfiguration.class, newStyleChannels);
         this.channelStateUpdateListener = builder.getUpdateListener();
 
         @Nullable
@@ -272,7 +278,7 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
 
         onOffValue = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
         brightnessValue = new PercentageValue(null, new BigDecimal(channelConfiguration.brightnessScale), null, null,
-                null);
+                null, FORMAT_INTEGER);
         @Nullable
         List<String> effectList = channelConfiguration.effectList;
         if (effectList != null) {
@@ -291,6 +297,7 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
         colorTempValue = new NumberValue(min, max, BigDecimal.ONE, Units.MIRED);
 
         buildChannels();
+        finalizeChannels();
     }
 
     protected abstract void buildChannels();
