@@ -4,19 +4,20 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="heatpump">
+	<thing-type id="stiebeleltron-heatpump-wpm3">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="tcp"/>
 			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
-		<label>Stiebel Eltron Heat Pump</label>
-		<description>A Stiebel Eltron Heat Pump connected through modbus to an ISG</description>
+		<label>Stiebel Eltron Heat Pump (WPM3)</label>
+		<description>A Stiebel Eltron Heat Pump (WPM3 compatible) connected through Modbus to an ISG</description>
+		<category>heating</category>
 
 		<channel-groups>
-			<channel-group id="systemState" typeId="system-state"/>
-			<channel-group id="systemParameter" typeId="system-parameter"/>
-			<channel-group id="systemInformation" typeId="system-information"/>
-			<channel-group id="energyInformation" typeId="energy-information"/>
+			<channel-group id="systemInformationWpm3" typeId="system-information-wpm3"/>
+			<channel-group id="systemParameterWpm3Wpm3i" typeId="system-parameter-wpm3wpm3i"/>
+			<channel-group id="systemStateWpm3" typeId="system-state-wpm3"/>
+			<channel-group id="energyInformationWpmWpm3" typeId="energy-information-wpm-wpm3"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:stiebeleltron:modbusconfig"/>
