@@ -38,11 +38,14 @@ import org.osgi.service.component.annotations.Reference;
 public class GoveeHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT);
 
-    private CommunicationManager communicationManager;
+    private final CommunicationManager communicationManager;
+    private final GoveeStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
-    public GoveeHandlerFactory(@Reference CommunicationManager communicationManager) {
+    public GoveeHandlerFactory(final @Reference CommunicationManager communicationManager,
+            final @Reference GoveeStateDescriptionProvider stateDescriptionProvider) {
         this.communicationManager = communicationManager;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -55,7 +58,7 @@ public class GoveeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_LIGHT.equals(thingTypeUID)) {
-            return new GoveeHandler(thing, communicationManager);
+            return new GoveeHandler(thing, communicationManager, stateDescriptionProvider);
         }
 
         return null;
