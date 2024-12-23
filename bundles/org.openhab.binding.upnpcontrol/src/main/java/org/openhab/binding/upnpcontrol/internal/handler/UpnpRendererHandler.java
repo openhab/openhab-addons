@@ -1653,7 +1653,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             } else {
                 State albumArt = null;
                 try {
-                    albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
+                    albumArt = HttpUtil.downloadImage(media.getAlbumArtUri().trim());
                 } catch (IllegalArgumentException e) {
                     logger.debug("Invalid album art URI: {}", media.getAlbumArtUri(), e);
                 }
