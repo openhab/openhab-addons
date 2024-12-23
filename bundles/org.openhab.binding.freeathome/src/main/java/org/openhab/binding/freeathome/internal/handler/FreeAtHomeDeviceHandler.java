@@ -589,8 +589,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
     // Create a channel UID. Makes sure that the channel UID is unique and generated the same way every time
     private ChannelUID createChannelUID(ThingUID thingUID, String channelID, String dpgLabel) {
-        ChannelUID channelUID = new ChannelUID(thingUID, channelID, dpgLabel.substring(4));
-        return channelUID;
+        return new ChannelUID(thingUID, channelID, dpgLabel.substring(4));
     }
 
     public void removeChannels() {
