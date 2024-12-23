@@ -15,178 +15,119 @@ package org.openhab.binding.amazonechocontrol.internal.smarthome;
 import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-
-import javax.measure.quantity.Temperature;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.connection.Connection;
+import org.openhab.binding.amazonechocontrol.internal.dto.smarthome.JsonSmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.dto.smarthome.JsonSmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.State;
+import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
 /**
- * The {@link HandlerThermostatController} is responsible for the Alexa.ThermostatControllerInterface
+ * The {@link HandlerThermostatController} is responsible for the Alexa.ThermostatController interface
  *
  * @author Sven Killig - Initial contribution
  */
 @NonNullByDefault
-public class HandlerThermostatController extends HandlerBase {
-    // Logger
-    private final Logger logger = LoggerFactory.getLogger(HandlerThermostatController.class);
-    // Interface
+public class HandlerThermostatController extends AbstractInterfaceHandler {
     public static final String INTERFACE = "Alexa.ThermostatController";
-    // Channel definitions
-    private static final ChannelInfo TARGET_SETPOINT = new ChannelInfo("targetSetpoint" /* propertyName */ ,
-            "targetSetpoint" /* ChannelId */, CHANNEL_TYPE_TARGETSETPOINT /* Channel Type */ ,
-            ITEM_TYPE_NUMBER_TEMPERATURE /* Item Type */);
-    private static final ChannelInfo LOWER_SETPOINT = new ChannelInfo("lowerSetpoint" /* propertyName */ ,
-            "lowerSetpoint" /* ChannelId */, CHANNEL_TYPE_LOWERSETPOINT /* Channel Type */ ,
-            ITEM_TYPE_NUMBER_TEMPERATURE /* Item Type */);
-    private static final ChannelInfo UPPER_SETPOINT = new ChannelInfo("upperSetpoint" /* propertyName */ ,
-            "upperSetpoint" /* ChannelId */, CHANNEL_TYPE_UPPERSETPOINT /* Channel Type */ ,
-            ITEM_TYPE_NUMBER_TEMPERATURE /* Item Type */);
-    private static final ChannelInfo THERMOSTAT_MODE = new ChannelInfo("thermostatMode" /* propertyName */ ,
-            "thermostatMode" /* ChannelId */, CHANNEL_TYPE_THERMOSTATMODE /* Channel Type */ ,
-            ITEM_TYPE_STRING /* Item Type */);
+
+    private static final ChannelInfo TARGET_SETPOINT = new ChannelInfo("targetSetpoint" /* propertyNameReceive */,
+            "targetTemperature" /* propertyNameSend */, "targetSetpoint", CHANNEL_TYPE_TARGETSETPOINT);
+    private static final ChannelInfo LOWER_SETPOINT = new ChannelInfo("lowerSetpoint",
+            "lowerSetTemperature" /* propertyNameSend */, "lowerSetpoint", CHANNEL_TYPE_LOWERSETPOINT);
+    private static final ChannelInfo UPPER_SETPOINT = new ChannelInfo("upperSetpoint",
+            "upperSetTemperature" /* propertyNameSend */, "upperSetpoint", CHANNEL_TYPE_UPPERSETPOINT);
+    private static final ChannelInfo MODE = new ChannelInfo("thermostatMode", "thermostatMode", "thermostatMode",
+            CHANNEL_TYPE_THERMOSTATMODE);
+
+    private static final Set<ChannelInfo> ALL_CHANNELS = Set.of(TARGET_SETPOINT, LOWER_SETPOINT, UPPER_SETPOINT, MODE);
+
+    private final Map<String, Type> setpointCache = new HashMap<>();
 
     public HandlerThermostatController(SmartHomeDeviceHandler smartHomeDeviceHandler) {
-        super(smartHomeDeviceHandler);
+        super(smartHomeDeviceHandler, List.of(INTERFACE));
     }
 
     @Override
-    public String[] getSupportedInterface() {
-        return new String[] { INTERFACE };
-    }
-
-    @Override
-    protected ChannelInfo @Nullable [] findChannelInfos(SmartHomeCapability capability, String property) {
-        if (TARGET_SETPOINT.propertyName.equals(property)) {
-            return new ChannelInfo[] { TARGET_SETPOINT };
-        }
-        if (LOWER_SETPOINT.propertyName.equals(property)) {
-            return new ChannelInfo[] { LOWER_SETPOINT };
-        }
-        if (UPPER_SETPOINT.propertyName.equals(property)) {
-            return new ChannelInfo[] { UPPER_SETPOINT };
-        }
-        if (THERMOSTAT_MODE.propertyName.equals(property)) {
-            return new ChannelInfo[] { THERMOSTAT_MODE };
-        }
-        return null;
+    protected Set<ChannelInfo> findChannelInfos(JsonSmartHomeCapability capability, @Nullable String property) {
+        return ALL_CHANNELS.stream().filter(c -> c.propertyName.equals(property)).collect(Collectors.toSet());
     }
 
     @Override
     public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
-        for (JsonObject state : stateList) {
-            QuantityType<Temperature> temperatureValue = null;
-            logger.debug("Updating {} with state: {}", interfaceName, state.toString());
-            if (TARGET_SETPOINT.propertyName.equals(state.get("name").getAsString())) {
-                // For groups take the first
-                if (temperatureValue == null) {
-                    JsonObject value = state.get("value").getAsJsonObject();
-                    float temperature = value.get("value").getAsFloat();
-                    String scale = value.get("scale").getAsString().toUpperCase();
-                    if ("CELSIUS".equals(scale)) {
-                        temperatureValue = new QuantityType<>(temperature, SIUnits.CELSIUS);
+        ALL_CHANNELS.forEach(channel -> {
+            State newState = null;
+            for (JsonObject state : stateList) {
+                if (channel.propertyName.equals(state.get("name").getAsString())) {
+                    if ("thermostatMode".equals(channel.propertyName)) {
+                        newState = new StringType(state.get("value").getAsString());
                     } else {
-                        temperatureValue = new QuantityType<>(temperature, ImperialUnits.FAHRENHEIT);
+                        JsonObject value = state.get("value").getAsJsonObject();
+                        // For groups take the first
+                        if (newState == null) {
+                            float temperature = value.get("value").getAsFloat();
+                            String scale = value.get("scale").getAsString().toUpperCase();
+                            if ("CELSIUS".equals(scale)) {
+                                newState = new QuantityType<>(temperature, SIUnits.CELSIUS);
+                            } else {
+                                newState = new QuantityType<>(temperature, ImperialUnits.FAHRENHEIT);
+                            }
+                        }
+                        setpointCache.put(channel.propertyNameSend, newState);
                     }
                 }
-                updateState(TARGET_SETPOINT.channelId, temperatureValue == null ? UnDefType.UNDEF : temperatureValue);
             }
-            if (THERMOSTAT_MODE.propertyName.equals(state.get("name").getAsString())) {
-                // For groups take the first
-                String operation = state.get("value").getAsString().toUpperCase();
-                StringType operationValue = new StringType(operation);
-                updateState(THERMOSTAT_MODE.channelId, operationValue);
-            }
-            if (UPPER_SETPOINT.propertyName.equals(state.get("name").getAsString())) {
-                // For groups take the first
-                if (temperatureValue == null) {
-                    JsonObject value = state.get("value").getAsJsonObject();
-                    float temperature = value.get("value").getAsFloat();
-                    String scale = value.get("scale").getAsString().toUpperCase();
-                    if ("CELSIUS".equals(scale)) {
-                        temperatureValue = new QuantityType<>(temperature, SIUnits.CELSIUS);
-                    } else {
-                        temperatureValue = new QuantityType<>(temperature, ImperialUnits.FAHRENHEIT);
-                    }
-                }
-                updateState(UPPER_SETPOINT.channelId, temperatureValue == null ? UnDefType.UNDEF : temperatureValue);
-            }
-            if (LOWER_SETPOINT.propertyName.equals(state.get("name").getAsString())) {
-                // For groups take the first
-                if (temperatureValue == null) {
-                    JsonObject value = state.get("value").getAsJsonObject();
-                    float temperature = value.get("value").getAsFloat();
-                    String scale = value.get("scale").getAsString().toUpperCase();
-                    if ("CELSIUS".equals(scale)) {
-                        temperatureValue = new QuantityType<>(temperature, SIUnits.CELSIUS);
-                    } else {
-                        temperatureValue = new QuantityType<>(temperature, ImperialUnits.FAHRENHEIT);
-                    }
-                }
-                updateState(LOWER_SETPOINT.channelId, temperatureValue == null ? UnDefType.UNDEF : temperatureValue);
-            }
-        }
+            smartHomeDeviceHandler.updateState(channel.channelId,
+                    Objects.requireNonNullElse(newState, UnDefType.UNDEF));
+        });
     }
 
     @Override
-    public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            List<SmartHomeCapability> capabilities, String channelId, Command command)
+    public boolean handleCommand(Connection connection, JsonSmartHomeDevice shd, String entityId,
+            List<JsonSmartHomeCapability> capabilities, String channelId, Command command)
             throws IOException, InterruptedException {
-        if (channelId.equals(TARGET_SETPOINT.channelId)) {
-            if (containsCapabilityProperty(capabilities, TARGET_SETPOINT.propertyName)) {
+        ChannelInfo channelInfo = ALL_CHANNELS.stream().filter(c -> c.channelId.equals(channelId)).findFirst()
+                .orElse(null);
+        if (channelInfo != null) {
+            if (containsCapabilityProperty(capabilities, channelInfo.propertyName)) {
                 if (command instanceof QuantityType) {
-                    connection.smartHomeCommand(entityId, "setTargetTemperature", "targetTemperature", command);
+                    Map<String, Object> values = new HashMap<>();
+                    if ("lowerSetTemperature".equals(channelInfo.propertyNameSend)) {
+                        values.put("lowerSetTemperature", command);
+                        values.put("upperSetTemperature", setpointCache.getOrDefault("upperSetTemperature", command));
+                    } else if ("upperSetTemperature".equals(channelInfo.propertyNameSend)) {
+                        values.put("upperSetTemperature", command);
+                        values.put("lowerSetTemperature", setpointCache.getOrDefault("lowerSetTemperature", command));
+                    } else {
+                        values.put("targetTemperature", command);
+                    }
+                    connection.smartHomeCommand(entityId, "setTargetTemperature", values);
                     return true;
                 }
-            }
-        }
-        if (channelId.equals(LOWER_SETPOINT.channelId)) {
-            if (containsCapabilityProperty(capabilities, LOWER_SETPOINT.propertyName)) {
-                if (command instanceof QuantityType) {
-                    connection.smartHomeCommand(entityId, "setTargetTemperature", "lowerSetTemperature", command);
-                    return true;
-                }
-            }
-        }
-        if (channelId.equals(UPPER_SETPOINT.channelId)) {
-            if (containsCapabilityProperty(capabilities, UPPER_SETPOINT.propertyName)) {
-                if (command instanceof QuantityType) {
-                    connection.smartHomeCommand(entityId, "setTargetTemperature", "upperSetTemperature", command);
-                    return true;
-                }
-            }
-        }
-        if (channelId.equals(THERMOSTAT_MODE.channelId)) {
-            if (containsCapabilityProperty(capabilities, THERMOSTAT_MODE.propertyName)) {
                 if (command instanceof StringType) {
-                    connection.smartHomeCommand(entityId, "setThermostatMode", "thermostatMode", command);
-                    return true;
+                    connection.smartHomeCommand(entityId, "setThermostatMode",
+                            Map.of(channelInfo.propertyNameSend, command));
                 }
             }
         }
-        return false;
-    }
 
-    @Override
-    public @Nullable StateDescription findStateDescription(String channelId, StateDescription originalStateDescription,
-            @Nullable Locale locale) {
-        return null;
+        return false;
     }
 }
