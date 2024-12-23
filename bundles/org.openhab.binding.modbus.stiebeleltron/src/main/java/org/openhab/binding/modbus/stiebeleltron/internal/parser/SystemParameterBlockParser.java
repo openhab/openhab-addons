@@ -20,6 +20,7 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
  * Parses inverter modbus data into a System Parameter Block
  *
  * @author Paul Frank - Initial contribution
+ * @author Thomas Burri - fixed typo
  *
  */
 @NonNullByDefault
