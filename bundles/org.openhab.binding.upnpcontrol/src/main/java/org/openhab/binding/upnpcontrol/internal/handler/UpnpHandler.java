@@ -663,7 +663,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     /**
-     * Send a device search request to the UPnP router.
+     * Send a device search request to the UPnP remote device.
      * 
      * Some devices, such as LinkPlay based systems (WiiM, Arylic, etc.) loose their registrations over time. Sending a
      * periodic search request will help keep the device registered.
