@@ -16,8 +16,6 @@ import java.io.Reader;
 import java.util.Objects;
 
 import javax.script.Bindings;
-import javax.script.Compilable;
-import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -37,7 +35,9 @@ import org.jruby.embed.jsr223.JRubyEngine;
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
-public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
+public class JRubyEngineWrapper implements Invocable, ScriptEngine {
+    // Don't implement Compilable because there is a bug
+    // in JRuby's compiled scripts: https://github.com/jruby/jruby/issues/8346
 
     private final JRubyEngine engine;
 
@@ -46,16 +46,6 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
 
     JRubyEngineWrapper(JRubyEngine engine) {
         this.engine = Objects.requireNonNull(engine);
-    }
-
-    @Override
-    public CompiledScript compile(@Nullable String script) throws ScriptException {
-        return new JRubyCompiledScriptWrapper(engine.compile(script));
-    }
-
-    @Override
-    public CompiledScript compile(@Nullable Reader reader) throws ScriptException {
-        return new JRubyCompiledScriptWrapper(engine.compile(reader));
     }
 
     @Override
