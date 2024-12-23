@@ -429,9 +429,10 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
                 if (deviceHandler != null) {
                     deviceHandler.onDeviceStateChanged(eventDatapointID, value);
+                    logger.debug("Socket event processed: event-datapoint-ID {} value {}", eventDatapointID, value);
+                } else {
+                    logger.debug("Socket event not processed: event-datapoint-ID {} value {}", eventDatapointID, value);
                 }
-
-                logger.debug("Socket event processed: event-datapoint-ID {} value {}", eventDatapointID, value);
             }
         }
     }

@@ -291,7 +291,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         if (dpg == null) {
             logger.debug("Handle command for device (but invalid datapointgroup) {} - at channel {} - full command {}",
                     device.getDeviceId(), channelUID.getAsString(), command.toFullString());
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/conf-error.invalid-deviceconfig");
         } else {
@@ -480,8 +479,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                         channelTypeUID = createChannelTypeForDatapointgroup(dpg, channelTypeUID);
                     }
 
-                    ChannelUID channelUID = new ChannelUID(thingUID, channel.getChannelId(),
-                            dpg.getLabel().substring(4));
+                    ChannelUID channelUID = createChannelUID(thingUID, channel.getChannelId(), dpg.getLabel());
 
                     String channelLabel = String.format("%s",
                             i18nProvider.getText(bundle, dpg.getLabel(), "-", locale));
@@ -568,7 +566,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                     channelTypeUID = createChannelTypeForDatapointgroup(dpg, channelTypeUID);
                 }
 
-                ChannelUID channelUID = new ChannelUID(thingUID, channel.getChannelId());
+                ChannelUID channelUID = createChannelUID(thingUID, channel.getChannelId(), dpg.getLabel());
 
                 FreeAtHomeDatapoint outputDatapoint = dpg.getOutputDatapoint();
 
@@ -587,6 +585,11 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                         device.getDeviceId() + device.getDeviceLabel(), channelTypeUID.getAsString());
             }
         }
+    }
+
+    // Create a channel UID. Makes sure that the channel UID is unique and generated the same way every time
+    private ChannelUID createChannelUID(ThingUID thingUID, String channelID, String dpgLabel) {
+        return new ChannelUID(thingUID, channelID, dpgLabel.substring(4));
     }
 
     public void removeChannels() {
