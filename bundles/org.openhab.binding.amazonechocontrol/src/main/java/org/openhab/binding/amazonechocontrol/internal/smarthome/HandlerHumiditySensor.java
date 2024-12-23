@@ -12,90 +12,80 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.smarthome;
 
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.*;
-import static org.openhab.core.library.unit.Units.*;
+import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.CHANNEL_TYPE_AIR_QUALITY_HUMIDITY;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Locale;
+import java.util.Set;
 
-import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.connection.Connection;
+import org.openhab.binding.amazonechocontrol.internal.dto.smarthome.JsonSmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.dto.smarthome.JsonSmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
-import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link HandlerHumiditySensor} is responsible for the Alexa.HumiditySensorInterface
+ * The {@link HandlerHumiditySensor} is responsible for the Alexa.HumiditySensor interface
  *
- * @author Daniel Campbell - Initial contribution
+ * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class HandlerHumiditySensor extends HandlerBase {
-    // Logger
+public class HandlerHumiditySensor extends AbstractInterfaceHandler {
     private final Logger logger = LoggerFactory.getLogger(HandlerHumiditySensor.class);
-    // Interface
     public static final String INTERFACE = "Alexa.HumiditySensor";
-    // Channel definitions
-    private static final ChannelInfo HUMIDITY = new ChannelInfo("relativeHumidity" /* propertyName */ ,
-            "relativeHumidity" /* ChannelId */, CHANNEL_TYPE_HUMIDITY /* Channel Type */ ,
-            ITEM_TYPE_HUMIDITY /* Item Type */);
+
+    private static final ChannelInfo HUMIDITY = new ChannelInfo("relativeHumidity", "relativeHumidity",
+            CHANNEL_TYPE_AIR_QUALITY_HUMIDITY);
 
     public HandlerHumiditySensor(SmartHomeDeviceHandler smartHomeDeviceHandler) {
-        super(smartHomeDeviceHandler);
+        super(smartHomeDeviceHandler, List.of(INTERFACE));
     }
 
     @Override
-    public String[] getSupportedInterface() {
-        return new String[] { INTERFACE };
-    }
-
-    @Override
-    protected ChannelInfo @Nullable [] findChannelInfos(SmartHomeCapability capability, String property) {
+    protected Set<ChannelInfo> findChannelInfos(JsonSmartHomeCapability capability, @Nullable String property) {
         if (HUMIDITY.propertyName.equals(property)) {
-            return new ChannelInfo[] { HUMIDITY };
+            return Set.of(HUMIDITY);
         }
-        return null;
+        return Set.of();
     }
 
     @Override
     public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
+        QuantityType<Dimensionless> humidityValue = null;
         for (JsonObject state : stateList) {
-            State humidityValue = null;
-            logger.debug("Updating {} with state: {}", interfaceName, state.toString());
-            if (HUMIDITY.propertyName.equals(state.get("name").getAsString())) {
-                // For groups take the first
-                humidityValue = getQuantityTypeState(state.get("value").getAsInt(), PERCENT);
-                updateState(HUMIDITY.channelId, humidityValue == null ? UnDefType.UNDEF : humidityValue);
+            if (HUMIDITY.propertyName.equals(state.get("name").getAsString()) && humidityValue == null) {
+                JsonElement value = state.get("value");
+                BigDecimal humidity;
+                if (value.isJsonObject()) {
+                    humidity = value.getAsJsonObject().getAsBigDecimal();
+                } else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
+                    humidity = value.getAsJsonPrimitive().getAsBigDecimal();
+                } else {
+                    logger.warn("Could not properly convert {}", state);
+                    continue;
+                }
+                humidityValue = new QuantityType<>(humidity, Units.PERCENT);
             }
         }
-    }
-
-    protected State getQuantityTypeState(@Nullable Number value, Unit<?> unit) {
-        return (value == null) ? UnDefType.UNDEF : new QuantityType<>(value, unit);
+        smartHomeDeviceHandler.updateState(HUMIDITY.channelId, humidityValue == null ? UnDefType.UNDEF : humidityValue);
     }
 
     @Override
-    public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            List<SmartHomeCapability> capabilities, String channelId, Command command) throws IOException {
+    public boolean handleCommand(Connection connection, JsonSmartHomeDevice shd, String entityId,
+            List<JsonSmartHomeCapability> capabilities, String channelId, Command command) throws IOException {
         return false;
-    }
-
-    @Override
-    public @Nullable StateDescription findStateDescription(String channelId, StateDescription originalStateDescription,
-            @Nullable Locale locale) {
-        return null;
     }
 }
