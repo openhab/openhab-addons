@@ -113,7 +113,7 @@ public class LinkDBWriter implements PortListener {
     private void setNextAllLinkRecord() {
         LinkDBChange change = device.getLinkDB().pollNextChange();
         if (change == null) {
-            logger.trace("all link db changes written using standard mode for {}", device.getAddress());
+            logger.debug("all link db changes written using standard mode for {}", device.getAddress());
             done();
         } else {
             setAllLinkRecord(change.getRecord());
@@ -123,7 +123,7 @@ public class LinkDBWriter implements PortListener {
     private void setNextPokeRecord() {
         LinkDBChange change = device.getLinkDB().pollNextChange();
         if (change == null) {
-            logger.trace("all link db changes written using peek/poke mode for {}", device.getAddress());
+            logger.debug("all link db changes written using peek/poke mode for {}", device.getAddress());
             done();
         } else {
             setPokeRecord(change.getRecord());

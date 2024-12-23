@@ -26,7 +26,7 @@ import org.openhab.binding.insteon.internal.utils.HexUtils;
  */
 @NonNullByDefault
 public class DatabaseRecord {
-    public static final int LOCATION_ZERO = 0;
+    public static final int SIZE = 8;
 
     private final int location;
     private final RecordType type;
@@ -42,12 +42,12 @@ public class DatabaseRecord {
         this.data = data;
     }
 
+    public DatabaseRecord(RecordType type, int group, InsteonAddress address, byte[] data) {
+        this(0, type, group, address, data);
+    }
+
     public DatabaseRecord(DatabaseRecord record) {
-        this.location = record.location;
-        this.type = record.type;
-        this.group = record.group;
-        this.address = record.address;
-        this.data = record.data;
+        this(record.location, record.type, record.group, record.address, record.data);
     }
 
     public int getLocation() {
@@ -114,7 +114,7 @@ public class DatabaseRecord {
     @Override
     public String toString() {
         String s = "";
-        if (location != LOCATION_ZERO) {
+        if (location != 0) {
             s += HexUtils.getHexString(location, 4) + " ";
         }
         s += address + " " + type;
