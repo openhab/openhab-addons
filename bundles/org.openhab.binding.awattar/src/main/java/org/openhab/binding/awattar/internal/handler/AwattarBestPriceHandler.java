@@ -40,7 +40,6 @@ import org.openhab.binding.awattar.internal.AwattarBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarConsecutiveBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarNonConsecutiveBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarPrice;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;

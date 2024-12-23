@@ -20,7 +20,6 @@ import java.time.temporal.ChronoUnit;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 

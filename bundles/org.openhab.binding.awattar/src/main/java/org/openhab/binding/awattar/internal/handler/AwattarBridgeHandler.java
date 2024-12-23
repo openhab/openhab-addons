@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.awattar.internal.handler;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.HOURS;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_MARKET_NET;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_TOTAL_NET;
 
@@ -186,11 +184,13 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     private boolean needRefresh() {
         // if the thing is offline, we need to refresh
         if (getThing().getStatus() != ThingStatus.ONLINE) {
+            lastRefresh = clock.instant();
             return true;
         }
 
         // if the local cache is empty, we need to refresh
         if (prices == null) {
+            lastRefresh = clock.instant();
             return true;
         }
 
@@ -208,7 +208,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         // refresh at 15:00, 18:00 and 21:00 if the last refresh was more than an hour ago
         if (now.getHour() % 3 == 0 && lastRefresh.getEpochSecond() < now.minusHours(1).toEpochSecond()) {
             // update the last refresh time
-            lastRefresh = Instant.now();
+            lastRefresh = clock.instant();
 
             // return true to indicate an update is needed
             return true;
