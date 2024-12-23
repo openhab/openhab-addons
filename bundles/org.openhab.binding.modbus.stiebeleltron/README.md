@@ -52,6 +52,7 @@ The following parameters are valid for all thing types:
 | maxTries  | integer | no       | 3                  | Number of retries when before giving up reading from this thing.           |
 
 A typcial bridge and thing setup would look like this:
+
 ```java
 Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1 ] {
     Thing heatpump StiebelEltronHP "Stiebel Eltron Heat Pump" (modbus:tcp:bridge) @"room"  [ ]
@@ -78,6 +79,7 @@ This groups contain general state information about the heat pump.
 | is-summer        | Contact   | true      | OPEN in case the heat pump is currently in summer mode        |
 
 #### Channels supported by things *Stiebel Eltron Heat Pump (WPMsystem)*, *Stiebel Eltron Heat Pump (WPM3)* and *Stiebel Eltron Heat Pump (WPM3i)*
+
 Note: The column WPM is for WPMsystem.
 
 | Channel ID                     | Item Type | Read only | Description                                                            | WPM | WPM3 | WPM3i |
@@ -132,6 +134,7 @@ This group contains system paramters of the heat pump.
 | eco-temperature-water       | Number:Temperature | false     | The current hot water eco temperature                                                            |
 
 #### Channels supported by things *Stiebel Eltron Heat Pump (WPMsystem)*, *Stiebel Eltron Heat Pump (WPM3)* and *Stiebel Eltron Heat Pump (WPM3i)*
+
 Note: The column WPM is for WPMsystem.
 
 | Channel ID                                | Item Type          | Read only | Description                                                                                      | WPM | WPM3 | WPM3i |
@@ -187,6 +190,7 @@ This group contains general operational information about the device.
 | water-temperature-setpoint | Number:Temperature   | true      | The current water temperature set point               |
 
 #### Channels supported by things *Stiebel Eltron Heat Pump (WPMsystem)*, *Stiebel Eltron Heat Pump (WPM3)* and *Stiebel Eltron Heat Pump (WPM3i)*
+
 Note: The column WPM is for WPMsystem.
 
 | Channel ID                                | Item Type                 | Read only | Description                                                          | WPM | WPM3 | WPM3i |
@@ -238,6 +242,7 @@ Note: The column WPM is for WPMsystem.
 This group contains information about the energy consumption and delivery of the heat pump.
 
 #### Channels supported by things *Stiebel Eltron Heat Pump*, *Stiebel Eltron Heat Pump (WPMsystem)* and *Stiebel Eltron Heat Pump (WPM3)*
+
 Note: The column WPM is for WPMsystem.
 
 | Channel ID                 | Item Type     | Read only | Description                                           | heatpump | WPM | WPM3 |
@@ -282,6 +287,7 @@ of compressor and emergency heating for heating, cooling and hot water productio
 
 
 ### SG Ready - Energy Management Settings
+
 | Channel ID             | Item Type | Read only | Description            |
 | -----------------------| ----------| --------- | -----------------------|
 | sg-ready-on-off-switch | Number    | false     | SG Ready On/Off Switch |
@@ -289,6 +295,7 @@ of compressor and emergency heating for heating, cooling and hot water productio
 
 
 ### SG Ready - Energy Management System Information
+
 | Channel ID                         | Item Type | Read only | Description                        |
 | ---------------------------------- | ----------| --------- | -----------------------------------|
 | sg-ready-operating-state           | Number    | true      | SG Ready Operating State           |
@@ -400,6 +407,7 @@ Text label="Heat pumpt" icon="temperature" {
 ## Full Example for the things things *Stiebel Eltron Heat Pump (WPM3)*, *Stiebel Eltron Heat Pump (WPM3)*, *Stiebel Eltron Heat Pump (WPM3i)* and *Stiebel Eltron ISG SG Ready EM*
 
 ### Thing Configuration
+
 Just use one of the heat pump things between the curly braces.
 
 ```java
