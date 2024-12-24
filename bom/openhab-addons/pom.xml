@@ -2303,6 +2303,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.voice.openaitts</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.voice.picotts</artifactId>
       <version>${project.version}</version>
     </dependency>

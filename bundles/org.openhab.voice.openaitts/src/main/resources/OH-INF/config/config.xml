@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="voice:openaitts">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication for connecting to OpenAI API.</description>
+		</parameter-group>
+		<parameter-group name="tts">
+			<label>TTS Configuration</label>
+			<description>Configure Text to Speech.</description>
+		</parameter-group>
+		<parameter name="apiKey" type="text" required="true" groupName="authentication">
+			<label>API Key</label>
+			<required>true</required>
+			<description>OpenAI API key.</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="apiUrl" type="text" required="true" groupName="authentication">
+			<label>API URL</label>
+			<required>true</required>
+			<description>TTS host API URL.</description>
+			<default>https://api.openai.com/v1/audio/speech</default>
+		</parameter>
+		<parameter name="model" type="text" required="true" groupName="tts">
+			<label>Model</label>
+			<required>true</required>
+			<description>ID of the model to use.</description>
+			<options>
+				<option value="tts-1">tts-1</option>
+				<option value="tts-1-hd">tts-1-hd</option>
+			</options>
+			<limitToOptions>false</limitToOptions>
+			<default>tts-1</default>
+		</parameter>
+		<parameter name="speed" type="decimal" min="0.25" max="4" groupName="tts">
+			<label>Speed</label>
+			<description>The speed of the generated audio. Select a value from 0.25 to 4.0.</description>
+			<default>1.0</default>
+		</parameter>
+
+	</config-description>
+</config-description:config-descriptions>
