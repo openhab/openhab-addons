@@ -103,8 +103,6 @@ public class NetworkHandler extends BaseThingHandler
                 Instant lastSeen = presenceDetection.getLastSeen();
                 if (lastSeen != null) {
                     updateState(CHANNEL_LASTSEEN, new DateTimeType(lastSeen));
-                } else {
-                    updateState(CHANNEL_LASTSEEN, UnDefType.UNDEF);
                 }
                 break;
             default:
@@ -144,8 +142,6 @@ public class NetworkHandler extends BaseThingHandler
         Instant lastSeen = presenceDetection.getLastSeen();
         if (value.isReachable() && lastSeen != null) {
             updateState(CHANNEL_LASTSEEN, new DateTimeType(lastSeen));
-        } else if (!value.isReachable() && lastSeen == null) {
-            updateState(CHANNEL_LASTSEEN, UnDefType.UNDEF);
         }
 
         updateNetworkProperties();
