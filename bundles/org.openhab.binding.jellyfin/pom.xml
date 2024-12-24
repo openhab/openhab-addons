@@ -13,6 +13,7 @@
     <bnd.importpackage>
       !android.*,!com.android.*,!kotlin.internal.jdk7,!kotlin.internal.jdk8,!kotlin.reflect.*,!okhttp3.*,!okio.*
     </bnd.importpackage>
+    <!-- SDK 1.4.x is no longer supported and only offers limited support for Jellyfin 10.9; it is no longer compatible with 10.10 -->
     <jellyfin.sdk>1.4.7</jellyfin.sdk>
   </properties>
   <artifactId>org.openhab.binding.jellyfin</artifactId>
