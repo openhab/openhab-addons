@@ -100,6 +100,8 @@ public class NetworkHandler extends BaseThingHandler
                 });
                 break;
             case CHANNEL_LASTSEEN:
+                // We should not set the last seen state to UNDEF, it prevents restoreOnStartup from working
+                // For reference: https://github.com/openhab/openhab-addons/issues/17404
                 Instant lastSeen = presenceDetection.getLastSeen();
                 if (lastSeen != null) {
                     updateState(CHANNEL_LASTSEEN, new DateTimeType(lastSeen));
@@ -143,6 +145,8 @@ public class NetworkHandler extends BaseThingHandler
         if (value.isReachable() && lastSeen != null) {
             updateState(CHANNEL_LASTSEEN, new DateTimeType(lastSeen));
         }
+        // We should not set the last seen state to UNDEF, it prevents restoreOnStartup from working
+        // For reference: https://github.com/openhab/openhab-addons/issues/17404
 
         updateNetworkProperties();
     }
