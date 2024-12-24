@@ -88,9 +88,4 @@ public class AlarmControlPanelTests extends AbstractComponentTests {
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
     }
-
-    @Override
-    protected boolean useNewStyleChannels() {
-        return true;
-    }
 }
