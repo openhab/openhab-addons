@@ -11,7 +11,7 @@
 		</parameter-group>
 		<parameter-group name="vad">
 			<label>Voice Activity Detection</label>
-			<description>Configure the VAD mechanisim used to isolate single phrases to feed whisper with.</description>
+			<description>Configure the VAD mechanism used to isolate single phrases to feed whisper with.</description>
 		</parameter-group>
 		<parameter-group name="whisper">
 			<label>Whisper Options</label>
@@ -19,7 +19,7 @@
 		</parameter-group>
 		<parameter-group name="grammar">
 			<label>Grammar</label>
-			<description>Define a grammar to improve transcrptions.</description>
+			<description>Define a grammar to improve transcriptions.</description>
 		</parameter-group>
 		<parameter-group name="messages">
 			<label>Info Messages</label>
@@ -30,9 +30,27 @@
 			<description>Options added for developers.</description>
 			<advanced>true</advanced>
 		</parameter-group>
+		<parameter-group name="openaiapi">
+			<label>API Configuration Options</label>
+			<description>Configure OpenAI compatible API, if you don't want to use the local model.</description>
+		</parameter-group>
+		<parameter name="mode" type="text" groupName="stt">
+			<label>Local Mode Or API</label>
+			<description>Use the local model or the OpenAI compatible API.</description>
+			<default>LOCAL</default>
+			<options>
+				<option value="LOCAL">Local</option>
+				<option value="API">OpenAI API</option>
+			</options>
+		</parameter>
 		<parameter name="modelName" type="text" groupName="stt" required="true">
-			<label>Model Name</label>
-			<description>Model name without extension.</description>
+			<label>Local Model Name</label>
+			<description>Model name without extension. Local mode only.</description>
+		</parameter>
+		<parameter name="language" type="text" groupName="whisper">
+			<label>Language</label>
+			<description>If specified, speed up recognition by avoiding auto-detection. Default to system locale.</description>
+			<default></default>
 		</parameter>
 		<parameter name="preloadModel" type="boolean" groupName="stt">
 			<label>Preload Model</label>
@@ -224,6 +242,21 @@
 			<description>Emit whisper.cpp library logs as add-on debug logs.</description>
 			<default>false</default>
 			<advanced>true</advanced>
+		</parameter>
+		<parameter name="apiKey" type="text" groupName="openaiapi">
+			<label>API Key</label>
+			<description>Key to access the API</description>
+			<default></default>
+		</parameter>
+		<parameter name="apiUrl" type="text" groupName="openaiapi">
+			<label>API Url</label>
+			<description>OpenAI compatible API URL. Default to OpenAI transcription service.</description>
+			<default>https://api.openai.com/v1/audio/transcriptions</default>
+		</parameter>
+		<parameter name="apiModelName" type="text" groupName="openaiapi">
+			<label>API Model</label>
+			<description>Model name to use (API only). Default to OpenAI only available model (whisper-1).</description>
+			<default>whisper-1</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
