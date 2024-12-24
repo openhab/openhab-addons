@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.tellstick.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Runtime exception in tellstick binding.
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public class TellstickRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = -1644730263645760297L;

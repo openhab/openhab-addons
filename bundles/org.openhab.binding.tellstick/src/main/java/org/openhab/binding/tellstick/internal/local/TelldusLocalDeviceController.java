@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -54,6 +55,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@NonNullByDefault
 public class TelldusLocalDeviceController implements DeviceChangeListener, SensorListener, TelldusDeviceController {
     private final Logger logger = LoggerFactory.getLogger(TelldusLocalDeviceController.class);
     private long lastSend = 0;
@@ -161,7 +163,7 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
         }
     }
 
-    private void handleResponse(TellstickLocalDeviceDTO device, TelldusLocalResponseDTO response)
+    private void handleResponse(TellstickLocalDeviceDTO device, @Nullable TelldusLocalResponseDTO response)
             throws TellstickException {
         if (response == null || (response.getStatus() == null && response.getError() == null)) {
             throw new TelldusBindingException("No response " + response);
@@ -184,7 +186,7 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
     }
 
     @Override
-    public State calcState(Device dev) {
+    public @Nullable State calcState(Device dev) {
         TellstickLocalDeviceDTO device = (TellstickLocalDeviceDTO) dev;
         State st = null;
 
@@ -241,12 +243,12 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
     }
 
     @Override
-    public void onRequest(TellstickSensorEvent newDevices) {
+    public void onRequest(@NonNullByDefault({}) TellstickSensorEvent newDevices) {
         setLastSend(newDevices.getTimestamp());
     }
 
     @Override
-    public void onRequest(TellstickDeviceEvent newDevices) {
+    public void onRequest(@NonNullByDefault({}) TellstickDeviceEvent newDevices) {
         setLastSend(newDevices.getTimestamp());
     }
 

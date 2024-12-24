@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tellstick.internal.live.xml;
+package org.openhab.binding.tellstick.internal.live.dto;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
@@ -19,14 +19,15 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  *
  * @author Jarle Hjortland - Initial contribution
  */
-public class NameToDataType extends XmlAdapter<String, LiveDataType> {
+public class NumberToBooleanMapper extends XmlAdapter<Integer, Boolean> {
+
     @Override
-    public LiveDataType unmarshal(String v) throws Exception {
-        return LiveDataType.fromName(v);
+    public Boolean unmarshal(Integer v) throws Exception {
+        return v == 1 ? true : false;
     }
 
     @Override
-    public String marshal(LiveDataType v) throws Exception {
-        return v.toString();
+    public Integer marshal(Boolean v) throws Exception {
+        return v ? 1 : 0;
     }
 }

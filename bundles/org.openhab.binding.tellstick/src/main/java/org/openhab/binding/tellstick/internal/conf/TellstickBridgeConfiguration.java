@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.tellstick.internal.conf;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration class for Tellstick bridge used to connect to the
  * Telldus Core service on the local machine.
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public class TellstickBridgeConfiguration {
-    public int resendInterval;
-    public String libraryPath;
+    public String libraryPath = "C:/Program Files/Telldus/;C:/Program Files (x86)/Telldus/";
+    public int resendInterval = 100;
 }
