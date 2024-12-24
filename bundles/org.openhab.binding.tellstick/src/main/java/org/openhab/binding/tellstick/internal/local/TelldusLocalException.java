@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.tellstick.internal.local;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.tellstick.device.TellstickException;
 
 /**
@@ -33,7 +33,7 @@ public class TelldusLocalException extends TellstickException {
     private static final long serialVersionUID = 3067179547449454711L;
 
     @Override
-    public @NonNull String getMessage() {
+    public @Nullable String getMessage() {
         Throwable throwable = getCause();
         if (throwable != null) {
             String localMessage = throwable.getMessage();
