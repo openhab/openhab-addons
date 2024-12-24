@@ -52,6 +52,7 @@ public class PortData {
     }
 
     public void setPulsing(ScheduledFuture<?> pulsing) {
+        cancelPulsing();
         this.pulsing = Optional.of(pulsing);
     }
 

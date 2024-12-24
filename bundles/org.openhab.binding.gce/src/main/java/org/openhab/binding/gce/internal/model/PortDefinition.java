@@ -32,7 +32,7 @@ public enum PortDefinition {
     public final String nodeName; // Name used in the status xml file
     public final String portName; // Name used by the M2M protocol
     public final String m2mCommand; // associated M2M command
-    private final int quantity; // base number of ports
+    public final int quantity; // base number of ports
 
     PortDefinition(String nodeName, String portName, String m2mCommand, int quantity) {
         this.nodeName = nodeName;
