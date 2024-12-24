@@ -220,7 +220,6 @@ public class UpnpRendererHandler extends UpnpHandler {
     @Override
     protected void initJob() {
         synchronized (jobLock) {
-
             sendDeviceSearchRequest();
 
             if (!upnpIOService.isRegistered(this)) {
