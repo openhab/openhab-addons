@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="buffer-type">
+		<label>Buffer</label>
+		<channels>
+			<channel id="buffer-error-number" typeId="buffer-error-number-type"/>
+			<channel id="buffer-operating-state" typeId="buffer-operating-state-type"/>
+			<channel id="buffer-actual-high-temperature" typeId="buffer-actual-high-temperature-type"/>
+			<channel id="buffer-actual-low-temperature" typeId="buffer-actual-low-temperature-type"/>
+			<channel id="buffer-maximum-buffer-temperature" typeId="buffer-maximum-buffer-temperature-type"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

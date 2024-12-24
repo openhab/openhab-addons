@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="boiler-error-number-type">
+		<item-type>Number</item-type>
+		<label>Boiler Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="boiler-operating-state-type">
+		<item-type>Number</item-type>
+		<label>Boiler Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">STBY</option>
+				<option value="1">DHW</option>
+				<option value="2">LEGIO</option>
+				<option value="3">SUMMER</option>
+				<option value="4">FROST</option>
+				<option value="5">HOLIDAY</option>
+				<option value="6">PRIO-STOP</option>
+				<option value="7">ERROR</option>
+				<option value="8">OFF</option>
+				<option value="9">PROMPT-DHW</option>
+				<option value="10">TRAILING-STOP</option>
+				<option value="11">TEMP-LOCK</option>
+				<option value="12">STBY-FROST</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="boiler-actual-high-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler Actual High Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="boiler-actual-low-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler Actual Low Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="boiler-maximum-boiler-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler Maximum Boiler Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>
