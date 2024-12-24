@@ -41,7 +41,6 @@ public class M2MMessageParser {
     public M2MMessageParser(Ipx800DeviceConnector connector, Ipx800EventListener listener) {
         this.connector = connector;
         this.listener = listener;
-        connector.setParser(this);
     }
 
     /**
@@ -67,7 +66,7 @@ public class M2MMessageParser {
                         portNumShift = 0; // Align counters on 1 based array
                     case ANALOG: {
                         int portNumber = Integer.parseInt(statusPart[0].substring(1)) + portNumShift;
-                        setStatus(portDefinition.getPortName() + portNumber, Double.parseDouble(statusPart[1]));
+                        setStatus(portDefinition.portName + portNumber, Double.parseDouble(statusPart[1]));
                     }
                 }
             }
@@ -80,7 +79,7 @@ public class M2MMessageParser {
 
     private void decodeDataLine(PortDefinition portDefinition, String data) {
         for (int count = 0; count < data.length(); count++) {
-            setStatus(portDefinition.getPortName() + (count + 1), (double) data.charAt(count) - '0');
+            setStatus(portDefinition.portName + (count + 1), (double) data.charAt(count) - '0');
         }
     }
 
@@ -94,7 +93,7 @@ public class M2MMessageParser {
             this.expectedResponse = expectedResponse;
         } else { // GetAnx or GetCountx
             PortDefinition portType = PortDefinition.fromM2MCommand(expectedResponse);
-            this.expectedResponse = expectedResponse.replaceAll(portType.getM2mCommand(), portType.getPortName());
+            this.expectedResponse = expectedResponse.replaceAll(portType.m2mCommand, portType.portName);
         }
     }
 
@@ -106,7 +105,7 @@ public class M2MMessageParser {
      */
     public void setOutput(String targetPort, int targetValue, boolean pulse) {
         logger.debug("Sending {} to {}", targetValue, targetPort);
-        String command = String.format("Set%02d%s%s", Integer.parseInt(targetPort), targetValue, pulse ? "p" : "");
+        String command = "Set%02d%s%s".formatted(Integer.parseInt(targetPort), targetValue, pulse ? "p" : "");
         connector.send(command);
     }
 
@@ -117,7 +116,7 @@ public class M2MMessageParser {
      */
     public void resetCounter(int targetCounter) {
         logger.debug("Resetting counter {} to 0", targetCounter);
-        connector.send(String.format("ResetCount%d", targetCounter));
+        connector.send("ResetCount%d".formatted(targetCounter));
     }
 
     public void errorOccurred(Exception e) {
