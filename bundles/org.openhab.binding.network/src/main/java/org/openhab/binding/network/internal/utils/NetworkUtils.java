@@ -151,7 +151,7 @@ public class NetworkUtils {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface networkInterface = en.nextElement();
-                if (!networkInterface.isLoopback()) {
+                if (networkInterface.isUp() && !networkInterface.isLoopback()) {
                     result.add(networkInterface.getName());
                 }
             }
