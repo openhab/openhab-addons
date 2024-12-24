@@ -81,7 +81,7 @@ public class JettyAdminService implements AdminService {
     @Override
     public void enableBlocking() throws PiHoleException {
         logger.debug("Enabling blocking");
-        var url = baseUrl.resolve("/admin/api.php?disable&auth=%s".formatted(token));
+        var url = baseUrl.resolve("/admin/api.php?enable&auth=%s".formatted(token));
         var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS);
         send(request);
     }
