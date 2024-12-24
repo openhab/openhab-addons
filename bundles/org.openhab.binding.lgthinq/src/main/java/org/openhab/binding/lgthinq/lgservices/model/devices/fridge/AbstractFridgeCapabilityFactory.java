@@ -141,7 +141,7 @@ public abstract class AbstractFridgeCapabilityFactory extends AbstractCapability
 
     @Override
     protected List<DeviceTypes> getSupportedDeviceTypes() {
-        return List.of(DeviceTypes.REFRIGERATOR);
+        return List.of(DeviceTypes.FRIDGE);
     }
 
     protected abstract String getMonitorValueNodeName();

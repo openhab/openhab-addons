@@ -13,7 +13,7 @@
 package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_SNAPSHOT_NODE_V2;
-import static org.openhab.binding.lgthinq.lgservices.model.DeviceTypes.REFRIGERATOR;
+import static org.openhab.binding.lgthinq.lgservices.model.DeviceTypes.FRIDGE;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class FridgeSnapshotBuilder extends DefaultSnapshotBuilder<FridgeCanonica
     @Override
     protected FridgeCanonicalSnapshot getSnapshot(Map<String, Object> snapMap, CapabilityDefinition capDef) {
         FridgeCanonicalSnapshot snap;
-        if (REFRIGERATOR.equals(capDef.getDeviceType())) {
+        if (FRIDGE.equals(capDef.getDeviceType())) {
             switch (capDef.getDeviceVersion()) {
                 case V1_0:
                     throw new IllegalArgumentException("Version 1.0 for Fridge driver is not supported yet.");

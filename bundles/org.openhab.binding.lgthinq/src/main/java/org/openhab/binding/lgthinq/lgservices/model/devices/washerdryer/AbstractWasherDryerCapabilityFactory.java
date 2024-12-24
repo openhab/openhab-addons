@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_RINSE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_SPIN;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_TEMP;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_RINSE_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_SPIN_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_TEMP_LEVEL_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WM_REMOTE_START_RINSE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WM_REMOTE_START_SPIN;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WM_REMOTE_START_TEMP;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.WM_LOST_WASHING_STATE_KEY;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.WM_LOST_WASHING_STATE_VALUE;
 
@@ -97,11 +97,11 @@ public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapab
         wdCap.setProcessState(newFeatureDefinition(getProcessStateNodeName(), monitorValueNode));
         // --- Selectable features -----
         wdCap.setRinseFeat(newFeatureDefinition(getRinseFeatureNodeName(), monitorValueNode,
-                CHANNEL_WM_REMOTE_START_RINSE, CHANNEL_WMD_RINSE_ID));
+                CHANNEL_WMD_REMOTE_START_RINSE, CHANNEL_WMD_RINSE_ID));
         wdCap.setTemperatureFeat(newFeatureDefinition(getTemperatureFeatureNodeName(), monitorValueNode,
-                CHANNEL_WM_REMOTE_START_TEMP, CHANNEL_WMD_TEMP_LEVEL_ID));
-        wdCap.setSpinFeat(newFeatureDefinition(getSpinFeatureNodeName(), monitorValueNode, CHANNEL_WM_REMOTE_START_SPIN,
-                CHANNEL_WMD_SPIN_ID));
+                CHANNEL_WMD_REMOTE_START_TEMP, CHANNEL_WMD_TEMP_LEVEL_ID));
+        wdCap.setSpinFeat(newFeatureDefinition(getSpinFeatureNodeName(), monitorValueNode,
+                CHANNEL_WMD_REMOTE_START_SPIN, CHANNEL_WMD_SPIN_ID));
         // ----------------------------
         wdCap.setDryLevel(newFeatureDefinition(getDryLevelNodeName(), monitorValueNode));
         wdCap.setSoilWash(newFeatureDefinition(getSoilWashFeatureNodeName(), monitorValueNode));

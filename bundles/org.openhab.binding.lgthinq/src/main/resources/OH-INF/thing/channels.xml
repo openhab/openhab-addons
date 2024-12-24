@@ -333,7 +333,7 @@
 	</channel-type>
 
 	<!-- Fridge -->
-	<channel-type id="fridge-some-door-open">
+	<channel-type id="fr-some-door-open">
 		<item-type>Contact</item-type>
 		<label>Door Open</label>
 		<description>Door status (at least one if combined fridge/freezer)</description>
@@ -344,7 +344,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="fridge-temp-unit">
+	<channel-type id="fr-temp-unit">
 		<item-type>String</item-type>
 		<label>Temp. Unit</label>
 		<description>Temperature Unit</description>
@@ -356,20 +356,20 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="fridge-freezer-temperature">
+	<channel-type id="fr-freezer-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Freezer Temp.</label>
 		<description>Freezer setpoint temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="fridge-fridge-temperature">
+	<channel-type id="fr-fridge-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Fridge Setpoint Temperature</label>
 		<description>Fridge setpoint temperature.</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="fr-express-mode">

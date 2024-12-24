@@ -51,7 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LGThinqDiscoveryService}
+ * The {@link LGThinqDiscoveryService} - Responsable to discovery new LG Thinq Devices for the registered Bridge
  *
  * @author Nemer Daud - Initial contribution
  */
@@ -147,7 +147,7 @@ public class LGThinqDiscoveryService extends AbstractThingHandlerDiscoveryServic
             case WASHER_TOWER -> THING_TYPE_WASHING_TOWER;
             case DRYER_TOWER -> THING_TYPE_DRYER_TOWER;
             case DRYER -> THING_TYPE_DRYER;
-            case REFRIGERATOR -> THING_TYPE_FRIDGE;
+            case FRIDGE -> THING_TYPE_FRIDGE;
             case DISH_WASHER -> THING_TYPE_DISHWASHER;
             default ->
                 throw new LGThinqException(String.format("device type [%s] not supported", device.getDeviceType()));

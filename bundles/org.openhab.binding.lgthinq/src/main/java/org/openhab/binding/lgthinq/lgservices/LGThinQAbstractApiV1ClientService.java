@@ -46,7 +46,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * The {@link LGThinQAbstractApiV1ClientService}
+ * The {@link LGThinQAbstractApiV1ClientService} - Specialized abstract class that implements methods and services to
+ * handle LG API V1 communication and convention.
  *
  * @author Nemer Daud - Initial contribution
  */

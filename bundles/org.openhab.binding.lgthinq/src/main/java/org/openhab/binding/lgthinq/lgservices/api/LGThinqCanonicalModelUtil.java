@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The {@link LGThinqCanonicalModelUtil} class
+ * The {@link LGThinqCanonicalModelUtil} class - Utilities to help communication with LG API
  *
  * @author Nemer Daud - Initial contribution
  */
@@ -31,13 +31,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class LGThinqCanonicalModelUtil {
     public static final ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Get structured result from the LG Authentication Gateway
+     * 
+     * @param rawJson RAW Json to process
+     * @return Structured Object returned from the API
+     * @throws IOException If some error happen procession token from file.
+     */
     public static GatewayResult getGatewayResult(String rawJson) throws IOException {
         Map<String, Object> map = mapper.readValue(rawJson, new TypeReference<>() {
         });
-        Map<String, String> content = mapper.convertValue(map, new TypeReference<>() {
-        });
+        @SuppressWarnings("unchecked")
+        Map<String, String> content = (Map<String, String>) map.get("result");
         String resultCode = (String) map.get("resultCode");
-        if (content == null) {
+        if (content == null || content.isEmpty()) {
             throw new IllegalArgumentException("Unexpected result. Gateway Content Result is null");
         } else if (resultCode == null) {
             throw new IllegalArgumentException("Unexpected result. resultCode code is null");

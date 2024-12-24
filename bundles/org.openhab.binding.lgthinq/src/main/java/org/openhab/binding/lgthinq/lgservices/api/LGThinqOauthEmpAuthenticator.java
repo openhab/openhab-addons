@@ -114,7 +114,8 @@ public class LGThinqOauthEmpAuthenticator {
 
         if (result.getStatusCode() != 200) {
             throw new IllegalStateException(
-                    "Expected HTTP OK return, but received result core:" + result.getJsonResponse());
+                    String.format("Expected HTTP OK return, but received result core:[%s] - error message:[%s]",
+                            result.getJsonResponse(), ResultCodes.getReasonResponse(result.getJsonResponse())));
         } else {
             GatewayResult gwResult = LGThinqCanonicalModelUtil.getGatewayResult(result.getJsonResponse());
             ResultCodes resultCode = ResultCodes.fromCode(gwResult.getReturnedCode());
@@ -176,9 +177,8 @@ public class LGThinqOauthEmpAuthenticator {
         }
         Map<String, Object> loginResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
         });
-        Map<String, String> accountResult = objectMapper.convertValue(loginResult.get("account"),
-                new TypeReference<>() {
-                });
+        @SuppressWarnings("unchecked")
+        Map<String, String> accountResult = (Map<String, String>) loginResult.get("account");
         if (accountResult == null) {
             throw new IllegalStateException("Error getting account from Login");
         }
@@ -277,8 +277,8 @@ public class LGThinqOauthEmpAuthenticator {
                 || ((Map<?, ?>) result.getOrDefault("account", Collections.emptyMap())).get("userNo") == null) {
             throw new IllegalStateException("Error retrieving the account user information from access token");
         }
-        Map<String, String> accountInfo = objectMapper.convertValue(result.get("account"), new TypeReference<>() {
-        });
+        @SuppressWarnings("unchecked")
+        Map<String, String> accountInfo = (Map<String, String>) result.getOrDefault("account", Collections.emptyMap());
 
         return new UserInfo(
                 Objects.requireNonNullElse(accountInfo.get("userNo"),

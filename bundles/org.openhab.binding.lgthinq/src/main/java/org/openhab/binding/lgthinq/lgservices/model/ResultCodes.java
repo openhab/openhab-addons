@@ -102,93 +102,43 @@ public enum ResultCodes {
     }
 
     public static ResultCodes fromCode(String code) {
-        switch (code) {
-            case "0000":
-            case "0001":
-                return OK;
-            case "0002":
-                return INVALID_PAYLOAD;
-            case "0003":
-                return INVALID_HEAD;
-            case "0110": // Update Terms
-                return UPDATE_TERMS_NEEDED;
-            case "0004": // Duplicated Login
-                return LOGIN_DUPLICATED;
-            case "0102": // Not Logged in
-            case "0114": // Mismatch Login Session
-                return LOGIN_FAILED;
-            case "0100":
-                return GENERAL_FAILURE;
-            case "0116":
-                return INVALID_REQUEST;
-            case "0108":
-            case "0109":
-                return NO_INFORMATION_FOUND;
-            case "0115":
-            case "0006":
-            case "0009":
-            case "0117":
-            case "0014":
-            case "0101":
-                return DEVICE_MISMATCH;
-            case "0010":
-                return INVALID_CUSTOMER_DATA;
-            case "0112":
-                return LIMIT_EXCEEDED_ERROR;
-            case "0118":
-            case "0120":
-                return INVALID_CUSTOMER_NUMBER;
-            case "0121":
-                return NOT_REGISTERED_SMART_CARE;
-            case "0007":
-                return PORTAL_INTERWORKING_ERROR;
-            case "0008":
-            case "0013":
-                return DUPLICATED_DATA;
-            case "0005":
-            case "0012":
-            case "8001":
-                return NOT_SUPPORTED_CONTROL;
-            case "0111":
-            case "0103":
-            case "0104":
-            case "0106":
-                return DEVICE_NOT_RESPONSE;
-            case "0105":
-                return CONTROL_ERROR;
-            case "9001":
-            case "9002":
-                return BASE64_CODING_ERROR;
-            case "0107":
-            case "8101":
-            case "8102":
-            case "8203":
-            case "8204":
-            case "8205":
-            case "8206":
-            case "8207":
-            case "8900":
-            case "9000":
-            case "9003":
-            case "9004":
-            case "9005":
-                return LG_SERVER_ERROR;
-            case "9999":
-                return PAYLOAD_ERROR;
-            case "9006":
-            case "0011":
-            case "0113":
-                return ACCESS_DENIED;
-            case "9010":
-                return INVALID_CSR;
-            case "0301":
-                return INVALID_PUSH_TOKEN;
-            default:
+        return switch (code) {
+            case "0000", "0001" -> OK;
+            case "0002" -> INVALID_PAYLOAD;
+            case "0003" -> INVALID_HEAD;
+            case "0110" -> // Update Terms
+                UPDATE_TERMS_NEEDED;
+            case "0004" -> // Duplicated Login
+                LOGIN_DUPLICATED; // Not Logged in
+            case "0102", "0114" -> // Mismatch Login Session
+                LOGIN_FAILED;
+            case "0100" -> GENERAL_FAILURE;
+            case "0116" -> INVALID_REQUEST;
+            case "0108", "0109" -> NO_INFORMATION_FOUND;
+            case "0115", "0006", "0009", "0117", "0014", "0101" -> DEVICE_MISMATCH;
+            case "0010" -> INVALID_CUSTOMER_DATA;
+            case "0112" -> LIMIT_EXCEEDED_ERROR;
+            case "0118", "0120" -> INVALID_CUSTOMER_NUMBER;
+            case "0121" -> NOT_REGISTERED_SMART_CARE;
+            case "0007" -> PORTAL_INTERWORKING_ERROR;
+            case "0008", "0013" -> DUPLICATED_DATA;
+            case "0005", "0012", "8001" -> NOT_SUPPORTED_CONTROL;
+            case "0111", "0103", "0104", "0106" -> DEVICE_NOT_RESPONSE;
+            case "0105" -> CONTROL_ERROR;
+            case "9001", "9002" -> BASE64_CODING_ERROR;
+            case "0107", "8101", "8102", "8203", "8204", "8205", "8206", "8207", "8900", "9000", "9003", "9004",
+                    "9005" ->
+                LG_SERVER_ERROR;
+            case "9999" -> PAYLOAD_ERROR;
+            case "9006", "0011", "0113" -> ACCESS_DENIED;
+            case "9010" -> INVALID_CSR;
+            case "0301" -> INVALID_PUSH_TOKEN;
+            default -> {
                 if (OTHER_ERROR_CODE_RESPONSE.containsKey(code)) {
-                    return OTHER;
+                    yield OTHER;
                 }
-                return UNKNOWN;
-
-        }
+                yield UNKNOWN;
+            }
+        };
     }
 }

@@ -54,7 +54,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LGThinQBridgeHandler}
+ * The {@link LGThinQBridgeHandler} - connect to the LG Account and get information about the user and registered
+ * devices of that user.
  *
  * @author Nemer Daud - Initial contribution
  */
@@ -129,6 +130,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                     } catch (RefreshTokenException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                                 "@text/error.toke-refresh");
+                        logger.error("Error refreshing token", e);
                         return;
                     }
                 } else {

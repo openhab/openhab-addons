@@ -72,7 +72,7 @@ public class ModelUtils {
 
             case WASHERDRYER_MACHINE:
             case DRYER:
-            case REFRIGERATOR:
+            case FRIDGE:
                 if (rootMap.containsKey("Value")) {
                     return LGAPIVerion.V1_0;
                 } else if (rootMap.containsKey("MonitoringValue")) {

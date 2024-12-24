@@ -14,26 +14,26 @@ package org.openhab.binding.lgthinq.internal.handler;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_POWER_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_DASHBOARD_GRP_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_DR_CHILD_LOCK_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_DR_DRY_LEVEL_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_CHILD_LOCK_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_COURSE_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_DELAY_TIME_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_DOOR_LOCK_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_DRY_LEVEL_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_PROCESS_STATE_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMAIN_TIME_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_COURSE;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_GRP_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_RINSE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_SPIN;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_START_STOP;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMOTE_START_TEMP;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_RINSE_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_SMART_COURSE_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_SPIN_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_STAND_BY_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_STATE_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_TEMP_LEVEL_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WM_REMOTE_START_RINSE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WM_REMOTE_START_SPIN;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WM_REMOTE_START_TEMP;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ALIAS;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_MODEL_URL_INFO;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_DRYER;
@@ -60,8 +60,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
-import org.openhab.binding.lgthinq.internal.type.ThinqChannelGroupTypeProvider;
-import org.openhab.binding.lgthinq.internal.type.ThinqChannelTypeProvider;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory;
 import org.openhab.binding.lgthinq.lgservices.LGThinQWMApiClientService;
@@ -92,8 +90,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LGThinQWasherDryerHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link LGThinQWasherDryerHandler} Handle Washer/Dryer And Washer Dryer Towers things
  *
  * @author Nemer Daud - Initial contribution
  */
@@ -127,25 +124,22 @@ public class LGThinQWasherDryerHandler
     private final LGThinQWMApiClientService lgThinqWMApiClientService;
 
     public LGThinQWasherDryerHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
-            ThinqChannelTypeProvider channelTypeProvider, ThinqChannelGroupTypeProvider channelGroupTypeProvider,
             ItemChannelLinkRegistry itemChannelLinkRegistry, HttpClientFactory httpClientFactory) {
         super(thing, stateDescriptionProvider, itemChannelLinkRegistry);
-        this.thinqChannelGroupProvider = channelGroupTypeProvider;
-        this.thinqChannelProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         lgThinqWMApiClientService = LGThinQApiClientServiceFactory.newWMApiClientService(lgPlatformType,
                 httpClientFactory);
         channelGroupRemoteStartUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_WMD_REMOTE_START_GRP_ID);
         channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
         courseChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_COURSE_ID);
-        dryLevelChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_DR_DRY_LEVEL_ID);
+        dryLevelChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DRY_LEVEL_ID);
         stateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_STATE_ID);
         processStateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_PROCESS_STATE_ID);
         remainTimeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_REMAIN_TIME_ID);
         delayTimeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DELAY_TIME_ID);
         temperatureChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_TEMP_LEVEL_ID);
         doorLockChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DOOR_LOCK_ID);
-        childLockChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_DR_CHILD_LOCK_ID);
+        childLockChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_CHILD_LOCK_ID);
         rinseChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_RINSE_ID);
         spinChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_SPIN_ID);
         standByModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_STAND_BY_ID);
@@ -369,13 +363,13 @@ public class LGThinQWasherDryerHandler
             String value = Objects.requireNonNullElse(getItemLinkedValue(c.getUID()), "");
             String simpleChannelUID = getSimpleChannelUID(c.getUID().getId());
             switch (simpleChannelUID) {
-                case CHANNEL_WM_REMOTE_START_RINSE:
+                case CHANNEL_WMD_REMOTE_START_RINSE:
                     data.put(cap.getRinseFeat().getName(), value);
                     break;
-                case CHANNEL_WM_REMOTE_START_TEMP:
+                case CHANNEL_WMD_REMOTE_START_TEMP:
                     data.put(cap.getTemperatureFeat().getName(), value);
                     break;
-                case CHANNEL_WM_REMOTE_START_SPIN:
+                case CHANNEL_WMD_REMOTE_START_SPIN:
                     data.put(cap.getSpinFeat().getName(), value);
                     break;
                 default:

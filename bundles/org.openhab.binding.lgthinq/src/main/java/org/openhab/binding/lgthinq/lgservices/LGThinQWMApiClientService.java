@@ -20,14 +20,31 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDr
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerSnapshot;
 
 /**
- * The {@link LGThinQWMApiClientService}
+ * The {@link LGThinQWMApiClientService} - Methods specifics for Washing/Drier Machines
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
 public interface LGThinQWMApiClientService extends LGThinQApiClientService<WasherDryerCapability, WasherDryerSnapshot> {
+    /**
+     * Control the remote start feature
+     * 
+     * @param bridgeName Bridge Name
+     * @param cap Capabilities of the device
+     * @param deviceId LG Device ID
+     * @param data Data to control the remote start
+     * @throws LGThinqApiException if some error is reported from the LG API
+     */
     void remoteStart(String bridgeName, WasherDryerCapability cap, String deviceId, Map<String, Object> data)
             throws LGThinqApiException;
 
+    /**
+     * Waking UP feature
+     * 
+     * @param bridgeName Bridge Name
+     * @param deviceId LG Device Name
+     * @param wakeUp to Wake Up (true/false)
+     * @throws LGThinqApiException if some error is reported from the LG API
+     */
     void wakeUp(String bridgeName, String deviceId, Boolean wakeUp) throws LGThinqApiException;
 }

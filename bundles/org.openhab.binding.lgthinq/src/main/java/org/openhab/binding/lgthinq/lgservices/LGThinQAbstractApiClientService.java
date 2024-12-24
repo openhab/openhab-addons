@@ -51,6 +51,7 @@ import org.openhab.binding.lgthinq.lgservices.api.RestResult;
 import org.openhab.binding.lgthinq.lgservices.api.RestUtils;
 import org.openhab.binding.lgthinq.lgservices.api.TokenManager;
 import org.openhab.binding.lgthinq.lgservices.api.TokenResult;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqAccessException;
 import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.errors.LGThinqDeviceV1MonitorExpiredException;
 import org.openhab.binding.lgthinq.lgservices.errors.LGThinqDeviceV1OfflineException;
@@ -75,7 +76,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * The {@link LGThinQACApiV1ClientServiceImpl}
+ * The {@link LGThinQAbstractApiClientService} - base class for all LG API client service. It's provide commons methods
+ * to
+ * communicate to the LG Cloud and exchange basic data.
  *
  * @author Nemer Daud - Initial contribution
  */
@@ -174,6 +177,8 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                     token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
             RestResult resp = RestUtils.getCall(httpClient, builder.build().toURL().toString(), headers, null);
             return handleDeviceSettingsResult(resp);
+        } catch (LGThinqException e) {
+            throw e;
         } catch (Exception e) {
             throw new LGThinqApiException("Errors list account devices from LG Server API", e);
         }
@@ -193,7 +198,8 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 LGThinQAbstractApiClientService.logger.warn(
                         "Error calling device settings from LG Server API. HTTP Status: {}. The reason is: {}",
                         resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse()));
-                return Collections.emptyMap();
+                throw new LGThinqAccessException(String.format("Error calling device settings from LG Server API. HTTP Status: %d. The reason is: %s",
+                resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse())));
             }
             try {
                 respMap = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {

@@ -24,7 +24,7 @@ import org.openhab.binding.lgthinq.lgservices.api.model.GatewayResult;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * The {@link LGThinqGateway} hold informations about the LG Gateway
+ * The {@link LGThinqGateway} hold information about the LG Gateway
  *
  * @author Nemer Daud - Initial contribution
  */

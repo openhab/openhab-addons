@@ -86,8 +86,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The {@link LGThinQAirConditionerHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link LGThinQAirConditionerHandler} Handle Air Conditioner and HeatPump Things
  *
  * @author Nemer Daud - Initial contribution
  */

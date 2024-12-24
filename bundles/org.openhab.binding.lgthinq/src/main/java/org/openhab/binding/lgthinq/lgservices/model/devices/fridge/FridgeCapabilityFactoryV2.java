@@ -129,8 +129,7 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
     }
 
     protected String getFridgeTempNodeName() {
-        throw new UnsupportedOperationException(
-                "Refrigerator Thinq2 doesn't support FridgeTemp node. It most likely a bug");
+        throw new UnsupportedOperationException("Fridge Thinq2 doesn't support FridgeTemp node. It most likely a bug");
     }
 
     @Override
@@ -145,8 +144,7 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
 
     @Override
     protected String getFreezerTempNodeName() {
-        throw new UnsupportedOperationException(
-                "Refrigerator Thinq2 doesn't support FreezerTemp node. It most likely a bug");
+        throw new UnsupportedOperationException("Fridge Thinq2 doesn't support FreezerTemp node. It most likely a bug");
     }
 
     @Override

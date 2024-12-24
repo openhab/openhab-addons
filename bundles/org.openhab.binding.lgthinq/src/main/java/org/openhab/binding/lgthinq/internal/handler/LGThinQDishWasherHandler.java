@@ -34,8 +34,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
-import org.openhab.binding.lgthinq.internal.type.ThinqChannelGroupTypeProvider;
-import org.openhab.binding.lgthinq.internal.type.ThinqChannelTypeProvider;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory;
 import org.openhab.binding.lgthinq.lgservices.LGThinQDishWasherApiClientService;
@@ -56,8 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LGThinQDishWasherHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link LGThinQDishWasherHandler} Handle the Dish Washer Things
  *
  * @author Nemer Daud - Initial contribution
  */
@@ -78,11 +75,8 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
     private final LGThinQDishWasherApiClientService lgThinqDishWasherApiClientService;
 
     public LGThinQDishWasherHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
-            ThinqChannelTypeProvider channelTypeProvider, ThinqChannelGroupTypeProvider channelGroupTypeProvider,
             ItemChannelLinkRegistry itemChannelLinkRegistry, HttpClientFactory httpClientFactory) {
         super(thing, stateDescriptionProvider, itemChannelLinkRegistry);
-        this.thinqChannelGroupProvider = channelGroupTypeProvider;
-        this.thinqChannelProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         lgThinqDishWasherApiClientService = LGThinQApiClientServiceFactory.newDishWasherApiClientService(lgPlatformType,
                 httpClientFactory);

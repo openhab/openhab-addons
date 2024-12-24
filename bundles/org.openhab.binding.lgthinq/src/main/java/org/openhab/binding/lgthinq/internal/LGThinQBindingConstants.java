@@ -46,8 +46,7 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final ThingTypeUID THING_TYPE_DRYER_TOWER = new ThingTypeUID(BINDING_ID,
             DeviceTypes.DRYER_TOWER.thingTypeId());
 
-    public static final ThingTypeUID THING_TYPE_FRIDGE = new ThingTypeUID(BINDING_ID,
-            DeviceTypes.REFRIGERATOR.thingTypeId());
+    public static final ThingTypeUID THING_TYPE_FRIDGE = new ThingTypeUID(BINDING_ID, DeviceTypes.FRIDGE.thingTypeId());
     public static final ThingTypeUID THING_TYPE_DISHWASHER = new ThingTypeUID(BINDING_ID,
             DeviceTypes.DISH_WASHER.thingTypeId());
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIR_CONDITIONER,
@@ -97,36 +96,36 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final String CHANNEL_AC_TARGET_TEMP_ID = "target-temperature";
 
     /**
-     * ============ Refrigerator's Channels & Constant Definition =============
+     * ============ Fridge's Channels & Constant Definition =============
      */
-    public static final String CHANNEL_RE_ACTIVE_SAVING = "fr-active-saving";
-    public static final String CHANNEL_RE_DOOR_OPEN = "some-door-open";
-    public static final String CHANNEL_RE_EXPRESS_COOL_MODE = "fr-express-cool-mode";
-    public static final String CHANNEL_RE_EXPRESS_FREEZE_MODE = "fr-express-mode";
-    public static final String CHANNEL_RE_FREEZER_TEMP_ID = "freezer-temperature";
-    public static final String CHANNEL_RE_FRESH_AIR_FILTER = "fr-fresh-air-filter";
-    public static final String CHANNEL_RE_FRIDGE_TEMP_ID = "fridge-temperature";
-    public static final String CHANNEL_RE_ICE_PLUS = "fr-ice-plus";
-    public static final String CHANNEL_RE_REF_TEMP_UNIT = "temp-unit";
-    public static final String CHANNEL_RE_SMART_SAVING_MODE_V2 = "fr-smart-saving-mode";
-    public static final String CHANNEL_RE_SMART_SAVING_SWITCH_V1 = "fr-smart-saving-switch";
-    public static final String CHANNEL_RE_VACATION_MODE = "fr-eco-friendly-mode";
-    public static final String CHANNEL_RE_WATER_FILTER = "fr-water-filter";
+    public static final String CHANNEL_FR_ACTIVE_SAVING = "fr-active-saving";
+    public static final String CHANNEL_FR_DOOR_OPEN = "fr-some-door-open";
+    public static final String CHANNEL_FR_EXPRESS_COOL_MODE = "fr-express-cool-mode";
+    public static final String CHANNEL_FR_EXPRESS_FREEZE_MODE = "fr-express-mode";
+    public static final String CHANNEL_FR_FREEZER_TEMP_ID = "fr-freezer-temperature";
+    public static final String CHANNEL_FR_FRESH_AIR_FILTER = "fr-fresh-air-filter";
+    public static final String CHANNEL_FR_FRIDGE_TEMP_ID = "fr-fridge-temperature";
+    public static final String CHANNEL_FR_ICE_PLUS = "fr-ice-plus";
+    public static final String CHANNEL_FR_REF_TEMP_UNIT = "fr-temp-unit";
+    public static final String CHANNEL_FR_SMART_SAVING_MODE_V2 = "fr-smart-saving-mode";
+    public static final String CHANNEL_FR_SMART_SAVING_SWITCH_V1 = "fr-smart-saving-switch";
+    public static final String CHANNEL_FR_VACATION_MODE = "fr-eco-friendly-mode";
+    public static final String CHANNEL_FR_WATER_FILTER = "fr-water-filter";
 
     /**
      * ============ Washing Machine/Dryer and DishWasher Channels & Constant Definition =============
      * DishWasher, Washing Machine and Dryer have the same channel core and features
      */
-    public static final String CHANNEL_DR_CHILD_LOCK_ID = "child-lock";
-    public static final String CHANNEL_DR_DRY_LEVEL_ID = "dry-level";
+    public static final String CHANNEL_WMD_CHILD_LOCK_ID = "child-lock";
+    public static final String CHANNEL_WMD_DRY_LEVEL_ID = "dry-level";
     public static final String CHANNEL_WMD_COURSE_ID = "course";
     public static final String CHANNEL_WMD_DELAY_TIME_ID = "delay-time";
     public static final String CHANNEL_WMD_DOOR_LOCK_ID = "door-lock";
     public static final String CHANNEL_WMD_PROCESS_STATE_ID = "process-state";
     public static final String CHANNEL_WMD_REMAIN_TIME_ID = "remain-time";
     public static final String CHANNEL_WMD_REMOTE_COURSE = "rs-course";
-    public static final String CHANNEL_WMD_REMOTE_START_GRP_ID = "remote-start-grp";
-    public static final String CHANNEL_WMD_REMOTE_START_ID = "remote-start-flag";
+    public static final String CHANNEL_WMD_REMOTE_START_GRP_ID = "rs-grp";
+    public static final String CHANNEL_WMD_REMOTE_START_ID = "rs-flag";
     public static final String CHANNEL_WMD_REMOTE_START_START_STOP = "rs-start-stop";
     public static final String CHANNEL_WMD_RINSE_ID = "rinse";
     public static final String CHANNEL_WMD_SMART_COURSE_ID = "smart-course";
@@ -134,9 +133,9 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final String CHANNEL_WMD_STAND_BY_ID = "stand-by";
     public static final String CHANNEL_WMD_STATE_ID = "state";
     public static final String CHANNEL_WMD_TEMP_LEVEL_ID = "temperature-level";
-    public static final String CHANNEL_WM_REMOTE_START_RINSE = "rs-rinse";
-    public static final String CHANNEL_WM_REMOTE_START_SPIN = "rs-spin";
-    public static final String CHANNEL_WM_REMOTE_START_TEMP = "rs-temperature-level";
+    public static final String CHANNEL_WMD_REMOTE_START_RINSE = "rs-rinse";
+    public static final String CHANNEL_WMD_REMOTE_START_SPIN = "rs-spin";
+    public static final String CHANNEL_WMD_REMOTE_START_TEMP = "rs-temperature-level";
 
     // ==============================================================================
     // DIGEST CONSTANTS

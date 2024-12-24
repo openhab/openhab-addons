@@ -31,8 +31,6 @@ import org.openhab.binding.lgthinq.internal.handler.LGThinQBridgeHandler;
 import org.openhab.binding.lgthinq.internal.handler.LGThinQDishWasherHandler;
 import org.openhab.binding.lgthinq.internal.handler.LGThinQFridgeHandler;
 import org.openhab.binding.lgthinq.internal.handler.LGThinQWasherDryerHandler;
-import org.openhab.binding.lgthinq.internal.type.ThinqChannelGroupTypeProvider;
-import org.openhab.binding.lgthinq.internal.type.ThinqChannelTypeProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -67,12 +65,6 @@ public class LGThinQHandlerFactory extends BaseThingHandlerFactory {
 
     @Nullable
     @Reference
-    protected ThinqChannelTypeProvider thinqChannelProvider;
-    @Nullable
-    @Reference
-    protected ThinqChannelGroupTypeProvider thinqChannelGroupProvider;
-    @Nullable
-    @Reference
     protected ItemChannelLinkRegistry itemChannelLinkRegistry;
 
     @Activate
@@ -97,18 +89,15 @@ public class LGThinQHandlerFactory extends BaseThingHandlerFactory {
             return new LGThinQBridgeHandler((Bridge) thing, httpClientFactory);
         } else if (THING_TYPE_WASHING_MACHINE.equals(thingTypeUID) || THING_TYPE_WASHING_TOWER.equals(thingTypeUID)) {
             return new LGThinQWasherDryerHandler(thing, stateDescriptionProvider,
-                    Objects.requireNonNull(thinqChannelProvider), Objects.requireNonNull(thinqChannelGroupProvider),
                     Objects.requireNonNull(itemChannelLinkRegistry), httpClientFactory);
         } else if (THING_TYPE_DRYER.equals(thingTypeUID) || THING_TYPE_DRYER_TOWER.equals(thingTypeUID)) {
             return new LGThinQWasherDryerHandler(thing, stateDescriptionProvider,
-                    Objects.requireNonNull(thinqChannelProvider), Objects.requireNonNull(thinqChannelGroupProvider),
                     Objects.requireNonNull(itemChannelLinkRegistry), httpClientFactory);
         } else if (THING_TYPE_FRIDGE.equals(thingTypeUID)) {
             return new LGThinQFridgeHandler(thing, stateDescriptionProvider,
                     Objects.requireNonNull(itemChannelLinkRegistry), httpClientFactory);
         } else if (THING_TYPE_DISHWASHER.equals(thingTypeUID)) {
             return new LGThinQDishWasherHandler(thing, stateDescriptionProvider,
-                    Objects.requireNonNull(thinqChannelProvider), Objects.requireNonNull(thinqChannelGroupProvider),
                     Objects.requireNonNull(itemChannelLinkRegistry), httpClientFactory);
         }
         logger.warn("Thing not supported by this Factory: {}", thingTypeUID.getId());

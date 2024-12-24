@@ -27,7 +27,7 @@ public enum DeviceTypes {
     WASHER_TOWER(221, "WM", "", "washer-tower-221"),
     DRYER(202, "DR", "Dryer", "dryer-202"),
     DRYER_TOWER(222, "DR", "Dryer", "dryer-tower-222"),
-    REFRIGERATOR(101, "REF", "Fridge", "fridge-101"),
+    FRIDGE(101, "REF", "Fridge", "fridge-101"),
     DISH_WASHER(204, "DW", "DishWasher", "dishwasher-204"),
     UNKNOWN(-1, "", "", "");
 
@@ -70,7 +70,7 @@ public enum DeviceTypes {
             case 222:
                 return DRYER_TOWER;
             case 101:
-                return REFRIGERATOR;
+                return FRIDGE;
             default:
                 return UNKNOWN;
         }
@@ -90,7 +90,7 @@ public enum DeviceTypes {
                 }
                 yield WASHERDRYER_MACHINE;
             }
-            case "REF" -> REFRIGERATOR;
+            case "REF" -> FRIDGE;
             case "DW" -> DISH_WASHER;
             default -> UNKNOWN;
         };

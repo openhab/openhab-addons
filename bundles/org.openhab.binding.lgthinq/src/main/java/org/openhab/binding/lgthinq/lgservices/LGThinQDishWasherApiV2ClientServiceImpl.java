@@ -49,9 +49,4 @@ public class LGThinQDishWasherApiV2ClientServiceImpl
     public void remoteStart(String bridgeName, DishWasherCapability cap, String deviceId, Map<String, Object> data) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
-
-    @Override
-    public void wakeUp(String bridgeName, String deviceId, Boolean wakeUp) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
 }

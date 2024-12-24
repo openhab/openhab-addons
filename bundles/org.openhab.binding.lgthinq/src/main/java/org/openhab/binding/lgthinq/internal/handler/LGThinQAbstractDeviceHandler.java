@@ -42,9 +42,8 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
-import org.openhab.binding.lgthinq.internal.type.ThinqChannelGroupTypeProvider;
-import org.openhab.binding.lgthinq.internal.type.ThinqChannelTypeProvider;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqAccessException;
 import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiExhaustionException;
 import org.openhab.binding.lgthinq.lgservices.errors.LGThinqDeviceV1MonitorExpiredException;
@@ -114,10 +113,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             ThingStatusDetail.CONFIGURATION_ERROR);
 
     protected final LGThinQStateDescriptionProvider stateDescriptionProvider;
-    @Nullable
-    protected ThinqChannelTypeProvider thinqChannelProvider;
-    @Nullable
-    protected ThinqChannelGroupTypeProvider thinqChannelGroupProvider;
 
     protected S getLastShot() {
         return Objects.requireNonNull(lastShot, "LastShot shouldn't be null. It most likely a bug.");
@@ -513,6 +508,8 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                     updateStatus(ThingStatus.ONLINE);
             }
 
+        } catch (LGThinqAccessException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (LGThinqApiExhaustionException e) {
             fetchMonitorRetries++;
             getLogger().warn("LG API returns null monitoring data for the thing {}/{}. No data available yet ?",

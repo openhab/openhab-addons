@@ -18,22 +18,32 @@ import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.SnapshotDefinition;
 
 /**
- * The {@link LGThinQBridge}
+ * The {@link LGThinQBridge} - Specific methods for discovery integration
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
 public interface LGThinQBridge {
     /**
-     * Register
+     * Register Discovery Listener
      * 
      * @param listener
      */
     void registerDiscoveryListener(LGThinqDiscoveryService listener);
 
+    /**
+     * Registry a device Thing to the bridge
+     * 
+     * @param thing Thing to be registered.
+     */
     void registryListenerThing(
             LGThinQAbstractDeviceHandler<? extends CapabilityDefinition, ? extends SnapshotDefinition> thing);
 
+    /**
+     * Unregistry the thing
+     * 
+     * @param thing to be unregistered
+     */
     void unRegistryListenerThing(
             LGThinQAbstractDeviceHandler<? extends CapabilityDefinition, ? extends SnapshotDefinition> thing);
 }
