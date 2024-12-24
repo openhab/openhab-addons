@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:velbus:33channelDeviceWithTemperatureSensor">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="subaddress1" type="text" required="true">
+			<label>Channel CH9..CH16 Address</label>
+			<description>The velbus sub-address 1 of the device (FF = disabled). In the VelbusLink application it's identified by
+				Page 3-4 or Pushbuttons 9-16.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress2" type="text" required="true">
+			<label>Channel CH17..CH24 Address</label>
+			<description>The velbus sub-address 2 of the device (FF = disabled). In the VelbusLink application it's identified by
+				Page 5-6 or Pushbuttons 17-24.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress3" type="text" required="true">
+			<label>Channel CH25..CH32 Address</label>
+			<description>The velbus sub-address 3 of the device (FF = disabled). In the VelbusLink application it's identified by
+				Page 7-8 or Pushbuttons 25-32.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress4" type="text" required="true">
+			<label>Channel CH33 Address</label>
+			<description>The velbus sub-address 4 of the device (FF = disabled). In the VelbusLink application it's identified by
+				Sensor or Thermostat.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="refresh" type="integer" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
+				refresh will be scheduled.</description>
+			<default>300</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 Name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 Name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 Name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 Name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 Name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 Name</label>
+			<description>The name of CH6.</description>
+			<default>CH6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH7" type="text">
+			<label>CH7 Name</label>
+			<description>The name of CH7.</description>
+			<default>CH7</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH8" type="text">
+			<label>CH8 Name</label>
+			<description>The name of CH8.</description>
+			<default>CH8</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH9" type="text">
+			<label>CH9 Name</label>
+			<description>The name of CH9.</description>
+			<default>CH9</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH10" type="text">
+			<label>CH10 Name</label>
+			<description>The name of CH10.</description>
+			<default>CH10</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH11" type="text">
+			<label>CH11 Name</label>
+			<description>The name of CH11.</description>
+			<default>CH11</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH12" type="text">
+			<label>CH12 Name</label>
+			<description>The name of CH12.</description>
+			<default>CH12</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH13" type="text">
+			<label>CH13 Name</label>
+			<description>The name of CH13.</description>
+			<default>CH13</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH14" type="text">
+			<label>CH14 Name</label>
+			<description>The name of CH14.</description>
+			<default>CH14</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH15" type="text">
+			<label>CH15 Name</label>
+			<description>The name of CH15.</description>
+			<default>CH15</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH16" type="text">
+			<label>CH16 Name</label>
+			<description>The name of CH16.</description>
+			<default>CH16</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH17" type="text">
+			<label>CH17 Name</label>
+			<description>The name of CH17.</description>
+			<default>CH17</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH18" type="text">
+			<label>CH18 Name</label>
+			<description>The name of CH18.</description>
+			<default>CH18</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH19" type="text">
+			<label>CH19 Name</label>
+			<description>The name of CH19.</description>
+			<default>CH19</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH20" type="text">
+			<label>CH20 Name</label>
+			<description>The name of CH20.</description>
+			<default>CH20</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH21" type="text">
+			<label>CH21 Name</label>
+			<description>The name of CH21.</description>
+			<default>CH21</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH22" type="text">
+			<label>CH22 Name</label>
+			<description>The name of CH22.</description>
+			<default>CH22</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH23" type="text">
+			<label>CH23 Name</label>
+			<description>The name of CH23.</description>
+			<default>CH23</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH24" type="text">
+			<label>CH24 Name</label>
+			<description>The name of CH24.</description>
+			<default>CH24</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH25" type="text">
+			<label>CH25 Name</label>
+			<description>The name of CH25.</description>
+			<default>CH25</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH26" type="text">
+			<label>CH26 Name</label>
+			<description>The name of CH26.</description>
+			<default>CH26</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH27" type="text">
+			<label>CH27 Name</label>
+			<description>The name of CH27.</description>
+			<default>CH27</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH28" type="text">
+			<label>CH28 Name</label>
+			<description>The name of CH28.</description>
+			<default>CH28</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH29" type="text">
+			<label>CH29 Name</label>
+			<description>The name of CH29.</description>
+			<default>CH29</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH30" type="text">
+			<label>CH30 Name</label>
+			<description>The name of CH30.</description>
+			<default>CH30</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH31" type="text">
+			<label>CH31 Name</label>
+			<description>The name of CH31.</description>
+			<default>CH31</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH32" type="text">
+			<label>CH32 Name</label>
+			<description>The name of CH32.</description>
+			<default>CH32</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH33" type="text">
+			<label>CH33 Name</label>
+			<description>The name of CH33 (temperature sensor channel).</description>
+			<default>Temperature</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
