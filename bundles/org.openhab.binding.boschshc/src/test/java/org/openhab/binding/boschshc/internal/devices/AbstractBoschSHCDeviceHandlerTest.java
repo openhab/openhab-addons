@@ -14,14 +14,20 @@ package org.openhab.binding.boschshc.internal.devices;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
@@ -42,11 +48,34 @@ import org.openhab.core.thing.ThingStatusDetail;
 public abstract class AbstractBoschSHCDeviceHandlerTest<T extends BoschSHCDeviceHandler>
         extends AbstractBoschSHCHandlerTest<T> {
 
+    protected static final String TAG_LEGACY_LOCATION_PROPERTY = "LegacyLocationProperty";
+    protected static final String TAG_LOCATION_PROPERTY = "LocationProperty";
+    protected static final String DEFAULT_ROOM_ID = "hz_1";
+
     @Override
     protected void configureDevice(Device device) {
         super.configureDevice(device);
 
         device.id = getDeviceID();
+        device.roomId = DEFAULT_ROOM_ID;
+    }
+
+    @Override
+    protected void beforeHandlerInitialization(TestInfo testInfo) {
+        super.beforeHandlerInitialization(testInfo);
+        Set<String> tags = testInfo.getTags();
+        if (tags.contains(TAG_LEGACY_LOCATION_PROPERTY) || tags.contains(TAG_LOCATION_PROPERTY)) {
+            Map<String, String> properties = new HashMap<>();
+            when(getThing().getProperties()).thenReturn(properties);
+
+            if (tags.contains(TAG_LEGACY_LOCATION_PROPERTY)) {
+                properties.put(BoschSHCBindingConstants.PROPERTY_LOCATION_LEGACY, "Living Room");
+            }
+
+            if (tags.contains(TAG_LOCATION_PROPERTY)) {
+                when(getBridgeHandler().resolveRoomId(DEFAULT_ROOM_ID)).thenReturn("Kitchen");
+            }
+        }
     }
 
     @Override
@@ -79,5 +108,45 @@ public abstract class AbstractBoschSHCDeviceHandlerTest<T extends BoschSHCDevice
         verify(getCallback()).statusUpdated(any(Thing.class),
                 argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
                         && status.getStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)));
+    }
+
+    @Tag(TAG_LEGACY_LOCATION_PROPERTY)
+    @Test
+    protected void deleteLegacyLocationProperty() {
+        verify(getThing()).setProperty(BoschSHCBindingConstants.PROPERTY_LOCATION_LEGACY, null);
+        verify(getCallback()).thingUpdated(getThing());
+    }
+
+    @Tag(TAG_LOCATION_PROPERTY)
+    @Test
+    protected void locationPropertyDidNotChange() {
+        verify(getThing()).setProperty(BoschSHCBindingConstants.PROPERTY_LOCATION, "Kitchen");
+        verify(getCallback()).thingUpdated(getThing());
+
+        getThing().getProperties().put(BoschSHCBindingConstants.PROPERTY_LOCATION, "Kitchen");
+
+        // re-initialize
+        getFixture().initialize();
+
+        verify(getThing()).setProperty(BoschSHCBindingConstants.PROPERTY_LOCATION, "Kitchen");
+        verify(getCallback()).thingUpdated(getThing());
+    }
+
+    @Tag(TAG_LOCATION_PROPERTY)
+    @Test
+    protected void locationPropertyDidChange() {
+        verify(getThing()).setProperty(BoschSHCBindingConstants.PROPERTY_LOCATION, "Kitchen");
+        verify(getCallback()).thingUpdated(getThing());
+
+        getThing().getProperties().put(BoschSHCBindingConstants.PROPERTY_LOCATION, "Kitchen");
+
+        getDevice().roomId = "hz_2";
+        when(getBridgeHandler().resolveRoomId("hz_2")).thenReturn("Dining Room");
+
+        // re-initialize
+        getFixture().initialize();
+
+        verify(getThing()).setProperty(BoschSHCBindingConstants.PROPERTY_LOCATION, "Dining Room");
+        verify(getCallback(), times(2)).thingUpdated(getThing());
     }
 }
