@@ -72,31 +72,27 @@ public class HexUtils {
     }
 
     /**
+     * Returns a hex string for a given byte array
+     *
+     * @param bytes the byte array
+     * @return the formatted hex string
+     */
+    public static String getHexString(byte[] bytes) {
+        return getHexString(bytes, bytes.length);
+    }
+
+    /**
      * Returns a hex string for a given byte array and length
      *
      * @param bytes the byte array
      * @param len the string length
      * @return the formatted hex string
+     * @throws ArrayIndexOutOfBoundsException
      */
-    public static String getHexString(byte[] bytes, int len) {
-        return getHexString(bytes, len, true);
-    }
-
-    /**
-     * Returns a hex string for a given byte array, length and prefix flag
-     *
-     * @param bytes the byte array
-     * @param len the string length
-     * @param addPrefix if hex prefix should be added
-     * @return the formatted hex string
-     */
-    public static String getHexString(byte[] bytes, int len, boolean addPrefix) {
+    public static String getHexString(byte[] bytes, int len) throws ArrayIndexOutOfBoundsException {
         String s = "";
-        for (int i = 0; i < bytes.length && i < len; i++) {
+        for (int i = 0; i < len; i++) {
             s += String.format("%02X", bytes[i] & 0xFF);
-        }
-        if (!s.isEmpty() && addPrefix) {
-            s = "0x" + s;
         }
         return s;
     }
