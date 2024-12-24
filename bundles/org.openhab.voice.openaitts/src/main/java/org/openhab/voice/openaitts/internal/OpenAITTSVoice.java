@@ -46,7 +46,7 @@ public class OpenAITTSVoice implements Voice {
      */
     @Override
     public String getLabel() {
-        return label;
+        return Character.toUpperCase(label.charAt(0)) + label.substring(1);
     }
 
     /**

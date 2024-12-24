@@ -12,8 +12,7 @@
  */
 package org.openhab.voice.openaitts.internal;
 
-import static org.openhab.voice.openaitts.internal.OpenAITTSConstants.TTS_SERVICE_ID;
-import static org.openhab.voice.openaitts.internal.OpenAITTSConstants.TTS_SERVICE_PID;
+import static org.openhab.voice.openaitts.internal.OpenAITTSConstants.*;
 
 import java.util.Locale;
 import java.util.Map;
@@ -111,7 +110,7 @@ public class OpenAITTSService extends AbstractCachedTTSService {
 
     /**
      * Synthesizes the given text to audio data using the OpenAI API
-     * 
+     *
      * @param text The text to synthesize
      * @param voice The voice to use
      * @param requestedFormat The requested audio format
@@ -123,7 +122,7 @@ public class OpenAITTSService extends AbstractCachedTTSService {
         JsonObject content = new JsonObject();
         content.addProperty("model", config.model);
         content.addProperty("input", text);
-        content.addProperty("voice", voice.getLabel());
+        content.addProperty("voice", voice.getLabel().toLowerCase());
         content.addProperty("speed", config.speed);
 
         String queryJson = gson.toJson(content);
