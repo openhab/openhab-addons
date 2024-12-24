@@ -1648,7 +1648,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
         if (!(isCurrent
                 && (media.getAlbumArtUri().isEmpty() || media.getAlbumArtUri().contains("DefaultAlbumCover")))) {
-            if (media.getAlbumArtUri().isEmpty() || media.getAlbumArtUri().contains("DefaultAlbumCover")) {
+            if (media.getAlbumArtUri().isBlank() || media.getAlbumArtUri().contains("DefaultAlbumCover")) {
                 updateState(ALBUM_ART, UnDefType.UNDEF);
             } else {
                 State albumArt = null;
