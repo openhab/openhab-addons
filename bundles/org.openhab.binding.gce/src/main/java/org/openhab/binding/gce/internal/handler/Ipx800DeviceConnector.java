@@ -41,11 +41,10 @@ public class Ipx800DeviceConnector extends Thread {
     private static final String ENDL = "\r\n";
 
     private final Logger logger = LoggerFactory.getLogger(Ipx800DeviceConnector.class);
-
     private final String hostname;
     private final int portNumber;
+    private final M2MMessageParser messageParser;
 
-    private Optional<M2MMessageParser> messageParser = Optional.empty();
     private Optional<Socket> socket = Optional.empty();
     private Optional<BufferedReader> input = Optional.empty();
     private Optional<PrintWriter> output = Optional.empty();
@@ -53,10 +52,11 @@ public class Ipx800DeviceConnector extends Thread {
     private int failedKeepalive = 0;
     private boolean waitingKeepaliveResponse = false;
 
-    public Ipx800DeviceConnector(String hostname, int portNumber, ThingUID uid) {
+    public Ipx800DeviceConnector(String hostname, int portNumber, ThingUID uid, Ipx800EventListener listener) {
         super("OH-binding-" + uid);
         this.hostname = hostname;
         this.portNumber = portNumber;
+        this.messageParser = new M2MMessageParser(this, listener);
         setDaemon(true);
     }
 
@@ -120,7 +120,6 @@ public class Ipx800DeviceConnector extends Thread {
     public void dispose() {
         interrupt();
         disconnect();
-        releaseParser();
     }
 
     /**
@@ -156,7 +155,7 @@ public class Ipx800DeviceConnector extends Thread {
                     try {
                         String command = in.readLine();
                         waitingKeepaliveResponse = false;
-                        messageParser.ifPresent(parser -> parser.unsolicitedUpdate(command));
+                        messageParser.unsolicitedUpdate(command);
                     } catch (IOException e) {
                         handleException(e);
                     }
@@ -181,15 +180,11 @@ public class Ipx800DeviceConnector extends Thread {
             } else if (e instanceof IOException) {
                 logger.warn("Communication error: '{}'. Will retry in {} ms", e, DEFAULT_RECONNECT_TIMEOUT_MS);
             }
-            messageParser.ifPresent(parser -> parser.errorOccurred(e));
+            messageParser.errorOccurred(e);
         }
     }
 
-    public void setParser(M2MMessageParser parser) {
-        messageParser = Optional.of(parser);
-    }
-
-    public void releaseParser() {
-        messageParser = Optional.empty();
+    public M2MMessageParser getParser() {
+        return messageParser;
     }
 }

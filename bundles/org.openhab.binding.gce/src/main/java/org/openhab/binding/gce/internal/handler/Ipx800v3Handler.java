@@ -14,6 +14,7 @@ package org.openhab.binding.gce.internal.handler;
 
 import static org.openhab.binding.gce.internal.GCEBindingConstants.*;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -27,16 +28,16 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gce.internal.action.Ipx800Actions;
 import org.openhab.binding.gce.internal.config.AnalogInputConfiguration;
 import org.openhab.binding.gce.internal.config.DigitalInputConfiguration;
 import org.openhab.binding.gce.internal.config.Ipx800Configuration;
 import org.openhab.binding.gce.internal.config.RelayOutputConfiguration;
-import org.openhab.binding.gce.internal.model.M2MMessageParser;
 import org.openhab.binding.gce.internal.model.PortData;
 import org.openhab.binding.gce.internal.model.PortDefinition;
-import org.openhab.binding.gce.internal.model.StatusFileInterpreter;
-import org.openhab.binding.gce.internal.model.StatusFileInterpreter.StatusEntry;
+import org.openhab.binding.gce.internal.model.StatusFile;
+import org.openhab.binding.gce.internal.model.StatusFileAccessor;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
@@ -60,6 +61,8 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
  * The {@link Ipx800v3Handler} is responsible for handling commands, which are
@@ -75,8 +78,8 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     private final Logger logger = LoggerFactory.getLogger(Ipx800v3Handler.class);
 
     private Optional<Ipx800DeviceConnector> connector = Optional.empty();
-    private Optional<M2MMessageParser> parser = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private Optional<StatusFileAccessor> statusConnector = Optional.empty();
 
     private final Map<String, PortData> portDatas = new HashMap<>();
 
@@ -88,7 +91,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         public LongPressEvaluator(Channel channel, String port, PortData portData) {
             this.referenceTime = portData.getTimestamp();
             this.port = port;
-            this.eventChannelId = channel.getUID().getId() + PROPERTY_SEPARATOR + TRIGGER_CONTACT;
+            this.eventChannelId = "%s-%s".formatted(channel.getUID().getId(), TRIGGER_CONTACT);
         }
 
         @Override
@@ -103,7 +106,6 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     public Ipx800v3Handler(Thing thing) {
         super(thing);
-        logger.debug("Create an IPX800 Handler for thing '{}'", getThing().getUID());
     }
 
     @Override
@@ -111,34 +113,61 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         logger.debug("Initializing IPX800 handler for uid '{}'", getThing().getUID());
 
         Ipx800Configuration config = getConfigAs(Ipx800Configuration.class);
-        StatusFileInterpreter statusFile = new StatusFileInterpreter(config.hostname, this);
 
-        if (thing.getProperties().isEmpty()) {
-            updateProperties(Map.of(Thing.PROPERTY_VENDOR, "GCE Electronics", Thing.PROPERTY_FIRMWARE_VERSION,
-                    statusFile.getElement(StatusEntry.VERSION), Thing.PROPERTY_MAC_ADDRESS,
-                    statusFile.getElement(StatusEntry.CONFIG_MAC)));
+        statusConnector = Optional.of(new StatusFileAccessor(config.hostname));
+        connector = Optional
+                .of(new Ipx800DeviceConnector(config.hostname, config.portNumber, getThing().getUID(), this));
+
+        updateStatus(ThingStatus.UNKNOWN);
+
+        refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::readStatusFile, 1500, config.pullInterval,
+                TimeUnit.MILLISECONDS));
+    }
+
+    private void readStatusFile() {
+        StatusFile status = null;
+        try {
+            status = statusConnector.get().read();
+            for (PortDefinition portDefinition : PortDefinition.values()) {
+                List<Node> nodes = status.getMatchingNodes(portDefinition.nodeName);
+                nodes.forEach(node -> {
+                    String sPortNum = node.getNodeName().replace(portDefinition.nodeName, "");
+                    int portNum = Integer.parseInt(sPortNum) + 1;
+                    double value = Double.parseDouble(node.getTextContent().replace("dn", "1").replace("up", "0"));
+                    dataReceived("%s%d".formatted(portDefinition.portName, portNum), value);
+                });
+            }
+        } catch (SAXException | IOException e) {
+            logger.warn("Unable to read status file for {}", thing.getUID());
         }
 
+        if (Thread.State.NEW.equals(connector.get().getState())) {
+            setProperties(status);
+            updateChannels(status);
+            connector.get().start();
+        }
+    }
+
+    private void updateChannels(@Nullable StatusFile status) {
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
         PortDefinition.AS_STREAM.forEach(portDefinition -> {
-            int nbElements = statusFile.getMaxNumberofNodeType(portDefinition);
+            int nbElements = status != null ? status.getMaxNumberofNodeType(portDefinition) : portDefinition.quantity;
             for (int i = 0; i < nbElements; i++) {
                 ChannelUID portChannelUID = createChannels(portDefinition, i, channels);
                 portDatas.put(portChannelUID.getId(), new PortData());
             }
         });
-
         updateThing(editThing().withChannels(channels).build());
+    }
 
-        connector = Optional.of(new Ipx800DeviceConnector(config.hostname, config.portNumber, getThing().getUID()));
-        parser = Optional.of(new M2MMessageParser(connector.get(), this));
-
-        updateStatus(ThingStatus.UNKNOWN);
-
-        refreshJob = Optional.of(
-                scheduler.scheduleWithFixedDelay(statusFile::read, 3000, config.pullInterval, TimeUnit.MILLISECONDS));
-
-        connector.get().start();
+    private void setProperties(@Nullable StatusFile status) {
+        Map<String, String> properties = thing.getProperties();
+        properties.put(Thing.PROPERTY_VENDOR, "GCE Electronics");
+        if (status != null) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, status.getVersion());
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, status.getMac());
+        }
+        updateProperties(properties);
     }
 
     @Override
@@ -149,11 +178,10 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         connector.ifPresent(Ipx800DeviceConnector::dispose);
         connector = Optional.empty();
 
-        parser.ifPresent(M2MMessageParser::dispose);
-        parser = Optional.empty();
-
         portDatas.values().stream().forEach(PortData::dispose);
         portDatas.clear();
+
+        statusConnector = Optional.empty();
 
         super.dispose();
     }
@@ -332,7 +360,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                 && PortDefinition.fromGroupId(groupId) == PortDefinition.RELAY) {
             RelayOutputConfiguration config = channel.getConfiguration().as(RelayOutputConfiguration.class);
             String id = channelUID.getIdWithoutGroup();
-            parser.ifPresent(p -> p.setOutput(id, onOffCommand == OnOffType.ON ? 1 : 0, config.pulse));
+            connector.ifPresent(p -> p.getParser().setOutput(id, onOffCommand == OnOffType.ON ? 1 : 0, config.pulse));
             return;
         }
         logger.debug("Can not handle command '{}' on channel '{}'", command, channelUID);
@@ -343,11 +371,11 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     }
 
     public void resetCounter(int counter) {
-        parser.ifPresent(p -> p.resetCounter(counter));
+        connector.ifPresent(p -> p.getParser().resetCounter(counter));
     }
 
     public void reset() {
-        parser.ifPresent(M2MMessageParser::resetPLC);
+        connector.ifPresent(p -> p.getParser().resetPLC());
     }
 
     @Override

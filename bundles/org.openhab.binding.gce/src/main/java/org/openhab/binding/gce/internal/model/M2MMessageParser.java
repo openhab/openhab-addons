@@ -41,11 +41,6 @@ public class M2MMessageParser {
     public M2MMessageParser(Ipx800DeviceConnector connector, Ipx800EventListener listener) {
         this.connector = connector;
         this.listener = listener;
-        connector.setParser(this);
-    }
-
-    public void dispose() {
-        connector.releaseParser();
     }
 
     /**
@@ -110,7 +105,7 @@ public class M2MMessageParser {
      */
     public void setOutput(String targetPort, int targetValue, boolean pulse) {
         logger.debug("Sending {} to {}", targetValue, targetPort);
-        String command = String.format("Set%02d%s%s", Integer.parseInt(targetPort), targetValue, pulse ? "p" : "");
+        String command = "Set%02d%s%s".formatted(Integer.parseInt(targetPort), targetValue, pulse ? "p" : "");
         connector.send(command);
     }
 
@@ -121,7 +116,7 @@ public class M2MMessageParser {
      */
     public void resetCounter(int targetCounter) {
         logger.debug("Resetting counter {} to 0", targetCounter);
-        connector.send(String.format("ResetCount%d", targetCounter));
+        connector.send("ResetCount%d".formatted(targetCounter));
     }
 
     public void errorOccurred(Exception e) {
