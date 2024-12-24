@@ -12,13 +12,18 @@
  */
 package org.openhab.binding.modbus.stiebeleltron.internal;
 
-import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.THING_TYPE_HEATPUMP;
+import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.stiebeleltron.internal.handler.StiebelEltronHandler;
+import org.openhab.binding.modbus.stiebeleltron.internal.handler.StiebelEltronHandlerIsgSgReadyEm;
+import org.openhab.binding.modbus.stiebeleltron.internal.handler.StiebelEltronHandlerWpm;
+import org.openhab.binding.modbus.stiebeleltron.internal.handler.StiebelEltronHandlerWpm3;
+import org.openhab.binding.modbus.stiebeleltron.internal.handler.StiebelEltronHandlerWpm3i;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -31,12 +36,25 @@ import org.osgi.service.component.annotations.Component;
  * handlers.
  *
  * @author Paul Frank - Initial contribution
+ * @author Thomas Burri - Added new things for WPM3 and WPM3i compatible heat pumps according to
+ *         Stiebel-Eltron Software Documentation/ Software extension for Internet Service Gateway (ISG) / Modbus TCP/IP
+ *         Version 9535
+ *
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.stiebeleltron", service = ThingHandlerFactory.class)
 public class StiebelEltronHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HEATPUMP);
+    @SuppressWarnings("serial")
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>() {
+        {
+            add(THING_TYPE_HEATPUMP);
+            add(THING_TYPE_STIEBELELTRON_HEATPUMP_WPMSYSTEM);
+            add(THING_TYPE_STIEBELELTRON_HEATPUMP_WPM3);
+            add(THING_TYPE_STIEBELELTRON_HEATPUMP_WPM3I);
+            add(THING_TYPE_STIEBELELTRON_ISG_SG_READY_EM);
+        }
+    };
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,6 +67,14 @@ public class StiebelEltronHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_HEATPUMP.equals(thingTypeUID)) {
             return new StiebelEltronHandler(thing);
+        } else if (THING_TYPE_STIEBELELTRON_HEATPUMP_WPMSYSTEM.equals(thingTypeUID)) {
+            return new StiebelEltronHandlerWpm(thing);
+        } else if (THING_TYPE_STIEBELELTRON_HEATPUMP_WPM3.equals(thingTypeUID)) {
+            return new StiebelEltronHandlerWpm3(thing);
+        } else if (THING_TYPE_STIEBELELTRON_HEATPUMP_WPM3I.equals(thingTypeUID)) {
+            return new StiebelEltronHandlerWpm3i(thing);
+        } else if (THING_TYPE_STIEBELELTRON_ISG_SG_READY_EM.equals(thingTypeUID)) {
+            return new StiebelEltronHandlerIsgSgReadyEm(thing);
         }
 
         return null;
