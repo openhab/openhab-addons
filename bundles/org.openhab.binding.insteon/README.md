@@ -26,6 +26,7 @@ You can follow the [migration guide](#migration-guide).
 
 However, the new version is fully backward compatible by supporting the legacy things.
 On the first start, existing `device` things connected to a `network` bridge will be migrated to the `legacy-device` thing type while still keeping the same ids to prevent any breakage.
+For textual configuration with defined thing channels, the channel types must be manually updated to the new ones by adding the `legacy` prefix and capitalizing the first letter, as shown in [these examples](#full-example).
 It is important to note that once the migration has occurred, downgrading to an older version will not be possible.
 
 ## Supported Things
@@ -474,27 +475,27 @@ Bridge insteon:plm:home [serialPort="/dev/ttyUSB0"] {
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
     Thing device 22F8A8 [address="22.F8.A8", productKey="F00.00.15"] {
       Channels:
-        Type keypadButtonA : keypadButtonA [ group=3 ]
-        Type keypadButtonB : keypadButtonB [ group=4 ]
-        Type keypadButtonC : keypadButtonC [ group=5 ]
-        Type keypadButtonD : keypadButtonD [ group=6 ]
+        Type legacyKeypadButtonA : keypadButtonA [ group=3 ]
+        Type legacyKeypadButtonB : keypadButtonB [ group=4 ]
+        Type legacyKeypadButtonC : keypadButtonC [ group=5 ]
+        Type legacyKeypadButtonD : keypadButtonD [ group=6 ]
     }
     Thing device 238D93 [address="23.8D.93", productKey="F00.00.12"]
     Thing device 238F55 [address="23.8F.55", productKey="F00.00.11"] {
       Channels:
-        Type dimmer        : dimmer [related="23.B0.D9+23.8F.C9"]
+        Type legacyDimmer        : dimmer [related="23.B0.D9+23.8F.C9"]
     }
     Thing device 238FC9 [address="23.8F.C9", productKey="F00.00.11"] {
       Channels:
-        Type dimmer        : dimmer [related="23.8F.55+23.B0.D9"]
+        Type legacyDimmer        : dimmer [related="23.8F.55+23.B0.D9"]
     }
     Thing device 23B0D9 [address="23.B0.D9", productKey="F00.00.11"] {
       Channels:
-        Type dimmer        : dimmer [related="23.8F.55+23.8F.C9"]
+        Type legacyDimmer        : dimmer [related="23.8F.55+23.8F.C9"]
     }
     Thing device 243141 [address="24.31.41", productKey="F00.00.11"]  {
       Channels:
-        Type dimmer        : dimmer [dimmermax=60]
+        Type legacyDimmer        : dimmer [dimmermax=60]
     }
   }
   ```
@@ -644,11 +645,11 @@ Thing device 23b0d9 [address="23.B0.D9"] {
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
     Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.11"]  {
       Channels:
-        Type dimmer     : dimmer [dimmermax=70]
+        Type legacyDimmer     : dimmer [dimmermax=70]
     }
     Thing device AABBCD [address="AA.BB.CD", productKey="F00.00.15"]  {
       Channels:
-        Type loadDimmer : loadDimmer [dimmermax=60]
+        Type legacyLoadDimmer : loadDimmer [dimmermax=60]
     }
   }
   ```
@@ -782,10 +783,10 @@ end
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
     Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.15"] {
       Channels:
-        Type keypadButtonA : keypadButtonA [ group="0xf3" ]
-        Type keypadButtonB : keypadButtonB [ group="0xf4" ]
-        Type keypadButtonC : keypadButtonC [ group="0xf5" ]
-        Type keypadButtonD : keypadButtonD [ group="0xf6" ]
+        Type legacyKeypadButtonA : keypadButtonA [ group="0xf3" ]
+        Type legacyKeypadButtonB : keypadButtonB [ group="0xf4" ]
+        Type legacyKeypadButtonC : keypadButtonC [ group="0xf5" ]
+        Type legacyKeypadButtonD : keypadButtonD [ group="0xf6" ]
     }
   }
   ```
@@ -1324,7 +1325,7 @@ An `ON` state indicates that all the device states associated to a scene are mat
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
     Thing device AABBCC             [address="AA.BB.CC", productKey="0x000045"] {
       Channels:
-        Type broadcastOnOff : broadcastOnOff#2
+        Type legacyBroadcastOnOff : broadcastOnOff#2
     }
   }
   ```
@@ -1426,11 +1427,11 @@ For scenes, these will be polled based on the modem database, after sending a gr
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
     Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.11"] {
       Channels:
-        Type dimmer : dimmer [related="AA.BB.DD"]
+        Type legacyDimmer : dimmer [related="AA.BB.DD"]
     }
     Thing device AABBDD [address="AA.BB.DD", productKey="F00.00.11"] {
       Channels:
-        Type dimmer : dimmer [related="AA.BB.CC"]
+        Type legacyDimmer : dimmer [related="AA.BB.CC"]
     }
   }
   ```
@@ -1444,7 +1445,7 @@ For scenes, these will be polled based on the modem database, after sending a gr
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
     Thing device AABBCC [address="AA.BB.CC", productKey="0x000045"] {
       Channels:
-        Type broadcastOnOff : broadcastOnOff#3 [related="AA.BB.DD+AA.BB.EE"]
+        Type legacyBroadcastOnOff : broadcastOnOff#3 [related="AA.BB.DD+AA.BB.EE"]
     }
     Thing device AABBDD [address="AA.BB.DD", productKey="F00.00.11"]
     Thing device AABBEE [address="AA.BB.EE", productKey="F00.00.11"]
