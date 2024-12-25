@@ -59,12 +59,15 @@ public class InsteonLegacyDiscoveryService extends AbstractDiscoveryService {
             ThingUID bridgeUID = handler.getThing().getUID();
             String id = address.toString().replace(".", "");
             ThingUID thingUID = new ThingUID(THING_TYPE_LEGACY_DEVICE, bridgeUID, id);
+            ThingUID oldThingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID, id);
             String label = "Insteon Device (Legacy) " + address;
             Map<String, Object> properties = new HashMap<>();
             properties.put(PROPERTY_DEVICE_ADDRESS, address.toString());
 
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
                     .withProperties(properties).withRepresentationProperty(PROPERTY_DEVICE_ADDRESS).build());
+
+            thingRemoved(oldThingUID);
 
             logger.debug("added Insteon device {} to inbox", address);
         }
