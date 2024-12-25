@@ -313,6 +313,8 @@ public class ValueTests {
         assertThat(v.parseCommand(new DecimalType(10.0)), is(PercentType.ZERO));
         assertThat(v.getMQTTpublishValue(PercentType.ZERO, null), is("10"));
 
+        v.update(OnOffType.OFF);
+
         assertThat(v.parseCommand(OnOffType.ON), is(OnOffType.ON));
         assertThat(v.getMQTTpublishValue(OnOffType.ON, null), is("110"));
         assertThat(v.parseCommand(OnOffType.OFF), is(OnOffType.OFF));
