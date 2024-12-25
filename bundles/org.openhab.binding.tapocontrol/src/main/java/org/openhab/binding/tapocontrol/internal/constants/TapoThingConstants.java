@@ -65,7 +65,7 @@ public class TapoThingConstants {
     public static final String DEVICE_DESCRIPTION_SMART_CONTACT = "Smart-Contact-Sensor";
     public static final String DEVICE_DESCRIPTION_MOTION_SENSOR = "Motion-Sensor";
     public static final String DEVICE_DESCRIPTION_TEMP_SENSOR = "Temperature-Sensor";
-    public static final String DEVICE_DESCRIPTION_SMART_SWITCH = "Smart Switch";
+    public static final String DEVICE_DESCRIPTION_SMART_SWITCH = "Smart-Switch";
 
     /*** LIST OF SUPPORTED THING UIDS ***/
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_BRIDGE);
