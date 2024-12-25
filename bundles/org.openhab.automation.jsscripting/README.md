@@ -800,6 +800,13 @@ actions.notificationBuilder('Hello World!').logOnly().send();
 // Sends a simple log notification with icon and tag
 actions.notificationBuilder('Hello World!').logOnly()
   .withIcon('f7:bell_fill').withTag('important').send();
+
+//sends a notification about a temperature change...
+actions.notificationBuilder(str).withIcon("oh:temperature").withTag("Temperature change").withReferenceId("living room").send();
+//and clears it again after 10 minutes
+setTimeout(() => {
+  actions.notificationBuilder().withReferenceId("living room").hide().send();
+}, 10 * 60 * 1000);
 ```
 
 See [openhab-js : actions.NotificationBuilder](https://openhab.github.io/openhab-js/actions.html#.notificationBuilder) for complete documentation.
