@@ -27,7 +27,7 @@ public class VehicleData {
     @SerializedName("id")
     public Long id;
     @SerializedName("user_id")
-    public int userId;
+    public Long userId;
     @SerializedName("vehicle_id")
     public String vehicleId;
     @SerializedName("vin")
