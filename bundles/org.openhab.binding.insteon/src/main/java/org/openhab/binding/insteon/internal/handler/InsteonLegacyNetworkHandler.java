@@ -28,10 +28,10 @@ import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfigura
 import org.openhab.binding.insteon.internal.device.DeviceAddress;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.discovery.InsteonLegacyDiscoveryService;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingManager;
@@ -74,7 +74,7 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
     private ThingRegistry thingRegistry;
     private Map<String, String> deviceInfo = new ConcurrentHashMap<>();
     private Map<String, String> channelInfo = new ConcurrentHashMap<>();
-    private Map<ChannelUID, Configuration> channelConfigs = new ConcurrentHashMap<>();
+    private Map<ChannelUID, Channel> channelCache = new ConcurrentHashMap<>();
 
     public InsteonLegacyNetworkHandler(Bridge bridge, HttpClient httpClient, SerialPortManager serialPortManager,
             ThingManager thingManager, ThingRegistry thingRegistry) {
@@ -318,12 +318,17 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
         channelInfo.remove(uid.getAsString());
     }
 
-    public Configuration getChannelConfig(ChannelUID channelUID) {
-        return channelConfigs.getOrDefault(channelUID, new Configuration());
+    public List<Channel> getCachedChannels(ThingUID thingUID) {
+        return channelCache.values().stream().filter(channel -> channel.getUID().getThingUID().equals(thingUID))
+                .toList();
     }
 
-    public void addChannelConfigs(Map<ChannelUID, Configuration> channelConfigs) {
-        this.channelConfigs.putAll(channelConfigs);
+    public @Nullable Channel pollCachedChannel(ChannelUID channelUID) {
+        return channelCache.remove(channelUID);
+    }
+
+    public void cacheChannel(Channel channel) {
+        channelCache.put(channel.getUID(), channel);
     }
 
     private void display(Console console, Map<String, String> info) {
