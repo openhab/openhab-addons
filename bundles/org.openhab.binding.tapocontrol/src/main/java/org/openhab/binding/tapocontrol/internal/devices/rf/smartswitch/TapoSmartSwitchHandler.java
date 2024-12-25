@@ -66,12 +66,8 @@ public class TapoSmartSwitchHandler extends TapoChildDeviceHandler {
         /* perform actions */
         if (command instanceof RefreshType) {
             setDeviceData();
-        } else if (command instanceof OnOffType) {
-            if (command == OnOffType.ON) {
-                deviceInfo.setDeviceOn(true);
-            } else {
-                deviceInfo.setDeviceOn(false);
-            }
+        } else if (command instanceof OnOffType onOffCommand) {
+            deviceInfo.setDeviceOn(OnOffType.ON.equals(onOffCommand));
 
             hub.sendCommandToChild(deviceInfo);
         } else {
