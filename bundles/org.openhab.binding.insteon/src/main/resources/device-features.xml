@@ -180,7 +180,6 @@
 		<message-handler command="0x19">TriggerPollMsgHandler</message-handler> <!-- poll after cmd request reply ack -->
 		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData8">CustomPercentMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
-		<command-handler command="OnOffType" ext="1" cmd1="0x2E" d2="0x06" field="userData3">CustomOnOffCommandHandler</command-handler>
 		<command-handler command="PercentType" ext="1" cmd1="0x2E" d2="0x06" field="userData3">CustomPercentCommandHandler</command-handler>
 		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
 		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
