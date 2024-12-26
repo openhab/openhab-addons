@@ -332,6 +332,8 @@
 		<item-type>Dimmer</item-type>
 		<label>LED Brightness Level</label>
 		<description>Set the device led(s) brightness level.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
+		<config-description-ref uri="channel-type:insteon:led-brightness"/>
 	</channel-type>
 
 	<channel-type id="led-on-off" advanced="true">
