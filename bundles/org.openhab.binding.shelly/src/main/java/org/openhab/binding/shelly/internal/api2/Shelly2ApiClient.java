@@ -62,6 +62,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm1Data;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusHumidity;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusIlluminance;
@@ -69,10 +70,10 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusSmoke;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusTempId;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2StatusEm1;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2StatusEm1;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
@@ -194,8 +195,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         updated |= updateRelayStatus(status, result.switch100, channelUpdate);
         updated |= updateRelayStatus(status, result.pm10, channelUpdate);
         updated |= updateEmStatus(status, result.em0, result.emdata0, channelUpdate);
-        updated |= updateEmStatus(status, result.em10, channelUpdate);
-        updated |= updateEmStatus(status, result.em11, channelUpdate);
+        updated |= updateEmStatus(status, result.em10, result.em1data0, channelUpdate);
+        updated |= updateEmStatus(status, result.em11, result.em1data1, channelUpdate);
         updated |= updateRollerStatus(status, result.cover0, channelUpdate);
         updated |= updateDimmerStatus(status, result.light0, channelUpdate);
         updated |= updateRGBWStatus(status, result.rgbw0, channelUpdate);
@@ -327,9 +328,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         relayStatus.meters.set(id, sm);
     }
 
-    private boolean updateEmStatus(ShellySettingsStatus status, @Nullable Shelly2StatusEm1 em, boolean channelUpdate)
-            throws ShellyApiException {
-        if (em == null) {
+    private boolean updateEmStatus(ShellySettingsStatus status, @Nullable Shelly2StatusEm1 em,
+            @Nullable Shelly2DeviceStatusEm1Data em1Data, boolean channelUpdate) throws ShellyApiException {
+        if (em == null || em1Data == null) {
             return false;
         }
 
@@ -337,9 +338,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         ShellySettingsEMeter emeter = status.emeters.get(em.id);
         if (em.actPower != null) {
             sm.power = emeter.power = em.actPower;
-        }
-        if (em.aptrPower != null) {
-            emeter.totalReturned = em.aptrPower;
         }
         if (em.voltage != null) {
             emeter.voltage = em.voltage;
@@ -369,9 +367,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (em.totalActPower != null) {
             status.totalPower = em.totalActPower;
         }
-        if (em.totalAprtPower != null) {
-            status.totalReturned = em.totalAprtPower;
-        }
 
         if (emData.totalKWH != null) {
             status.totalKWH = emData.totalKWH;
@@ -384,9 +379,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
         if (emData.aTotal != null) {
             emeter.total = emData.aTotal;
-        }
-        if (em.aAprtPower != null) {
-            emeter.totalReturned = em.aAprtPower;
         }
         if (em.aVoltage != null) {
             emeter.voltage = em.aVoltage;
@@ -410,9 +402,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             if (emData.bTotal != null) {
                 emeter.total = emData.bTotal;
             }
-            if (em.bAprtPower != null) {
-                emeter.totalReturned = em.bAprtPower;
-            }
             if (em.bVoltage != null) {
                 emeter.voltage = em.bVoltage;
             }
@@ -435,9 +424,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             }
             if (emData.cTotal != null) {
                 emeter.total = emData.cTotal;
-            }
-            if (em.cAprtPower != null) {
-                emeter.totalReturned = em.cAprtPower;
             }
             if (em.cVoltage != null) {
                 emeter.voltage = em.cVoltage;
