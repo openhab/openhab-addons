@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gemini"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="account" extensible="chat">
+
+		<label>Gemini Binding Thing</label>
+		<description>Sample thing for Gemini Binding</description>
+
+		<channels>
+			<channel id="chat" typeId="chat"/>
+		</channels>
+
+		<config-description>
+			<parameter name="keyFile" type="text">
+				<label>Google service account key file (json)</label>
+				<description>Service account key file exported from cloud management console.</description>
+			</parameter>
+
+
+			<parameter name="location" type="text" required="true">
+				<label>Server location</label>
+				<description>Gemini is available in the following regions, see also
+					https://cloud.google.com/vertex-ai/generative-ai/docs/learn/locations</description>
+				<default>europe-west3</default>
+				<limitToOptions>false</limitToOptions>
+				<options>
+					<option value="asia-east1">Taiwan</option>
+					<option value="asia-east2">Hong-Kong</option>
+					<option value="asia-northeast1">Japan</option>
+					<option value="asia-northeast3">Korea</option>
+					<option value="asia-south1">India</option>
+					<option value="asia-southeast1">Singapore</option>
+					<option value="australia-southeast1"></option>
+					<option value="europe-central2">Poland</option>
+					<option value="europe-north1">Finland</option>
+					<option value="europe-southwest1">Spain</option>
+					<option value="europe-west1">Belgium</option>
+					<option value="europe-west2">United Kingdom</option>
+					<option value="europe-west3">Germany</option>
+					<option value="europe-west4">Netherlands</option>
+					<option value="europe-west6">Switzerland</option>
+					<option value="europe-west8">Italy</option>
+					<option value="europe-west9">Paris</option>
+					<option value="me-west1">Israel</option>
+					<option value="northamerica-northeast1">Canada</option>
+					<option value="southamerica-east1">Brazil</option>
+					<option value="us-central1">Iowa</option>
+					<option value="us-east1">South Carolina</option>
+					<option value="us-east4">Virginia</option>
+					<option value="us-south1">Texas</option>
+					<option value="us-west1">Oregon</option>
+					<option value="us-west4">Las Vegas</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="chat">
+		<item-type>String</item-type>
+		<label>Chat</label>
+		<description>A chat session</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="model" type="text">
+				<label>Model</label>
+				<description>The model to be used for the responses</description>
+				<limitToOptions>false</limitToOptions>
+				<default>gemini-pro-vision</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+</thing:thing-descriptions>
