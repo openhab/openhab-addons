@@ -37,7 +37,6 @@ import org.openhab.binding.gce.internal.config.RelayOutputConfiguration;
 import org.openhab.binding.gce.internal.model.PortData;
 import org.openhab.binding.gce.internal.model.PortDefinition;
 import org.openhab.binding.gce.internal.model.StatusFile;
-import org.openhab.binding.gce.internal.model.StatusFileAccessor;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
@@ -61,7 +60,6 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -76,12 +74,10 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     private static final double ANALOG_SAMPLING = 0.000050354;
 
     private final Logger logger = LoggerFactory.getLogger(Ipx800v3Handler.class);
-
-    private Optional<Ipx800DeviceConnector> connector = Optional.empty();
-    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-    private Optional<StatusFileAccessor> statusConnector = Optional.empty();
-
     private final Map<String, PortData> portDatas = new HashMap<>();
+
+    private @Nullable Ipx800DeviceConnector deviceConnector;
+    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
     private class LongPressEvaluator implements Runnable {
         private final Instant referenceTime;
@@ -114,9 +110,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
         Ipx800Configuration config = getConfigAs(Ipx800Configuration.class);
 
-        statusConnector = Optional.of(new StatusFileAccessor(config.hostname));
-        connector = Optional
-                .of(new Ipx800DeviceConnector(config.hostname, config.portNumber, getThing().getUID(), this));
+        deviceConnector = new Ipx800DeviceConnector(config.hostname, config.portNumber, getThing().getUID(), this);
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -125,32 +119,42 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     }
 
     private void readStatusFile() {
-        StatusFile status = null;
-        try {
-            status = statusConnector.get().read();
-            for (PortDefinition portDefinition : PortDefinition.values()) {
-                List<Node> nodes = status.getMatchingNodes(portDefinition.nodeName);
-                nodes.forEach(node -> {
-                    String sPortNum = node.getNodeName().replace(portDefinition.nodeName, "");
-                    int portNum = Integer.parseInt(sPortNum) + 1;
-                    double value = Double.parseDouble(node.getTextContent().replace("dn", "1").replace("up", "0"));
-                    dataReceived("%s%d".formatted(portDefinition.portName, portNum), value);
-                });
+        if (deviceConnector instanceof Ipx800DeviceConnector connector) {
+            StatusFile status = null;
+            try {
+                status = connector.readStatusFile();
+            } catch (SAXException | IOException e) {
+                logger.warn("Unable to read status file for {}", thing.getUID());
             }
-        } catch (SAXException | IOException e) {
-            logger.warn("Unable to read status file for {}", thing.getUID());
-        }
 
-        if (Thread.State.NEW.equals(connector.get().getState())) {
-            setProperties(status);
-            updateChannels(status);
-            connector.get().start();
+            if (Thread.State.NEW.equals(connector.getState())) {
+                setProperties(status);
+                updateChannels(status);
+                connector.start();
+            }
+
+            if (status != null) {
+                for (PortDefinition portDefinition : PortDefinition.values()) {
+                    status.getMatchingNodes(portDefinition.nodeName).forEach(node -> {
+                        String sPortNum = node.getNodeName().replace(portDefinition.nodeName, "");
+                        try {
+                            int portNum = Integer.parseInt(sPortNum) + 1;
+                            double value = Double
+                                    .parseDouble(node.getTextContent().replace("dn", "1").replace("up", "0"));
+                            dataReceived("%s%d".formatted(portDefinition.portName, portNum), value);
+                        } catch (NumberFormatException e) {
+                            logger.warn(e.getMessage());
+                        }
+                    });
+                }
+            }
+
         }
     }
 
     private void updateChannels(@Nullable StatusFile status) {
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
-        PortDefinition.AS_STREAM.forEach(portDefinition -> {
+        PortDefinition.AS_SET.forEach(portDefinition -> {
             int nbElements = status != null ? status.getMaxNumberofNodeType(portDefinition) : portDefinition.quantity;
             for (int i = 0; i < nbElements; i++) {
                 ChannelUID portChannelUID = createChannels(portDefinition, i, channels);
@@ -161,7 +165,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     }
 
     private void setProperties(@Nullable StatusFile status) {
-        Map<String, String> properties = thing.getProperties();
+        Map<String, String> properties = new HashMap<>(thing.getProperties());
         properties.put(Thing.PROPERTY_VENDOR, "GCE Electronics");
         if (status != null) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, status.getVersion());
@@ -175,13 +179,13 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         refreshJob.ifPresent(job -> job.cancel(true));
         refreshJob = Optional.empty();
 
-        connector.ifPresent(Ipx800DeviceConnector::dispose);
-        connector = Optional.empty();
+        if (deviceConnector instanceof Ipx800DeviceConnector connector) {
+            connector.dispose();
+            connector = null;
+        }
 
         portDatas.values().stream().forEach(PortData::dispose);
         portDatas.clear();
-
-        statusConnector = Optional.empty();
 
         super.dispose();
     }
@@ -357,10 +361,11 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
             return;
         }
         if (command instanceof OnOffType onOffCommand && isValidPortId(channelUID)
-                && PortDefinition.fromGroupId(groupId) == PortDefinition.RELAY) {
+                && PortDefinition.fromGroupId(groupId) == PortDefinition.RELAY
+                && deviceConnector instanceof Ipx800DeviceConnector connector) {
             RelayOutputConfiguration config = channel.getConfiguration().as(RelayOutputConfiguration.class);
             String id = channelUID.getIdWithoutGroup();
-            connector.ifPresent(p -> p.getParser().setOutput(id, onOffCommand == OnOffType.ON ? 1 : 0, config.pulse));
+            connector.getParser().setOutput(id, onOffCommand == OnOffType.ON ? 1 : 0, config.pulse);
             return;
         }
         logger.debug("Can not handle command '{}' on channel '{}'", command, channelUID);
@@ -371,11 +376,15 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     }
 
     public void resetCounter(int counter) {
-        connector.ifPresent(p -> p.getParser().resetCounter(counter));
+        if (deviceConnector instanceof Ipx800DeviceConnector connector) {
+            connector.getParser().resetCounter(counter);
+        }
     }
 
     public void reset() {
-        connector.ifPresent(p -> p.getParser().resetPLC());
+        if (deviceConnector instanceof Ipx800DeviceConnector connector) {
+            connector.getParser().resetPLC();
+        }
     }
 
     @Override

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.gce.internal.model;
 
-import java.util.stream.Stream;
+import java.util.EnumSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -41,7 +41,7 @@ public enum PortDefinition {
         this.quantity = quantity;
     }
 
-    public static final Stream<PortDefinition> AS_STREAM = Stream.of(PortDefinition.values());
+    public static final EnumSet<PortDefinition> AS_SET = EnumSet.allOf(PortDefinition.class);
 
     @Override
     public String toString() {
@@ -53,11 +53,11 @@ public enum PortDefinition {
     }
 
     public static PortDefinition fromM2MCommand(String m2mCommand) {
-        return AS_STREAM.filter(v -> m2mCommand.startsWith(v.m2mCommand)).findFirst().get();
+        return AS_SET.stream().filter(v -> m2mCommand.startsWith(v.m2mCommand)).findFirst().get();
     }
 
     public static PortDefinition fromPortName(String portName) {
-        return AS_STREAM.filter(v -> portName.startsWith(v.portName)).findFirst().get();
+        return AS_SET.stream().filter(v -> portName.startsWith(v.portName)).findFirst().get();
     }
 
     public static PortDefinition fromGroupId(String groupId) {
@@ -66,7 +66,7 @@ public enum PortDefinition {
 
     public static String asChannelId(String portDefinition) {
         String portKind = portDefinition.substring(0, 1);
-        PortDefinition result = AS_STREAM.filter(v -> v.portName.startsWith(portKind)).findFirst().get();
+        PortDefinition result = AS_SET.stream().filter(v -> v.portName.equals(portKind)).findFirst().get();
         return "%s#%s".formatted(result.toString(), portDefinition.substring(1));
     }
 }
