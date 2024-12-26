@@ -1,7 +1,16 @@
 #!/usr/bin/bash
 clear
 
-CLI=2.2.1
+# if [ ! -d "swagger-codegen" ]; then
+#   echo "⏬ - Pull swagger-codegen repository"
+#   git clone https://github.com/swagger-api/swagger-codegen
+  
+#   cd swagger-codegen
+  
+#   echo "⚙️ - Create swagger-codegen package"
+#   mvn clean package
+#   cd ..
+# fi
 
 VERSION=$(curl -sL https://repo.jellyfin.org/releases/openapi/jellyfin-openapi-stable.json | jq -r .info.version)
 
@@ -17,23 +26,23 @@ if [ ! -e "${FILENAME}" ]; then
         https://repo.jellyfin.org/releases/openapi/jellyfin-openapi-stable.json
 fi
 
+yq -p json -o yaml $FILENAME > jellyfin-openapi-$VERSION.yaml
 
-# http://nuc.ehrendingen:8096/api-docs/openapi.json
-# OPENAPI=openapi-jellyfin-10.10.3.json
+#PREPROCESSED="./jellyfin-openapi-$VERSION-preprocessed.json"
 
-# library
-#     library template (sub-template) to use:
-#     jersey1 - HTTP client: Jersey client 1.18. JSON processing: Jackson 2.4.2
-#     jersey2 - HTTP client: Jersey client 2.6
-#     feign - HTTP client: Netflix Feign 8.1.1.  JSON processing: Jackson 2.6.3
-#     okhttp-gson (default) - HTTP client: OkHttp 2.4.0. JSON processing: Gson 2.3.1
-#     retrofit - HTTP client: OkHttp 2.4.0. JSON processing: Gson 2.3.1 (Retrofit 1.9.0)
-#     retrofit2 - HTTP client: OkHttp 2.5.0. JSON processing: Gson 2.4 (Retrofit 2.0.0-beta2)
-#     google-api-client - HTTP client: google-api-client 1.23.0. JSON processing: Jackson 2.8.9
-#     rest-assured - HTTP client: rest-assured : 3.1.0. JSON processing: Gson 2.6.1. Only for Java8
+# rm -f $PREPROCESSED
+# cp $FILENAME $PREPROCESSED
+# node scripts/modify-schema.mjs $PREPROCESSED
 
-# java -Xmx8G -jar swagger-codegen-cli-${CLI}.jar generate \ 
-#   -i $OPENAPI 
-#   -l java
-#   -c config.json
-#   -o ~Temp/jellyfin/api/$VERSION 
+# echo "⚙️  - generating code from $PREPROCESSED"
+
+# https://repo1.maven.org/maven2/io/swagger/swagger-codegen-cli/2.4.43/swagger-codegen-cli-2.4.43.jar
+# java -Xmx8G -jar swagger-codegen-cli-${CLI}.jar config-help -l java
+# export JAVA_OPTS="${JAVA_OPTS} -XX:MaxPermSize=256M -Xmx1024M -DloggerPath=conf/log4j.properties"
+
+# java -Xmx8G -jar swagger-codegen-cli-${CLI}.jar generate \
+# java -jar swagger-codegen-cli-${CLI}.jar generate \
+#     --verbose \
+#     --lang java \
+#     --config config.json \
+#     --input-spec ${PREPROCESSED}
