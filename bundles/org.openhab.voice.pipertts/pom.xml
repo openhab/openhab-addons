@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.voice.pipertts</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: PiperTTS Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Voice :: Piper Text-to-Speech</name>
 
   <dependencies>
     <dependency>
