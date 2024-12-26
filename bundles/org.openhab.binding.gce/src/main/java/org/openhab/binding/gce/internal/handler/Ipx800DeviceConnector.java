@@ -22,9 +22,12 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.gce.internal.model.M2MMessageParser;
+import org.openhab.binding.gce.internal.model.StatusFile;
+import org.openhab.binding.gce.internal.model.StatusFileAccessor;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * The {@link Ipx800DeviceConnector} is responsible for connecting,
@@ -44,6 +47,7 @@ public class Ipx800DeviceConnector extends Thread {
     private final String hostname;
     private final int portNumber;
     private final M2MMessageParser messageParser;
+    private final StatusFileAccessor statusAccessor;
 
     private Optional<Socket> socket = Optional.empty();
     private Optional<BufferedReader> input = Optional.empty();
@@ -57,6 +61,7 @@ public class Ipx800DeviceConnector extends Thread {
         this.hostname = hostname;
         this.portNumber = portNumber;
         this.messageParser = new M2MMessageParser(this, listener);
+        this.statusAccessor = new StatusFileAccessor(hostname);
         setDaemon(true);
     }
 
@@ -186,5 +191,9 @@ public class Ipx800DeviceConnector extends Thread {
 
     public M2MMessageParser getParser() {
         return messageParser;
+    }
+
+    public StatusFile readStatusFile() throws SAXException, IOException {
+        return statusAccessor.read();
     }
 }
