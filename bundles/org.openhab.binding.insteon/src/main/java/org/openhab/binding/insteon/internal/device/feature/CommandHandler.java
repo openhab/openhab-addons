@@ -1460,8 +1460,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
         }
 
         private void setLEDOnOff(InsteonChannelConfiguration config, Command cmd) {
-            State state = getInsteonDevice().getFeatureState(FEATURE_LED_ON_OFF);
-            if (!((State) cmd).equals(state)) {
+            DeviceFeature feature = getInsteonDevice().getFeature(FEATURE_LED_ON_OFF);
+            if (feature != null) {
                 feature.handleCommand(config, cmd);
             }
         }
@@ -2187,8 +2187,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
         }
 
         private void setLEDControl(InsteonChannelConfiguration config) {
-            State state = getInsteonModem().getFeatureState(FEATURE_LED_CONTROL);
-            if (!OnOffType.ON.equals(state)) {
+            DeviceFeature feature = getInsteonModem().getFeature(FEATURE_LED_CONTROL);
+            if (feature != null) {
                 feature.handleCommand(config, OnOffType.ON);
             }
         }
