@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.mail.internal;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,8 +32,8 @@ public class MailBindingConstants {
     public static final ThingTypeUID THING_TYPE_IMAPSERVER = new ThingTypeUID(BINDING_ID, "imap");
     public static final ThingTypeUID THING_TYPE_POP3SERVER = new ThingTypeUID(BINDING_ID, "pop3");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_SMTPSERVER, THING_TYPE_IMAPSERVER, THING_TYPE_POP3SERVER));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SMTPSERVER, THING_TYPE_IMAPSERVER,
+            THING_TYPE_POP3SERVER);
 
     public static final ChannelTypeUID CHANNEL_TYPE_UID_FOLDER_MAILCOUNT = new ChannelTypeUID(BINDING_ID, "mailcount");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_MAIL_CONTENT = new ChannelTypeUID(BINDING_ID, "content");
