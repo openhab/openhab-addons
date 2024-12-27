@@ -10,18 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sbus.handler;
+package org.openhab.binding.sbus.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import ro.ciprianpascu.sbus.Sbus;
+
 /**
- * Signals that {@link ModbusEndpointThingHandler} is not properly initialized yet, and the requested operation cannot
- * be completed.
+ * The {@link SbusBridgeConfig} class contains fields mapping bridge configuration parameters.
  *
  * @author Ciprian Pascu - Initial contribution
  */
 @NonNullByDefault
-public class EndpointNotInitializedException extends Exception {
+public class SbusBridgeConfig {
+    /**
+     * The host address of the SBUS bridge
+     */
+    public String host = "";
 
-    private static final long serialVersionUID = -6721646244844348903L;
+    /**
+     * The port number for SBUS communication
+     */
+    public int port = Sbus.DEFAULT_PORT;
 }

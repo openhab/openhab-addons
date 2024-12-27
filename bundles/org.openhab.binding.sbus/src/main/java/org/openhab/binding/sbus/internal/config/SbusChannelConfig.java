@@ -10,19 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sbus;
+package org.openhab.binding.sbus.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ModbusBindingConstants} class defines some constants
- * public that might be used from other bundles as well.
+ * The {@link SbusChannelConfig} class contains fields mapping channel configuration parameters.
  *
  * @author Ciprian Pascu - Initial contribution
- * @author Nagy Attila Gabor - Split the original ModbusBindingConstants in two
  */
 @NonNullByDefault
-public class ModbusBindingConstants {
-
-    public static final String BINDING_ID = "sbus";
+public class SbusChannelConfig {
+    /**
+     * The physical channel number on the SBUS device
+     */
+    public int channelNumber;
 }

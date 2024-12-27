@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 	https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="profile:modbus:gainOffset">
+	<config-description uri="profile:sbus:gainOffset">
 		<parameter name="pre-gain-offset" type="decimal">
 			<label>Pre-gain Offset</label>
 			<description>Offset to add to raw value towards the item (before the gain). The negative

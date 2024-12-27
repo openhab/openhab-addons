@@ -7,11 +7,69 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.sbus</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: S-Bus Binding</name>
+  <name>openHAB Add-ons :: Bundles :: SBUS Binding</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>ro.ciprianpascu</groupId>
+      <artifactId>j2sbus</artifactId>
+      <version>1.5.3-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>embed-dependencies</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>j2sbus</includeArtifactIds>
+              <outputDirectory>${project.build.directory}/classes</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>biz.aQute.bnd</groupId>
+        <artifactId>bnd-maven-plugin</artifactId>
+        <configuration>
+          <bnd><![CDATA[
+            Bundle-SymbolicName: ${project.artifactId}
+            Bundle-Version: ${project.version}
+            Import-Package: \
+              !ro.ciprianpascu.*, \
+              org.openhab.core.*, \
+              org.eclipse.jdt.annotation;resolution:=optional, \
+              *
+            Private-Package: \
+              ro.ciprianpascu.sbus.*
+            -exportcontents: org.openhab.binding.sbus.*
+            -dsannotations: *
+            -dsannotations-options: norequirements
+            -noimportjava: true
+          ]]></bnd>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>bnd-process</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
