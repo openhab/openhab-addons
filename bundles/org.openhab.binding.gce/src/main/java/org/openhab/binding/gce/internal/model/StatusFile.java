@@ -59,7 +59,7 @@ public class StatusFile {
                         result.put(Integer.parseInt(node.getNodeName().replace(searched, "")) + 1,
                                 Double.parseDouble(node.getTextContent().replace("dn", "1").replace("up", "0")));
                     } catch (NumberFormatException e) {
-                        logger.warn(e.getMessage());
+                        logger.warn("{}", e.getMessage());
                     }
                 });
         return result;

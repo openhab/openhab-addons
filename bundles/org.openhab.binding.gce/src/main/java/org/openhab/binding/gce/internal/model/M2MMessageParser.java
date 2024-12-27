@@ -43,7 +43,7 @@ public class M2MMessageParser {
     public void unsolicitedUpdate(String data) {
         if ("OK".equals(data)) { // If OK, do nothing special
         } else if ("? Bad command".equals(data)) {
-            logger.warn(data);
+            logger.warn("{}", data);
         } else if (IO_PATTERN.matcher(data).matches()) {
             PortDefinition portDefinition = PortDefinition.fromM2MCommand(expectedResponse);
             decodeDataLine(portDefinition, data);
