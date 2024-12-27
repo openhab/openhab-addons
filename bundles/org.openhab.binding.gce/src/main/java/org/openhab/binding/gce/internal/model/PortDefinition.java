@@ -34,7 +34,7 @@ public enum PortDefinition {
     public final String m2mCommand; // associated M2M command
     public final int quantity; // base number of ports
 
-    PortDefinition(String nodeName, String portName, String m2mCommand, int quantity) {
+    private PortDefinition(String nodeName, String portName, String m2mCommand, int quantity) {
         this.nodeName = nodeName;
         this.portName = portName;
         this.m2mCommand = m2mCommand;

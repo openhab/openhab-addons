@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.gce.internal.model;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -29,12 +30,14 @@ import org.w3c.dom.NodeList;
  */
 @NonNullByDefault
 public class StatusFile {
-
+    private final Logger logger = LoggerFactory.getLogger(StatusFile.class);
     private final Element root;
+    private final NodeList childs;
 
     public StatusFile(Document doc) {
         this.root = doc.getDocumentElement();
         root.normalize();
+        this.childs = root.getChildNodes();
     }
 
     public String getMac() {
@@ -45,14 +48,20 @@ public class StatusFile {
         return root.getElementsByTagName("version").item(0).getTextContent();
     }
 
-    public List<Node> getMatchingNodes(String criteria) {
-        NodeList nodeList = root.getChildNodes();
-        return IntStream.range(0, nodeList.getLength()).boxed().map(nodeList::item)
-                .filter(node -> node.getNodeName().startsWith(criteria)).sorted(Comparator.comparing(Node::getNodeName))
-                .toList();
-    }
+    public Map<Integer, Double> getPorts(PortDefinition portDefinition) {
+        Map<Integer, Double> result = new HashMap<>();
 
-    public int getMaxNumberofNodeType(PortDefinition portDefinition) {
-        return getMatchingNodes(portDefinition.nodeName).size();
+        String searched = portDefinition.nodeName;
+
+        IntStream.range(0, childs.getLength()).boxed().map(childs::item)
+                .filter(node -> node.getNodeName().startsWith(searched)).forEach(node -> {
+                    try {
+                        result.put(Integer.parseInt(node.getNodeName().replace(searched, "")) + 1,
+                                Double.parseDouble(node.getTextContent().replace("dn", "1").replace("up", "0")));
+                    } catch (NumberFormatException e) {
+                        logger.warn(e.getMessage());
+                    }
+                });
+        return result;
     }
 }

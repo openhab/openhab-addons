@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.xml.sax.SAXException;
 
 /**
- * This class takes care of interpreting the status.xml file
+ * This class takes care of providing the IPX status file
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -34,7 +34,7 @@ public class StatusFileAccessor {
     private final String url;
 
     public StatusFileAccessor(String hostname) {
-        this.url = String.format(URL_TEMPLATE, hostname);
+        this.url = URL_TEMPLATE.formatted(hostname);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setXIncludeAware(false);
         factory.setExpandEntityReferences(false);
@@ -45,12 +45,11 @@ public class StatusFileAccessor {
             factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            throw new IllegalArgumentException("Error initializing StatusFileInterpreter", e);
+            throw new IllegalArgumentException("Error initializing StatusFileAccessor", e);
         }
     }
 
     public StatusFile read() throws SAXException, IOException {
-        StatusFile document = new StatusFile(builder.parse(url));
-        return document;
+        return new StatusFile(builder.parse(url));
     }
 }

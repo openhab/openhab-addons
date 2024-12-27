@@ -13,10 +13,10 @@
 package org.openhab.binding.gce.internal.model;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link PortData} is responsible for holding data regarding current status of a port.
@@ -27,15 +27,27 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class PortData {
     private double value = -1;
     private Instant timestamp = Instant.now();
-    private Optional<ScheduledFuture<?>> pulsing = Optional.empty();
+    private @Nullable ScheduledFuture<?> pulsing;
+    private @Nullable ScheduledFuture<?> pulseCanceler;
 
     public void cancelPulsing() {
-        pulsing.ifPresent(pulse -> pulse.cancel(true));
-        pulsing = Optional.empty();
+        if (pulsing instanceof ScheduledFuture job) {
+            job.cancel(true);
+            pulsing = null;
+        }
+        cancelCanceler();
+    }
+
+    public void cancelCanceler() {
+        if (pulseCanceler instanceof ScheduledFuture job) {
+            job.cancel(true);
+            pulseCanceler = null;
+        }
     }
 
     public void dispose() {
         cancelPulsing();
+        cancelCanceler();
     }
 
     public void setData(double value, Instant timestamp) {
@@ -53,10 +65,14 @@ public class PortData {
 
     public void setPulsing(ScheduledFuture<?> pulsing) {
         cancelPulsing();
-        this.pulsing = Optional.of(pulsing);
+        this.pulsing = pulsing;
     }
 
-    public boolean isInitializing() {
-        return value == -1;
+    public boolean isInitialized() {
+        return value != -1;
+    }
+
+    public void setPulseCanceler(ScheduledFuture<?> pulseCanceler) {
+        this.pulseCanceler = pulseCanceler;
     }
 }

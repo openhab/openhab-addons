@@ -17,11 +17,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Optional;
+import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.gce.internal.model.M2MMessageParser;
+import org.openhab.binding.gce.internal.model.PortDefinition;
 import org.openhab.binding.gce.internal.model.StatusFile;
 import org.openhab.binding.gce.internal.model.StatusFileAccessor;
 import org.openhab.core.thing.ThingUID;
@@ -38,16 +41,18 @@ import org.xml.sax.SAXException;
  */
 @NonNullByDefault
 public class Ipx800DeviceConnector extends Thread {
-    private static final int DEFAULT_SOCKET_TIMEOUT_MS = 5000;
+    private static final int DEFAULT_SOCKET_TIMEOUT_MS = 10000;
     private static final int DEFAULT_RECONNECT_TIMEOUT_MS = 5000;
     private static final int MAX_KEEPALIVE_FAILURE = 3;
-    private static final String ENDL = "\r\n";
 
     private final Logger logger = LoggerFactory.getLogger(Ipx800DeviceConnector.class);
+    private final Random randomizer = new Random();
+
     private final String hostname;
     private final int portNumber;
-    private final M2MMessageParser messageParser;
+    private final M2MMessageParser parser;
     private final StatusFileAccessor statusAccessor;
+    private final Ipx800EventListener listener;
 
     private Optional<Socket> socket = Optional.empty();
     private Optional<BufferedReader> input = Optional.empty();
@@ -60,17 +65,10 @@ public class Ipx800DeviceConnector extends Thread {
         super("OH-binding-" + uid);
         this.hostname = hostname;
         this.portNumber = portNumber;
-        this.messageParser = new M2MMessageParser(this, listener);
+        this.listener = listener;
+        this.parser = new M2MMessageParser(listener);
         this.statusAccessor = new StatusFileAccessor(hostname);
         setDaemon(true);
-    }
-
-    public synchronized void send(String message) {
-        output.ifPresentOrElse(out -> {
-            logger.debug("Sending '{}' to Ipx800", message);
-            out.write(message + ENDL);
-            out.flush();
-        }, () -> logger.warn("Trying to send '{}' while the output stream is closed.", message));
     }
 
     /**
@@ -84,39 +82,27 @@ public class Ipx800DeviceConnector extends Thread {
         logger.debug("Connecting to {}:{}...", hostname, portNumber);
         Socket socket = new Socket(hostname, portNumber);
         socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_MS);
-        socket.getInputStream().skip(socket.getInputStream().available());
+        // socket.getInputStream().skip(socket.getInputStream().available());
         this.socket = Optional.of(socket);
 
-        input = Optional.of(new BufferedReader(new InputStreamReader(socket.getInputStream())));
         output = Optional.of(new PrintWriter(socket.getOutputStream(), true));
+        input = Optional.of(new BufferedReader(new InputStreamReader(socket.getInputStream())));
     }
 
     /**
      * Disconnect the device
      */
     private void disconnect() {
-        logger.debug("Disconnecting");
-
-        input.ifPresent(in -> {
-            try {
-                in.close();
-            } catch (IOException ignore) {
-            }
-            input = Optional.empty();
-        });
-
-        output.ifPresent(PrintWriter::close);
-        output = Optional.empty();
-
         socket.ifPresent(client -> {
             try {
+                logger.debug("Closing socket");
                 client.close();
             } catch (IOException ignore) {
             }
             socket = Optional.empty();
+            input = Optional.empty();
+            output = Optional.empty();
         });
-
-        logger.debug("Disconnected");
     }
 
     /**
@@ -127,23 +113,35 @@ public class Ipx800DeviceConnector extends Thread {
         disconnect();
     }
 
+    public synchronized void send(String message) {
+        output.ifPresentOrElse(out -> {
+            logger.debug("Sending '{}' to Ipx800", message);
+            out.println(message);
+        }, () -> logger.warn("Unable to send '{}' when the output stream is closed.", message));
+    }
+
     /**
      * Send an arbitrary keepalive command which cause the IPX to send an update.
      * If we don't receive the update maxKeepAliveFailure time, the connection is closed and reopened
      */
     private void sendKeepalive() {
-        output.ifPresent(out -> {
+        output.ifPresentOrElse(out -> {
+            PortDefinition pd = PortDefinition.values()[randomizer.nextInt(PortDefinition.AS_SET.size())];
+            String command = "%s%d".formatted(pd.m2mCommand, randomizer.nextInt(pd.quantity) + 1);
+
             if (waitingKeepaliveResponse) {
                 failedKeepalive++;
-                logger.debug("Sending keepalive, attempt {}", failedKeepalive);
+                logger.debug("Sending keepalive {}, attempt {}", command, failedKeepalive);
             } else {
                 failedKeepalive = 0;
-                logger.debug("Sending keepalive");
+                logger.debug("Sending keepalive {}", command);
             }
-            out.println("GetIn01");
-            out.flush();
+
+            out.println(command);
+            parser.setExpectedResponse(command);
+
             waitingKeepaliveResponse = true;
-        });
+        }, () -> logger.warn("Unable to send keepAlive when the output stream is closed."));
     }
 
     @Override
@@ -160,7 +158,7 @@ public class Ipx800DeviceConnector extends Thread {
                     try {
                         String command = in.readLine();
                         waitingKeepaliveResponse = false;
-                        messageParser.unsolicitedUpdate(command);
+                        parser.unsolicitedUpdate(command);
                     } catch (IOException e) {
                         handleException(e);
                     }
@@ -182,18 +180,43 @@ public class Ipx800DeviceConnector extends Thread {
             if (e instanceof SocketTimeoutException) {
                 sendKeepalive();
                 return;
+            } else if (e instanceof SocketException) {
+                logger.debug("SocketException raised by streams while closing socket");
             } else if (e instanceof IOException) {
                 logger.warn("Communication error: '{}'. Will retry in {} ms", e, DEFAULT_RECONNECT_TIMEOUT_MS);
             }
-            messageParser.errorOccurred(e);
+            listener.errorOccurred(e);
         }
-    }
-
-    public M2MMessageParser getParser() {
-        return messageParser;
     }
 
     public StatusFile readStatusFile() throws SAXException, IOException {
         return statusAccessor.read();
     }
+
+    /**
+     * Set output of the device sending the corresponding command
+     *
+     * @param targetPort
+     * @param targetValue
+     */
+    public void setOutput(String targetPort, int targetValue, boolean pulse) {
+        logger.debug("Sending {} to {}", targetValue, targetPort);
+        String command = "Set%02d%s%s".formatted(Integer.parseInt(targetPort), targetValue, pulse ? "p" : "");
+        send(command);
+    }
+
+    /**
+     * Resets the counter value to 0
+     *
+     * @param targetCounter
+     */
+    public void resetCounter(int targetCounter) {
+        logger.debug("Resetting counter {} to 0", targetCounter);
+        send("ResetCount%d".formatted(targetCounter));
+    }
+
+    public void resetPLC() {
+        send("Reset");
+    }
+
 }
