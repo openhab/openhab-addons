@@ -136,7 +136,6 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                         (portNum, value) -> dataReceived("%s%d".formatted(portDefinition.portName, portNum), value)));
             }
         }
-
     }
 
     private void updateChannels(@Nullable StatusFile status) {
