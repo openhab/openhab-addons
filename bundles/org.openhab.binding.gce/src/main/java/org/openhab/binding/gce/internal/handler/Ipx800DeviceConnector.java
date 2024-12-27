@@ -218,5 +218,4 @@ public class Ipx800DeviceConnector extends Thread {
     public void resetPLC() {
         send("Reset");
     }
-
 }
