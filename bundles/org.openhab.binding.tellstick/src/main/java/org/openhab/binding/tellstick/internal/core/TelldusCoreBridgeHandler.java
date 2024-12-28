@@ -88,7 +88,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
         TelldusDeviceController deviceController = this.deviceController;
         if (deviceController != null) {
             deviceController.dispose();
-            deviceController = null;
+            this.deviceController = null;
         }
 
         TellstickEventHandler eventHandler = this.eventHandler;
