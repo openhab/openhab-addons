@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="blind">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Blind</label>
+		<description>Window or door blind</description>
+
+		<channels>
+			<channel id="blind-state" typeId="blind-state"/>
+			<channel id="blind-level" typeId="blind-dimmer"/>
+			<channel id="battery-level" typeId="system.battery-level">
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
+			</channel>
+			<channel id="custom-name" typeId="custom-name"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+</thing:thing-descriptions>
