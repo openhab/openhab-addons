@@ -468,7 +468,7 @@ public class CloudClient {
                     responseJson.put("id", requestId);
                     responseJson.put("headers", getJSONHeaders(response.getHeaders()));
                     responseJson.put("responseStatusCode", response.getStatus());
-                    responseJson.put("responseStatusText", "OK");
+                    responseJson.put("responseStatusText", response.getReason());
                     socket.emit("responseHeader", responseJson);
                     logger.trace("Sent headers to request {}", requestId);
                     logger.trace("{}", responseJson.toString());
