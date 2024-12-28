@@ -29,4 +29,13 @@ public class ApiHandlerConfiguration {
     public String webHookUrl = "";
     public String webHookPostfix = "";
     public int reconnectInterval = 300;
+
+    public ConfigurationLevel check() {
+        if (clientId.isBlank()) {
+            return ConfigurationLevel.EMPTY_CLIENT_ID;
+        } else if (clientSecret.isBlank()) {
+            return ConfigurationLevel.EMPTY_CLIENT_SECRET;
+        }
+        return ConfigurationLevel.COMPLETED;
+    }
 }
