@@ -114,7 +114,6 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
         this.client = client;
         try {
             Response response = client.prepareGet(HTTP_TELLDUS_CLIENTS).execute().get();
-            this.client = client;
             logger.debug("Response {} statusText {}", response.getResponseBody(), response.getStatusText());
         } catch (InterruptedException | ExecutionException e) {
             logger.warn("Failed to connect", e);
