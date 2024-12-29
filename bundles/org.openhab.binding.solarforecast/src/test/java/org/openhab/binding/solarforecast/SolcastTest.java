@@ -76,7 +76,8 @@ class SolcastTest {
     public static final String TOO_LATE_INDICATOR = "too late";
     public static final String DAY_MISSING_INDICATOR = "not available in forecast";
 
-    public static SolcastObject scfo = new SolcastObject("sc-test", Instant.MIN, TIMEZONEPROVIDER, mock(Storage.class));
+    public static SolcastObject scfo = new SolcastObject("sc-test", null, Instant.MIN, TIMEZONEPROVIDER,
+            mock(Storage.class));
     public static ZonedDateTime now = ZonedDateTime.now(TEST_ZONE);
 
     @BeforeAll
@@ -861,7 +862,7 @@ class SolcastTest {
         forecastJson.put(KEY_ACTUALS, actualsJson.getJSONArray(KEY_ACTUALS));
 
         Storage<String> store = new VolatileStorage<>();
-        scfo = new SolcastObject("sc-test", Instant.MIN, TIMEZONEPROVIDER, store);
+        scfo = new SolcastObject("sc-test", null, Instant.MIN, TIMEZONEPROVIDER, store);
         // assert values without stored object
         assertEquals(Instant.MAX, scfo.getForecastBegin(), "Forecast invalid begin");
         assertEquals(Instant.MIN, scfo.getForecastEnd(), "Forecast invalid end");
@@ -869,7 +870,7 @@ class SolcastTest {
 
         store.put("sc-test-forecast", forecastJson.toString());
         store.put("sc-test-expiration", Instant.now().plus(1, ChronoUnit.HOURS).toString());
-        scfo = new SolcastObject("sc-test", Instant.MIN, TIMEZONEPROVIDER, store);
+        scfo = new SolcastObject("sc-test", null, Instant.MIN, TIMEZONEPROVIDER, store);
         // assert values after storeage is filled
         assertEquals("2022-07-10T21:30:00Z", scfo.getForecastBegin().toString(), "Forecast invalid begin");
         assertEquals("2022-07-24T21:00:00Z", scfo.getForecastEnd().toString(), "Forecast invalid end");
@@ -890,7 +891,7 @@ class SolcastTest {
 
         // store shall be filled now after instatiation
         // create new new SolcastObject to read from store
-        scfo = new SolcastObject("sc-test", Instant.MIN, TIMEZONEPROVIDER, store);
+        scfo = new SolcastObject("sc-test", null, Instant.MIN, TIMEZONEPROVIDER, store);
         assertEquals("2022-07-10T21:30:00Z", scfo.getForecastBegin().toString(), "Forecast invalid begin");
         assertEquals("2022-07-24T21:00:00Z", scfo.getForecastEnd().toString(), "Forecast invalid end");
         assertFalse(scfo.isExpired());

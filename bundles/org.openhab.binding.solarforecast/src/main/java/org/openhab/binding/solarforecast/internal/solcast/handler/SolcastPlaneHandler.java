@@ -41,7 +41,6 @@ import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMod
 import org.openhab.binding.solarforecast.internal.solcast.config.SolcastPlaneConfiguration;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
@@ -63,6 +62,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernd Weymann - Initial contribution
  */
+
 @NonNullByDefault
 public class SolcastPlaneHandler extends BaseThingHandler implements SolarForecastProvider {
     public static final String CALL_COUNT_APPENDIX = "-count";
@@ -76,12 +76,13 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private Optional<SolcastBridgeHandler> bridgeHandler = Optional.empty();
     private Storage<String> storage;
     private Instant lastReset = Utils.now();
-    private int apiRequestCounter = 0;
+    private JSONObject counterJson;
 
     public SolcastPlaneHandler(Thing thing, HttpClient hc, Storage<String> storage) {
         super(thing);
         httpClient = hc;
         this.storage = storage;
+        counterJson = getNewCounter();
     }
 
     @Override
@@ -95,7 +96,15 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
 
         String counterString = storage.get(thing.getUID() + CALL_COUNT_APPENDIX);
         if (counterString != null) {
-            apiRequestCounter = Integer.valueOf(counterString);
+            try {
+                counterJson = new JSONObject(counterString);
+            } catch (Exception e) {
+                counterJson = getNewCounter();
+                int persistenceCount = Integer.valueOf(counterString);
+                counterJson.put("200", persistenceCount);
+            }
+        } else {
+            counterJson = getNewCounter();
         }
         String lastResetString = storage.get(thing.getUID() + CALL_COUNT_DATE_APPENDIX);
         if (lastResetString != null) {
@@ -113,7 +122,8 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     bridgeHandler = Optional.of(sbh);
                     Instant expiration = (configuration.refreshInterval == 0) ? Instant.MAX
                             : Utils.now().minusSeconds(1);
-                    SolcastObject forecast = new SolcastObject(thing.getUID().getAsString(), expiration, sbh, storage);
+                    SolcastObject forecast = new SolcastObject(thing.getUID().getAsString(), null, expiration, sbh,
+                            storage);
                     currentForecastOptional = Optional.of(forecast);
                     sbh.addPlane(this);
                 } else {
@@ -135,7 +145,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         super.dispose();
         bridgeHandler.ifPresent(bridge -> bridge.removePlane(this));
         storage.put(thing.getUID() + CALL_COUNT_DATE_APPENDIX, lastReset.toString());
-        storage.put(thing.getUID() + CALL_COUNT_APPENDIX, String.valueOf(apiRequestCounter));
+        storage.put(thing.getUID() + CALL_COUNT_APPENDIX, counterJson.toString());
     }
 
     @Override
@@ -150,7 +160,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         if (command instanceof RefreshType) {
             checkCount();
             if (CHANNEL_API_COUNT.equals(channelUID.getIdWithoutGroup())) {
-                updateState(CHANNEL_API_COUNT, new DecimalType(apiRequestCounter));
+                updateState(CHANNEL_API_COUNT, StringType.valueOf(counterJson.toString()));
             } else {
                 currentForecastOptional.ifPresent(forecastObject -> {
                     String group = channelUID.getGroupId();
@@ -220,9 +230,9 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                             logger.trace("{} We have no actual values - need to fetch", thing.getUID());
                             Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
                             estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
-                            increaseCount();
                             ContentResponse crEstimate = estimateRequest.send();
                             int callStatus = crEstimate.getStatus();
+                            count(callStatus);
                             if (callStatus == 200) {
                                 forecast = new JSONObject(crEstimate.getContentAsString());
                             } else {
@@ -232,10 +242,11 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         }
                         Request forecastRequest = httpClient.newRequest(forecastUrl);
                         forecastRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
-                        increaseCount();
                         ContentResponse crForecast = forecastRequest.send();
+                        int callStatus = crForecast.getStatus();
+                        count(callStatus);
 
-                        if (crForecast.getStatus() == 200) {
+                        if (callStatus == 200) {
                             JSONObject forecastJson = new JSONObject(crForecast.getContentAsString());
                             forecast.put(KEY_FORECAST, forecastJson.getJSONArray(KEY_FORECAST));
                             Instant expiration = (configuration.refreshInterval == 0) ? Instant.MAX
@@ -264,22 +275,39 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         return currentForecastOptional.get();
     }
 
-    private void increaseCount() {
+    private void count(int status) {
         // check first regarding day switch before increasing
+        switch (status) {
+            case 200:
+                int new200Count = counterJson.getInt("200") + 1;
+                counterJson.put("200", new200Count);
+                break;
+            case 429:
+                int new429Count = counterJson.getInt("429") + 1;
+                counterJson.put("429", new429Count);
+                break;
+            default:
+                int newOtherCount = counterJson.getInt("other") + 1;
+                counterJson.put("other", newOtherCount);
+                break;
+        }
         checkCount();
-        apiRequestCounter++;
     }
 
     private void checkCount() {
         Instant now = Utils.now();
         if (lastReset.atZone(ZoneId.of("UTC")).getDayOfMonth() != now.atZone(ZoneId.of("UTC")).getDayOfMonth()) {
-            apiRequestCounter = 0;
+            counterJson = getNewCounter();
             lastReset = now;
         }
     }
 
-    public int getCount() {
-        return apiRequestCounter;
+    private JSONObject getNewCounter() {
+        return new JSONObject("{\"200\":0,\"429\":0,\"other\":0}");
+    }
+
+    public JSONObject getCounter() {
+        return counterJson;
     }
 
     /**
@@ -346,7 +374,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     Utils.getPowerState(f.getActualPowerValue(now, QueryMode.Average)));
         });
         updateState(GROUP_UPDATE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_API_COUNT,
-                new DecimalType(apiRequestCounter));
+                StringType.valueOf(counterJson.toString()));
         ZonedDateTime creation = Utils.getZdtFromUTC(f.getCreationInstant());
         updateState(GROUP_UPDATE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_LATEST_UPDATE,
                 new DateTimeType(creation));

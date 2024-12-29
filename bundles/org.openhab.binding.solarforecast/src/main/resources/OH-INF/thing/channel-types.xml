@@ -46,7 +46,7 @@
 		<description>Plain JSON response without conversions</description>
 	</channel-type>
 	<channel-type id="api-count">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>API Request Count</label>
 		<description>Number of requests send to Solcast API starting 0:00 UTC</description>
 	</channel-type>
