@@ -230,6 +230,12 @@ public class ValueTests {
     }
 
     @Test
+    public void numberDimension() {
+        NumberValue v = new NumberValue(null, null, new BigDecimal(10), Units.MIRED);
+        assertThat(v.getItemType(), is("Number:Temperature"));
+    }
+
+    @Test
     public void rollershutterUpdateWithStrings() {
         RollershutterValue v = new RollershutterValue("fancyON", "fancyOff", "fancyStop");
         // Test with UP/DOWN/STOP command
