@@ -25,6 +25,7 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.Type;
@@ -69,7 +70,7 @@ public class NumberValue extends Value {
         if (unit == null) {
             return CoreItemFactory.NUMBER;
         }
-        String dimension = UnitUtils.getDimensionName(unit);
+        String dimension = Units.MIRED.equals(unit) ? "Temperature" : UnitUtils.getDimensionName(unit);
         if (dimension == null) {
             return CoreItemFactory.NUMBER;
         }
