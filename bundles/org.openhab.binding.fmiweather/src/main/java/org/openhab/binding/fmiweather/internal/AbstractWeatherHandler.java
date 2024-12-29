@@ -16,8 +16,6 @@ import static org.openhab.binding.fmiweather.internal.BindingConstants.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
@@ -60,7 +58,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class AbstractWeatherHandler extends BaseThingHandler {
 
-    private static final ZoneId UTC = ZoneId.of("UTC");
     protected static final String PROP_LONGITUDE = "longitude";
     protected static final String PROP_LATITUDE = "latitude";
     protected static final String PROP_NAME = "name";
@@ -202,8 +199,7 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
      */
     protected <T extends Quantity<T>> void updateEpochSecondStateIfLinked(ChannelUID channelUID, long epochSecond) {
         if (isLinked(channelUID)) {
-            updateState(channelUID, new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), UTC)
-                    .withZoneSameInstant(ZoneId.systemDefault())));
+            updateState(channelUID, new DateTimeType(Instant.ofEpochSecond(epochSecond)));
         }
     }
 

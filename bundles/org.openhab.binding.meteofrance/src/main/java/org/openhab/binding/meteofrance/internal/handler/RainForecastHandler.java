@@ -15,7 +15,6 @@ package org.openhab.binding.meteofrance.internal.handler;
 import static org.openhab.binding.meteofrance.internal.MeteoFranceBindingConstants.*;
 import static org.openhab.core.types.TimeSeries.Policy.REPLACE;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -58,15 +57,13 @@ import org.slf4j.LoggerFactory;
 public class RainForecastHandler extends BaseThingHandler implements MeteoFranceChildHandler {
     private final Logger logger = LoggerFactory.getLogger(RainForecastHandler.class);
     private final ChannelUID intensityChannelUID;
-    private final ZoneId systemZoneId;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<PointType> location = Optional.empty();
 
-    public RainForecastHandler(Thing thing, ZoneId zoneId) {
+    public RainForecastHandler(Thing thing) {
         super(thing);
         this.intensityChannelUID = new ChannelUID(getThing().getUID(), INTENSITY);
-        this.systemZoneId = zoneId;
     }
 
     @Override
@@ -169,9 +166,7 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
 
     private void updateDate(String channelId, @Nullable ZonedDateTime zonedDateTime) {
         if (isLinked(channelId)) {
-            updateState(channelId,
-                    zonedDateTime != null ? new DateTimeType(zonedDateTime.withZoneSameInstant(systemZoneId))
-                            : UnDefType.NULL);
+            updateState(channelId, zonedDateTime != null ? new DateTimeType(zonedDateTime) : UnDefType.NULL);
         }
     }
 }

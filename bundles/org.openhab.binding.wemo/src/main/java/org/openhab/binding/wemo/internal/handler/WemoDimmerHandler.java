@@ -16,12 +16,10 @@ import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -502,8 +500,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     getThing().getUID());
             return null;
         }
-        ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochSecond(value), TimeZone.getDefault().toZoneId());
-        return new DateTimeType(zoned);
+        return new DateTimeType(Instant.ofEpochSecond(value));
     }
 
     public void setBinaryState(String action, String argument, String value) {

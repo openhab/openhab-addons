@@ -148,8 +148,7 @@ public class AlarmSettingsData {
         }
     }
 
-    public void setAlarmTime(DateTimeType timeState) {
-        final ZonedDateTime zonedTime = timeState.getZonedDateTime();
+    public void setAlarmTime(ZonedDateTime zonedTime) {
         final LocalTime time = LocalTime.of(zonedTime.getHour(), zonedTime.getMinute());
         if (time == null) {
             return;

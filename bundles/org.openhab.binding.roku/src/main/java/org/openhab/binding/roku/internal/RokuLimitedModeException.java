@@ -10,25 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fineoffsetweatherstation.internal.domain;
-
-import java.time.ZoneId;
+package org.openhab.binding.roku.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @author Andreas Berger - Initial contribution
+ * The {@link RokuLimitedModeException} extends RokuHttpException
+ *
+ * @author Michael Lobstein - Initial contribution
  */
 @NonNullByDefault
-public class ConversionContext {
+public class RokuLimitedModeException extends RokuHttpException {
+    private static final long serialVersionUID = 1L;
 
-    private final ZoneId zoneId;
-
-    public ConversionContext(ZoneId zoneId) {
-        this.zoneId = zoneId;
+    public RokuLimitedModeException(String errorMessage, Throwable t) {
+        super(errorMessage, t);
     }
 
-    public ZoneId getZoneId() {
-        return zoneId;
+    public RokuLimitedModeException(String errorMessage) {
+        super(errorMessage);
     }
 }
