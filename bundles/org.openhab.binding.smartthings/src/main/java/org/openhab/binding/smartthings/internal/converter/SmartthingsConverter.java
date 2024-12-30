@@ -142,18 +142,18 @@ public abstract class SmartthingsConverter {
                 return UnDefType.UNDEF;
             case "Dimmer":
                 // The value coming in should be a number
-                if (dataFromSmartthings instanceof String stringCommand) {
-                    return new PercentType(stringCommand);
+                if (dataFromSmartthings instanceof String stringCommandDimmer) {
+                    return new PercentType(stringCommandDimmer);
                 } else {
                     logger.warn("Failed to convert with a value of {} from class {} to an appropriate type.",
                             dataFromSmartthings, dataFromSmartthings.getClass().getName());
                     return UnDefType.UNDEF;
                 }
             case "Number":
-                if (dataFromSmartthings instanceof String stringCommand) {
+                if (dataFromSmartthings instanceof String stringCommandNumber) {
                     // review this, oven return a bad value of format 00:00:00
                     try {
-                        return new DecimalType(Double.parseDouble(stringCommand));
+                        return new DecimalType(Double.parseDouble(stringCommandNumber));
                     } catch (NumberFormatException ex) {
                         return new DecimalType(0.00);
                     }
@@ -191,8 +191,8 @@ public abstract class SmartthingsConverter {
                 // But if the result is from sensor change via a subscription to a threeAxis device the results will
                 // be a String of the format "value":"-873,-70,484"
                 // which GSON returns as a LinkedTreeMap
-                if (dataFromSmartthings instanceof String stringCommand3) {
-                    return new StringType(stringCommand3);
+                if (dataFromSmartthings instanceof String stringCommandVector) {
+                    return new StringType(stringCommandVector);
                 } else if (dataFromSmartthings instanceof Map<?, ?>) {
                     Map<String, String> map = (Map<String, String>) dataFromSmartthings;
                     String s = String.format("%.0f,%.0f,%.0f", map.get("x"), map.get("y"), map.get("z"));
