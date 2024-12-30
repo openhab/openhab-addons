@@ -675,8 +675,9 @@ public class StateFilterProfile implements StateProfile {
                 return result.toBigDecimal().compareTo(BigDecimal.ZERO) < 0 ? result.negate() : result;
             }
             BigDecimal result = ((DecimalType) newState).toBigDecimal()
-                    .subtract(((DecimalType) acceptedState).toBigDecimal());
-            return result.compareTo(BigDecimal.ZERO) < 0 ? new DecimalType(result.negate()) : new DecimalType(result);
+                    .subtract(((DecimalType) acceptedState).toBigDecimal()) //
+                    .abs();
+            return new DecimalType(result);
         }
 
         private @Nullable State calculateDeltaPercent() {
@@ -691,6 +692,7 @@ public class StateFilterProfile implements StateProfile {
                 bdDelta = ((DecimalType) calculatedDelta).toBigDecimal();
                 bdBase = ((DecimalType) acceptedState).toBigDecimal();
             }
+            bdBase = bdBase.abs();
             BigDecimal percent = bdDelta.multiply(BigDecimal.valueOf(100)).divide(bdBase, 2, RoundingMode.HALF_EVEN);
             return new DecimalType(percent);
         }

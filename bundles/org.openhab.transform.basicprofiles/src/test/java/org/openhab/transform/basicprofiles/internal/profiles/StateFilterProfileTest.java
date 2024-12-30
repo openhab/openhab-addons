@@ -659,8 +659,10 @@ public class StateFilterProfileTest {
         NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
         NumberItem decimalItem = new NumberItem("decimalItem");
         List<Number> numbers = List.of(1, 2, 3, 4, 5);
+        List<Number> negatives = List.of(-1, -2, -3, -4, -5);
         List<QuantityType> quantities = numbers.stream().map(n -> new QuantityType(n, Units.WATT)).toList();
         List<DecimalType> decimals = numbers.stream().map(DecimalType::new).toList();
+        List<DecimalType> negativeDecimals = negatives.stream().map(DecimalType::new).toList();
 
         return Stream.of( //
                 // test custom window size
@@ -695,6 +697,9 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("1.11"), false), //
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.91"), true), //
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.89"), false), //
+
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", negativeDecimals, DecimalType.valueOf("0"), false), //
+                Arguments.of(decimalItem, "10 > $DELTA_PERCENT", negativeDecimals, DecimalType.valueOf("0"), false), //
 
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.09"), true), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.11"), false), //
