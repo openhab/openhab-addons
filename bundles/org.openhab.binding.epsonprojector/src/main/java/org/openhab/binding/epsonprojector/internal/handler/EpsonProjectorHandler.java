@@ -200,7 +200,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             if (EpsonProjectorCommandType.POWER == commandType && loadSourceList && !isSourceListLoaded) {
                 final List<StateOption> sourceListOptions = remoteController.getSourceList();
 
-                // If SOURCELIST was retrieved, load it in the source channel state options
+                // If a SOURCELIST was retrieved, load it in the source channel state options
                 if (!sourceListOptions.isEmpty()) {
                     stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_TYPE_SOURCE),
                             sourceListOptions);
