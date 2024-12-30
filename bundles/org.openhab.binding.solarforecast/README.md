@@ -91,14 +91,40 @@ Scenarios are clustered in groups:
 - `pessimistic` scenario: 10th percentile
 - `optimistic` scenario: 90th percentile
 
+| Channel                 | Type          | Unit | Description                                     | 
+|-------------------------|---------------|------|-------------------------------------------------|
+| power-estimate          | Number:Power  | W    | Power forecast for next hours/days              |
+| energy-estimate         | Number:Energy | kWh  | Energy forecast for next hours/days             |
+| power-actual            | Number:Power  | W    | Power prediction for this moment                |
+| energy-actual           | Number:Energy | kWh  | Today's forecast till now                       |
+| energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          |
+| energy-today            | Number:Energy | kWh  | Today's forecast in total                       |
+
+Technical channels observing the update behavior are reported in `update` group.
+
+| Channel                 | Type          | Description                                                  |
+|-------------------------|---------------|--------------------------------------------------------------|
+| api-count               | String        | Number of requests send to Solcast API starting 0:00 UTC     |
+| latest-update           | DateTime      | Date and time of the latest forecast update                  |
+
+<img src="./doc/APICountTransformation.png" width="320" height="300"/>
+
+The `api-count` channel delivers a JSON object with 3 different counters:
+
+- 200 - succesful API calls
+- 429 - unsuccessful API calls due to throttling, too many calls
+- other - unsuccesful API calls due to other problems 
+
+```
+{"200":2,"other":0,"429":0} 
+```
+
+You can connect a Number item to this channel using a [JSONPATH transformation](https://www.openhab.org/addons/transformations/jsonpath/) referring the wanted JSON key e.g. `$.200`.
+
+JSON channel holding raw data is reported in `raw` group.
+
 | Channel                 | Type          | Unit | Description                                     | Advanced |
 |-------------------------|---------------|------|-------------------------------------------------|----------|
-| power-estimate          | Number:Power  | W    | Power forecast for next hours/days              | no       |
-| energy-estimate         | Number:Energy | kWh  | Energy forecast for next hours/days             | no       |
-| power-actual            | Number:Power  | W    | Power prediction for this moment                | no       |
-| energy-actual           | Number:Energy | kWh  | Today's forecast till now                       | no       |
-| energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          | no       |
-| energy-today            | Number:Energy | kWh  | Today's forecast in total                       | no       |
 | json                    | String        | -    | Plain JSON response without conversions         | yes      |
 
 ## ForecastSolar Configuration
