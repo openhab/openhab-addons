@@ -14,7 +14,7 @@ package org.openhab.binding.insteon.internal.device;
 
 import java.sql.Date;
 import java.util.Iterator;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * - An entry in the poll queue corresponds to a single device, i.e. each device should
  * have exactly one entry in the poll queue. That entry is created when startPolling()
  * is called, and then re-enqueued whenever it expires.
- * - When a device comes up for polling, its doPoll() method is called, which in turn
+ * - When a device comes up for polling, its poll() method is called, which in turn
  * puts an entry into that devices request queue. So the Poller class actually never
  * sends out messages directly. That is done by the device itself via its request
  * queue. The poller just reminds the device to poll.
@@ -135,7 +135,7 @@ public class PollManager {
     }
 
     /**
-     * Adds a device to the poll queue. After this call, the device's doPoll() method
+     * Adds a device to the poll queue. After this call, the device's poll() method
      * will be called according to the polling frequency set.
      *
      * @param device the device to poll periodically
@@ -146,9 +146,9 @@ public class PollManager {
 
     private void addToPollQueue(Device device, long pollInterval, long time) {
         long expTime = findNextExpirationTime(device, pollInterval, time);
-        PQEntry queue = new PQEntry(device, pollInterval, expTime);
-        logger.trace("added entry {}", queue);
-        pollQueue.add(queue);
+        PQEntry entry = new PQEntry(device, pollInterval, expTime);
+        logger.trace("added entry {}", entry);
+        pollQueue.add(entry);
     }
 
     /**
@@ -164,35 +164,35 @@ public class PollManager {
 
     private long findNextExpirationTime(Device device, long pollInterval, long time) {
         long expTime;
-        // tailSet finds all those that expire after time - buffer
-        PQEntry queue = new PQEntry(device, pollInterval, time - MIN_MSEC_BETWEEN_POLLS);
-        SortedSet<PQEntry> tailSet = pollQueue.tailSet(queue);
-        if (tailSet.isEmpty()) {
+        // find all poll queue entries that expire after time - buffer
+        PQEntry entry = new PQEntry(device, pollInterval, time - MIN_MSEC_BETWEEN_POLLS);
+        Set<PQEntry> expEntries = pollQueue.tailSet(entry);
+        if (expEntries.isEmpty()) {
             // all entries in the poll queue are ahead of the new element,
             // go ahead and simply add it to the end
             expTime = time;
         } else {
-            Iterator<PQEntry> it = tailSet.iterator();
-            PQEntry prevQueue = it.next();
-            if (prevQueue.getExpirationTime() > time + MIN_MSEC_BETWEEN_POLLS) {
+            Iterator<PQEntry> it = expEntries.iterator();
+            PQEntry prevEntry = it.next();
+            if (prevEntry.getExpirationTime() > time + MIN_MSEC_BETWEEN_POLLS) {
                 // there is a time slot free before the head of the tail set
                 expTime = time;
             } else {
                 // look for a gap where we can squeeze in
                 // a new poll while maintaining MIN_MSEC_BETWEEN_POLLS
                 while (it.hasNext()) {
-                    PQEntry currQueue = it.next();
-                    long currTime = currQueue.getExpirationTime();
-                    long prevTime = prevQueue.getExpirationTime();
+                    PQEntry currEntry = it.next();
+                    long currTime = currEntry.getExpirationTime();
+                    long prevTime = prevEntry.getExpirationTime();
                     if (currTime - prevTime >= 2 * MIN_MSEC_BETWEEN_POLLS) {
                         // found gap
                         logger.trace("device {} time {} found slot between {} and {}", device.getAddress(), time,
                                 prevTime, currTime);
                         break;
                     }
-                    prevQueue = currQueue;
+                    prevEntry = currEntry;
                 }
-                expTime = prevQueue.getExpirationTime() + MIN_MSEC_BETWEEN_POLLS;
+                expTime = prevEntry.getExpirationTime() + MIN_MSEC_BETWEEN_POLLS;
             }
         }
         return expTime;
@@ -212,13 +212,13 @@ public class PollManager {
                         }
                         // something is in the queue
                         long now = System.currentTimeMillis();
-                        PQEntry queue = pollQueue.first();
-                        long delay = queue.getExpirationTime() - now;
+                        PQEntry entry = pollQueue.first();
+                        long delay = entry.getExpirationTime() - now;
                         if (delay > 0) { // must wait for this item to expire
-                            logger.trace("waiting for {} msec until {} comes due", delay, queue);
+                            logger.trace("waiting for {} msec until {} comes due", delay, entry);
                             pollQueue.wait(delay);
                         } else { // queue entry has expired, process it!
-                            logger.trace("poll queue {} has expired", queue);
+                            logger.trace("poll queue entry {} has expired", entry);
                             processQueueEntry(now);
                         }
                     }
@@ -236,10 +236,10 @@ public class PollManager {
          * @param now the current time
          */
         private void processQueueEntry(long now) {
-            PQEntry queue = pollQueue.pollFirst();
-            if (queue != null) {
-                queue.getDevice().doPoll(0L);
-                addToPollQueue(queue.getDevice(), queue.getPollInterval(), now + queue.getPollInterval());
+            PQEntry entry = pollQueue.pollFirst();
+            if (entry != null) {
+                entry.getDevice().poll(0L);
+                addToPollQueue(entry.getDevice(), entry.getPollInterval(), now + entry.getPollInterval());
             }
         }
     }

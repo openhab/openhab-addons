@@ -83,12 +83,12 @@ public class RequestManager {
                 queue = new RequestQueue(device, time);
                 requestQueues.add(queue);
                 requestQueueHash.put(device, queue);
-                requestQueues.notify();
             } else if (queue.getExpirationTime() > time) {
                 logger.trace("rescheduling request for device {} from {} to {} msec", device.getAddress(),
                         queue.getExpirationTime() - now, delay);
                 queue.setExpirationTime(time);
             }
+            requestQueues.notify();
         }
     }
 
@@ -98,7 +98,6 @@ public class RequestManager {
     public void pause() {
         if (isRunning() && !paused.getAndSet(true)) {
             logger.debug("pausing request queue thread");
-
             synchronized (requestQueues) {
                 requestQueues.notify();
             }
@@ -111,7 +110,6 @@ public class RequestManager {
     public void resume() {
         if (isRunning() && paused.getAndSet(false)) {
             logger.debug("resuming request queue thread");
-
             synchronized (paused) {
                 paused.notify();
             }
@@ -170,11 +168,11 @@ public class RequestManager {
                             Device device = queue.getDevice();
                             if (delay > 0) {
                                 // The head of the queue is not up for processing yet, wait().
-                                logger.trace("request queue head: {} must wait for {} msec", device.getAddress(),
-                                        delay);
+                                logger.trace("request queue for {} must wait for {} msec", device.getAddress(), delay);
                                 requestQueues.wait(delay);
                             } else {
                                 // The head of the queue has expired and can be processed!
+                                logger.trace("processing request queue for {}", device.getAddress());
                                 processRequestQueue(now);
                             }
                         }

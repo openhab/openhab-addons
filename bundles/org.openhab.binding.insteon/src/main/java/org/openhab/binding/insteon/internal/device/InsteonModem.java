@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.insteon.internal.device;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -183,7 +182,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         return initialized;
     }
 
-    public void writeMessage(Msg msg) throws IOException {
+    public void writeMessage(Msg msg) {
         port.writeMessage(msg);
     }
 
@@ -205,12 +204,9 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
 
     public void disconnect() {
         logger.debug("disconnecting from modem");
-        if (linker.isRunning()) {
-            linker.stop();
-        }
-
-        dbm.stop();
         port.stop();
+        dbm.stop();
+        linker.stop();
         requester.stop();
         poller.stop();
     }
@@ -234,10 +230,8 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         try {
             Msg msg = Msg.makeMessage("GetIMInfo");
             writeMessage(msg);
-        } catch (IOException e) {
-            logger.warn("error sending modem info query ", e);
         } catch (InvalidMessageTypeException e) {
-            logger.warn("invalid message ", e);
+            logger.warn("error creating message", e);
         }
     }
 
@@ -274,10 +268,8 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         try {
             Msg msg = Msg.makeMessage("ResetIM");
             writeMessage(msg);
-        } catch (IOException e) {
-            logger.warn("error sending modem reset query", e);
         } catch (InvalidMessageTypeException e) {
-            logger.warn("invalid message ", e);
+            logger.warn("error creating message", e);
         }
     }
 
@@ -504,7 +496,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     private void handleMessage(DeviceAddress address, Msg msg) throws FieldException {
         Device device = getDevice(address);
         if (device == null) {
-            logger.debug("unknown device with address {}, dropping message", address);
+            logger.trace("unknown device with address {}, dropping message", address);
         } else if (msg.isReply()) {
             device.requestReplied(msg);
         } else {

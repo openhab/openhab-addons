@@ -33,12 +33,15 @@ import org.openhab.core.io.transport.serial.UnsupportedCommOperationException;
  */
 @NonNullByDefault
 public class SerialIOStream extends IOStream {
+    private static final int RATE_LIMIT_TIME = 800; // in milliseconds
+
     private String name;
     private int baudRate;
     private SerialPortManager serialPortManager;
     private @Nullable SerialPort port;
 
     public SerialIOStream(String name, int baudRate, SerialPortManager serialPortManager) {
+        super(RATE_LIMIT_TIME);
         this.name = name;
         this.baudRate = baudRate;
         this.serialPortManager = serialPortManager;

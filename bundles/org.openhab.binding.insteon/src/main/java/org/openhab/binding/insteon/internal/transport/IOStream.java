@@ -44,6 +44,15 @@ public abstract class IOStream {
 
     protected @Nullable InputStream in;
     protected @Nullable OutputStream out;
+    private final int rateLimitTime;
+
+    protected IOStream(int rateLimitTime) {
+        this.rateLimitTime = rateLimitTime;
+    }
+
+    public int getRateLimitTime() {
+        return rateLimitTime;
+    }
 
     /**
      * Reads data from IOStream

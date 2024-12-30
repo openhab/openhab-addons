@@ -13,13 +13,16 @@
 package org.openhab.binding.insteon.internal.transport;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +30,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
 import org.openhab.binding.insteon.internal.transport.message.MsgFactory;
+import org.openhab.binding.insteon.internal.transport.message.Priority;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,15 +55,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Port {
-    /**
-     * The ReplyType is used to keep track of the state of the serial port receiver
-     */
-    private static enum ReplyType {
-        GOT_ACK,
-        WAITING_FOR_ACK,
-        GOT_NACK
-    }
-
     private final Logger logger = LoggerFactory.getLogger(Port.class);
 
     private String name;
@@ -69,9 +64,9 @@ public class Port {
     private IOStreamWriter writer = new IOStreamWriter();
     private @Nullable ScheduledFuture<?> readJob;
     private @Nullable ScheduledFuture<?> writeJob;
-    private MsgFactory msgFactory = new MsgFactory();
     private Set<PortListener> listeners = new CopyOnWriteArraySet<>();
-    private LinkedBlockingQueue<Msg> writeQueue = new LinkedBlockingQueue<>();
+    private PriorityBlockingQueue<Msg> writeQueue = new PriorityBlockingQueue<>(10,
+            Comparator.comparing(Msg::getPriority).thenComparingLong(Msg::getTimestamp));
     private AtomicBoolean connected = new AtomicBoolean(false);
 
     public Port(InsteonBridgeConfiguration config, HttpClient httpClient, ScheduledExecutorService scheduler,
@@ -156,12 +151,8 @@ public class Port {
      * Adds message to the write queue
      *
      * @param msg message to be added to the write queue
-     * @throws IOException
      */
-    public void writeMessage(@Nullable Msg msg) throws IOException {
-        if (msg == null) {
-            throw new IOException("trying to write null message!");
-        }
+    public void writeMessage(Msg msg) {
         try {
             writeQueue.add(msg);
             logger.trace("enqueued msg ({}): {}", writeQueue.size(), msg);
@@ -201,19 +192,12 @@ public class Port {
     /**
      * The IOStreamReader uses the MsgFactory to turn the incoming bytes into
      * Msgs for the listeners. It also communicates with the IOStreamWriter
-     * to implement flow control (tell the IOStreamWriter that it needs to retransmit,
-     * or the reply message has been received correctly).
+     * to implement flow control.
      */
     private class IOStreamReader implements Runnable {
         private static final int READ_BUFFER_SIZE = 1024;
-        private static final int REPLY_TIMEOUT_TIME = 30000; // milliseconds
 
-        private ReplyType replyType = ReplyType.GOT_ACK;
-        private Object replyLock = new Object();
-
-        public Object getReplyLock() {
-            return replyLock;
-        }
+        private final MsgFactory msgFactory = new MsgFactory();
 
         @Override
         public void run() {
@@ -246,57 +230,14 @@ public class Port {
                     if (msg != null) {
                         logger.debug("got msg: {}", msg);
                         messageReceived(msg);
-                        notifyWriter(msg);
+                        writer.messageReceived(msg);
                     }
                 } catch (IOException e) {
                     // got bad data from modem,
                     // unblock those waiting for ack
-                    synchronized (replyLock) {
-                        if (replyType == ReplyType.WAITING_FOR_ACK) {
-                            logger.debug("got bad data back, must assume message was acked.");
-                            replyType = ReplyType.GOT_ACK;
-                            replyLock.notify();
-                        }
-                    }
+                    writer.invalidMessageReceived();
                 }
             }
-        }
-
-        private void notifyWriter(Msg msg) {
-            synchronized (replyLock) {
-                if (replyType == ReplyType.WAITING_FOR_ACK) {
-                    if (msg.isEcho()) {
-                        replyType = msg.isPureNack() ? ReplyType.GOT_NACK : ReplyType.GOT_ACK;
-                        logger.trace("signaling receipt of ack: {}", replyType == ReplyType.GOT_ACK);
-                        replyLock.notify();
-                    }
-                }
-            }
-        }
-
-        /**
-         * Blocking wait for ack or nack from modem.
-         * Called by IOStreamWriter for flow control.
-         *
-         * @return true if retransmission is necessary
-         * @throws InterruptedException
-         */
-        public boolean waitForReply() throws InterruptedException {
-            logger.trace("waiting for reply ack");
-            replyType = ReplyType.WAITING_FOR_ACK;
-            // There have been cases observed, in particular for
-            // the Hub, where we get no ack or nack back, causing the binding
-            // to hang in the wait() below, because unsolicited messages
-            // do not trigger a notify(). For this reason we request retransmission
-            // if the wait() times out.
-            replyLock.wait(REPLY_TIMEOUT_TIME);
-            if (replyType == ReplyType.WAITING_FOR_ACK) { // timeout expired without getting ACK or NACK
-                logger.trace("reply ack timeout expired, asking for retransmit!");
-                replyType = ReplyType.GOT_NACK;
-            } else {
-                logger.trace("got reply ack: {}", replyType == ReplyType.GOT_ACK);
-            }
-            return replyType == ReplyType.GOT_NACK;
         }
     }
 
@@ -305,8 +246,19 @@ public class Port {
      * documents to avoid overloading the modem.
      */
     private class IOStreamWriter implements Runnable {
-        private static final int RETRANSMIT_WAIT_TIME = 200; // milliseconds
-        private static final int WRITE_WAIT_TIME = 500; // milliseconds
+        private static final int REPLY_TIMEOUT_TIME = 8000; // milliseconds
+
+        private static enum ReplyStatus {
+            GOT_ACK,
+            GOT_NACK,
+            WAITING_FOR_ACK
+        }
+
+        private final ReentrantLock lock = new ReentrantLock();
+        private final Condition messageReceived = lock.newCondition();
+        private final Condition replyReceived = lock.newCondition();
+        private ReplyStatus replyStatus = ReplyStatus.GOT_ACK;
+        private @Nullable Msg lastMsg;
 
         @Override
         public void run() {
@@ -314,20 +266,16 @@ public class Port {
             try {
                 while (!Thread.interrupted()) {
                     logger.trace("writer checking message queue");
-                    // this call blocks until the lock on the queue is released
                     Msg msg = writeQueue.take();
-                    logger.debug("writing: {}", msg);
-                    synchronized (reader.getReplyLock()) {
+                    if (msg.isExpired()) {
+                        logger.trace("skipping expired message: {}", msg);
+                    } else {
+                        logger.debug("writing: {}", msg);
                         ioStream.write(msg.getData());
                         messageSent(msg);
-                        while (reader.waitForReply()) {
-                            Thread.sleep(RETRANSMIT_WAIT_TIME);
-                            logger.trace("retransmitting msg: {}", msg);
-                            ioStream.write(msg.getData());
-                        }
+                        waitForReply(msg);
+                        limitRate(ioStream.getRateLimitTime());
                     }
-                    // limit rate by waiting between writes to transport
-                    Thread.sleep(WRITE_WAIT_TIME);
                 }
             } catch (InterruptedException e) {
                 logger.trace("writer thread got interrupted!");
@@ -336,6 +284,69 @@ public class Port {
                 disconnected();
             }
             logger.debug("exiting writer thread!");
+        }
+
+        private void messageReceived(Msg msg) {
+            lock.lock();
+            try {
+                if (replyStatus == ReplyStatus.WAITING_FOR_ACK) {
+                    if (msg.isPureNack() || msg.isReplyOf(lastMsg)) {
+                        replyStatus = msg.isPureNack() ? ReplyStatus.GOT_NACK : ReplyStatus.GOT_ACK;
+                        logger.trace("signaling receipt of ack: {}", replyStatus == ReplyStatus.GOT_ACK);
+                        replyReceived.signal();
+                    }
+                }
+                messageReceived.signal();
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        private void invalidMessageReceived() {
+            lock.lock();
+            try {
+                if (replyStatus == ReplyStatus.WAITING_FOR_ACK) {
+                    logger.debug("got bad data back, must assume message was acked.");
+                    replyStatus = ReplyStatus.GOT_ACK;
+                    replyReceived.signal();
+                }
+                messageReceived.signal();
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        private void waitForReply(Msg msg) throws InterruptedException {
+            lock.lock();
+            try {
+                lastMsg = msg;
+                replyStatus = ReplyStatus.WAITING_FOR_ACK;
+                logger.trace("waiting for reply ack");
+                if (replyReceived.await(REPLY_TIMEOUT_TIME, TimeUnit.MILLISECONDS)) {
+                    logger.trace("got reply ack: {}", replyStatus == ReplyStatus.GOT_ACK);
+                } else {
+                    logger.trace("reply ack timeout expired");
+                    replyStatus = ReplyStatus.GOT_NACK;
+                }
+                if (replyStatus == ReplyStatus.GOT_NACK) {
+                    logger.trace("retransmitting msg: {}", msg);
+                    msg.setPriority(Priority.RETRANSMIT);
+                    writeMessage(msg);
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        private void limitRate(int time) throws InterruptedException {
+            lock.lock();
+            try {
+                do {
+                    logger.trace("writer rate limited for {} msec", time);
+                } while (messageReceived.await(time, TimeUnit.MILLISECONDS));
+            } finally {
+                lock.unlock();
+            }
         }
     }
 }

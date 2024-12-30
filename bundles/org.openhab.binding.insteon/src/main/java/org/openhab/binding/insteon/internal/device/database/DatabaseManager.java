@@ -74,21 +74,10 @@ public class DatabaseManager {
             this.job = null;
         }
 
-        if (ldbr.isRunning()) {
-            ldbr.stop();
-        }
-
-        if (ldbw.isRunning()) {
-            ldbw.stop();
-        }
-
-        if (mdbr.isRunning()) {
-            mdbr.stop();
-        }
-
-        if (mdbw.isRunning()) {
-            mdbw.stop();
-        }
+        ldbr.stop();
+        ldbw.stop();
+        mdbr.stop();
+        mdbw.stop();
     }
 
     /**
