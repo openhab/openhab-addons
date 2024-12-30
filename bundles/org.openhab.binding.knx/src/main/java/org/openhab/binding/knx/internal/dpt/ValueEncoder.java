@@ -228,7 +228,14 @@ public class ValueEncoder {
             }
 
             if (unit != null) {
-                QuantityType<?> converted = ((QuantityType<?>) value).toUnit(unit);
+                QuantityType<?> converted = null;
+                if ("K".equals(unit) || "°C".equals(unit)) {
+                    // workaround for color temperatures given in MIRED, required as long as toUnit does
+                    // not convert MIRED to Kelvin
+                    converted = ((QuantityType<?>) value).toInvertibleUnit(unit);
+                } else {
+                    converted = ((QuantityType<?>) value).toUnit(unit);
+                }
                 if (converted == null) {
                     LOGGER.warn("Could not convert {} to unit {}, stripping unit only. Check your configuration.",
                             value, unit);
