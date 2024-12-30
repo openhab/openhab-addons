@@ -908,7 +908,7 @@
 		<feature name="daytime" group="2">WirelessSensorState</feature>
 		<feature name="lowBattery" group="3">WirelessSensorState</feature>
 		<feature name="heartbeat" group="4">HeartbeatMonitor</feature>
-		<feature-group name="extDataGroup" type="extDataGroup">
+		<feature-group name="extDataGroup" type="ExtDataGroup">
 			<feature name="batteryLevel">MotionSensorBatteryLevel</feature>
 			<feature name="lightLevel">MotionSensorLightLevel</feature>
 		</feature-group>
