@@ -349,11 +349,11 @@ public class SmartthingsServlet extends SmartthingsBaseServlet {
                     networkConnector.doRequest(JsonObject.class, subscriptionUri, null, tokenInstallUpdate, body,
                             HttpMethod.POST);
                 } catch (SmartthingsException ex) {
-                    logger.error("Unable to register subscriptions: " + ex.getMessage() + " " + dev.deviceId);
+                    logger.error("Unable to register subscriptions: {} {} ", ex.getMessage(), dev.deviceId);
                 }
             }
         } catch (SmartthingsException ex) {
-            logger.error("Unable to register subscriptions: " + ex.getMessage());
+            logger.error("Unable to register subscriptions: {}", ex.getMessage());
         }
     }
 

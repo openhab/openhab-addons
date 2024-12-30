@@ -74,7 +74,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService
         try {
             doScan(true);
         } catch (SmartthingsException ex) {
-            logger.error("Error during device scan:", ex.toString());
+            logger.error("Error during device scan: {}", ex.toString());
         }
     }
 
