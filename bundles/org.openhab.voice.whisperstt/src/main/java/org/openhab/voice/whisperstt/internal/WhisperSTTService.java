@@ -286,7 +286,6 @@ public class WhisperSTTService implements STTService {
     @Override
     public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale, Set<String> set)
             throws STTException {
-
         AtomicBoolean aborted = new AtomicBoolean(false);
         try {
             logger.debug("Creating VAD instance...");
@@ -607,7 +606,6 @@ public class WhisperSTTService implements STTService {
     }
 
     private String recognizeAPI(int audioSamplesOffset, short[] audioStream, String language) throws STTException {
-
         // convert to byte array, Each short has 2 bytes
         int size = audioSamplesOffset * 2;
         ByteBuffer byteArrayBuffer = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN);
@@ -621,7 +619,7 @@ public class WhisperSTTService implements STTService {
 
         try {
             AudioInputStream audioInputStream = new AudioInputStream(new ByteArrayInputStream(byteArray), jAudioFormat,
-                    size);
+                    audioSamplesOffset);
 
             // write stream as a WAV file, in a byte array stream :
             ByteArrayInputStream byteArrayInputStream = null;
