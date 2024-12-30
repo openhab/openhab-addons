@@ -132,7 +132,6 @@ Bridge tellstick:telldus-local:3 "Tellstick Local ZWave" [ipAddress="x.y.z.w" , 
 
 **NOTE**: This binding does not automatically update the the token, even if 'Auto renew access' is chosen in step 2) above. This has to be done manually at least once a year, as described in the 'Refreshing a token' section in the above page.
 
-
 Required:
 
 - **ipAddress:** Local IP address of your Tellstick device
