@@ -31,7 +31,7 @@
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.11</version>
+            <version>0.8.12</version>
             <executions>
               <execution>
                 <id>default-instrument</id>
@@ -89,7 +89,7 @@
           <groupId>org.jacoco</groupId>
           <artifactId>org.jacoco.agent</artifactId>
           <classifier>runtime</classifier>
-          <version>0.8.11</version>
+          <version>0.8.12</version>
           <scope>test</scope>
         </dependency>
       </dependencies>
