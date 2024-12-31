@@ -37,8 +37,8 @@ public class Tag extends AbstractComponent<Tag.ChannelConfiguration> {
         protected String topic = "";
     }
 
-    public Tag(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Tag(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         buildChannel(TAG_CHANNEL_ID, ComponentChannelType.TRIGGER, new TextValue(), getName(),
                 componentConfiguration.getUpdateListener())

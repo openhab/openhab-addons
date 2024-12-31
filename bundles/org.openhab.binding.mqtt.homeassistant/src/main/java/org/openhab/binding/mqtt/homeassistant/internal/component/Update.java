@@ -143,8 +143,8 @@ public class Update extends AbstractComponent<Update.ChannelConfiguration> imple
     private ReleaseState state = new ReleaseState();
     private @Nullable ReleaseStateListener listener = null;
 
-    public Update(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Update(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         TextValue value = new TextValue();
         String commandTopic = channelConfiguration.commandTopic;

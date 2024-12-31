@@ -53,7 +53,6 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     private final ScheduledExecutorService scheduler;
     private final ChannelStateUpdateListener updateListener;
     private final AvailabilityTracker tracker;
-    private final boolean newStyleChannels;
 
     protected final CompletableFuture<@Nullable Void> discoverFinishedFuture = new CompletableFuture<>();
     private final Gson gson;
@@ -84,7 +83,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      */
     public DiscoverComponents(ThingUID thingUID, ScheduledExecutorService scheduler,
             ChannelStateUpdateListener channelStateUpdateListener, AvailabilityTracker tracker, Gson gson,
-            Jinjava jinjava, UnitProvider unitProvider, boolean newStyleChannels) {
+            Jinjava jinjava, UnitProvider unitProvider) {
         this.thingUID = thingUID;
         this.scheduler = scheduler;
         this.updateListener = channelStateUpdateListener;
@@ -92,7 +91,6 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         this.jinjava = jinjava;
         this.unitProvider = unitProvider;
         this.tracker = tracker;
-        this.newStyleChannels = newStyleChannels;
     }
 
     @Override
@@ -108,7 +106,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         if (config.length() > 0) {
             try {
                 component = ComponentFactory.createComponent(thingUID, haID, config, updateListener, tracker, scheduler,
-                        gson, jinjava, unitProvider, newStyleChannels);
+                        gson, jinjava, unitProvider);
                 component.setConfigSeen();
 
                 logger.trace("Found HomeAssistant component {}", haID);

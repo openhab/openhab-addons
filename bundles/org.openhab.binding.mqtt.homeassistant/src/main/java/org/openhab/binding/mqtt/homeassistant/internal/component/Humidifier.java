@@ -108,8 +108,8 @@ public class Humidifier extends AbstractComponent<Humidifier.ChannelConfiguratio
         protected @Nullable List<String> modes;
     }
 
-    public Humidifier(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Humidifier(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         if (!PLATFORM_HUMIDIFIER.equals(channelConfiguration.platform)) {
             throw new ConfigurationException("platform must be " + PLATFORM_HUMIDIFIER);

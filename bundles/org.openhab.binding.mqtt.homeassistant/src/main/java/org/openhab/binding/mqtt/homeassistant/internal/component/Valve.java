@@ -110,8 +110,8 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
     private final ChannelStateUpdateListener channelStateUpdateListener;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Valve(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Valve(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
         this.channelStateUpdateListener = componentConfiguration.getUpdateListener();
 
         AutoUpdatePolicy autoUpdatePolicy = null;

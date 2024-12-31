@@ -58,13 +58,9 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
 
     public static final String COMMAND_CH_ID = "command";
     public static final String FAN_SPEED_CH_ID = "fan-speed";
-    public static final String FAN_SPEED_CH_ID_DEPRECATED = "fanSpeed";
     public static final String CUSTOM_COMMAND_CH_ID = "custom-command";
-    public static final String CUSTOM_COMMAND_CH_ID_DEPRECATED = "customCommand";
     public static final String BATTERY_LEVEL_CH_ID = "battery-level";
-    public static final String BATTERY_LEVEL_CH_ID_DEPRECATED = "batteryLevel";
     public static final String JSON_ATTRIBUTES_CH_ID = "json-attributes";
-    public static final String JSON_ATTRIBUTES_CH_ID_DEPRECATED = "jsonAttributes";
     public static final String STATE_CH_ID = "state";
 
     private static final String STATE_TEMPLATE = "{{ value_json.state }}";
@@ -122,8 +118,8 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
      *
      * @param componentConfiguration generic componentConfiguration with not parsed JSON config
      */
-    public Vacuum(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Vacuum(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
         final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
         final var supportedFeatures = channelConfiguration.supportedFeatures;
@@ -137,7 +133,7 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
         addPayloadToList(supportedFeatures, FEATURE_PAUSE, channelConfiguration.payloadPause, commands);
 
         buildOptionalChannel(COMMAND_CH_ID, ComponentChannelType.STRING, new TextValue(commands.toArray(new String[0])),
-                updateListener, null, channelConfiguration.commandTopic, null, null);
+                updateListener, null, channelConfiguration.commandTopic, null, null, "Command");
 
         final var fanSpeedList = channelConfiguration.fanSpeedList;
         if (supportedFeatures.contains(FEATURE_FAN_SPEED) && fanSpeedList != null && !fanSpeedList.isEmpty()) {
@@ -147,21 +143,18 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             }
             var fanSpeedValue = new TextValue(fanSpeedList.toArray(new String[0]), fanSpeedCommandList);
             if (supportedFeatures.contains(FEATURE_STATUS)) {
-                buildOptionalChannel(newStyleChannels ? FAN_SPEED_CH_ID : FAN_SPEED_CH_ID_DEPRECATED,
-                        ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
+                buildOptionalChannel(FAN_SPEED_CH_ID, ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
                         channelConfiguration.setFanSpeedTopic, "{{ value_json.fan_speed }}",
-                        channelConfiguration.stateTopic);
+                        channelConfiguration.stateTopic, "Fan Speed");
             } else {
-                buildOptionalChannel(newStyleChannels ? FAN_SPEED_CH_ID : FAN_SPEED_CH_ID_DEPRECATED,
-                        ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
-                        channelConfiguration.setFanSpeedTopic, null, null);
+                buildOptionalChannel(FAN_SPEED_CH_ID, ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
+                        channelConfiguration.setFanSpeedTopic, null, null, "Fan Speed");
             }
         }
 
         if (supportedFeatures.contains(FEATURE_SEND_COMMAND)) {
-            buildOptionalChannel(newStyleChannels ? CUSTOM_COMMAND_CH_ID : CUSTOM_COMMAND_CH_ID_DEPRECATED,
-                    ComponentChannelType.STRING, new TextValue(), updateListener, null,
-                    channelConfiguration.sendCommandTopic, null, null);
+            buildOptionalChannel(CUSTOM_COMMAND_CH_ID, ComponentChannelType.STRING, new TextValue(), updateListener,
+                    null, channelConfiguration.sendCommandTopic, null, null, "Custom Command");
         }
 
         if (supportedFeatures.contains(FEATURE_STATUS)) {
@@ -169,32 +162,24 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             buildOptionalChannel(STATE_CH_ID, ComponentChannelType.STRING,
                     new TextValue(new String[] { STATE_CLEANING, STATE_DOCKED, STATE_PAUSED, STATE_IDLE,
                             STATE_RETURNING, STATE_ERROR }),
-                    updateListener, null, null, STATE_TEMPLATE, channelConfiguration.stateTopic);
+                    updateListener, null, null, STATE_TEMPLATE, channelConfiguration.stateTopic, "State");
             if (supportedFeatures.contains(FEATURE_BATTERY)) {
-                buildOptionalChannel(newStyleChannels ? BATTERY_LEVEL_CH_ID : BATTERY_LEVEL_CH_ID_DEPRECATED,
-                        ComponentChannelType.DIMMER,
+                buildOptionalChannel(BATTERY_LEVEL_CH_ID, ComponentChannelType.DIMMER,
                         new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.ONE, null, null, null),
-                        updateListener, null, null, "{{ value_json.battery_level }}", channelConfiguration.stateTopic);
+                        updateListener, null, null, "{{ value_json.battery_level }}", channelConfiguration.stateTopic,
+                        "Battery Level");
             }
         }
 
         finalizeChannels();
     }
 
-    // Overridden to use deprecated channel ID
-    @Override
-    protected void addJsonAttributesChannel() {
-        buildOptionalChannel(newStyleChannels ? JSON_ATTRIBUTES_CH_ID : JSON_ATTRIBUTES_CH_ID_DEPRECATED,
-                ComponentChannelType.STRING, new TextValue(), componentConfiguration.getUpdateListener(), null, null,
-                channelConfiguration.getJsonAttributesTemplate(), channelConfiguration.getJsonAttributesTopic());
-    }
-
     @Nullable
     private ComponentChannel buildOptionalChannel(String channelId, ComponentChannelType channelType, Value valueState,
             ChannelStateUpdateListener channelStateUpdateListener, @Nullable String commandTemplate,
-            @Nullable String commandTopic, @Nullable String stateTemplate, @Nullable String stateTopic) {
+            @Nullable String commandTopic, @Nullable String stateTemplate, @Nullable String stateTopic, String label) {
         if ((commandTopic != null && !commandTopic.isBlank()) || (stateTopic != null && !stateTopic.isBlank())) {
-            return buildChannel(channelId, channelType, valueState, getName(), channelStateUpdateListener)
+            return buildChannel(channelId, channelType, valueState, label, channelStateUpdateListener)
                     .stateTopic(stateTopic, stateTemplate, channelConfiguration.getValueTemplate())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos(),
                             commandTemplate)

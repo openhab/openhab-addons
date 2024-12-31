@@ -54,8 +54,8 @@ public class Event extends AbstractComponent<Event.ChannelConfiguration> impleme
 
     private final HomeAssistantChannelTransformation transformation;
 
-    public Event(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Event(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         transformation = new HomeAssistantChannelTransformation(getJinjava(), this, "");
 

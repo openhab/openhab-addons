@@ -47,8 +47,8 @@ public class Button extends AbstractComponent<Button.ChannelConfiguration> {
         protected String payloadPress = "PRESS";
     }
 
-    public Button(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Button(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         TextValue value = new TextValue(new String[] { channelConfiguration.payloadPress });
 

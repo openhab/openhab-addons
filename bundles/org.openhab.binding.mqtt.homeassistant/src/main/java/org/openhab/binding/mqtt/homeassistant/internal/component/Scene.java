@@ -45,8 +45,8 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
         protected String payloadOn = "ON";
     }
 
-    public Scene(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Scene(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         TextValue value = new TextValue(new String[] { channelConfiguration.payloadOn });
 
