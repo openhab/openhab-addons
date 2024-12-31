@@ -35,6 +35,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -658,8 +659,10 @@ public class StateFilterProfileTest {
         NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
         NumberItem decimalItem = new NumberItem("decimalItem");
         List<Number> numbers = List.of(1, 2, 3, 4, 5);
+        List<Number> negatives = List.of(-1, -2, -3, -4, -5);
         List<QuantityType> quantities = numbers.stream().map(n -> new QuantityType(n, Units.WATT)).toList();
         List<DecimalType> decimals = numbers.stream().map(DecimalType::new).toList();
+        List<DecimalType> negativeDecimals = negatives.stream().map(DecimalType::new).toList();
 
         return Stream.of( //
                 // test custom window size
@@ -694,6 +697,9 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("1.11"), false), //
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.91"), true), //
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.89"), false), //
+
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", negativeDecimals, DecimalType.valueOf("0"), false), //
+                Arguments.of(decimalItem, "10 > $DELTA_PERCENT", negativeDecimals, DecimalType.valueOf("0"), false), //
 
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.09"), true), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.11"), false), //
@@ -761,5 +767,31 @@ public class StateFilterProfileTest {
 
         profile.onStateUpdateFromHandler(input);
         verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(input);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { //
+            "$DELTA > 10", //
+            "$DELTA < 10", //
+            "10 < $DELTA", //
+            "10 > $DELTA", //
+            "$DELTA_PERCENT > 10", //
+            "$DELTA_PERCENT < 10", //
+            "10 < $DELTA_PERCENT", //
+            "10 > $DELTA_PERCENT", //
+            "> 10%", //
+            "< 10%" //
+    })
+    public void testFirstDataIsAcceptedForDeltaFunctions(String conditions) throws ItemNotFoundException {
+        NumberItem decimalItem = new NumberItem("decimalItem");
+
+        when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", conditions)));
+        when(mockItemRegistry.getItem(decimalItem.getName())).thenReturn(decimalItem);
+        when(mockItemChannelLink.getItemName()).thenReturn(decimalItem.getName());
+
+        StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
+
+        profile.onStateUpdateFromHandler(DecimalType.valueOf("1"));
+        verify(mockCallback, times(1)).sendUpdate(DecimalType.valueOf("1"));
     }
 }

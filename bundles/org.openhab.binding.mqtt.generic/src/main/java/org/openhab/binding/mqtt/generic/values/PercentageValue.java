@@ -75,7 +75,7 @@ public class PercentageValue extends Value {
 
     @Override
     public Command parseCommand(Command command) throws IllegalArgumentException {
-        PercentType oldvalue = (state instanceof UnDefType) ? new PercentType() : (PercentType) state;
+        PercentType oldvalue = (state instanceof UnDefType) ? new PercentType() : state.as(PercentType.class);
         // Nothing do to -> We have received a percentage
         if (command instanceof PercentType percent) {
             return percent;
