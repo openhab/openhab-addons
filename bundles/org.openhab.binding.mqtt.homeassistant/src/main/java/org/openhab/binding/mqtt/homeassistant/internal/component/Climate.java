@@ -49,12 +49,9 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public static final String ACTION_CH_ID = "action";
     public static final String AUX_CH_ID = "aux";
     public static final String AWAY_MODE_CH_ID = "away-mode";
-    public static final String AWAY_MODE_CH_ID_DEPRECATED = "awayMode";
     public static final String CURRENT_HUMIDITY_CH_ID = "current-humidity";
     public static final String CURRENT_TEMPERATURE_CH_ID = "current-temperature";
-    public static final String CURRENT_TEMPERATURE_CH_ID_DEPRECATED = "currentTemperature";
     public static final String FAN_MODE_CH_ID = "fan-mode";
-    public static final String FAN_MODE_CH_ID_DEPRECATED = "fanMode";
     public static final String HOLD_CH_ID = "hold";
     public static final String MODE_CH_ID = "mode";
     public static final String PRESET_MODE_CH_ID = "preset-mode";
@@ -62,9 +59,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public static final String TARGET_HUMIDITY_CH_ID = "target-humidity";
     public static final String TEMPERATURE_CH_ID = "temperature";
     public static final String TEMPERATURE_HIGH_CH_ID = "temperature-high";
-    public static final String TEMPERATURE_HIGH_CH_ID_DEPRECATED = "temperatureHigh";
     public static final String TEMPERATURE_LOW_CH_ID = "temperature-low";
-    public static final String TEMPERATURE_LOW_CH_ID_DEPRECATED = "temperatureLow";
     public static final String POWER_CH_ID = "power";
 
     private static final String ACTION_OFF = "off";
@@ -224,8 +219,8 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
         protected Boolean sendIfOff = true;
     }
 
-    public Climate(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Climate(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         TemperatureUnit temperatureUnit = channelConfiguration.temperatureUnit;
         if (channelConfiguration.temperatureUnit == null) {
@@ -250,8 +245,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.auxCommandTopic, channelConfiguration.auxStateTemplate,
                 channelConfiguration.auxStateTopic, commandFilter);
 
-        buildOptionalChannel(newStyleChannels ? AWAY_MODE_CH_ID : AWAY_MODE_CH_ID_DEPRECATED,
-                ComponentChannelType.SWITCH, new OnOffValue(), updateListener, null,
+        buildOptionalChannel(AWAY_MODE_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(), updateListener, null,
                 channelConfiguration.awayModeCommandTopic, channelConfiguration.awayModeStateTemplate,
                 channelConfiguration.awayModeStateTopic, commandFilter);
 
@@ -259,12 +253,12 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 new NumberValue(new BigDecimal(0), new BigDecimal(100), null, Units.PERCENT), updateListener, null,
                 null, channelConfiguration.currentHumidityTemplate, channelConfiguration.currentHumidityTopic, null);
 
-        buildOptionalChannel(newStyleChannels ? CURRENT_TEMPERATURE_CH_ID : CURRENT_TEMPERATURE_CH_ID_DEPRECATED,
-                ComponentChannelType.TEMPERATURE, new NumberValue(null, null, precision, temperatureUnit.getUnit()),
-                updateListener, null, null, channelConfiguration.currentTemperatureTemplate,
-                channelConfiguration.currentTemperatureTopic, commandFilter);
+        buildOptionalChannel(CURRENT_TEMPERATURE_CH_ID, ComponentChannelType.TEMPERATURE,
+                new NumberValue(null, null, precision, temperatureUnit.getUnit()), updateListener, null, null,
+                channelConfiguration.currentTemperatureTemplate, channelConfiguration.currentTemperatureTopic,
+                commandFilter);
 
-        buildOptionalChannel(newStyleChannels ? FAN_MODE_CH_ID : FAN_MODE_CH_ID_DEPRECATED, ComponentChannelType.STRING,
+        buildOptionalChannel(FAN_MODE_CH_ID, ComponentChannelType.STRING,
                 new TextValue(channelConfiguration.fanModes.toArray(new String[0])), updateListener,
                 channelConfiguration.fanModeCommandTemplate, channelConfiguration.fanModeCommandTopic,
                 channelConfiguration.fanModeStateTemplate, channelConfiguration.fanModeStateTopic, commandFilter);
@@ -306,16 +300,14 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.temperatureCommandTopic, channelConfiguration.temperatureStateTemplate,
                 channelConfiguration.temperatureStateTopic, commandFilter);
 
-        buildOptionalChannel(newStyleChannels ? TEMPERATURE_HIGH_CH_ID : TEMPERATURE_HIGH_CH_ID_DEPRECATED,
-                ComponentChannelType.TEMPERATURE,
+        buildOptionalChannel(TEMPERATURE_HIGH_CH_ID, ComponentChannelType.TEMPERATURE,
                 new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
                         channelConfiguration.tempStep, temperatureUnit.getUnit()),
                 updateListener, channelConfiguration.temperatureHighCommandTemplate,
                 channelConfiguration.temperatureHighCommandTopic, channelConfiguration.temperatureHighStateTemplate,
                 channelConfiguration.temperatureHighStateTopic, commandFilter);
 
-        buildOptionalChannel(newStyleChannels ? TEMPERATURE_LOW_CH_ID : TEMPERATURE_LOW_CH_ID_DEPRECATED,
-                ComponentChannelType.TEMPERATURE,
+        buildOptionalChannel(TEMPERATURE_LOW_CH_ID, ComponentChannelType.TEMPERATURE,
                 new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
                         channelConfiguration.tempStep, temperatureUnit.getUnit()),
                 updateListener, channelConfiguration.temperatureLowCommandTemplate,

@@ -163,7 +163,6 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
                 Map<String, Object> properties = new HashMap<>();
                 properties = config.appendToProperties(properties);
                 properties.put("deviceId", thingID);
-                properties.put("newStyleChannels", "true");
 
                 buildResult(thingID, thingUID, config.getThingName(), haID, properties, bridgeUID);
             }

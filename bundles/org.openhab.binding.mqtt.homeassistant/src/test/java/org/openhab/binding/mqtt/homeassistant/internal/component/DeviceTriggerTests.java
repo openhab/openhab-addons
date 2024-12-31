@@ -145,9 +145,4 @@ public class DeviceTriggerTests extends AbstractComponentTests {
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC_1, CONFIG_TOPIC_2);
     }
-
-    @Override
-    protected boolean useNewStyleChannels() {
-        return true;
-    }
 }

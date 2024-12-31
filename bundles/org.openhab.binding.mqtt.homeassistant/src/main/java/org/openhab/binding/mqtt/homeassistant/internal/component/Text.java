@@ -54,8 +54,8 @@ public class Text extends AbstractComponent<Text.ChannelConfiguration> {
         protected String mode = MODE_TEXT; // Presumably for a password, it should mask any controls in the UI
     }
 
-    public Text(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Text(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         TextValue value = new TextValue();
 

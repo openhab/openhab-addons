@@ -39,8 +39,8 @@ public class Camera extends AbstractComponent<Camera.ChannelConfiguration> {
         protected String topic = "";
     }
 
-    public Camera(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Camera(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         ImageValue value = new ImageValue();
 

@@ -59,8 +59,8 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
         }
     }
 
-    public DeviceTrigger(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public DeviceTrigger(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         if (!"trigger".equals(channelConfiguration.automationType)) {
             throw new ConfigurationException("Component:DeviceTrigger must have automation_type 'trigger'");
@@ -72,13 +72,11 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
             throw new ConfigurationException("Component:DeviceTrigger must have a subtype");
         }
 
-        if (newStyleChannels) {
-            // Name the channel after the subtype, not the component ID
-            // So that we only end up with a single channel for all possible events
-            // for a single button (subtype is the button, type is type of press)
-            componentId = channelConfiguration.subtype;
-            groupId = null;
-        }
+        // Name the channel after the subtype, not the component ID
+        // So that we only end up with a single channel for all possible events
+        // for a single button (subtype is the button, type is type of press)
+        componentId = channelConfiguration.subtype;
+        groupId = null;
 
         TextValue value;
         String payload = channelConfiguration.payload;
