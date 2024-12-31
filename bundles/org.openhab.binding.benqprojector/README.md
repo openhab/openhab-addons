@@ -98,7 +98,7 @@ sitemaps/benq.sitemap
 sitemap benq label="BenQ Projector" {
     Frame label="Controls" {
         Switch     item=benqPower  label="Power"
-        Selection  item=benqSource label="Source" mappings=["hdmi"="HDMI", "hdmi2"="HDMI2", "ypbr"="Component", "RGB"="Computer", "vid"="Video", "svid"="S-Video"]
+        Selection  item=benqSource label="Source" mappings=["hdmi"="HDMI", "hdmi2"="HDMI2", "usbreader"="USB Reader", "ypbr"="Component", "RGB"="Computer", "vid"="Video", "svid"="S-Video"]
         Selection  item=benqPictureMode label="Picture Mode"
         Selection  item=benqAspectRatio label="Aspect Ratio"
         Switch     item=benqFreeze label="Freeze"
