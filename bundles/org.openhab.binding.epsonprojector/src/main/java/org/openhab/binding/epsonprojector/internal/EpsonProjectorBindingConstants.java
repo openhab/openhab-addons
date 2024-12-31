@@ -41,6 +41,7 @@ public class EpsonProjectorBindingConstants {
     public static final String CHANNEL_TYPE_POWER = "power";
     public static final String CHANNEL_TYPE_POWERSTATE = "powerstate";
     public static final String CHANNEL_TYPE_LAMPTIME = "lamptime";
+    public static final String CHANNEL_TYPE_SOURCE = "source";
 
     // Config properties
     public static final String THING_PROPERTY_HOST = "host";
