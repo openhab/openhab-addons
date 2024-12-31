@@ -26,6 +26,7 @@ public class XMPPClientConfiguration {
     public @Nullable String host;
     public Integer port = 5222;
     public String username = "";
+    public String nickname = "";
     public String password = "";
     public String domain = "";
     public String securityMode = SecurityMode.required.toString();
