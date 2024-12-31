@@ -41,29 +41,37 @@ import javax.script.ScriptException;
 import org.graalvm.home.Version;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
-import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Language;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.graalvm.python.embedding.utils.GraalPyResources;
 import org.openhab.core.OpenHAB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory {
     private static final String LANGUAGE_ID = "python";
 
+    private final Logger logger = LoggerFactory.getLogger(GraalPythonScriptEngineFactory.class);
     private static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
+
+    // private static final Context context = CreatePythonContext(polyglotEngine, PYTHON_DEFAULT_PATH);
+    private static final Context context = GraalPyResources.contextBuilder(PYTHON_DEFAULT_PATH).build();
+    // private static final Engine polyglotEngine = Engine.newBuilder().allowExperimentalOptions(true).build();
+    private static final Engine polyglotEngine = context.getEngine();
 
     /***********************************************************/
     /* Everything below is generic and does not need to change */
     /***********************************************************/
 
-    // private final Engine polyglotEngine = Engine.newBuilder().build();
-    private final Engine polyglotEngine = GraalPyResources.contextBuilder(PYTHON_DEFAULT_PATH).allowAllAccess(true)
-            .allowHostAccess(HostAccess.ALL).build().getEngine();
-
-    // private final Engine polyglotEngine = GraalPyResources.createContext().getEngine();
     private final Language language = polyglotEngine.getLanguages().get(LANGUAGE_ID);
+
+    public GraalPythonScriptEngineFactory() {
+        logger.debug("Languages: {}", polyglotEngine.getLanguages().keySet().toString());
+
+        context.eval("python", "print('Hello world')");
+    }
 
     @Override
     public String getEngineName() {
