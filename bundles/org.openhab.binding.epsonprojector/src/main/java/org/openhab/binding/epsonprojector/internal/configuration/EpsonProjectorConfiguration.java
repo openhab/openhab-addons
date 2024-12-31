@@ -46,4 +46,9 @@ public class EpsonProjectorConfiguration {
      * Maximum volume setting of this projector, ie 20, 40, etc.
      */
     public int maxVolume = 20;
+
+    /**
+     * Boolean to indicate if source list should be retrieved from projector
+     */
+    public boolean loadSourceList;
 }
