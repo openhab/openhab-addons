@@ -341,7 +341,12 @@ public class StateFilterProfile implements StateProfile {
 
                 if (rhsState == null) {
                     rhsItem = getItemOrNull(rhsString);
-                } else if (rhsState instanceof FunctionType) {
+                } else if (rhsState instanceof FunctionType rhsFunction) {
+                    if (acceptedState == UnDefType.UNDEF && (rhsFunction.getType() == FunctionType.Function.DELTA
+                            || rhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)) {
+                        acceptedState = input;
+                        return true;
+                    }
                     rhsItem = getLinkedItem();
                 }
 
@@ -359,6 +364,11 @@ public class StateFilterProfile implements StateProfile {
                         return false;
                     }
                 } else if (lhsState instanceof FunctionType lhsFunction) {
+                    if (acceptedState == UnDefType.UNDEF && (lhsFunction.getType() == FunctionType.Function.DELTA
+                            || lhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)) {
+                        acceptedState = input;
+                        return true;
+                    }
                     lhsItem = getLinkedItem();
                     lhsState = lhsFunction.calculate();
                     if (lhsState == null) {
@@ -660,27 +670,18 @@ public class StateFilterProfile implements StateProfile {
         }
 
         private @Nullable State calculateDelta() {
-            if (acceptedState == UnDefType.UNDEF) {
-                logger.debug("No previous data to calculate delta");
-                acceptedState = newState;
-                return null;
-            }
-
             if (newState instanceof QuantityType newStateQuantity) {
                 QuantityType result = newStateQuantity.subtract((QuantityType) acceptedState);
                 return result.toBigDecimal().compareTo(BigDecimal.ZERO) < 0 ? result.negate() : result;
             }
             BigDecimal result = ((DecimalType) newState).toBigDecimal()
-                    .subtract(((DecimalType) acceptedState).toBigDecimal());
-            return result.compareTo(BigDecimal.ZERO) < 0 ? new DecimalType(result.negate()) : new DecimalType(result);
+                    .subtract(((DecimalType) acceptedState).toBigDecimal()) //
+                    .abs();
+            return new DecimalType(result);
         }
 
         private @Nullable State calculateDeltaPercent() {
             State calculatedDelta = calculateDelta();
-            if (calculatedDelta == null) {
-                return null;
-            }
-
             BigDecimal bdDelta;
             BigDecimal bdBase;
             if (acceptedState instanceof QuantityType acceptedStateQuantity) {
@@ -691,6 +692,7 @@ public class StateFilterProfile implements StateProfile {
                 bdDelta = ((DecimalType) calculatedDelta).toBigDecimal();
                 bdBase = ((DecimalType) acceptedState).toBigDecimal();
             }
+            bdBase = bdBase.abs();
             BigDecimal percent = bdDelta.multiply(BigDecimal.valueOf(100)).divide(bdBase, 2, RoundingMode.HALF_EVEN);
             return new DecimalType(percent);
         }
