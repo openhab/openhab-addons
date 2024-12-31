@@ -124,7 +124,7 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         if (pollingJob.getDelay(TimeUnit.SECONDS) > REFRESH_DELAY) {
             ScheduledFuture<?> immediateRefreshJob = this.immediateRefreshJob;
             if (immediateRefreshJob == null || immediateRefreshJob.isDone()) {
-                immediateRefreshJob = scheduler.schedule(this::refreshDeviceList, REFRESH_DELAY, TimeUnit.SECONDS);
+                this.immediateRefreshJob = scheduler.schedule(this::refreshDeviceList, REFRESH_DELAY, TimeUnit.SECONDS);
             }
         }
     }

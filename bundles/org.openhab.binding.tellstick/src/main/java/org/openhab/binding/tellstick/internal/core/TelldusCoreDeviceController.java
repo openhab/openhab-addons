@@ -184,8 +184,8 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     private void increaseDecrease(Device dev, IncreaseDecreaseType increaseDecreaseType) throws TellstickException {
         double value = 0;
         if (dev instanceof TellstickDevice device) {
-            String strValue = null;
-            if ((strValue = device.getData()) != null) {
+            String strValue = device.getData();
+            if (strValue != null) {
                 value = Double.valueOf(strValue);
             }
         }

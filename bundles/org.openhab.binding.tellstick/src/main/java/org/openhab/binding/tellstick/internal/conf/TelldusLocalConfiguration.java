@@ -24,5 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class TelldusLocalConfiguration {
     public String ipAddress = "";
     public String accessToken = "";
-    public long refreshInterval;
+    public long refreshInterval = 60000;
 }
