@@ -76,6 +76,7 @@ public class HomekitAccessoryFactory {
             put(CARBON_MONOXIDE_SENSOR, new HomekitCharacteristicType[] { CARBON_MONOXIDE_DETECTED_STATE });
             put(CONTACT_SENSOR, new HomekitCharacteristicType[] { CONTACT_SENSOR_STATE });
             put(DOOR, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
+            put(DOORBELL, new HomekitCharacteristicType[] { PROGRAMMABLE_SWITCH_EVENT });
             put(FAN, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(FAUCET, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(FILTER_MAINTENANCE, new HomekitCharacteristicType[] { FILTER_CHANGE_INDICATION });
@@ -104,8 +105,7 @@ public class HomekitAccessoryFactory {
             put(TELEVISION, new HomekitCharacteristicType[] { ACTIVE });
             put(TELEVISION_SPEAKER, new HomekitCharacteristicType[] { MUTE });
             put(TEMPERATURE_SENSOR, new HomekitCharacteristicType[] { CURRENT_TEMPERATURE });
-            put(THERMOSTAT, new HomekitCharacteristicType[] { CURRENT_HEATING_COOLING_STATE,
-                    TARGET_HEATING_COOLING_STATE, CURRENT_TEMPERATURE });
+            put(THERMOSTAT, new HomekitCharacteristicType[] { TARGET_HEATING_COOLING_STATE, CURRENT_TEMPERATURE });
             put(VALVE, new HomekitCharacteristicType[] { ACTIVE_STATUS, INUSE_STATUS });
             put(WINDOW, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
             put(WINDOW_COVERING, new HomekitCharacteristicType[] { TARGET_POSITION, CURRENT_POSITION, POSITION_STATE });
@@ -124,6 +124,7 @@ public class HomekitAccessoryFactory {
             put(CARBON_MONOXIDE_SENSOR, HomekitCarbonMonoxideSensorImpl.class);
             put(CONTACT_SENSOR, HomekitContactSensorImpl.class);
             put(DOOR, HomekitDoorImpl.class);
+            put(DOORBELL, HomekitDoorbellImpl.class);
             put(FAN, HomekitFanImpl.class);
             put(FAUCET, HomekitFaucetImpl.class);
             put(FILTER_MAINTENANCE, HomekitFilterMaintenanceImpl.class);

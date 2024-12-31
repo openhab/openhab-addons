@@ -13,6 +13,7 @@
 package org.openhab.binding.fmiweather.internal.client;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.fmiweather.internal.config.ForecastConfiguration;
 
 /**
  * Request for weather forecasts
@@ -21,9 +22,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public class ForecastRequest extends Request {
+public class ForecastRequest extends FMIRequest {
 
-    public static final String STORED_QUERY_ID = "fmi::forecast::harmonie::surface::point::multipointcoverage";
+    public static final String STORED_QUERY_ID_HARMONIE = "fmi::forecast::harmonie::surface::point::multipointcoverage";
+    public static final String STORED_QUERY_ID_EDITED = "fmi::forecast::edited::weather::scandinavia::point::multipointcoverage";
 
     // For description of variables: http://opendata.fmi.fi/meta?observableProperty=forecast
     public static final String PARAM_TEMPERATURE = "Temperature";
@@ -39,7 +41,12 @@ public class ForecastRequest extends Request {
             PARAM_WIND_SPEED, PARAM_WIND_GUST, PARAM_PRESSURE, PARAM_PRECIPITATION_1H, PARAM_TOTAL_CLOUD_COVER,
             PARAM_WEATHER_SYMBOL };
 
-    public ForecastRequest(QueryParameter location, long startEpoch, long endEpoch, long timestepMinutes) {
-        super(STORED_QUERY_ID, location, startEpoch, endEpoch, timestepMinutes, PARAMETERS);
+    public ForecastRequest(QueryParameter location, String query, long startEpoch, long endEpoch,
+            long timestepMinutes) {
+        super(switch (query) {
+            case ForecastConfiguration.QUERY_HARMONIE -> STORED_QUERY_ID_HARMONIE;
+            case ForecastConfiguration.QUERY_EDITED -> STORED_QUERY_ID_EDITED;
+            default -> throw new IllegalArgumentException("Invalid query parameter '%s'".formatted(query));
+        }, location, startEpoch, endEpoch, timestepMinutes, PARAMETERS);
     }
 }

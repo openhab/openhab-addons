@@ -79,7 +79,7 @@ public class ModelParserTest {
 
     @Test
     public void shouldParseCorrectStatusModelWithHealth() {
-        String correctModel = "{ \"successful\": true, \"name\": \"Rosenlund Automower\", \"status\": { \"status\": 4, \"stopped\": false, \"duration\": 47493, \"mode\": 0, \"battery\": 20, \"hours\": 991 }, \"timer\": { \"status\": 2, \"next\": { \"date\": \"30.07.2017\", \"time\": \"13:00:00\", \"unix\": 1501419600 } }, \"wlan\": { \"signal\": -66 }, \"health\": { \"temperature\": 28, \"humidity\": 32 } }";
+        String correctModel = "{ \"successful\": true, \"name\": \"Rosenlund Automower\", \"status\": { \"status\": 4, \"stopped\": false, \"duration\": 47493, \"mode\": 0, \"battery\": 20, \"hours\": 991 }, \"timer\": { \"status\": 2, \"next\": { \"date\": \"30.07.2017\", \"time\": \"13:00:00\", \"unix\": 1501419600 } }, \"blades\": {\"quality\": 9, \"hours\": 183, \"days\": 76}, \"wlan\": { \"signal\": -66 }, \"health\": { \"temperature\": 28, \"humidity\": 32 } }";
         MowerInfo mowerInfo = subject.parse(correctModel, MowerInfo.class);
         assertTrue(mowerInfo.isSuccessful());
         assertEquals("Rosenlund Automower", mowerInfo.getName());
@@ -98,6 +98,9 @@ public class ModelParserTest {
         assertNotNull(mowerInfo.getHealth());
         assertEquals(28, mowerInfo.getHealth().getTemperature());
         assertEquals(32, mowerInfo.getHealth().getHumidity());
+        assertEquals(9, mowerInfo.getBlades().getQuality());
+        assertEquals(76, mowerInfo.getBlades().getDays());
+        assertEquals(183, mowerInfo.getBlades().getHours());
         // "health": { "temperature": 28, "humidity": 32 }
     }
 

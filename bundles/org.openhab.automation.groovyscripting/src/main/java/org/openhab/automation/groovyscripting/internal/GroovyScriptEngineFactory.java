@@ -12,21 +12,19 @@
  */
 package org.openhab.automation.groovyscripting.internal;
 
-import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
 
+import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.codehaus.groovy.jsr223.GroovyScriptEngineImpl;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.AbstractScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.osgi.service.component.annotations.Component;
-
-import groovy.lang.GroovyClassLoader;
 
 /**
  * This is an implementation of a {@link ScriptEngineFactory} for Groovy.
@@ -37,20 +35,11 @@ import groovy.lang.GroovyClassLoader;
 @NonNullByDefault
 public class GroovyScriptEngineFactory extends AbstractScriptEngineFactory {
 
-    private static final String FILE_DIRECTORY = "automation" + File.separator + "groovy";
     private final org.codehaus.groovy.jsr223.GroovyScriptEngineFactory factory = new org.codehaus.groovy.jsr223.GroovyScriptEngineFactory();
 
-    private final List<String> scriptTypes = (List<String>) Stream.of(factory.getExtensions(), factory.getMimeTypes())
+    private final List<String> scriptTypes = Stream.of(factory.getExtensions(), factory.getMimeTypes())
             .flatMap(List::stream) //
-            .collect(Collectors.toUnmodifiableList());
-
-    private final GroovyClassLoader gcl = new GroovyClassLoader(GroovyScriptEngineFactory.class.getClassLoader());
-
-    public GroovyScriptEngineFactory() {
-        String scriptDir = OpenHAB.getConfigFolder() + File.separator + FILE_DIRECTORY;
-        logger.debug("Adding script directory {} to the GroovyScriptEngine class path.", scriptDir);
-        gcl.addClasspath(scriptDir);
-    }
+            .toList();
 
     @Override
     public List<String> getScriptTypes() {
@@ -58,10 +47,32 @@ public class GroovyScriptEngineFactory extends AbstractScriptEngineFactory {
     }
 
     @Override
-    public @Nullable ScriptEngine createScriptEngine(String scriptType) {
-        if (scriptTypes.contains(scriptType)) {
-            return new org.codehaus.groovy.jsr223.GroovyScriptEngineImpl(gcl);
+    public void scopeValues(ScriptEngine scriptEngine, Map<String, Object> scopeValues) {
+        ImportCustomizer importCustomizer = new ImportCustomizer();
+        for (Map.Entry<String, Object> entry : scopeValues.entrySet()) {
+            if (entry.getValue() instanceof Class<?> clazz) {
+                String canonicalName = clazz.getCanonicalName();
+                try {
+                    // Only add imports for classes that are available to the classloader
+                    getClass().getClassLoader().loadClass(canonicalName);
+                    importCustomizer.addImport(entry.getKey(), canonicalName);
+                    logger.debug("Added import for {} as {}", entry.getKey(), canonicalName);
+                } catch (ClassNotFoundException e) {
+                    logger.debug("Unable to add import for {} as {}", entry.getKey(), canonicalName, e);
+                }
+            } else {
+                scriptEngine.put(entry.getKey(), entry.getValue());
+            }
         }
-        return null;
+
+        GroovyScriptEngineImpl gse = (GroovyScriptEngineImpl) scriptEngine;
+        CustomizableGroovyClassLoader cl = (CustomizableGroovyClassLoader) gse.getClassLoader();
+        cl.addCompilationCustomizers(importCustomizer);
+    }
+
+    @Override
+    public @Nullable ScriptEngine createScriptEngine(String scriptType) {
+        return scriptTypes.contains(scriptType) ? new GroovyScriptEngineImpl(new CustomizableGroovyClassLoader())
+                : null;
     }
 }

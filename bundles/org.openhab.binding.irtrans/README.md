@@ -1,10 +1,15 @@
 # IRtrans Binding
 
-This binding integrates infrared receivers and blasters manufactured by IRtrans (www.irtrans.de)
+This binding integrates infrared receivers and blasters manufactured by IRtrans <www.irtrans.de>
 
 ## Supported Things
 
-The _ethernet_ Bridge supports the Ethernet (PoE) IRtrans transceiver equipped with an on-board IRDB database. Blasters and receivers are defined as Channels on the Bridge, but one can also define blasters as a _blaster_ child Thing on the Bridge.
+This binding supports the following Thing types
+
+| Thing    | Thing Type | Description                                                                |
+|----------|------------|----------------------------------------------------------------------------|
+| ethernet | Bridge     | Ethernet (PoE) IRtrans transceiver equipped with an on-board IRDB database |
+| blaster  | Thing      | Child thing representing an IR Blaster                                     |
 
 ## Discovery
 
@@ -16,30 +21,60 @@ There is no specific binding configuration required.
 
 ## Thing Configuration
 
-The _ethernet_ Bridge requires an _ipAddress_ IP address and _portNumber_ TCP port number in order to configure it. Optionally, one can add the following parameters to the configuration:
+### `ethernet` Bridge Configuration
 
-_bufferSize_ : Buffer size used by the TCP socket when sending and receiving commands to the transceiver (default: 1024)
-_responseTimeOut_ : Specifies the time milliseconds to wait for a response from the transceiver when sending a command (default: 100)
-_pingTimeOut_ : Specifies the time milliseconds to wait for a response from the transceiver when pinging the device (default: 1000)
-_reconnectInterval_ : Specifies the time seconds to wait before reconnecting to a transceiver after a communication failure (default: 10)
+| Parameter         | Description                                                                                           | Config   | Default |
+|-------------------|-------------------------------------------------------------------------------------------------------|----------|---------|
+| ipAddress         | The IP address or hostname of the bridge                                                              | Required | -       |
+| portNumber        | The port number the bridge listens on                                                                 | Required | -       |
+| bufferSize        | Buffer size used by the TCP socket when sending and receiving commands to the transceiver             | Optional | 1024    |
+| responseTimeOut   | Specifies the time milliseconds to wait for a response from the transceiver when sending a command    | Optional | 100     |
+| pingTimeOut       | Specifies the time milliseconds to wait for a response from the transceiver when pinging the device   | Optional | 1000    |
+| reconnectInterval | Specifies the time seconds to wait before reconnecting to a transceiver after a communication failure | Optional | 10      |
 
-The _blaster_ Thing requires a _led_ parameter to specify on which infrared commands will be emitted, _remote_ the remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be ' \*' for 'any' remote), and _command_ the name of the command will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be '*' for 'any' command).
+### `blaster` Thing Configuration
+
+The `blaster` Thing reuires an `ethernet` (Bridge) before it can be used.
+
+| Parameter | Description                                                                                                                                                                      | Config   | Default |
+|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
+| led       | Specifies the led on which infrared commands will be emitted                                                                                                                     | Required | -       |
+| remote    | The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be ' \*' for 'any' remote) | Required | -       |
+| command   | The name of the command will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be '*' for 'any' command)                           | Required | -       |
 
 ## Channels
 
-The _ethernet_ Thing supports the following Channel Types:
+### `ethernet` Bridge Channels
 
-| Channel Type ID | Item Type | Description                                                                         |
-|-----------------|-----------|-------------------------------------------------------------------------------------|
-| blaster         | String    | Send (filtered) infrared commands over the specified blaster LED of the transceiver |
-| receiver        | String    | Receive (filtered) infrared commands on the receiver LED of the transceiver         |
+| Channel Type ID | Item Type | Description                                                                         |                                            |
+|-----------------|-----------|-------------------------------------------------------------------------------------|--------------------------------------------|
+| blaster         | String    | Send (filtered) infrared commands over the specified blaster LED of the transceiver | [Channel configuration](#blaster-channel)  |
+| receiver        | String    | Receive (filtered) infrared commands on the receiver LED of the transceiver         | [Channel configuration](#receiver-channel) |
 
-The _blaster_ Channel Type requires a _led_ configuration parameter to specify on which infrared commands will be emitted, _remote_ the remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be '\*' for 'any' remote), and _command_ the name of the command will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be '*' for 'any' command).
+### `ethernet` Bridge Channel Configuration
 
-The _receiver_ Channel Type requires _remote_ the remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be '\*' for 'any' remote), and _command_ the name of the command will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be '*' for 'any' command).
+#### `blaster` Channel
 
-The _blaster_ Thing supports a _io_ Channel (of Item Type String) that allows to read infrared commands received by the blaster, as well as to write infrared commands to be sent by the blaster.
+| Parameter | Description                                                                                                                                                                      | Config   | Default |
+|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
+| led       | Specifies the led on which infrared commands will be emitted                                                                                                                     | Required | -       |
+| remote    | The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be ' \*' for 'any' remote) | Required | -       |
+| command   | The name of the command will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be '*' for 'any' command)                           | Required | -       |
 
+#### `receiver` Channel
+
+| Parameter | Description                                                                                                                                                                      | Config   | Default |
+|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
+| remote    | The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be ' \*' for 'any' remote) | Required | -       |
+| command   | The name of the command will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be '*' for 'any' command)                           | Required | -       |
+
+### `blaster` Thing Channels
+
+| Channel Type ID | Item Type | Description                                                                                                               |                                      |
+|-----------------|-----------|---------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| io              | String    | Allows to read infrared commands received by the blaster, as well as to write infrared commands to be sent by the blaster | [Channel configuration](#io-channel) |
+
+*note*
 The IRtrans transceivers store infrared commands in a "remote,command" table, e.g. "telenet,power". Sending the literal text string "telenet,power" to the transceiver will make the transceiver "translate" that into the actual infrared command that will be emitted by the transceiver.  A "remote,command" string sent to a Channel that does not match the defined filter will be ignored.
 
 ## Full Example
@@ -91,7 +126,7 @@ demo.rules:
 ```java
 rule "Kitchen switch IR rule"
 when
-    Item KitchenIRReceiverTelenetPower received update 
+    Item KitchenIRReceiverTelenetPower received update
 then
     createTimer(now.plusSeconds(5)) [|
         KitchenIRBlasterSamsung.sendCommand("samsung,power")

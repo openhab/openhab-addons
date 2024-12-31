@@ -54,9 +54,9 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
         if (args.length == 1 && CMD_LIST_UNKNOWN_GA.equalsIgnoreCase(args[0])) {
             for (KNXBridgeBaseThingHandler bridgeHandler : knxHandlerFactory.getBridges()) {
                 console.println("KNX bridge \"" + bridgeHandler.getThing().getLabel()
-                        + "\": group address, type, number of bytes, and number of occurence since last reload of binding:");
+                        + "\": group address, type, number of bytes, and number of occurrence since last reload of binding:");
                 for (Entry<String, Long> entry : bridgeHandler.getCommandExtensionData().unknownGA().entrySet()) {
-                    console.println(entry.getKey() + " " + entry.getValue());
+                    console.println(entry.getKey() + "  " + entry.getValue());
                 }
             }
             return;

@@ -508,7 +508,6 @@ public class GrowattCloud implements AutoCloseable {
 
         DeviceType deviceType = getDeviceTypeChecked(deviceId);
         switch (deviceType) {
-
             case MIX:
             case SPA:
                 setTimeProgram(deviceId, deviceType,

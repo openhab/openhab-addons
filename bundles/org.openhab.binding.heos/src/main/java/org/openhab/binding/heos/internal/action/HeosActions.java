@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HeosActions implements ThingActions {
 
-    private static final Logger logger = LoggerFactory.getLogger(HeosActions.class);
+    private final Logger logger = LoggerFactory.getLogger(HeosActions.class);
 
     private @Nullable HeosBridgeHandler handler;
 

@@ -340,7 +340,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             pollingJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, refreshInterval, TimeUnit.SECONDS);
         }
         if (queueConsumerThread == null || !queueConsumerThread.isAlive()) {
-            queueConsumerThread = new Thread(new QueueConsumer(commandQueue), "max-queue-consumer");
+            queueConsumerThread = new Thread(new QueueConsumer(commandQueue),
+                    "OH-binding-" + getThing().getUID() + "-max-queue-consumer");
             queueConsumerThread.setDaemon(true);
             queueConsumerThread.start();
         }

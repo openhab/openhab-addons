@@ -38,7 +38,7 @@ public class DynamicChannelHelper {
     private record ConfigurationChannel(String id, String typeId, String itemType) {
     }
 
-    private final static List<ConfigurationChannel> channels = new ArrayList<ConfigurationChannel>() {
+    private static final List<ConfigurationChannel> CHANNELS = new ArrayList<ConfigurationChannel>() {
         {
             add(new ConfigurationChannel(CHANNEL_COUNTRY_CODE, CHANNEL_COUNTRY_CODE, "String"));
             add(new ConfigurationChannel(CHANNEL_PM_STANDARD, CHANNEL_PM_STANDARD, "String"));
@@ -58,10 +58,10 @@ public class DynamicChannelHelper {
         }
     };
 
-    private final static Logger logger = LoggerFactory.getLogger(DynamicChannelHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicChannelHelper.class);
 
     public static ThingBuilder updateThingWithConfigurationChannels(Thing thing, ThingBuilder builder) {
-        for (ConfigurationChannel channel : channels) {
+        for (ConfigurationChannel channel : CHANNELS) {
             addLocalConfigurationChannel(thing, builder, channel);
         }
 
@@ -72,7 +72,7 @@ public class DynamicChannelHelper {
             ConfigurationChannel toAdd) {
         ChannelUID channelId = new ChannelUID(originalThing.getUID(), toAdd.id);
         if (originalThing.getChannel(channelId) == null) {
-            logger.debug("Adding dynamic channel {} to {}", toAdd.id, originalThing.getUID());
+            LOGGER.debug("Adding dynamic channel {} to {}", toAdd.id, originalThing.getUID());
             ChannelTypeUID typeId = new ChannelTypeUID(BINDING_ID, toAdd.typeId);
             Channel channel = ChannelBuilder.create(channelId, toAdd.itemType).withType(typeId).build();
             builder.withChannel(channel);

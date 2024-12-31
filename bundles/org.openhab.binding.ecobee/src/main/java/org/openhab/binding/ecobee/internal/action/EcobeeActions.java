@@ -90,7 +90,7 @@ public class EcobeeActions implements ThingActions {
      *      </a>
      */
     @RuleAction(label = "acknowledge an alert", description = "Acknowledges an alert.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean acknowledge(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean acknowledge(
             @ActionInput(name = "ackRef", description = "The acknowledge ref of alert") @Nullable String ackRef,
             @ActionInput(name = "ackType", description = "The type of acknowledgement. Valid values: accept, decline, defer, unacknowledged") @Nullable String ackType,
             @ActionInput(name = "remindMeLater", description = "(opt) Whether to remind at a later date, if this is a defer acknowledgement") @Nullable Boolean remindMeLater) {
@@ -117,7 +117,7 @@ public class EcobeeActions implements ThingActions {
      *      Plug</a>
      */
     @RuleAction(label = "control a plug", description = "Control the on/off state of a plug by setting a hold on the plug.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean controlPlug(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean controlPlug(
             @ActionInput(name = "plugName", description = "The name of the plug. Ensure each plug has a unique name.") @Nullable String plugName,
             @ActionInput(name = "plugState", description = "The state to put the plug into. Valid values: on, off, resume.") @Nullable String plugState,
             @ActionInput(name = "startDateTime", description = "(opt) The start date/time in thermostat time.") @Nullable Date startDateTime,
@@ -150,10 +150,10 @@ public class EcobeeActions implements ThingActions {
      *      Vacation</a>
      */
     @RuleAction(label = "create a vacation", description = "The create vacation function creates a vacation event on the thermostat.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean createVacation(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean createVacation(
             @ActionInput(name = "name", description = "The vacation event name. It must be unique.") @Nullable String name,
-            @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool vacation hold.") @Nullable QuantityType<Temperature> coolHoldTemp,
-            @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat vacation hold.") @Nullable QuantityType<Temperature> heatHoldTemp,
+            @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool vacation hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> coolHoldTemp,
+            @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat vacation hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> heatHoldTemp,
             @ActionInput(name = "startDateTime", description = "(opt) The start date/time in thermostat time.") @Nullable Date startDateTime,
             @ActionInput(name = "endDateTime", description = "(opt) The end date in thermostat time.") @Nullable Date endDateTime,
             @ActionInput(name = "fan", description = "(opt) The fan mode during the vacation. Values: auto, on Default: auto") @Nullable String fan,
@@ -185,7 +185,7 @@ public class EcobeeActions implements ThingActions {
      *      Vacation</a>
      */
     @RuleAction(label = "delete a vacation", description = "The delete vacation function deletes a vacation event from a thermostat.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean deleteVacation(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean deleteVacation(
             @ActionInput(name = "name", description = "The vacation event name to delete.") @Nullable String name) {
         LOGGER.debug("EcobeeActions: Action 'Delete Vacation' called");
         EcobeeThermostatBridgeHandler localHandler = handler;
@@ -208,7 +208,7 @@ public class EcobeeActions implements ThingActions {
      *      Preferences</a>
      */
     @RuleAction(label = "reset the preferences", description = "The reset preferences function sets all of the user configurable settings back to the factory default values.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean resetPreferences() {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean resetPreferences() {
         LOGGER.debug("EcobeeActions: Action 'Reset Preferences' called");
         EcobeeThermostatBridgeHandler localHandler = handler;
         if (localHandler == null) {
@@ -230,7 +230,7 @@ public class EcobeeActions implements ThingActions {
      *      Program</a>
      */
     @RuleAction(label = "resume the program", description = "Removes the currently running event providing the event is not a mandatory demand response event")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean resumeProgram(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean resumeProgram(
             @ActionInput(name = "resumeAll", description = "(opt) Should the thermostat be resumed to next event (false) or to its program (true)") @Nullable Boolean resumeAll) {
         LOGGER.debug("EcobeeActions: Action 'Resume Program' called");
         EcobeeThermostatBridgeHandler localHandler = handler;
@@ -253,7 +253,7 @@ public class EcobeeActions implements ThingActions {
      *      Message</a>
      */
     @RuleAction(label = "send a message", description = "The send message function allows an alert message to be sent to the thermostat.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMessage(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendMessage(
             @ActionInput(name = "text", description = "The message text to send. Text will be truncated to 500 characters if longer") @Nullable String text) {
         LOGGER.debug("EcobeeActions: Action 'SendMessage' called");
         EcobeeThermostatBridgeHandler localHandler = handler;
@@ -275,9 +275,9 @@ public class EcobeeActions implements ThingActions {
      * @see <a href="https://www.ecobee.com/home/developer/api/documentation/v1/functions/SetHold.shtml">Set Hold</a>
      */
     @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified temperatures.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
-            @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool hold.") @Nullable QuantityType<Temperature> coolHoldTemp,
-            @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat hold.") @Nullable QuantityType<Temperature> heatHoldTemp) {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean setHold(
+            @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> coolHoldTemp,
+            @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> heatHoldTemp) {
         if (coolHoldTemp == null || heatHoldTemp == null) {
             throw new IllegalArgumentException("hold temperatures cannot be null");
         }
@@ -296,9 +296,9 @@ public class EcobeeActions implements ThingActions {
      * Set a hold by providing the cool and heat temperatures and the number of hours.
      */
     @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold for the specified number of hours.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
-            @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool hold.") @Nullable QuantityType<Temperature> coolHoldTemp,
-            @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat hold.") @Nullable QuantityType<Temperature> heatHoldTemp,
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean setHold(
+            @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> coolHoldTemp,
+            @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> heatHoldTemp,
             @ActionInput(name = "holdHours", description = "The number of hours for the hold.") @Nullable Number holdHours) {
         if (coolHoldTemp == null || heatHoldTemp == null) {
             throw new IllegalArgumentException("hold temperatures cannot be null");
@@ -321,7 +321,7 @@ public class EcobeeActions implements ThingActions {
      * Set an indefinite hold using the supplied climateRef
      */
     @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified climate ref.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "holdClimateRef", description = "The holdClimateRef used to set the hold.") @Nullable String holdClimateRef) {
         EcobeeThermostatBridgeHandler localHandler = handler;
         if (localHandler == null) {
@@ -344,7 +344,7 @@ public class EcobeeActions implements ThingActions {
      * Set a hold using the supplied climateRef for the supplied number of hours.
      */
     @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified climate ref.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "holdClimateRef", description = "The holdClimateRef used to set the hold.") @Nullable String holdClimateRef,
             @ActionInput(name = "holdHours", description = "The number of hours for the hold.") @Nullable Number holdHours) {
         if (holdHours == null) {
@@ -371,9 +371,9 @@ public class EcobeeActions implements ThingActions {
      * Set a hold
      */
     @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified temperature or climate ref.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
-            @ActionInput(name = "coolHoldTemp", description = "(opt) The temperature at which to set the cool hold.") @Nullable QuantityType<Temperature> coolHoldTemp,
-            @ActionInput(name = "heatHoldTemp", description = "(opt) The temperature at which to set the heat hold.") @Nullable QuantityType<Temperature> heatHoldTemp,
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean setHold(
+            @ActionInput(name = "coolHoldTemp", description = "(opt) The temperature at which to set the cool hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> coolHoldTemp,
+            @ActionInput(name = "heatHoldTemp", description = "(opt) The temperature at which to set the heat hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> heatHoldTemp,
             @ActionInput(name = "holdClimateRef", description = "(opt) The Climate to use as reference for setting the coolHoldTemp, heatHoldTemp and fan settings for this hold. If this value is passed the coolHoldTemp and heatHoldTemp are not required.") @Nullable String holdClimateRef,
             @ActionInput(name = "startDateTime", description = "(opt) The start date in thermostat time.") @Nullable Date startDateTime,
             @ActionInput(name = "endDateTime", description = "(opt) The end date in thermostat time.") @Nullable Date endDateTime,
@@ -404,7 +404,7 @@ public class EcobeeActions implements ThingActions {
      * Set a hold by providing a parameter map
      */
     @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified event parameters.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "params", description = "The map of hold parameters.") @Nullable Map<String, Object> params,
             @ActionInput(name = "holdType", description = "(opt) The hold duration type. Valid values: dateTime, nextTransition, indefinite, holdHours.") @Nullable String holdType,
             @ActionInput(name = "holdHours", description = "(opt) The number of hours to hold for, used and required if holdType='holdHours'.") @Nullable Number holdHours,
@@ -495,7 +495,7 @@ public class EcobeeActions implements ThingActions {
      *      Occupied</a>
      */
     @RuleAction(label = "switch the thermostat occupancy", description = "The function switches a thermostat from occupied mode to unoccupied, or vice versa (EMS MODELS ONLY).")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setOccupied(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean setOccupied(
             @ActionInput(name = "occupied", description = "The climate to use for the temperature, occupied (true) or unoccupied (false).") @Nullable Boolean occupied,
             @ActionInput(name = "startDateTime", description = "(opt) The start date in thermostat time.") @Nullable Date startDateTime,
             @ActionInput(name = "endDateTime", description = "(opt) The end date in thermostat time.") @Nullable Date endDateTime,
@@ -525,7 +525,7 @@ public class EcobeeActions implements ThingActions {
      *      Sensor</a>
      */
     @RuleAction(label = "update a remote sensor name", description = "The update sensor function allows the caller to update the name of an ecobee3 remote sensor.")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean updateSensor(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean updateSensor(
             @ActionInput(name = "name", description = "The updated name to give the sensor. Has a max length of 32, but shorter is recommended.") @Nullable String name,
             @ActionInput(name = "deviceId", description = "The deviceId for the sensor, typically this indicates the enclosure and corresponds to the ThermostatRemoteSensor.id field. For example: rs:100") @Nullable String deviceId,
             @ActionInput(name = "sensorId", description = "The identifier for the sensor within the enclosure. Corresponds to the RemoteSensorCapability.id. For example: 1") @Nullable String sensorId) {
@@ -548,7 +548,7 @@ public class EcobeeActions implements ThingActions {
      * Get the alerts list. Returns a JSON string containing all the alerts.
      */
     @RuleAction(label = "get the alerts", description = "Get the alerts list.")
-    public @ActionOutput(name = "alerts", type = "java.lang.String") @Nullable String getAlerts() {
+    public @ActionOutput(label = "Alerts", type = "java.lang.String") @Nullable String getAlerts() {
         LOGGER.debug("EcobeeActions: Action 'Get Alerts' called");
         EcobeeThermostatBridgeHandler localHandler = handler;
         if (localHandler == null) {
@@ -566,7 +566,7 @@ public class EcobeeActions implements ThingActions {
      * Get the events list. Returns a JSON string contains all events.
      */
     @RuleAction(label = "get the events", description = "Get the events list.")
-    public @ActionOutput(name = "events", type = "java.lang.String") @Nullable String getEvents() {
+    public @ActionOutput(label = "Events", type = "java.lang.String") @Nullable String getEvents() {
         LOGGER.debug("EcobeeActions: Action 'Get Events' called");
         EcobeeThermostatBridgeHandler localHandler = handler;
         if (localHandler == null) {
@@ -584,7 +584,7 @@ public class EcobeeActions implements ThingActions {
      * Get a list of climates. Returns a JSON string contains all climates.
      */
     @RuleAction(label = "get the climates", description = "Get a list of climates.")
-    public @ActionOutput(name = "climates", type = "java.lang.String") @Nullable String getClimates() {
+    public @ActionOutput(label = "Climates", type = "java.lang.String") @Nullable String getClimates() {
         LOGGER.debug("EcobeeActions: Action 'Get Climates' called");
         EcobeeThermostatBridgeHandler localHandler = handler;
         if (localHandler == null) {

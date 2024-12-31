@@ -93,6 +93,7 @@ public class Mapper {
                 case MB_KEY_RANGELIQUID:
                 case MB_KEY_DISTANCE_START:
                 case MB_KEY_DISTANCE_RESET:
+                case MB_KEY_ECOSCORE_BONUS:
                     Unit<?> lengthUnit = defaultLengthUnit;
                     if (value.hasDistanceUnit()) {
                         observer = new UOMObserver(value.getDistanceUnit().toString());
@@ -196,6 +197,10 @@ public class Mapper {
                 // Percentages
                 case MB_KEY_SOC:
                 case MB_KEY_TANKLEVELPERCENT:
+                case MB_KEY_ADBLUELEVELPERCENT:
+                case MB_KEY_ECOSCORE_ACCEL:
+                case MB_KEY_ECOSCORE_CONSTANT:
+                case MB_KEY_ECOSCORE_COASTING:
                     double level = Utils.getDouble(value);
                     state = QuantityType.valueOf(level, Units.PERCENT);
                     return new ChannelStateMap(ch[0], ch[1], state);
@@ -239,23 +244,20 @@ public class Mapper {
                 case MB_KEY_CHARGE_COUPLER_DC_STATUS:
                 case MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS:
                 case MB_KEY_TIRE_SENSOR_AVAILABLE:
+                case MB_KEY_CHARGE_STATUS:
+                case MB_KEY_CHARGE_ERROR:
+                case MB_KEY_TIRE_MARKER_FRONT_RIGHT:
+                case MB_KEY_TIRE_MARKER_FRONT_LEFT:
+                case MB_KEY_TIRE_MARKER_REAR_RIGHT:
+                case MB_KEY_TIRE_MARKER_REAR_LEFT:
+                case MB_KEY_POSITION_ERROR:
+                case MB_KEY_AUXILIARY_WARNINGS:
+                case MB_KEY_PRECOND_NOW_ERROR:
                     int stateNumberInteger = Utils.getInt(value);
                     if (stateNumberInteger < 0) {
                         state = UnDefType.UNDEF;
                     } else {
                         state = new DecimalType(stateNumberInteger);
-                    }
-                    return new ChannelStateMap(ch[0], ch[1], state);
-
-                case MB_KEY_TIRE_MARKER_FRONT_RIGHT:
-                case MB_KEY_TIRE_MARKER_FRONT_LEFT:
-                case MB_KEY_TIRE_MARKER_REAR_RIGHT:
-                case MB_KEY_TIRE_MARKER_REAR_LEFT:
-                    double stateNumberDouble = Utils.getDouble(value);
-                    if (stateNumberDouble < 0) {
-                        state = UnDefType.UNDEF;
-                    } else {
-                        state = new DecimalType(stateNumberDouble);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -384,6 +386,8 @@ public class Mapper {
         CHANNELS.put(MB_KEY_PRECOND_SEAT_FRONT_LEFT, new String[] { OH_CHANNEL_FRONT_LEFT, GROUP_HVAC });
         CHANNELS.put(MB_KEY_PRECOND_SEAT_REAR_RIGHT, new String[] { OH_CHANNEL_REAR_RIGHT, GROUP_HVAC });
         CHANNELS.put(MB_KEY_PRECOND_SEAT_REAR_LEFT, new String[] { OH_CHANNEL_REAR_LEFT, GROUP_HVAC });
+        CHANNELS.put(MB_KEY_AUXILIARY_WARNINGS, new String[] { OH_CHANNEL_AUX_STATUS, GROUP_HVAC });
+        CHANNELS.put(MB_KEY_PRECOND_NOW_ERROR, new String[] { OH_CHANNEL_AC_STATUS, GROUP_HVAC });
         // temperaturePoints - special handling: sets zone & temperature
 
         CHANNELS.put(MB_KEY_STARTER_BATTERY_STATE, new String[] { OH_CHANNEL_STARTER_BATTERY, GROUP_SERVICE });
@@ -401,16 +405,20 @@ public class Mapper {
         CHANNELS.put(MB_KEY_RANGELIQUID, new String[] { OH_CHANNEL_RANGE_FUEL, GROUP_RANGE });
         CHANNELS.put(MB_KEY_OVERALL_RANGE, new String[] { OH_CHANNEL_RANGE_HYBRID, GROUP_RANGE });
         CHANNELS.put(MB_KEY_TANKLEVELPERCENT, new String[] { OH_CHANNEL_FUEL_LEVEL, GROUP_RANGE });
+        CHANNELS.put(MB_KEY_ADBLUELEVELPERCENT, new String[] { OH_CHANNEL_ADBLUE_LEVEL, GROUP_RANGE });
 
         CHANNELS.put(MB_KEY_CHARGE_FLAP_DC_STATUS, new String[] { OH_CHANNEL_CHARGE_FLAP, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_CHARGE_COUPLER_AC_STATUS, new String[] { OH_CHANNEL_COUPLER_AC, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_CHARGE_COUPLER_DC_STATUS, new String[] { OH_CHANNEL_COUPLER_DC, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS, new String[] { OH_CHANNEL_COUPLER_LOCK, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_CHARGINGACTIVE, new String[] { OH_CHANNEL_ACTIVE, GROUP_CHARGE });
+        CHANNELS.put(MB_KEY_CHARGE_STATUS, new String[] { OH_CHANNEL_STATUS, GROUP_CHARGE });
+        CHANNELS.put(MB_KEY_CHARGE_ERROR, new String[] { OH_CHANNEL_ERROR, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_CHARGING_POWER, new String[] { OH_CHANNEL_POWER, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_ENDOFCHARGETIME, new String[] { OH_CHANNEL_END_TIME, GROUP_CHARGE });
 
         CHANNELS.put(MB_KEY_POSITION_HEADING, new String[] { OH_CHANNEL_HEADING, GROUP_POSITION });
+        CHANNELS.put(MB_KEY_POSITION_ERROR, new String[] { OH_CHANNEL_STATUS, GROUP_POSITION });
 
         CHANNELS.put(MB_KEY_DISTANCE_START, new String[] { OH_CHANNEL_DISTANCE, GROUP_TRIP });
         CHANNELS.put(MB_KEY_DRIVEN_TIME_START, new String[] { OH_CHANNEL_TIME, GROUP_TRIP });
@@ -422,6 +430,11 @@ public class Mapper {
         CHANNELS.put(MB_KEY_AVERAGE_SPEED_RESET, new String[] { OH_CHANNEL_AVG_SPEED_RESET, GROUP_TRIP });
         CHANNELS.put(MB_KEY_ELECTRICCONSUMPTIONRESET, new String[] { OH_CHANNEL_CONS_EV_RESET, GROUP_TRIP });
         CHANNELS.put(MB_KEY_LIQUIDCONSUMPTIONRESET, new String[] { OH_CHANNEL_CONS_CONV_RESET, GROUP_TRIP });
+
+        CHANNELS.put(MB_KEY_ECOSCORE_ACCEL, new String[] { OH_CHANNEL_ACCEL, GROUP_ECO });
+        CHANNELS.put(MB_KEY_ECOSCORE_CONSTANT, new String[] { OH_CHANNEL_CONSTANT, GROUP_ECO });
+        CHANNELS.put(MB_KEY_ECOSCORE_COASTING, new String[] { OH_CHANNEL_COASTING, GROUP_ECO });
+        CHANNELS.put(MB_KEY_ECOSCORE_BONUS, new String[] { OH_CHANNEL_BONUS_RANGE, GROUP_ECO });
 
         CHANNELS.put(MB_KEY_TIREPRESSURE_REAR_RIGHT, new String[] { OH_CHANNEL_PRESSURE_REAR_RIGHT, GROUP_TIRES });
         CHANNELS.put(MB_KEY_TIREPRESSURE_FRONT_RIGHT, new String[] { OH_CHANNEL_PRESSURE_FRONT_RIGHT, GROUP_TIRES });

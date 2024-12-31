@@ -15,6 +15,8 @@ package org.openhab.binding.smartmeter;
 import java.io.IOException;
 import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.connectors.ConnectorBase;
 
 /**
@@ -22,6 +24,7 @@ import org.openhab.binding.smartmeter.connectors.ConnectorBase;
  * @author Matthias Steigenberger - Initial contribution
  *
  */
+@NonNullByDefault
 public class MockMeterReaderConnector extends ConnectorBase<Object> {
 
     private boolean applyRetry;
@@ -42,12 +45,12 @@ public class MockMeterReaderConnector extends ConnectorBase<Object> {
     }
 
     @Override
-    protected Object readNext(byte[] initMessage) throws IOException {
+    protected Object readNext(byte @Nullable [] initMessage) throws IOException {
         try {
             return readNextSupplier.get();
         } catch (RuntimeException e) {
-            if (e.getCause() instanceof IOException) {
-                throw (IOException) e.getCause();
+            if (e.getCause() instanceof IOException cause) {
+                throw cause;
             }
             throw e;
         }

@@ -203,16 +203,16 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("light"));
 
-        assertChannel(component, Light.ON_OFF_CHANNEL_ID, "", "dummy", "On/Off State", OnOffValue.class);
+        assertChannel(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, "", "dummy", "On/Off State", OnOffValue.class);
 
         publishMessage("zigbee2mqtt/light/state", "{ \"state\": \"ON\" }");
-        assertState(component, Light.ON_OFF_CHANNEL_ID, OnOffType.ON);
+        assertState(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.ON);
         publishMessage("zigbee2mqtt/light/state", "{ \"state\": \"OFF\" }");
-        assertState(component, Light.ON_OFF_CHANNEL_ID, OnOffType.OFF);
+        assertState(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.OFF);
 
-        sendCommand(component, Light.ON_OFF_CHANNEL_ID, OnOffType.OFF);
+        sendCommand(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.OFF);
         assertPublished("zigbee2mqtt/light/set/state", "{\"state\":\"OFF\"}");
-        sendCommand(component, Light.ON_OFF_CHANNEL_ID, OnOffType.ON);
+        sendCommand(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.ON);
         assertPublished("zigbee2mqtt/light/set/state", "{\"state\":\"ON\"}");
     }
 

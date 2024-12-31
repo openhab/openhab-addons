@@ -36,6 +36,7 @@ package org.openhab.binding.lgwebos.internal.handler.command;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 
@@ -48,6 +49,7 @@ import com.google.gson.JsonObject;
  * @author Hyun Kook Khang - Connect SDK initial contribution
  * @author Sebastian Prehn - Adoption for openHAB
  */
+@NonNullByDefault
 public class ServiceCommand<T> {
 
     protected enum Type {
@@ -56,13 +58,13 @@ public class ServiceCommand<T> {
     }
 
     protected Type type;
-    protected JsonObject payload;
+    protected @Nullable JsonObject payload;
     protected String target;
     protected Function<JsonObject, @Nullable T> converter;
 
     ResponseListener<T> responseListener;
 
-    public ServiceCommand(String targetURL, JsonObject payload, Function<JsonObject, @Nullable T> converter,
+    public ServiceCommand(String targetURL, @Nullable JsonObject payload, Function<JsonObject, @Nullable T> converter,
             ResponseListener<T> listener) {
         this.target = targetURL;
         this.payload = payload;
@@ -71,7 +73,7 @@ public class ServiceCommand<T> {
         this.type = Type.request;
     }
 
-    public JsonElement getPayload() {
+    public @Nullable JsonElement getPayload() {
         return payload;
     }
 
@@ -83,8 +85,10 @@ public class ServiceCommand<T> {
         return target;
     }
 
-    public void processResponse(JsonObject response) {
-        this.getResponseListener().onSuccess(this.converter.apply(response));
+    public void processResponse(@Nullable JsonObject response) {
+        if (response != null) {
+            this.getResponseListener().onSuccess(this.converter.apply(response));
+        }
     }
 
     public void processError(String error) {

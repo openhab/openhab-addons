@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="pv-state-channel">
+		<item-type>Switch</item-type>
+		<label>PV Modulation Active</label>
+		<description>State of PV-Modulation</description>
+	</channel-type>
+	<channel-type id="pv-power-channel">
+		<item-type>Number:Power</item-type>
+		<label>PV Power</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="pv-target-temperature-heating-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>PV Temp Heating</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="pv-target-temperature-drinkingwater-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>PV Temp Drinkingwater</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>

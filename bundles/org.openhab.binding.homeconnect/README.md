@@ -98,22 +98,22 @@ After the bridge has been added and authorized, devices are discovered automatic
 #### 2. Create Home Connect developer account
 
 1. Create an account at [https://developer.home-connect.com](https://developer.home-connect.com) and login.
-1. Please make sure you've added your associated Home Connect account email at <https://developer.home-connect.com/user/me/edit>. You should fill in your email address, which you use for the official Android or iOS app, at `Default Home Connect User Account for Testing`.  
+1. Please make sure you've added your associated Home Connect account email at <https://developer.home-connect.com/user/me/edit>. You should fill in your email address, which you use for the official Android or iOS app, at `Default Home Connect User Account for Testing`.
 ![Screenshot Home Connect profile page](doc/home_connect_profile.png "Screenshot Home Connect profile page")
 1. Register / Create an application at [https://developer.home-connect.com/applications](https://developer.home-connect.com/applications)
     - _Application ID_: e.g. `openhab-binding`
     - _OAuth Flow_: Authorization Code Grant Flow
-    - _Home Connect User Account for Testing_: the associated user account email from [Home Connect](https://www.home-connect.com/)  
-       > **WARNING**: Please don't use your developer account username  
+    - _Home Connect User Account for Testing_: the associated user account email from [Home Connect](https://www.home-connect.com/)
+       > **WARNING**: Please don't use your developer account username
 
-    - _Redirect URIs_: add your openHAB URL followed by `/homeconnect`  
+    - _Redirect URIs_: add your openHAB URL followed by `/homeconnect`
     for example: `http://192.168.178.34:8080/homeconnect` or `https://myhome.domain.com/homeconnect`
     - _One Time Token Mode_: keep unchecked
     - _Proof Key for Code Exchange_: keep unchecked
-      
+
        > **NOTE**: You might get an error (`403 - Forbidden`) in case you entered a bare IP of your local openHAB instance. In that case, use your instance's hostname instead (e.g. for openhabian `http://openhabian:8080/homeconnect`) and try again.
-    
-1. After your application has been created, you should see the _Client ID_ and _Client Secret_ of the application. Please save these for later.  
+
+1. After your application has been created, you should see the _Client ID_ and _Client Secret_ of the application. Please save these for later.
 
 ![Screenshot Home Connect application page](doc/home_connect_application.png "Screenshot Home Connect application page")
 
@@ -129,11 +129,11 @@ The Home Connect bridge can be configured in the openHAB UI as follows:
     - **client secret:** your application client secret
     - **simulator:** false
 1. Now navigate to the URL (`Redirct URI`) you've added to your Home Connect application in the previous step (2.3). For example `http://192.168.178.80:8080/homeconnect`.
-1. Please follow the steps shown to authenticate your binding. You can redo this step every time. For example if you have authentication problems, just start wizard again.  
-![Screenshot Home Connect wizard page 1](doc/homeconnect_setup_1.png "Screenshot Home Connect wizard page 1")  
-![Screenshot Home Connect wizard page 2](doc/homeconnect_setup_2.png "Screenshot Home Connect wizard page 2")  
-![Screenshot Home Connect wizard page 3](doc/homeconnect_setup_3.png "Screenshot Home Connect wizard page 3")  
-![Screenshot Home Connect wizard page 4](doc/homeconnect_setup_4.png "Screenshot Home Connect wizard page 4")  
+1. Please follow the steps shown to authenticate your binding. You can redo this step every time. For example if you have authentication problems, just start wizard again.
+![Screenshot Home Connect wizard page 1](doc/homeconnect_setup_1.png "Screenshot Home Connect wizard page 1")
+![Screenshot Home Connect wizard page 2](doc/homeconnect_setup_2.png "Screenshot Home Connect wizard page 2")
+![Screenshot Home Connect wizard page 3](doc/homeconnect_setup_3.png "Screenshot Home Connect wizard page 3")
+![Screenshot Home Connect wizard page 4](doc/homeconnect_setup_4.png "Screenshot Home Connect wizard page 4")
 1. That's it! Now you can use autodiscovery to add devices. Your devices should show up if you start a device scan in the openHAB UI.
 
 ## Examples: File based configuration
@@ -327,7 +327,7 @@ The channel of type `remote_start_allowance_state` is read only. You can only en
 
 ### In case of error...
 
-Please check log UI (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect) and ask for help in the community forum or on github. Please provide request and event exports.  
+Please check log UI (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect) and ask for help in the community forum or on github. Please provide request and event exports.
  ![Screenshot Home Connect wizard page 4](doc/export_button.png "Export button")
 
 ### Rate limit reached

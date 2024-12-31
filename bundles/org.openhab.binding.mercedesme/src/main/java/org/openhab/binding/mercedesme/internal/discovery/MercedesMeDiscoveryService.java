@@ -29,6 +29,7 @@ import org.osgi.service.component.annotations.Component;
  * associated vehicles and provides DiscoveryResults
  *
  * @author Bernd Weymann - Initial Contribution
+ * @author Bernd Weymann - Add vin as representation property
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.mercedesme")
@@ -56,8 +57,9 @@ public class MercedesMeDiscoveryService extends AbstractDiscoveryService {
                 break;
         }
         if (ttuid != null) {
+            properties.put("vin", vin);
             thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(ttuid, ac.getThing().getUID(), vin))
-                    .withBridge(ac.getThing().getUID()).withProperties(properties)
+                    .withBridge(ac.getThing().getUID()).withProperties(properties).withRepresentationProperty("vin")
                     .withLabel("Mercedes Benz " + ttuid.getId().toUpperCase()).build());
         }
     }

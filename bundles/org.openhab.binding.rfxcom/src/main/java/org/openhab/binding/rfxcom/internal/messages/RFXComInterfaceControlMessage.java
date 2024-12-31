@@ -19,7 +19,7 @@ import org.openhab.core.types.Type;
  * RFXCOM data class for control message.
  *
  * @author Pauli Anttila - Initial contribution
- * @author Mike Jagdis
+ * @author Mike Jagdis - Improvements
  */
 public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
     private byte[] data = new byte[14];

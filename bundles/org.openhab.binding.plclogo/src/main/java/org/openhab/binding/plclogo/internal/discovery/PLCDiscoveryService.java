@@ -15,27 +15,21 @@ package org.openhab.binding.plclogo.internal.discovery;
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_DEVICE;
 
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Arrays;
-import java.util.Enumeration;
+import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.model.script.actions.Ping;
+import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -107,44 +101,19 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
 
         logger.debug("Start scan for LOGO! bridge");
 
-        Enumeration<NetworkInterface> devices = null;
-        try {
-            devices = NetworkInterface.getNetworkInterfaces();
-        } catch (SocketException exception) {
-            logger.warn("LOGO! bridge discovering: {}.", exception.toString());
-        }
-
-        Set<String> addresses = new TreeSet<>();
-        while ((devices != null) && devices.hasMoreElements()) {
-            NetworkInterface device = devices.nextElement();
-            try {
-                if (!device.isUp() || device.isLoopback()) {
-                    continue;
-                }
-            } catch (SocketException exception) {
-                logger.warn("LOGO! bridge discovering: {}.", exception.toString());
-            }
-            for (InterfaceAddress iface : device.getInterfaceAddresses()) {
-                InetAddress address = iface.getAddress();
-                if (address instanceof Inet4Address) {
-                    String prefix = String.valueOf(iface.getNetworkPrefixLength());
-                    SubnetUtils utilities = new SubnetUtils(address.getHostAddress() + "/" + prefix);
-                    addresses.addAll(Arrays.asList(utilities.getInfo().getAllAddresses()));
-                }
-            }
-        }
-
+        List<InetAddress> addressesToScan = NetUtil.getFullRangeOfAddressesToScan();
+        logger.debug("Performing discovery on {} ip addresses", addressesToScan.size());
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        for (String address : addresses) {
+        for (InetAddress address : addressesToScan) {
             try {
-                executor.execute(new Runner(address));
+                executor.execute(new Runner(address.getHostAddress()));
             } catch (RejectedExecutionException exception) {
                 logger.warn("LOGO! bridge discovering: {}.", exception.toString());
             }
         }
 
         try {
-            executor.awaitTermination(CONNECTION_TIMEOUT * addresses.size(), TimeUnit.MILLISECONDS);
+            executor.awaitTermination(CONNECTION_TIMEOUT * addressesToScan.size(), TimeUnit.MILLISECONDS);
         } catch (InterruptedException exception) {
             logger.warn("LOGO! bridge discovering: {}.", exception.toString());
         }

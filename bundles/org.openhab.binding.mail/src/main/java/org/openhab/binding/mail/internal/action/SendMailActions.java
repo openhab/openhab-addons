@@ -52,7 +52,7 @@ public class SendMailActions implements ThingActions {
     private Map<String, String> headers = new HashMap<>();
 
     @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMail(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendMail(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject,
             @ActionInput(name = "text") @Nullable String text) {
@@ -60,7 +60,7 @@ public class SendMailActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendAttachmentMessageActionLabel", description = "@text/sendAttachmentMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMailWithAttachment(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendMailWithAttachment(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "text") @Nullable String text,
             @ActionInput(name = "url") @Nullable String url) {
@@ -72,10 +72,10 @@ public class SendMailActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendAttachmentsMessageActionLabel", description = "@text/sendAttachmentsMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMailWithAttachments(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendMailWithAttachments(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "text") @Nullable String text,
-            @ActionInput(name = "urlList") @Nullable List<String> urlList) {
+            @ActionInput(name = "urlList", type = "List<String>") @Nullable List<String> urlList) {
         if (recipient == null) {
             logger.warn("Cannot send mail as recipient is missing.");
             return false;
@@ -141,7 +141,7 @@ public class SendMailActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendHTMLMessageActionLabel", description = "@text/sendHTMLMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendHtmlMail(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendHtmlMail(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject,
             @ActionInput(name = "htmlContent") @Nullable String htmlContent) {
@@ -149,7 +149,7 @@ public class SendMailActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendHTMLAttachmentMessageActionLabel", description = "@text/sendHTMLAttachmentMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendHtmlMailWithAttachment(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendHtmlMailWithAttachment(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject,
             @ActionInput(name = "htmlContent") @Nullable String htmlContent,
@@ -162,11 +162,11 @@ public class SendMailActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendHTMLAttachmentsMessageActionLabel", description = "@text/sendHTMLAttachmentsMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendHtmlMailWithAttachments(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendHtmlMailWithAttachments(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject,
             @ActionInput(name = "htmlContent") @Nullable String htmlContent,
-            @ActionInput(name = "urlList") @Nullable List<String> urlList) {
+            @ActionInput(name = "urlList", type = "List<String>") @Nullable List<String> urlList) {
         if (recipient == null) {
             logger.warn("Cannot send mail as recipient is missing.");
             return false;
@@ -244,7 +244,7 @@ public class SendMailActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/addHeaderActionLabel", description = "@text/addHeaderActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean addHeader(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean addHeader(
             @ActionInput(name = "name") @Nullable String name, @ActionInput(name = "value") @Nullable String value) {
         if (name != null && !name.isEmpty()) {
             if (value != null && !value.isEmpty()) {

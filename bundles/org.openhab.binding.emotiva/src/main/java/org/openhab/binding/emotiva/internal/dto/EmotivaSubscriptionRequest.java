@@ -14,13 +14,12 @@ package org.openhab.binding.emotiva.internal.dto;
 
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion.PROTOCOL_V2;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
 
 /**
@@ -38,26 +37,18 @@ public class EmotivaSubscriptionRequest extends AbstractJAXBElementDTO {
     public EmotivaSubscriptionRequest() {
     }
 
-    public EmotivaSubscriptionRequest(List<EmotivaCommandDTO> commands, String protocol) {
+    public EmotivaSubscriptionRequest(List<EmotivaSubscriptionTags> emotivaCommandTypes, String protocol) {
         this.protocol = protocol;
-        this.commands = commands;
-    }
-
-    public EmotivaSubscriptionRequest(EmotivaSubscriptionTags[] emotivaCommandTypes, String protocol) {
-        this.protocol = protocol;
-        List<EmotivaCommandDTO> list = new ArrayList<>();
-        for (EmotivaSubscriptionTags commandType : emotivaCommandTypes) {
-            list.add(EmotivaCommandDTO.fromTypeWithAck(commandType));
-        }
-        this.commands = list;
+        this.commands = emotivaCommandTypes.stream().map(EmotivaCommandDTO::fromTypeWithAck)
+                .collect(Collectors.toList());
     }
 
     public EmotivaSubscriptionRequest(EmotivaSubscriptionTags tag) {
         this.commands = List.of(EmotivaCommandDTO.fromTypeWithAck(tag));
     }
 
-    public EmotivaSubscriptionRequest(EmotivaControlCommands commandType, String protocol) {
+    public EmotivaSubscriptionRequest(EmotivaCommandDTO commandType, String protocol) {
         this.protocol = protocol;
-        this.commands = List.of(EmotivaCommandDTO.fromTypeWithAck(commandType));
+        this.commands = List.of(commandType);
     }
 }

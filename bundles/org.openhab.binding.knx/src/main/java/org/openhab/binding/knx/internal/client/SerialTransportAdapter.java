@@ -42,7 +42,7 @@ import tuwien.auto.calimero.serial.spi.SerialCom;
  * {@literal @}ServiceProvider annotation (biz.aQute.bnd.annotation) automatically creates the file
  * /META-INF/services/tuwien.auto.calimero.serial.spi.SerialCom
  * to register SerialTransportAdapter to the service loader.
- * Additional attributes for SerialTansportAdapter can be specified as well, e.g.
+ * Additional attributes for SerialTransportAdapter can be specified as well, e.g.
  * attribute = { "position=1" }
  * and will be part of MANIFEST.MF
  * 
@@ -74,7 +74,7 @@ public class SerialTransportAdapter implements SerialCom {
         if (portId == null) {
             throw new IOException("Port not available");
         }
-        logger = LoggerFactory.getLogger("SerialTransportAdapter:" + portId);
+        logger = LoggerFactory.getLogger(SerialTransportAdapter.class.getName() + ":" + portId);
 
         final @Nullable SerialPortManager tmpSerialPortManager = serialPortManager;
         if (tmpSerialPortManager == null) {
@@ -83,6 +83,10 @@ public class SerialTransportAdapter implements SerialCom {
         try {
             SerialPortIdentifier portIdentifier = tmpSerialPortManager.getIdentifier(portId);
             if (portIdentifier != null) {
+                if (portIdentifier.isCurrentlyOwned()) {
+                    logger.warn("Configured port {} is currently in use by another application: {}", portId,
+                            portIdentifier.getCurrentOwner());
+                }
                 logger.trace("Trying to open port {}", portId);
                 SerialPort serialPort = portIdentifier.open(this.getClass().getName(), OPEN_TIMEOUT_MS);
                 // apply default settings for com port, may be overwritten by caller

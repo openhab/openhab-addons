@@ -35,4 +35,42 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="kaleidescape:player">
+		<instruction-set targetVersion="2">
+			<add-channel id="endtime" groupIds="ui">
+				<type>kaleidescape:endtime</type>
+			</add-channel>
+			<add-channel id="title" groupIds="music">
+				<type>kaleidescape:music_title</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="kaleidescape:cinemaone">
+		<instruction-set targetVersion="2">
+			<add-channel id="endtime" groupIds="c1-alto_ui">
+				<type>kaleidescape:endtime</type>
+			</add-channel>
+			<add-channel id="title" groupIds="music">
+				<type>kaleidescape:music_title</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="kaleidescape:alto">
+		<instruction-set targetVersion="2">
+			<add-channel id="endtime" groupIds="c1-alto_ui">
+				<type>kaleidescape:endtime</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="kaleidescape:strato">
+		<instruction-set targetVersion="2">
+			<add-channel id="endtime" groupIds="strato_ui">
+				<type>kaleidescape:endtime</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 </update:update-descriptions>

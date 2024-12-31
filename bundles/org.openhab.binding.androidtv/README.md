@@ -15,7 +15,7 @@ This binding supports two thing types:
 
 ## Discovery
 
-All relevant thing types should be added automatically to the inbox through the mDNS discovery process.  
+All relevant thing types should be added automatically to the inbox through the mDNS discovery process.
 
 In the case of the ShieldTV or PhilipsTV, openHAB will likely create an inbox entry for both a GoogleTV and a ShieldTV or PhilipsTV device.
 Only the ShieldTV or PhilipsTV device should be configured, the GoogleTV can be ignored.
@@ -24,11 +24,13 @@ This could cause undesired effects.
 
 ## Binding Configuration
 
-This binding does not require any special configuration files.  
+This binding does not require any special configuration files.
 
 This binding does require a PIN login process (documented below) upon first connection.
 
-This binding requires GoogleTV to be installed on the device (https://play.google.com/store/apps/details?id=com.google.android.videos)
+This binding requires [GoogleTV](https://play.google.com/store/apps/details?id=com.google.android.videos) to be installed on the device.
+The binding also requires [Android TV Remote Service](https://play.google.com/store/apps/details?id=com.google.android.tv.remote.service)
+to be installed on the device.
 
 ## Thing Configuration
 
@@ -84,7 +86,6 @@ Thing androidtv:philipstv:bedroom [ ipAddress="192.168.1.4" ]
 | ambilightRightColor  | Color  | Color for right Ambilight Side       |    N/A   |    N/A   |     RW    |
 | ambilightTopColor    | Color  | Color for top Ambilight Side         |    N/A   |    N/A   |     RW    |
 | ambilightBottomColor | Color  | Color for bottom Ambilight Side      |    N/A   |    N/A   |     RW    |
-
 
 ```java
 String ShieldTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:shieldtv:livingroom:keyboard" }
@@ -161,7 +162,7 @@ KEYPRESS will accept the following commands as strings (case sensitive):
 - KEY_MUTE
 - KEY_SUBMIT
 
-The list above causes an instantanious "press and release" of each button.  
+The list above causes an instantanious "press and release" of each button.
 If you would like to manually control the press and release of each you may append _PRESS and _RELEASE to the end of each.
 (e.g. KEY_FORWARD_PRESS or KEY_FORWARD_RELEASE)
 
@@ -169,7 +170,7 @@ You may also send an ASCII character as a single letter to simulate a key entry 
 Use KEY_SUBMIT when full text entry is complete to tell the shield to process the line.
 KEY_SUBMIT is automatically sent by KEYBOARD when a command is sent to the channel.
 
-APP will display the currently active app as presented by the AndroidTV.  
+APP will display the currently active app as presented by the AndroidTV.
 You may also send it a command of the app package name (e.g. com.google.android.youtube.tv) to start/change-to that app.
 
 KEYCODE values are listed at the bottom of this README.
@@ -195,11 +196,11 @@ openhab> openhab:androidtv androidtv:googletv:theater keypress KEY_POWER
 
 ## Pin Code Process
 
-For the AndroidTV to be successfully accessed an on-screen PIN authentication is required on the first connection.  
+For the AndroidTV to be successfully accessed an on-screen PIN authentication is required on the first connection.
 
 To begin the PIN process, send the text "REQUEST" to the pincode channel while watching your AndroidTV.
 
-CLI Example Usage: 
+CLI Example Usage:
 
 ```shell
 openhab> openhab:androidtv androidtv:googletv:theater pincode REQUEST
@@ -222,6 +223,13 @@ If you are on a ShieldTV or PhilipsTV you must run that process a second time to
 This completes the PIN process.
 
 Upon reconnection (either from reconfiguration or a restart of OpenHAB), you should now see a message of "Login Successful" in openhab.log
+
+## Troubleshooting
+Some devices come with an outdated version of the "Android TV Remote Service". So in case the PIN Process does not result in a PIN
+shown on the screen, and the openHAB log shows an entry
+```GoogleTV version on device needs to be updated```
+visit the Google Play Store on the device, search for the "Android TV Remote Service", and update the App (Service) manually by pressing
+"Update".
 
 ## Full Example
 

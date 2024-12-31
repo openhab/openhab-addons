@@ -47,4 +47,7 @@ public class GoEStatusResponseV2DTO extends GoEStatusResponseBaseDTO {
 
     @SerializedName("nrg")
     public Double[] energy;
+
+    @SerializedName("awp")
+    public Double awattarMaxPrice;
 }

@@ -12,6 +12,12 @@ The following TP-Link Smart Devices are supported:
 - LED On/Off
 - Wi-Fi signal strength (RSSI)
 
+### EP25 Kasa Smart WiFi Plug Slim with Energy Monitoring
+
+- Power On/Off
+- Energy readings
+- Wi-Fi signal strength (RSSI)
+
 ### EP40 Kasa Smart Wi-Fi Outdoor Plug
 
 - Power On/Off Group
@@ -385,13 +391,13 @@ All devices support some of the following channels:
 
 | Channel Type ID     | Item Type                | Description                                    | Thing types supporting this channel                                                                                                                    |
 |---------------------|--------------------------|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| switch              | Switch                   | Power the device on or off.                    | EP10, EP40, HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP105, KP115, KP200, KP303, KP400, KP401, KS230, RE270K, RE370K             |
+| switch              | Switch                   | Power the device on or off.                    | EP10, EP25, EP40, HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP105, KP115, KP200, KP303, KP400, KP401, KS230, RE270K, RE370K       |
 | brightness          | Dimmer                   | Set the brightness of device or dimmer.        | ES20M, HS220, KB100, KL50, KL60, KL110, KL120, KP405, LB100, LB110, LB120, LB200                                                                       |
 | colorTemperature    | Dimmer                   | Set the color temperature in percentage.       | KB130, KL120, KL125, KL130, KL135, KL400, KL430, LB120, LB130, LB230                                                                                   |
-| colorTemperatureAbs | Number                   | Set the color temperature in Kelvin.           | KB130, KL120, KL125, KL130, KL135, KL400, KL430, LB120, LB130, LB230                                                                                   |
+| colorTemperatureAbs | Number:Temperature       | Set the color temperature in Kelvin.           | KB130, KL120, KL125, KL130, KL135, KL400, KL430, LB120, LB130, LB230                                                                                   |
 | color               | Color                    | Set the color of the light.                    | KB130, KL125, KL130, KL135, KL400, KL430, LB130, LB230                                                                                                 |
-| power               | Number:Power             | Actual energy usage in Watt.                   | HS110, HS300, KLxxx, KP115, KP125, LBxxx,                                                                                                              |
-| eneryUsage          | Number:Energy            | Energy Usage in kWh.                           | HS110, HS300, KP115, KP125                                                                                                                             |
+| power               | Number:Power             | Actual energy usage in Watt.                   | EP25, HS110, HS300, KLxxx, KP115, KP125, LBxxx,                                                                                                        |
+| eneryUsage          | Number:Energy            | Energy Usage in kWh.                           | EP25, HS110, HS300, KP115, KP125                                                                                                                       |
 | current             | Number:ElectricCurrent   | Actual current usage in Ampere.                | HS110, HS300, KP115, KP125                                                                                                                             |
 | voltage             | Number:ElectricPotential | Actual voltage usage in Volt.                  | HS110, HS300, KP115, KP125                                                                                                                             |
 | led                 | Switch                   | Switch the status LED on the device on or off. | ES20M, EP10, EP40, HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS220, HS300, KP100, KP105, KP115, KP125, KP303, KP200, KP400, KP401, KP405, KS230 |
@@ -417,7 +423,7 @@ Than the a `RefreshType` command will fetch the device state and update the inte
 
 ## Full Example
 
-### tplinksmarthome.things:
+### `tplinksmarthome.things` Example
 
 ```java
 tplinksmarthome:hs100:tv      "TV"                 [ deviceId="00000000000000000000000000000001", refresh=60 ]
@@ -427,7 +433,7 @@ tplinksmarthome:lb130:bulb2   "Living Room Bulb 2" [ deviceId="00000000000000000
 tplinksmarthome:kp401:outlet  "Outdoor Outlet"     [ ipAddress="192.168.1.101" ]
 ```
 
-### tplinksmarthome.items:
+### `tplinksmarthome.items` Example
 
 ```java
 Switch       TP_L_TV      "TV"                                 { channel="tplinksmarthome:hs100:tv:switch" }

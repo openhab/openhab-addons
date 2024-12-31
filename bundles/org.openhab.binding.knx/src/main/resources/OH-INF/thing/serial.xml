@@ -8,6 +8,10 @@
 		<label>KNX FT1.2 Interface</label>
 		<description>This is a serial interface for accessing the KNX bus</description>
 		<config-description>
+			<parameter-group name="knxsecure">
+				<label>KNX secure</label>
+				<description>Settings for KNX secure. Optional. Requires KNX secure features to be active in KNX installation.</description>
+			</parameter-group>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port </context>
 				<limitToOptions>false</limitToOptions>
@@ -41,6 +45,19 @@
 				<label>Auto Reconnect Period</label>
 				<description>Seconds between connect retries when KNX link has been lost, 0 means never retry</description>
 				<default>0</default>
+			</parameter>
+			<parameter name="keyringFile" type="text" groupName="knxsecure">
+				<label>Keyring file</label>
+				<description>Keyring file exported from ETS and placed in openHAB config/misc folder, e.g.
+					knx.knxkeys. This file is
+					mandatory to decode secure group addresses.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="keyringPassword" type="text" groupName="knxsecure">
+				<context>password</context>
+				<label>Keyring password</label>
+				<description>Keyring file password (set during export from ETS).</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>

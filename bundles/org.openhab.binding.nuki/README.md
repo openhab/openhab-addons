@@ -1,6 +1,6 @@
 # Nuki Binding
 
-This is the binding for the [Nuki Smart Lock](https://nuki.io).  
+This is the binding for the [Nuki Smart Lock](https://nuki.io).
 This binding allows you to integrate, view, control and configure the Nuki Bridge, Nuki Smart Lock and Nuki Opener.
 
 ## Prerequisites
@@ -10,23 +10,23 @@ This binding allows you to integrate, view, control and configure the Nuki Bridg
     - [Nuki Combo](https://nuki.io/en/shop/nuki-combo/)
 1. The Bridge HTTP-API has to be enabled during [Initial Bridge setup](https://nuki.io/en/support/bridge/bridge-setup/initial-bridge-setup/).
 
-It is absolutely recommended to configure static IP addresses for both, the openHAB server and the Nuki Bridge!  
+It is absolutely recommended to configure static IP addresses for both, the openHAB server and the Nuki Bridge!
 
 ### Nuki Bridge Callback
 
 The Nuki Binding will manage the required callback from the Nuki Bridge to the openHAB server if _manageCallbacks_ is set to `true`.
-If _manageCallbacks_ is not set it will default to `true`.  
+If _manageCallbacks_ is not set it will default to `true`.<br>
 Make sure that you've selected the correct primary address in the [network settings](https://www.openhab.org/docs/settings/services_system.html#network-settings).
 
 If you want to manage the callbacks from the Nuki Bridge to the openHAB server by yourself, you need to set _manageCallbacks_ to `false`.
-Then add the callback on the Nuki Bridge via Bridge API Endpoint _/callback/add_ in the format `http://<openHAB_IP>:<openHAB_PORT>/nuki/bcb`.  
-The Sheet [NukiBridgeAPI](https://docs.google.com/spreadsheets/d/1SGKWhqwqRyOGbv4NEq-8PAPjBORRixvEjRuzO-nVabQ) is a helpfull tool for listing, adding and removing callbacks.  
+Then add the callback on the Nuki Bridge via Bridge API Endpoint _/callback/add_ in the format `http://<openHAB_IP>:<openHAB_PORT>/nuki/bcb`.
+The Sheet [NukiBridgeAPI](https://docs.google.com/spreadsheets/d/1SGKWhqwqRyOGbv4NEq-8PAPjBORRixvEjRuzO-nVabQ) is a helpfull tool for listing, adding and removing callbacks.
 
 ## Supported Bridges
 
-This binding supports just one bridge type: The Nuki Bridge (`nuki:bridge`). Create one `bridge` per Nuki Bridge available in your home automation environment.  
+This binding supports just one bridge type: The Nuki Bridge (`nuki:bridge`). Create one `bridge` per Nuki Bridge available in your home automation environment.
 
-The following configuration options are available:  
+The following configuration options are available:
 
 | Parameter       | Description                                                                                                                                                                                        | Comment      |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
@@ -159,7 +159,7 @@ Unfortunately the Nuki Bridge is not reporting any transition states (e.g. for L
 | 255   | Undefined           |
 
 ##### Supported openerMode values
-  
+
 | Mode | Name            |
 | ---- | --------------- |
 | 2    | Door mode       |

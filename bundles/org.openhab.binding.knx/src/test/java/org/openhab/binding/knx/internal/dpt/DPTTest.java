@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.openhab.binding.knx.internal.itests.Back2BackTest;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -36,8 +35,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.util.ColorUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
@@ -54,8 +51,6 @@ import tuwien.auto.calimero.dptxlator.DptXlator2ByteSigned;
  */
 @NonNullByDefault
 class DPTTest {
-    public static final Logger LOGGER = LoggerFactory.getLogger(Back2BackTest.class);
-
     @Test
     void testDptBroken() {
         assertNull(ValueEncoder.encode(new DecimalType(), "9.042.1"));
@@ -206,13 +201,13 @@ class DPTTest {
     @Test
     void testToDPT10ValueFromQuantityType() {
         // DateTimeType, not QuantityType
-        assertEquals("Wed, 17:30:00", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00Z"), "10.001"));
+        assertEquals("Wed, 17:30:00", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00"), "10.001"));
     }
 
     @Test
     void testToDPT11ValueFromQuantityType() {
         // DateTimeType, not QuantityType
-        assertEquals("2019-06-12", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00Z"), "11.001"));
+        assertEquals("2019-06-12", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00"), "11.001"));
     }
 
     @Test
@@ -342,7 +337,7 @@ class DPTTest {
     @Test
     void testToDPT19ValueFromQuantityType() {
         // DateTimeType, not QuantityType
-        assertEquals("2019-06-12 17:30:00", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00Z"), "19.001"));
+        assertEquals("2019-06-12 17:30:00", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00"), "19.001"));
         // special: clock fault
         assertNull(ValueDecoder.decode("19.001", new byte[] { (byte) (2019 - 1900), 1, 15, 17, 30, 0, (byte) 0x80, 0 },
                 DateTimeType.class));
@@ -529,7 +524,7 @@ class DPTTest {
         assertNotEquals(DPTXlator4ByteFloat.DPT_ELECTROMAGNETIC_MOMENT.getUnit(),
                 Units.AMPERE.multiply(SIUnits.SQUARE_METRE).toString());
 
-        // 64 bit signed (DPT 29)
+        // 64-bit signed (DPT 29)
         assertNotEquals(DPTXlator64BitSigned.DPT_REACTIVE_ENERGY.getUnit(), Units.VAR_HOUR.toString());
     }
 

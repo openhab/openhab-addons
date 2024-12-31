@@ -2,7 +2,7 @@
 
 OpenHAB binding to the SAIC-API used by MG cars (MG4, MG5 EV, MG ZSV...)
 
-It enables iSMART users to get battery status and other data from their cars. 
+It enables iSMART users to get battery status and other data from their cars.
 They can also pre-heat their cars by turning ON the AC.
 
 Based on the work done here: https://github.com/SAIC-iSmart-API
@@ -14,10 +14,9 @@ European iSMART accounts and vehicles.
 - `account`: Bridge representing an iSMART Account
 - `vehicle`: Thing representing an iSMART MG Car
 
-
 ## Discovery
 
-Vehicle discovery is implemented. 
+Vehicle discovery is implemented.
 Once an account has been configured it can be scanned for vehicles.
 
 ## Thing Configuration
@@ -35,7 +34,6 @@ Once an account has been configured it can be scanned for vehicles.
 |---------------|------|--------------------------------------|---------|----------|----------|
 | vin           | text | Vehicle identification number (VIN)  | N/A     | yes      | no       |
 | abrpUserToken | text | User token for A Better Routeplanner | N/A     | no       | no       |
-
 
 ## Channels
 
@@ -90,7 +88,7 @@ demo.items:
 ```java
 Number 		MG5_Total_Distance_Driven		"MG5 Total Distance Driven"	["Length"]		{channel="saicismart:vehicle:myaccount:mymg5:odometer"}
 Number 		MG5_Electric_Range			"MG5 Electric Range"		["Length"]		{channel="saicismart:vehicle:myaccount:mymg5:range-electric"}
-Number		MG5_Battery_Level			"MG5 Battery Level"		["Energy"]		{channel="saicismart:vehicle:myaccount:mymg5:soc"}  
+Number		MG5_Battery_Level			"MG5 Battery Level"		["Energy"]		{channel="saicismart:vehicle:myaccount:mymg5:soc"}
 Number 		MG5_Power_Usage 			"MG5 Power Usage"		["Power"]		{channel="saicismart:vehicle:myaccount:mymg5:power"}
 Switch 		MG5_Charging 				"MG5 Charging"						{channel="saicismart:vehicle:myaccount:mymg5:charging"}
 Switch 		MG5_Engine_State			"MG5 Engine State"					{channel="saicismart:vehicle:myaccount:mymg5:engine"}
@@ -122,7 +120,6 @@ Switch		MG5_Force_Refresh 			"MG5 Force Refresh"					{channel="saicismart:vehicl
 DateTime 	MG5_Last_Alarm_Message_Timestamp	"MG5 Last Alarm Message Timestamp"			{channel="saicismart:vehicle:myaccount:mymg5:last-alarm-message-date"}
 String 		MG5_Vehicle_Message			"MG5 Vehicle Message"					{channel="saicismart:vehicle:myaccount:mymg5:last-alarm-message-content"}
 ```
-
 
 ## Limitations
 

@@ -1,8 +1,8 @@
 # TasmotaPlug Binding
 
-This binding connects Tasmota flashed smart plugs with 1, 2, 3 or 4 relay channels to openHAB.  
-The plug must report the status of the relay via the url `http://$PLUG_IP/cm?cmnd=Power` in order for the binding to work.  
-The energy monitoring channels can be used if the plug reports energy status via the url `http://$PLUG_IP/cm?cmnd=Status%2010`.  
+This binding connects Tasmota flashed smart plugs with 1, 2, 3 or 4 relay channels to openHAB.
+The plug must report the status of the relay via the url `http://$PLUG_IP/cm?cmnd=Power` in order for the binding to work.
+The energy monitoring channels can be used if the plug reports energy status via the url `http://$PLUG_IP/cm?cmnd=Status%2010`.
 See the [Tasmota Supported Devices Repository](https://templates.blakadder.com/plug.html) for a list of supported plugs.
 
 ## Supported Things

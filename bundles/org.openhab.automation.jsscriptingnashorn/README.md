@@ -21,7 +21,7 @@ If you create an empty file called `test.nashornjs`, you will see a log line wit
 
 To enable debug logging, use the [console logging]({{base}}/administration/logging.html) commands to enable debug logging for the automation functionality:
 
-```text
+```shell
 log:set DEBUG org.openhab.core.automation
 ```
 

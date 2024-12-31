@@ -81,7 +81,7 @@ See section [Discovery](#discovery) for details.
 ### Generation 2 Plus series
 
 | thing-type           | Model                                                    | Vendor ID                    |
-| -------------------- | -------------------------------------------------------- | ---------------------------- |
+|----------------------|----------------------------------------------------------|------------------------------|
 | shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU |
 | shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU |
 | shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU |
@@ -97,6 +97,7 @@ See section [Discovery](#discovery) for details.
 | shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                   |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
+| shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
 | shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                    |
 
@@ -239,13 +240,12 @@ In this case the credentials are persisted as part of the Thing configuration.
 
 ### Range Extender Mode
 
-The Plus/Pro devices support the so-called Range Extender Mode (not available for Gen1). 
+The Plus/Pro devices support the so-called Range Extender Mode (not available for Gen1).
 This allows connect Shellys, which are normally no reachable, because of a lack of WiFi signal.
 Once enabled the Shelly acts as a hub to the linked devices, like a WiFi repeater.
 The hub device enables the access point, which can be seen by the linked device.
 The binding could then get access to the secondary device using &lt;ub shelly ip&gt;:&lt;special port&gt;.
 A special port on the hub device will be created for every linked device so one hub device could supported multiple linked devices.
-
 
 The binding communicates with the Shelly hub device, which then forwards the request to the secondary device.
 Once the thing for the primary Shelly goes online the binding detects the enabled range extender mode and adds all connected secondary devices to the Inbox.
@@ -482,7 +482,7 @@ Refer to section [Full Example](#full-example) for examples how to catch alarm t
 
 ## Channels
 
-Depending on the device type and firmware release channels might be not available or stay with value NaN.  
+Depending on the device type and firmware release channels might be not available or stay with value NaN.
 
 ### Shelly 1 (thing-type: shelly1)
 
@@ -630,7 +630,6 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 _Note:
 You should calibrate the device if you want to use "neutral current" measurements.
 Check the Shelly documentation for details._
-
 
 ### Shelly 2 - relay mode (thing-type: shelly2-relay)
 
@@ -1343,7 +1342,6 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
-
 ### Shelly Plus PM Mini (thing-type: shellypmmini)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
@@ -1352,7 +1350,6 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
-
 
 ## Shelly Pro Series
 
@@ -1606,7 +1603,6 @@ There are no additional channels beside the device group.
 Thing shelly:shelly25-roller:XXXXX1 "Shelly 25 Roller XXXXX1" @ "Home Theater" [deviceIp="x.x.x.x", userId="", password=""]
 Thing shelly:shelly25-roller:XXXXX2 "Shelly 25 Roller XXXXX2" @ "Living Room"  [deviceIp="x.x.x.x", userId="admin", password="secret"]
 
-
 /* Shelly 2.5 Relays */
 Thing shelly:shelly25-relay:XXXXX3 "Shelly 25 Relay XXXXX3" @ "Hall Way" [deviceIp="x.x.x.x", userId="", password=""]
 Thing shelly:shelly25-relay:XXXXX4 "Shelly 25 Relay XXXXX4" @ "Dining Room" [deviceIp="x.x.x.x", userId="", password=""]
@@ -1616,7 +1612,6 @@ Thing shelly:shelly25-relay:XXXXX5 "Shelly 25 Relay XXXXX5" @ "Bed Room" [device
 Thing shelly:shellyht:e01691 "ShellyChimenea" @ "lowerground" [ deviceIp="10.0.55.101", userId="", password="", lowBattery=15 , eventsCoIoT=true ]
 Thing shelly:shellyht:e01681 "ShellyDormitorio" @ "upperground" [ deviceIp="10.0.55.102", userId="", password="", lowBattery=15 , eventsCoIoT=true ]
 Thing shelly:shellyflood:XXXXXX "ShellyFlood" @ "cellar" [ deviceIp="10.0.0.103", userId="", password="", lowBattery=15, eventsSwitch=true, eventsButton=true, eventsCoIoT=true ]
-
 ```
 
 ### shelly.items
@@ -1712,7 +1707,7 @@ then
     if (! gBattery.allMembers.filter([state < lowBatteryThreshold]).empty) {
         message = "Battery levels:\n"
 
-        var report = gBattery.allMembers.filter([ state instanceof DecimalType ]).sortBy([ state instanceof DecimalType ]).map[ 
+        var report = gBattery.allMembers.filter([ state instanceof DecimalType ]).sortBy([ state instanceof DecimalType ]).map[
         name + ": " + state.format("%d%%\n") ]
         message = message + report
 
@@ -1777,7 +1772,7 @@ then
 end
 ```
 
-#### Reading colors from Color Picker:
+#### Reading Colors from Color Picker
 
 ```java
 import org.openhab.core.library.types.*
@@ -1807,10 +1802,10 @@ then
         eventSource = triggeredChannel
         eventType = receivedEvent
         ...
-    } 
+    }
 end
 
-rule "Color changed" 
+rule "Color changed"
 when
     Item ShellyColor changed
 then

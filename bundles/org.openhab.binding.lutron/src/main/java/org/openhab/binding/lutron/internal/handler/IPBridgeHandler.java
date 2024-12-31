@@ -216,7 +216,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
         sendCommand(new LIPCommand(TargetType.BRIDGE, LutronOperation.QUERY, LutronCommandType.SYSTEM, null,
                 SYSTEM_DBEXPORTDATETIME));
 
-        messageSender = new Thread(this::sendCommandsThread, "Lutron sender");
+        messageSender = new Thread(this::sendCommandsThread, "OH-binding-" + getThing().getUID() + "-IPBridgeSender");
         messageSender.start();
 
         logger.debug("Starting keepAlive job with interval {}", heartbeatInterval);

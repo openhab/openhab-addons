@@ -14,6 +14,7 @@ package org.openhab.binding.xmppclient.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 
 /**
  * The {@link XMPPClientConfiguration} class contains fields mapping thing configuration parameters.
@@ -27,4 +28,10 @@ public class XMPPClientConfiguration {
     public String username = "";
     public String password = "";
     public String domain = "";
+    public String securityMode = SecurityMode.required.toString();
+
+    public boolean isValid() {
+        String host = this.host;
+        return !(host == null || host.isBlank());
+    }
 }

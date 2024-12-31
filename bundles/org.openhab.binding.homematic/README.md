@@ -141,7 +141,7 @@ Network address of the Homematic gateway
 Hint for the binding to identify the gateway type (auto|ccu|noccu) (default = "auto").
 
 - **callbackHost**
-Callback network address of the system runtime, default is auto-discovery
+Callback network address of the system runtime, default is auto-discovery. This value must not contain any white spaces.
 
 - **xmlCallbackPort**
 Callback port of the binding's XML-RPC server, default is 9125 and counts up for each additional bridge
@@ -181,7 +181,7 @@ For a CCU2, the value may need to be increased to 180s.
 Time in seconds that the controller will be in install mode when a device discovery is initiated (default = 60)
 
 - **unpairOnDeletion**
-If set to true, devices are automatically unpaired from the gateway when their corresponding things are deleted.  
+If set to true, devices are automatically unpaired from the gateway when their corresponding things are deleted.<br>
 **Warning:** The option "factoryResetOnDeletion" also unpairs a device, so in order to avoid unpairing on deletion completely, both options need to be set to false! (default = false)
 
 - **factoryResetOnDeletion**
@@ -192,7 +192,7 @@ Due to the factory reset, the device will also be unpaired from the gateway, eve
   If a large number of devices are connected to the gateway, the default buffersize of 2048 kB may be too small for communication with the gateway.
   In this case, e.g. the discovery fails.
   With this setting the buffer size can be adjusted. The value is specified in kB.
-  
+
 - **useAuthentication**
 Username and password are send to the gateway to authenticate the access to the gateway.
 
@@ -212,7 +212,7 @@ homematic:bridge:NAME
 - **bridge** the type, fixed
 - **name** the name of the bridge
 
-### Example
+### Bridge Configuration Example
 
 #### Minimum configuration
 
@@ -448,7 +448,7 @@ Adds multiple virtual datapoints to the HM-Dis-WM55 and HM-Dis-EP-WM55 devices t
 
 **Note:** The HM-Dis-EP-WM55 has only a black and white display and therefore does not support datapoints for colored lines. In addition, only lines 1-3 can be set.
 
-#### Example
+#### Button Example
 
 Display text at line 1,3 and 5 when the bottom button on the display is pressed
 
@@ -734,6 +734,7 @@ The problem can be solved by increasing the `bufferSize` value in the bridge con
 
 openHAB and the CCU are using different values for the same state of a rollershutter.
 Examples: HmIP-BROLL, HmIP-FROLL, HmIP-BBL, HmIP-FBL and HmIP-DRBLI4
+
 |         | Open | Closed |
 | ------- | ---- | ------ |
 | openHAB | 0%   | 100%   |

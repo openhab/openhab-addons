@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +28,6 @@ import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SirenStatus;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
@@ -49,11 +50,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class SecurityCapability extends RestCapability<SecurityApi> {
+    private static final ZonedDateTime ZDT_REFERENCE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0),
+            ZoneId.systemDefault());
+
     private final Logger logger = LoggerFactory.getLogger(SecurityCapability.class);
-
     private final Map<String, HomeEvent> eventBuffer = new HashMap<>();
-    private @Nullable ZonedDateTime freshestEventTime;
 
+    private ZonedDateTime freshestEventTime = ZDT_REFERENCE;
     private NAObjectMap<HomeDataPerson> persons = new NAObjectMap<>();
     private NAObjectMap<HomeDataModule> modules = new NAObjectMap<>();
     private String securityId = "";
@@ -65,7 +68,6 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     @Override
     public void initialize() {
         super.initialize();
-        freshestEventTime = null;
         securityId = handler.getThingConfigAs(HomeConfiguration.class).getIdForArea(FeatureArea.SECURITY);
     }
 
@@ -121,26 +123,26 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     protected List<NAObject> updateReadings(SecurityApi api) {
         List<NAObject> result = new ArrayList<>();
         try {
-            for (HomeEvent event : api.getHomeEvents(securityId, freshestEventTime)) {
-                HomeEvent previousEvent = eventBuffer.get(event.getCameraId());
-                if (previousEvent == null || previousEvent.getTime().isBefore(event.getTime())) {
-                    eventBuffer.put(event.getCameraId(), event);
+            api.getHomeEvents(securityId, freshestEventTime).stream().forEach(event -> {
+                bufferIfNewer(event.getCameraId(), event);
+                if (event.getPersonId() instanceof String personId) {
+                    bufferIfNewer(personId, event);
                 }
-                String personId = event.getPersonId();
-                if (personId != null) {
-                    previousEvent = eventBuffer.get(personId);
-                    if (previousEvent == null || previousEvent.getTime().isBefore(event.getTime())) {
-                        eventBuffer.put(personId, event);
-                    }
-                }
-                if (freshestEventTime == null || event.getTime().isAfter(freshestEventTime)) {
+                if (event.getTime().isAfter(freshestEventTime)) {
                     freshestEventTime = event.getTime();
                 }
-            }
+            });
         } catch (NetatmoException e) {
             logger.warn("Error retrieving last events for home '{}' : {}", securityId, e.getMessage());
         }
         return result;
+    }
+
+    private void bufferIfNewer(String id, HomeEvent event) {
+        HomeEvent previousEvent = eventBuffer.get(id);
+        if (previousEvent == null || previousEvent.getTime().isBefore(event.getTime())) {
+            eventBuffer.put(id, event);
+        }
     }
 
     public NAObjectMap<HomeDataPerson> getPersons() {
@@ -234,17 +236,6 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                 handler.expireData();
             } catch (NetatmoException e) {
                 logger.warn("Error changing Presence floodlight mode '{}' : {}", mode, e.getMessage());
-            }
-        });
-    }
-
-    public void changeSirenStatus(String moduleId, SirenStatus status) {
-        getApi().ifPresent(api -> {
-            try {
-                api.changeSirenStatus(handler.getId(), moduleId, status);
-                handler.expireData();
-            } catch (NetatmoException e) {
-                logger.warn("Error changing siren status '{}' : {}", status, e.getMessage());
             }
         });
     }

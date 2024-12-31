@@ -17,6 +17,8 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link Rate} defines a rate limiter that accepts a number of calls to be
  * executed in a given time length. If the quota of calls is used, then calls
@@ -24,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public final class Rate {
 
     private final int numberCalls;

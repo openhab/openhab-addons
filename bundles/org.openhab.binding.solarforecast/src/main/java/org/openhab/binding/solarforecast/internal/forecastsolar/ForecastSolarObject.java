@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * The {@link ForecastSolarObject} holds complete data for forecast
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - TimeSeries delivers only future values, otherwise past values are overwritten
  */
 @NonNullByDefault
 public class ForecastSolarObject implements SolarForecast {
@@ -157,8 +158,12 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public TimeSeries getEnergyTimeSeries(QueryMode mode) {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
+        Instant now = Instant.now(Utils.getClock());
         wattHourMap.forEach((timestamp, energy) -> {
-            ts.add(timestamp.toInstant(), Utils.getEnergyState(energy / 1000.0));
+            Instant entryTimestamp = timestamp.toInstant();
+            if (Utils.isAfterOrEqual(entryTimestamp, now)) {
+                ts.add(entryTimestamp, Utils.getEnergyState(energy / 1000.0));
+            }
         });
         return ts;
     }
@@ -206,8 +211,12 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public TimeSeries getPowerTimeSeries(QueryMode mode) {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
+        Instant now = Instant.now(Utils.getClock());
         wattMap.forEach((timestamp, power) -> {
-            ts.add(timestamp.toInstant(), Utils.getPowerState(power / 1000.0));
+            Instant entryTimestamp = timestamp.toInstant();
+            if (Utils.isAfterOrEqual(entryTimestamp, now)) {
+                ts.add(entryTimestamp, Utils.getPowerState(power / 1000.0));
+            }
         });
         return ts;
     }
@@ -316,6 +325,11 @@ public class ForecastSolarObject implements SolarForecast {
         }
         ZonedDateTime zdt = wattHourMap.lastEntry().getKey();
         return zdt.toInstant();
+    }
+
+    @Override
+    public void triggerUpdate() {
+        expirationDateTime = Instant.MIN;
     }
 
     private void throwOutOfRangeException(Instant query) {

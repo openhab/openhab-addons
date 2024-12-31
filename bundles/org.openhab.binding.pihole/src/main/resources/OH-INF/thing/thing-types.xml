@@ -116,6 +116,9 @@
 			<channel id="enabled" typeId="enabled-channel"/>
 			<channel id="disable-enable" typeId="disable-enable-channel"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -160,5 +163,16 @@
 				<option value="ENABLE">Enable Blocking</option>
 			</options>
 		</command>
+	</channel-type>
+	<channel-type id="gravity-file-exists-channel">
+		<item-type>Switch</item-type>
+		<label>Gravity File Exists</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="gravity-last-update-channel">
+		<item-type>DateTime</item-type>
+		<label>Gravity Last Update</label>
+		<category>time</category>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

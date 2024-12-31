@@ -11,7 +11,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>4.3.0-SNAPSHOT</version>
+  <version>5.0.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
@@ -63,11 +63,11 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <oh.java.version>17</oh.java.version>
+    <oh.java.version>21</oh.java.version>
     <maven.compiler.release>${oh.java.version}</maven.compiler.release>
 
-    <ohc.version>4.3.0-SNAPSHOT</ohc.version>
-    <bnd.version>7.0.0</bnd.version>
+    <ohc.version>5.0.0-SNAPSHOT</ohc.version>
+    <bnd.version>7.1.0</bnd.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
     <jackson.version>2.17.1</jackson.version>
@@ -419,6 +419,9 @@ Import-Package: \\
             </argLine>
             <systemPropertyVariables>
               <junit.jupiter.execution.timeout.default>15 m</junit.jupiter.execution.timeout.default>
+              <openhab.conf>${project.build.directory}/openhab/conf</openhab.conf>
+              <openhab.runtime>${project.build.directory}/openhab/runtime</openhab.runtime>
+              <openhab.userdata>${project.build.directory}/openhab/userdata</openhab.userdata>
             </systemPropertyVariables>
           </configuration>
         </plugin>
@@ -636,7 +639,7 @@ Import-Package: \\
                   <version>3.6.3</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
-                  <version>[17.0,18.0),[21.0,22.0)</version>
+                  <version>[21.0,22.0)</version>
                 </requireJavaVersion>
               </rules>
             </configuration>
@@ -822,9 +825,9 @@ Import-Package: \\
       </build>
     </profile>
     <profile>
-      <id>j21</id>
+      <id>j17</id>
       <properties>
-        <oh.java.version>21</oh.java.version>
+        <oh.java.version>17</oh.java.version>
         <maven.compiler.release>${oh.java.version}</maven.compiler.release>
       </properties>
     </profile>

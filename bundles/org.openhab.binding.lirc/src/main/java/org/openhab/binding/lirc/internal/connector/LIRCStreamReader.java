@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.openhab.binding.lirc.internal.LIRCBindingConstants;
 import org.openhab.binding.lirc.internal.LIRCResponseException;
 import org.openhab.binding.lirc.internal.messages.LIRCButtonEvent;
 import org.openhab.binding.lirc.internal.messages.LIRCResponse;
@@ -45,6 +46,7 @@ public class LIRCStreamReader extends Thread {
     private LIRCConnector connector;
 
     public LIRCStreamReader(LIRCConnector connector, InputStream in) {
+        super(String.format("OH-binding-%s-%s", LIRCBindingConstants.BINDING_ID, "StreamReader"));
         this.connector = connector;
         this.in = in;
     }

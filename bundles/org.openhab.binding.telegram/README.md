@@ -196,7 +196,7 @@ These actions will send a message to all chat ids configured for this bot.
 | Action                     | Description  |
 |----------------------------|--------------|
 | sendTelegram(String message) | Sends a message. |
-| sendTelegram(String format, Object... args)          | Sends a formatted message (See <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html> for more information).
+| sendTelegram(String format, Object... args)          | Sends a formatted message (See <https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Formatter.html> for more information).
 | sendTelegramQuery(String message, String replyId, String... buttons) | Sends a question to the user that can be answered via the defined buttons. The replyId can be freely choosen and is sent back with the answer. Then, the id is required to identify what question has been answered (e.g. in case of multiple open questions). The final result looks like this: ![Telegram Inline Keyboard](doc/queryExample.png) |
 | sendTelegramAnswer(String replyId, String message) | Sends a message after the user has answered a question. You should _always_ call this method after you received an answer. It will remove buttons from the specific question and will also stop the progress bar displayed at the client side. If no message is necessary, just pass `null` here. |
 | deleteTelegramQuery(String replyId) | Deletes a question in the chat. The replyId must be the same as used for the corresponding sendTelegramQuery() action. |
@@ -354,7 +354,7 @@ To receive a message and react on that:
 
 telegram.items
 
-```php
+```java
 String telegramMessage "Telegram Message" { channel = "telegram:telegramBot:2b155b22:lastMessageText" }
 ```
 
@@ -373,7 +373,7 @@ To send a question with two alternatives and have the bot handle the reply:
 
 telegram.items
 
-```php
+```java
 String telegramReplyId "Telegram Reply Id" { channel = "telegram:telegramBot:2b155b22:replyId" }
 ```
 

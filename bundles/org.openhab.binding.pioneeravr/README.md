@@ -8,7 +8,7 @@ The binding can auto-discover the Pioneer AVRs present on your local network.
 The auto-discovery is enabled by default.
 To disable it, you can create a file in the services directory called pioneeravr.cfg with the following content:
 
-```text
+```ini
 #Put your configuration here
 org.openhab.pioneeravr:enableAutoDiscovery=false
 ```

@@ -48,11 +48,14 @@ import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,6 +84,16 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
         super(FreeboxOsHandler.class,
                 Stream.of(THINGS_TYPES_UIDS, HOME_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet()),
                 DISCOVERY_TIME_SECONDS);
+    }
+
+    @Reference(unbind = "-")
+    public void bindTranslationProvider(TranslationProvider translationProvider) {
+        this.i18nProvider = translationProvider;
+    }
+
+    @Reference(unbind = "-")
+    public void bindLocaleProvider(LocaleProvider localeProvider) {
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -159,10 +172,10 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
             logger.debug("Error discovering phones: {}", e.getMessage());
         }
         if (!statuses.isEmpty()) {
-            ThingUID thingUID = new ThingUID(THING_TYPE_CALL, bridgeUID, "landline");
+            ThingUID thingUID = new ThingUID(THING_TYPE_CALL, bridgeUID, "calls");
             logger.debug("Adding new Call thing {} to inbox", thingUID);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withLabel("Freebox Calls").build();
+                    .withLabel("@text/discovery.call.label").build();
             thingDiscovered(discoveryResult);
         }
     }
@@ -181,7 +194,8 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                         bridgeUID, mac.toHexString(false));
                 logger.debug("Adding new Freebox Network Host {} to inbox", thingUID);
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                        .withLabel(lanHost.getPrimaryName().orElse("Network Device %s".formatted(macString)))
+                        .withLabel(lanHost.getPrimaryName()
+                                .orElse("@text/discovery.network-device.label [ \"%s\" ]".formatted(macString)))
                         .withTTL(300).withProperty(Thing.PROPERTY_MAC_ADDRESS, macString)
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
                 thingDiscovered(builder.build());
@@ -201,7 +215,8 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 logger.debug("Adding new VM Device {} to inbox", thingUID);
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
-                        .withLabel("%s (VM)".formatted(vm.name())).withProperty(ClientConfiguration.ID, vm.id())
+                        .withLabel("@text/discovery.vm.label [ \"%s\" ]".formatted(vm.name()))
+                        .withProperty(ClientConfiguration.ID, vm.id())
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac.toColonDelimitedString()).build();
                 thingDiscovered(discoveryResult);
             });
@@ -219,7 +234,7 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
 
                 ThingUID thingUID = new ThingUID(THING_TYPE_REPEATER, bridgeUID, Integer.toString(repeater.id()));
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                        .withLabel("Repeater %s".formatted(repeater.name()))
+                        .withLabel("@text/discovery.repeater.label [ \"%s\" ]".formatted(repeater.name()))
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac.toColonDelimitedString())
                         .withProperty(ClientConfiguration.ID, repeater.id())
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();

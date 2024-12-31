@@ -60,6 +60,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
     private Optional<ScheduledFuture<?>> initializerJob = Optional.empty();
     private Optional<VehicleDiscovery> vehicleDiscovery = Optional.empty();
     private LocaleProvider localeProvider;
+    private Optional<MyBMWBridgeConfiguration> bmwBridgeConfiguration = Optional.empty();
 
     public MyBMWBridgeHandler(Bridge bridge, HttpClientFactory hcf, LocaleProvider localeProvider) {
         super(bridge);
@@ -82,11 +83,23 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.trace("MyBMWBridgeHandler.initialize");
         updateStatus(ThingStatus.UNKNOWN);
-        MyBMWBridgeConfiguration config = getConfigAs(MyBMWBridgeConfiguration.class);
-        if (config.language.equals(Constants.LANGUAGE_AUTODETECT)) {
-            config.language = localeProvider.getLocale().getLanguage().toLowerCase();
+
+        this.bmwBridgeConfiguration = Optional.of(getConfigAs(MyBMWBridgeConfiguration.class));
+
+        MyBMWBridgeConfiguration localBridgeConfiguration;
+
+        if (bmwBridgeConfiguration.isPresent()) {
+            localBridgeConfiguration = bmwBridgeConfiguration.get();
+        } else {
+            logger.warn("the bridge configuration could not be retrieved");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
         }
-        if (!MyBMWConfigurationChecker.checkConfiguration(config)) {
+
+        if (localBridgeConfiguration.getLanguage().equals(Constants.LANGUAGE_AUTODETECT)) {
+            localBridgeConfiguration.setLanguage(localeProvider.getLocale().getLanguage().toLowerCase());
+        }
+        if (!MyBMWConfigurationChecker.checkInitialConfiguration(localBridgeConfiguration)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
             // there is no risk in this functionality as several steps have to happen to get the file proxy working:
@@ -100,19 +113,26 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
                 environment = "";
             }
 
-            createMyBmwProxy(config, environment);
+            // this access has to be synchronized as the vehicleHandler as well as the bridge itself request the
+            // instance
+            Optional<MyBMWProxy> localProxy = getMyBmwProxy();
+            localProxy.ifPresent(proxy -> proxy.setBridgeConfiguration(localBridgeConfiguration));
+
             initializerJob = Optional.of(scheduler.schedule(this::discoverVehicles, 2, TimeUnit.SECONDS));
         }
     }
 
     private synchronized void createMyBmwProxy(MyBMWBridgeConfiguration config, String environment) {
         if (!myBmwProxy.isPresent()) {
-            if (!(TEST.equals(environment) && TESTUSER.equals(config.userName))) {
+            if (!(TEST.equals(environment) && TESTUSER.equals(config.getUserName()))) {
                 myBmwProxy = Optional.of(new MyBMWHttpProxy(httpClientFactory, config));
             } else {
                 myBmwProxy = Optional.of(new MyBMWFileProxy(httpClientFactory, config));
             }
             logger.trace("MyBMWBridgeHandler proxy set");
+        } else {
+            myBmwProxy.get().setBridgeConfiguration(config);
+            logger.trace("MyBMWBridgeHandler update proxy with bridge configuration");
         }
     }
 
@@ -135,10 +155,6 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
     private void discoverVehicles() {
         logger.trace("MyBMWBridgeHandler.requestVehicles");
 
-        MyBMWBridgeConfiguration config = getConfigAs(MyBMWBridgeConfiguration.class);
-
-        myBmwProxy.ifPresent(proxy -> proxy.setBridgeConfiguration(config));
-
         vehicleDiscovery.ifPresent(discovery -> discovery.discoverVehicles());
     }
 
@@ -148,9 +164,23 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
         return List.of(VehicleDiscovery.class);
     }
 
-    public Optional<MyBMWProxy> getMyBmwProxy() {
+    public synchronized Optional<MyBMWProxy> getMyBmwProxy() {
         logger.trace("MyBMWBridgeHandler.getProxy");
-        createMyBmwProxy(getConfigAs(MyBMWBridgeConfiguration.class), ENVIRONMENT);
+
+        MyBMWBridgeConfiguration localBridgeConfiguration = null;
+
+        if (bmwBridgeConfiguration.isPresent()) {
+            localBridgeConfiguration = bmwBridgeConfiguration.get();
+        } else {
+            logger.warn("the bridge configuration could not be retrieved");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            throw new IllegalStateException("bridge handler - configuration is not available");
+        }
+
+        if (!myBmwProxy.isPresent()) {
+            createMyBmwProxy(localBridgeConfiguration, ENVIRONMENT);
+        }
+
         return myBmwProxy;
     }
 }

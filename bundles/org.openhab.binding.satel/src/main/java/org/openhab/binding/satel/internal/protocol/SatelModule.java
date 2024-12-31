@@ -23,6 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.satel.internal.SatelBindingConstants;
 import org.openhab.binding.satel.internal.command.IntegraVersionCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand.State;
@@ -520,7 +521,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
                     SatelModule.this.communicationLoop(CommunicationWatchdog.this);
                     logger.debug("Communication thread stopped");
                 }
-            });
+            }, "OH-binding-" + SatelBindingConstants.BINDING_ID + "-dispatcher");
             thread.start();
             this.thread = thread;
             // if module is not initialized yet, send version command

@@ -30,13 +30,14 @@ import org.openhab.binding.solarman.internal.modbus.exception.SolarmanProtocolEx
  * @author Catalin Sanda - Initial contribution
  */
 @NonNullByDefault
-public class SolarmanV5Protocol {
+public class SolarmanV5Protocol implements SolarmanProtocol {
     private final SolarmanLoggerConfiguration solarmanLoggerConfiguration;
 
     public SolarmanV5Protocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {
         this.solarmanLoggerConfiguration = solarmanLoggerConfiguration;
     }
 
+    @Override
     public Map<Integer, byte[]> readRegisters(SolarmanLoggerConnection solarmanLoggerConnection, byte mbFunctionCode,
             int firstReg, int lastReg) throws SolarmanException {
         byte[] solarmanV5Frame = buildSolarmanV5Frame(mbFunctionCode, firstReg, lastReg);

@@ -42,7 +42,7 @@ Once done, you can also create your things via *.things file.
 
 There is no channel associated with the bridge.
 
-Channels available for the gates are :
+Channels available for the gates are:
 
 | Channel   | Type   | Read/Write | Description                                              |
 |-----------|--------|------------|----------------------------------------------------------|
@@ -56,7 +56,7 @@ Channels available for the gates are :
 (1) : Accepted commands are : STOP, MOVE
 (2) : Valid status are : OPEN, CLOSED, OPENING, CLOSING, STOPPED
 (3) : Accepted commands are : "stop","open","close"
-(4) : There is no way to retrieve the current status of the courtesy light. It is supposed to be ON when the gate is moving and turned OFF once done. 
+(4) : There is no way to retrieve the current status of the courtesy light. It is supposed to be ON when the gate is moving and turned OFF once done.
 The delay between the moving end and light being turned off is a configuration parameter of the `courtesy` channel.
 
 ### T4 Commands
@@ -65,7 +65,7 @@ Depending upon your gate model and motor capabilities, some T4 commands can be u
 The list of available commands for your model will be automatically discovered by the binding.
 This information is stored in the `allowedT4` property held by the gate Thing itself.
 
-Complete list of T4 Commands :
+Complete list of T4 Commands:
 
 | Command | Action                     |
 |---------|----------------------------|

@@ -81,7 +81,7 @@ public enum ModuleType {
     PERSON(FeatureArea.SECURITY, "NAPerson", 1, "virtual", HOME,
             Set.of(PersonCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             new ChannelGroup(PersonChannelHelper.class, GROUP_PERSON),
-            new ChannelGroup(EventPersonChannelHelper.class, GROUP_PERSON_LAST_EVENT)),
+            new ChannelGroup(EventPersonChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_PERSON_LAST_EVENT)),
 
     WELCOME(FeatureArea.SECURITY, "NACamera", 1, "camera", HOME,
             Set.of(CameraCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
@@ -96,7 +96,7 @@ public enum ModuleType {
             Set.of(ChannelHelperCapability.class, ParentUpdateCapability.class), ChannelGroup.SIGNAL,
             ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP, new ChannelGroup(SirenChannelHelper.class, GROUP_SIREN)),
 
-    PRESENCE(FeatureArea.SECURITY, "NOC", 1, "camera", HOME,
+    PRESENCE(FeatureArea.SECURITY, "NOC", 2, "camera", HOME,
             Set.of(PresenceCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.EVENT,
             new ChannelGroup(PresenceChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_CAM_STATUS, GROUP_CAM_LIVE,

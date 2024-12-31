@@ -13,7 +13,7 @@
 		</parameter>
 		<parameter name="id" type="integer" required="true">
 			<label>ID</label>
-			<description>Id of the repeater</description>
+			<description>Id of the repeater within Freebox Api</description>
 			<default>1</default>
 		</parameter>
 	</config-description>
