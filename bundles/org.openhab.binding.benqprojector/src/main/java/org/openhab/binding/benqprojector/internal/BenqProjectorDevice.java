@@ -13,6 +13,7 @@
 package org.openhab.binding.benqprojector.internal;
 
 import java.time.Duration;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -122,7 +123,7 @@ public class BenqProjectorDevice {
      * Power
      */
     public Switch getPowerStatus() throws BenqProjectorCommandException, BenqProjectorException {
-        return (queryString("pow=?").contains("on") ? Switch.ON : Switch.OFF);
+        return (queryString("pow=?").toLowerCase(Locale.ENGLISH).contains("on") ? Switch.ON : Switch.OFF);
     }
 
     public void setPower(Switch value) throws BenqProjectorCommandException, BenqProjectorException {
@@ -172,7 +173,7 @@ public class BenqProjectorDevice {
      * Blank Screen
      */
     public Switch getBlank() throws BenqProjectorCommandException, BenqProjectorException {
-        return (queryString("blank=?").contains("on") ? Switch.ON : Switch.OFF);
+        return (queryString("blank=?").toLowerCase(Locale.ENGLISH).contains("on") ? Switch.ON : Switch.OFF);
     }
 
     public void setBlank(Switch value) throws BenqProjectorCommandException, BenqProjectorException {
@@ -183,7 +184,7 @@ public class BenqProjectorDevice {
      * Freeze
      */
     public Switch getFreeze() throws BenqProjectorCommandException, BenqProjectorException {
-        return (queryString("freeze=?").contains("on") ? Switch.ON : Switch.OFF);
+        return (queryString("freeze=?").toLowerCase(Locale.ENGLISH).contains("on") ? Switch.ON : Switch.OFF);
     }
 
     public void setFreeze(Switch value) throws BenqProjectorCommandException, BenqProjectorException {

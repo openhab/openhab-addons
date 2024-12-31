@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -93,8 +92,7 @@ public interface BenqProjectorConnector {
                     // The response is fully received when the second '#' arrives
                     // example: *pow=?# *POW=ON#
                     if (resp.chars().filter(ch -> ch == '#').count() >= 2) {
-                        return resp.replaceAll("[\\s\\r\\n*#>]", BLANK).replace(data, BLANK)
-                                .toLowerCase(Locale.ENGLISH);
+                        return resp.replaceAll("[\\s\\r\\n*#>]", BLANK).replace(data, BLANK);
                     }
                 } else {
                     try {
