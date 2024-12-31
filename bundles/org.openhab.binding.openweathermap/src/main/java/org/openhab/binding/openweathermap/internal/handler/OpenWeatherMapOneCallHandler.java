@@ -37,7 +37,6 @@ import org.openhab.binding.openweathermap.internal.dto.onecall.Hourly;
 import org.openhab.binding.openweathermap.internal.dto.onecall.Precipitation;
 import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.i18n.ConfigurationException;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -90,8 +89,8 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
     private int forecastDays = 8;
     private int numberOfAlerts = 0;
 
-    public OpenWeatherMapOneCallHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public OpenWeatherMapOneCallHandler(Thing thing) {
+        super(thing);
     }
 
     @Override

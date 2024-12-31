@@ -564,7 +564,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
     }
 
     protected State getDateTimeTypeState(@Nullable String value) {
-        return (value == null) ? UnDefType.UNDEF : new DateTimeType(value).toLocaleZone();
+        return (value == null) ? UnDefType.UNDEF : new DateTimeType(value);
     }
 
     protected State getQuantityTypeState(@Nullable Number value, Unit<?> unit) {

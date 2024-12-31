@@ -93,6 +93,7 @@ However, only devices will appear that are added in the LIVISI SmartHome app bef
 | moldWarning           | Switch        | Active, if the measured humidity is too low (ON/OFF)                      | RST, RST2, WRT                                              |
 | motionCount           | Number        | Number of detected motions, increases with each detected motion           | WMD, WMDO                                                   |
 | operationMode         | String        | The mode of a thermostat (auto/manual)                                    | RST, RST2, WRT                                              |
+| restart               | Switch        | Restarts the device (stateless switch)                                    | SHC (bridge)                                                |
 | rollershutter         | Rollershutter | Controls a roller shutter                                                 | ISR2                                                        |
 | targetTemperature     | Number        | Sets the target temperature in °C (min 6 °C, max 30 °C)                   | RST, RST2, WRT                                              |
 | siren                 | Switch        | Switches the siren (ON/OFF)                                               | SIR                                                         |

@@ -38,6 +38,7 @@ import org.openhab.core.library.unit.Units;
 @NonNullByDefault
 public class ClimateTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "climate/0x847127fffe11dd6a_climate_zigbee2mqtt";
+    public static final String TION_CONFIG_TOPIC = "climate/living-room-tion-3s/living-room-tion-3s";
 
     @SuppressWarnings("null")
     @Test
@@ -397,8 +398,82 @@ public class ClimateTests extends AbstractComponentTests {
         assertState(component, Climate.TARGET_HUMIDITY_CH_ID, new QuantityType<>(50, Units.PERCENT));
     }
 
+    @SuppressWarnings("null")
+    @Test
+    public void testClimateWithEmptyName() {
+        var component = discoverComponent(configTopicToMqtt(TION_CONFIG_TOPIC), """
+                {
+                  "curr_temp_t": "living-room-tion-3s/climate/living-room-tion-3s/current_temperature/state",
+                  "mode_cmd_t": "living-room-tion-3s/climate/living-room-tion-3s/mode/command",
+                  "mode_stat_t": "living-room-tion-3s/climate/living-room-tion-3s/mode/state",
+                  "modes": [
+                    "off",
+                    "heat",
+                    "fan_only",
+                    "heat_cool"
+                  ],
+                  "temp_cmd_t": "living-room-tion-3s/climate/living-room-tion-3s/target_temperature/command",
+                  "temp_stat_t": "living-room-tion-3s/climate/living-room-tion-3s/target_temperature/state",
+                  "min_temp": 1,
+                  "max_temp": 25,
+                  "temp_step": 1,
+                  "precision": 1,
+                  "temp_unit": "C",
+                  "min_hum": 30,
+                  "max_hum": 99,
+                  "act_t": "living-room-tion-3s/climate/living-room-tion-3s/action/state",
+                  "fan_mode_cmd_t": "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/command",
+                  "fan_mode_stat_t": "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/state",
+                  "fan_modes": [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6"
+                  ],
+                  "name": "",
+                  "ic": "mdi:air-filter",
+                  "avty_t": "living-room-tion-3s/status",
+                  "uniq_id": "ESPclimateliving-room-tion-3s",
+                  "dev": {
+                    "ids": "f09e9e213ab0",
+                    "name": "living-room-tion-3s",
+                    "sw": "2024.8.0 (ESPHome 2024.11.3)",
+                    "mdl": "tion",
+                    "mf": "dentra",
+                    "cns": [
+                      [
+                        "mac",
+                        "f09e9e213ab0"
+                      ]
+                    ]
+                  }
+                }
+                """);
+
+        assertThat(component.channels.size(), is(5));
+        assertThat(component.getName(), is("living-room-tion-3s"));
+
+        assertChannel(component, Climate.ACTION_CH_ID, "living-room-tion-3s/climate/living-room-tion-3s/action/state",
+                "", "living-room-tion-3s", TextValue.class);
+        assertChannel(component, Climate.CURRENT_TEMPERATURE_CH_ID_DEPRECATED,
+                "living-room-tion-3s/climate/living-room-tion-3s/current_temperature/state", "", "living-room-tion-3s",
+                NumberValue.class);
+        assertChannel(component, Climate.FAN_MODE_CH_ID_DEPRECATED,
+                "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/state",
+                "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/command", "living-room-tion-3s",
+                TextValue.class);
+        assertChannel(component, Climate.MODE_CH_ID, "living-room-tion-3s/climate/living-room-tion-3s/mode/state",
+                "living-room-tion-3s/climate/living-room-tion-3s/mode/command", "living-room-tion-3s", TextValue.class);
+        assertChannel(component, Climate.TEMPERATURE_CH_ID,
+                "living-room-tion-3s/climate/living-room-tion-3s/target_temperature/state",
+                "living-room-tion-3s/climate/living-room-tion-3s/target_temperature/command", "living-room-tion-3s",
+                NumberValue.class);
+    }
+
     @Override
     protected Set<String> getConfigTopics() {
-        return Set.of(CONFIG_TOPIC);
+        return Set.of(CONFIG_TOPIC, TION_CONFIG_TOPIC);
     }
 }
