@@ -85,7 +85,7 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         UnitProvider unitProvider = mock(UnitProvider.class);
 
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING,
-                scheduler, channelStateUpdateListener, availabilityTracker, gson, jinjava, unitProvider, true));
+                scheduler, channelStateUpdateListener, availabilityTracker, gson, jinjava, unitProvider));
 
         HandlerConfiguration config = new HandlerConfiguration("homeassistant", List.of("switch/object"));
 

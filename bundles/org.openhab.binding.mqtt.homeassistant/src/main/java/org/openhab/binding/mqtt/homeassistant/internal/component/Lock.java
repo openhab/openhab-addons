@@ -73,8 +73,8 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
     private OnOffValue lockValue;
     private TextValue stateValue;
 
-    public Lock(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Lock(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         this.optimistic = channelConfiguration.optimistic || channelConfiguration.stateTopic.isBlank();
 

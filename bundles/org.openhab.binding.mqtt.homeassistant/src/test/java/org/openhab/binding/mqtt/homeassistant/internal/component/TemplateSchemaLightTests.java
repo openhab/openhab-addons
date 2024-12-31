@@ -151,12 +151,11 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
         assertThat(component.getName(), is("Bulb-white"));
 
         assertChannel(component, Light.BRIGHTNESS_CHANNEL_ID, "", "dummy", "Brightness", PercentageValue.class);
-        assertChannel(component, Light.COLOR_TEMP_CHANNEL_ID_DEPRECATED, "", "dummy", "Color Temperature",
-                NumberValue.class);
+        assertChannel(component, Light.COLOR_TEMP_CHANNEL_ID, "", "dummy", "Color Temperature", NumberValue.class);
 
         publishMessage("shellies/bulb/color/0/status", "{ \"state\": \"on\", \"brightness\": 100 }");
         assertState(component, Light.BRIGHTNESS_CHANNEL_ID, PercentType.HUNDRED);
-        assertState(component, Light.COLOR_TEMP_CHANNEL_ID_DEPRECATED, UnDefType.NULL);
+        assertState(component, Light.COLOR_TEMP_CHANNEL_ID, UnDefType.NULL);
 
         sendCommand(component, Light.BRIGHTNESS_CHANNEL_ID, PercentType.HUNDRED);
         assertPublished("shellies/bulb/color/0/set", "{\"turn\": \"on\", \"mode\": \"white\", \"brightness\": 100}");
@@ -164,7 +163,7 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
         sendCommand(component, Light.BRIGHTNESS_CHANNEL_ID, OnOffType.OFF);
         assertPublished("shellies/bulb/color/0/set", "{\"turn\":\"off\", \"mode\": \"white\"}");
 
-        sendCommand(component, Light.COLOR_TEMP_CHANNEL_ID_DEPRECATED, new QuantityType(200, Units.MIRED));
+        sendCommand(component, Light.COLOR_TEMP_CHANNEL_ID, new QuantityType(200, Units.MIRED));
         assertPublished("shellies/bulb/color/0/set", "{\"turn\": \"on\", \"mode\": \"white\", \"temp\": 5000}");
     }
 
@@ -185,16 +184,16 @@ public class TemplateSchemaLightTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("light"));
 
-        assertChannel(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, "", "dummy", "On/Off State", OnOffValue.class);
+        assertChannel(component, Light.SWITCH_CHANNEL_ID, "", "dummy", "On/Off State", OnOffValue.class);
 
         publishMessage("zigbee2mqtt/light/state", "{\"power\": \"on\"}");
-        assertState(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.ON);
+        assertState(component, Light.SWITCH_CHANNEL_ID, OnOffType.ON);
         publishMessage("zigbee2mqtt/light/state", "{\"power\": \"off\"}");
-        assertState(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.OFF);
+        assertState(component, Light.SWITCH_CHANNEL_ID, OnOffType.OFF);
 
-        sendCommand(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.OFF);
+        sendCommand(component, Light.SWITCH_CHANNEL_ID, OnOffType.OFF);
         assertPublished("zigbee2mqtt/light/set/state", "off");
-        sendCommand(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.ON);
+        sendCommand(component, Light.SWITCH_CHANNEL_ID, OnOffType.ON);
         assertPublished("zigbee2mqtt/light/set/state", "on");
     }
 
