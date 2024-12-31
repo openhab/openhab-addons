@@ -126,10 +126,11 @@ public class BenqProjectorDevice {
     }
 
     public void setPower(Switch value) throws BenqProjectorCommandException, BenqProjectorException {
-        sendCommand(value == Switch.ON ? "pow=on" : "pow=off");
-
-        // some projectors need the off command twice to switch off
-        if (value == Switch.OFF) {
+        if (value == Switch.ON) {
+            sendCommand("pow=on");
+        } else {
+            // some projectors need the off command twice to switch off
+            sendCommand("pow=off");
             sendCommand("pow=off");
         }
     }
