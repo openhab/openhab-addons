@@ -12,89 +12,91 @@
  */
 package org.openhab.automation.pythonscripting.internal.graal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.Objects;
 
-import javax.script.Bindings;
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.Invocable;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
-import javax.script.ScriptException;
 
-import org.graalvm.home.Version;
-import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.Language;
-import org.graalvm.polyglot.PolyglotException;
-import org.graalvm.polyglot.Source;
-import org.graalvm.polyglot.Value;
-import org.graalvm.python.embedding.utils.GraalPyResources;
-import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Jeff James - Initial contribution
+ */
 public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory {
     private static final String LANGUAGE_ID = "python";
-
     private final Logger logger = LoggerFactory.getLogger(GraalPythonScriptEngineFactory.class);
-    private static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
 
-    // private static final Context context = CreatePythonContext(polyglotEngine, PYTHON_DEFAULT_PATH);
-    private static final Context context = GraalPyResources.contextBuilder(PYTHON_DEFAULT_PATH).build();
-    // private static final Engine polyglotEngine = Engine.newBuilder().allowExperimentalOptions(true).build();
-    private static final Engine polyglotEngine = context.getEngine();
+    private WeakReference<Engine> defaultEngine;
+    private final Engine userDefinedEngine;
 
-    /***********************************************************/
-    /* Everything below is generic and does not need to change */
-    /***********************************************************/
+    private static Language language;
 
-    private final Language language = polyglotEngine.getLanguages().get(LANGUAGE_ID);
+    private static final String ENGINE_NAME = "Graal.py";
+    private static final String NAME = "python";
+
+    private static final String[] EXTENSIONS = { "py" };
 
     public GraalPythonScriptEngineFactory() {
-        logger.debug("Languages: {}", polyglotEngine.getLanguages().keySet().toString());
+        super();
+        this.userDefinedEngine = null;
 
-        context.eval("python", "print('Hello world')");
+        defaultEngine = new WeakReference<Engine>(createDefaultEngine());
+        logger.debug("Languages supported: {}", defaultEngine.get().getLanguages().keySet().toString());
+
+        language = defaultEngine.get().getLanguages().get(LANGUAGE_ID);
+    }
+
+    public GraalPythonScriptEngineFactory(Engine engine) {
+        super();
+        this.userDefinedEngine = engine;
+        language = engine.getLanguages().get(LANGUAGE_ID);
+
+        logger.debug("Languages supported: {}", engine.getLanguages().keySet().toString());
+    }
+
+    private static Engine createDefaultEngine() {
+        return Engine.newBuilder() //
+                .allowExperimentalOptions(true) //
+                .option("engine.WarnInterpreterOnly", "false") //
+                .build();
+    }
+
+    /**
+     * Returns the underlying polyglot engine.
+     */
+    public Engine getPolyglotEngine() {
+        return (userDefinedEngine != null) ? userDefinedEngine : defaultEngine.get();
     }
 
     @Override
     public String getEngineName() {
-        return language.getImplementationName();
+        return ENGINE_NAME;
     }
 
     @Override
     public String getEngineVersion() {
-        return Version.getCurrent().toString();
+        return getPolyglotEngine().getVersion();
     }
 
     @Override
-    public List getExtensions() {
-        return List.of(LANGUAGE_ID);
+    public List<String> getExtensions() {
+        return List.of(EXTENSIONS);
     }
 
     @Override
-    public List getMimeTypes() {
+    public List<String> getMimeTypes() {
         return List.copyOf(language.getMimeTypes());
     }
 
     @Override
-    public List getNames() {
+    public List<String> getNames() {
         return List.of(language.getName(), LANGUAGE_ID, language.getImplementationName());
     }
 
@@ -109,8 +111,10 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
     }
 
     @Override
-    public Object getParameter(final String key) {
+    public Object getParameter(String key) {
         switch (key) {
+            case ScriptEngine.NAME:
+                return NAME;
             case ScriptEngine.ENGINE:
                 return getEngineName();
             case ScriptEngine.ENGINE_VERSION:
@@ -119,512 +123,81 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
                 return getLanguageName();
             case ScriptEngine.LANGUAGE_VERSION:
                 return getLanguageVersion();
-            case ScriptEngine.NAME:
-                return LANGUAGE_ID;
+            default:
+                return null;
         }
-        return null;
     }
 
     @Override
-    public String getMethodCallSyntax(final String obj, final String m, final String... args) {
-        throw new UnsupportedOperationException("Unimplemented method 'getMethodCallSyntax'");
+    public GraalPythonScriptEngine getScriptEngine() {
+        return new GraalPythonScriptEngine(this);
+    }
+
+    @Override
+    public String getMethodCallSyntax(final String obj, final String method, final String... args) {
+        Objects.requireNonNull(obj);
+        Objects.requireNonNull(method);
+        final StringBuilder sb = new StringBuilder().append(obj).append('.').append(method).append('(');
+        final int len = args.length;
+
+        if (len > 0) {
+            Objects.requireNonNull(args[0]);
+            sb.append(args[0]);
+        }
+        for (int i = 1; i < len; i++) {
+            Objects.requireNonNull(args[i]);
+            sb.append(',').append(args[i]);
+        }
+        sb.append(')');
+
+        return sb.toString();
     }
 
     @Override
     public String getOutputStatement(final String toDisplay) {
-        throw new UnsupportedOperationException("Unimplemented method 'getOutputStatement'");
+        return "print(\"" + toDisplay + "\")";
     }
 
     @Override
     public String getProgram(final String... statements) {
-        throw new UnsupportedOperationException("Unimplemented method 'getProgram'");
+        final StringBuilder sb = new StringBuilder();
+
+        for (final String statement : statements) {
+            Objects.requireNonNull(statement);
+            sb.append(statement).append(';');
+        }
+
+        return sb.toString();
     }
 
-    @Override
-    public ScriptEngine getScriptEngine() {
-        return new PolyglotEngine(this);
-    }
+    private static void clearEngineFactory(ScriptEngineFactory factory) {
+        assert factory != null;
 
-    private static final class PolyglotEngine implements ScriptEngine, Compilable, Invocable, AutoCloseable {
-        private final ScriptEngineFactory factory;
-        private PolyglotContext defaultContext;
+        try {
+            Class<?> clazz = factory.getClass();
+            for (String immutableListFieldName : new String[] { "names", "mimeTypes", "extensions" }) {
+                Field immutableListField = clazz.getDeclaredField(immutableListFieldName);
+                immutableListField.setAccessible(true);
+                Object immutableList = immutableListField.get(null);
 
-        PolyglotEngine(ScriptEngineFactory factory) {
-            this.factory = factory;
-            this.defaultContext = new PolyglotContext(factory);
-        }
+                Class<?> unmodifiableListClazz = Class.forName("java.util.Collections$UnmodifiableList");
+                Field unmodifiableListField = unmodifiableListClazz.getDeclaredField("list");
+                unmodifiableListField.setAccessible(true);
 
-        @Override
-        public void close() {
-            defaultContext.getContext().close();
-        }
+                Class<?> unmodifiableCollectionClazz = Class.forName("java.util.Collections$UnmodifiableCollection");
+                Field unmodifiableCField = unmodifiableCollectionClazz.getDeclaredField("c");
+                unmodifiableCField.setAccessible(true);
 
-        @Override
-        public CompiledScript compile(String script) throws ScriptException {
-            Source src = Source.create(LANGUAGE_ID, script);
-            try {
-                defaultContext.getContext().parse(src); // only for the side-effect of validating the source
-            } catch (PolyglotException e) {
-                throw new ScriptException(e);
+                List<?> list = (List<?>) unmodifiableListField.get(immutableList);
+                List<Object> filteredList = new ArrayList<>();
+
+                unmodifiableListField.set(immutableList, filteredList);
+                unmodifiableCField.set(immutableList, filteredList);
             }
-            return new PolyglotCompiledScript(src, this);
-        }
-
-        @Override
-        public CompiledScript compile(Reader script) throws ScriptException {
-            Source src;
-            try {
-                src = Source.newBuilder(LANGUAGE_ID, script, "sourcefromreader").build();
-                defaultContext.getContext().parse(src); // only for the side-effect of validating the source
-            } catch (PolyglotException | IOException e) {
-                throw new ScriptException(e);
-            }
-            return new PolyglotCompiledScript(src, this);
-        }
-
-        @Override
-        public Object eval(String script, ScriptContext context) throws ScriptException {
-            if (context instanceof PolyglotContext) {
-                PolyglotContext c = (PolyglotContext) context;
-                try {
-                    return c.getContext().eval(LANGUAGE_ID, script).as(Object.class);
-                } catch (PolyglotException e) {
-                    throw new ScriptException(e);
-                }
-            } else {
-                throw new ClassCastException("invalid context");
-            }
-        }
-
-        @Override
-        public Object eval(Reader reader, ScriptContext context) throws ScriptException {
-            Source src;
-            try {
-                src = Source.newBuilder(LANGUAGE_ID, reader, "sourcefromreader").build();
-            } catch (IOException e) {
-                throw new ScriptException(e);
-            }
-            if (context instanceof PolyglotContext) {
-                PolyglotContext c = (PolyglotContext) context;
-                try {
-                    return c.getContext().eval(src).as(Object.class);
-                } catch (PolyglotException e) {
-                    throw new ScriptException(e);
-                }
-            } else {
-                throw new ScriptException("invalid context");
-            }
-        }
-
-        @Override
-        public Object eval(String script) throws ScriptException {
-            return eval(script, defaultContext);
-        }
-
-        @Override
-        public Object eval(Reader reader) throws ScriptException {
-            return eval(reader, defaultContext);
-        }
-
-        @Override
-        public Object eval(String script, Bindings n) throws ScriptException {
-            throw new UnsupportedOperationException("Bindings for Polyglot language cannot be created explicitly");
-        }
-
-        @Override
-        public Object eval(Reader reader, Bindings n) throws ScriptException {
-            throw new UnsupportedOperationException("Bindings for Polyglot language cannot be created explicitly");
-        }
-
-        @Override
-        public void put(String key, Object value) {
-            defaultContext.getBindings(ScriptContext.ENGINE_SCOPE).put(key, value);
-        }
-
-        @Override
-        public Object get(String key) {
-            return defaultContext.getBindings(ScriptContext.ENGINE_SCOPE).get(key);
-        }
-
-        @Override
-        public Bindings getBindings(int scope) {
-            return defaultContext.getBindings(scope);
-        }
-
-        @Override
-        public void setBindings(Bindings bindings, int scope) {
-            defaultContext.setBindings(bindings, scope);
-        }
-
-        @Override
-        public Bindings createBindings() {
-            throw new UnsupportedOperationException("Bindings for Polyglot language cannot be created explicitly");
-        }
-
-        @Override
-        public ScriptContext getContext() {
-            return defaultContext;
-        }
-
-        @Override
-        public void setContext(ScriptContext context) {
-            throw new UnsupportedOperationException("The context of a Polyglot ScriptEngine cannot be modified.");
-        }
-
-        @Override
-        public ScriptEngineFactory getFactory() {
-            return factory;
-        }
-
-        @Override
-        public Object invokeMethod(Object thiz, String name, Object... args)
-                throws ScriptException, NoSuchMethodException {
-            try {
-                Value receiver = defaultContext.getContext().asValue(thiz);
-                if (receiver.canInvokeMember(name)) {
-                    return receiver.invokeMember(name, args).as(Object.class);
-                } else {
-                    throw new NoSuchMethodException(name);
-                }
-            } catch (PolyglotException e) {
-                throw new ScriptException(e);
-            }
-        }
-
-        @Override
-        public Object invokeFunction(String name, Object... args) throws ScriptException, NoSuchMethodException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Object getInterface(Class interfaceClass) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Object getInterface(Object thiz, Class interfaceClass) {
-            return defaultContext.getContext().asValue(thiz).as(interfaceClass);
-        }
-    }
-
-    private static final class PolyglotContext implements ScriptContext {
-        private Context context;
-        private final ScriptEngineFactory factory;
-        private final PolyglotReader in;
-        private final PolyglotWriter out;
-        private final PolyglotWriter err;
-        private Bindings globalBindings;
-
-        PolyglotContext(ScriptEngineFactory factory) {
-            this.factory = factory;
-            this.in = new PolyglotReader(new InputStreamReader(System.in));
-            this.out = new PolyglotWriter(new OutputStreamWriter(System.out));
-            this.err = new PolyglotWriter(new OutputStreamWriter(System.err));
-        }
-
-        Context getContext() {
-            if (context == null) {
-                Context.Builder builder = Context.newBuilder(LANGUAGE_ID).in(this.in).out(this.out).err(this.err)
-                        .allowAllAccess(true);
-                Bindings globalBindings = getBindings(ScriptContext.GLOBAL_SCOPE);
-                if (globalBindings != null) {
-                    for (Entry<String, Object> entry : globalBindings.entrySet()) {
-                        Object value = entry.getValue();
-                        if (value instanceof String) {
-                            builder.option(entry.getKey(), (String) value);
-                        }
-                    }
-                }
-                context = builder.build();
-            }
-            return context;
-        }
-
-        @Override
-        public void setBindings(Bindings bindings, int scope) {
-            if (scope == ScriptContext.GLOBAL_SCOPE) {
-                if (context == null) {
-                    globalBindings = bindings;
-                } else {
-                    throw new UnsupportedOperationException(
-                            "Global bindings for Polyglot language can only be set before the context is initialized.");
-                }
-            } else {
-                throw new UnsupportedOperationException("Bindings objects for Polyglot language is final.");
-            }
-        }
-
-        @Override
-        public Bindings getBindings(int scope) {
-            if (scope == ScriptContext.ENGINE_SCOPE) {
-                return new PolyglotBindings(getContext().getBindings(LANGUAGE_ID));
-            } else if (scope == ScriptContext.GLOBAL_SCOPE) {
-                return globalBindings;
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        public void setAttribute(String name, Object value, int scope) {
-            if (scope == ScriptContext.ENGINE_SCOPE) {
-                getBindings(scope).put(name, value);
-            } else if (scope == ScriptContext.GLOBAL_SCOPE) {
-                if (context == null) {
-                    globalBindings.put(name, value);
-                } else {
-                    throw new IllegalStateException("Cannot modify global bindings after context creation.");
-                }
-            }
-        }
-
-        @Override
-        public Object getAttribute(String name, int scope) {
-            if (scope == ScriptContext.ENGINE_SCOPE) {
-                return getBindings(scope).get(name);
-            } else if (scope == ScriptContext.GLOBAL_SCOPE) {
-                return globalBindings.get(name);
-            }
-            return null;
-        }
-
-        @Override
-        public Object removeAttribute(String name, int scope) {
-            Object prev = getAttribute(name, scope);
-            if (prev != null) {
-                if (scope == ScriptContext.ENGINE_SCOPE) {
-                    getBindings(scope).remove(name);
-                } else if (scope == ScriptContext.GLOBAL_SCOPE) {
-                    if (context == null) {
-                        globalBindings.remove(name);
-                    } else {
-                        throw new IllegalStateException("Cannot modify global bindings after context creation.");
-                    }
-                }
-            }
-            return prev;
-        }
-
-        @Override
-        public Object getAttribute(String name) {
-            return getAttribute(name, ScriptContext.ENGINE_SCOPE);
-        }
-
-        @Override
-        public int getAttributesScope(String name) {
-            if (getAttribute(name, ScriptContext.ENGINE_SCOPE) != null) {
-                return ScriptContext.ENGINE_SCOPE;
-            } else if (getAttribute(name, ScriptContext.GLOBAL_SCOPE) != null) {
-                return ScriptContext.GLOBAL_SCOPE;
-            }
-            return -1;
-        }
-
-        @Override
-        public Writer getWriter() {
-            return this.out.writer;
-        }
-
-        @Override
-        public Writer getErrorWriter() {
-            return this.err.writer;
-        }
-
-        @Override
-        public void setWriter(Writer writer) {
-            this.out.writer = writer;
-        }
-
-        @Override
-        public void setErrorWriter(Writer writer) {
-            this.err.writer = writer;
-        }
-
-        @Override
-        public Reader getReader() {
-            return this.in.reader;
-        }
-
-        @Override
-        public void setReader(Reader reader) {
-            this.in.reader = reader;
-        }
-
-        @Override
-        public List getScopes() {
-            return List.of(ScriptContext.ENGINE_SCOPE, ScriptContext.GLOBAL_SCOPE);
-        }
-
-        private static final class PolyglotReader extends InputStream {
-            private volatile Reader reader;
-
-            public PolyglotReader(InputStreamReader inputStreamReader) {
-                this.reader = inputStreamReader;
-            }
-
-            @Override
-            public int read() throws IOException {
-                return reader.read();
-            }
-        }
-
-        private static final class PolyglotWriter extends OutputStream {
-            private volatile Writer writer;
-
-            public PolyglotWriter(OutputStreamWriter outputStreamWriter) {
-                this.writer = outputStreamWriter;
-            }
-
-            @Override
-            public void write(int b) throws IOException {
-                writer.write(b);
-            }
-        }
-    }
-
-    private static final class PolyglotCompiledScript extends CompiledScript {
-        private final Source source;
-        private final ScriptEngine engine;
-
-        public PolyglotCompiledScript(Source src, ScriptEngine engine) {
-            this.source = src;
-            this.engine = engine;
-        }
-
-        @Override
-        public Object eval(ScriptContext context) throws ScriptException {
-            if (context instanceof PolyglotContext) {
-                return ((PolyglotContext) context).getContext().eval(source).as(Object.class);
-            }
-            throw new UnsupportedOperationException(
-                    "Polyglot CompiledScript instances can only be evaluated in Polyglot.");
-        }
-
-        @Override
-        public ScriptEngine getEngine() {
-            return engine;
-        }
-    }
-
-    private static final class PolyglotBindings implements Bindings {
-        private Value languageBindings;
-
-        PolyglotBindings(Value languageBindings) {
-            this.languageBindings = languageBindings;
-        }
-
-        @Override
-        public int size() {
-            return keySet().size();
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return size() == 0;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            Set<String> result = keySet();
-            for (String s : result) {
-                if (get(s) == value) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public void clear() {
-            Set<String> result = keySet();
-            for (String s : result) {
-                remove(s);
-            }
-        }
-
-        @Override
-        public Set keySet() {
-            return languageBindings.getMemberKeys();
-        }
-
-        @Override
-        public Collection values() {
-            List values = new ArrayList<>();
-            Set<String> result = keySet();
-            for (String s : result) {
-                values.add(get(s));
-            }
-            return values;
-        }
-
-        @Override
-        public Set<Entry<String, Object>> entrySet() {
-            Set<Entry<String, Object>> values = new HashSet<>();
-            Set<String> result = keySet();
-            for (String s : result) {
-                values.add(new Entry<String, Object>() {
-                    @Override
-                    public String getKey() {
-                        return s;
-                    }
-
-                    @Override
-                    public Object getValue() {
-                        return get(s);
-                    }
-
-                    @Override
-                    public Object setValue(Object value) {
-                        return put(s, value);
-                    }
-                });
-            }
-            return values;
-        }
-
-        @Override
-        public Object put(String name, Object value) {
-            Object previous = get(name);
-            languageBindings.putMember(name, value);
-            return previous;
-        }
-
-        @Override
-        public void putAll(Map<? extends String, ? extends Object> toMerge) {
-            for (Entry<? extends String, ? extends Object> e : toMerge.entrySet()) {
-                put(e.getKey(), e.getValue());
-            }
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            if (key instanceof String) {
-                return languageBindings.hasMember((String) key);
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public Object get(Object key) {
-            if (key instanceof String) {
-                Value value = languageBindings.getMember((String) key);
-                if (value != null) {
-                    return value.as(Object.class);
-                }
-            }
-            return null;
-        }
-
-        @Override
-        public Object remove(Object key) {
-            Object prev = get(key);
-            if (prev != null) {
-                languageBindings.removeMember((String) key);
-                return prev;
-            } else {
-                return null;
-            }
+        } catch (NullPointerException | ClassNotFoundException | IllegalAccessException | IllegalArgumentException
+                | NoSuchFieldException | SecurityException e) {
+            System.err.println("Failed to clear engine names [" + factory.getEngineName() + "]");
+            // e.printStackTrace();
         }
     }
 }
