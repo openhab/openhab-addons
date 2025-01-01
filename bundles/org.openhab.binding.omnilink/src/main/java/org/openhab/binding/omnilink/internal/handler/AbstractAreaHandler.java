@@ -67,14 +67,14 @@ public abstract class AbstractAreaHandler extends AbstractOmnilinkStatusHandler<
 
         super.initialize();
         if (bridgeHandler != null) {
-            updateAreaProperties(bridgeHandler);
+            updateAreaProperties();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing Area!");
         }
     }
 
-    private void updateAreaProperties(OmnilinkBridgeHandler bridgeHandler) {
+    private void updateAreaProperties() {
         final List<AreaProperties> areas = getAreaProperties();
         if (areas != null) {
             for (AreaProperties areaProperties : areas) {
@@ -99,13 +99,10 @@ public abstract class AbstractAreaHandler extends AbstractOmnilinkStatusHandler<
             return;
         }
 
-        switch (channelUID.getId()) {
-            case CHANNEL_AREA_ACTIVATE_KEYPAD_EMERGENCY:
-                handleKeypadEmergency(channelUID, command);
-                break;
-            default:
-                handleSecurityMode(channelUID, command);
-                break;
+        if (channelUID.getId().equals(CHANNEL_AREA_ACTIVATE_KEYPAD_EMERGENCY)) {
+            handleKeypadEmergency(command);
+        } else {
+            handleSecurityMode(channelUID, command);
         }
     }
 
@@ -176,7 +173,7 @@ public abstract class AbstractAreaHandler extends AbstractOmnilinkStatusHandler<
      */
     protected abstract EnumSet<AreaAlarm> getAlarms();
 
-    private void handleKeypadEmergency(ChannelUID channelUID, Command command) {
+    private void handleKeypadEmergency(Command command) {
         if (command instanceof DecimalType decimalCommand) {
             try {
                 final OmnilinkBridgeHandler bridge = getOmnilinkBridgeHandler();

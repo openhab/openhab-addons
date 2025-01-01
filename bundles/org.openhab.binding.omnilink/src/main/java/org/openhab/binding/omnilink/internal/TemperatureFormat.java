@@ -51,7 +51,7 @@ public enum TemperatureFormat {
 
     private final int formatNumber;
 
-    private TemperatureFormat(int formatNumber) {
+    TemperatureFormat(int formatNumber) {
         this.formatNumber = formatNumber;
     }
 

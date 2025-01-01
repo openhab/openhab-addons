@@ -162,9 +162,7 @@ public class UnitHandler extends AbstractOmnilinkStatusHandler<ExtendedUnitStatu
         int unitStatus = status.getStatus();
         int level = 0;
 
-        if (unitStatus == Status.UNIT_OFF) {
-            level = 0;
-        } else if (unitStatus == Status.UNIT_ON) {
+        if (unitStatus == Status.UNIT_ON) {
             level = 100;
         } else if ((unitStatus >= Status.UNIT_SCENE_A) && (unitStatus <= Status.UNIT_SCENE_L)) {
             level = 100;
@@ -195,7 +193,6 @@ public class UnitHandler extends AbstractOmnilinkStatusHandler<ExtendedUnitStatu
     }
 
     private static class Status {
-        private static final int UNIT_OFF = 0;
         private static final int UNIT_ON = 1;
         private static final int UNIT_SCENE_A = 2;
         private static final int UNIT_SCENE_L = 13;
@@ -206,7 +203,7 @@ public class UnitHandler extends AbstractOmnilinkStatusHandler<ExtendedUnitStatu
     /**
      * Handle a switch press event by triggering the appropriate channel.
      *
-     * @param switchPressEvent
+     * @param switchPressEvent A switch press event to handle.
      */
     public void handleSwitchPressEvent(SwitchPressEvent switchPressEvent) {
         ChannelUID activateChannel = new ChannelUID(getThing().getUID(), TRIGGER_CHANNEL_SWITCH_PRESS_EVENT);

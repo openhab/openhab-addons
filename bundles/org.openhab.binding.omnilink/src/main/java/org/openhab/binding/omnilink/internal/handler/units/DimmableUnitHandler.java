@@ -49,13 +49,11 @@ public class DimmableUnitHandler extends UnitHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand called for channel: {}, command: {}", channelUID, command);
-        switch (channelUID.getId()) {
-            case CHANNEL_UNIT_LEVEL:
-                handleUnitLevel(channelUID, command);
-                break;
-            default:
-                logger.debug("Unknown channel for Dimmable Unit thing: {}", channelUID);
-                super.handleCommand(channelUID, command);
+        if (channelUID.getId().equals(CHANNEL_UNIT_LEVEL)) {
+            handleUnitLevel(channelUID, command);
+        } else {
+            logger.debug("Unknown channel for Dimmable Unit thing: {}", channelUID);
+            super.handleCommand(channelUID, command);
         }
     }
 

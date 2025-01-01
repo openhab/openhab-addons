@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Craig Hamilton - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("serial")
 public class BridgeOfflineException extends Exception {
     public BridgeOfflineException(Exception e) {
         super(e);
