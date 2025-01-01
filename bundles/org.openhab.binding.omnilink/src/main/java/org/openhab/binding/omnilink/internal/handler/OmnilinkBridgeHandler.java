@@ -647,13 +647,13 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                     logger.debug("Processing event log message number: {}", logData.getEventNumber());
                     eventLogNumber = logData.getEventNumber();
                     String json = gson.toJson(logData);
-                    logger.debug("Receieved event log message: {}", json);
+                    logger.debug("Received event log message: {}", json);
                     updateState(CHANNEL_EVENT_LOG, new StringType(json));
                 }
             } while (message.getMessageType() != Message.MESG_TYPE_END_OF_DATA);
 
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-            logger.debug("Exception recieved while polling for event log messages: {}", e.getMessage());
+            logger.debug("Exception received while polling for event log messages: {}", e.getMessage());
         }
     }
 
