@@ -19,11 +19,6 @@
 				<default>6000</default>
 			</parameter>
 
-			<parameter name="refresh" type="integer" required="false" min="1">
-				<label>Refresh Interval</label>
-				<description>Refresh interval in seconds</description>
-				<default>30</default>
-			</parameter>
 			<parameter name="enableDiscovery" type="boolean">
 				<label>Discovery Enabled</label>
 				<description>When enabled we try to find a device specific handler. Turn this on if you're using one of the

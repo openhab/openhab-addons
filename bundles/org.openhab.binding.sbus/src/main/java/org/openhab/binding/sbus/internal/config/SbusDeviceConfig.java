@@ -34,7 +34,7 @@ public class SbusDeviceConfig {
     public int subnetId = Sbus.DEFAULT_SUBNET_ID;
 
     /**
-     * Refresh interval in milliseconds
+     * Refresh interval in seconds
      */
-    public int refresh = 30000; // Default value from thing-types.xml
+    public int refresh = 30; // Default value from thing-types.xml
 }
