@@ -452,6 +452,13 @@ public class ClimateTests extends AbstractComponentTests {
 
         assertChannel(component, Climate.ACTION_CH_ID, "living-room-tion-3s/climate/living-room-tion-3s/action/state",
                 "", "living-room-tion-3s", TextValue.class);
+        assertChannel(component, Climate.CURRENT_TEMPERATURE_CH_ID,
+                "living-room-tion-3s/climate/living-room-tion-3s/current_temperature/state", "", "living-room-tion-3s",
+                NumberValue.class);
+        assertChannel(component, Climate.FAN_MODE_CH_ID,
+                "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/state",
+                "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/command", "living-room-tion-3s",
+                TextValue.class);
         assertChannel(component, Climate.MODE_CH_ID, "living-room-tion-3s/climate/living-room-tion-3s/mode/state",
                 "living-room-tion-3s/climate/living-room-tion-3s/mode/command", "living-room-tion-3s", TextValue.class);
         assertChannel(component, Climate.TEMPERATURE_CH_ID,
