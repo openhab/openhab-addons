@@ -19,10 +19,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.Optional;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gce.internal.model.M2MMessageParser;
 import org.openhab.binding.gce.internal.model.PortDefinition;
 import org.openhab.binding.gce.internal.model.StatusFile;
@@ -54,9 +54,10 @@ public class Ipx800DeviceConnector extends Thread {
     private final StatusFileAccessor statusAccessor;
     private final Ipx800EventListener listener;
 
-    private Optional<Socket> socket = Optional.empty();
-    private Optional<BufferedReader> input = Optional.empty();
-    private Optional<PrintWriter> output = Optional.empty();
+    private @Nullable Socket socket;
+    private @Nullable BufferedReader input;
+    private @Nullable PrintWriter output;
+    private @Nullable InputStreamReader streamReader;
 
     private int failedKeepalive = 0;
     private boolean waitingKeepaliveResponse = false;
@@ -82,27 +83,41 @@ public class Ipx800DeviceConnector extends Thread {
         logger.debug("Connecting to {}:{}...", hostname, portNumber);
         Socket socket = new Socket(hostname, portNumber);
         socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_MS);
-        // socket.getInputStream().skip(socket.getInputStream().available());
-        this.socket = Optional.of(socket);
+        this.socket = socket;
 
-        output = Optional.of(new PrintWriter(socket.getOutputStream(), true));
-        input = Optional.of(new BufferedReader(new InputStreamReader(socket.getInputStream())));
+        output = new PrintWriter(socket.getOutputStream(), true);
+        streamReader = new InputStreamReader(socket.getInputStream());
+        input = new BufferedReader(streamReader);
     }
 
     /**
      * Disconnect the device
      */
     private void disconnect() {
-        socket.ifPresent(client -> {
+        if (socket instanceof Socket client) {
             try {
+                if (output instanceof PrintWriter out) {
+                    out.close();
+                    output = null;
+                }
+
+                if (input instanceof BufferedReader in) {
+                    in.close();
+                    input = null;
+                }
+
+                if (streamReader instanceof InputStreamReader stream) {
+                    stream.close();
+                    streamReader = null;
+                }
+
                 logger.debug("Closing socket");
                 client.close();
-            } catch (IOException ignore) {
+            } catch (IOException e) {
+                logger.warn("Exception closing streams: {}", e.getMessage());
             }
-            socket = Optional.empty();
-            input = Optional.empty();
-            output = Optional.empty();
-        });
+            socket = null;
+        }
     }
 
     /**
@@ -114,18 +129,20 @@ public class Ipx800DeviceConnector extends Thread {
     }
 
     public synchronized void send(String message) {
-        output.ifPresentOrElse(out -> {
+        if (output instanceof PrintWriter out) {
             logger.debug("Sending '{}' to Ipx800", message);
             out.println(message);
-        }, () -> logger.warn("Unable to send '{}' when the output stream is closed.", message));
+        } else {
+            logger.warn("Unable to send '{}' when the output stream is closed.", message);
+        }
     }
 
     /**
-     * Send an arbitrary keepalive command which cause the IPX to send an update.
+     * Send a random keepalive command which cause the IPX to send an update.
      * If we don't receive the update maxKeepAliveFailure time, the connection is closed and reopened
      */
     private void sendKeepalive() {
-        output.ifPresentOrElse(out -> {
+        if (output instanceof PrintWriter out) {
             PortDefinition pd = PortDefinition.values()[randomizer.nextInt(PortDefinition.AS_SET.size())];
             String command = "%s%d".formatted(pd.m2mCommand, randomizer.nextInt(pd.quantity) + 1);
 
@@ -141,7 +158,9 @@ public class Ipx800DeviceConnector extends Thread {
             parser.setExpectedResponse(command);
 
             waitingKeepaliveResponse = true;
-        }, () -> logger.warn("Unable to send keepAlive when the output stream is closed."));
+        } else {
+            logger.warn("Unable to send keepAlive when the output stream is closed.");
+        }
     }
 
     @Override
@@ -154,7 +173,7 @@ public class Ipx800DeviceConnector extends Thread {
                 if (failedKeepalive > MAX_KEEPALIVE_FAILURE) {
                     throw new IOException("Max keep alive attempts has been reached");
                 }
-                input.ifPresent(in -> {
+                if (input instanceof BufferedReader in) {
                     try {
                         String command = in.readLine();
                         waitingKeepaliveResponse = false;
@@ -162,7 +181,7 @@ public class Ipx800DeviceConnector extends Thread {
                     } catch (IOException e) {
                         handleException(e);
                     }
-                });
+                }
             }
             disconnect();
         } catch (IOException e) {
