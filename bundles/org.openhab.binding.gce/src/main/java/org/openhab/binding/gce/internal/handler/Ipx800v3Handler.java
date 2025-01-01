@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -73,30 +72,10 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     private static final double ANALOG_SAMPLING = 0.000050354;
 
     private final Logger logger = LoggerFactory.getLogger(Ipx800v3Handler.class);
-    private final Map<String, PortData> portDatas = new HashMap<>();
+    private final Map<ChannelUID, PortData> portDatas = new HashMap<>();
 
     private @Nullable Ipx800DeviceConnector deviceConnector;
-    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-
-    private class LongPressEvaluator implements Runnable {
-        private final Instant referenceTime;
-        private final String port;
-        private final String eventChannelId;
-
-        public LongPressEvaluator(Channel channel, String port, PortData portData) {
-            this.referenceTime = portData.getTimestamp();
-            this.port = port;
-            this.eventChannelId = "%s-%s".formatted(channel.getUID().getId(), TRIGGER_CONTACT);
-        }
-
-        @Override
-        public void run() {
-            if (portDatas.get(port) instanceof PortData currentData && currentData.getValue() == 1
-                    && referenceTime.equals(currentData.getTimestamp())) {
-                triggerChannel(eventChannelId, EVENT_LONG_PRESS);
-            }
-        }
-    }
+    private List<ScheduledFuture<?>> jobs = new ArrayList<>();
 
     public Ipx800v3Handler(Thing thing) {
         super(thing);
@@ -112,7 +91,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::readStatusFile, 1500, config.pullInterval,
+        jobs.add(scheduler.scheduleWithFixedDelay(this::readStatusFile, 1500, config.pullInterval,
                 TimeUnit.MILLISECONDS));
     }
 
@@ -144,7 +123,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
             int nbElements = status != null ? status.getPorts(portDefinition).size() : portDefinition.quantity;
             for (int i = 0; i < nbElements; i++) {
                 ChannelUID portChannelUID = createChannels(portDefinition, i, channels);
-                portDatas.put(portChannelUID.getId(), new PortData());
+                portDatas.put(portChannelUID, new PortData());
             }
         });
         updateThing(editThing().withChannels(channels).build());
@@ -162,8 +141,8 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     @Override
     public void dispose() {
-        refreshJob.ifPresent(job -> job.cancel(true));
-        refreshJob = Optional.empty();
+        jobs.forEach(job -> job.cancel(true));
+        jobs.clear();
 
         if (deviceConnector instanceof Ipx800DeviceConnector connector) {
             connector.dispose();
@@ -248,10 +227,11 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     public void dataReceived(String port, double value) {
         updateStatus(ThingStatus.ONLINE);
         if (thing.getChannel(PortDefinition.asChannelId(port)) instanceof Channel channel) {
-            String channelId = channel.getUID().getId();
+            ChannelUID channelUID = channel.getUID();
+            String channelId = channelUID.getId();
 
-            if (portDatas.get(channelId) instanceof PortData portData
-                    && channel.getUID().getGroupId() instanceof String groupId) {
+            if (portDatas.get(channelUID) instanceof PortData portData
+                    && channelUID.getGroupId() instanceof String groupId) {
                 Instant now = Instant.now();
                 Configuration configuration = channel.getConfiguration();
                 PortDefinition portDefinition = PortDefinition.fromGroupId(groupId);
@@ -275,8 +255,12 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
                         if (value == 1) { // CLOSED
                             if (config.longPressTime != 0 && portData.isInitialized()) {
-                                scheduler.schedule(new LongPressEvaluator(channel, port, portData),
-                                        config.longPressTime, TimeUnit.MILLISECONDS);
+                                jobs.add(scheduler.schedule(() -> {
+                                    if (portData.getValue() == 1 && now.equals(portData.getTimestamp())) {
+                                        String eventChannelId = "%s-%s".formatted(channelUID.getId(), TRIGGER_CONTACT);
+                                        triggerChannel(eventChannelId, EVENT_LONG_PRESS);
+                                    }
+                                }, config.longPressTime, TimeUnit.MILLISECONDS));
                             } else if (config.pulsePeriod != 0) {
                                 portData.setPulsing(scheduler.scheduleWithFixedDelay(() -> {
                                     triggerPushButtonChannel(channel, EVENT_PULSE);
