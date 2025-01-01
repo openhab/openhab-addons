@@ -123,6 +123,10 @@ class DPTTest {
         assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 lx"), "7.013"));
 
         assertEquals("3000", ValueEncoder.encode(new QuantityType<>("3000 K"), "7.600"));
+        // unit for 7.600 is K; special handling for color temperature: make sure °C and mired work as well
+        assertEquals("3273.15", ValueEncoder.encode(new QuantityType<>("3000 °C"), "7.600"));
+        assertEquals("4000", ValueEncoder.encode(new QuantityType<>("250 mired"), "7.600"));
+        assertEquals("4000", ValueEncoder.encode(new QuantityType<>("250 mirek"), "7.600"));
     }
 
     @Test
@@ -316,7 +320,15 @@ class DPTTest {
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 Pa"), "14.066"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 N/m"), "14.067"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 °C"), "14.068"));
+        // unit for 14.068 is °C; special handling for color temperature: make sure °C and mired work as well
+        assertEquals("-272.15", ValueEncoder.encode(new QuantityType<>("1 K"), "14.068"));
+        assertEquals("3726.85", ValueEncoder.encode(new QuantityType<>("250 mired"), "14.068"));
+        assertEquals("3726.85", ValueEncoder.encode(new QuantityType<>("250 mirek"), "14.068"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 K"), "14.069"));
+        // unit for 14.069 is K; special handling for color temperature: make sure °C and mired work as well
+        assertEquals("274.15", ValueEncoder.encode(new QuantityType<>("1 °C"), "14.069"));
+        assertEquals("4000", ValueEncoder.encode(new QuantityType<>("250 mired"), "14.069"));
+        assertEquals("4000", ValueEncoder.encode(new QuantityType<>("250 mirek"), "14.069"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 K"), "14.070"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 J/K"), "14.071"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 W/m/K"), "14.072"));
@@ -526,6 +538,12 @@ class DPTTest {
 
         // 64-bit signed (DPT 29)
         assertNotEquals(DPTXlator64BitSigned.DPT_REACTIVE_ENERGY.getUnit(), Units.VAR_HOUR.toString());
+
+        // workaround for color temperatures given in MIRED, required as long as toUnit does
+        // not convert MIRED to Kelvin
+        // -> if this test fails, workaround in ValueEncoder can be removed
+        assertNull((new QuantityType<>("1 mired")).toUnit("K"));
+        assertNotNull((new QuantityType<>("1 mired")).toInvertibleUnit("K"));
     }
 
     private static Stream<Map.Entry<String, String>> unitProvider() {
