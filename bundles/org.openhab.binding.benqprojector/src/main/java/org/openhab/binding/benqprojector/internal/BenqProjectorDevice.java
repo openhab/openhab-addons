@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.benqprojector.internal;
 
+import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.*;
+
 import java.time.Duration;
 import java.util.Locale;
 
@@ -34,10 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BenqProjectorDevice {
-    private static final String UNSUPPORTED_ITM = "Unsupported item";
-    private static final String BLOCK_ITM = "Block item";
-    private static final String ILLEGAL_FMT = "Illegal format";
-
     private static final int LAMP_REFRESH_WAIT_MINUTES = 5;
 
     private ExpiringCache<Integer> cachedLampHours = new ExpiringCache<>(Duration.ofMinutes(LAMP_REFRESH_WAIT_MINUTES),
@@ -66,14 +64,6 @@ public class BenqProjectorDevice {
 
         if (response.contains(UNSUPPORTED_ITM)) {
             return "UNSUPPORTED";
-        }
-
-        if (response.contains(BLOCK_ITM)) {
-            throw new BenqProjectorCommandException("Block Item received for command: " + query);
-        }
-
-        if (response.contains(ILLEGAL_FMT)) {
-            throw new BenqProjectorCommandException("Illegal Format response received for command: " + query);
         }
 
         logger.debug("Response: '{}'", response);

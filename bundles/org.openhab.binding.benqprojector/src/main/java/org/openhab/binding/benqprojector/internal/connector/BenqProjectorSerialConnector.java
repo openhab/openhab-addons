@@ -18,6 +18,7 @@ import java.io.OutputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.benqprojector.internal.BenqProjectorCommandException;
 import org.openhab.binding.benqprojector.internal.BenqProjectorException;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
@@ -120,7 +121,7 @@ public class BenqProjectorSerialConnector implements BenqProjectorConnector, Ser
     }
 
     @Override
-    public String sendMessage(String data) throws BenqProjectorException {
+    public String sendMessage(String data) throws BenqProjectorException, BenqProjectorCommandException {
         InputStream in = this.in;
         OutputStream out = this.out;
 
