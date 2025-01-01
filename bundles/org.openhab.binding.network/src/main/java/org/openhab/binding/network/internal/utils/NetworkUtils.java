@@ -32,9 +32,11 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -173,13 +175,37 @@ public class NetworkUtils {
     }
 
     /**
+     * Retrieves a map of network interface names to their associated IP addresses.
+     * 
+     * @return A map where the key is the name of the network interface and the value is a set of CidrAddress objects
+     *         representing the IP addresses and network prefix lengths for that interface.
+     */
+    public Map<String, Set<CidrAddress>> getNetworkIPsPerInterface() {
+        Map<String, Set<CidrAddress>> outputMap = new HashMap<>();
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface networkInterface = en.nextElement();
+                if (networkInterface.isUp() && !networkInterface.isLoopback()) {
+                    outputMap.put(networkInterface.getName(),
+                            networkInterface.getInterfaceAddresses().stream()
+                                    .map(m -> new CidrAddress(m.getAddress(), m.getNetworkPrefixLength()))
+                                    .collect(Collectors.toSet()));
+                }
+            }
+        } catch (SocketException e) {
+            logger.trace("Could not get network interfaces", e);
+        }
+        return outputMap;
+    }
+
+    /**
      * Takes the interfaceIPs and fetches every IP which can be assigned on their network
      *
      * @param interfaceIPs The IPs which are assigned to the Network Interfaces
      * @param maximumPerInterface The maximum of IP addresses per interface or 0 to get all.
      * @return Every single IP which can be assigned on the Networks the computer is connected to
      */
-    private Set<String> getNetworkIPs(Set<CidrAddress> interfaceIPs, int maximumPerInterface) {
+    public Set<String> getNetworkIPs(Set<CidrAddress> interfaceIPs, int maximumPerInterface) {
         Set<String> networkIPs = new LinkedHashSet<>();
 
         short minCidrPrefixLength = 8; // historic Class A network, addresses = 16777214
