@@ -160,7 +160,7 @@ public class UnitHandler extends AbstractOmnilinkStatusHandler<ExtendedUnitStatu
     public void updateChannels(ExtendedUnitStatus status) {
         logger.debug("updateChannels called for Unit status: {}", status);
         int unitStatus = status.getStatus();
-        int level = 0;
+        int level = Status.UNIT_OFF;
 
         if (unitStatus == Status.UNIT_ON) {
             level = 100;
@@ -193,6 +193,7 @@ public class UnitHandler extends AbstractOmnilinkStatusHandler<ExtendedUnitStatu
     }
 
     private static class Status {
+        private static final int UNIT_OFF = 0;
         private static final int UNIT_ON = 1;
         private static final int UNIT_SCENE_A = 2;
         private static final int UNIT_SCENE_L = 13;
