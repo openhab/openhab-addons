@@ -48,4 +48,5 @@ public class BindingConstants {
     public static final String CHANNEL_GREEN = "green";
     public static final String CHANNEL_BLUE = "blue";
     public static final String CHANNEL_WHITE = "white";
+    public static final String CHANNEL_COLOR = "color";
 }

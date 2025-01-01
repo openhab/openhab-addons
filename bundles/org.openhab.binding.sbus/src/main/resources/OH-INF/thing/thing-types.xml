@@ -24,8 +24,8 @@
 			</parameter>
 			<parameter name="refresh" type="integer">
 				<label>Refresh Interval</label>
-				<description>Refresh interval in milliseconds</description>
-				<default>30000</default>
+				<description>Refresh interval in seconds</description>
+				<default>30</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -49,8 +49,8 @@
 			</parameter>
 			<parameter name="refresh" type="integer">
 				<label>Refresh Interval</label>
-				<description>Refresh interval in milliseconds</description>
-				<default>30000</default>
+				<description>Refresh interval in seconds</description>
+				<default>30</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -74,8 +74,8 @@
 			</parameter>
 			<parameter name="refresh" type="integer">
 				<label>Refresh Interval</label>
-				<description>Refresh interval in milliseconds</description>
-				<default>30000</default>
+				<description>Refresh interval in seconds</description>
+				<default>30</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -90,6 +90,42 @@
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
 				<description>The physical channel number on the SBUS device</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="dimmer-channel">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer State</label>
+		<description>Dimmer state (0-100%)</description>
+		<category>DimmableLight</category>
+		<config-description>
+			<parameter name="channelNumber" type="integer" required="true">
+				<label>Channel Number</label>
+				<description>The physical channel number on the SBUS device</description>
+			</parameter>
+			<parameter name="timer" type="integer">
+				<label>Timer</label>
+				<description>Timer in seconds to automatically turn off the switch (0 = disabled)</description>
+				<default>0</default>
+				<min>0</min>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="paired-channel">
+		<item-type>Contact</item-type>
+		<label>Paired Channel State</label>
+		<description>Paired channel state (OPEN/CLOSED) - controls two opposite channels</description>
+		<category>Contact</category>
+		<config-description>
+			<parameter name="channelNumber" type="integer" required="true">
+				<label>Channel Number</label>
+				<description>The physical channel number on the SBUS device</description>
+			</parameter>
+			<parameter name="pairedChannelNumber" type="integer" required="true">
+				<label>Paired Channel Number</label>
+				<description>The physical channel number of the paired channel (will be set to opposite state)</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -109,11 +145,10 @@
 	</channel-type>
 
 	<channel-type id="color-channel">
-		<item-type>Dimmer</item-type>
-		<label>Color Channel</label>
-		<description>Color intensity (0-100%)</description>
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Color control</description>
 		<category>ColorLight</category>
-		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
 
 	<!-- Channel Group Types (unused, but left in case you need them) -->

@@ -22,7 +22,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SbusChannelConfig {
     /**
-     * The physical channel number on the SBUS device
+     * The physical channel number on the SBUS device.
      */
     public int channelNumber;
+
+    /**
+     * The paired channel number for OpenClosedType channels.
+     * When the main channel is opened, this channel will be closed and vice versa.
+     */
+    public int pairedChannelNumber;
+
+    /**
+     * Timer in seconds to automatically turn off the switch (-1 = disabled).
+     */
+    public int timer = 0;
 }
