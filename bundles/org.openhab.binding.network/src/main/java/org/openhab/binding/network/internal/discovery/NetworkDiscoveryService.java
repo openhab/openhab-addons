@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -37,6 +38,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.net.CidrAddress;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -133,37 +135,43 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             return;
         }
         removeOlderResults(getTimestampOfLastScan(), null);
-        logger.trace("Starting Network Device Discovery");
+        logger.debug("Starting Network Device Discovery");
+        Map<String, Set<CidrAddress>> discoveryList = networkUtils.getNetworkIPsPerInterface();
 
-        final Set<String> networkIPs = networkUtils.getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE);
-        scannedIPcount.set(0);
+        for (String networkInterface : discoveryList.keySet()) {
+            final Set<String> networkIPs = networkUtils.getNetworkIPs(
+                    Objects.requireNonNull(discoveryList.get(networkInterface)), MAXIMUM_IPS_PER_INTERFACE);
+            logger.debug("Scanning {} IPs on interface {} ", networkIPs.size(), networkInterface);
+            scannedIPcount.set(0);
+            for (String ip : networkIPs) {
+                final PresenceDetection pd = new PresenceDetection(this, scheduler, Duration.ofSeconds(2));
+                pd.setHostname(ip);
+                pd.setNetworkInterfaceNames(Set.of(networkInterface));
+                pd.setIOSDevice(true);
+                pd.setUseDhcpSniffing(false);
+                pd.setTimeout(PING_TIMEOUT);
+                // Ping devices
+                pd.setUseIcmpPing(true);
+                pd.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
+                // TCP devices
+                pd.setServicePorts(tcpServicePorts);
 
-        for (String ip : networkIPs) {
-            final PresenceDetection pd = new PresenceDetection(this, scheduler, Duration.ofSeconds(2));
-            pd.setHostname(ip);
-            pd.setIOSDevice(true);
-            pd.setUseDhcpSniffing(false);
-            pd.setTimeout(PING_TIMEOUT);
-            // Ping devices
-            pd.setUseIcmpPing(true);
-            pd.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
-            // TCP devices
-            pd.setServicePorts(tcpServicePorts);
-
-            service.execute(() -> {
-                Thread.currentThread().setName("Discovery thread " + ip);
-                try {
-                    pd.getValue();
-                } catch (ExecutionException | InterruptedException e) {
-                    stopScan();
-                }
-                int count = scannedIPcount.incrementAndGet();
-                if (count == networkIPs.size()) {
-                    logger.trace("Scan of {} IPs successful", scannedIPcount);
-                    stopScan();
-                }
-            });
+                service.execute(() -> {
+                    Thread.currentThread().setName("Discovery thread " + ip);
+                    try {
+                        pd.getValue();
+                    } catch (ExecutionException | InterruptedException e) {
+                        stopScan();
+                    }
+                    int count = scannedIPcount.incrementAndGet();
+                    if (count == networkIPs.size()) {
+                        logger.trace("Scan of {} IPs on interface {} successful", scannedIPcount, networkInterface);
+                        stopScan();
+                    }
+                });
+            }
         }
+        logger.debug("Finished Network Device Discovery");
     }
 
     @Override
