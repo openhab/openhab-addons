@@ -37,8 +37,8 @@ public interface BenqProjectorConnector {
     static final String END = "#\r";
     static final String BLANK = "";
 
-    public static final String BLOCK_ITM = "Block item";
-    public static final String ILLEGAL_FMT = "Illegal format";
+    static final String BLOCK_ITM = "Block item";
+    static final String ILLEGAL_FMT = "Illegal format";
 
     /**
      * Procedure for connecting to projector.
