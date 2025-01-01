@@ -10,17 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.handler;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.smartthings.internal.dto;
 
 /**
- * Smartthings Bridge messages
+ * Data object for Smartthings capabilities description
  *
- * @author Bob Raker - Initial contribution
+ * @author Laurent ARNAL - Initial contribution
  */
-@NonNullByDefault
-public interface SmartthingsThingConfigStatusMessage {
+public class SmartthingsAttribute {
 
-    static final String SMARTTHINGS_NAME_MISSING = "missing-smartthings-name";
+    public String setter;
+    public SmartthingsSchema schema;
+    public SmartthingsEnumCommand[] enumCommands;
 }
