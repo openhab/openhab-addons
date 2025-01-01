@@ -210,7 +210,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     protected ComponentChannel.Builder buildChannel(String channelID, ComponentChannelType channelType,
             Value valueState, String label, ChannelStateUpdateListener channelStateUpdateListener) {
-        if (groupId == null && newStyleChannels) {
+        if (groupId == null) {
             channelID = componentId;
         }
         return new ComponentChannel.Builder(this, channelID, channelType.getChannelTypeUID(), valueState, label,
