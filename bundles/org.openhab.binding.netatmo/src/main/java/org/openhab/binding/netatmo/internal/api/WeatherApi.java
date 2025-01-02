@@ -77,7 +77,7 @@ public class WeatherApi extends RestManager {
                 return station;
             }
         }
-        throw new NetatmoException("Unexpected answer searching device '%s' : not found.", deviceId);
+        throw new NetatmoException("Unexpected answer searching device '%s': not found.", deviceId);
     }
 
     /**
@@ -98,7 +98,7 @@ public class WeatherApi extends RestManager {
                 return station;
             }
         }
-        throw new NetatmoException("Unexpected answer searching device '%s' : not found.", deviceId);
+        throw new NetatmoException("Unexpected answer searching device '%s': not found.", deviceId);
     }
 
     public Collection<NAMain> getFavoriteAndGuestStationsData() throws NetatmoException {
