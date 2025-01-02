@@ -149,6 +149,12 @@
 		<label>Color</label>
 		<description>Color control</description>
 		<category>ColorLight</category>
+		<config-description>
+			<parameter name="channelNumber" type="integer" required="true">
+				<label>Channel Number</label>
+				<description>The physical channel number on the SBUS device</description>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<!-- Channel Group Types (unused, but left in case you need them) -->

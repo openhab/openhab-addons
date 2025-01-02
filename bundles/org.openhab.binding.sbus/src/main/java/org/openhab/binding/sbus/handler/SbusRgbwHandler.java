@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.sbus.handler;
 
-import static org.openhab.binding.sbus.BindingConstants.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -56,7 +55,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      * @param hsbType the openHAB HSBType (hue [0..360], sat [0..100], bri [0..100])
      * @return an int array [R, G, B, W] each in [0..255]
      */
-    public static int[] hsbToRgbw(HSBType hsbType) {
+    private int[] hsbToRgbw(HSBType hsbType) {
         if (hsbType == null) {
             throw new IllegalArgumentException("HSBType cannot be null.");
         }
@@ -88,7 +87,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      * @param rgbw an int array [R, G, B, W] each in [0..255]
      * @return an HSBType (hue [0..360], saturation/brightness [0..100])
      */
-    public static HSBType rgbwToHsb(int[] rgbw) {
+    private HSBType rgbwToHsb(int[] rgbw) {
         if (rgbw == null || rgbw.length < 4) {
             throw new IllegalArgumentException("rgbw must be non-null and have 4 elements: [R, G, B, W].");
         }
@@ -114,16 +113,49 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
         return hsbType;
     }
 
+    /**
+     * Checks if any RGBW value is greater than 0.
+     *
+     * @param rgbw an int array [R, G, B, W] each in [0..255]
+     * @return true if any value is greater than 0, false otherwise
+     */
+    private boolean isAnyRgbwValueActive(int[] rgbw) {
+        if (rgbw == null || rgbw.length < 4) {
+            return false;
+        }
+        for (int value : rgbw) {
+            if (value > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void initializeChannels() {
-        // Validate all color channel configurations
+        int switchChannelCount = 0;
+
+        // Validate all channel configurations
         for (Channel channel : getThing().getChannels()) {
-            if ("color-channel".equals(channel.getChannelTypeUID().getId())) {
-                SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
+            SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
+            String channelTypeId = channel.getChannelTypeUID().getId();
+            if ("color-channel".equals(channelTypeId)) {
                 if (channelConfig.channelNumber <= 0) {
                     logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
                 }
             }
+            if ("switch-channel".equals(channelTypeId)) {
+                switchChannelCount++;
+                if (channelConfig.channelNumber <= 0) {
+                    logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
+                }
+            }
+        }
+        if (switchChannelCount > 1) {
+            logger.error("Only one switch channel is allowed for RGBW thing {}", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Only one switch channel is allowed");
+            return;
         }
     }
 
@@ -139,19 +171,26 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
         try {
             SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
 
-            // Update all color channels
+            // Update all channels
             for (Channel channel : getThing().getChannels()) {
-                if ("color-channel".equals(channel.getChannelTypeUID().getId())) {
-                    SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
+                String channelTypeId = channel.getChannelTypeUID().getId();
+                SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
 
+                if ("color-channel".equals(channelTypeId)) {
                     // Read RGBW values for this channel
                     int[] rgbwValues = adapter.readRgbw(config.subnetId, config.id, channelConfig.channelNumber);
                     if (rgbwValues != null && rgbwValues.length >= 4) {
                         // Convert RGBW to HSB using our custom conversion
                         HSBType hsbType = rgbwToHsb(rgbwValues);
-
                         updateState(channel.getUID(), hsbType);
                     }
+                } else if ("switch-channel".equals(channelTypeId)) {
+                    // Read status channels for switch states
+                    int[] statuses = adapter.readStatusChannels(config.subnetId, config.id);
+
+                    // Update switch state
+                    boolean isActive = isAnyRgbwValueActive(statuses);
+                    updateState(channel.getUID(), isActive ? OnOffType.ON : OnOffType.OFF);
                 }
             }
 
@@ -173,20 +212,24 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
         try {
             Channel channel = getThing().getChannel(channelUID.getId());
-            if (channel != null && "color-channel".equals(channel.getChannelTypeUID().getId())
-                    && command instanceof HSBType hsbCommand) {
+            if (channel != null) {
+                String channelTypeId = channel.getChannelTypeUID().getId();
                 SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
 
-                // Convert HSB to RGBW
-                int[] rgbw = hsbToRgbw(hsbCommand);
-
-                // Write all RGBW values at once using the dedicated method
-                adapter.writeRgbw(config.subnetId, config.id, channelConfig.channelNumber, rgbw[0], rgbw[1], rgbw[2],
-                        rgbw[3]);
-
-                // Update state
-                updateState(channelUID, hsbCommand);
+                if ("color-channel".equals(channelTypeId) && command instanceof HSBType hsbCommand) {
+                    // Handle color command
+                    int[] rgbw = hsbToRgbw(hsbCommand);
+                    adapter.writeRgbw(config.subnetId, config.id, channelConfig.channelNumber, rgbw[0], rgbw[1],
+                            rgbw[2], rgbw[3]);
+                    updateState(channelUID, hsbCommand);
+                } else if ("switch-channel".equals(channelTypeId) && command instanceof OnOffType onOffCommand) {
+                    // Handle switch command
+                    boolean isOn = onOffCommand == OnOffType.ON;
+                    adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, isOn ? 100 : 0,
+                            -1);
+                    updateState(channelUID, isOn ? OnOffType.ON : OnOffType.OFF);
+                }
             }
         } catch (Exception e) {
             logger.error("Error handling command", e);
