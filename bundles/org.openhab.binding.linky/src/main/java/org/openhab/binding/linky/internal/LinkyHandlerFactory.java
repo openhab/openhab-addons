@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.linky.internal;
 
+import static java.time.temporal.ChronoField.*;
 import static org.openhab.binding.linky.internal.LinkyBindingConstants.THING_TYPE_LINKY;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -28,6 +32,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.openhab.core.thing.Thing;
@@ -55,21 +60,43 @@ import com.google.gson.JsonDeserializer;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.linky")
 public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private static final DateTimeFormatter LINKY_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
+    private static final DateTimeFormatter LINKY_LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
+    private static final DateTimeFormatter LINKY_LOCALDATETIME_FORMATTER = new DateTimeFormatterBuilder()
+            .appendPattern("uuuu-MM-dd'T'HH:mm").optionalStart().appendLiteral(':').appendValue(SECOND_OF_MINUTE, 2)
+            .optionalStart().appendFraction(NANO_OF_SECOND, 0, 9, true).toFormatter();
+
     private static final int REQUEST_BUFFER_SIZE = 8000;
     private static final int RESPONSE_BUFFER_SIZE = 200000;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
-    private final Gson gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
-            (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
-                    .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER))
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ZonedDateTime.class,
+                    (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
+                            .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER))
+            .registerTypeAdapter(LocalDate.class,
+                    (JsonDeserializer<LocalDate>) (json, type, jsonDeserializationContext) -> LocalDate
+                            .parse(json.getAsJsonPrimitive().getAsString(), LINKY_LOCALDATE_FORMATTER))
+            .registerTypeAdapter(LocalDateTime.class,
+                    (JsonDeserializer<LocalDateTime>) (json, type, jsonDeserializationContext) -> {
+                        try {
+                            return LocalDateTime.parse(json.getAsJsonPrimitive().getAsString(),
+                                    LINKY_LOCALDATETIME_FORMATTER);
+                        } catch (Exception ex) {
+                            return LocalDate.parse(json.getAsJsonPrimitive().getAsString(), LINKY_LOCALDATE_FORMATTER)
+                                    .atStartOfDay();
+                        }
+                    })
+
             .create();
     private final LocaleProvider localeProvider;
     private final HttpClient httpClient;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
-            final @Reference HttpClientFactory httpClientFactory) {
+            final @Reference HttpClientFactory httpClientFactory, final @Reference TimeZoneProvider timeZoneProvider) {
         this.localeProvider = localeProvider;
+        this.timeZoneProvider = timeZoneProvider;
         SslContextFactory sslContextFactory = new SslContextFactory.Client();
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
@@ -114,7 +141,8 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        return supportsThingType(thing.getThingTypeUID()) ? new LinkyHandler(thing, localeProvider, gson, httpClient)
+        return supportsThingType(thing.getThingTypeUID())
+                ? new LinkyHandler(thing, localeProvider, gson, httpClient, timeZoneProvider)
                 : null;
     }
 }
