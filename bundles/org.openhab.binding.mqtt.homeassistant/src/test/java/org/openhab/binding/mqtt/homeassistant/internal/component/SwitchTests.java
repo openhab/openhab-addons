@@ -166,6 +166,54 @@ public class SwitchTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/th1/set/auto_lock", "AUTO");
     }
 
+    @Test
+    public void testSwitchNoName() {
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                {
+                  "availability": [
+                    {
+                      "topic": "zigbee2mqtt/bridge/state",
+                      "value_template": "{{ value_json.state }}"
+                    },
+                    {
+                      "topic": "zigbee2mqtt/Master Bedroom Subwoofer/availability",
+                      "value_template": "{{ value_json.state }}"
+                    }
+                  ],
+                  "availability_mode": "all",
+                  "command_topic": "zigbee2mqtt/Master Bedroom Subwoofer/set",
+                  "device": {
+                    "configuration_url": "http://z2m:8084/#/device/0x00124b0029e7388c/info",
+                    "identifiers": [
+                      "zigbee2mqtt_0x00124b0029e7388c"
+                    ],
+                    "manufacturer": "SONOFF",
+                    "model": "15A Zigbee smart plug (S40ZBTPB)",
+                    "name": "Master Bedroom Subwoofer",
+                    "sw_version": "1.1.0",
+                    "via_device": "zigbee2mqtt_bridge_0xe0798dfffe882ce4"
+                  },
+                  "name": null,
+                  "object_id": "master_bedroom_subwoofer",
+                  "origin": {
+                    "name": "Zigbee2MQTT",
+                    "sw": "1.42.0-dev",
+                    "url": "https://www.zigbee2mqtt.io"
+                  },
+                  "payload_off": "OFF",
+                  "payload_on": "ON",
+                  "state_topic": "zigbee2mqtt/Master Bedroom Subwoofer",
+                  "unique_id": "0x00124b0029e7388c_switch_zigbee2mqtt",
+                  "value_template": "{{ value_json.state }}"
+                }
+                          """);
+
+        assertThat(component.channels.size(), is(1));
+        assertThat(component.getName(), is("Master Bedroom Subwoofer"));
+        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "zigbee2mqtt/Master Bedroom Subwoofer",
+                "zigbee2mqtt/Master Bedroom Subwoofer/set", "Master Bedroom Subwoofer", OnOffValue.class);
+    }
+
     @Override
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
