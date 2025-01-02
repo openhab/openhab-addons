@@ -39,15 +39,21 @@ Please note the broadcast address. This is how Sbus devices communicate with eac
 #### RGBW Controller
 
 ```
-Thing sbus:rgbw:mybridge:light1 [ address=1 ]
+Thing rgbw colorctrl [ id=72, refresh=30 ] {
+    Channels:
+        Type color-channel : color [ channelNumber=1 ]   // HSB color picker, RGBW values stored at channel 1
+        Type switch-channel : power [ channelNumber=1 ]  // On/Off control for the RGBW output. 
+}
 ```
 
 Supported channels:
 
-* `red` - Red component (0-100%)
-* `green` - Green component (0-100%)
-* `blue` - Blue component (0-100%)
-* `white` - White component (0-100%)
+* `color` - HSB color picker that controls:
+  * Red component (0-100%)
+  * Green component (0-100%)
+  * Blue component (0-100%)
+  * White component (0-100%)
+* `power` - On/Off control for the RGBW output with optional timer
 
 #### Temperature Sensor
 
@@ -84,10 +90,23 @@ Supported channels:
 items/sbus.items:
 
 ```
-Color Light_RGB "RGB Light" { channel="sbus:rgbw:mybridge:light1:color" }
 Number:Temperature Temp_Sensor "Temperature [%.1f °C]" { channel="sbus:temperature:mybridge:temp1:temperature" }
 Switch Light_Switch "Switch" { channel="sbus:switch:mybridge:switch1:switch" }
 ```
+
+Example: RGBW Controller with Power Control
+
+```
+// Light Group
+Group   gLight      "RGBW Light"    <light>     ["Lighting"]
+
+// Color Control
+Color   rgbwColor    "Color"        <colorwheel> (gLight)   ["Control", "Light"]    { channel="sbus:rgbw:mybridge:colorctrl:color" }
+
+// Power Control
+Switch  rgbwPower    "Power"        <switch>     (gLight)   ["Switch", "Light"]     { channel="sbus:rgbw:mybridge:colorctrl:power" }
+```
+
 
 sitemap/sbus.sitemap:
 
@@ -101,29 +120,3 @@ sitemap sbus label="SBUS Demo"
     }
 }
 ```
-
-## Special Case: RGBW Controller with Power Control
-
-Here's how to configure an RGBW controller with both color and power control:
-
-```
-// RGBW controller for color
-Thing rgbw colorctrl [ id=72, refresh=30 ] {
-    Channels:
-        Type color-channel : color [ channelNumber=1 ]   // HSB color picker, RGBW values stored at channel 1
-}
-
-// Switch for power control
-Thing switch powerctrl [ id=72, refresh=30 ] {
-    Channels:
-        Type switch-channel : power [ channelNumber=5, timer=-1 ]  // On/Off control for the RGBW output. Disable the timer functionality. The device doesn't support it.
-}
-
-// Light Group
-Group   gLight      "RGBW Light"    <light>     ["Lighting"]
-
-// Color Control
-Color   rgbwColor    "Color"        <colorwheel> (gLight)   ["Control", "Light"]    { channel="sbus:rgbw:mybridge:colorctrl:color" }
-
-// Power Control
-Switch  rgbwPower    "Power"        <switch>     (gLight)   ["Switch", "Light"]     { channel="sbus:switch:mybridge:powerctrl:power" }
