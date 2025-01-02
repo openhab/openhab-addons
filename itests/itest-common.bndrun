@@ -19,7 +19,7 @@ Test-Cases: ${classes;CONCRETE;PUBLIC;NAMED;*Test}
 -runsystempackages: sun.reflect
 
 -runfw: org.eclipse.osgi
--runee: JavaSE-17
+-runee: JavaSE-21
 
 # An unused random HTTP port is used during tests to prevent resource conflicts
 # This property is set by the build-helper-maven-plugin in the itests pom.xml

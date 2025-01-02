@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -276,8 +276,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
         if (!isConnect) {
             openSocket();
 
-            Thread thread = new Thread(socketReceiverRunnable);
-            thread.setName("VitotronicSocketThread");
+            Thread thread = new Thread(socketReceiverRunnable, "OH-binding-" + getThing().getUID() + "-SocketThread");
             thread.start();
         }
     }

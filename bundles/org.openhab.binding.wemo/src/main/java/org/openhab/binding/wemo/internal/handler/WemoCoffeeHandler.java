@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,7 @@ import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.io.StringReader;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -345,8 +343,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                     getThing().getUID());
             return null;
         }
-        ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochSecond(value), TimeZone.getDefault().toZoneId());
-        State dateTimeState = new DateTimeType(zoned);
+        State dateTimeState = new DateTimeType(Instant.ofEpochSecond(value));
         logger.trace("New attribute brewed '{}' received", dateTimeState);
         return dateTimeState;
     }

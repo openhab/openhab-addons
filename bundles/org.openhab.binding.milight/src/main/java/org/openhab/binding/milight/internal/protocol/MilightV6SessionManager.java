@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.milight.internal.MilightBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -185,7 +186,7 @@ public class MilightV6SessionManager implements Runnable, Closeable {
             throw new IllegalArgumentException("keepAliveInterval not within given limits!");
         }
 
-        sessionThread = new Thread(this, "SessionThread");
+        sessionThread = new Thread(this, "OH-binding-" + MilightBindingConstants.BINDING_ID + "-SessionThread");
     }
 
     /**
