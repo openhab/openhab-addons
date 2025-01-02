@@ -87,19 +87,22 @@ In this example file-based using Rule Builder:
 rules.when()
     .channel('energidataservice:service:energidataservice:electricity#event').triggered('DAY_AHEAD_AVAILABLE')
     .then(event => {
-        var timeSeries = new items.TimeSeries('REPLACE');
-        var start = time.LocalDate.now().atStartOfDay().atZone(time.ZoneId.systemDefault());
-        var spotPrices = items.SpotPrice.persistence.getAllStatesBetween(start, start.plusDays(2));
-        for (var spotPrice of spotPrices) {
-            var totalPrice = spotPrice.quantityState
-                .add(items.GridTariff.persistence.persistedState(spotPrice.timestamp).quantityState)
-                .add(items.SystemTariff.persistence.persistedState(spotPrice.timestamp).quantityState)
-                .add(items.TransmissionGridTariff.persistence.persistedState(spotPrice.timestamp).quantityState)
-                .add(items.ElectricityTax.persistence.persistedState(spotPrice.timestamp).quantityState);
+        // Short delay because persistence is asynchronous.
+        setTimeout(() => {
+            var timeSeries = new items.TimeSeries('REPLACE');
+            var start = time.LocalDate.now().atStartOfDay().atZone(time.ZoneId.systemDefault());
+            var spotPrices = items.SpotPrice.persistence.getAllStatesBetween(start, start.plusDays(2));
+            for (var spotPrice of spotPrices) {
+                var totalPrice = spotPrice.quantityState
+                    .add(items.GridTariff.persistence.persistedState(spotPrice.timestamp).quantityState)
+                    .add(items.SystemTariff.persistence.persistedState(spotPrice.timestamp).quantityState)
+                    .add(items.TransmissionGridTariff.persistence.persistedState(spotPrice.timestamp).quantityState)
+                    .add(items.ElectricityTax.persistence.persistedState(spotPrice.timestamp).quantityState);
 
-            timeSeries.add(spotPrice.timestamp, totalPrice);
-        }
-        items.TotalPrice.persistence.persist(timeSeries);
+                timeSeries.add(spotPrice.timestamp, totalPrice);
+            }
+            items.TotalPrice.persistence.persist(timeSeries);
+        }, 5000);
     })
     .build("Calculate total price");
 ```
