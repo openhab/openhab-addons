@@ -16,6 +16,7 @@ package org.openhab.binding.modbus.stiebeleltron.internal.dto;
  * Dto class for the System Information Block
  *
  * @author Paul Frank - Initial contribution
+ * @author Thomas Burri - Renamed some members
  *
  */
 public class SystemInformationBlock {
@@ -25,8 +26,8 @@ public class SystemInformationBlock {
     public short humidityFek;
     public short dewpointFek;
     public short temperatureOutdoor;
-    public short temperatureHk1;
-    public short temperatureHk1SetPoint;
+    public short temperatureHc1;
+    public short temperatureHc1SetPoint;
     public short temperatureSupply;
     public short temperatureReturn;
     public short temperatureSource;
