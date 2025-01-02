@@ -87,7 +87,7 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
                 return localizationService.createLocalizedThingType(bundle,
                         moduleType.isABridge() ? thingTypeBuilder.buildBridge() : thingTypeBuilder.build(), locale);
             } catch (IllegalArgumentException e) {
-                logger.warn("Unable to define ModuleType for thingType {} : {}", thingTypeUID.getId(), e.getMessage());
+                logger.warn("Unable to define ModuleType for thingType {}: {}", thingTypeUID.getId(), e.getMessage());
             }
         }
         return null;
