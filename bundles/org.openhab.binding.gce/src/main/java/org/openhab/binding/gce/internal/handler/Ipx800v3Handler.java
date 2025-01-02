@@ -15,6 +15,7 @@ package org.openhab.binding.gce.internal.handler;
 import static org.openhab.binding.gce.internal.GCEBindingConstants.*;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -87,12 +88,16 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
         Ipx800Configuration config = getConfigAs(Ipx800Configuration.class);
 
-        deviceConnector = new Ipx800DeviceConnector(config.hostname, config.portNumber, getThing().getUID(), this);
-
-        updateStatus(ThingStatus.UNKNOWN);
-
-        jobs.add(scheduler.scheduleWithFixedDelay(this::readStatusFile, 1500, config.pullInterval,
-                TimeUnit.MILLISECONDS));
+        try {
+            deviceConnector = new Ipx800DeviceConnector(config.hostname, config.portNumber, getThing().getUID(), this);
+            updateStatus(ThingStatus.UNKNOWN);
+            jobs.add(scheduler.scheduleWithFixedDelay(this::readStatusFile, 1500, config.pullInterval,
+                    TimeUnit.MILLISECONDS));
+        } catch (UnknownHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     private void readStatusFile() {
