@@ -93,7 +93,7 @@ public class GrantServlet extends NetatmoServlet {
             resp.getWriter().append(replaceKeysFromMap(accountTemplate, replaceMap));
             resp.getWriter().close();
         } else {
-            logger.warn("Unexpected : requestUrl is null");
+            logger.warn("Unexpected: requestUrl is null");
         }
     }
 
