@@ -112,7 +112,7 @@ public class SecurityApi extends RestManager {
         try {
             return get(uriBuilder, Ping.class).getStatus();
         } catch (NetatmoException e) {
-            logger.debug("Pinging {} failed : {}", vpnUrl, e.getMessage());
+            logger.debug("Pinging {} failed: {}", vpnUrl, e.getMessage());
             return null;
         }
     }

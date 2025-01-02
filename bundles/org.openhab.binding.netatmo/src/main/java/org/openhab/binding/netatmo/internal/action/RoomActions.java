@@ -111,7 +111,7 @@ public class RoomActions implements ThingActions {
                 return;
             }
         } catch (IllegalArgumentException e) {
-            logger.info("Invalid mode passed : {} - {}", mode, e.getMessage());
+            logger.info("Invalid mode passed: {} - {}", mode, e.getMessage());
             return;
         }
 

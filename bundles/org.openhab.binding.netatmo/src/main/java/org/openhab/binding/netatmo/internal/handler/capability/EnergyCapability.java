@@ -114,7 +114,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
                 api.setThermpoint(energyId, roomId, mode, endtime, temp);
                 handler.expireData();
             } catch (NetatmoException e) {
-                logger.warn("Error setting room thermostat mode '{}' : {}", mode, e.getMessage());
+                logger.warn("Error setting room thermostat mode '{}': {}", mode, e.getMessage());
             }
         });
     }
@@ -154,7 +154,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
                 }
                 handler.expireData();
             } catch (NetatmoException e) {
-                logger.warn("Error handling command '{}' : {}", command, e.getMessage());
+                logger.warn("Error handling command '{}': {}", command, e.getMessage());
             } catch (IllegalArgumentException e) {
                 logger.warn("Command '{}' sent to channel '{}' is not a valid setpoint mode.", command, channelName);
             }

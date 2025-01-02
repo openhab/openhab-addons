@@ -55,6 +55,6 @@ public class AircareApi extends RestManager {
                 return station;
             }
         }
-        throw new NetatmoException("Unexpected answer querying device '%s' : not found.", deviceId);
+        throw new NetatmoException("Unexpected answer querying device '%s': not found.", deviceId);
     }
 }
