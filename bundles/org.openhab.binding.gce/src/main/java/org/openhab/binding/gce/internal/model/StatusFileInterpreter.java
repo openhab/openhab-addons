@@ -92,7 +92,7 @@ public class StatusFileInterpreter {
 
     private void pushDatas() {
         getRoot().ifPresent(root -> {
-            PortDefinition.AS_STREAM.forEach(portDefinition -> {
+            PortDefinition.AS_SET.forEach(portDefinition -> {
                 List<Node> xmlNodes = getMatchingNodes(root.getChildNodes(), portDefinition.nodeName);
                 xmlNodes.forEach(xmlNode -> {
                     String sPortNum = xmlNode.getNodeName().replace(portDefinition.nodeName, "");
