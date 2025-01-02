@@ -289,7 +289,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      */
     public String getName() {
         String result = channelConfiguration.getName();
-        if (result.isBlank()) {
+        if (result != null && result.isBlank()) {
             result = null;
         }
 
