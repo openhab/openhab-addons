@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
@@ -85,8 +86,15 @@ public class RefreshCapability extends Capability {
         Duration delay;
         handler.proceedWithUpdate();
         if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
-            delay = OFFLINE_DELAY;
-            logger.debug("Thing '{}' is not ONLINE, using special refresh interval", thingUID);
+            if (handler.getAccountHandler() instanceof ApiBridgeHandler accountHandler
+                    && !ThingStatus.ONLINE.equals(accountHandler.getThing().getStatus())) {
+                delay = accountHandler.getTimeBeforeReconnect();
+                delay = delay != null ? delay.plus(ASAP) : OFFLINE_DELAY;
+            } else {
+                delay = OFFLINE_DELAY;
+                logger.debug("Thing '{}' is not ONLINE, special refresh interval {} used", thingUID, OFFLINE_DELAY);
+            }
+
         } else {
             delay = calcDelay();
         }

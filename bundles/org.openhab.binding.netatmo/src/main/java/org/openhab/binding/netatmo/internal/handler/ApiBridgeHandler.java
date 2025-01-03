@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayDeque;
@@ -161,6 +162,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Connected to Netatmo API.");
+        freeConnectJob();
 
         ApiHandlerConfiguration configuration = getConfiguration();
         if (!configuration.webHookUrl.isBlank()
@@ -462,5 +464,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     public Optional<WebhookServlet> getWebHookServlet() {
         return Optional.ofNullable(webHookServlet);
+    }
+
+    public @Nullable Duration getTimeBeforeReconnect() {
+        return connectJob.map(job -> Duration.ofSeconds(job.getDelay(TimeUnit.SECONDS))).orElse(null);
     }
 }
