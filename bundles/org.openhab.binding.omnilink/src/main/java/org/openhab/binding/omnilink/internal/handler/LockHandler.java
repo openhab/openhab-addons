@@ -88,7 +88,7 @@ public class LockHandler extends AbstractOmnilinkStatusHandler<ExtendedAccessCon
             return;
         }
 
-        if (channelUID.getId().equals(CHANNEL_LOCK_SWITCH)) {
+        if (CHANNEL_LOCK_SWITCH.equals(channelUID.getId())) {
             if (command instanceof OnOffType) {
                 sendOmnilinkCommand(
                         OnOffType.OFF.equals(command) ? CommandMessage.CMD_UNLOCK_DOOR : CommandMessage.CMD_LOCK_DOOR,

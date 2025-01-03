@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class BridgeOfflineException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     public BridgeOfflineException(Exception e) {
         super(e);
     }

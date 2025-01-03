@@ -113,7 +113,7 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
         logger.debug("handleCommand called for channel: {}, command: {}", channelUID, command);
         final ScheduledFuture<?> scheduledPolling = this.scheduledPolling;
 
-        if (channelUID.getId().equals(CHANNEL_AUDIO_SOURCE_POLLING)) {
+        if (CHANNEL_AUDIO_SOURCE_POLLING.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 updateState(CHANNEL_AUDIO_SOURCE_POLLING,
                         OnOffType.from((scheduledPolling != null && !scheduledPolling.isDone())));

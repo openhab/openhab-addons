@@ -95,7 +95,7 @@ public class ButtonHandler extends AbstractOmnilinkHandler {
             return;
         }
 
-        if (channelUID.getId().equals(CHANNEL_BUTTON_PRESS)) {
+        if (CHANNEL_BUTTON_PRESS.equals(channelUID.getId())) {
             if (command instanceof OnOffType) {
                 sendOmnilinkCommand(CommandMessage.CMD_BUTTON, 0, thingID);
                 updateChannels();

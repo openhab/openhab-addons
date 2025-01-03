@@ -55,7 +55,7 @@ public class UpbUnitHandler extends DimmableUnitHandler {
             return;
         }
 
-        if (channelUID.getId().equals(CHANNEL_UPB_STATUS)) {
+        if (CHANNEL_UPB_STATUS.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 sendOmnilinkCommand(CommandMessage.CMD_UNIT_UPB_REQ_STATUS, 0, thingID);
                 updateState(CHANNEL_UPB_STATUS, UnDefType.UNDEF);
