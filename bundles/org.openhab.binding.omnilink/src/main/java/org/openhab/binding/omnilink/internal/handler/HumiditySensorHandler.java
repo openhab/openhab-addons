@@ -125,7 +125,7 @@ public class HumiditySensorHandler extends AbstractOmnilinkStatusHandler<Extende
                         thingID);
                 break;
             default:
-                logger.warn("Unknown channel for Humdity Sensor thing: {}", channelUID);
+                logger.warn("Unknown channel for Humidity Sensor thing: {}", channelUID);
         }
     }
 
