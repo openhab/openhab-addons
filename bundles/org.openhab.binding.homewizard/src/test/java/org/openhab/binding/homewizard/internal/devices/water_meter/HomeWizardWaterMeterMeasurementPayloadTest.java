@@ -40,7 +40,6 @@ public class HomeWizardWaterMeterMeasurementPayloadTest {
 
         assertThat(key.getActiveLiter(), is(7.2));
         assertThat(key.getTotalLiter(), is(123.456));
-
     }
 
     @Test
@@ -51,6 +50,5 @@ public class HomeWizardWaterMeterMeasurementPayloadTest {
 
         assertThat(key.getActiveLiter(), is(0.0));
         assertThat(key.getTotalLiter(), is(0.0));
-
     }
 }
