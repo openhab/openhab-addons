@@ -89,7 +89,7 @@ String benqAspectRatio  "Aspect Ratio [%s]"           { channel="benqprojector:p
 Switch benqFreeze                                     { channel="benqprojector:projector-serial:hometheater:freeze" }
 Switch benqBlank                                      { channel="benqprojector:projector-serial:hometheater:blank" }
 String benqDirect                                     { channel="benqprojector:projector-serial:hometheater:directcmd" }
-Number benqLampTime     "Lamp Time [%d h]"   <switch> { channel="benqprojector:projector-serial:hometheater:lamptime" }
+Number benqLampTime     "Lamp Time [%d h]"    <light> { channel="benqprojector:projector-serial:hometheater:lamptime" }
 ```
 
 sitemaps/benq.sitemap
