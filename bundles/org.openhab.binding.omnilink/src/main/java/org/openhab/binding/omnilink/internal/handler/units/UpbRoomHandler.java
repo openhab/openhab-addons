@@ -146,7 +146,7 @@ public class UpbRoomHandler extends UnitHandler {
                 param2 = ((roomNum * 6) - 3) + cmdValue - 2;
                 break;
             default:
-                logger.warn("Unexpected UPB Room state: {}", Integer.toString(cmdValue));
+                logger.warn("Unexpected UPB Room state: {}", cmdValue);
                 return;
         }
 

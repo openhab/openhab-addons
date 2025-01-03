@@ -25,7 +25,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 
 /**
  * The {@link AbstractOmnilinkStatusHandler} defines some methods that can be used across
- * the many different units exposed by the OmniLink protocol to retrive updated status information.
+ * the many different units exposed by the OmniLink protocol to retrieve updated status information.
  *
  * @author Craig Hamilton - Initial contribution
  * @author Ethan Dye - openHAB3 rewrite

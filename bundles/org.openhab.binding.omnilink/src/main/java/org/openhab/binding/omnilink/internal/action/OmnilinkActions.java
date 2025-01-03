@@ -67,11 +67,8 @@ public class OmnilinkActions implements ThingActions {
                 zdt = ZonedDateTime.now(ZoneId.of(zone));
             } else {
                 logger.debug("Time zone provided invalid, using system default!");
-                if (timeZoneProvider.isPresent()) {
-                    zdt = ZonedDateTime.now(timeZoneProvider.get().getTimeZone());
-                } else {
-                    zdt = ZonedDateTime.now(ZoneId.systemDefault());
-                }
+                zdt = timeZoneProvider.map(zoneProvider -> ZonedDateTime.now(zoneProvider.getTimeZone()))
+                        .orElseGet(() -> ZonedDateTime.now(ZoneId.systemDefault()));
             }
             actionsHandler.synchronizeControllerTime(zdt);
         }

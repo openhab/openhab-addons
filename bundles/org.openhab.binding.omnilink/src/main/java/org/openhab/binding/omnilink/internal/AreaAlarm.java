@@ -47,10 +47,6 @@ public enum AreaAlarm {
         return alarmBits.testBit(bit);
     }
 
-    public boolean isSet(int alarmBits) {
-        return isSet(BigInteger.valueOf(alarmBits));
-    }
-
     public String getChannelUID() {
         return channelUID;
     }
