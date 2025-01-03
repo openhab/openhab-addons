@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class VelbusVirtualColorChannel extends VelbusColorChannel {
-    private final byte NOT_CONFIGURED = (byte) 0x00;
+    private static final byte NOT_CONFIGURED = (byte) 0x00;
 
     private byte redChannel;
     private byte greenChannel;
