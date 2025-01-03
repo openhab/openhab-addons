@@ -15,7 +15,6 @@ package org.openhab.binding.homewizard.internal.devices.kwh_meter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterHandler;
-import org.openhab.binding.homewizard.internal.devices.energy_socket.HomeWizardEnergySocketHandler;
 import org.openhab.binding.homewizard.internal.devices.energy_socket.HomeWizardEnergySocketMeasurementPayload;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -23,7 +22,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 
 /**
- * The {@link HomeWizardEnergySocketHandler} implements functionality to handle a HomeWizard EnergySocket.
+ * The {@link HomeWizardKwhMeterHandler} implements functionality to handle a HomeWizard kWh Meter.
  *
  * @author Gearrel Welvaart - Initial contribution
  *
