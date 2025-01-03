@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal.handler;
+package org.openhab.binding.homewizard.internal.devices.energy_socket;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,31 +18,32 @@ import java.io.InputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homewizard.internal.dto.StatePayload;
-import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterHandler;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 
 /**
- * The {@link HomeWizardStatefulDeviceHandler} extends the base class
+ * The {@link HomeWizardEnergySocketStateHandler} extends the base class
  * to provide support for devices that also have a 'state' interface.
  * This interface can be used to query and control the state of a device.
  *
  * @author Daniël van Os - Initial contribution
+ * @author Gearrel Welvaart - Several minor tweaks
+ *
  */
 @NonNullByDefault
-public abstract class HomeWizardStatefulDeviceHandler extends HomeWizardP1MeterHandler {
+public abstract class HomeWizardEnergySocketStateHandler extends HomeWizardEnergyMeterHandler {
 
     /**
      * Constructor
      *
      * @param thing The thing to handle
-     * @param timeZoneProvider The TimeZoneProvider
+     *
      */
-    public HomeWizardStatefulDeviceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public HomeWizardEnergySocketStateHandler(Thing thing) {
+        super(thing);
     }
 
     /**
@@ -50,13 +51,25 @@ public abstract class HomeWizardStatefulDeviceHandler extends HomeWizardP1MeterH
      *
      * @param payload The data parsed from the state Json file
      */
-    protected abstract void handleStatePayload(StatePayload payload);
+    protected abstract void handleStatePayload(HomeWizardEnergySocketStatePayload payload);
+
+    /**
+     * @return json response from the state api
+     * @throws IOException
+     */
+    public String getStateData() throws IOException {
+        if (apiVersion == 2) {
+            return HttpUtil.executeUrl("GET", apiURL + "v1/state", 30000);
+        } else {
+            return HttpUtil.executeUrl("GET", apiURL + "v1/state", 30000);
+        }
+    }
 
     protected void pollState() {
         final String stateResult;
 
         try {
-            stateResult = HttpUtil.executeUrl("GET", apiURL + "state", 30000);
+            stateResult = getStateData();
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Unable to query device state: %s", e.getMessage()));
@@ -68,7 +81,8 @@ public abstract class HomeWizardStatefulDeviceHandler extends HomeWizardP1MeterH
             return;
         }
 
-        StatePayload statePayload = gson.fromJson(stateResult, StatePayload.class);
+        HomeWizardEnergySocketStatePayload statePayload = gson.fromJson(stateResult,
+                HomeWizardEnergySocketStatePayload.class);
         if (statePayload == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Unable to parse state response from device");
@@ -83,10 +97,10 @@ public abstract class HomeWizardStatefulDeviceHandler extends HomeWizardP1MeterH
      *
      * @param command The command to send.
      */
-    protected @Nullable StatePayload sendStateCommand(String command) {
+    protected @Nullable HomeWizardEnergySocketStatePayload sendStateCommand(String command) {
         try (InputStream is = new ByteArrayInputStream(command.getBytes())) {
-            String updatedState = HttpUtil.executeUrl("PUT", apiURL + "state", is, "application/json", 30000);
-            return gson.fromJson(updatedState, StatePayload.class);
+            String updatedState = HttpUtil.executeUrl("PUT", apiURL + "v1/state", is, "application/json", 30000);
+            return gson.fromJson(updatedState, HomeWizardEnergySocketStatePayload.class);
         } catch (IOException e) {
             logger.warn("Failed to send command {} to {}", command, apiURL + "state");
             return null;
