@@ -10,20 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal.dto;
+package org.openhab.binding.homewizard.internal.devices.energy_socket;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Class that provides storage for the json object obtained from the HomeWizard device State API
+ * Class that provides storage for the json object obtained from the HomeWizard Energy Socket State API
  *
  * @author Daniël van Os - Initial contribution
  *
  */
 @NonNullByDefault
-public class StatePayload {
+public class HomeWizardEnergySocketStatePayload {
     @SerializedName("power_on")
     private boolean powerOn;
     @SerializedName("switch_lock")
