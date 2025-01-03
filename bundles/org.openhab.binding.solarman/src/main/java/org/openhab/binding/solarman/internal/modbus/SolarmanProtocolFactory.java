@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
 
 /**
- * @author Peter Kretz - Added RAW Modbus for LAN Stick
+ * @author Peter Kretz - Initial contribution
  */
 @NonNullByDefault
 public class SolarmanProtocolFactory {
