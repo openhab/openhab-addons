@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0
+                        https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Switch Device -->
+	<thing-type id="switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="udp"/>
+		</supported-bridge-type-refs>
+		<label>SBUS Switch</label>
+		<description>SBUS switch device</description>
+		<config-description>
+			<parameter name="subnetId" type="integer">
+				<label>SubnetId</label>
+				<description>Slave subnet id. Can take any value between 0 and 255.</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>Device ID</label>
+				<description>The ID of the SBUS device</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Temperature Device -->
+	<thing-type id="temperature">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="udp"/>
+		</supported-bridge-type-refs>
+		<label>SBUS Temperature Sensor</label>
+		<description>SBUS temperature sensor device</description>
+		<config-description>
+			<parameter name="subnetId" type="integer">
+				<label>SubnetId</label>
+				<description>Slave subnet id. Can take any value between 0 and 255.</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>Device ID</label>
+				<description>The ID of the SBUS device</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- RGBW Device -->
+	<thing-type id="rgbw">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="udp"/>
+		</supported-bridge-type-refs>
+		<label>SBUS RGBW Controller</label>
+		<description>SBUS RGBW lighting controller</description>
+		<config-description>
+			<parameter name="subnetId" type="integer">
+				<label>SubnetId</label>
+				<description>Slave subnet id. Can take any value between 0 and 255.</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>Device ID</label>
+				<description>The ID of the SBUS device</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="switch-channel">
+		<item-type>Switch</item-type>
+		<label>Switch State</label>
+		<description>Switch state (ON/OFF)</description>
+		<category>Switch</category>
+		<config-description>
+			<parameter name="channelNumber" type="integer" required="true">
+				<label>Channel Number</label>
+				<description>The physical channel number on the SBUS device</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="dimmer-channel">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer State</label>
+		<description>Dimmer state (0-100%)</description>
+		<category>DimmableLight</category>
+		<config-description>
+			<parameter name="channelNumber" type="integer" required="true">
+				<label>Channel Number</label>
+				<description>The physical channel number on the SBUS device</description>
+			</parameter>
+			<parameter name="timer" type="integer">
+				<label>Timer</label>
+				<description>Timer in seconds to automatically turn off the switch (0 = disabled)</description>
+				<default>0</default>
+				<min>0</min>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="paired-channel">
+		<item-type>Contact</item-type>
+		<label>Paired Channel State</label>
+		<description>Paired channel state (OPEN/CLOSED) - controls two opposite channels</description>
+		<category>Contact</category>
+		<config-description>
+			<parameter name="channelNumber" type="integer" required="true">
+				<label>Channel Number</label>
+				<description>The physical channel number on the SBUS device</description>
+			</parameter>
+			<parameter name="pairedChannelNumber" type="integer" required="true">
+				<label>Paired Channel Number</label>
+				<description>The physical channel number of the paired channel (will be set to opposite state)</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature reading from the device</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+		<config-description>
+			<parameter name="channelNumber" type="integer" required="true">
+				<label>Channel Number</label>
+				<description>The physical channel number on the SBUS device</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="color-channel">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Color control</description>
+		<category>ColorLight</category>
+		<config-description>
+			<parameter name="channelNumber" type="integer" required="true">
+				<label>Channel Number</label>
+				<description>The physical channel number on the SBUS device</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<!-- Channel Group Types (unused, but left in case you need them) -->
+	<channel-group-type id="switches">
+		<label>Switch Channels</label>
+		<description>Group of switch channels</description>
+		<category>Switch</category>
+	</channel-group-type>
+
+	<channel-group-type id="sensors">
+		<label>Temperature Sensors</label>
+		<description>Group of temperature sensors</description>
+		<category>Temperature</category>
+	</channel-group-type>
+
+	<channel-group-type id="colors">
+		<label>Color Channels</label>
+		<description>Group of RGBW color channels</description>
+		<category>ColorLight</category>
+	</channel-group-type>
+
+</thing:thing-descriptions>
