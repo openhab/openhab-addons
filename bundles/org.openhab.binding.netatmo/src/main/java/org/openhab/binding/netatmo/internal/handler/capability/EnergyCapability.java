@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -114,7 +114,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
                 api.setThermpoint(energyId, roomId, mode, endtime, temp);
                 handler.expireData();
             } catch (NetatmoException e) {
-                logger.warn("Error setting room thermostat mode '{}' : {}", mode, e.getMessage());
+                logger.warn("Error setting room thermostat mode '{}': {}", mode, e.getMessage());
             }
         });
     }
@@ -154,7 +154,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
                 }
                 handler.expireData();
             } catch (NetatmoException e) {
-                logger.warn("Error handling command '{}' : {}", command, e.getMessage());
+                logger.warn("Error handling command '{}': {}", command, e.getMessage());
             } catch (IllegalArgumentException e) {
                 logger.warn("Command '{}' sent to channel '{}' is not a valid setpoint mode.", command, channelName);
             }
