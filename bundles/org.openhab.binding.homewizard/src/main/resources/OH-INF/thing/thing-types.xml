@@ -75,7 +75,7 @@
 
 	</thing-type>
 
-
+	
 	<thing-type id="energy_socket" listed="false">
 		<label>HomeWizard Energysocket</label>
 		<description>This thing provides the measurement data that is available through the http interface of a HomeWizard

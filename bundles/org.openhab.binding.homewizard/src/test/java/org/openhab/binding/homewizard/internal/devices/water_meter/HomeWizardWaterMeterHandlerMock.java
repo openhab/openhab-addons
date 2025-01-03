@@ -21,10 +21,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
+import org.openhab.binding.homewizard.internal.devices.energy_socket.HomeWizardEnergySocketHandler;
 import org.openhab.core.thing.Thing;
 
 /**
- * The {@link HomeWizardWaterMeterHandlerMock} is responsible for mocking {@link HomeWizardWaterMeterHandler}
+ * The {@link HomeWizardWaterMeterHandlerMock} is responsible for mocking {@link HomeWizardEnergySocketHandler}
  *
  * @author Gearrel Welvaart - Initial contribution
  *

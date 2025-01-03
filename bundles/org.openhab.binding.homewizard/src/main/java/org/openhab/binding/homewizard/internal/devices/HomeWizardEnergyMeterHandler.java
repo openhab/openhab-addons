@@ -15,6 +15,7 @@ package org.openhab.binding.homewizard.internal.devices;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.devices.dto.HomeWizardEnergyMeterMeasurementPayload;
+import org.openhab.binding.homewizard.internal.devices.p1_meter.HomeWizardP1MeterHandler;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -22,7 +23,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 
 /**
- * The {@link HomeWizardEnergyMeterHandler} implements functionality generic to several energy meters.
+ * The {@link HomeWizardP1MeterHandler} implements functionality to handle a HomeWizard P1 Meter.
  *
  * @author Gearrel Welvaart - Initial contribution
  */

@@ -52,5 +52,6 @@ public class HomeWizardEnergySocketStatePayloadTest {
         assertThat(key.getPowerOn(), is(false));
         assertThat(key.getSwitchLock(), is(false));
         assertThat(key.getBrightness(), is(0));
+
     }
 }
