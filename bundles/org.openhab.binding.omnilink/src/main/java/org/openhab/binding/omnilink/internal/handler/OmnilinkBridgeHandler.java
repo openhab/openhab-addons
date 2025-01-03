@@ -594,8 +594,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private void scheduleReconnectJob() {
         ScheduledFuture<?> currentReconnectJob = connectJob;
         if (currentReconnectJob == null || currentReconnectJob.isDone()) {
-            connectJob = super.scheduler.scheduleWithFixedDelay(this::makeOmnilinkConnection, 0, 60,
-                    TimeUnit.SECONDS);
+            connectJob = super.scheduler.scheduleWithFixedDelay(this::makeOmnilinkConnection, 0, 60, TimeUnit.SECONDS);
         }
     }
 
