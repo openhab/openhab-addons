@@ -306,11 +306,14 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String payload,
             @Nullable String contentType, int retryCount) throws NetatmoException {
+        if (connectJob.isPresent()) {
+            throw new NetatmoException("Connection pending, request will not be accepted in the meantime.");
+        }
+
+        logger.debug("executeUri {}  {} ", method.toString(), uri);
+        Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
+
         try {
-            logger.debug("executeUri {}  {} ", method.toString(), uri);
-
-            Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
-
             if (!authenticate(null, null)) {
                 prepareReconnection(getConfiguration().reconnectInterval, "@text/status-bridge-offline", null, null);
                 throw new NetatmoException("Not authenticated");
