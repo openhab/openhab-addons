@@ -6,26 +6,26 @@
 
 	<config-description uri="thing-type:homewizard:device">
 		<parameter name="ipAddress" type="text" required="true">
-            <label>Network Address</label>
-            <description>The IP or host name of the HomeWizard device.</description>
-            <context>network-address</context>
-        </parameter>
-        <parameter name="refreshDelay" type="integer" min="1" unit="s">
-            <label>Refresh Interval</label>
-            <description>The refresh interval in seconds for polling the HomeWizard device.</description>
-            <advanced>true</advanced>
-            <default>5</default>
-        </parameter>
-        <parameter name="apiVersion" type="integer" min="1">
-            <label>API Version</label>
-            <description>The API version for polling the HomeWizard device.</description>
-            <options>
-                <option value="1">v1</option>
-                <option value="2">v2</option>
-            </options>
-            <limitToOptions>true</limitToOptions>
-            <advanced>true</advanced>
-            <default>1</default>
-        </parameter>
+			<label>Network Address</label>
+			<description>The IP or host name of the HomeWizard device.</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="refreshDelay" type="integer" min="1" unit="s">
+			<label>Refresh Interval</label>
+			<description>The refresh interval in seconds for polling the HomeWizard device.</description>
+			<advanced>true</advanced>
+			<default>5</default>
+		</parameter>
+		<parameter name="apiVersion" type="integer" min="1">
+			<label>API Version</label>
+			<description>The API version for polling the HomeWizard device.</description>
+			<options>
+				<option value="1">v1</option>
+				<option value="2">v2</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<advanced>true</advanced>
+			<default>1</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

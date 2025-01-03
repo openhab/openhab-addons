@@ -101,7 +101,6 @@ public class HomeWizardP1MeterMeasurementPayload extends HomeWizardEnergyMeterMe
         } catch (Exception e) {
             return 0.0;
         }
-
     }
 
     /**

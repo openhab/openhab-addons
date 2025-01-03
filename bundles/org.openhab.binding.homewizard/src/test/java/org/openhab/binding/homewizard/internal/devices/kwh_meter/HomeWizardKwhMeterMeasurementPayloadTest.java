@@ -62,7 +62,6 @@ public class HomeWizardKwhMeterMeasurementPayloadTest {
         assertThat(key.getReactivePower(), is(-429.025));
         assertThat(key.getApparentPower(), is(7112.293));
         assertThat(key.getFrequency(), is(49.926));
-
     }
 
     @Test
