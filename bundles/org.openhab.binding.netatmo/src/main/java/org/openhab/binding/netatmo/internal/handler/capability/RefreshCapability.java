@@ -85,17 +85,14 @@ public class RefreshCapability extends Capability {
     private void proceedWithUpdate() {
         Duration delay;
         handler.proceedWithUpdate();
-        if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
-            if (handler.getAccountHandler() instanceof ApiBridgeHandler accountHandler
-                    && !ThingStatus.ONLINE.equals(accountHandler.getThing().getStatus())) {
-                delay = accountHandler.getTimeBeforeReconnect();
-                delay = delay != null ? delay.plus(ASAP) : OFFLINE_DELAY;
-                logger.debug("Bridge is not ONLINE, will wait for him to come-back {}", delay);
-            } else {
-                delay = OFFLINE_DELAY;
-                logger.debug("Thing '{}' is not ONLINE, special refresh interval {} used", thingUID, delay);
-            }
-
+        if (handler.getAccountHandler() instanceof ApiBridgeHandler accountHandler
+                && !ThingStatus.ONLINE.equals(accountHandler.getThing().getStatus())) {
+            delay = accountHandler.getTimeBeforeReconnect();
+            delay = delay != null ? delay.plus(ASAP) : OFFLINE_DELAY;
+            logger.debug("Bridge is not ONLINE, will wait for him to come-back {}", delay);
+        } else if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
+            delay = OFFLINE_DELAY;
+            logger.debug("Thing '{}' is not ONLINE, special refresh interval {} used", thingUID, delay);
         } else {
             delay = calcDelay();
         }
