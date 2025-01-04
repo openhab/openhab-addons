@@ -39,7 +39,7 @@ public class X10Address implements DeviceAddress {
     private final byte unitCode;
 
     public X10Address(byte address) {
-        this.houseCode = (byte) (address >> 4);
+        this.houseCode = (byte) (address >> 4 & 0x0F);
         this.unitCode = (byte) (address & 0x0F);
     }
 
@@ -49,7 +49,7 @@ public class X10Address implements DeviceAddress {
     }
 
     public X10Address(String address) throws IllegalArgumentException {
-        String[] parts = address.replace(".", "").split("");
+        String[] parts = address.replace(".", "").split("", 2);
         if (parts.length != 2) {
             throw new IllegalArgumentException("Invalid X10 address format");
         }
