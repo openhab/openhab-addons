@@ -45,7 +45,11 @@ final class CollectionDate {
         /**
          * Light packaging.
          */
-        LIGHT_PACKAGES;
+        LIGHT_PACKAGES,
+        /**
+         * Christmas Tree.
+         */
+        CHRISTMAS_TREES;
 
         /**
          * Parses the {@link WasteType} from the given Value from the Web-page.
@@ -60,6 +64,8 @@ final class CollectionDate {
                     return PAPER;
                 case "Leichtverpackungen":
                     return LIGHT_PACKAGES;
+                case "Weihnachtsbäume":
+                    return CHRISTMAS_TREES;
                 default:
                     throw new IllegalArgumentException("Unknown waste type: " + value);
             }
