@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.insteon.internal.device.database;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
@@ -26,7 +31,7 @@ import org.openhab.binding.insteon.internal.transport.message.Msg;
 public class ModemDBRecord extends DatabaseRecord {
 
     public ModemDBRecord(RecordType type, int group, InsteonAddress address, byte[] data) {
-        super(LOCATION_ZERO, type, group, address, data);
+        super(type, group, address, data);
     }
 
     public ModemDBRecord(DatabaseRecord record) {
@@ -97,6 +102,34 @@ public class ModemDBRecord extends DatabaseRecord {
         }
 
         return new ModemDBRecord(type, group, address, data);
+    }
+
+    /**
+     * Factory method for creating a list of ModemDBRecord from an Insteon record dump
+     *
+     * @param stream the Insteon record dump input stream to use
+     * @return the list of modem db records
+     * @throws IllegalArgumentException
+     * @throws IOException
+     */
+    public static List<ModemDBRecord> fromRecordDump(InputStream stream) throws IllegalArgumentException, IOException {
+        List<ModemDBRecord> records = new ArrayList<>();
+
+        if (stream.available() % ModemDBRecord.SIZE != 0) {
+            throw new IllegalArgumentException("Invalid record dump length");
+        }
+
+        while (stream.available() > 0) {
+            byte[] buf = stream.readNBytes(ModemDBRecord.SIZE);
+            RecordType type = new RecordType(Byte.toUnsignedInt(buf[0]));
+            int group = Byte.toUnsignedInt(buf[1]);
+            InsteonAddress address = new InsteonAddress(buf[2], buf[3], buf[4]);
+            byte[] data = new byte[] { buf[5], buf[6], buf[7] };
+
+            records.add(new ModemDBRecord(type, group, address, data));
+        }
+
+        return records;
     }
 
     /**

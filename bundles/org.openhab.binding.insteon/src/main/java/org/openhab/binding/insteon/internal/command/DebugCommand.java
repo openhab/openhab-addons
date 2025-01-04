@@ -13,11 +13,11 @@
 package org.openhab.binding.insteon.internal.command;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonScene;
 import org.openhab.binding.insteon.internal.device.X10Address;
@@ -71,7 +70,7 @@ public class DebugCommand extends InsteonCommand implements PortListener {
 
     private static final String ALL_OPTION = "--all";
 
-    private static final String MSG_EVENTS_FILE_PREFIX = "messageEvents";
+    private static final String MSG_EVENTS_FILE_PREFIX = "message-events";
 
     private static enum MessageType {
         STANDARD,
@@ -195,9 +194,16 @@ public class DebugCommand extends InsteonCommand implements PortListener {
         } else if (cursorArgumentIndex == 1) {
             switch (args[0]) {
                 case START_MONITORING:
+                    strings = monitorAllDevices ? List.of()
+                            : Stream.concat(Stream.of(ALL_OPTION),
+                                    getModem().getDB().getDevices().stream()
+                                            .filter(address -> !monitoredAddresses.contains(address))
+                                            .map(InsteonAddress::toString))
+                                    .toList();
+                    break;
                 case STOP_MONITORING:
-                    strings = Stream.concat(Stream.of(ALL_OPTION),
-                            getModem().getDB().getDevices().stream().map(InsteonAddress::toString)).toList();
+                    strings = monitorAllDevices ? List.of(ALL_OPTION)
+                            : monitoredAddresses.stream().map(InsteonAddress::toString).toList();
                     break;
                 case SEND_BROADCAST_MESSAGE:
                     strings = getModem().getDB().getBroadcastGroups().stream().map(String::valueOf).toList();
@@ -251,40 +257,25 @@ public class DebugCommand extends InsteonCommand implements PortListener {
         }
     }
 
-    private String getMsgEventsFileName(String address) {
-        return MSG_EVENTS_FILE_PREFIX + "-" + address.replace(".", "") + ".log";
-    }
-
-    private String getMsgEventsFilePath(String address) {
-        return InsteonBindingConstants.BINDING_DATA_DIR + File.separator + getMsgEventsFileName(address);
+    private Path getMsgEventsFilePath(String address) {
+        return getBindingDataFilePath(MSG_EVENTS_FILE_PREFIX + "-" + address.toLowerCase().replace(".", "") + ".log");
     }
 
     private void clearMonitorFiles(String address) {
-        File folder = new File(InsteonBindingConstants.BINDING_DATA_DIR);
-        String prefix = ALL_OPTION.equals(address) ? MSG_EVENTS_FILE_PREFIX : getMsgEventsFileName(address);
+        String prefix = ALL_OPTION.equals(address) ? MSG_EVENTS_FILE_PREFIX
+                : getMsgEventsFilePath(address).getFileName().toString();
 
-        if (folder.isDirectory()) {
-            Arrays.asList(folder.listFiles()).stream().filter(file -> file.getName().startsWith(prefix))
-                    .forEach(File::delete);
-        }
+        getBindingDataFilePaths(prefix).map(Path::toFile).forEach(File::delete);
     }
 
     private void logMessageEvent(InsteonAddress address, Msg msg) {
         String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
-        String pathname = getMsgEventsFilePath(address.toString());
+        String line = timestamp + " " + msg + System.lineSeparator();
+        Path path = getMsgEventsFilePath(address.toString());
 
         try {
-            File file = new File(pathname);
-            File parent = file.getParentFile();
-            if (parent == null) {
-                throw new IOException(pathname + " does not name a parent directory");
-            }
-            parent.mkdirs();
-            file.createNewFile();
-
-            PrintStream ps = new PrintStream(new FileOutputStream(file, true));
-            ps.println(timestamp + " " + msg.toString());
-            ps.close();
+            Files.createDirectories(path.getParent());
+            Files.writeString(path, line, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException e) {
             logger.warn("failed to write to message event file", e);
         }
@@ -307,7 +298,7 @@ public class DebugCommand extends InsteonCommand implements PortListener {
                 monitorAllDevices = true;
                 monitoredAddresses.clear();
                 console.println("Started monitoring all devices.");
-                console.println("Message events logged in " + InsteonBindingConstants.BINDING_DATA_DIR);
+                console.println("Message events logged in " + getBindingDataDirPath());
                 clearMonitorFiles(address);
             } else {
                 console.println("Already monitoring all devices.");

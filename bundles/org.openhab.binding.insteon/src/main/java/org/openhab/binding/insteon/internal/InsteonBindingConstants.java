@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.insteon.internal;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +34,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class InsteonBindingConstants {
     public static final String BINDING_ID = "insteon";
-    public static final String BINDING_DATA_DIR = OpenHAB.getUserDataFolder() + File.separator + BINDING_ID;
+    public static final Path BINDING_DATA_DIR = Path.of(OpenHAB.getUserDataFolder(), BINDING_ID);
 
     // List of all thing type uids
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");

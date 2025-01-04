@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.insteon.internal.device.database;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,6 +82,14 @@ public class ModemDB {
         synchronized (records) {
             return records.stream().toList();
         }
+    }
+
+    public byte[] getRecordDump() {
+        return getRecords().stream().distinct().map(ModemDBRecord::getBytes)
+                .flatMapToInt(bytes -> IntStream.range(0, bytes.length).map(i -> bytes[i]))
+                .collect(ByteArrayOutputStream::new, ByteArrayOutputStream::write,
+                        (out1, out2) -> out1.write(out2.toByteArray(), 0, out2.size()))
+                .toByteArray();
     }
 
     private Stream<ModemDBRecord> getRecords(@Nullable InsteonAddress address, @Nullable Integer group,
