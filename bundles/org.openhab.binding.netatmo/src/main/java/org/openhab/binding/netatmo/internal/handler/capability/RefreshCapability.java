@@ -90,7 +90,7 @@ public class RefreshCapability extends Capability {
                     && !ThingStatus.ONLINE.equals(accountHandler.getThing().getStatus())) {
                 delay = accountHandler.getTimeBeforeReconnect();
                 delay = delay != null ? delay.plus(ASAP) : OFFLINE_DELAY;
-                logger.debug("Bridge is not ONLINE, will wait for him to come-back {}", thingUID, delay);
+                logger.debug("Bridge is not ONLINE, will wait for him to come-back {}", delay);
             } else {
                 delay = OFFLINE_DELAY;
                 logger.debug("Thing '{}' is not ONLINE, special refresh interval {} used", thingUID, delay);
