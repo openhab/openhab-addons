@@ -31,7 +31,7 @@ public class VelbusSetScenePacket extends VelbusPacket {
         this.data = new byte[] { VelbusBindingConstants.COMMAND_SET_DIMSCENE, channel, sceneNumber };
     }
 
-    public void GoToScene(byte sceneNumber) {
+    public void goToScene(byte sceneNumber) {
         data[2] = sceneNumber;
     }
 

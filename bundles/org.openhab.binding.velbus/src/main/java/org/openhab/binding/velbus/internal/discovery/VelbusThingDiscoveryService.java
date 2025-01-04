@@ -385,6 +385,26 @@ public class VelbusThingDiscoveryService extends AbstractThingHandlerDiscoverySe
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 9), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBDALI_20, 81);
                 break;
+            case MODULE_TYPE_VMB4LEDPWM_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB4LEDPWM_20, 4);
+                break;
+            case MODULE_TYPE_VMB8DC_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB8DC_20, 8);
+                break;
+            case MODULE_TYPE_VMBPIRO_10:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBPIRO_10, 9);
+                break;
+            case MODULE_TYPE_VMBPIR_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBPIR_20, 7);
+                break;
+            case MODULE_TYPE_VMB8IN_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB8IN_20, 8);
+                break;
         }
 
         if (velbusModule != null) {

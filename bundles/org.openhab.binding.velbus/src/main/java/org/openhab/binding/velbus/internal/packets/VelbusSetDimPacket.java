@@ -36,6 +36,10 @@ public class VelbusSetDimPacket extends VelbusPacket {
         data[2] = dim;
     }
 
+    public void setMode(byte mode) {
+        data[3] = mode;
+    }
+
     @Override
     protected byte[] getDataBytes() {
         return data;
