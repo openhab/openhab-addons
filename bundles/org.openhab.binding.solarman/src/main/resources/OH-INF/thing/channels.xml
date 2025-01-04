@@ -7,24 +7,28 @@
 	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>Text Value</label>
-		<config-description-ref uri="channel-type-config:solarman:string-channel"/>
+		<description>Channel used to represent a string value</description>
+		<config-description-ref uri="channel-type-config:solarman:dynamic-channel"/>
 	</channel-type>
 
 	<channel-type id="number">
 		<item-type>Number</item-type>
 		<label>Number Value</label>
-		<config-description-ref uri="channel-type-config:solarman:number-channel"/>
+		<description>Channel used to represent a numeric value</description>
+		<config-description-ref uri="channel-type-config:solarman:dynamic-channel"/>
 	</channel-type>
 
 	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
 		<label>Datetime Value</label>
-		<config-description-ref uri="channel-type-config:solarman:datetime-channel"/>
+		<description>Channel used to represent a datetime value</description>
+		<config-description-ref uri="channel-type-config:solarman:dynamic-channel"/>
 	</channel-type>
 
 	<channel-type id="dynamic">
 		<item-type>String</item-type>
 		<label>Dynamic Channel</label>
+		<description>Channel used to represent a dynamic value</description>
 		<config-description-ref uri="channel-type-config:solarman:dynamic-channel"/>
 	</channel-type>
 

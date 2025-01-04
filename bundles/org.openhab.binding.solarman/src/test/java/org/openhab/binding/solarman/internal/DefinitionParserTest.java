@@ -98,7 +98,8 @@ public class DefinitionParserTest {
     }
 
     private static List<String> scanDirectory(String directoryPath) throws IOException, URISyntaxException {
-        URL url = Objects.requireNonNull(DefinitionParserTest.class.getClassLoader()).getResource(directoryPath);
+        URL url = Objects.requireNonNull(
+                Objects.requireNonNull(DefinitionParserTest.class.getClassLoader()).getResource(directoryPath));
         Path directory = Paths.get(url.toURI());
 
         if (!Files.isDirectory(directory)) {
@@ -106,9 +107,8 @@ public class DefinitionParserTest {
         }
 
         try (Stream<Path> stream = Files.list(directory)) {
-            List<String> files = stream.filter(file -> file.getFileName().toString().endsWith(YAML_EXTENSION))
-                    .map(file -> directoryPath + "/" + file.getFileName().toString()).toList();
-            return files;
+            return stream.filter(file -> file.getFileName().toString().endsWith(YAML_EXTENSION))
+                    .map(file -> directoryPath + "/" + file.getFileName()).toList();
         }
     }
 }
