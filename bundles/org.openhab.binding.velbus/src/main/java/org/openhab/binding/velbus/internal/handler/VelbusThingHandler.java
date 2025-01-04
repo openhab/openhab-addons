@@ -259,9 +259,6 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
     public boolean onPacketReceived(byte[] packet) {
         logger.trace("onPacketReceived() was called");
 
-        if (disposed) {
-            return false;
-        }
-        return true;
+        return !disposed;
     }
 }

@@ -20,6 +20,7 @@ import org.openhab.binding.velbus.internal.handler.VelbusBlindsHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusBridgeHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusDimmerHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusNetworkBridgeHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusNewDimmerHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusRelayHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusRelayWithInputHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusSensorHandler;
@@ -110,6 +111,8 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
             thingHandler = new VelbusVMB1TSHandler(thing);
         } else if (VelbusVMBDALIHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMBDALIHandler(thing);
+        } else if (VelbusNewDimmerHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusNewDimmerHandler(thing);
         }
 
         return thingHandler;

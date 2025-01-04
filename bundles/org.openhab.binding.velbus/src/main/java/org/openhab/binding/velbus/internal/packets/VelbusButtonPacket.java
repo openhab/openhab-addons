@@ -35,15 +35,15 @@ public class VelbusButtonPacket extends VelbusPacket {
                 (byte) 0x00 };
     }
 
-    public void Pressed() {
+    public void pressed() {
         data = new byte[] { VelbusBindingConstants.COMMAND_PUSH_BUTTON_STATUS, channel, (byte) 0x00, (byte) 0x00 };
     }
 
-    public void LongPressed() {
+    public void longPressed() {
         data = new byte[] { VelbusBindingConstants.COMMAND_PUSH_BUTTON_STATUS, (byte) 0x00, (byte) 0x00, channel };
     }
 
-    public void Released() {
+    public void released() {
         data = new byte[] { VelbusBindingConstants.COMMAND_PUSH_BUTTON_STATUS, (byte) 0x00, channel, (byte) 0x00 };
     }
 
