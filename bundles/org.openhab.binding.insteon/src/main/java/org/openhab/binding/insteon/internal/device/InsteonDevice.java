@@ -980,7 +980,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                 device.setFlags(deviceType.getFlags());
             }
             int location = productData.getFirstRecordLocation();
-            if (location != LinkDBRecord.LOCATION_ZERO) {
+            if (location != 0) {
                 device.getLinkDB().setFirstRecordLocation(location);
             }
             device.setProductData(productData);

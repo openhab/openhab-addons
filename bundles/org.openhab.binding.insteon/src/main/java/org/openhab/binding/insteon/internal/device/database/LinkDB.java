@@ -36,8 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LinkDB {
-    public static final int RECORD_BYTE_SIZE = 8;
-
     private static enum DatabaseStatus {
         EMPTY,
         COMPLETE,
@@ -258,7 +256,7 @@ public class LinkDB {
      */
     public int getNextAvailableLocation() {
         return getRecords().stream().filter(LinkDBRecord::isAvailable).map(LinkDBRecord::getLocation).findFirst()
-                .orElse(Math.min(getLastRecordLocation(), getLastChangeLocation() - RECORD_BYTE_SIZE));
+                .orElse(Math.min(getLastRecordLocation(), getLastChangeLocation() - LinkDBRecord.SIZE));
     }
 
     /**
@@ -355,7 +353,7 @@ public class LinkDB {
             LinkDBRecord prevRecord = records.put(record.getLocation(), record);
             // move last record if overwritten
             if (prevRecord != null && prevRecord.isLast()) {
-                int location = prevRecord.getLocation() - RECORD_BYTE_SIZE;
+                int location = prevRecord.getLocation() - LinkDBRecord.SIZE;
                 records.put(location, LinkDBRecord.withNewLocation(location, prevRecord));
                 if (logger.isTraceEnabled()) {
                     logger.trace("moved last record for {} to location {}", device.getAddress(),
@@ -531,7 +529,7 @@ public class LinkDB {
 
         int firstLocation = records.firstKey();
         int lastLocation = records.lastKey();
-        int expected = (firstLocation - lastLocation) / RECORD_BYTE_SIZE + 1;
+        int expected = (firstLocation - lastLocation) / LinkDBRecord.SIZE + 1;
         if (firstLocation != getFirstRecordLocation()) {
             logger.debug("got unexpected first record location for {}", device.getAddress());
             setStatus(DatabaseStatus.PARTIAL);
