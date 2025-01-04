@@ -564,16 +564,10 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     public void requestReplied(Msg msg) {
         DeviceFeature feature = getFeatureQueried();
         if (feature != null && feature.isMyReply(msg)) {
-            if (msg.isReplyAck()) {
-                // mark feature queried as acked
-                feature.setQueryStatus(QueryStatus.QUERY_ACKED);
-            } else {
-                logger.debug("got a reply nack msg: {}", msg);
-                // mark feature queried as processed and answered
-                setFeatureQueried(null);
-                feature.setQueryMessage(null);
-                feature.setQueryStatus(QueryStatus.QUERY_ANSWERED);
-            }
+            // mark feature queried as processed and answered
+            setFeatureQueried(null);
+            feature.setQueryMessage(null);
+            feature.setQueryStatus(QueryStatus.QUERY_ANSWERED);
         }
     }
 
