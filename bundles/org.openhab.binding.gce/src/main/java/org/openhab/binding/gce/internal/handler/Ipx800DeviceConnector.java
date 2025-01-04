@@ -146,7 +146,6 @@ public class Ipx800DeviceConnector extends Thread {
                 logger.warn("Exception closing socket: {}", e.getMessage());
             }
         }
-
     }
 
     public StatusFile readStatusFile() throws SAXException, IOException {
