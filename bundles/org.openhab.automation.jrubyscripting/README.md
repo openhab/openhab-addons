@@ -5,7 +5,7 @@
 
 This add-on provides Ruby scripting language for automation rules.
 It includes the [openhab-scripting](https://openhab.github.io/openhab-jruby/) helper library, a comprehensive Ruby gem designed to enhance automation in openHAB.
-This library offers a streamlined syntax for writing file-based and UI-based rules, making it easier and more intuitive than RulesDSL, while delivering the full features of the Ruby language.
+This library offers a streamlined syntax for writing file-based and UI-based rules, making it easier and more intuitive than Rules DSL, while delivering the full features of the Ruby language.
 
 If you're new to Ruby, you may want to check out [Ruby Basics](https://openhab.github.io/openhab-jruby/main/file.ruby-basics.html).
 
@@ -50,7 +50,7 @@ only_every(2.minutes) do # apply rate-limiting
 end
 ```
 
-Additional [example rules are available](https://openhab.github.io/openhab-jruby/main/file.examples.html), as well as examples of [conversions from RulesDSL, JavaScript, and Python rules](https://openhab.github.io/openhab-jruby/main/file.conversions.html).
+Additional [example rules are available](https://openhab.github.io/openhab-jruby/main/file.examples.html), as well as examples of [conversions from Rules DSL, JavaScript, and Python rules](https://openhab.github.io/openhab-jruby/main/file.conversions.html).
 
 - [Why Ruby?](#why-ruby)
 - [Installation](#installation)
@@ -158,7 +158,7 @@ Simply change the `gems` and `require` configuration settings.
 
 | Parameter             | Description                                                                                                |
 | --------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `gem_home`            | The path to store Ruby Gems. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/.gem/RUBY_ENGINE_VERSION` |
+| `gem_home`            | The path to store Ruby Gems. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/.gem/RUBY_ENGINE_VERSION`   |
 | `gems`                | A list of gems to install. <br/><br/>Default: `openhab-scripting=~>5.0`                                    |
 | `check_update`        | Check for updated version of `gems` on start up or settings change. <br/><br/>Default: `true`              |
 | `require`             | List of scripts to be required automatically. <br/><br/>Default: `openhab/dsl`                             |
