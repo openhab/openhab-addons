@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.insteon.internal.command;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,6 +23,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.binding.insteon.internal.device.Device;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
@@ -170,5 +174,22 @@ public abstract class InsteonCommand implements ConsoleCommandCompleter {
     protected InsteonEngine getInsteonEngine(String thingId) {
         InsteonDevice device = getInsteonDevice(thingId);
         return device != null ? device.getInsteonEngine() : InsteonEngine.UNKNOWN;
+    }
+
+    protected Path getBindingDataDirPath() {
+        return InsteonBindingConstants.BINDING_DATA_DIR;
+    }
+
+    protected Path getBindingDataFilePath(String filename) {
+        return InsteonBindingConstants.BINDING_DATA_DIR.resolve(filename);
+    }
+
+    protected Stream<Path> getBindingDataFilePaths(String prefix) {
+        try {
+            return Files.list(InsteonBindingConstants.BINDING_DATA_DIR)
+                    .filter(path -> path.getFileName().toString().startsWith(prefix));
+        } catch (IOException e) {
+            return Stream.of();
+        }
     }
 }
