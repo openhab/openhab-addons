@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:velbus:9channelDeviceWithTemperatureSensor">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="subaddress1" type="text" required="true">
+			<label>Channel CH9 Address</label>
+			<description>The velbus sub-address of the device (FF = disabled). In the VelbusLink application it's identified by
+				Sensor or Thermostat.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="refresh" type="integer" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
+				refresh will be scheduled.</description>
+			<default>300</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 Name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 Name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 Name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 Name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 Name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 Name</label>
+			<description>The name of CH6.</description>
+			<default>CH6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH7" type="text">
+			<label>CH7 Name</label>
+			<description>The name of CH7.</description>
+			<default>CH7</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH8" type="text">
+			<label>CH8 Name</label>
+			<description>The name of CH8.</description>
+			<default>CH8</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH9" type="text">
+			<label>CH9 Name</label>
+			<description>The name of CH9 (temperature sensor channel).</description>
+			<default>Temperature</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:9channelDeviceWithTemperatureSensorWithoutSubAddress">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="refresh" type="integer" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
+				refresh will be scheduled.</description>
+			<default>300</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 Name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 Name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 Name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 Name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 Name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 Name</label>
+			<description>The name of CH6.</description>
+			<default>CH6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH7" type="text">
+			<label>CH7 Name</label>
+			<description>The name of CH7.</description>
+			<default>CH7</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH8" type="text">
+			<label>CH8 Name</label>
+			<description>The name of CH8.</description>
+			<default>CH8</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH9" type="text">
+			<label>CH9 Name</label>
+			<description>The name of CH9 (temperature sensor channel).</description>
+			<default>Temperature</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
