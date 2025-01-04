@@ -456,9 +456,6 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
             if (address == null) {
                 return;
             }
-            if (msg.isX10()) {
-                lastX10Address = msg.isX10Address() ? (X10Address) address : null;
-            }
             long time = System.currentTimeMillis();
             Device device = getAddress().equals(address) ? this : getDevice(address);
             if (device != null) {
@@ -495,13 +492,12 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     }
 
     private void handleX10Message(Msg msg) throws FieldException {
-        X10Address address = lastX10Address;
-        if (msg.isX10Address()) {
-            // store the x10 address to use with the next cmd
-            lastX10Address = msg.getX10Address();
-        } else if (address != null) {
+        X10Address address = msg.isX10Address() ? msg.getX10Address() : lastX10Address;
+        if (address != null) {
             handleMessage(address, msg);
-            lastX10Address = null;
+            // store the x10 address to use with the next cmd
+            lastX10Address = msg.isX10Address() ? address : null;
+
         }
     }
 
