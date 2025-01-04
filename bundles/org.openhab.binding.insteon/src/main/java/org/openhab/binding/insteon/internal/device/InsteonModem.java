@@ -270,6 +270,26 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         }
     }
 
+    public void reset() {
+        try {
+            Msg msg = Msg.makeMessage("ResetIM");
+            writeMessage(msg);
+        } catch (IOException e) {
+            logger.warn("error sending modem reset query", e);
+        } catch (InvalidMessageTypeException e) {
+            logger.warn("invalid message ", e);
+        }
+    }
+
+    private void handleModemReset() {
+        logger.debug("modem reset initiated");
+
+        InsteonBridgeHandler handler = getHandler();
+        if (handler != null) {
+            handler.reset(RESET_TIME);
+        }
+    }
+
     public void logDeviceStatistics() {
         logger.debug("devices: {} configured, {} polling, msgs received: {}", getDevices().size(),
                 getPollManager().getSizeOfQueue(), msgsReceived);
@@ -385,18 +405,6 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     }
 
     /**
-     * Notifies that the modem reset process has been initiated
-     */
-    public void resetInitiated() {
-        logger.debug("modem reset initiated");
-
-        InsteonBridgeHandler handler = getHandler();
-        if (handler != null) {
-            handler.reset(RESET_TIME);
-        }
-    }
-
-    /**
      * Notifies that the modem port has disconnected
      */
     @Override
@@ -462,8 +470,12 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     }
 
     private void handleIMMessage(Msg msg) throws FieldException {
-        if (msg.getCommand() == 0x60) {
+        if (msg.getCommand() == 0x60 && msg.isReplyAck()) {
+            // we got an im info reply ack
             handleModemInfo(msg);
+        } else if (msg.getCommand() == 0x55 || msg.getCommand() == 0x67 && msg.isReplyAck()) {
+            // we got a user reset detected message or im reset reply ack
+            handleModemReset();
         } else {
             handleMessage(msg);
         }

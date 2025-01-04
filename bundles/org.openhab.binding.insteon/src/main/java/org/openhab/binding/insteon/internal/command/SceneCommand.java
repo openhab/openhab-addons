@@ -153,7 +153,6 @@ public class SceneCommand extends InsteonCommand {
                     }
                     break;
             }
-
         } else if (cursorArgumentIndex == 4) {
             InsteonDevice device = getInsteonDevice(args[2]);
             DeviceFeature feature = device != null ? device.getFeature(args[3]) : null;

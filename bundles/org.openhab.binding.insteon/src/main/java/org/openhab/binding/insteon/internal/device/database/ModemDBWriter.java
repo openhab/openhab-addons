@@ -94,7 +94,7 @@ public class ModemDBWriter implements PortListener {
     private void manageNextModemLinkRecord() {
         ModemDBChange change = modem.getDB().pollNextChange();
         if (change == null) {
-            logger.trace("all modem database changes written");
+            logger.debug("all modem database changes written");
             done();
         } else {
             ModemDBRecord record = change.getRecord();
