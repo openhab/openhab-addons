@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="velbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="heatingOperatingMode">
+		<item-type>String</item-type>
+		<label>Operating Mode</label>
+		<description>Operating mode (heating/cooling) for the thermostat in Velbus</description>
+		<state>
+			<options>
+				<option value="HEATING">Heating</option>
+				<option value="COOLING">Cooling</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatingMode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Mode (comfort/day/night/safe) for the thermostat in Velbus</description>
+		<state>
+			<options>
+				<option value="COMFORT">Comfort</option>
+				<option value="DAY">Day</option>
+				<option value="NIGHT">Night</option>
+				<option value="SAFE">Safe</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ledFeedback">
+		<item-type>String</item-type>
+		<label>Feedback LED</label>
+		<description>Feedback LED for the push button in Velbus</description>
+		<state>
+			<options>
+				<option value="CLEAR_LED">Off</option>
+				<option value="SET_LED">On</option>
+				<option value="SLOW_BLINK_LED">Slow blink</option>
+				<option value="FAST_BLINK_LED">Fast blink</option>
+				<option value="VERY_FAST_BLINK_LED">Very fast blink</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alarmType">
+		<item-type>String</item-type>
+		<label>Alarm Type</label>
+		<description>Type (local/global) of the alarm clock in Velbus</description>
+		<state readOnly="true">
+			<options>
+				<option value="LOCAL">Local</option>
+				<option value="GLOBAL">Global</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="text">
+		<item-type>String</item-type>
+		<label>Text</label>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch control for action in Velbus</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="button-channel">
+		<item-type>String</item-type>
+		<label>Button Channel</label>
+		<category>Switch</category>
+		<command>
+			<options>
+				<option value="PRESSED">pressed</option>
+				<option value="LONG_PRESSED">long pressed</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Brightness control for dimmer action in Velbus</description>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>Rollershutter control for rollershutter action in Velbus</description>
+		<category>Blinds</category>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="hour">
+		<item-type>Number</item-type>
+		<label>Hour</label>
+		<state readOnly="false" min="0" max="23">
+		</state>
+	</channel-type>
+
+	<channel-type id="minute">
+		<item-type>Number</item-type>
+		<label>Minute</label>
+		<state readOnly="false" min="0" max="59">
+		</state>
+	</channel-type>
+
+	<channel-type id="counter">
+		<item-type>Number</item-type>
+		<label>Counter</label>
+		<state readOnly="false" min="0">
+		</state>
+	</channel-type>
+
+	<channel-type id="temperatureSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Setpoint</label>
+		<category>Temperature</category>
+		<state readOnly="false" min="-55" max="63.5" step="0.5" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Currently measured voltage</description>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Currently measured current</description>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="percentage">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Percentage</label>
+		<description>Current percentage</description>
+		<category>Percentage</category>
+	</channel-type>
+
+	<channel-type id="resistance">
+		<item-type>Number:ElectricResistance</item-type>
+		<label>Resistance</label>
+		<description>Currently measured resistance</description>
+		<category>Resistance</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="rainfall">
+		<item-type>Number:Length</item-type>
+		<label>Rainfall</label>
+		<description>Currently measured quantity of rain</description>
+		<category>Rainfall</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="illuminance">
+		<item-type>Number:Illuminance</item-type>
+		<label>Illuminance</label>
+		<description>Currently measured illuminance</description>
+		<category>Illuminance</category>
+		<state readOnly="true" pattern="%d %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="windspeed">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed</label>
+		<description>Currently measured wind speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="trigger-channel">
+		<kind>trigger</kind>
+		<label>Trigger Channel</label>
+		<event>
+			<options>
+				<option value="PRESSED">pressed</option>
+				<option value="RELEASED">released</option>
+				<option value="LONG_PRESSED">long pressed</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="thermostat-trigger-channel">
+		<kind>trigger</kind>
+		<label>Thermostat Trigger Channel</label>
+		<event>
+			<options>
+				<option value="PRESSED">pressed</option>
+				<option value="RELEASED">released</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="light-scene">
+		<item-type>Number</item-type>
+		<label>Scene</label>
+		<description>Scene options for DALI network</description>
+		<state readOnly="false" min="0" max="15" step="1">
+		</state>
+	</channel-type>
+
+	<channel-type id="fade-mode">
+		<item-type>String</item-type>
+		<label>Fade Mode</label>
+		<description>Fade mode for dimmer module</description>
+		<command>
+			<options>
+				<option value="DIRECT">direct</option>
+				<option value="FADE_RATE">fade rate</option>
+				<option value="FADE_TIME">fade time</option>
+			</options>
+		</command>
+	</channel-type>
+
+</thing:thing-descriptions>

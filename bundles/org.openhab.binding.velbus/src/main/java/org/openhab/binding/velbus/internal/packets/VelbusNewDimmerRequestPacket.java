@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,24 +18,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 
 /**
- * The {@link VelbusDaliRequestPacket} represents a Velbus packet that can be used to
- * request the values of the DALI channel(s) of the given Velbus module.
+ * The {@link VelbusNewDimmerRequestPacket} represents a Velbus packet that can be used to
+ * request the values of the channel(s) of the given Velbus module.
  *
  * @author Daniel Rosengarten - Initial contribution
  */
 @NonNullByDefault
-public class VelbusDaliRequestPacket extends VelbusPacket {
-    private static final byte GATEWAY_CONFIG = (byte) 0x01;
+public class VelbusNewDimmerRequestPacket extends VelbusPacket {
+    private static final byte GATEWAY_CONFIG = (byte) 0x00;
 
-    private byte channel = ALL_DALI_CHANNELS;
+    private byte channel = ALL_CHANNELS;
 
-    public VelbusDaliRequestPacket(byte address, byte channel) {
+    public VelbusNewDimmerRequestPacket(byte address, byte channel) {
         super(address, PRIO_LOW);
 
-        this.channel = (channel == ALL_CHANNELS) ? ALL_DALI_CHANNELS : channel;
+        this.channel = (channel == ALL_CHANNELS) ? ALL_CHANNELS : channel;
     }
 
-    public VelbusDaliRequestPacket(VelbusChannelIdentifier velbusChannelIdentifier) {
+    public VelbusNewDimmerRequestPacket(VelbusChannelIdentifier velbusChannelIdentifier) {
         super(velbusChannelIdentifier.getAddress(), PRIO_LOW);
 
         this.channel = velbusChannelIdentifier.getChannelByte();
@@ -43,7 +43,7 @@ public class VelbusDaliRequestPacket extends VelbusPacket {
 
     @Override
     protected byte[] getDataBytes() {
-        if (this.channel == ALL_DALI_CHANNELS) {
+        if (this.channel == ALL_CHANNELS) {
             return new byte[] { COMMAND_TEMP_SENSOR_SETTINGS_REQUEST, this.channel, GATEWAY_CONFIG };
         } else {
             return new byte[] { COMMAND_TEMP_SENSOR_SETTINGS_REQUEST, this.channel, GATEWAY_CONFIG,
