@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.solarman.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Peter Kretz - Initial contribution
  */
+@NonNullByDefault
 public enum SolarmanLoggerMode {
     V5MODBUS,
     RAWMODBUS
