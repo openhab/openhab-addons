@@ -19,6 +19,7 @@ import java.net.Socket;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.benqprojector.internal.BenqProjectorCommandException;
 import org.openhab.binding.benqprojector.internal.BenqProjectorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +100,7 @@ public class BenqProjectorTcpConnector implements BenqProjectorConnector {
     }
 
     @Override
-    public String sendMessage(String data) throws BenqProjectorException {
+    public String sendMessage(String data) throws BenqProjectorException, BenqProjectorCommandException {
         InputStream in = this.in;
         OutputStream out = this.out;
 
