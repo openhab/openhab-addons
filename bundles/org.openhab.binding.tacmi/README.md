@@ -18,6 +18,11 @@ CoE (CAN over Ethernet) Connection
 - Send ON/OFF to digital CAN-inputs defined in TAPPS2
 - Send numeric values to analog CAN-inputs defined in TAPPS2
 
+JSON API
+
+- Read selected data via the JSON API (inputs, outputs, logging).
+  See [API documentation](https://wiki.ta.co.at/C.M.I._JSON-API) for details
+
 Depending on what you want to achieve, either the "Schema API Page" or the CoE way might be better.
 As rough guidance: Anything you want to provide to the TA equipment it has to work / operate with the CoE might be better.
 If you plan things mainly for user interaction the "Schema API Page" might be better.
@@ -25,22 +30,23 @@ If you plan things mainly for user interaction the "Schema API Page" might be be
 ## Supported Bridge and Things
 
 - TA C.M.I. **Schema API Connection** - Thing \
-This thing reflecting one of our 'schema API page' as defined in the prerequisites.
-This thing doesn't need the bridge.
-Multiple of these pages on different C.M.I.'s could be defined within an openHAB instance.
-
+  This thing reflecting one of our 'schema API page' as defined in the prerequisites.
+  This thing doesn't need the bridge.
+  Multiple of these pages on different C.M.I.'s could be defined within an openHAB instance.
 - TA C.M.I. **CoE Bridge** \
-In order to get the CAN over Ethernet (COE) envionment working a `coe-bridge` has to be created.
-The bridge itself opens the UDP port 5441 for communication with the C.M.I. devices.
-The bridge could be used for multiple C.M.I. devices.
-
+  In order to get the CAN over Ethernet (COE) envionment working a `coe-bridge` has to be created.
+  The bridge itself opens the UDP port 5441 for communication with the C.M.I. devices.
+  The bridge could be used for multiple C.M.I. devices.
 - TA C.M.I. **CoE Connection** - Thing \
-This thing reflects a connection to a node behind a specific C.M.I..
-This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
+  This thing reflects a connection to a node behind a specific C.M.I..
+  This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
+- TA C.M.I. **JSON API Connection** - Thing \
+  This is a thing connection that regularly polls the CMI using the JSON API.
 
 ## Discovery
 
-Autodiscovering is not supported. We have to define the things manually.
+Autodiscovering is not supported. 
+You have to define the things manually.
 
 ## Schema API
 
@@ -271,4 +277,20 @@ sitemap heatingTA label="heatingTA"
 }
 ```
 
+## JSON API
 
+Before setting up the JSON API, it is worth reading the [API documention](https://wiki.ta.co.at/C.M.I._JSON-API).
+Once configured, the exposed items should show up as channels.
+
+### Configuring the JSON API
+
+The _TA C.M.I. JSON API Connection_ has to be manually configured.
+
+| Parameter Label   | Parameter ID | Description                                                                     | Accepted values               |
+| ----------------- | ------------ | ------------------------------------------------------------------------------- | ----------------------------- |
+| C.M.I. IP Address | host         | Host name or IP address of the C.M.I.                                           | Any String                    |
+| User name         | username     | User name for authentication on the C.M.I.                                      | Any String                    |
+| Password          | password     | Password for authentication on the C.M.I.                                       | Any String                    |
+| Node Id           | nodeId       | The node ID of the device you want to monitor  (CMI &rarr; CAN-Bus)             | An Integer that is not 0      |
+| API-Parameters    | params       | The params to query. E.g. I,O,Sg (See the [API documentation](https://wiki.ta.co.at/C.M.I._JSON-API) for details) <br/> Possible options are: Inputs (I), Outputs (O), General (Sg), Logging Analog (La), Logging Digital (Ld)     | Any String                    |
+| Poll Interval     | pollInterval | Poll interval in seconds. The documentation suggests 60s, but less is possible. | An integer between 10 and 900 |
