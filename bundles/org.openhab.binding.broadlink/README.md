@@ -1,10 +1,15 @@
 # Broadlink Binding
 
-This binding supports a range of home networking devices made by (and occasionally OEM licensed from) [Broadlink](https://www.ibroadlink.com/).
+This binding supports sending infrared (IR) and radio frequency (RF) commands using a range of devices for made by (and occasionally OEM licensed from) [Broadlink](https://www.ibroadlink.com/). 
+
+The highlevel overview is:
+1. learn codes from your existing IR (and RF) remote controls, associating each of them with a command that you choose such as `AC_OFF`;
+2. making openHAB rules that send the command e.g. `AC_OFF` to the device;
+3. the binding will look up the learned code associated with your command and then send it.
 
 ## Supported Things
 
-| Thing ID   | Description                                                                   |
+| Thing Type | Device                                                                        |
 |------------|-------------------------------------------------------------------------------|
 | a1         | Broadlink A1 multi sensor                                                     |
 | mp1        | Broadlink MP1 WiFi Smart Power Strip (4 sockets)                              |
@@ -29,7 +34,7 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 
 ## Thing Configuration
 
-| Name                | Type    | Default       | description                                                                       |
+| Name                | Type    | Default       | Description                                                                       |
 |---------------------|---------|---------------|-----------------------------------------------------------------------------------|
 | ipAddress           | String  |               | Sets the IP address of the Broadlink device                                       |
 | staticIp            | Boolean | true          | Enabled if your broadlink device has a Static IP set                              |
@@ -39,6 +44,8 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | nameOfCommandToLearn| String  | DEVICE_ON     | The name of the IR or RF command to learn when using the learn command channel    |
 
 ## Channels
+
+These are the channels that are available, depending on the device.
 
 | Channel           | Supported Devices        | Type                 | Description                                     |
 |-------------------|--------------------------|----------------------|-------------------------------------------------|
@@ -59,26 +66,32 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | rf-command        | RM Pro, RM4 Pro          | String               | RF Command code to transmit
 | learning-control  | all RMx                  | String               | Learn mode command channel (see below)          |
 
+Note that there are different channels for sending IR and RF codes.
+
 ## Learning Remote Codes
 
-To obtain the command codes, you can get this binding to put your Broadlink RMx device into "learn mode" and then ask it for the code it learnt.
+Associate remote codes with your commands, you can get this binding to put your Broadlink RMx device into "learn mode".
 Here are the steps:
 
 0. In the openHAB web UI, navigate to your RMx Thing
-1. Set the *Name of IR/RF command to learn* property to the name of the command you want the device to learn
+1. Set the *Name of IR/RF command to learn* property to the command you want the device to learn. This can be any text that you want, but you will use it in your rules to send commands, so for example 'AC_OFF' or 'TV_VOLUME_UP' would be good commands.
 2. Click on its *Channels* tab
-3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead.(Only needed the first time)
+3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead. (Only needed the first time)
 4. Click the item, and click the rectangular area that is marked NULL
 5. In the pop-up menu that appears, select *Learn IR command* for IR or *Learn RF command* for RF
 6. *The LED on your RM device will illuminate solidly*
 7. Point your IR/RF remote control at your RM device and keep pressing the button you'd like to learn. For RF, this can take 10-30 seconds
 8. *The LED on your RM device will extinguish once it has identified the command*
 9. If the command has been identified succesfully, the channel will have changed it name to "Learn command" or *RF command learnt*
-10. If no succes, the channel will be named "NULL". Inspect the `openhab.log` file on your openHAB server for any issues
-11. Check and save the IR/RF command by clicking the item once more and select "Check and save command".
+10. If no success, the channel will be named "NULL". Look in the logs on your openHAB server for any issues - try under the Developer Tools section of Main UI.
+11. Check and save the IR/RF command by clicking the item once more and select "Check and save command"
 12. Keep pressing the remote control with the command to check and save
-13. If succesfull, the channel will change name to the command saved
-14. If no succes, the channel be named "NULL", restart from step 3.
+13. If successfull, the channel will change name to the command saved
+14. If no success, the channel be named "NULL", restart from step 3.
+
+### Sending Remote Codes
+
+In a rule, send your command to a String-type Item linked to the command (IR) or rf-command (RF) channel of your device. The binding will look up the learned IR or RF remote code you associated with that command and send it.
 
 ### Modify or Delete Remote Codes
 
@@ -159,17 +172,15 @@ end
 
 This rule file assumes you previously have learned the "AC_ON" and "AC_OFF" IR commands.
 
-
 ## Migrating Legacy Map File
 
 Up to openHAB version 3.3, there was a previous version of this binding that was not part of the openHAB distribution.
 It stored the IR/RF commands in a different place and a different format.
 If you want to mirgrate from those versions to this version of the binding, please read this section.
 
-The Broadlink RM family of devices can transmit IR codes. The pro models add RF codes.
-The map file contains a list of IR/RF command codes to send via the device.
+The map file contains a list of IR command codes to send via the device; there is a separate map file for RF codes.
 
-IR codes are store in `$OPENHAB_USERDATA/jsondb/broadlink_ir.json` and for the RM Pro series of devices the RF codes are store in `$OPENHAB_USERDATA/jsondb/broadlink_rf.json`
+### openHAB < 4.3.0
 
 Before openHAB version 4.3.0, the file used the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and was stored in the `<OPENHAB_CONF>/transform` folder.
 By default, the file name was `broadlink.map` for the IR codes, but could be changed using the `mapFile` setting.
@@ -183,14 +194,16 @@ heatpump_off=2600760069380D0C0D0C0D290D0C0D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D2
 ```
 
 The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu heat pump.
-To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
+To send either code, the command string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
 For RF, the `rf-command` channel is used.
 
-Storage of codes is handled by openHAB. The map files are stored in the $OPENHAB_USERDATA/jsondb directory.
-As an advantage, the files are now backed up by openHAB, which is more practical for migrations, data robustness, etc. having the storage of the codes handled by openHAB also provides uniformity in where the files are stored.
+### openHAB >= 4.3.0
 
-With the change of the storage mechanism, the files are also changing format, and codes are now stored in json. 
-With the change of the storage mechanism, the files are also changing format, and codes are now stored in json.
+Since openHAB version 4.3.0, codes are stored stored in the $OPENHAB_USERDATA/jsondb directory. IR codes are stored in `$OPENHAB_USERDATA/jsondb/broadlink_ir.json`. For the RM Pro series of devices the RF codes are stored in `$OPENHAB_USERDATA/jsondb/broadlink_rf.json`
+
+The advantage of this change is that the files are now backed up by openHAB, which is more practical for migrations, data robustness, etc. Having the storage of the codes handled by openHAB also provides uniformity with other openHAB configuration through Main UI.
+
+With the change of the storage mechanism, the files are also changing format, and codes are now stored in json, like this:
 
 ```json
 {
@@ -203,7 +216,9 @@ With the change of the storage mechanism, the files are also changing format, an
 }
 ```
 
-The code shown below is a Python script that can be used to convert from the old format to the new one:
+### Migrating from openHAB < 4.3.0 to > 4.3.0
+
+Below is a Python script that can be used to convert from the old format to the new one:
 
 ```python
 import csv
