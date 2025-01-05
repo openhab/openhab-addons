@@ -334,7 +334,7 @@ public class LegacyDevice {
             if (qe == null) {
                 return 0L;
             }
-            if (!qe.getMsg().isBroadcast()) {
+            if (!qe.getMsg().isAllLinkBroadcast()) {
                 logger.debug("qe taken off direct: {} {}", qe.getFeature(), qe.getMsg());
                 lastQueryTime = timeNow;
                 // mark feature as pending
@@ -382,7 +382,7 @@ public class LegacyDevice {
         synchronized (mrequestQueue) {
             mrequestQueue.add(new QEntry(feature, msg, now + delay));
         }
-        if (!msg.isBroadcast()) {
+        if (!msg.isAllLinkBroadcast()) {
             msg.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
         }
         logger.trace("enqueing direct message with delay {}", delay);
