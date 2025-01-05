@@ -42,4 +42,7 @@ public class BenqProjectorBindingConstants {
     // Config properties
     public static final String THING_PROPERTY_HOST = "host";
     public static final String THING_PROPERTY_PORT = "port";
+
+    // Unsupported item response
+    public static final String UNSUPPORTED_ITM = "Unsupported item";
 }
