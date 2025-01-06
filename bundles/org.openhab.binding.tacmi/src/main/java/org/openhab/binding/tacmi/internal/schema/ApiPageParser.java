@@ -185,7 +185,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     } else if ("durchsichtig".equals(classFlag)) { // link
                         this.fieldType = FieldType.IGNORE;
                     } else if ("bord".equals(classFlag)) { // special button style - not of our interest...
-                        return;
+                        continue;
                     } else {
                         logger.debug("Unhanndled class in {}:{}:{}: '{}' ", id, line, col, classFlag);
                     }
