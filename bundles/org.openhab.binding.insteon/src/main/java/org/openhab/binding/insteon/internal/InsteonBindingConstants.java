@@ -78,7 +78,7 @@ public class InsteonBindingConstants {
     public static final String FEATURE_ON_LEVEL = "onLevel";
     public static final String FEATURE_PING = "ping";
     public static final String FEATURE_RAMP_RATE = "rampRate";
-    public static final String FEATURE_SCENE_ON_OFF = "sceneOnOff";
+    public static final String FEATURE_SCENE = "scene";
     public static final String FEATURE_STAY_AWAKE = "stayAwake";
     public static final String FEATURE_TEMPERATURE_SCALE = "temperatureScale";
     public static final String FEATURE_TWO_GROUPS = "2Groups";
