@@ -89,7 +89,7 @@ public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
     protected boolean processDeviceInfo(Device deviceInfo) {
         try {
             updateLocationPropertiesIfApplicable(deviceInfo);
-        } catch (Exception e) {
+        } catch (BoschSHCException e) {
             logger.warn("Error while updating location properties for thing {}.", getThing().getUID(), e);
         }
         // do not cancel thing initialization if location properties cannot be updated
@@ -104,12 +104,10 @@ public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
 
     private void updateLocationPropertyIfApplicable(Map<String, String> thingProperties, Device deviceInfo)
             throws BoschSHCException {
-        @Nullable
         String roomName = getBridgeHandler().resolveRoomId(deviceInfo.roomId);
         if (roomName != null) {
-            @Nullable
             String currentLocation = thingProperties.get(PROPERTY_LOCATION);
-            if (currentLocation == null || !currentLocation.equals(roomName)) {
+            if (!roomName.equals(currentLocation)) {
                 logger.debug("Updating property '{}' of thing {} to '{}'.", PROPERTY_LOCATION, getThing().getUID(),
                         roomName);
                 updateProperty(PROPERTY_LOCATION, roomName);
