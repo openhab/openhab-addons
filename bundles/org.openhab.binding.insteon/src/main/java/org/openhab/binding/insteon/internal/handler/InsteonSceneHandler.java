@@ -184,7 +184,7 @@ public class InsteonSceneHandler extends InsteonBaseThingHandler {
 
     public void updateState(State state) {
         getThing().getChannels().stream().map(Channel::getUID)
-                .filter(channelUID -> FEATURE_SCENE_ON_OFF.equals(channelUID.getId())).findFirst()
+                .filter(channelUID -> FEATURE_SCENE.equals(channelUID.getId())).findFirst()
                 .ifPresent(channelUID -> updateState(channelUID, state));
     }
 }
