@@ -102,7 +102,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
     @Override
     public void initialize() {
         config = getConfigAs(DigiplexBridgeConfiguration.class);
-        if (config.port == null) {
+        if (config.port.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return;
         }

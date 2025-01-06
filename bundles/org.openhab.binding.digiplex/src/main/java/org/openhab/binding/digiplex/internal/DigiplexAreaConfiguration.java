@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.digiplex.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link DigiplexAreaConfiguration} class contains fields mapping area configuration parameters.
  *
  * @author Robert Michalak - Initial contribution
  */
+@NonNullByDefault
 public class DigiplexAreaConfiguration {
 
-    public int refreshPeriod;
+    public int refreshPeriod = 60;
 }
