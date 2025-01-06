@@ -514,7 +514,7 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
 
     private void handleInsteonMessage(Msg msg) throws FieldException {
         InsteonAddress toAddr = msg.getInsteonAddress("toAddress");
-        if (!msg.isBroadcast() && !driver.isMsgForUs(toAddr)) {
+        if (!msg.isBroadcast() && !msg.isAllLinkBroadcast() && !driver.isMsgForUs(toAddr)) {
             // not for one of our modems, do not process
             return;
         }
