@@ -103,7 +103,8 @@ public class DeviceCommand extends InsteonCommand {
                         "set a button radio group for a configured Insteon KeypadLinc device"),
                 buildCommandUsage(CLEAR_BUTTON_RADIO_GROUP + " <thingId> <button1> <button2> [<button3> ... <button7>]",
                         "clear a button radio group for a configured Insteon KeypadLinc device"),
-                buildCommandUsage(REFRESH + " <thingId>", "refresh data for a configured Insteon device"));
+                buildCommandUsage(REFRESH + " " + ALL_OPTION + "|<thingId>",
+                        "refresh data for a specific or all configured Insteon devices"));
     }
 
     @Override
@@ -222,7 +223,11 @@ public class DeviceCommand extends InsteonCommand {
                 break;
             case REFRESH:
                 if (args.length == 2) {
-                    refreshDevice(console, args[1]);
+                    if (ALL_OPTION.equals(args[1])) {
+                        refreshDevices(console);
+                    } else {
+                        refreshDevice(console, args[1], true);
+                    }
                 } else {
                     printUsage(console, args[0]);
                 }
@@ -246,7 +251,6 @@ public class DeviceCommand extends InsteonCommand {
                     strings = getAllDeviceHandlers().map(InsteonThingHandler::getThingId).toList();
                     break;
                 case LIST_DATABASE:
-                case REFRESH:
                     strings = getInsteonDeviceHandlers().map(InsteonDeviceHandler::getThingId).toList();
                     break;
                 case ADD_DATABASE_CONTROLLER:
@@ -272,6 +276,7 @@ public class DeviceCommand extends InsteonCommand {
                     break;
                 case LIST_MISSING_LINKS:
                 case ADD_MISSING_LINKS:
+                case REFRESH:
                     strings = Stream.concat(Stream.of(ALL_OPTION),
                             getInsteonDeviceHandlers().map(InsteonDeviceHandler::getThingId)).toList();
                     break;
@@ -510,7 +515,7 @@ public class DeviceCommand extends InsteonCommand {
                     if (!device.isAwake() || !device.isResponding()) {
                         console.println("Scheduling " + deviceLinkCount + " missing links for device "
                                 + device.getAddress() + " to be added to its link database the next time it is "
-                                + (device.isBatteryPowered() ? "awake" : "responding") + ".");
+                                + (device.isBatteryPowered() ? "awake" : "online") + ".");
                     } else {
                         console.println("Adding " + deviceLinkCount + " missing links for device " + device.getAddress()
                                 + " to its link database...");
@@ -605,7 +610,7 @@ public class DeviceCommand extends InsteonCommand {
             if (!device.isAwake() || !device.isResponding() || !getModem().getDB().isComplete()) {
                 console.println("Scheduling " + count + " pending changes for device " + device.getAddress()
                         + " to be applied to its link database the next time it is "
-                        + (device.isBatteryPowered() ? "awake" : "responding") + ".");
+                        + (device.isBatteryPowered() ? "awake" : "online") + ".");
             } else {
                 console.println("Applying " + count + " pending changes to link database for device "
                         + device.getAddress() + "...");
@@ -694,7 +699,11 @@ public class DeviceCommand extends InsteonCommand {
         }
     }
 
-    private void refreshDevice(Console console, String thingId) {
+    private void refreshDevices(Console console) {
+        getInsteonDeviceHandlers().forEach(handler -> refreshDevice(console, handler.getThingId(), false));
+    }
+
+    private void refreshDevice(Console console, String thingId, boolean immediate) {
         InsteonDevice device = getInsteonDevice(thingId);
         if (device == null) {
             console.println("The device " + thingId + " is not configured or enabled!");
@@ -706,10 +715,10 @@ public class DeviceCommand extends InsteonCommand {
             device.getLinkDB().setReload(true);
             device.resetFeaturesQueryStatus();
 
-            if (!device.isAwake() || !device.isResponding() || !getModem().getDB().isComplete()) {
-                console.println(
-                        "The device " + device.getAddress() + " is scheduled to be refreshed the next time it is "
-                                + (device.isBatteryPowered() ? "awake" : "responding") + ".");
+            if (!device.isAwake() || !device.isResponding() || !getModem().getDB().isComplete() || !immediate) {
+                console.println("The device " + device.getAddress()
+                        + " is scheduled to be refreshed the next time it is "
+                        + (device.isBatteryPowered() ? "awake" : !device.isResponding() ? "online" : "polled") + ".");
             } else {
                 console.println("Refreshing device " + device.getAddress() + "...");
                 device.doPoll(0L);
