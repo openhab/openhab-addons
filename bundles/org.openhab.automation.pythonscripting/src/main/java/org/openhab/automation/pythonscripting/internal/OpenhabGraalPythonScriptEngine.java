@@ -30,7 +30,6 @@ import javax.script.ScriptContext;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.PolyglotAccess;
 import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.core.OpenHAB;
@@ -79,6 +78,8 @@ public class OpenhabGraalPythonScriptEngine
     private boolean initialized = false;
     private final boolean jythonEmulation;
 
+    public String testString = "Test String";
+
     /**
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
@@ -89,12 +90,9 @@ public class OpenhabGraalPythonScriptEngine
         this.jythonEmulation = jythonEmulation;
 
         Context.Builder contextConfig = Context.newBuilder("python") //
-                .allowExperimentalOptions(true) //
-                .allowAllAccess(true) //
-                .allowPolyglotAccess(PolyglotAccess.ALL) //
                 .allowHostAccess(HOST_ACCESS) //
                 .allowHostClassLoading(true) //
-                .hostClassLoader(getClass().getClassLoader()) //
+                .allowAllAccess(true) //
                 // .fileSystem(...)
                 // allow exporting Python values to polyglot bindings and accessing Java
                 // from Python
@@ -150,6 +148,11 @@ public class OpenhabGraalPythonScriptEngine
         if (scriptExtensionAccessor == null) {
             throw new IllegalStateException("Failed to retrieve script extension accessor from engine bindings");
         }
+
+        ScriptAccessorComputedHashMap accessorGlobals = new ScriptAccessorComputedHashMap(scriptExtensionAccessor, localEngineIdentifier);
+
+        delegate.getPolyglotContext().getBindings("python").putMember("scope", accessorGlobals);
+        delegate.getPolyglotContext().getBindings("python").putMember("testString", testString);
 
         initialized = true;
     }
