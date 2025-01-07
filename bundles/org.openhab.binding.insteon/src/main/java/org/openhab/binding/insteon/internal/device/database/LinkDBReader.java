@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -229,12 +229,12 @@ public class LinkDBReader implements PortListener {
         stream.write(b);
         // get next peek byte if stream size below the record byte size
         // otherwise add record and get next peek record if not done
-        if (stream.size() < LinkDB.RECORD_BYTE_SIZE) {
+        if (stream.size() < LinkDBRecord.SIZE) {
             getNextPeekByte();
         } else {
             addRecord(LinkDBRecord.fromRecordData(stream.toByteArray(), location));
             if (!done) {
-                location -= LinkDB.RECORD_BYTE_SIZE;
+                location -= LinkDBRecord.SIZE;
                 getNextPeekRecord();
             }
         }

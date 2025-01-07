@@ -12,13 +12,13 @@
 
   <artifactId>org.openhab.voice.pipertts</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: PiperTTS Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Voice :: Piper Text-to-Speech</name>
 
   <dependencies>
     <dependency>
       <groupId>io.github.givimad</groupId>
       <artifactId>piper-jni</artifactId>
-      <version>1.2.0-a0f09cd</version>
+      <version>1.2.0-c0670df</version>
     </dependency>
   </dependencies>
 

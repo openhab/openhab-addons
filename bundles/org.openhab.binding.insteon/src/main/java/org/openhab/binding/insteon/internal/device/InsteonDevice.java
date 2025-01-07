@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -907,6 +907,25 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     }
 
     /**
+     * Notifies that a message request was replied for this device
+     *
+     * @param msg the message received
+     */
+    @Override
+    public void requestReplied(Msg msg) {
+        DeviceFeature feature = getFeatureQueried();
+        if (feature != null && feature.isMyReply(msg)) {
+            if (msg.isReplyAck()) {
+                // mark feature queried as acked
+                feature.setQueryStatus(QueryStatus.QUERY_ACKED);
+            } else {
+                logger.debug("got a reply nack msg: {}", msg);
+                super.requestReplied(msg);
+            }
+        }
+    }
+
+    /**
      * Notifies that the link db has been updated for this device
      */
     public void linkDBUpdated() {
@@ -980,7 +999,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                 device.setFlags(deviceType.getFlags());
             }
             int location = productData.getFirstRecordLocation();
-            if (location != LinkDBRecord.LOCATION_ZERO) {
+            if (location != 0) {
                 device.getLinkDB().setFirstRecordLocation(location);
             }
             device.setProductData(productData);
