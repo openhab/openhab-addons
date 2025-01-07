@@ -78,7 +78,7 @@
     <okio.version>3.9.0</okio.version>
     <gson.version>2.9.1</gson.version>
     <kotlin.version>1.9.23</kotlin.version>
-    <sat.version>0.16.0</sat.version>
+    <sat.version>0.17.0</sat.version>
     <slf4j.version>2.0.12</slf4j.version>
     <spotless.version>2.43.0</spotless.version>
     <!-- Eclipse Java formatter version 4.26+ does not check test files -->
