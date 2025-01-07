@@ -55,18 +55,18 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_UDP_BRIDGE)) {
-            logger.debug("Creating SBUS UDP bridge handler for thing {}", thing.getUID());
+            logger.debug("Creating Sbus UDP bridge handler for thing {}", thing.getUID());
             return new SbusBridgeHandler((Bridge) thing);
         }
 
         if (thingTypeUID.equals(THING_TYPE_SWITCH)) {
-            logger.debug("Creating SBUS switch handler for thing {}", thing.getUID());
+            logger.debug("Creating Sbus switch handler for thing {}", thing.getUID());
             return new SbusSwitchHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_TEMPERATURE)) {
-            logger.debug("Creating SBUS temperature handler for thing {}", thing.getUID());
+            logger.debug("Creating Sbus temperature handler for thing {}", thing.getUID());
             return new SbusTemperatureHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_RGBW)) {
-            logger.debug("Creating SBUS RGBW handler for thing {}", thing.getUID());
+            logger.debug("Creating Sbus RGBW handler for thing {}", thing.getUID());
             return new SbusRgbwHandler(thing);
         }
 

@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import ro.ciprianpascu.sbus.facade.SbusAdapter;
 
 /**
- * The {@link SbusRgbwHandler} is responsible for handling commands for SBUS RGBW devices.
+ * The {@link SbusRgbwHandler} is responsible for handling commands for Sbus RGBW devices.
  * It supports reading and controlling red, green, blue, and white color channels.
  *
  * @author Ciprian Pascu - Initial contribution
@@ -56,10 +56,6 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      * @return an int array [R, G, B, W] each in [0..255]
      */
     private int[] hsbToRgbw(HSBType hsbType) {
-        if (hsbType == null) {
-            throw new IllegalArgumentException("HSBType cannot be null.");
-        }
-
         // Convert HSBType to standard RGB [0..255]
         PercentType[] rgb = ColorUtil.hsbToRgbPercent(hsbType);
         // Convert each channel from 0..100 to 0..255
@@ -88,8 +84,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      * @return an HSBType (hue [0..360], saturation/brightness [0..100])
      */
     private HSBType rgbwToHsb(int[] rgbw) {
-        if (rgbw == null || rgbw.length < 4) {
-            throw new IllegalArgumentException("rgbw must be non-null and have 4 elements: [R, G, B, W].");
+        if (rgbw.length < 4) {
+            throw new IllegalArgumentException("rgbw must have 4 elements: [R, G, B, W].");
         }
 
         int r = rgbw[0];
@@ -120,7 +116,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      * @return true if any value is greater than 0, false otherwise
      */
     private boolean isAnyRgbwValueActive(int[] rgbw) {
-        if (rgbw == null || rgbw.length < 4) {
+        if (rgbw.length < 4) {
             return false;
         }
         for (int value : rgbw) {
@@ -138,7 +134,12 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
         // Validate all channel configurations
         for (Channel channel : getThing().getChannels()) {
             SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
-            String channelTypeId = channel.getChannelTypeUID().getId();
+            var channelTypeUID = channel.getChannelTypeUID();
+            if (channelTypeUID == null) {
+                logger.warn("Channel {} has no channel type", channel.getUID());
+                continue;
+            }
+            String channelTypeId = channelTypeUID.getId();
             if ("color-channel".equals(channelTypeId)) {
                 if (channelConfig.channelNumber <= 0) {
                     logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
@@ -163,8 +164,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
     protected void pollDevice() {
         final SbusAdapter adapter = super.sbusAdapter;
         if (adapter == null) {
-            logger.warn("SBUS adapter not initialized");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "SBUS adapter not initialized");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
             return;
         }
 
@@ -173,7 +173,12 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
             // Update all channels
             for (Channel channel : getThing().getChannels()) {
-                String channelTypeId = channel.getChannelTypeUID().getId();
+                var channelTypeUID = channel.getChannelTypeUID();
+                if (channelTypeUID == null) {
+                    logger.warn("Channel {} has no channel type", channel.getUID());
+                    continue;
+                }
+                String channelTypeId = channelTypeUID.getId();
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
 
                 if ("color-channel".equals(channelTypeId)) {
@@ -196,7 +201,6 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            logger.error("Error reading device state", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error reading device state");
         }
     }
@@ -205,15 +209,20 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         final SbusAdapter adapter = super.sbusAdapter;
         if (adapter == null) {
-            logger.warn("SBUS adapter not initialized");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "SBUS adapter not initialized");
+            logger.warn("Sbus adapter not initialized");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
             return;
         }
 
         try {
             Channel channel = getThing().getChannel(channelUID.getId());
             if (channel != null) {
-                String channelTypeId = channel.getChannelTypeUID().getId();
+                var channelTypeUID = channel.getChannelTypeUID();
+                if (channelTypeUID == null) {
+                    logger.warn("Channel {} has no channel type", channel.getUID());
+                    return;
+                }
+                String channelTypeId = channelTypeUID.getId();
                 SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
 

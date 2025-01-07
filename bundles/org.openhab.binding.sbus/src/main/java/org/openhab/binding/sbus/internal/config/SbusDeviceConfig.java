@@ -24,12 +24,12 @@ import ro.ciprianpascu.sbus.Sbus;
 @NonNullByDefault
 public class SbusDeviceConfig {
     /**
-     * The ID of the SBUS device
+     * The ID of the Sbus device
      */
     public int id = Sbus.DEFAULT_UNIT_ID;
 
     /**
-     * The subnet ID for SBUS communication
+     * The subnet ID for Sbus communication
      */
     public int subnetId = Sbus.DEFAULT_SUBNET_ID;
 

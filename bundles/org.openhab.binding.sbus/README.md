@@ -1,122 +1,132 @@
-# OpenHAB SBUS Binding
+# Sbus Binding
 
-This binding integrates SBUS devices with OpenHAB, allowing control and monitoring of SBUS-compatible devices over UDP.
+This binding integrates Sbus devices with openHAB, allowing control and monitoring of Sbus-compatible devices over UDP.
+Sbus is a protocol used for home automation devices that communicate over UDP networks.
+The binding supports various device types including RGB/RGBW controllers, temperature sensors, and switch controllers.
 
 ## Supported Things
 
-* SBUS Bridge (Thing Type: `bridge-udp`)
-* RGB/RGBW Controllers
-* Temperature Sensors
-* Switch Controllers
+* `udp` - Sbus Bridge for UDP communication
+* `rgbw` - RGB/RGBW Controllers for color and brightness control
+* `temperature` - Temperature Sensors for monitoring environmental conditions
+* `switch` - Switch Controllers for basic on/off and dimming control
 
-## Installation
+## Discovery
 
-Install this binding through the OpenHAB console:
+Sbus devices communicate via UDP broadcast, but manual configuration is required to set up the devices in openHAB.
+Auto-discovery is not supported at this moment.
 
-```
-bundle:install org.openhab.binding.sbus
-```
+## Binding Configuration
 
-## Configuration
+The binding itself does not require any special configuration.
+
+## Thing Configuration
 
 ### Bridge Configuration
 
-The SBUS Bridge requires the following configuration parameters:
+The Sbus Bridge requires the following configuration parameters:
 
-* `host` - IP address of the SBUS device
-* `port` - UDP port number (default: 5000)
+| Name    | Type    | Description                                          | Default | Required | Advanced |
+|---------|---------|------------------------------------------------------|---------|----------|-----------|
+| host    | text    | IP address of the Sbus device (typically broadcast)  | N/A     | yes      | no        |
+| port    | integer | UDP port number                                      | 6000    | no       | no        |
 
-Example:
+### RGBW Controller Configuration
 
-```
-Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000 ]
-```
+| Name    | Type    | Description                                          | Default | Required | Advanced |
+|---------|---------|------------------------------------------------------|---------|----------|-----------|
+| subnetId| integer | Subnet ID the RGBW controller is part of             | N/A     | yes      | no        |
+| id      | integer | Device ID of the RGBW controller                     | N/A     | yes      | no        |
+| refresh | integer | Refresh interval in seconds                          | 30      | no       | yes       |
 
-Please note the broadcast address. This is how Sbus devices communicate with each other.
+### Temperature Sensor Configuration
+
+| Name    | Type    | Description                                          | Default | Required | Advanced |
+|---------|---------|------------------------------------------------------|---------|----------|-----------|
+| subnetId| integer | Subnet ID the temperature sensor is part of          | N/A     | yes      | no        |
+| id      | integer | Device ID of the temperature sensor                  | N/A     | yes      | no        |
+| refresh | integer | Refresh interval in seconds                          | 30      | no       | yes       |
+
+### Switch Controller Configuration
+
+| Name    | Type    | Description                                          | Default | Required | Advanced |
+|---------|---------|------------------------------------------------------|---------|----------|-----------|
+| subnetId| integer | Subnet ID the switch controller is part of           | N/A     | yes      | no        |
+| id      | integer | Device ID of the switch controller                   | N/A     | yes      | no        |
+| refresh | integer | Refresh interval in seconds                          | 30      | no       | yes       |
+
+## Channels
+
+### RGBW Controller Channels
+
+| Channel | Type   | Read/Write | Description                                                |
+|---------|--------|------------|------------------------------------------------------------|
+| color   | Color  | RW         | HSB color picker that controls RGBW components (0-100%)    |
+| switch  | Switch | RW         | On/Off control for the RGBW output with optional timer     |
+
+### Temperature Sensor Channels
+
+| Channel     | Type                | Read/Write | Description                    |
+|-------------|---------------------|------------|--------------------------------|
+| temperature | Number:Temperature  | R          | Current temperature reading. Can be configured to use Celsius (default) or Fahrenheit units    |
+
+### Switch Controller Channels
+
+| Channel | Type   | Read/Write | Description                                               |
+|---------|--------|------------|-----------------------------------------------------------|
+| switch  | Switch | RW         | Basic ON/OFF state control                                |
+| dimmer  | Dimmer | RW         | ON/OFF state with timer transition                        |
+| paired  | Paired | RW         | ON/OFF state for two paired channels (e.g., curtains)     |
+
+## Full Example
 
 ### Thing Configuration
 
-#### RGBW Controller
-
 ```
-Thing rgbw colorctrl [ id=72, refresh=30 ] {
-    Channels:
-        Type color-channel : color [ channelNumber=1 ]   // HSB color picker, RGBW values stored at channel 1
-        Type switch-channel : power [ channelNumber=1 ]  // On/Off control for the RGBW output. 
+Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000 ] {
+    Thing rgbw colorctrl [ id=72, refresh=30 ] {
+        Channels:
+            Type color-channel : color [ channelNumber=1 ]   // HSB color picker, RGBW values stored at channel 1
+            Type switch-channel : power [ channelNumber=1 ]  // On/Off control for the RGBW output For complex scenes, one Sbus color controller can keep up to 40 color states. The switch channelNumber has to fall into this range.
+    }
+    
+    Thing temperature temp1 [ id=62, refresh=30 ] {
+        Channels:
+            Type temperature-channel : temperature [ channelNumber=1 ]
+    }
+    
+    Thing switch switch1 [ id=75, refresh=30 ] {
+        Channels:
+            Type switch-channel : first_switch  [ channelNumber=1 ]
+            Type dimmer-channel : second_switch [ channelNumber=2 ]
+            Type paired-channel : third_switch [ channelNumber=3 ]
+    }
 }
 ```
 
-Supported channels:
-
-* `color` - HSB color picker that controls:
-  * Red component (0-100%)
-  * Green component (0-100%)
-  * Blue component (0-100%)
-  * White component (0-100%)
-* `power` - On/Off control for the RGBW output with optional timer
-
-#### Temperature Sensor
+### Item Configuration
 
 ```
-Thing temperature temp1 [ id=62, refresh=30 ] {
-    Channels:
-        Type temperature-channel : temperature [ channelNumber=1 ]
-}
-```
-
-Supported channels:
-
-* `temperature` - Current temperature reading
-
-#### Switch Controller
-
-```
-Thing switch switch1 [ id=75, refresh=30 ] {
-    Channels:
-        Type switch-channel : first_switch  [ channelNumber=1 ]
-        Type dimmer-channel : second_switch [ channelNumber=2 ]
-        Type paired-channel : third_switch [ channelNumber=3 ]
-}
-```
-
-Supported channels:
-
-* `switch` - ON/OFF state
-* `dimmer` - ON/OFF state with timer transition
-* `paired` - ON/OFF state for two paired channels. This feature is used for curtains and other devices that require two actuator channels.
-
-## Example Usage
-
-items/sbus.items:
-
-```
+// Temperature Sensor
 Number:Temperature Temp_Sensor "Temperature [%.1f °C]" { channel="sbus:temperature:mybridge:temp1:temperature" }
+
+// Basic Switch
 Switch Light_Switch "Switch" { channel="sbus:switch:mybridge:switch1:switch" }
-```
 
-Example: RGBW Controller with Power Control
-
-```
-// Light Group
+// RGBW Controller with Power Control
 Group   gLight      "RGBW Light"    <light>     ["Lighting"]
-
-// Color Control
 Color   rgbwColor    "Color"        <colorwheel> (gLight)   ["Control", "Light"]    { channel="sbus:rgbw:mybridge:colorctrl:color" }
-
-// Power Control
 Switch  rgbwPower    "Power"        <switch>     (gLight)   ["Switch", "Light"]     { channel="sbus:rgbw:mybridge:colorctrl:power" }
 ```
 
-
-sitemap/sbus.sitemap:
+### Sitemap Configuration
 
 ```
-sitemap sbus label="SBUS Demo"
+sitemap sbus label="Sbus Demo"
 {
-    Frame label="SBUS Controls" {
+    Frame label="Sbus Controls" {
         Colorpicker item=Light_RGB
         Text item=Temp_Sensor
         Switch item=Light_Switch
     }
 }
-```

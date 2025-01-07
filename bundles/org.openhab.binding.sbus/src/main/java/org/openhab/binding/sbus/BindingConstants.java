@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link BindingConstants} class defines common constants used across the SBUS binding.
+ * The {@link BindingConstants} class defines common constants used across the Sbus binding.
  *
  * @author Ciprian Pascu - Initial contribution
  */

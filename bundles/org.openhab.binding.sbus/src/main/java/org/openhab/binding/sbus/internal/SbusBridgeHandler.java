@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import ro.ciprianpascu.sbus.facade.SbusAdapter;
 
 /**
- * The {@link SbusBridgeHandler} is responsible for handling communication with the SBUS bridge.
+ * The {@link SbusBridgeHandler} is responsible for handling communication with the Sbus bridge.
  *
  * @author Ciprian Pascu - Initial contribution
  */
@@ -39,7 +39,7 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
     private @Nullable SbusAdapter sbusConnection;
 
     /**
-     * Constructs a new SBUSBridgeHandler.
+     * Constructs a new SbusBridgeHandler.
      *
      * @param bridge the bridge
      */
@@ -48,51 +48,49 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Initializes the SBUS bridge handler by establishing a connection to the SBUS network.
+     * Initializes the Sbus bridge handler by establishing a connection to the Sbus network.
      */
     @Override
     public void initialize() {
-        logger.debug("Initializing SBUS bridge handler for bridge {}", getThing().getUID());
+        logger.debug("Initializing Sbus bridge handler for bridge {}", getThing().getUID());
 
+        // Get configuration using the config class
+        SbusBridgeConfig config = getConfigAs(SbusBridgeConfig.class);
+        if (config.host.isBlank()) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, "Host address not configured");
+            return;
+        }
         try {
-            // Get configuration using the config class
-            SbusBridgeConfig config = getConfigAs(SbusBridgeConfig.class);
-            if (config.host.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address not configured");
-                return;
-            }
-
-            // Initialize SBUS connection with the configuration parameters
+            // Initialize Sbus connection with the configuration parameters
             sbusConnection = new SbusAdapter(config.host, config.port);
 
             updateStatus(ThingStatus.ONLINE);
-            logger.debug("SBUS bridge handler initialized successfully");
 
         } catch (Exception e) {
-            logger.error("Error initializing SBUS bridge", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
     /**
-     * Gets the SBUS adapter connection.
+     * Gets the Sbus adapter connection.
      *
-     * @return the SBUS adapter
+     * @return the Sbus adapter
      */
     public @Nullable SbusAdapter getSbusConnection() {
         return sbusConnection;
     }
 
     /**
-     * Disposes the handler by closing the SBUS connection.
+     * Disposes the handler by closing the Sbus connection.
      */
     @Override
     public void dispose() {
-        logger.debug("Disposing SBUS bridge handler");
+        logger.debug("Disposing Sbus bridge handler");
         final SbusAdapter connection = sbusConnection;
         if (connection != null) {
             connection.close();
         }
+        sbusConnection = null;
         super.dispose();
     }
 

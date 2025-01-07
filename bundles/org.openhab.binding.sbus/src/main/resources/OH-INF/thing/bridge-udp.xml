@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="udp">
-		<label>Sbus UDP Slave</label>
+		<label>Sbus UDP Bridge</label>
 		<description>Endpoint for Sbus UDP slaves</description>
 		<config-description>
 			<parameter name="host" type="text" required="true">
@@ -35,7 +35,7 @@
 			<!-- connection handling -->
 			<parameter name="timeBetweenTransactionsMillis" type="integer" min="0" unit="ms">
 				<label>Time Between Transactions</label>
-				<description>How long to delay we must have at minimum between two consecutive SBUS transactions. In milliseconds.
+				<description>How long to delay we must have at minimum between two consecutive Sbus transactions. In milliseconds.
 				</description>
 				<default>60</default>
 			</parameter>
@@ -62,7 +62,7 @@
 			<parameter name="reconnectAfterMillis" type="integer" min="0" unit="ms">
 				<label>Reconnect Again After</label>
 				<description>The connection is kept open at least the time specified here. Value of zero means that connection is
-					disconnected after every SBUS transaction. In milliseconds.</description>
+					disconnected after every Sbus transaction. In milliseconds.</description>
 				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>

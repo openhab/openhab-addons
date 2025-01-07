@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import ro.ciprianpascu.sbus.facade.SbusAdapter;
 
 /**
- * The {@link SbusSwitchHandler} is responsible for handling commands for SBUS switch devices.
+ * The {@link SbusSwitchHandler} is responsible for handling commands for Sbus switch devices.
  * It supports reading the current state and switching the device on/off.
  *
  * @author Ciprian Pascu - Initial contribution
@@ -58,14 +58,9 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
 
     @Override
     protected void pollDevice() {
-        handleReadStatusChannels();
-    }
-
-    private void handleReadStatusChannels() {
         final SbusAdapter adapter = super.sbusAdapter;
         if (adapter == null) {
-            logger.warn("SBUS adapter not initialized");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "SBUS adapter not initialized");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
             return;
         }
 
@@ -73,7 +68,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
             int[] statuses = adapter.readStatusChannels(config.subnetId, config.id);
             if (statuses == null) {
-                logger.warn("Received null status channels from SBUS device");
+                logger.warn("Received null status channels from Sbus device");
                 return;
             }
 
@@ -81,9 +76,14 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             for (Channel channel : getThing().getChannels()) {
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
                 if (channelConfig.channelNumber > 0 && channelConfig.channelNumber <= statuses.length) {
-                    String channelTypeId = channel.getChannelTypeUID().getId();
-                    boolean isActive = statuses[channelConfig.channelNumber - 1] == 0x64; // 100 when on, something else
-                                                                                          // when off
+                    var channelTypeUID = channel.getChannelTypeUID();
+                    if (channelTypeUID == null) {
+                        logger.warn("Channel {} has no channel type", channel.getUID());
+                        continue;
+                    }
+                    String channelTypeId = channelTypeUID.getId();
+                    // 100 when on, something else when off
+                    boolean isActive = statuses[channelConfig.channelNumber - 1] == 0x64;
 
                     if ("switch-channel".equals(channelTypeId)) {
                         updateState(channel.getUID(), isActive ? OnOffType.ON : OnOffType.OFF);
@@ -95,7 +95,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error reading status channels", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error reading device state");
         }
     }
 
@@ -103,8 +103,8 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         final SbusAdapter adapter = super.sbusAdapter;
         if (adapter == null) {
-            logger.warn("SBUS adapter not initialized");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "SBUS adapter not initialized");
+            logger.warn("Sbus adapter not initialized");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
             return;
         }
 

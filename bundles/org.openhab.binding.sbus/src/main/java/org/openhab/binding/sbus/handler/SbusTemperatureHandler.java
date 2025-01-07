@@ -13,9 +13,10 @@
 package org.openhab.binding.sbus.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
+import org.openhab.binding.sbus.internal.config.TemperatureChannelConfig;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -29,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import ro.ciprianpascu.sbus.facade.SbusAdapter;
 
 /**
- * The {@link SbusTemperatureHandler} is responsible for handling commands for SBUS temperature sensors.
+ * The {@link SbusTemperatureHandler} is responsible for handling commands for Sbus temperature sensors.
  * It supports reading temperature values in Celsius.
  *
  * @author Ciprian Pascu - Initial contribution
@@ -48,44 +49,52 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
         // Get all channel configurations from the thing
         for (Channel channel : getThing().getChannels()) {
             // Channels are already defined in thing-types.xml, just validate their configuration
-            SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
-            if (channelConfig.channelNumber <= 0) {
-                logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
+            TemperatureChannelConfig channelConfig = channel.getConfiguration().as(TemperatureChannelConfig.class);
+            if (!channelConfig.isValid()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Invalid channel configuration: " + channel.getUID());
+                return;
             }
         }
     }
 
     @Override
     protected void pollDevice() {
-        handleReadTemperature();
-    }
-
-    private void handleReadTemperature() {
         final SbusAdapter adapter = super.sbusAdapter;
         if (adapter == null) {
-            logger.warn("SBUS adapter not initialized");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "SBUS adapter not initialized");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
             return;
         }
 
         try {
             SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
+
+            // Read temperatures in Celsius from device
             float[] temperatures = adapter.readTemperatures(config.subnetId, config.id);
             if (temperatures == null) {
-                logger.warn("Received null temperatures from SBUS device");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received null temperatures");
                 return;
             }
 
             // Iterate over all channels and update their states with corresponding temperatures
             for (Channel channel : getThing().getChannels()) {
-                SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
+                TemperatureChannelConfig channelConfig = channel.getConfiguration().as(TemperatureChannelConfig.class);
                 if (channelConfig.channelNumber > 0 && channelConfig.channelNumber <= temperatures.length) {
-                    float temperature = temperatures[channelConfig.channelNumber - 1];
-                    updateState(channel.getUID(), new QuantityType<>(temperature, SIUnits.CELSIUS));
+                    float temperatureCelsius = temperatures[channelConfig.channelNumber - 1];
+                    if (channelConfig.isFahrenheit()) {
+                        // Convert Celsius to Fahrenheit
+                        float temperatureFahrenheit = (temperatureCelsius * 9 / 5) + 32;
+                        updateState(channel.getUID(),
+                                new QuantityType<>(temperatureFahrenheit, ImperialUnits.FAHRENHEIT));
+                    } else {
+                        updateState(channel.getUID(), new QuantityType<>(temperatureCelsius, SIUnits.CELSIUS));
+                    }
                 }
             }
+
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            logger.error("Error reading temperature", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error reading device state");
         }
     }
 

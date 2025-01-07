@@ -10,17 +10,19 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="udp"/>
 		</supported-bridge-type-refs>
-		<label>SBUS Switch</label>
-		<description>SBUS switch device</description>
+		<label>Sbus Switch</label>
+		<description>Sbus switch device</description>
 		<config-description>
 			<parameter name="subnetId" type="integer">
 				<label>SubnetId</label>
-				<description>Slave subnet id. Can take any value between 0 and 255.</description>
+				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
 				<default>1</default>
+				<min>1</min>
+				<max>255</max>
 			</parameter>
 			<parameter name="id" type="integer" required="true">
 				<label>Device ID</label>
-				<description>The ID of the SBUS device</description>
+				<description>The ID of the Sbus device</description>
 			</parameter>
 			<parameter name="refresh" type="integer">
 				<label>Refresh Interval</label>
@@ -35,17 +37,19 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="udp"/>
 		</supported-bridge-type-refs>
-		<label>SBUS Temperature Sensor</label>
-		<description>SBUS temperature sensor device</description>
+		<label>Sbus Temperature Sensor</label>
+		<description>Sbus temperature sensor device</description>
 		<config-description>
 			<parameter name="subnetId" type="integer">
 				<label>SubnetId</label>
-				<description>Slave subnet id. Can take any value between 0 and 255.</description>
+				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
 				<default>1</default>
+				<min>1</min>
+				<max>255</max>
 			</parameter>
 			<parameter name="id" type="integer" required="true">
 				<label>Device ID</label>
-				<description>The ID of the SBUS device</description>
+				<description>The ID of the Sbus device</description>
 			</parameter>
 			<parameter name="refresh" type="integer">
 				<label>Refresh Interval</label>
@@ -60,17 +64,19 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="udp"/>
 		</supported-bridge-type-refs>
-		<label>SBUS RGBW Controller</label>
-		<description>SBUS RGBW lighting controller</description>
+		<label>Sbus RGBW Controller</label>
+		<description>Sbus RGBW lighting controller</description>
 		<config-description>
 			<parameter name="subnetId" type="integer">
 				<label>SubnetId</label>
-				<description>Slave subnet id. Can take any value between 0 and 255.</description>
+				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
 				<default>1</default>
+				<min>1</min>
+				<max>255</max>
 			</parameter>
 			<parameter name="id" type="integer" required="true">
 				<label>Device ID</label>
-				<description>The ID of the SBUS device</description>
+				<description>The ID of the Sbus device</description>
 			</parameter>
 			<parameter name="refresh" type="integer">
 				<label>Refresh Interval</label>
@@ -89,7 +95,7 @@
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
-				<description>The physical channel number on the SBUS device</description>
+				<description>The physical channel number on the Sbus device</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -102,7 +108,7 @@
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
-				<description>The physical channel number on the SBUS device</description>
+				<description>The physical channel number on the Sbus device</description>
 			</parameter>
 			<parameter name="timer" type="integer">
 				<label>Timer</label>
@@ -121,7 +127,7 @@
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
-				<description>The physical channel number on the SBUS device</description>
+				<description>The physical channel number on the Sbus device</description>
 			</parameter>
 			<parameter name="pairedChannelNumber" type="integer" required="true">
 				<label>Paired Channel Number</label>
@@ -135,11 +141,20 @@
 		<label>Temperature</label>
 		<description>Temperature reading from the device</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
-				<description>The physical channel number on the SBUS device</description>
+				<description>The physical channel number on the Sbus device</description>
+			</parameter>
+			<parameter name="unit" type="text">
+				<label>Temperature Unit</label>
+				<description>The unit to use for temperature readings (°C or °F)</description>
+				<options>
+					<option value="CELSIUS">Celsius</option>
+					<option value="FAHRENHEIT">Fahrenheit</option>
+				</options>
+				<default>CELSIUS</default>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -152,28 +167,9 @@
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
 				<label>Channel Number</label>
-				<description>The physical channel number on the SBUS device</description>
+				<description>The physical channel number on the Sbus device</description>
 			</parameter>
 		</config-description>
 	</channel-type>
-
-	<!-- Channel Group Types (unused, but left in case you need them) -->
-	<channel-group-type id="switches">
-		<label>Switch Channels</label>
-		<description>Group of switch channels</description>
-		<category>Switch</category>
-	</channel-group-type>
-
-	<channel-group-type id="sensors">
-		<label>Temperature Sensors</label>
-		<description>Group of temperature sensors</description>
-		<category>Temperature</category>
-	</channel-group-type>
-
-	<channel-group-type id="colors">
-		<label>Color Channels</label>
-		<description>Group of RGBW color channels</description>
-		<category>ColorLight</category>
-	</channel-group-type>
 
 </thing:thing-descriptions>

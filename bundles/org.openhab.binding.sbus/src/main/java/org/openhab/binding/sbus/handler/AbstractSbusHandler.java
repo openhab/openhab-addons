@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import ro.ciprianpascu.sbus.facade.SbusAdapter;
 
 /**
- * The {@link AbstractSbusHandler} is the base class for all SBUS device handlers.
+ * The {@link AbstractSbusHandler} is the base class for all Sbus device handlers.
  * It provides common functionality for device initialization, channel management, and polling.
  *
  * @author Ciprian Pascu - Initial contribution
@@ -56,7 +56,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
 
     @Override
     public final void initialize() {
-        logger.debug("Initializing SBUS handler for thing {}", getThing().getUID());
+        logger.debug("Initializing Sbus handler for thing {}", getThing().getUID());
 
         initializeChannels();
 
@@ -68,18 +68,18 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
 
         SbusBridgeHandler bridgeHandler = (SbusBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null || bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not online");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not online");
             return;
         }
 
-        try {
-            sbusAdapter = bridgeHandler.getSbusConnection();
-            updateStatus(ThingStatus.ONLINE);
-            startPolling();
-        } catch (Exception e) {
-            logger.error("Error initializing SBUS connection", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        sbusAdapter = bridgeHandler.getSbusConnection();
+        if (sbusAdapter == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "Bridge connection not initialized");
+            return;
         }
+
+        startPolling();
     }
 
     /**
@@ -125,7 +125,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
                 try {
                     pollDevice();
                 } catch (Exception e) {
-                    logger.error("Error polling SBUS device", e);
+                    logger.error("Error polling Sbus device", e);
                 }
             }, 0, config.refresh, TimeUnit.SECONDS);
         }
@@ -139,13 +139,16 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
+        ScheduledFuture<?> job = pollingJob;
+        if (job != null) {
+            job.cancel(true);
         }
         final SbusAdapter adapter = sbusAdapter;
         if (adapter != null) {
             adapter.close();
         }
+        pollingJob = null;
+        sbusAdapter = null;
         super.dispose();
     }
 }

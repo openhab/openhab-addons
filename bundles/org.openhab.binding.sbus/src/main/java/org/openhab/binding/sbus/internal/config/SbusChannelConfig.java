@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SbusChannelConfig {
     /**
-     * The physical channel number on the SBUS device.
+     * The physical channel number on the Sbus device.
      */
     public int channelNumber;
 

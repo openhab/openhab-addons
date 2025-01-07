@@ -24,12 +24,12 @@ import ro.ciprianpascu.sbus.Sbus;
 @NonNullByDefault
 public class SbusBridgeConfig {
     /**
-     * The host address of the SBUS bridge
+     * The host address of the Sbus bridge
      */
-    public String host = "";
+    public String host = "localhost";
 
     /**
-     * The port number for SBUS communication
+     * The port number for Sbus communication
      */
     public int port = Sbus.DEFAULT_PORT;
 }
