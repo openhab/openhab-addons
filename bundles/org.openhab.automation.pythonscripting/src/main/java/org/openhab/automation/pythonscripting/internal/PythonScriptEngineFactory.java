@@ -14,13 +14,13 @@ package org.openhab.automation.pythonscripting.internal;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.automation.pythonscripting.internal.generic.GenericScriptServiceUtil;
 import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigParser;
@@ -30,7 +30,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +48,6 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     private static final String CFG_INJECTION_CACHING_ENABLED = "injectionCachingEnabled";
     private static final String CFG_JYTHON_EMULATION = "jythonEmulation";
 
-    private boolean injectionEnabled = true;
-    private boolean injectionCachingEnabled = true;
     private boolean jythonEmulation = false;
 
     private static final GraalPythonScriptEngineFactory factory = new GraalPythonScriptEngineFactory();
@@ -59,15 +56,10 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
             .flatMap(List::stream) //
             .toList();
 
-    private final GenericScriptServiceUtil genericScriptServiceUtil;
-    // private final JSDependencyTracker jsDependencyTracker;
-
     @Activate
-    public PythonScriptEngineFactory(final @Reference GenericScriptServiceUtil genericScriptServiceUtil,
-            Map<String, Object> config) {
+    public PythonScriptEngineFactory(Map<String, Object> config) {
         logger.debug("Loading PythonScriptEngineFactory");
 
-        this.genericScriptServiceUtil = genericScriptServiceUtil;
         modified(config);
     }
 
@@ -83,7 +75,11 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
     @Override
     public void scopeValues(ScriptEngine scriptEngine, Map<String, Object> scopeValues) {
-        // noop; they are retrieved via modules, not injected
+        logger.info("Scope Values: {}", scopeValues);
+
+        for (Entry<String, Object> entry : scopeValues.entrySet()) {
+            scriptEngine.put(entry.getKey(), entry.getValue());
+        }
     }
 
     @Override
@@ -91,8 +87,8 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
         if (!scriptTypes.contains(scriptType)) {
             return null;
         }
-        return new DebuggingGraalScriptEngine<>(new OpenhabGraalPythonScriptEngine(injectionEnabled,
-                injectionCachingEnabled, jythonEmulation, genericScriptServiceUtil));
+        return new OpenhabGraalPythonScriptEngine(jythonEmulation);
+        // return new DebuggingGraalScriptEngine<>(new OpenhabGraalPythonScriptEngine(jythonEmulation));
     }
 
     /*
@@ -104,9 +100,6 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
     @Modified
     protected void modified(Map<String, ?> config) {
-        this.injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Boolean.class, true);
-        this.injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED),
-                Boolean.class, true);
         this.jythonEmulation = ConfigParser.valueAsOrElse(config.get(CFG_JYTHON_EMULATION), Boolean.class, false);
     }
 }

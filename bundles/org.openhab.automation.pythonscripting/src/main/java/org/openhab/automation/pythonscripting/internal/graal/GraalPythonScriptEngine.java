@@ -58,12 +58,15 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
     private static final String OUT_SYMBOL = "$$internal.out$$";
     private static final String IN_SYMBOL = "$$internal.in$$";
     private static final String ERR_SYMBOL = "$$internal.err$$";
+    // private static final String PYTHON_SCRIPT_ENGINE_GLOBAL_SCOPE_IMPORT_OPTION =
+    // "python.script-engine-global-scope-import";
 
     private static final String PYTHON_OPTION_POSIXMODULEBACKEND = "python.PosixModuleBackend";
     private static final String PYTHON_OPTION_DONTWRITEBYTECODEFLAG = "python.DontWriteBytecodeFlag";
     private static final String PYTHON_OPTION_FORCEIMPORTSITE = "python.ForceImportSite";
     private static final String PYTHON_OPTION_CHECKHASHPYCSMODE = "python.CheckHashPycsMode";
-    private static final String INSECURE_SCRIPTENGINE_ACCESS_SYSTEM_PROPERTY = "graalpy.insecure-scriptengine-access";
+    // private static final String INSECURE_SCRIPTENGINE_ACCESS_SYSTEM_PROPERTY =
+    // "graalpy.insecure-scriptengine-access";
 
     static final String MAGIC_OPTION_PREFIX = "polyglot.py.";
 
@@ -125,7 +128,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
 
     GraalPythonScriptEngine(GraalPythonScriptEngineFactory factory, Engine engine, Context.Builder contextConfig) {
         Engine engineToUse = (engine != null) ? engineToUse = engine : factory.getPolyglotEngine();
-        this.factory = (factory == null) ? new GraalPythonScriptEngineFactory(engineToUse) : factory;
+        // this.factory = (factory == null) ? new GraalPythonScriptEngineFactory(engineToUse) : factory;
 
         Context.Builder contextConfigToUse = contextConfig;
         if (contextConfigToUse == null) {
@@ -156,18 +159,13 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
                     // The sys.executable path, a virtual path that is used by the interpreter
                     // to discover packages
                     .engine(engine);
-
-            if (Boolean.getBoolean(INSECURE_SCRIPTENGINE_ACCESS_SYSTEM_PROPERTY)) {
-                updateForScriptEngineAccessibility(contextConfigToUse);
-            }
         }
-        this.contextConfig = contextConfigToUse;
-        // this.contextConfig = contextConfigToUse.option(JS_SCRIPT_ENGINE_GLOBAL_SCOPE_IMPORT_OPTION, "true");
-        this.context.setBindings(new GraalPythonBindings(this.contextConfig, this.context), ScriptContext.ENGINE_SCOPE);
-    }
-
-    private static void updateForScriptEngineAccessibility(Context.Builder builder) {
-        builder.allowHostAccess(HostAccess.ALL);
+        this.factory = (factory == null) ? new GraalPythonScriptEngineFactory(engineToUse) : factory;
+        this.contextConfig = contextConfigToUse.engine(engineToUse);
+        // this.contextConfig = contextConfigToUse.option(PYTHON_SCRIPT_ENGINE_GLOBAL_SCOPE_IMPORT_OPTION, "true")
+        // .engine(engineToUse);
+        this.context.setBindings(new GraalPythonBindings(this.contextConfig, this.context, this),
+                ScriptContext.ENGINE_SCOPE);
     }
 
     static Context createDefaultContext(Context.Builder builder) {
@@ -223,7 +221,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
 
     @Override
     public Bindings createBindings() {
-        return new GraalPythonBindings(contextConfig, null);
+        return new GraalPythonBindings(contextConfig, null, this);
     }
 
     @Override
@@ -340,7 +338,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
         if (engineB instanceof GraalPythonBindings) {
             return ((GraalPythonBindings) engineB);
         } else {
-            GraalPythonBindings bindings = new GraalPythonBindings(createContext(engineB), scriptContext);
+            GraalPythonBindings bindings = new GraalPythonBindings(createContext(engineB), scriptContext, this);
             bindings.putAll(engineB);
             return bindings;
         }

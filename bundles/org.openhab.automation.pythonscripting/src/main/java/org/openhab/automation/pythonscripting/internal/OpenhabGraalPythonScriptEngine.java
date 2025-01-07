@@ -12,8 +12,7 @@
  */
 package org.openhab.automation.pythonscripting.internal;
 
-import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_ENGINE_IDENTIFIER;
-import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_EXTENSION_ACCESSOR;
+import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +30,6 @@ import javax.script.ScriptContext;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.openhab.automation.pythonscripting.internal.generic.GenericScriptServiceUtil;
-import org.openhab.automation.pythonscripting.internal.generic.RuntimeFeatures;
 import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.core.OpenHAB;
@@ -60,32 +57,6 @@ public class OpenhabGraalPythonScriptEngine
     private static final String PYTHON_OPTION_CHECKHASHPYCSMODE = "python.CheckHashPycsMode";
 
     private static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
-    /*
-     * private static final Source GLOBAL_SOURCE;
-     * static {
-     * try {
-     * GLOBAL_SOURCE = Source.newBuilder("python", getFileAsReader("node_modules/@jsscripting-globals.js"),
-     * "@jsscripting-globals.js").cached(true).build();
-     * } catch (IOException e) {
-     * throw new IllegalStateException("Failed to load @jsscripting-globals.js", e);
-     * }
-     * }
-     *
-     * private static final Source OPENHAB_JS_SOURCE;
-     * static {
-     * try {
-     * OPENHAB_JS_SOURCE = Source
-     * .newBuilder("js", getFileAsReader("node_modules/@openhab-globals.js"), "@openhab-globals.js")
-     * .cached(true).build();
-     * } catch (IOException e) {
-     * throw new IllegalStateException("Failed to load @openhab-globals.js", e);
-     * }
-     * }
-     */
-    // private static final String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
-
-    /** Final CommonJS search path for our library */
-    // private static final Path NODE_DIR = Paths.get("node_modules");
 
     /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalPythonScriptEngine} */
     private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
@@ -93,50 +64,18 @@ public class OpenhabGraalPythonScriptEngine
 
     /** Provides unlimited host access as well as custom translations from Python to Java Objects */
     private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL) //
-            /*
-             * // Translate openhab-python Item to org.openhab.core.items.Item
-             * .targetTypeMapping(Value.class, Item.class, v -> v.hasMember("rawItem"),
-             * v -> v.getMember("rawItem").as(Item.class), HostAccess.TargetMappingPrecedence.LOW)
-             */
             .build();
-    /*
-     * // Translate JS-Joda ZonedDateTime to java.time.ZonedDateTime
-     * .targetTypeMapping(Value.class, ZonedDateTime.class, v -> v.hasMember("withFixedOffsetZone"),
-     * v -> ZonedDateTime.parse(v.invokeMember("withFixedOffsetZone").invokeMember("toString").asString()),
-     * HostAccess.TargetMappingPrecedence.LOW)
-     *
-     * // Translate JS-Joda Duration to java.time.Duration
-     * .targetTypeMapping(Value.class, Duration.class,
-     * // picking two members to check as Duration has many common function names
-     * v -> v.hasMember("minusDuration") && v.hasMember("toNanos"),
-     * v -> Duration.ofNanos(v.invokeMember("toNanos").asLong()), HostAccess.TargetMappingPrecedence.LOW)
-     *
-     * // Translate JS-Joda Instant to java.time.Instant
-     * .targetTypeMapping(Value.class, Instant.class,
-     * // picking two members to check as Instant has many common function names
-     * v -> v.hasMember("toEpochMilli") && v.hasMember("epochSecond"),
-     * v -> Instant.ofEpochMilli(v.invokeMember("toEpochMilli").asLong()),
-     * HostAccess.TargetMappingPrecedence.LOW)
-     *
-     * // Translate openhab-js Quantity to org.openhab.core.library.types.QuantityType
-     * .targetTypeMapping(Value.class, QuantityType.class, v -> v.hasMember("rawQtyType"),
-     * v -> v.getMember("rawQtyType").as(QuantityType.class), HostAccess.TargetMappingPrecedence.LOW)
-     * .build();
-     */
 
     private final Logger logger = LoggerFactory.getLogger(OpenhabGraalPythonScriptEngine.class);
 
     /** {@link Lock} synchronization of multi-thread access */
     private final Lock lock = new ReentrantLock();
-    private final RuntimeFeatures runtimeFeatures;
 
     // these fields start as null because they are populated on first use
     // private @Nullable Consumer<String> scriptDependencyListener;
     private String engineIdentifier; // this field is very helpful for debugging, please do not remove it
 
     private boolean initialized = false;
-    private final boolean injectionEnabled;
-    private final boolean injectionCachingEnabled;
     private final boolean jythonEmulation;
 
     public String testString = "Test String";
@@ -145,20 +84,15 @@ public class OpenhabGraalPythonScriptEngine
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
      */
-    public OpenhabGraalPythonScriptEngine(boolean injectionEnabled, boolean injectionCachingEnabled,
-            boolean jythonEmulation, GenericScriptServiceUtil genericScriptServiceUtil) {
+    public OpenhabGraalPythonScriptEngine(boolean jythonEmulation) {
         // JSDependencyTracker jsDependencyTracker) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
-        this.injectionEnabled = injectionEnabled;
-        this.injectionCachingEnabled = injectionCachingEnabled;
         this.jythonEmulation = jythonEmulation;
-        this.runtimeFeatures = genericScriptServiceUtil.getRuntimeFeatures(lock);
 
         Context.Builder contextConfig = Context.newBuilder("python") //
                 .allowHostAccess(HOST_ACCESS) //
                 .allowHostClassLoading(true) //
                 .allowAllAccess(true) //
-                // TODO: .hostClassLoader(getClass().getClassLoader())
                 // .fileSystem(...)
                 // allow exporting Python values to polyglot bindings and accessing Java
                 // from Python
@@ -221,25 +155,6 @@ public class OpenhabGraalPythonScriptEngine
         delegate.getPolyglotContext().getBindings("python").putMember("testString", testString);
 
         initialized = true;
-
-        /*
-         * try {
-         * logger.debug("Evaluating cached global script...");
-         * delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
-         * if (this.injectionEnabled) {
-         * if (this.injectionCachingEnabled) {
-         * logger.debug("Evaluating cached openhab-js injection...");
-         * delegate.getPolyglotContext().eval(OPENHAB_JS_SOURCE);
-         * } else {
-         * logger.debug("Evaluating openhab-js injection from the file system...");
-         * eval(OPENHAB_JS_INJECTION_CODE);
-         * }
-         * }
-         * logger.debug("Successfully initialized GraalJS script engine.");
-         * } catch (ScriptException e) {
-         * logger.error("Could not inject global script", e);
-         * }
-         */
     }
 
     @Override
@@ -257,7 +172,6 @@ public class OpenhabGraalPythonScriptEngine
 
     @Override
     public void close() {
-        runtimeFeatures.close();
     }
 
     /**
