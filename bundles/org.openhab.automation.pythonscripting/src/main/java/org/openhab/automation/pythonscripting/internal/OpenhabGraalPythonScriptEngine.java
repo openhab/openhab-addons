@@ -31,7 +31,6 @@ import javax.script.ScriptContext;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.PolyglotAccess;
 import org.openhab.automation.pythonscripting.internal.generic.GenericScriptServiceUtil;
 import org.openhab.automation.pythonscripting.internal.generic.RuntimeFeatures;
 import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEngine;
@@ -140,6 +139,8 @@ public class OpenhabGraalPythonScriptEngine
     private final boolean injectionCachingEnabled;
     private final boolean jythonEmulation;
 
+    public String testString = "Test String";
+
     /**
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
@@ -154,10 +155,9 @@ public class OpenhabGraalPythonScriptEngine
         this.runtimeFeatures = genericScriptServiceUtil.getRuntimeFeatures(lock);
 
         Context.Builder contextConfig = Context.newBuilder("python") //
-                .allowExperimentalOptions(true) //
+                .allowHostAccess(HOST_ACCESS) //
+                .allowHostClassLoading(true) //
                 .allowAllAccess(true) //
-                .allowPolyglotAccess(PolyglotAccess.ALL)
-                // TODO: .allowHostAccess(HOST_ACCESS)
                 // TODO: .hostClassLoader(getClass().getClassLoader())
                 // .fileSystem(...)
                 // allow exporting Python values to polyglot bindings and accessing Java
@@ -215,35 +215,10 @@ public class OpenhabGraalPythonScriptEngine
             throw new IllegalStateException("Failed to retrieve script extension accessor from engine bindings");
         }
 
-        /*
-         * Consumer<String> localScriptDependencyListener = (Consumer<String>) ctx
-         * .getAttribute(CONTEXT_KEY_DEPENDENCY_LISTENER);
-         * if (localScriptDependencyListener == null) {
-         * logger.warn(
-         * "Failed to retrieve script script dependency listener from engine bindings. Script dependency tracking will be disabled."
-         * );
-         * }
-         */
-        // scriptDependencyListener = localScriptDependencyListener;
+        ScriptAccessorComputedHashMap accessorGlobals = new ScriptAccessorComputedHashMap(scriptExtensionAccessor, localEngineIdentifier);
 
-        // ScriptExtensionModuleProvider scriptExtensionModuleProvider = new ScriptExtensionModuleProvider(
-        // scriptExtensionAccessor, lock);
-
-        // Wrap the "require" function to also allow loading modules from the ScriptExtensionModuleProvider
-        /*
-         * Function<Function<Object[], Object>, Function<String, Object>> wrapRequireFn = originalRequireFn ->
-         * moduleName -> scriptExtensionModuleProvider
-         * .locatorFor(delegate.getPolyglotContext(), localEngineIdentifier).locateModule(moduleName)
-         * .map(m -> (Object) m).orElseGet(() -> originalRequireFn.apply(new Object[] { moduleName }));
-         */
-        // delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(REQUIRE_WRAPPER_NAME, wrapRequireFn);
-        // delegate.put("require", wrapRequireFn.apply((Function<Object[], Object>) delegate.get("require")));
-
-        // Injections into the runtime
-        runtimeFeatures.getFeatures().forEach((key, obj) -> {
-            logger.debug("Injecting {} into the runtime...", key);
-            delegate.put(key, obj);
-        });
+        delegate.getPolyglotContext().getBindings("python").putMember("scope", accessorGlobals);
+        delegate.getPolyglotContext().getBindings("python").putMember("testString", testString);
 
         initialized = true;
 
