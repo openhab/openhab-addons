@@ -55,6 +55,8 @@ public class RokuBindingConstants {
     public static final String PLAY_MODE = "playMode";
     public static final String TIME_ELAPSED = "timeElapsed";
     public static final String TIME_TOTAL = "timeTotal";
+    public static final String END_TIME = "endTime";
+    public static final String PROGRESS = "progress";
     public static final String ACTIVE_CHANNEL = "activeChannel";
     public static final String SIGNAL_MODE = "signalMode";
     public static final String SIGNAL_QUALITY = "signalQuality";
