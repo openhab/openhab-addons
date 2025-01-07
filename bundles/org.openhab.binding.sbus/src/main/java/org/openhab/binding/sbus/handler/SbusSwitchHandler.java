@@ -13,8 +13,8 @@
 package org.openhab.binding.sbus.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
-import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
+import org.openhab.binding.sbus.handler.config.SbusChannelConfig;
+import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
@@ -26,8 +26,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ro.ciprianpascu.sbus.facade.SbusAdapter;
 
 /**
  * The {@link SbusSwitchHandler} is responsible for handling commands for Sbus switch devices.
@@ -58,7 +56,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
 
     @Override
     protected void pollDevice() {
-        final SbusAdapter adapter = super.sbusAdapter;
+        final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
             return;
@@ -67,10 +65,6 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
         try {
             SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
             int[] statuses = adapter.readStatusChannels(config.subnetId, config.id);
-            if (statuses == null) {
-                logger.warn("Received null status channels from Sbus device");
-                return;
-            }
 
             // Iterate over all channels and update their states
             for (Channel channel : getThing().getChannels()) {
@@ -101,7 +95,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        final SbusAdapter adapter = super.sbusAdapter;
+        final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
             logger.warn("Sbus adapter not initialized");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
@@ -133,7 +127,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
     }
 
     private void handleOnOffCommand(OnOffType command, SbusDeviceConfig config, SbusChannelConfig channelConfig,
-            ChannelUID channelUID, SbusAdapter adapter) throws Exception {
+            ChannelUID channelUID, SbusService adapter) throws Exception {
         boolean isOn = command == OnOffType.ON;
         adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, isOn ? 100 : 0,
                 channelConfig.timer);
@@ -141,14 +135,14 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
     }
 
     private void handlePercentCommand(PercentType command, SbusDeviceConfig config, SbusChannelConfig channelConfig,
-            ChannelUID channelUID, SbusAdapter adapter) throws Exception {
+            ChannelUID channelUID, SbusService adapter) throws Exception {
         adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, command.intValue(),
                 channelConfig.timer);
         updateState(channelUID, command);
     }
 
     private void handleOpenClosedCommand(OpenClosedType command, SbusDeviceConfig config,
-            SbusChannelConfig channelConfig, ChannelUID channelUID, SbusAdapter adapter) throws Exception {
+            SbusChannelConfig channelConfig, ChannelUID channelUID, SbusService adapter) throws Exception {
         boolean isOpen = command == OpenClosedType.OPEN;
         // Set main channel
         if (getChannelToClose(channelConfig, isOpen) > 0) {

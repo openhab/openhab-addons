@@ -10,21 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sbus.internal;
+package org.openhab.binding.sbus.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sbus.internal.config.SbusBridgeConfig;
+import org.openhab.binding.sbus.handler.config.SbusBridgeConfig;
+import org.openhab.binding.sbus.internal.SbusServiceImpl;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ro.ciprianpascu.sbus.facade.SbusAdapter;
 
 /**
  * The {@link SbusBridgeHandler} is responsible for handling communication with the Sbus bridge.
@@ -36,7 +36,8 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusBridgeHandler.class);
 
-    private @Nullable SbusAdapter sbusConnection;
+    @Reference
+    private @Nullable SbusService sbusService;
 
     /**
      * Constructs a new SbusBridgeHandler.
@@ -61,10 +62,20 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
             return;
         }
         try {
-            // Initialize Sbus connection with the configuration parameters
-            sbusConnection = new SbusAdapter(config.host, config.port);
+            // Initialize Sbus service with the configuration parameters
+            final SbusService service = sbusService;
+            if (service == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        "Sbus service not available");
+                return;
+            }
 
-            updateStatus(ThingStatus.ONLINE);
+            try {
+                ((SbusServiceImpl) service).initialize(config.host, config.port);
+                updateStatus(ThingStatus.ONLINE);
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
 
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -72,12 +83,12 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Gets the Sbus adapter connection.
+     * Gets the Sbus service.
      *
-     * @return the Sbus adapter
+     * @return the Sbus service
      */
-    public @Nullable SbusAdapter getSbusConnection() {
-        return sbusConnection;
+    public @Nullable SbusService getSbusConnection() {
+        return sbusService;
     }
 
     /**
@@ -86,11 +97,10 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing Sbus bridge handler");
-        final SbusAdapter connection = sbusConnection;
-        if (connection != null) {
-            connection.close();
+        final SbusService service = sbusService;
+        if (service != null) {
+            service.close();
         }
-        sbusConnection = null;
         super.dispose();
     }
 

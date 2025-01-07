@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sbus.internal;
+package org.openhab.binding.sbus.handler;
 
 import static org.openhab.binding.sbus.BindingConstants.*;
 
@@ -18,9 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sbus.handler.SbusRgbwHandler;
-import org.openhab.binding.sbus.handler.SbusSwitchHandler;
-import org.openhab.binding.sbus.handler.SbusTemperatureHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;

@@ -19,8 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sbus.internal.SbusBridgeHandler;
-import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
+import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -35,8 +34,6 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ro.ciprianpascu.sbus.facade.SbusAdapter;
-
 /**
  * The {@link AbstractSbusHandler} is the base class for all Sbus device handlers.
  * It provides common functionality for device initialization, channel management, and polling.
@@ -47,7 +44,7 @@ import ro.ciprianpascu.sbus.facade.SbusAdapter;
 public abstract class AbstractSbusHandler extends BaseThingHandler {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected @Nullable SbusAdapter sbusAdapter;
+    protected @Nullable SbusService sbusAdapter;
     protected @Nullable ScheduledFuture<?> pollingJob;
 
     public AbstractSbusHandler(Thing thing) {
@@ -143,7 +140,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
         if (job != null) {
             job.cancel(true);
         }
-        final SbusAdapter adapter = sbusAdapter;
+        final SbusService adapter = sbusAdapter;
         if (adapter != null) {
             adapter.close();
         }

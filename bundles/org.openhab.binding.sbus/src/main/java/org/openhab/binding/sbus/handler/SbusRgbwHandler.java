@@ -13,8 +13,8 @@
 package org.openhab.binding.sbus.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
-import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
+import org.openhab.binding.sbus.handler.config.SbusChannelConfig;
+import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -27,8 +27,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ro.ciprianpascu.sbus.facade.SbusAdapter;
 
 /**
  * The {@link SbusRgbwHandler} is responsible for handling commands for Sbus RGBW devices.
@@ -162,7 +160,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
     @Override
     protected void pollDevice() {
-        final SbusAdapter adapter = super.sbusAdapter;
+        final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
             return;
@@ -184,7 +182,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 if ("color-channel".equals(channelTypeId)) {
                     // Read RGBW values for this channel
                     int[] rgbwValues = adapter.readRgbw(config.subnetId, config.id, channelConfig.channelNumber);
-                    if (rgbwValues != null && rgbwValues.length >= 4) {
+                    if (rgbwValues.length >= 4) {
                         // Convert RGBW to HSB using our custom conversion
                         HSBType hsbType = rgbwToHsb(rgbwValues);
                         updateState(channel.getUID(), hsbType);
@@ -207,7 +205,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        final SbusAdapter adapter = super.sbusAdapter;
+        final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
             logger.warn("Sbus adapter not initialized");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");

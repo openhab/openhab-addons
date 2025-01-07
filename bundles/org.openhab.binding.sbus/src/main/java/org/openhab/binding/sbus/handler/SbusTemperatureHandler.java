@@ -13,8 +13,8 @@
 package org.openhab.binding.sbus.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
-import org.openhab.binding.sbus.internal.config.TemperatureChannelConfig;
+import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
+import org.openhab.binding.sbus.handler.config.TemperatureChannelConfig;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -26,8 +26,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ro.ciprianpascu.sbus.facade.SbusAdapter;
 
 /**
  * The {@link SbusTemperatureHandler} is responsible for handling commands for Sbus temperature sensors.
@@ -60,7 +58,7 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
 
     @Override
     protected void pollDevice() {
-        final SbusAdapter adapter = super.sbusAdapter;
+        final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
             return;
@@ -71,10 +69,6 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
 
             // Read temperatures in Celsius from device
             float[] temperatures = adapter.readTemperatures(config.subnetId, config.id);
-            if (temperatures == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received null temperatures");
-                return;
-            }
 
             // Iterate over all channels and update their states with corresponding temperatures
             for (Channel channel : getThing().getChannels()) {
