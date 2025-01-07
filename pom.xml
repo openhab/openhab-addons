@@ -443,7 +443,6 @@ Import-Package: \\
             <strictCheck>true</strictCheck>
             <aggregate>true</aggregate>
             <mapping>
-              <java>JAVADOC_STYLE</java>
               <xml>xml-header-style</xml>
             </mapping>
             <useDefaultExcludes>true</useDefaultExcludes>
