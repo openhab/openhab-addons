@@ -29,6 +29,7 @@ import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.openhab.binding.linky.internal.handler.MyElectricalDataBridgeHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -80,6 +81,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private final HttpService httpService;
     private final ThingRegistry thingRegistry;
     private final ComponentContext componentContext;
+    private final TimeZoneProvider timeZoneProvider;
 
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(ZonedDateTime.class,
@@ -106,9 +108,9 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
             final @Reference HttpClientFactory httpClientFactory, final @Reference OAuthFactory oAuthFactory,
             final @Reference HttpService httpService, final @Reference ThingRegistry thingRegistry,
-            ComponentContext componentContext) {
+            ComponentContext componentContext, final @Reference TimeZoneProvider timeZoneProvider) {
         this.localeProvider = localeProvider;
-
+        this.timeZoneProvider = timeZoneProvider;
         this.httpClientFactory = httpClientFactory;
         this.oAuthFactory = oAuthFactory;
         this.httpService = httpService;
@@ -141,7 +143,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
                     this.httpClientFactory, this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
         } else if (THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
-            LinkyHandler handler = new LinkyHandler(thing, localeProvider);
+            LinkyHandler handler = new LinkyHandler(thing, localeProvider, timeZoneProvider);
             return handler;
         }
 

@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
@@ -50,6 +49,7 @@ import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -84,6 +84,9 @@ import org.threeten.extra.Years;
 
 @NonNullByDefault
 public class LinkyHandler extends BaseThingHandler {
+    private final TimeZoneProvider timeZoneProvider;
+    private ZoneId zoneId = ZoneId.systemDefault();
+
     private static final int REFRESH_FIRST_HOUR_OF_DAY = 1;
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
@@ -109,10 +112,11 @@ public class LinkyHandler extends BaseThingHandler {
         ALL
     }
 
-    public LinkyHandler(Thing thing, LocaleProvider localeProvider) {
+    public LinkyHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
 
         config = getConfigAs(LinkyConfiguration.class);
+        this.timeZoneProvider = timeZoneProvider;
 
         this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
@@ -165,6 +169,22 @@ public class LinkyHandler extends BaseThingHandler {
     @Override
     public synchronized void initialize() {
         logger.debug("Initializing Linky handler.");
+
+        // update the timezone if not set to default to openhab default timezone
+        Configuration thingConfig = getConfig();
+
+        Object val = thingConfig.get("timezone");
+        if (val == null || "".equals(val)) {
+            zoneId = this.timeZoneProvider.getTimeZone();
+            thingConfig.put("timezone", zoneId.getId());
+        } else {
+            zoneId = ZoneId.of((String) val);
+        }
+
+        saveConfiguration(thingConfig);
+
+        // reread config to update timezone field
+        config = getConfigAs(LinkyConfiguration.class);
 
         Bridge bridge = getBridge();
         if (bridge == null) {
@@ -386,15 +406,15 @@ public class LinkyHandler extends BaseThingHandler {
 
             updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_1, values.baseValue[dSize - 1].value);
             updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_1,
-                    new DateTimeType(values.baseValue[dSize - 1].date.atZone(ZoneId.systemDefault())));
+                    new DateTimeType(values.baseValue[dSize - 1].date.atZone(zoneId)));
 
             updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_2, values.baseValue[dSize - 2].value);
             updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_2,
-                    new DateTimeType(values.baseValue[dSize - 2].date.atZone(ZoneId.systemDefault())));
+                    new DateTimeType(values.baseValue[dSize - 2].date.atZone(zoneId)));
 
             updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_3, values.baseValue[dSize - 3].value);
             updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_3,
-                    new DateTimeType(values.baseValue[dSize - 3].date.atZone(ZoneId.systemDefault())));
+                    new DateTimeType(values.baseValue[dSize - 3].date.atZone(zoneId)));
 
             updatePowerTimeSeries(DAILY_GROUP, MAX_POWER_CHANNEL, values.baseValue);
             updatePowerTimeSeries(WEEKLY_GROUP, MAX_POWER_CHANNEL, values.weekValue);
@@ -482,7 +502,7 @@ public class LinkyHandler extends BaseThingHandler {
                     continue;
                 }
 
-                Instant timestamp = iv[i].date.toInstant(ZoneOffset.UTC);
+                Instant timestamp = iv[i].date.atZone(zoneId).toInstant();
 
                 if (Double.isNaN(iv[i].value)) {
                     continue;
@@ -504,7 +524,7 @@ public class LinkyHandler extends BaseThingHandler {
                 continue;
             }
 
-            Instant timestamp = iv[i].date.toInstant(ZoneOffset.UTC);
+            Instant timestamp = iv[i].date.atZone(zoneId).toInstant();
 
             if (Double.isNaN(iv[i].value)) {
                 continue;
