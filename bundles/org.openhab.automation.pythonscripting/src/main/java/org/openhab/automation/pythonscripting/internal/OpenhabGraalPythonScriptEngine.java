@@ -12,8 +12,7 @@
  */
 package org.openhab.automation.pythonscripting.internal;
 
-import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_ENGINE_IDENTIFIER;
-import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_EXTENSION_ACCESSOR;
+import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,9 +90,15 @@ public class OpenhabGraalPythonScriptEngine
         this.jythonEmulation = jythonEmulation;
 
         Context.Builder contextConfig = Context.newBuilder("python") //
-                .allowHostAccess(HOST_ACCESS) //
-                .allowHostClassLoading(true) //
+                // .allowHostAccess(HOST_ACCESS) //
+                // .allowHostClassLoading(true) //
                 .allowAllAccess(true) //
+                .allowNativeAccess(true) //
+
+                // .allowNativeAccess(true) //
+                // .allowCreateProcess(true) //
+                // .allowCreateThread(true) //
+                // .allowExperimentalOptions(true) //
                 // .fileSystem(...)
                 // allow exporting Python values to polyglot bindings and accessing Java
                 // from Python

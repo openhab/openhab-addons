@@ -75,7 +75,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
     @Override
     public void scopeValues(ScriptEngine scriptEngine, Map<String, Object> scopeValues) {
-        logger.info("Scope Values: {}", scopeValues);
+        logger.debug("Scope Values: {}", scopeValues);
 
         for (Entry<String, Object> entry : scopeValues.entrySet()) {
             scriptEngine.put(entry.getKey(), entry.getValue());
