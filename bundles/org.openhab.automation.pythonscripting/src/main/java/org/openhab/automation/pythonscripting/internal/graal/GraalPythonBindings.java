@@ -89,10 +89,10 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
         requireContext();
         context.getBindings("python").putMember(key, value);
         // GraalPythonScriptEngine.evalInternal(context,
-            // "lambda key, value: 
-            // def set_global(key, value):\n" +
-            // " globals()[key] = value\n" + 
-            // "set_global(key, value)").execute(key, value);
+        // "lambda key, value:
+        // def set_global(key, value):\n" +
+        // " globals()[key] = value\n" +
+        // "set_global(key, value)").execute(key, value);
     }
 
     private Value deletePropertyFunction() {
@@ -120,7 +120,8 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
         checkKey(name);
         requireContext();
 
-        // JJ: modified to directly put in context, not sure how the GraalJSBindings ever could have injected items without this.
+        // JJ: modified to directly put in context, not sure how the GraalJSBindings ever could have injected items
+        // without this.
         context.getBindings("python").putMember(name, v);
         return global.put(name, v);
     }

@@ -161,7 +161,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
         DelegatingInputStream in = new DelegatingInputStream();
         DelegatingOutputStream out = new DelegatingOutputStream();
         DelegatingOutputStream err = new DelegatingOutputStream();
-        if(ctxt != null) {
+        if (ctxt != null) {
             in.setReader(ctxt.getReader());
             out.setWriter(ctxt.getWriter());
             err.setWriter(ctxt.getErrorWriter());
