@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -43,9 +43,7 @@ public class ExpiringDayCache<V> {
 
     private final String name;
     private final int beginningHour;
-    private final int beginningMinute;
-
-    private Supplier<@Nullable V> action;
+    private final Supplier<@Nullable V> action;
 
     private @Nullable V value;
     private LocalDateTime expiresAt;
@@ -57,10 +55,9 @@ public class ExpiringDayCache<V> {
      * @param beginningHour the hour in the day at which the validity period is starting
      * @param action the action to retrieve/calculate the value
      */
-    public ExpiringDayCache(String name, int beginningHour, int beginningMinute, Supplier<@Nullable V> action) {
+    public ExpiringDayCache(String name, int beginningHour, Supplier<@Nullable V> action) {
         this.name = name;
         this.beginningHour = beginningHour;
-        this.beginningMinute = beginningMinute;
         this.expiresAt = calcAlreadyExpired();
         this.action = action;
     }
@@ -102,7 +99,7 @@ public class ExpiringDayCache<V> {
 
     private LocalDateTime calcNextExpiresAt() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime limit = now.withHour(beginningHour).withMinute(beginningMinute).truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime limit = now.withHour(beginningHour).truncatedTo(ChronoUnit.HOURS);
         LocalDateTime result = now.isBefore(limit) ? limit : limit.plusDays(1);
         logger.debug("calcNextExpiresAt result = {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         return result;
