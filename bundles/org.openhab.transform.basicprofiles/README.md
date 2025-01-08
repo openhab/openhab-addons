@@ -2,7 +2,7 @@
 
 This bundle provides a list of useful Profiles:
 
-| Profile                                                         | Description                                                                                      |
+| Profile                                                         | Description                                                                                  |
 | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | [Generic Command Profile](#generic-command-profile)             | Sends a Command towards the Item when an event is triggered                                  |
 | [Generic Toggle Switch Profile](#generic-toggle-switch-profile) | Toggles a Switch Item when an event is triggered                                             |
