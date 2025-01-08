@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,7 +103,7 @@ public class TempSensorHandler extends AbstractOmnilinkStatusHandler<ExtendedAux
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand called for channel: {}, command: {}", channelUID, command);
         final OmnilinkBridgeHandler bridgeHandler = getOmnilinkBridgeHandler();
-        Optional<TemperatureFormat> temperatureFormat = Optional.empty();
+        Optional<TemperatureFormat> temperatureFormat;
 
         if (command instanceof RefreshType) {
             retrieveStatus().ifPresentOrElse(this::updateChannels, () -> updateStatus(ThingStatus.OFFLINE,
@@ -118,7 +118,7 @@ public class TempSensorHandler extends AbstractOmnilinkStatusHandler<ExtendedAux
         if (bridgeHandler != null) {
             temperatureFormat = bridgeHandler.getTemperatureFormat();
             if (temperatureFormat.isEmpty()) {
-                logger.warn("Receieved null temperature format!");
+                logger.warn("Received null temperature format!");
                 return;
             }
         } else {
@@ -158,7 +158,7 @@ public class TempSensorHandler extends AbstractOmnilinkStatusHandler<ExtendedAux
                         temperatureFormat.get().omniToFormat(status.getHeatSetpoint()),
                         temperatureFormat.get().getFormatNumber() == 1 ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS));
             } else {
-                logger.warn("Receieved null temperature format, could not update Temperature Sensor channels!");
+                logger.warn("Received null temperature format, could not update Temperature Sensor channels!");
             }
         } else {
             logger.debug("Received null bridge while updating Temperature Sensor channels!");

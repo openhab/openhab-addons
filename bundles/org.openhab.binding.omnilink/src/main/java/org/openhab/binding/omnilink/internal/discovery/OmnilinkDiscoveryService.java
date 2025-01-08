@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,9 +99,9 @@ public class OmnilinkDiscoveryService extends AbstractThingHandlerDiscoveryServi
     }
 
     /**
-     * Calculate the area filter the a supplied area
+     * Calculate the area filter of a supplied area
      *
-     * @param area Area to calculate filter for.
+     * @param areaProperties Area to calculate filter for.
      * @return Calculated Bit Filter for the supplied area. Bit 0 is area 1, bit 2 is area 2 and so on.
      */
     private static int bitFilterForArea(AreaProperties areaProperties) {
@@ -328,7 +328,7 @@ public class OmnilinkDiscoveryService extends AbstractThingHandlerDiscoveryServi
     /**
      * Discovers OmniLink areas
      */
-    private @Nullable List<AreaProperties> discoverAreas() {
+    private List<AreaProperties> discoverAreas() {
         final ThingUID bridgeUID = thingHandler.getThing().getUID();
         List<AreaProperties> areas = new LinkedList<>();
 
@@ -356,22 +356,18 @@ public class OmnilinkDiscoveryService extends AbstractThingHandlerDiscoveryServi
 
             final String name = thingName;
             systemType.ifPresentOrElse(t -> {
-                ThingUID thingUID = null;
-                switch (t) {
-                    case LUMINA:
-                        thingUID = new ThingUID(THING_TYPE_LUMINA_AREA, bridgeUID, thingID);
-                        break;
-                    default:
-                        thingUID = new ThingUID(THING_TYPE_OMNI_AREA, bridgeUID, thingID);
+                ThingUID thingUID;
+                if (t == SystemType.LUMINA) {
+                    thingUID = new ThingUID(THING_TYPE_LUMINA_AREA, bridgeUID, thingID);
+                } else {
+                    thingUID = new ThingUID(THING_TYPE_OMNI_AREA, bridgeUID, thingID);
                 }
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                         .withProperty(THING_PROPERTIES_NUMBER, thingID)
                         .withRepresentationProperty(THING_PROPERTIES_NUMBER).withBridge(bridgeUID).withLabel(name)
                         .build();
                 thingDiscovered(discoveryResult);
-            }, () -> {
-                logger.warn("Unknown System Type");
-            });
+            }, () -> logger.warn("Unknown System Type"));
 
             areas.add(areaProperties);
         }
@@ -397,7 +393,7 @@ public class OmnilinkDiscoveryService extends AbstractThingHandlerDiscoveryServi
                     int thingType = unitProperties.getUnitType();
                     String thingName = unitProperties.getName();
                     String thingID = Integer.toString(unitProperties.getNumber());
-                    ThingUID thingUID = null;
+                    ThingUID thingUID;
 
                     Map<String, Object> properties = new HashMap<>();
                     properties.put(THING_PROPERTIES_NAME, thingName);

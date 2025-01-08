@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -184,7 +184,7 @@ public class InsteonSceneHandler extends InsteonBaseThingHandler {
 
     public void updateState(State state) {
         getThing().getChannels().stream().map(Channel::getUID)
-                .filter(channelUID -> FEATURE_SCENE_ON_OFF.equals(channelUID.getId())).findFirst()
+                .filter(channelUID -> FEATURE_SCENE.equals(channelUID.getId())).findFirst()
                 .ifPresent(channelUID -> updateState(channelUID, state));
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,7 +102,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
     @Override
     public void initialize() {
         config = getConfigAs(DigiplexBridgeConfiguration.class);
-        if (config.port == null) {
+        if (config.port.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return;
         }

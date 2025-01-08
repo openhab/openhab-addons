@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,24 +45,16 @@ public class OmniAreaHandler extends AbstractAreaHandler {
 
     @Override
     protected int getMode(ChannelUID channelUID) {
-        switch (channelUID.getId()) {
-            case CHANNEL_AREA_SECURITY_MODE_DISARM:
-                return CommandMessage.CMD_SECURITY_OMNI_DISARM;
-            case CHANNEL_AREA_SECURITY_MODE_DAY:
-                return CommandMessage.CMD_SECURITY_OMNI_DAY_MODE;
-            case CHANNEL_AREA_SECURITY_MODE_NIGHT:
-                return CommandMessage.CMD_SECURITY_OMNI_NIGHT_MODE;
-            case CHANNEL_AREA_SECURITY_MODE_AWAY:
-                return CommandMessage.CMD_SECURITY_OMNI_AWAY_MODE;
-            case CHANNEL_AREA_SECURITY_MODE_VACATION:
-                return CommandMessage.CMD_SECURITY_OMNI_VACATION_MODE;
-            case CHANNEL_AREA_SECURITY_MODE_DAY_INSTANT:
-                return CommandMessage.CMD_SECURITY_OMNI_DAY_INSTANT_MODE;
-            case CHANNEL_AREA_SECURITY_MODE_NIGHT_DELAYED:
-                return CommandMessage.CMD_SECURITY_OMNI_NIGHT_DELAYED_MODE;
-            default:
-                throw new IllegalStateException("Unknown channel for area thing " + channelUID);
-        }
+        return switch (channelUID.getId()) {
+            case CHANNEL_AREA_SECURITY_MODE_DISARM -> CommandMessage.CMD_SECURITY_OMNI_DISARM;
+            case CHANNEL_AREA_SECURITY_MODE_DAY -> CommandMessage.CMD_SECURITY_OMNI_DAY_MODE;
+            case CHANNEL_AREA_SECURITY_MODE_NIGHT -> CommandMessage.CMD_SECURITY_OMNI_NIGHT_MODE;
+            case CHANNEL_AREA_SECURITY_MODE_AWAY -> CommandMessage.CMD_SECURITY_OMNI_AWAY_MODE;
+            case CHANNEL_AREA_SECURITY_MODE_VACATION -> CommandMessage.CMD_SECURITY_OMNI_VACATION_MODE;
+            case CHANNEL_AREA_SECURITY_MODE_DAY_INSTANT -> CommandMessage.CMD_SECURITY_OMNI_DAY_INSTANT_MODE;
+            case CHANNEL_AREA_SECURITY_MODE_NIGHT_DELAYED -> CommandMessage.CMD_SECURITY_OMNI_NIGHT_DELAYED_MODE;
+            default -> throw new IllegalStateException("Unknown channel for area thing " + channelUID);
+        };
     }
 
     @Override

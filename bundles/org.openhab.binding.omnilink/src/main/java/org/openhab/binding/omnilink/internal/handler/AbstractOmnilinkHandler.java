@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,7 +71,7 @@ public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
     }
 
     /**
-     * Calculate the area filter the a supplied area
+     * Calculate the area filter of a supplied area
      *
      * @param areaProperties Area to calculate filter for.
      * @return Calculated Bit Filter for the supplied area. Bit 0 is area 1, bit 2 is area 2 and so on.
@@ -120,7 +120,7 @@ public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
     protected int getAreaNumber() {
         String areaNumber = getThing().getProperties().get(THING_PROPERTIES_AREA);
         if (areaNumber != null) {
-            return Integer.valueOf(areaNumber);
+            return Integer.parseInt(areaNumber);
         } else {
             return -1;
         }

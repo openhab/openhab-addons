@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
 import org.openhab.binding.tapocontrol.internal.devices.rf.smartcontact.TapoSmartContactHandler;
+import org.openhab.binding.tapocontrol.internal.devices.rf.smartswitch.TapoSmartSwitchHandler;
 import org.openhab.binding.tapocontrol.internal.devices.rf.weathersensor.TapoWeatherSensorHandler;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoUniversalDeviceHandler;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.bulb.TapoBulbHandler;
@@ -130,6 +131,8 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
             return new TapoSmartContactHandler(thing);
         } else if (SUPPORTED_WEATHER_SENSORS.contains(thingTypeUID)) {
             return new TapoWeatherSensorHandler(thing);
+        } else if (SUPPORTED_SMART_SWITCHES.contains(thingTypeUID)) {
+            return new TapoSmartSwitchHandler(thing);
         } else if (thingTypeUID.equals(UNIVERSAL_THING_TYPE)) {
             return new TapoUniversalDeviceHandler(thing);
         }

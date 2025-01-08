@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,13 @@
 package org.openhab.binding.epsonprojector.internal;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,6 +37,7 @@ import org.openhab.binding.epsonprojector.internal.enums.PowerStatus;
 import org.openhab.binding.epsonprojector.internal.enums.Switch;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -651,5 +656,29 @@ public class EpsonProjectorDevice {
     public String getErrorString() throws EpsonProjectorCommandException, EpsonProjectorException {
         int err = queryHexInt("ERR?");
         return ErrorMessage.forCode(err);
+    }
+
+    /*
+     * Source List
+     */
+    public List<StateOption> getSourceList() throws EpsonProjectorException {
+        final List<StateOption> sourceListOptions = new ArrayList<>();
+
+        try {
+            // example: 30 HDMI1 A0 HDMI2
+            final String[] sources = queryString("SOURCELIST?").split(" ");
+
+            if (sources.length % 2 != 0) {
+                logger.debug("getSourceList(): {} has odd number of elements!", Arrays.toString(sources));
+            } else if (sources[0].length() != 2) {
+                logger.debug("getSourceList(): {} has invalid first entry", Arrays.toString(sources));
+            } else {
+                IntStream.range(0, sources.length / 2)
+                        .forEach(i -> sourceListOptions.add(new StateOption(sources[i * 2], sources[i * 2 + 1])));
+            }
+        } catch (EpsonProjectorCommandException e) {
+            logger.debug("getSourceList(): {}", e.getMessage());
+        }
+        return sourceListOptions;
     }
 }

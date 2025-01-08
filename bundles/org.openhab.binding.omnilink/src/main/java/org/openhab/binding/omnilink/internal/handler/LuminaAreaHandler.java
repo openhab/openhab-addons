@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,22 +44,15 @@ public class LuminaAreaHandler extends AbstractAreaHandler {
 
     @Override
     protected int getMode(ChannelUID channelUID) {
-        switch (channelUID.getId()) {
-            case CHANNEL_AREA_SECURITY_MODE_HOME:
-                return CommandMessage.CMD_SECURITY_LUMINA_HOME_MODE;
-            case CHANNEL_AREA_SECURITY_MODE_SLEEP:
-                return CommandMessage.CMD_SECURITY_LUMINA_SLEEP_MODE;
-            case CHANNEL_AREA_SECURITY_MODE_AWAY:
-                return CommandMessage.CMD_SECURITY_LUMINA_AWAY_MODE;
-            case CHANNEL_AREA_SECURITY_MODE_VACATION:
-                return CommandMessage.CMD_SECURITY_LUMINA_VACATION_MODE;
-            case CHANNEL_AREA_SECURITY_MODE_PARTY:
-                return CommandMessage.CMD_SECURITY_LUMINA_PARTY_MODE;
-            case CHANNEL_AREA_SECURITY_MODE_SPECIAL:
-                return CommandMessage.CMD_SECURITY_LUMINA_SPECIAL_MODE;
-            default:
-                throw new IllegalStateException("Unknown channel for area thing " + channelUID);
-        }
+        return switch (channelUID.getId()) {
+            case CHANNEL_AREA_SECURITY_MODE_HOME -> CommandMessage.CMD_SECURITY_LUMINA_HOME_MODE;
+            case CHANNEL_AREA_SECURITY_MODE_SLEEP -> CommandMessage.CMD_SECURITY_LUMINA_SLEEP_MODE;
+            case CHANNEL_AREA_SECURITY_MODE_AWAY -> CommandMessage.CMD_SECURITY_LUMINA_AWAY_MODE;
+            case CHANNEL_AREA_SECURITY_MODE_VACATION -> CommandMessage.CMD_SECURITY_LUMINA_VACATION_MODE;
+            case CHANNEL_AREA_SECURITY_MODE_PARTY -> CommandMessage.CMD_SECURITY_LUMINA_PARTY_MODE;
+            case CHANNEL_AREA_SECURITY_MODE_SPECIAL -> CommandMessage.CMD_SECURITY_LUMINA_SPECIAL_MODE;
+            default -> throw new IllegalStateException("Unknown channel for area thing " + channelUID);
+        };
     }
 
     @Override
