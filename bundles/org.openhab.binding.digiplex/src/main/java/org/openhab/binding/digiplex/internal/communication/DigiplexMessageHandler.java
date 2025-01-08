@@ -52,6 +52,9 @@ public interface DigiplexMessageHandler {
     default void handleUnknownResponse(UnknownResponse response) {
     }
 
+    default void handleErroneousResponse(ErroneousResponse response) {
+    }
+
     // Events
     default void handleZoneEvent(ZoneEvent event) {
     }

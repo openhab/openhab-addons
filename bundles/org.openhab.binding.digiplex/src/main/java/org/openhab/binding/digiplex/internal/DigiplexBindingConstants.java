@@ -51,7 +51,6 @@ public class DigiplexBindingConstants {
     public static final String BRIDGE_MESSAGES_SENT = "statistics#messages_sent";
     public static final String BRIDGE_RESPONSES_RECEIVED = "statistics#responses_received";
     public static final String BRIDGE_EVENTS_RECEIVED = "statistics#events_received";
-
     public static final String BRIDGE_TLM_TROUBLE = "troubles#tlm_trouble";
     public static final String BRIDGE_AC_FAILURE = "troubles#ac_failure";
     public static final String BRIDGE_BATTERY_FAILURE = "troubles#battery_failure";

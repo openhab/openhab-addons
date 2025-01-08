@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -15,24 +15,24 @@ package org.openhab.binding.digiplex.internal.communication;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Unknown message from PRT3.
+ * Erroneous message from PRT3.
  *
- * Message that is otherwise valid, but not handled in this binding.
+ * Message that is invalid, which happens sometimes due to communication errors.
  *
  * @author Robert Michalak - Initial contribution
  *
  */
 @NonNullByDefault
-public class UnknownResponse implements DigiplexResponse {
+public class ErroneousResponse implements DigiplexResponse {
 
     public final String message;
 
-    public UnknownResponse(String message) {
+    public ErroneousResponse(String message) {
         this.message = message;
     }
 
     @Override
     public void accept(DigiplexMessageHandler visitor) {
-        visitor.handleUnknownResponse(this);
+        visitor.handleErroneousResponse(this);
     }
 }
