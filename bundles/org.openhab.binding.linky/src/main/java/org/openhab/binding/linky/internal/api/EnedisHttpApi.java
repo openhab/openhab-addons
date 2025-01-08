@@ -27,6 +27,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport;
@@ -99,26 +100,6 @@ public class EnedisHttpApi {
 
     private static String getContent(Logger logger, LinkyBridgeHandler linkyBridgeHandler, String url,
             HttpClient httpClient, String token) throws LinkyException {
-        int numberRetry = 0;
-        LinkyException lastException = null;
-
-        while (numberRetry < 3) {
-            try {
-                return getContentInternal(logger, linkyBridgeHandler, url, httpClient, token);
-            } catch (LinkyException ex) {
-                lastException = ex;
-
-                // try to reinit connection, fail after 3 attemps
-                linkyBridgeHandler.connectionInit();
-            }
-            numberRetry++;
-        }
-
-        throw Objects.requireNonNull(lastException);
-    }
-
-    private static String getContentInternal(Logger logger, LinkyBridgeHandler linkyBridgeHandler, String url,
-            HttpClient httpClient, String token) throws LinkyException {
         try {
             Request request = httpClient.newRequest(url);
 
@@ -130,14 +111,16 @@ public class EnedisHttpApi {
             }
 
             ContentResponse result = request.send();
-            if (result.getStatus() == 307) {
+            if (result.getStatus() == HttpStatus.TEMPORARY_REDIRECT_307
+                    || result.getStatus() == HttpStatus.MOVED_TEMPORARILY_302) {
                 String loc = result.getHeaders().get("Location");
                 String newUrl = linkyBridgeHandler.getBaseUrl() + loc.substring(1);
                 request = httpClient.newRequest(newUrl);
                 request = request.method(HttpMethod.GET);
                 result = request.send();
 
-                if (result.getStatus() == 307) {
+                if (result.getStatus() == HttpStatus.TEMPORARY_REDIRECT_307
+                        || result.getStatus() == HttpStatus.MOVED_TEMPORARILY_302) {
                     loc = result.getHeaders().get("Location");
                     String[] urlParts = loc.split("/");
                     if (urlParts.length < 4) {
@@ -163,18 +146,37 @@ public class EnedisHttpApi {
             linkyBridgeHandler.initialize();
         }
 
-        String data = getContent(handler, url);
+        int numberRetry = 0;
+        LinkyException lastException = null;
+        logger.debug("getData begin {}: {}", clazz.getName(), url);
 
-        if (data.isEmpty()) {
-            throw new LinkyException("Requesting '%s' returned an empty response", url);
+        while (numberRetry < 3) {
+            try {
+                String data = getContent(handler, url);
+
+                if (!data.isEmpty()) {
+                    try {
+                        logger.debug("getData success {}: {}", clazz.getName(), url);
+                        return Objects.requireNonNull(gson.fromJson(data, clazz));
+                    } catch (JsonSyntaxException e) {
+                        logger.debug("Invalid JSON response not matching {}: {}", clazz.getName(), data);
+                        throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
+                    }
+                }
+            } catch (LinkyException ex) {
+                lastException = ex;
+
+                logger.debug("getData error {}: {} , retry{}", clazz.getName(), url, numberRetry);
+
+                // try to reinit connection, fail after 3 attemps
+                linkyBridgeHandler.connectionInit();
+            }
+            numberRetry++;
         }
 
-        try {
-            return Objects.requireNonNull(gson.fromJson(data, clazz));
-        } catch (JsonSyntaxException e) {
-            logger.debug("Invalid JSON response not matching {}: {}", clazz.getName(), data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
-        }
+        logger.debug("getData error {}: {} , maxRetry", clazz.getName(), url);
+
+        throw Objects.requireNonNull(lastException);
     }
 
     public PrmInfo getPrmInfo(LinkyHandler handler, String internId, String prmId) throws LinkyException {

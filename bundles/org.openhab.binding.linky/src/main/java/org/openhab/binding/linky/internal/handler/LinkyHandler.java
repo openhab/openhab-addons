@@ -189,6 +189,11 @@ public class LinkyHandler extends BaseThingHandler {
         }
     }
 
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+    }
+
     public boolean supportNewApiFormat() throws LinkyException {
         Bridge bridge = getBridge();
         if (bridge == null) {
