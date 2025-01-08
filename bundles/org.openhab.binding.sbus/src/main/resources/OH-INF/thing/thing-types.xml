@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0
-                        https://openhab.org/schemas/thing-description-1.0.0.xsd">
+			https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Switch Device -->
 	<thing-type id="switch">
@@ -17,8 +17,10 @@
 				<label>SubnetId</label>
 				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
 				<default>1</default>
-				<min>1</min>
-				<max>255</max>
+				<options>
+					<option value="1">1</option>
+					<option value="255">255</option>
+				</options>
 			</parameter>
 			<parameter name="id" type="integer" required="true">
 				<label>Device ID</label>
@@ -28,6 +30,7 @@
 				<label>Refresh Interval</label>
 				<description>Refresh interval in seconds</description>
 				<default>30</default>
+				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -44,8 +47,10 @@
 				<label>SubnetId</label>
 				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
 				<default>1</default>
-				<min>1</min>
-				<max>255</max>
+				<options>
+					<option value="1">1</option>
+					<option value="255">255</option>
+				</options>
 			</parameter>
 			<parameter name="id" type="integer" required="true">
 				<label>Device ID</label>
@@ -55,6 +60,7 @@
 				<label>Refresh Interval</label>
 				<description>Refresh interval in seconds</description>
 				<default>30</default>
+				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -71,8 +77,10 @@
 				<label>SubnetId</label>
 				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
 				<default>1</default>
-				<min>1</min>
-				<max>255</max>
+				<options>
+					<option value="1">1</option>
+					<option value="255">255</option>
+				</options>
 			</parameter>
 			<parameter name="id" type="integer" required="true">
 				<label>Device ID</label>
@@ -82,6 +90,7 @@
 				<label>Refresh Interval</label>
 				<description>Refresh interval in seconds</description>
 				<default>30</default>
+				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -114,7 +123,8 @@
 				<label>Timer</label>
 				<description>Timer in seconds to automatically turn off the switch (0 = disabled)</description>
 				<default>0</default>
-				<min>0</min>
+				<advanced>true</advanced>
+				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
 	</channel-type>

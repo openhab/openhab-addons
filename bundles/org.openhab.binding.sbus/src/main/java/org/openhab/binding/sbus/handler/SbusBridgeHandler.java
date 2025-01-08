@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -68,10 +68,8 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
                         "Sbus service not available");
                 return;
             }
-
             service.initialize(config.host, config.port);
             updateStatus(ThingStatus.ONLINE);
-
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
