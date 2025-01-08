@@ -161,12 +161,12 @@ public class LinkyHandler extends BaseThingHandler {
         // update the timezone if not set to default to openhab default timezone
         Configuration thingConfig = getConfig();
 
-        Object val = thingConfig.get("timezone");
-        if (val == null || "".equals(val)) {
+        String val = (String) thingConfig.get("timezone");
+        if (val == null || val.isBlank()) {
             zoneId = this.timeZoneProvider.getTimeZone();
             thingConfig.put("timezone", zoneId.getId());
         } else {
-            zoneId = ZoneId.of((String) val);
+            zoneId = ZoneId.of(val);
         }
 
         updateConfiguration(thingConfig);
