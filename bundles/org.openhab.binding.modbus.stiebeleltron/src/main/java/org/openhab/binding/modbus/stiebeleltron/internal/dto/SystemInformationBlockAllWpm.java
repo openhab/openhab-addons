@@ -44,9 +44,12 @@ public class SystemInformationBlockAllWpm extends SystemInformationBlock {
     public short temperatureAreaCooling;
     public short temperatureAreaCoolingSetPoint;
 
+    // The following three values are only available for WPM3
     public short temperatureCollectorSolar;
     public short temperatureCylinderSolar;
     public int runtimeSolar;
+
+    // The following three values are only available for WPMsystem and WPM3
     public short temperatureExtHeatSource;
     public short temperatureExtHeatSourceSetPoint;
     public int runtimeExtHeatSource;
@@ -57,6 +60,7 @@ public class SystemInformationBlockAllWpm extends SystemInformationBlock {
     public short temperatureSourceMin;
     public short pressureSource;
 
+    // The following three values are only available for WPM3i
     public short temperatureHotgas;
     public short pressureHigh;
     public short pressureLow;

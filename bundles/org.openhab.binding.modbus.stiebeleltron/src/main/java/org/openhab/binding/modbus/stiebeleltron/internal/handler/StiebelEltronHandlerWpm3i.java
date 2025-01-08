@@ -32,7 +32,7 @@ import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemParameterBloc
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateBlockAllWpm;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.EnergyBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.RuntimeBlockParser;
-import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInfromationBlockAllWpmParser;
+import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInformationBlockAllWpmParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemParameterBlockAllWpmParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemStateBlockParserAllWpm;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
@@ -139,7 +139,7 @@ public class StiebelEltronHandlerWpm3i extends BaseThingHandler {
     /**
      * Parser used to convert incoming raw messages into system blocks
      */
-    private final SystemInfromationBlockAllWpmParser systemInformationBlockParser = new SystemInfromationBlockAllWpmParser();
+    private final SystemInformationBlockAllWpmParser systemInformationBlockParser = new SystemInformationBlockAllWpmParser();
     /**
      * Parser used to convert incoming raw messages into system parameter blocks
      */
