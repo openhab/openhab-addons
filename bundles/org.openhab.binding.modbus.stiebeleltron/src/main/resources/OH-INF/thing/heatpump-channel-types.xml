@@ -270,13 +270,13 @@
 		<item-type>Number:Pressure</item-type>
 		<label>High Pressure</label>
 		<category>pressure</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="low-pressure-type">
 		<item-type>Number:Pressure</item-type>
 		<label>Low Pressure</label>
 		<category>pressure</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 
