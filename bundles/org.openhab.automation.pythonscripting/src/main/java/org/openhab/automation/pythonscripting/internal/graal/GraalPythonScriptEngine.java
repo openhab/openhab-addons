@@ -39,9 +39,9 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Context.Builder;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.PolyglotAccess;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
+import org.graalvm.polyglot.SourceSection;
 import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.proxy.Proxy;
 
@@ -132,22 +132,16 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
 
         Context.Builder contextConfigToUse = contextConfig;
         if (contextConfigToUse == null) {
-            contextConfigToUse = Context.newBuilder() // TODO: ID
+            contextConfigToUse = Context.newBuilder(ID) // TODO: ID
                     .allowExperimentalOptions(true) //
                     .allowAllAccess(true) //
                     .allowHostAccess(HostAccess.ALL) //
-                    .allowPolyglotAccess(PolyglotAccess.ALL)
                     // TODO .allowIO(IOAccess.newBuilder().allowHostSocketAccess(true).fileSystem(null).build()) //
-                    // TODO .allowAllAccess(false) //
-                    // allows python ao access the java language
-                    // TODO .allowHostAccess(HostAccess.ALL) //
                     // allow creating python threads
                     .allowCreateThread(true) //
                     // allow running Python native extensions
                     .allowNativeAccess(true) //
                     // allow exporting Python values to polyglot bindings and accessing Java
-                    // from Python
-                    .allowPolyglotAccess(PolyglotAccess.ALL) //
                     // choose the backend for the POSIX module
                     .option(PYTHON_OPTION_POSIXMODULEBACKEND, "java") //
                     // equivalent to the Python -B flag
@@ -155,23 +149,23 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
                     // Force to automatically import site.py module, to make Python packages available
                     .option(PYTHON_OPTION_FORCEIMPORTSITE, "true") //
                     // causes the interpreter to always assume hash-based pycs are valid
-                    .option(PYTHON_OPTION_CHECKHASHPYCSMODE, "never") //
-                    // The sys.executable path, a virtual path that is used by the interpreter
-                    // to discover packages
-                    .engine(engine);
+                    .option(PYTHON_OPTION_CHECKHASHPYCSMODE, "never");
         }
         this.factory = (factory == null) ? new GraalPythonScriptEngineFactory(engineToUse) : factory;
         this.contextConfig = contextConfigToUse.engine(engineToUse);
-        // this.contextConfig = contextConfigToUse.option(PYTHON_SCRIPT_ENGINE_GLOBAL_SCOPE_IMPORT_OPTION, "true")
-        // .engine(engineToUse);
         this.context.setBindings(new GraalPythonBindings(this.contextConfig, this.context, this),
                 ScriptContext.ENGINE_SCOPE);
     }
 
-    static Context createDefaultContext(Context.Builder builder) {
+    static Context createDefaultContext(Context.Builder builder, ScriptContext ctxt) {
         DelegatingInputStream in = new DelegatingInputStream();
         DelegatingOutputStream out = new DelegatingOutputStream();
         DelegatingOutputStream err = new DelegatingOutputStream();
+        if(ctxt != null) {
+            in.setReader(ctxt.getReader());
+            out.setWriter(ctxt.getWriter());
+            err.setWriter(ctxt.getErrorWriter());
+        }
         builder.in(in).out(out).err(err);
         Context ctx = builder.build();
         ctx.getPolyglotBindings().putMember(OUT_SYMBOL, out);
@@ -328,7 +322,20 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
             // Re-use the stack-trace of PolyglotException (with guest-language stack-frames)
             sex.setStackTrace(ex.getStackTrace());
         } else {
-            sex = new ScriptException(ex);
+            SourceSection sourceSection = ex.getSourceLocation();
+            if (sourceSection != null && sourceSection.isAvailable()) {
+                Source source = sourceSection.getSource();
+                String fileName = source.getPath();
+                if (fileName == null) {
+                    fileName = source.getName();
+                }
+                int lineNo = sourceSection.getStartLine();
+                int columnNo = sourceSection.getStartColumn();
+                sex = new ScriptException(ex.getMessage(), fileName, lineNo, columnNo);
+                sex.initCause(ex);
+            } else {
+                sex = new ScriptException(ex);
+            }
         }
         return sex;
     }
@@ -348,7 +355,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
         Object ctx = engineB.get(POLYGLOT_CONTEXT);
         if (!(ctx instanceof Context)) {
             Context.Builder builder = contextConfig;
-            ctx = createDefaultContext(builder);
+            ctx = createDefaultContext(builder, context);
             engineB.put(POLYGLOT_CONTEXT, ctx);
         }
         return (Context) ctx;
