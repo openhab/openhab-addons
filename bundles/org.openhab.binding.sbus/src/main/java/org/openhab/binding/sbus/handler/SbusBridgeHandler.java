@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -15,7 +15,6 @@ package org.openhab.binding.sbus.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sbus.handler.config.SbusBridgeConfig;
-import org.openhab.binding.sbus.internal.SbusServiceImpl;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -70,12 +69,8 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            try {
-                ((SbusServiceImpl) service).initialize(config.host, config.port);
-                updateStatus(ThingStatus.ONLINE);
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
+            service.initialize(config.host, config.port);
+            updateStatus(ThingStatus.ONLINE);
 
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
