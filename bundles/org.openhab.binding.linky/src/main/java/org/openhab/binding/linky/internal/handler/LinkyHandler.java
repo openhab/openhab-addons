@@ -16,6 +16,7 @@ import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -38,6 +39,7 @@ import org.openhab.binding.linky.internal.dto.ConsumptionReport.Consumption;
 import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.UserInfo;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -67,6 +69,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class LinkyHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
+    private ZoneId zoneId = ZoneId.systemDefault();
 
     private static final int REFRESH_FIRST_HOUR_OF_DAY = 1;
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
@@ -155,6 +158,19 @@ public class LinkyHandler extends BaseThingHandler {
         logger.debug("Initializing Linky handler.");
         updateStatus(ThingStatus.UNKNOWN);
 
+        // update the timezone if not set to default to openhab default timezone
+        Configuration thingConfig = getConfig();
+
+        Object val = thingConfig.get("timezone");
+        if (val == null || "".equals(val)) {
+            zoneId = this.timeZoneProvider.getTimeZone();
+            thingConfig.put("timezone", zoneId.getId());
+        } else {
+            zoneId = ZoneId.of((String) val);
+        }
+
+        updateConfiguration(thingConfig);
+
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
         if (config.seemsValid()) {
             enedisApi = new EnedisHttpApi(config, gson, httpClient);
@@ -217,8 +233,8 @@ public class LinkyHandler extends BaseThingHandler {
             cachedPowerData.getValue().ifPresentOrElse(values -> {
                 Aggregate days = values.aggregats.days;
                 updatekVAChannel(PEAK_POWER, days.datas.get(days.datas.size() - 1).valeur);
-                updateState(PEAK_TIMESTAMP, new DateTimeType(
-                        days.datas.get(days.datas.size() - 1).dateDebut.atZone(this.timeZoneProvider.getTimeZone())));
+                updateState(PEAK_TIMESTAMP,
+                        new DateTimeType(days.datas.get(days.datas.size() - 1).dateDebut.atZone(zoneId)));
             }, () -> {
                 updateKwhChannel(PEAK_POWER, Double.NaN);
                 updateState(PEAK_TIMESTAMP, UnDefType.UNDEF);
