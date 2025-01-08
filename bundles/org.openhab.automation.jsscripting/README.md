@@ -803,7 +803,7 @@ actions.notificationBuilder('Hello World!').logOnly()
 
 // Sends a notification about a temperature change ...
 actions.notificationBuilder(str).withIcon("oh:temperature").withTag("Temperature change").withReferenceId("living room").send();
-//and clears it again after 10 minutes
+// ... and hides it after 10 minutes
 setTimeout(() => {
   actions.notificationBuilder().hide().withReferenceId("living room").send();
 }, 10 * 60 * 1000);
