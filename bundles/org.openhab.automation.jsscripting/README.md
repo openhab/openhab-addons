@@ -801,7 +801,7 @@ actions.notificationBuilder('Hello World!').logOnly().send();
 actions.notificationBuilder('Hello World!').logOnly()
   .withIcon('f7:bell_fill').withTag('important').send();
 
-//sends a notification about a temperature change...
+// Sends a notification about a temperature change ...
 actions.notificationBuilder(str).withIcon("oh:temperature").withTag("Temperature change").withReferenceId("living room").send();
 //and clears it again after 10 minutes
 setTimeout(() => {
