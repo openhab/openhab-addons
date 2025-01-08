@@ -23,7 +23,7 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
  *
  */
 @NonNullByDefault
-public class SystemInfromationBlockAllWpmParser extends AbstractBaseParser {
+public class SystemInformationBlockAllWpmParser extends AbstractBaseParser {
 
     public SystemInformationBlockAllWpm parse(ModbusRegisterArray raw) {
         SystemInformationBlockAllWpm block = new SystemInformationBlockAllWpm();

@@ -30,7 +30,7 @@ import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemInformationBl
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemParameterBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.EnergyBlockParser;
-import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInfromationBlockParser;
+import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInformationBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemParameterBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemStateBlockParser;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
@@ -134,7 +134,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
     /**
      * Parser used to convert incoming raw messages into system blocks
      */
-    private final SystemInfromationBlockParser systemInformationBlockParser = new SystemInfromationBlockParser();
+    private final SystemInformationBlockParser systemInformationBlockParser = new SystemInformationBlockParser();
     /**
      * Parser used to convert incoming raw messages into system state blocks
      */

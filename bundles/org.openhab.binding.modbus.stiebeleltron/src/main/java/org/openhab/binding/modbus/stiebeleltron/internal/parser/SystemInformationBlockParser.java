@@ -24,7 +24,7 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
  *
  */
 @NonNullByDefault
-public class SystemInfromationBlockParser extends AbstractBaseParser {
+public class SystemInformationBlockParser extends AbstractBaseParser {
 
     public SystemInformationBlock parse(ModbusRegisterArray raw) {
         SystemInformationBlock block = new SystemInformationBlock();
