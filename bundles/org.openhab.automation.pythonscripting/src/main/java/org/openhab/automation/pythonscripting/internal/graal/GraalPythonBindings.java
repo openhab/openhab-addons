@@ -30,7 +30,7 @@ import org.graalvm.polyglot.proxy.ProxyObject;
 /***
  * @author Jeff James - Initial contribution
  */
-final class GraalPythonBindings extends AbstractMap<String, Object> implements Bindings, AutoCloseable {
+final class GraalPythonBindings extends AbstractMap<String, Object> implements javax.script.Bindings, AutoCloseable {
     private static final String SCRIPT_CONTEXT_GLOBAL_BINDINGS_IMPORT_FUNCTION_NAME = "importScriptEngineGlobalBindings";
 
     private static final TypeLiteral<Map<String, Object>> STRING_MAP = new TypeLiteral<Map<String, Object>>() {
@@ -65,7 +65,7 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements B
     }
 
     private void initContext() {
-        context = GraalPythonScriptEngine.createDefaultContext(contextBuilder);
+        context = GraalPythonScriptEngine.createDefaultContext(contextBuilder, engineScriptContext);
         initGlobal();
     }
 
@@ -86,8 +86,13 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements B
     }
 
     private void updateBinding(String key, Object value) {
-        // GraalPythonScriptEngine.evalInternal(context, "def set_global(key, value):\n globals()[key]=value")
-        // .execute(key, value);
+        requireContext();
+        context.getBindings("python").putMember(key, value);
+        // GraalPythonScriptEngine.evalInternal(context,
+            // "lambda key, value: 
+            // def set_global(key, value):\n" +
+            // " globals()[key] = value\n" + 
+            // "set_global(key, value)").execute(key, value);
     }
 
     private Value deletePropertyFunction() {
@@ -114,6 +119,9 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements B
     public Object put(String name, Object v) {
         checkKey(name);
         requireContext();
+
+        // JJ: modified to directly put in context, not sure how the GraalJSBindings ever could have injected items without this.
+        context.getBindings("python").putMember(name, v);
         return global.put(name, v);
     }
 

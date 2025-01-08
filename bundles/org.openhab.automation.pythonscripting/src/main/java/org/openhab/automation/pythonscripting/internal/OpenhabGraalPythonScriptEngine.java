@@ -12,7 +12,8 @@
  */
 package org.openhab.automation.pythonscripting.internal;
 
-import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
+import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_ENGINE_IDENTIFIER;
+import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_EXTENSION_ACCESSOR;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -148,11 +149,6 @@ public class OpenhabGraalPythonScriptEngine
         if (scriptExtensionAccessor == null) {
             throw new IllegalStateException("Failed to retrieve script extension accessor from engine bindings");
         }
-
-        ScriptAccessorComputedHashMap accessorGlobals = new ScriptAccessorComputedHashMap(scriptExtensionAccessor, localEngineIdentifier);
-
-        delegate.getPolyglotContext().getBindings("python").putMember("scope", accessorGlobals);
-        delegate.getPolyglotContext().getBindings("python").putMember("testString", testString);
 
         initialized = true;
     }
