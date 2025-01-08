@@ -802,7 +802,7 @@ actions.notificationBuilder('Hello World!').logOnly()
   .withIcon('f7:bell_fill').withTag('important').send();
 
 // Sends a notification about a temperature change ...
-actions.notificationBuilder(str).withIcon('oh:temperature').withTag('Temperature change').withReferenceId('livingRoom').send();
+actions.notificationBuilder('new temperature: xyz').withIcon('oh:temperature').withTag('Temperature change').withReferenceId('livingRoom').send();
 // ... and hides it again after 10 minutes
 setTimeout(() => {
   actions.notificationBuilder().hide().withReferenceId('livingRoom').send();
