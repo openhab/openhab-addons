@@ -12,7 +12,8 @@
  */
 package org.openhab.automation.pythonscripting.internal;
 
-import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
+import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_ENGINE_IDENTIFIER;
+import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_EXTENSION_ACCESSOR;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,9 +81,6 @@ public class OpenhabGraalPythonScriptEngine
     private String engineIdentifier; // this field is very helpful for debugging, please do not remove it
 
     private boolean initialized = false;
-    private final boolean jythonEmulation;
-
-    public String testString = "Test String";
 
     /**
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
@@ -91,7 +89,6 @@ public class OpenhabGraalPythonScriptEngine
     public OpenhabGraalPythonScriptEngine(boolean jythonEmulation) {
         // JSDependencyTracker jsDependencyTracker) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
-        this.jythonEmulation = jythonEmulation;
 
         script_bundle = FrameworkUtil.getBundle(org.openhab.core.automation.module.script.ScriptEngineManager.class);
 
@@ -181,6 +178,10 @@ public class OpenhabGraalPythonScriptEngine
 
     @Override
     public void close() {
+        try {
+            ((AutoCloseable) ENGINE).close();
+        } catch (Exception e) {
+        }
     }
 
     /**
