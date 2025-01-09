@@ -58,7 +58,7 @@ public class OpenhabGraalPythonScriptEngine
     private static final String PYTHON_OPTION_FORCEIMPORTSITE = "python.ForceImportSite";
     private static final String PYTHON_OPTION_CHECKHASHPYCSMODE = "python.CheckHashPycsMode";
 
-    private static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
+    public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
 
     /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalPythonScriptEngine} */
     private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
@@ -181,6 +181,10 @@ public class OpenhabGraalPythonScriptEngine
 
     @Override
     public void close() {
+        try {
+            delegate.close();
+        } catch (Exception e) {
+        }
     }
 
     /**
