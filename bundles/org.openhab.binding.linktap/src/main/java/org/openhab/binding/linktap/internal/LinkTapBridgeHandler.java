@@ -150,7 +150,6 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             backgroundGwPollingScheduler = scheduler.scheduleWithFixedDelay(() -> {
                 if (lastGwCommandRecvTs + 120000 < System.currentTimeMillis()) {
                     getGatewayConfiguration(false);
-                    ;
                 }
             }, 5000, 120000, TimeUnit.MILLISECONDS);
         }
@@ -239,8 +238,9 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     }
 
     public boolean getGatewayConfiguration(final boolean forceFreshRead) {
-        if (forceFreshRead)
+        if (forceFreshRead) {
             lastGetConfigCache.invalidateValue();
+        }
         String resp = "";
         synchronized (getConfigLock) {
             resp = lastGetConfigCache.getValue();
