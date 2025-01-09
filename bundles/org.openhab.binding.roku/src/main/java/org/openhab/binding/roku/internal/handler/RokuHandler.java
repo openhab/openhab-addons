@@ -15,7 +15,7 @@ package org.openhab.binding.roku.internal.handler;
 import static org.openhab.binding.roku.internal.RokuBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -214,7 +214,7 @@ public class RokuHandler extends BaseThingHandler {
                     }
 
                     if (position >= 0 && duration > 0) {
-                        updateState(END_TIME, new DateTimeType(ZonedDateTime.now().plusSeconds(duration - position)));
+                        updateState(END_TIME, new DateTimeType(Instant.now().plusSeconds(duration - position)));
                         updateState(PROGRESS,
                                 new PercentType(BigDecimal.valueOf(Math.round(position / (double) duration * 100.0))));
                     } else {
