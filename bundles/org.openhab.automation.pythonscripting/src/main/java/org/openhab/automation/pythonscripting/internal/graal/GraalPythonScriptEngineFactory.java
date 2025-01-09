@@ -30,13 +30,11 @@ import org.slf4j.LoggerFactory;
  * @author Jeff James - Initial contribution
  */
 public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory {
-    private static final String LANGUAGE_ID = "python";
+    private static final String LANGUAGE = "python";
     private final Logger logger = LoggerFactory.getLogger(GraalPythonScriptEngineFactory.class);
 
     private WeakReference<Engine> defaultEngine;
     private final Engine userDefinedEngine;
-
-    private static Language language;
 
     private static final String ENGINE_NAME = "Graal.py";
     private static final String NAME = "python";
@@ -48,17 +46,11 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
         this.userDefinedEngine = null;
 
         defaultEngine = new WeakReference<Engine>(createDefaultEngine());
-        logger.debug("Languages supported: {}", defaultEngine.get().getLanguages().keySet().toString());
-
-        language = defaultEngine.get().getLanguages().get(LANGUAGE_ID);
     }
 
     public GraalPythonScriptEngineFactory(Engine engine) {
-        super();
+        this.defaultEngine = null;
         this.userDefinedEngine = engine;
-        language = engine.getLanguages().get(LANGUAGE_ID);
-
-        logger.debug("Languages supported: {}", engine.getLanguages().keySet().toString());
     }
 
     private static Engine createDefaultEngine() {
@@ -72,7 +64,16 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
      * Returns the underlying polyglot engine.
      */
     public Engine getPolyglotEngine() {
-        return (userDefinedEngine != null) ? userDefinedEngine : defaultEngine.get();
+        if (userDefinedEngine != null) {
+            return userDefinedEngine;
+        } else {
+            Engine engine = defaultEngine == null ? null : defaultEngine.get();
+            if (engine == null) {
+                engine = createDefaultEngine();
+                defaultEngine = new WeakReference<>(engine);
+            }
+            return engine;
+        }
     }
 
     @Override
@@ -92,21 +93,25 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
 
     @Override
     public List<String> getMimeTypes() {
+        Language language = getPolyglotEngine().getLanguages().get(LANGUAGE);
         return List.copyOf(language.getMimeTypes());
     }
 
     @Override
     public List<String> getNames() {
-        return List.of(language.getName(), LANGUAGE_ID, language.getImplementationName());
+        Language language = getPolyglotEngine().getLanguages().get(LANGUAGE);
+        return List.of(language.getName(), LANGUAGE, language.getImplementationName());
     }
 
     @Override
     public String getLanguageName() {
+        Language language = getPolyglotEngine().getLanguages().get(LANGUAGE);
         return language.getName();
     }
 
     @Override
     public String getLanguageVersion() {
+        Language language = getPolyglotEngine().getLanguages().get(LANGUAGE);
         return language.getVersion();
     }
 
