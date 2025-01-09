@@ -45,7 +45,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 ## core.helper
 
 | Class                    | Usage                                                                                 | Description                                                                                         |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | rule                     | @decorator                                                                            | Decorate/Enable a class as a rule                                                                   |
 | logger                   | logger.info, logger.warn ...                                                          | Logger object with prefix 'org.automation.pythonscripting.<filename>'                               |
 | startTimer               | startTimer(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0)   | Starts a timer in <duration> seconds                                                                |
@@ -60,7 +60,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 ## core.actions
 
 | Class                    | Usage                                                                                 | Description                                                                                         |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | Audio                    |                                                                                       |                                                                                                     |
 | Exec                     |                                                                                       |                                                                                                     |
 | HTTP                     |                                                                                       |                                                                                                     |
@@ -74,7 +74,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 ## core.triggers
 
 | Class                    | Usage                                                                                 | Description                                                                                         |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | CronTrigger              | CronTrigger(cron_expression, trigger_name=None)                                       |                                                                                                     |
 | ItemStateUpdateTrigger   | ItemStateUpdateTrigger(item_name, state=None, trigger_name=None)                      |                                                                                                     |
 | ItemStateChangeTrigger   | ItemStateChangeTrigger(item_name, state=None, previous_state=None, trigger_name=None) |                                                                                                     |
@@ -84,3 +84,8 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | ChannelEventTrigger      | ChannelEventTrigger(channel_uid, event=None, trigger_name=None)                       |                                                                                                     |
 | GenericEventTrigger      | GenericEventTrigger(event_source, event_types, event_topic="*/*", trigger_name=None)  |                                                                                                     |
 | ItemEventTrigger         | ItemEventTrigger(event_types, item_name=None, trigger_name=None)                      |                                                                                                     |
+
+## limitations
+
+- graalby can't handle arguments in constructors of java objects. Means you can't instantiate a javaobject in python with a parameter. https://github.com/oracle/graalpython/issues/367
+- graalpy does not support SET and LIST types as arguments of function calls to java objects https://github.com/oracle/graalpython/issues/260

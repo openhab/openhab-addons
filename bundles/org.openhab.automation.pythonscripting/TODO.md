@@ -5,5 +5,3 @@
 - find a good concept for handling datetime conversion
 
 - fix binding reload
-
-
