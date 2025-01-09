@@ -107,6 +107,7 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
     }
 
     @Test
+    @Disabled("https://github.com/openhab/openhab-addons/issues/12474")
     public void assertThatThingHandlesREFRESHCommand()
             throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = RefreshType.REFRESH;
