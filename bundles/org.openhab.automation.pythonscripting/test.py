@@ -1,1 +1,0 @@
-/Users/jeff/openhab/conf/automation/python/test.py

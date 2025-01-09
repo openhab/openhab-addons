@@ -64,14 +64,6 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     private boolean jythonEmulation = false;
 
     public static final String SCRIPT_TYPE = "py3";
-
-    // private static final GraalPythonScriptEngineFactory factory = new GraalPythonScriptEngineFactory();
-
-    // private final List<String> scriptTypes = (List<String>) Stream.of(factory.getExtensions(),
-    // factory.getMimeTypes()) //
-    // .flatMap(List::stream) //
-    // .toList();
-
     private final List<String> scriptTypes = Arrays.asList(PythonScriptEngineFactory.SCRIPT_TYPE);
 
     @Activate
@@ -95,8 +87,6 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
     @Override
     public void scopeValues(ScriptEngine scriptEngine, Map<String, Object> scopeValues) {
-        logger.debug("Scope Values: {}", scopeValues);
-
         for (Entry<String, Object> entry : scopeValues.entrySet()) {
             scriptEngine.put(entry.getKey(), entry.getValue());
         }
@@ -110,13 +100,6 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
         return new OpenhabGraalPythonScriptEngine(jythonEmulation);
         // return new DebuggingGraalScriptEngine<>(new OpenhabGraalPythonScriptEngine(jythonEmulation));
     }
-
-    /*
-     * @Override
-     * public @Nullable ScriptDependencyTracker getDependencyTracker() {
-     * return jsDependencyTracker;
-     * }
-     */
 
     @Modified
     protected void modified(Map<String, ?> config) {
