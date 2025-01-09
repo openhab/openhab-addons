@@ -14,6 +14,8 @@ package org.openhab.binding.roku.internal.handler;
 
 import static org.openhab.binding.roku.internal.RokuBindingConstants.*;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +36,10 @@ import org.openhab.binding.roku.internal.dto.DeviceInfo;
 import org.openhab.binding.roku.internal.dto.Player;
 import org.openhab.binding.roku.internal.dto.TvChannel;
 import org.openhab.binding.roku.internal.dto.TvChannels.Channel;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -195,20 +199,31 @@ public class RokuHandler extends BaseThingHandler {
                             PLAY.equalsIgnoreCase(playerInfo.getState()) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
 
                     // Remove non-numeric from string, ie: ' ms'
-                    String position = playerInfo.getPosition().replaceAll(NON_DIGIT_PATTERN, EMPTY);
-                    if (!EMPTY.equals(position)) {
-                        updateState(TIME_ELAPSED,
-                                new QuantityType<>(Integer.parseInt(position) / 1000, API_SECONDS_UNIT));
+                    final String positionStr = playerInfo.getPosition().replaceAll(NON_DIGIT_PATTERN, EMPTY);
+                    int position = -1;
+                    if (!EMPTY.equals(positionStr)) {
+                        position = Integer.parseInt(positionStr) / 1000;
+                        updateState(TIME_ELAPSED, new QuantityType<>(position, API_SECONDS_UNIT));
                     } else {
                         updateState(TIME_ELAPSED, UnDefType.UNDEF);
                     }
 
-                    String duration = playerInfo.getDuration().replaceAll(NON_DIGIT_PATTERN, EMPTY);
-                    if (!EMPTY.equals(duration)) {
-                        updateState(TIME_TOTAL,
-                                new QuantityType<>(Integer.parseInt(duration) / 1000, API_SECONDS_UNIT));
+                    final String durationStr = playerInfo.getDuration().replaceAll(NON_DIGIT_PATTERN, EMPTY);
+                    int duration = -1;
+                    if (!EMPTY.equals(durationStr)) {
+                        duration = Integer.parseInt(durationStr) / 1000;
+                        updateState(TIME_TOTAL, new QuantityType<>(duration, API_SECONDS_UNIT));
                     } else {
                         updateState(TIME_TOTAL, UnDefType.UNDEF);
+                    }
+
+                    if (position >= 0 && duration > 0) {
+                        updateState(END_TIME, new DateTimeType(Instant.now().plusSeconds(duration - position)));
+                        updateState(PROGRESS,
+                                new PercentType(BigDecimal.valueOf(Math.round(position / (double) duration * 100.0))));
+                    } else {
+                        updateState(END_TIME, UnDefType.UNDEF);
+                        updateState(PROGRESS, UnDefType.UNDEF);
                     }
                 } catch (NumberFormatException e) {
                     logger.debug("Unable to parse playerInfo integer value. Exception: {}", e.getMessage());
@@ -224,6 +239,8 @@ public class RokuHandler extends BaseThingHandler {
                 updateState(PLAY_MODE, UnDefType.UNDEF);
                 updateState(TIME_ELAPSED, UnDefType.UNDEF);
                 updateState(TIME_TOTAL, UnDefType.UNDEF);
+                updateState(END_TIME, UnDefType.UNDEF);
+                updateState(PROGRESS, UnDefType.UNDEF);
             }
 
             if (thingTypeUID.equals(THING_TYPE_ROKU_TV) && tvActive) {
