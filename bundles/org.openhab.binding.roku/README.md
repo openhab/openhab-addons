@@ -46,6 +46,8 @@ The following channels are available:
 | playMode           | String               | The current playback mode ie: stop, play, pause (ReadOnly).                                                                                                     |
 | timeElapsed        | Number:Time          | The total number of seconds of playback time elapsed for the current playing title (ReadOnly).                                                                  |
 | timeTotal          | Number:Time          | The total length of the current playing title in seconds (ReadOnly). This data is not provided by all streaming apps.                                           |
+| endTime            | DateTime             | The date/time when the currently playing media will end (ReadOnly). N/A if timeTotal is not provided by the current streaming app.                              |
+| progress           | Dimmer               | The current progress [0-100%] of playing media (ReadOnly). N/A if timeTotal is not provided by the current streaming app.                                       |
 | activeChannel      | String               | A dropdown containing a list of available TV channels on the Roku TV. The channel currently tuned is automatically selected. The list updates every 10 minutes. |
 | signalMode         | String               | The signal type of the current TV channel, ie: 1080i (ReadOnly).                                                                                                |
 | signalQuality      | Number:Dimensionless | The signal quality of the current TV channel, 0-100% (ReadOnly).                                                                                                |
@@ -59,6 +61,7 @@ The following channels are available:
 Some Notes:
 
 - The values for `activeApp`, `activeAppName`, `playMode`, `timeElapsed`, `timeTotal`, `activeChannel`, `signalMode`, `signalQuality`, `channelName`, `programTitle`, `programDescription`, `programRating`, `power` & `powerState` refresh automatically per the configured `refresh` interval.
+- The `endTime` and `progress` channels may not be accurate for some streaming apps especially 'live' streams where the `timeTotal` value constantly increases.
 
 **List of available button commands for Roku streaming devices:**
 
@@ -113,32 +116,36 @@ roku:roku_tv:mytv1 "My Roku TV" [ hostName="192.168.10.1", refresh=10 ]
 ```java
 // Roku streaming media player items:
 
-String Player_ActiveApp        "Current App: [%s]"         { channel="roku:roku_player:myplayer1:activeApp" }
-String Player_ActiveAppName    "Current App Name: [%s]"    { channel="roku:roku_player:myplayer1:activeAppName" }
-String Player_Button           "Send Command to Roku"      { channel="roku:roku_player:myplayer1:button" }
-Player Player_Control          "Control"                   { channel="roku:roku_player:myplayer1:control" }
-String Player_PlayMode         "Status: [%s]"              { channel="roku:roku_player:myplayer1:playMode" }
-Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="roku:roku_player:myplayer1:timeElapsed" }
-Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"   { channel="roku:roku_player:myplayer1:timeTotal" }
+String Player_ActiveApp        "Current App: [%s]"             { channel="roku:roku_player:myplayer1:activeApp" }
+String Player_ActiveAppName    "Current App Name: [%s]"        { channel="roku:roku_player:myplayer1:activeAppName" }
+String Player_Button           "Send Command to Roku"          { channel="roku:roku_player:myplayer1:button" }
+Player Player_Control          "Control"                       { channel="roku:roku_player:myplayer1:control" }
+String Player_PlayMode         "Status: [%s]"                  { channel="roku:roku_player:myplayer1:playMode" }
+Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]"     { channel="roku:roku_player:myplayer1:timeElapsed" }
+Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"       { channel="roku:roku_player:myplayer1:timeTotal" }
+DateTime Player_EndTime        "End Time: [%1$tl:%1$tM %1$tp]" { channel="roku:roku_player:myplayer1:endTime" }
+Dimmer Player_Progress         "Progress [%.0f%%]"             { channel="roku:roku_player:myplayer1:progress" }
 
 // Roku TV items:
 
-Switch Player_Power              "Power: [%s]"               { channel="roku:roku_tv:mytv1:power" }
-String Player_PowerState         "Power State: [%s]          { channel="roku:roku_tv:mytv1:powerState" }
-String Player_ActiveApp          "Current App: [%s]"         { channel="roku:roku_tv:mytv1:activeApp" }
-String Player_ActiveAppName      "Current App Name: [%s]"    { channel="roku:roku_tv:mytv1:activeAppName" }
-String Player_Button             "Send Command to Roku"      { channel="roku:roku_tv:mytv1:button" }
-Player Player_Control            "Control"                   { channel="roku:roku_tv:mytv1:control" }
-String Player_PlayMode           "Status: [%s]"              { channel="roku:roku_tv:mytv1:playMode" }
-Number:Time Player_TimeElapsed   "Elapsed Time: [%d %unit%]" { channel="roku:roku_tv:mytv1:timeElapsed" }
-Number:Time Player_TimeTotal     "Total Time: [%d %unit%]"   { channel="roku:roku_tv:mytv1:timeTotal" }
-String Player_ActiveChannel      "Current Channel: [%s]"     { channel="roku:roku_tv:mytv1:activeChannel" }
-String Player_SignalMode         "Signal Mode: [%s]"         { channel="roku:roku_tv:mytv1:signalMode" }
-Number Player_SignalQuality      "Signal Quality: [%d %%]"   { channel="roku:roku_tv:mytv1:signalQuality" }
-String Player_ChannelName        "Channel Name: [%s]"        { channel="roku:roku_tv:mytv1:channelName" }
-String Player_ProgramTitle       "Program Title: [%s]"       { channel="roku:roku_tv:mytv1:programTitle" }
-String Player_ProgramDescription "Program Description: [%s]" { channel="roku:roku_tv:mytv1:programDescription" }
-String Player_ProgramRating      "Program Rating: [%s]"      { channel="roku:roku_tv:mytv1:programRating" }
+Switch Player_Power              "Power: [%s]"                   { channel="roku:roku_tv:mytv1:power" }
+String Player_PowerState         "Power State: [%s]              { channel="roku:roku_tv:mytv1:powerState" }
+String Player_ActiveApp          "Current App: [%s]"             { channel="roku:roku_tv:mytv1:activeApp" }
+String Player_ActiveAppName      "Current App Name: [%s]"        { channel="roku:roku_tv:mytv1:activeAppName" }
+String Player_Button             "Send Command to Roku"          { channel="roku:roku_tv:mytv1:button" }
+Player Player_Control            "Control"                       { channel="roku:roku_tv:mytv1:control" }
+String Player_PlayMode           "Status: [%s]"                  { channel="roku:roku_tv:mytv1:playMode" }
+Number:Time Player_TimeElapsed   "Elapsed Time: [%d %unit%]"     { channel="roku:roku_tv:mytv1:timeElapsed" }
+Number:Time Player_TimeTotal     "Total Time: [%d %unit%]"       { channel="roku:roku_tv:mytv1:timeTotal" }
+DateTime Player_EndTime          "End Time: [%1$tl:%1$tM %1$tp]" { channel="roku:roku_tv:mytv1:endTime" }
+Dimmer Player_Progress           "Progress [%.0f%%]"             { channel="roku:roku_tv:mytv1:progress" }
+String Player_ActiveChannel      "Current Channel: [%s]"         { channel="roku:roku_tv:mytv1:activeChannel" }
+String Player_SignalMode         "Signal Mode: [%s]"             { channel="roku:roku_tv:mytv1:signalMode" }
+Number Player_SignalQuality      "Signal Quality: [%d %%]"       { channel="roku:roku_tv:mytv1:signalQuality" }
+String Player_ChannelName        "Channel Name: [%s]"            { channel="roku:roku_tv:mytv1:channelName" }
+String Player_ProgramTitle       "Program Title: [%s]"           { channel="roku:roku_tv:mytv1:programTitle" }
+String Player_ProgramDescription "Program Description: [%s]"     { channel="roku:roku_tv:mytv1:programDescription" }
+String Player_ProgramRating      "Program Rating: [%s]"          { channel="roku:roku_tv:mytv1:programRating" }
 ```
 
 ### `roku.sitemap` Example
@@ -154,6 +161,8 @@ sitemap roku label="Roku" {
         Text item=Player_PlayMode
         Text item=Player_TimeElapsed icon="time"
         Text item=Player_TimeTotal icon="time"
+        Text item=Player_EndTime icon="time"
+        Slider item=Player_Progress icon="time"
         // The following items apply to Roku TVs only
         Switch item=Player_Power
         Text item=Player_PowerState
