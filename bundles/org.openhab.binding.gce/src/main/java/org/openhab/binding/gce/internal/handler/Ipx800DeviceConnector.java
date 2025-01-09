@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -75,8 +75,11 @@ public class Ipx800DeviceConnector extends Thread {
     }
 
     /**
-     * Stop the device thread
+     *
+     * Stop the
+     * device thread
      */
+
     public void dispose() {
         interrupted = true;
     }
@@ -87,9 +90,20 @@ public class Ipx800DeviceConnector extends Thread {
     }
 
     /**
-     * Send a random keepalive command which cause the IPX to send an update.
-     * If we don't receive the update maxKeepAliveFailure time, the connection is closed
+     *
+     * Send a
+     * random keepalive
+     * command which
+     * cause the
+     * IPX to
+     * send an update.*
+     * If we don't
+     * receive the
+     * update maxKeepAliveFailure time,
+     * the connection
+     * is closed
      */
+
     private void sendKeepalive() {
         PortDefinition pd = PortDefinition.values()[randomizer.nextInt(PortDefinition.AS_SET.size())];
         String command = "%s%d".formatted(pd.m2mCommand, randomizer.nextInt(pd.quantity) + 1);
@@ -153,7 +167,11 @@ public class Ipx800DeviceConnector extends Thread {
     }
 
     /**
-     * Set output of the device sending the corresponding command
+     *
+     * Set output
+     * of the
+     * device sending
+     * the corresponding command**
      *
      * @param targetPort
      * @param targetValue
@@ -165,7 +183,9 @@ public class Ipx800DeviceConnector extends Thread {
     }
 
     /**
-     * Resets the counter value to 0
+     *
+     * Resets the
+     * counter value to 0**
      *
      * @param targetCounter
      */
