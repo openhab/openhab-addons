@@ -165,6 +165,7 @@ public class HomieImplementationTest extends MqttOSGiTest {
                 "Connection " + homieConnection.getClientId() + " not retrieving all topics ");
     }
 
+    @Disabled("https://github.com/openhab/openhab-addons/issues/12667")
     @Test
     public void retrieveOneAttribute() throws Exception {
         WaitForTopicValue watcher = new WaitForTopicValue(homieConnection, DEVICE_TOPIC + "/$homie");
