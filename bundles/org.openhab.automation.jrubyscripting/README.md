@@ -147,10 +147,6 @@ Additional [example rules are available](https://openhab.github.io/openhab-jruby
 After installing this add-on, you will find configuration options in the openHAB portal under _Settings -> Add-on Settings -> JRuby Scripting_.
 Alternatively, JRuby configuration parameters may be set by creating a `jruby.cfg` file in `conf/services/`.
 
-> **_NOTE:_**
-> In openHAB 3.4.x, the `gems` and `require` settings must be manually configured to the value given in the table below.
-Starting from openHAB 4.0, the correct defaults were added, so manual configurations are no longer necessary.
-
 By default this add-on includes the [openhab-scripting](https://github.com/openhab/openhab-jruby) Ruby gem and automatically `require`s it.
 This allows the use of [items](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#items-class_method), [rules](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#rules-class_method), [shared_cache](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#shared_cache-class_method) and other objects in your scripts.
 This functionality can be disabled for users who prefer to manage their own gems and `require`s via the add-on configuration options.
