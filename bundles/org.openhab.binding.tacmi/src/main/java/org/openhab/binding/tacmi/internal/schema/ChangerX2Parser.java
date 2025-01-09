@@ -102,7 +102,7 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
             this.optionFieldName = attributes == null ? null : attributes.get("name");
         } else if ((this.parserState == ParserState.INIT || this.parserState == ParserState.INPUT)
                 && "br".equals(elementName)) {
-            // ignored
+            return; // ignored
         } else if ((this.parserState == ParserState.INIT || this.parserState == ParserState.INPUT)
                 && "input".equals(elementName) && "changeto".equals(id)) {
             this.parserState = ParserState.INPUT_DATA;
@@ -171,7 +171,6 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
                     }
                     this.options.put(ChangerX2Entry.TIME_PERIOD_PARTS, timeParts);
                 } else {
-
                     logger.warn("Error parsing options for {}: Unhandled input field in {}:{}: {}", channelName, line,
                             col, attributes);
                 }
@@ -218,7 +217,7 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
                 }
             }
         } else if (this.parserState == ParserState.INPUT && "span".equals(elementName)) {
-            // span's are ignored...
+            return; // span's are ignored...
         } else {
             logger.debug("Error parsing options for {}: Unexpected CloseElement in {}:{}: {}", channelName, line, col,
                     elementName);
@@ -275,10 +274,11 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
                 sb.append(buffer, offset, len);
             }
         } else if (this.parserState == ParserState.INIT && len == 1 && buffer[offset] == '\n') {
-            // single newline - ignore/drop it...
+            return; // single newline - ignore/drop it...
         } else if (this.parserState == ParserState.INPUT) {
             // this is a label next to the value input field - we currently have no use for it so
             // it's dropped...
+            return;
         } else {
             logger.debug("Error parsing options for {}: Unexpected Text {}:{}: (ctx: {} len: {}) '{}' ",
                     this.channelName, line, col, this.parserState, len, new String(buffer, offset, len));
