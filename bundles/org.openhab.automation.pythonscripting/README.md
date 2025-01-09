@@ -49,11 +49,11 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | rule                     | @decorator                                                                            | Decorate/Enable a class as a rule                                                                   |
 | logger                   | logger.info, logger.warn ...                                                          | Logger object with prefix 'org.automation.pythonscripting.<filename>'                               |
 | startTimer               | startTimer(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0)   | Starts a timer in <duration> seconds                                                                |
-| getGroupMember           | getGroupMember(group_name, item_state = None)                                         | Collect recursive all group memberships. Optional filtered by their state                           |
+| getGroupMember           | getGroupMember(group_name, item_state = None)                                         | Collect recursive all items which are member of these group. Optional filtered by their state       |
 | getItem                  | getItem(name)                                                                         | Get an item                                                                                         |
 | getThing                 | getThing(name)                                                                        | Get a thing                                                                                         |
 | getChannel               | getChannel(name)                                                                      | Get a channel                                                                                       |
-| getItemState             | getItemState(name, default = None)                                                    | Get an item state                                                                                   |
+| getItemState             | getItemState(name, default = None)                                                    | Get an item state. Optional with a default (fallback) value if the item state is undefined          |
 | postUpdate               | postUpdate(name, state, only_if_changed = False)                                      | Post an update. Optional only if the state is different to the current one                          |
 | sendCommand              | sendCommand(name, command, only_if_changed = False)                                   | Send a command. Optional only if the state is different to the current one                          |
 
