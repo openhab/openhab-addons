@@ -12,16 +12,15 @@
  */
 package org.openhab.automation.pythonscripting.internal;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.core.ConfigurableService;
@@ -44,17 +43,20 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PythonScriptEngineFactory implements ScriptEngineFactory {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngineFactory.class);
-    private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
-    private static final String CFG_INJECTION_CACHING_ENABLED = "injectionCachingEnabled";
     private static final String CFG_JYTHON_EMULATION = "jythonEmulation";
 
     private boolean jythonEmulation = false;
 
-    private static final GraalPythonScriptEngineFactory factory = new GraalPythonScriptEngineFactory();
+    public static final String SCRIPT_TYPE = "py3";
 
-    private final List<String> scriptTypes = (List<String>) Stream.of(factory.getExtensions(), factory.getMimeTypes()) //
-            .flatMap(List::stream) //
-            .toList();
+    // private static final GraalPythonScriptEngineFactory factory = new GraalPythonScriptEngineFactory();
+
+    // private final List<String> scriptTypes = (List<String>) Stream.of(factory.getExtensions(),
+    // factory.getMimeTypes()) //
+    // .flatMap(List::stream) //
+    // .toList();
+
+    private final List<String> scriptTypes = Arrays.asList(PythonScriptEngineFactory.SCRIPT_TYPE);
 
     @Activate
     public PythonScriptEngineFactory(Map<String, Object> config) {

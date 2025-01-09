@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.automation.pythonscripting.internal.PythonScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptFileWatcher;
@@ -51,7 +52,7 @@ public class PythonScriptFileWatcher extends AbstractScriptFileWatcher {
         Optional<String> scriptType = super.getScriptType(scriptFilePath);
         if (scriptType.isPresent() && !scriptFilePath.startsWith(getWatchPath().resolve("lib"))
                 && ("py".equals(scriptType.get()))) {
-            return scriptType;
+            return Optional.of(PythonScriptEngineFactory.SCRIPT_TYPE);
         }
         return Optional.empty();
     }
