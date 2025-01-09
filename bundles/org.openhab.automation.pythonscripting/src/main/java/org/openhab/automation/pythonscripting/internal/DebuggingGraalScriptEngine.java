@@ -111,7 +111,7 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
             }
         }
 
-        logger = LoggerFactory.getLogger("org.openhab.automation.script.javascript." + identifier);
+        logger = LoggerFactory.getLogger("org.openhab.automation.pythonscripting." + identifier);
     }
 
     @Override

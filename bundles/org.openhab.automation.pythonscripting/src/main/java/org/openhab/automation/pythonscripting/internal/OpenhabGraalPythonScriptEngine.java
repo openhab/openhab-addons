@@ -34,6 +34,8 @@ import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEn
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +68,8 @@ public class OpenhabGraalPythonScriptEngine
     private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL) //
             .build();
 
+    private final Bundle script_bundle;
+
     private final Logger logger = LoggerFactory.getLogger(OpenhabGraalPythonScriptEngine.class);
 
     /** {@link Lock} synchronization of multi-thread access */
@@ -88,6 +92,8 @@ public class OpenhabGraalPythonScriptEngine
         // JSDependencyTracker jsDependencyTracker) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
         this.jythonEmulation = jythonEmulation;
+
+        script_bundle = FrameworkUtil.getBundle(org.openhab.core.automation.module.script.ScriptEngineManager.class);
 
         Context.Builder contextConfig = Context.newBuilder("python") //
                 // .allowHostAccess(HOST_ACCESS) //
@@ -154,6 +160,8 @@ public class OpenhabGraalPythonScriptEngine
         if (scriptExtensionAccessor == null) {
             throw new IllegalStateException("Failed to retrieve script extension accessor from engine bindings");
         }
+
+        delegate.getPolyglotContext().getBindings("python").putMember("scriptBundle", script_bundle);
 
         initialized = true;
     }
