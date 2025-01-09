@@ -18,6 +18,8 @@ import static org.openhab.binding.linktap.protocol.http.TransientCommunicationIs
 
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.NoRouteToHostException;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -166,11 +168,18 @@ public final class WebServerApi {
             throw new TransientCommunicationIssueException(COMMUNICATIONS_LOST);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
-            if (t instanceof UnknownHostException || t instanceof SocketTimeoutException) {
+            if (t instanceof UnknownHostException || t instanceof SocketTimeoutException
+                    || t instanceof SocketException) {
                 throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
+                if (t instanceof SocketException) {
+                    logger.warn("Hit A1");
+                }
+                if (t instanceof NoRouteToHostException) {
+                    logger.warn("Hit B1");
+                }
                 logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
             throw new LinkTapException(getLocalizedText("exception.unexpected-failure", Utils.getMessage(e)));
@@ -457,11 +466,17 @@ public final class WebServerApi {
             final Throwable t = e.getCause();
             if (t instanceof UnknownHostException) {
                 throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
-            } else if (t instanceof SocketTimeoutException) {
+            } else if (t instanceof SocketTimeoutException || t instanceof SocketException) {
                 throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
+                if (t instanceof SocketException) {
+                    logger.warn("Hit A2");
+                }
+                if (t instanceof NoRouteToHostException) {
+                    logger.warn("Hit B2");
+                }
                 logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
             throw new NotTapLinkGatewayException(getLocalizedText("exception.unexpected-failure", Utils.getMessage(t)));
@@ -490,11 +505,17 @@ public final class WebServerApi {
             final Throwable t = e.getCause();
             if (t instanceof UnknownHostException) {
                 throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
-            } else if (t instanceof SocketTimeoutException) {
+            } else if (t instanceof SocketTimeoutException || t instanceof SocketException) {
                 throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
+                if (t instanceof SocketException) {
+                    logger.warn("Hit A3");
+                }
+                if (t instanceof NoRouteToHostException) {
+                    logger.warn("Hit B3");
+                }
                 logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
             throw new NotTapLinkGatewayException(getLocalizedText("exception.unexpected-failure", Utils.getMessage(e)));
@@ -560,7 +581,7 @@ public final class WebServerApi {
             throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
-            if (t instanceof UnknownHostException) {
+            if (t instanceof UnknownHostException || t instanceof SocketException) {
                 throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
