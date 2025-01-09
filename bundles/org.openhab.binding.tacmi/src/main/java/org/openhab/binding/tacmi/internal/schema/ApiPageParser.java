@@ -185,6 +185,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     } else if ("durchsichtig".equals(classFlag)) { // link
                         this.fieldType = FieldType.IGNORE;
                     } else if ("bord".equals(classFlag)) { // special button style - not of our interest...
+                        continue;
                     } else {
                         logger.debug("Unhanndled class in {}:{}:{}: '{}' ", id, line, col, classFlag);
                     }
@@ -192,7 +193,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             }
         } else if (this.parserState == ParserState.DATA_ENTRY && this.fieldType == FieldType.BUTTON
                 && "span".equals(elementName)) {
-            // ignored...
+            return; // ignored...
         } else {
             logger.debug("Unexpected OpenElement in {}:{}: {} [{}]", line, col, elementName, attributes);
         }
@@ -245,14 +246,14 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                         getApiPageEntry(id, line, col, shortName, description, this.buttonValue);
                     }
                 } else if (this.fieldType == FieldType.IGNORE) {
-                    // ignore
+                    return; // ignore
                 } else {
                     logger.debug("Unhandled setting {}:{}:{} [{}] : {}", id, line, col, this.fieldType, sb);
                 }
             }
         } else if (this.parserState == ParserState.DATA_ENTRY && this.fieldType == FieldType.BUTTON
                 && "span".equals(elementName)) {
-            // ignored...
+            return;// ignored...
         } else {
             logger.debug("Unexpected CloseElement in {}:{}: {}", line, col, elementName);
         }
@@ -307,7 +308,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             }
         } else if (this.parserState == ParserState.INIT && ((len == 1 && buffer[offset] == '\n')
                 || (len == 2 && buffer[offset] == '\r' && buffer[offset + 1] == '\n'))) {
-            // single newline - ignore/drop it...
+            return; // single newline - ignore/drop it...
         } else {
             String msg = new String(buffer, offset, len).replace("\n", "\\n").replace("\r", "\\r");
             logger.debug("Unexpected Text {}:{}: ParserState: {} ({}) `{}`", line, col, parserState, len, msg);
@@ -400,9 +401,9 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                                     // failed to get unit...
                                     if ("Imp".equals(unitStr) || "€$".contains(unitStr)) {
                                         // special case
-                                        unitData = taCmiSchemaHandler.SPECIAL_MARKER;
+                                        unitData = TACmiSchemaHandler.SPECIAL_MARKER;
                                     } else {
-                                        unitData = taCmiSchemaHandler.NULL_MARKER;
+                                        unitData = TACmiSchemaHandler.NULL_MARKER;
                                         logger.warn(
                                                 "Unhandled UoM '{}' - seen on channel {} '{}'; Message from QuantityType: {}",
                                                 valParts[1], shortName, description, iae.getMessage());
@@ -410,12 +411,12 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                                 }
                                 taCmiSchemaHandler.unitsCache.put(unitStr, unitData);
                             }
-                            if (unitData == taCmiSchemaHandler.NULL_MARKER) {
+                            if (unitData == TACmiSchemaHandler.NULL_MARKER) {
                                 // no UoM mappable - just send value
                                 channelType = "Number";
                                 unit = null;
                                 state = new DecimalType(bd);
-                            } else if (unitData == taCmiSchemaHandler.SPECIAL_MARKER) {
+                            } else if (unitData == TACmiSchemaHandler.SPECIAL_MARKER) {
                                 // special handling for unknown UoM
                                 if ("Imp".equals(unitStr)) { // Number of Pulses
                                     // impulses - no idea how to map this to something useful here?
