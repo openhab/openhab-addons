@@ -237,6 +237,11 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
+    public boolean getGatewayConfigurationFreshCheck() {
+        readZeroDevices = false;
+        return getGatewayConfiguration(true);
+    }
+
     public boolean getGatewayConfiguration(final boolean forceFreshRead) {
         if (forceFreshRead) {
             lastGetConfigCache.invalidateValue();
@@ -447,7 +452,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             }
 
             if (!getGatewayConfiguration(true)) {
-                logger.info("{}", getLocalizedText("bridge.info.awaiting-init"));
+                logger.debug("{}", getLocalizedText("bridge.info.awaiting-init"));
                 scheduleReconnect();
                 return;
             }
@@ -489,9 +494,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
 
             // Ensure we have a response with data in if not schedule a reconnect in 15 seconds, theres no reason
             // for a gateway with no devices.
-            readZeroDevices = false;
-            if (!getGatewayConfiguration(true)) {
-                logger.info("{}", getLocalizedText("bridge.info.awaiting-init"));
+            if (!getGatewayConfigurationFreshCheck()) {
+                logger.debug("{}", getLocalizedText("bridge.info.awaiting-init"));
                 scheduleReconnect();
                 return;
             }
