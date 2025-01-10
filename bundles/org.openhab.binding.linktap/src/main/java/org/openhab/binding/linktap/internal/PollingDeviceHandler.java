@@ -267,6 +267,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
                 final LinkTapDeviceMetadata metadata = vesyncBridgeHandler.getDeviceLookup().get(devId);
 
                 if (metadata != null) {
+                    logger.trace("Using matched Address ID (dev_id) {}", metadata.deviceId);
                     return metadata.deviceId;
                 }
             }
@@ -286,6 +287,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
                     return MARKER_INVALID_DEVICE_KEY;
                 }
 
+                logger.trace("Using matched Address ID (dev_name) {}", matchedAddressIds[0]);
                 return matchedAddressIds[0];
             }
         }
