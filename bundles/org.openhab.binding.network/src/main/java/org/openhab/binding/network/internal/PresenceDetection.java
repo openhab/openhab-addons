@@ -74,7 +74,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     protected @Nullable IpPingMethodEnum pingMethod = IpPingMethodEnum.DISABLED;
     private boolean iosDevice;
     private boolean useArpPing;
-    private boolean usePing;
+    private boolean useIcmpPing;
     private Set<Integer> tcpPorts = new HashSet<>();
 
     private Duration refreshInterval = Duration.ofMinutes(1);
@@ -280,17 +280,17 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     /**
-     * Return <code>true</code> if the device presence detection is also performed using ping.
+     * Return <code>true</code> if the device presence detection is also performed using icmp ping.
      */
-    public boolean isUsePing() {
-        return usePing;
+    public boolean isUseIcmpPing() {
+        return useIcmpPing;
     }
 
     /**
-     * Set to <code>true</code> if the device presence detection should also be performed using ping.
+     * Set to <code>true</code> if the device presence detection should also be performed using icmp ping.
      */
-    public void setUsePing(boolean usePing) {
-        this.usePing = usePing;
+    public void setUseIcmPing(boolean useIcmpPing) {
+        this.useIcmpPing = useIcmpPing;
     }
 
     /**

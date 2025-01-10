@@ -183,7 +183,7 @@ public class NetworkHandler extends BaseThingHandler
             presenceDetection.setIOSDevice(handlerConfiguration.useIOSWakeUp);
             // Hand over binding configurations to the network service
             presenceDetection.setUseDhcpSniffing(configuration.allowDHCPlisten);
-            presenceDetection.setUseIcmpPing(handlerConfiguration.usePing ? configuration.allowSystemPings : null);
+            presenceDetection.setUseIcmpPing(handlerConfiguration.useIcmpPing ? configuration.allowSystemPings : null);
             presenceDetection.setUseArpPing(handlerConfiguration.useArpPing, configuration.arpPingToolPath,
                     configuration.arpPingUtilMethod);
         }

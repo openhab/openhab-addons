@@ -43,7 +43,7 @@ public class LatencyParser {
     // 1 packets transmitted, 1 packets received, 0.0% packet loss
     // round-trip min/avg/max/stddev = 1.225/1.225/1.225/0.000 ms
 
-    // This is an example of an apring response on Linux:
+    // This is an example of an arping response on Linux:
     // arping -c 1 -i eth0 192.168.0.1
     // ARPING 192.168.0.1
     // 60 bytes from xx:xx:xx:xx:xx:xx (192.168.0.1): index=0 time=792.847 usec
