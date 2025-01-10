@@ -91,7 +91,7 @@
       <artifactId>regex</artifactId>
       <version>${graalpy.version}</version>
     </dependency>
-    <!-- Graal JavaScript engine (depends on Graal TRegex engine, must be added after it) -->
+    <!-- Graal Python engine (depends on Graal TRegex engine, must be added after it) -->
     <dependency>
       <groupId>org.graalvm.polyglot</groupId>
       <artifactId>python-community</artifactId>

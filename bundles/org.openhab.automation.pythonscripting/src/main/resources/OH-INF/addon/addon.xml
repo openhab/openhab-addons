@@ -10,5 +10,4 @@
 
 	<service-id>org.openhab.pythonscripting</service-id>
 	<config-description-ref uri="automation:pythonscripting"/>
-
 </addon:addon>

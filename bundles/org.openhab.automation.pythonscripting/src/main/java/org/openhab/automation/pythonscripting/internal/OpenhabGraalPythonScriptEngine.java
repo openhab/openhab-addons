@@ -54,7 +54,7 @@ public class OpenhabGraalPythonScriptEngine
         implements Lock {
 
     private static final String PYTHON_OPTION_EXECUTABLE = "python.Executable";
-    private static final String PYTHON_OPTION_PYTHONHOME = "python.PythonHome";
+    // private static final String PYTHON_OPTION_PYTHONHOME = "python.PythonHome";
     private static final String PYTHON_OPTION_PYTHONPATH = "python.PythonPath";
     private static final String PYTHON_OPTION_INPUTFILEPATH = "python.InputFilePath";
     private static final String PYTHON_OPTION_EMULATEJYTHON = "python.EmulateJython";
@@ -62,6 +62,7 @@ public class OpenhabGraalPythonScriptEngine
     private static final String PYTHON_OPTION_DONTWRITEBYTECODEFLAG = "python.DontWriteBytecodeFlag";
     private static final String PYTHON_OPTION_FORCEIMPORTSITE = "python.ForceImportSite";
     private static final String PYTHON_OPTION_CHECKHASHPYCSMODE = "python.CheckHashPycsMode";
+    private static final String PYTHON_OPTION_ALWAYSRUNEXCEPTHOOK = "python.AlwaysRunExcepthook";
 
     public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
 
@@ -144,9 +145,9 @@ public class OpenhabGraalPythonScriptEngine
                 // choose the backend for the POSIX module
                 .option(PYTHON_OPTION_POSIXMODULEBACKEND, "java") //
                 // equivalent to the Python -B flag
-                .option(PYTHON_OPTION_DONTWRITEBYTECODEFLAG, "true") //
+                .option(PYTHON_OPTION_DONTWRITEBYTECODEFLAG, Boolean.toString(true)) //
                 // Force to automatically import site.py module, to make Python packages available
-                .option(PYTHON_OPTION_FORCEIMPORTSITE, "true") //
+                .option(PYTHON_OPTION_FORCEIMPORTSITE, Boolean.toString(true)) //
                 // causes the interpreter to always assume hash-based pycs are valid
                 .option(PYTHON_OPTION_CHECKHASHPYCSMODE, "never") //
                 // The sys.executable path, a virtual path that is used by the interpreter
@@ -158,6 +159,9 @@ public class OpenhabGraalPythonScriptEngine
                 .option(PYTHON_OPTION_PYTHONPATH, PYTHON_DEFAULT_PATH.resolve("lib").toString())
                 // pass the path to be executed
                 .option(PYTHON_OPTION_INPUTFILEPATH, PYTHON_DEFAULT_PATH.toString()) //
+                // make sure the TopLevelExceptionHandler calls the excepthook to print Python exceptions
+                .option(PYTHON_OPTION_ALWAYSRUNEXCEPTHOOK, Boolean.toString(true)) //
+                // emulate jython behavior (will slowdown the engine)
                 .option(PYTHON_OPTION_EMULATEJYTHON, String.valueOf(jythonEmulation));
 
         delegate = GraalPythonScriptEngine.create(ENGINE, contextConfig);
