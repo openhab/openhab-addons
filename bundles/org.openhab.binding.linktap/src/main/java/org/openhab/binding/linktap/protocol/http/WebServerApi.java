@@ -18,7 +18,6 @@ import static org.openhab.binding.linktap.protocol.http.TransientCommunicationIs
 
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.NoRouteToHostException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
@@ -174,12 +173,6 @@ public final class WebServerApi {
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
-                if (t instanceof SocketException) {
-                    logger.warn("Hit A1");
-                }
-                if (t instanceof NoRouteToHostException) {
-                    logger.warn("Hit B1");
-                }
                 logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
             throw new LinkTapException(getLocalizedText("exception.unexpected-failure", Utils.getMessage(e)));
@@ -471,12 +464,6 @@ public final class WebServerApi {
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
-                if (t instanceof SocketException) {
-                    logger.warn("Hit A2");
-                }
-                if (t instanceof NoRouteToHostException) {
-                    logger.warn("Hit B2");
-                }
                 logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
             throw new NotTapLinkGatewayException(getLocalizedText("exception.unexpected-failure", Utils.getMessage(t)));
@@ -510,12 +497,6 @@ public final class WebServerApi {
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
-                if (t instanceof SocketException) {
-                    logger.warn("Hit A3");
-                }
-                if (t instanceof NoRouteToHostException) {
-                    logger.warn("Hit B3");
-                }
                 logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
             throw new NotTapLinkGatewayException(getLocalizedText("exception.unexpected-failure", Utils.getMessage(e)));
