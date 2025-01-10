@@ -177,8 +177,8 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
                 });
             }
 
-            Files.createDirectory(helperLibPath);
-            Files.setPosixFilePermissions(helperLibPath, PosixFilePermissions.fromString("rwxr-xr-x"));
+            Files.createDirectories(helperLibPath,
+                    PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x")));
 
             for (String resourceFile : resourceFiles) {
                 InputStream is = this.getClass().getClassLoader().getResourceAsStream("/lib/openhab/" + resourceFile);
