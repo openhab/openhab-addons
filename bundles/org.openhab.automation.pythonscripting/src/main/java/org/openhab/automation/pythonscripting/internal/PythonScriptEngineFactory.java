@@ -51,7 +51,8 @@ import org.slf4j.LoggerFactory;
 /**
  * This is an implementation of {@link ScriptEngineFactory} for Python.
  *
- * @author Holger Hees - Initial contribution
+ * @author Holger Hees - initial contribution
+ * @author Jeff James - initial contribution
  */
 @Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.pythonscripting", property = Constants.SERVICE_PID
         + "=org.openhab.pythonscripting")
@@ -97,8 +98,8 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
         if (!scriptTypes.contains(scriptType)) {
             return null;
         }
-        return new OpenhabGraalPythonScriptEngine(jythonEmulation);
-        // return new DebuggingGraalScriptEngine<>(new OpenhabGraalPythonScriptEngine(jythonEmulation));
+        // return new OpenhabGraalPythonScriptEngine(jythonEmulation);
+        return new DebuggingGraalScriptEngine<>(new OpenhabGraalPythonScriptEngine(jythonEmulation));
     }
 
     @Modified

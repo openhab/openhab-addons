@@ -5,9 +5,9 @@ import time
 import os
 import threading
 import profile, pstats, io
+from datetime import datetime
 
 from openhab.jsr223 import scope
-
 
 LOG_PREFIX = "org.openhab.core.automation.pythonscripting"
 
@@ -27,6 +27,8 @@ scriptExtension.importPreset("RuleSimple")
 automationManager = scope.get("automationManager")
 lifecycleTracker = scope.get("lifecycleTracker")
 
+ChannelUID = java.type("org.openhab.core.thing.ChannelUID")
+ThingUID = java.type("org.openhab.core.thing.ThingUID")
 SimpleRule = java.type("org.openhab.core.automation.module.script.rulesupport.shared.simple.SimpleRule")
 #SimpleRule = scope.get("SimpleRule")
 
@@ -50,9 +52,10 @@ class NotInitialisedException(Exception):
     pass
 
 class rule(object):
-    def __init__(self, name=None, tags=None, profile=None):
+    def __init__(self, name=None, tags=None, trigger=None, profile=None):
         self.name = name
         self.tags = tags
+        self.trigger = trigger
         self.profile = profile
 
     def __call__(self, clazz):
@@ -77,26 +80,31 @@ class rule(object):
                 _rule_obj.execute(module, input)
 
         _base_obj = BaseSimpleRule()
+        _trigger = []
+        if proxy.trigger is not None:
+            _trigger = proxy.trigger
+        elif hasattr(_rule_obj, "buildTrigger") and callable(_rule_obj.buildTrigger):
+            _trigger = _rule_obj.buildTrigger()
+
         _has_timer = False
-        if hasattr(_rule_obj, 'triggers'):
-            _triggers = []
-            _items = {}
-            for trigger in _rule_obj.triggers:
-                _items[trigger.raw_trigger.getConfiguration().get("itemName") ] = True
-                _triggers.append(trigger.raw_trigger)
-                if trigger.raw_trigger.getTypeUID() == "timer.GenericCronTrigger":
-                    _has_timer = True
+        _raw_trigger = []
+        _items = {}
+        for trigger in _trigger:
+            _items[trigger.raw_trigger.getConfiguration().get("itemName") ] = True
+            _raw_trigger.append(trigger.raw_trigger)
+            if trigger.raw_trigger.getTypeUID() == "timer.GenericCronTrigger":
+                _has_timer = True
 
-            _base_obj.setTriggers(_triggers)
-            _rule_obj._trigger_items = _items
+        _base_obj.setTriggers(_raw_trigger)
+        _rule_obj._trigger_items = _items
 
-        _base_obj.setName(file_package + "." + class_package if proxy.name is None else proxy.name )
+        _base_obj.setName(file_package + "." + class_package if proxy.name is None else proxy.name)
         if _has_timer:
             if proxy.tags is None:
                 proxy.tags = []
             proxy.tags.append("Schedule")
-        #if proxy.tags is not None:
-        #    _base_obj.setTags(list(["test"]))
+        if proxy.tags is not None:
+            _base_obj.setTags(GraalWrapperSet(proxy.tags))
         automationManager.addRule(_base_obj)
 
         clazz.logger.info(u"Rule '{}' initialised".format(class_package))
@@ -176,34 +184,147 @@ class rule(object):
 
         return func_wrapper
 
-# *** Timer handling ***
-# could also be solved by storing it in a private cache => https://next.openhab.org/docs/configuration/jsr223.html
-# because Timer & ScheduledFuture are canceled when a private cache is cleaned on unload or refresh
-activeTimer = []
-def cleanTimer():
-    for timer in list(activeTimer):
-        timer.cancel()
-lifecycleTracker.addDisposeHook(cleanTimer)
+class Item():
+    def __init__(self, raw_item):
+        self.raw_item = raw_item
 
-def startTimer(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0 ):
-    if old_timer != None:
-        old_timer.cancel()
-        max_count = old_timer.max_count
+    def postUpdate(self, state, only_if_different = False):
+        if only_if_different and not Item._checkIfDifferent(self.getState(), state):
+            return False
+        events.postUpdate(self.raw_item, state)
+        return True
 
-    max_count = max_count - 1
+    def sendCommand(self, command, only_if_different = False):
+        if only_if_changed and not Item._checkIfDifferent(self.getState(), command):
+            return False
+        events.sendCommand(self.raw_item, command)
+        return True
 
-    if max_count == 0:
-        callback(*args, **kwargs)
+    def getState(self):
+        return Item._convertState(self.raw_item.getState())
 
-        return None
+    def __getattr__(self, name):
+        return getattr(self.raw_item, name)
 
-    timer = createTimer(duration, callback, args, kwargs )
-    timer.start()
-    timer.max_count = max_count
+    @staticmethod
+    def _convertState(state):
+        if state.getClass().getName() == 'org.openhab.core.library.types.DateTimeType':
+            return datetime.fromisoformat(state.getZonedDateTime().toString().split("[")[0])
+        #elif state.getClass().getName() == 'org.openhab.core.library.types.QuantityType':
+        #    return QuantityType(state)
+        return state
 
-    return timer
+    @staticmethod
+    def _checkIfDifferent(current_state, new_state):
+        if type(current_state) is not UnDefType:
+            if isinstance(new_state, str):
+                if current_state.toString() == state:
+                    return False
+            elif isinstance(new_state, int):
+                if current_state.intValue() == state:
+                    return False
+            elif isinstance(new_state, float):
+                if current_state.doubleValue() == state:
+                    return False
+            elif current_state == new_state:
+                return False
+        return True
 
-class createTimer:
+    @staticmethod
+    def _wrapItem(item):
+        if item.getClass().getName() == 'org.openhab.core.items.GroupItem':
+            return GroupItem(item)
+        return Item(item)
+
+class GroupItem(Item):
+    def getAllMembers(self):
+        return [Item._wrapItem(raw_item) for raw_item in self.raw_item.getAllMembers()]
+
+    def getMembers(self):
+        return [Item._wrapItem(raw_item) for raw_item in self.raw_item.getMembers()]
+
+class Thing():
+    def __init__(self, raw_item):
+        self.raw_item = raw_item
+
+    def __getattr__(self, name):
+        return getattr(self.raw_item, name)
+
+class Channel():
+    def __init__(self, raw_item):
+        self.raw_item = raw_item
+
+    def __getattr__(self, name):
+        return getattr(self.raw_item, name)
+
+class Registry():
+    @staticmethod
+    def getItemState(name, default = None):
+        state = items.get(name)
+        if state is None:
+            raise NotInitialisedException(u"Item state for {} not found".format(name))
+        if default is not None and isinstance(state, UnDefType):
+            state = default
+        return Item._convertState(state)
+
+    @staticmethod
+    def getItem(name):
+        item = itemRegistry.getItem(name)
+        if item is None:
+            raise NotInitialisedException(u"Item {} not found".format(name))
+        return Item._wrapItem(item)
+
+    @staticmethod
+    def getThing(name):
+        thing = things.get(ThingUID(name))
+        if thing is None:
+            raise NotInitialisedException(u"Thing {} not found".format(name))
+        return Thing(thing)
+
+    @staticmethod
+    def getChannel(name):
+        channel = things.getChannel(ChannelUID(name))
+        if channel is None:
+            raise NotInitialisedException(u"Channel {} not found".format(name))
+        return Channel(channel)
+
+# helper class to force graalpy to force a specific type cast. e.g. convert a list to to a java.util.Set instead of java.util.List
+class GraalWrapperSet():
+    def __init__(self, value):
+        self.value = value
+
+    def getGraalWrapperSet(self):
+        return self.value
+
+class Timer():
+    # could also be solved by storing it in a private cache => https://next.openhab.org/docs/configuration/jsr223.html
+    # because Timer & ScheduledFuture are canceled when a private cache is cleaned on unload or refresh
+    activeTimer = []
+
+    @staticmethod
+    def _cleanTimer():
+        for timer in list(Timer.activeTimer):
+            timer.cancel()
+
+    @staticmethod
+    def startTimer(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0 ):
+        if old_timer != None:
+            old_timer.cancel()
+            max_count = old_timer.max_count
+
+        max_count = max_count - 1
+
+        if max_count == 0:
+            callback(*args, **kwargs)
+
+            return None
+
+        timer = Timer(duration, callback, args, kwargs )
+        timer.start()
+        timer.max_count = max_count
+
+        return timer
+
     def __init__(self, duration, callback, args=[], kwargs={}):
         self.callback = callback
         self.args = args
@@ -216,7 +337,7 @@ class createTimer:
         try:
             self.callback(*self.args, **self.kwargs)
             try:
-                activeTimer.remove(self)
+                Timer.activeTimer.remove(self)
             except ValueError:
                 # can happen when timer is executed and canceled at the same time
                 # could be solved with a LOCK, but this solution is more efficient, because it works without a LOCK
@@ -228,94 +349,37 @@ class createTimer:
     def start(self):
         if not self.timer.isAlive():
             #log.info("timer started")
-            activeTimer.append(self)
+            Timer.activeTimer.append(self)
             self.timer.start()
         else:
             pass
 
     def cancel(self):
         if self.timer.isAlive():
-            activeTimer.remove(self)
+            Timer.activeTimer.remove(self)
             self.timer.cancel()
         else:
             pass
 
+lifecycleTracker.addDisposeHook(Timer._cleanTimer)
+
 # *** Group Member getter ***
-def _walkGroupMemberRecursive(parent):
-    result = []
-    items = parent.getAllMembers()
-    for item in items:
-        if item.getType() == "Group":
-            result = result + _walkGroupMemberRecursive(item)
-        else:
-            result.append(item)
-    return result
+#def _walkGroupMemberRecursive(parent):
+#    result = []
+#    items = parent.getAllMembers()
+#    for item in items:
+#        if item.getType() == "Group":
+#            result = result + _walkGroupMemberRecursive(item)
+#        else:
+#            result.append(item)
+#    return result
 
-def getGroupMember(group_name, item_state = None):
-    items = _walkGroupMemberRecursive(getItem(group_name))
-    if item_state is not None:
-        if isinstance(item_state, list):
-            return filter(lambda child: child.getState() in item_state, items)
-        else:
-            return filter(lambda child: child.getState() == item_state, items)
-
-    return items
-
-# *** Item/Thing/Channel getter ***
-def getItem(name):
-    item = itemRegistry.getItem(name)
-    if item is None:
-        raise NotInitialisedException(u"Item {} not found".format(name))
-    return item
-
-def getThing(name):
-    thing = things.get(ThingUID(name))
-    if thing is None:
-        raise NotInitialisedException(u"Thing {} not found".format(name))
-    return thing
-
-def getChannel(name):
-    channel = things.getChannel(ChannelUID(name))
-    if channel is None:
-        raise NotInitialisedException(u"Channel {} not found".format(name))
-    return channel
-
-# *** State getter
-def getItemState(name, default = None):
-    state = items.get(name)
-    if state is None:
-        raise NotInitialisedException(u"Item state for {} not found".format(name))
-    if default is not None and isinstance(state, UnDefType):
-        state = default
-    return state
-
-# *** Item updates ***
-def _checkForItemUpdates(name, state):
-    currentState = getItemState(name)
-    if type(currentState) is not UnDefType:
-        if isinstance(state, str):
-            if currentState.toString() == state:
-                return False
-        elif isinstance(state, int):
-            if currentState.intValue() == state:
-                return False
-        elif isinstance(state, float):
-            if currentState.doubleValue() == state:
-                return False
-        elif currentState == state:
-            return False
-
-    return True
-
-def postUpdate(name, state, only_if_changed = False):
-    if only_if_changed and not _checkForItemUpdates(name, state):
-        return False
-    events.postUpdate(getItem(name), state)
-    return True
-
-def sendCommand(name, command, only_if_changed = False):
-    if only_if_changed and not _checkForItemUpdates(name, command):
-        return False
-    events.sendCommand(getItem(name), command)
-    return True
+#def getGroupMember(group_name, item_state = None):
+#    items = _walkGroupMemberRecursive(getItem(group_name))
+#    if item_state is not None:
+#        if isinstance(item_state, list):
+#            return filter(lambda child: child.getState() in item_state, items)
+#        else:
+#            return filter(lambda child: child.getState() == item_state, items)
+#    return items
 

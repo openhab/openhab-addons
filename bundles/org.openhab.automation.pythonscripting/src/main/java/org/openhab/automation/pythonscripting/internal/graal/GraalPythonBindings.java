@@ -28,7 +28,8 @@ import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.proxy.ProxyObject;
 
 /***
- * @author Jeff James - Initial contribution
+ * @author Holger Hees - initial contribution
+ * @author Jeff James - initial contribution
  */
 final class GraalPythonBindings extends AbstractMap<String, Object> implements javax.script.Bindings, AutoCloseable {
     private static final String SCRIPT_CONTEXT_GLOBAL_BINDINGS_IMPORT_FUNCTION_NAME = "importScriptEngineGlobalBindings";

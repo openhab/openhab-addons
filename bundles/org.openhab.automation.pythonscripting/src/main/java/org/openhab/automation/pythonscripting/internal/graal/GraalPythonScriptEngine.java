@@ -49,7 +49,8 @@ import org.graalvm.polyglot.proxy.Proxy;
  * A Graal.Python implementation of the script engine. It provides access to the polyglot context using
  * {@link #getPolyglotContext()}.
  *
- * @author Jeff James - Initial contribution
+ * @author Holger Hees - initial contribution
+ * @author Jeff James - initial contribution
  */
 public final class GraalPythonScriptEngine extends AbstractScriptEngine
         implements Compilable, Invocable, AutoCloseable {
@@ -180,7 +181,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
      */
     @Override
     public void close() {
-        getPolyglotContext().close();
+        getPolyglotContext().close(true);
     }
 
     /**

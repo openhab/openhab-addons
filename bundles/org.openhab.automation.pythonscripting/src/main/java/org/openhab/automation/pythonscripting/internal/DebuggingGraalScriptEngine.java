@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Wraps ScriptEngines provided by Graal to provide error messages and stack traces for scripts.
  *
- * @author Jonathan Gilbert - Initial contribution
- * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
+ * @author Holger Hees - initial contribution
+ * @author Jeff James - initial contribution
  */
 class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & Lock>
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T> implements Lock {

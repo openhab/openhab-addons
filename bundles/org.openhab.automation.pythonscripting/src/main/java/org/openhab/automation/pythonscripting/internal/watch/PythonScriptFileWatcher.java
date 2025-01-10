@@ -32,7 +32,8 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * Monitors {@code <openHAB-conf>/automation/python} for Python files, but not libraries
  *
- * @author Holger Hees - Initial contribution
+ * @author Holger Hees - initial contribution
+ * @author Jeff James - initial contribution
  */
 @Component(immediate = true, service = { ScriptFileWatcher.class, ScriptDependencyTracker.Listener.class })
 @NonNullByDefault

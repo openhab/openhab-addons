@@ -27,7 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Jeff James - Initial contribution
+ * @author Holger Hees - initial contribution
+ * @author Jeff James - initial contribution
  */
 public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory {
     private static final String LANGUAGE = "python";

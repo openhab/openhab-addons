@@ -1,28 +1,28 @@
 ## Script Examples
 
 ```python
-from core.helper import rule, logger, postUpdateIfChanged, postUpdate
+from core.helper import rule, logger, Registry
 from core.triggers import CronTrigger, ItemStateUpdateTrigger
 
-@rule()
+@rule(
+    trigger = [
+        CronTrigger("*/5 * * * * ?"),
+        ItemStateUpdateTrigger("Item1")
+    ]
+)
 class Test1Rule:
-    def __init__(self):
-        self.triggers = [
+    def execute(self, module, input):
+        Registry.getItem("Item1").postUpdate("<myvalue>")
+
+@rule(profile=1)
+class Test2Rule:
+    def buildTrigger(self):
+        return [
             CronTrigger("*/5 * * * * ?")
         ]
 
     def execute(self, module, input):
-        postUpdate("Item1", "<myvalue>")
-
-@rule(profile=1)
-class Test2Rule:
-    def __init__(self):
-        self.triggers = [
-            ItemStateUpdateTrigger("Item1")
-        ]
-
-    def execute(self, module, input):
-        postUpdateIfChanged("Item2", "<myvalue>")
+        Registry.getItem("Item2").postUpdate("<myvalue>", only_if_different = True)
         
         self.logger.info("test log message")
 ```
@@ -46,16 +46,14 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 
 | Class                    | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| rule                     | @decorator                                                                            | Decorate/Enable a class as a rule                                                                   |
+| rule                     | @rule( name=None, tags=None, trigger=None, profile=None)                              | Decorate/Enable a class as a rule                                                                   |
 | logger                   | logger.info, logger.warn ...                                                          | Logger object with prefix 'org.automation.pythonscripting.<filename>'                               |
-| startTimer               | startTimer(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0)   | Starts a timer in <duration> seconds                                                                |
-| getGroupMember           | getGroupMember(group_name, item_state = None)                                         | Collect recursive all items which are member of these group. Optional filtered by their state       |
-| getItem                  | getItem(name)                                                                         | Get an item                                                                                         |
-| getThing                 | getThing(name)                                                                        | Get a thing                                                                                         |
-| getChannel               | getChannel(name)                                                                      | Get a channel                                                                                       |
-| getItemState             | getItemState(name, default = None)                                                    | Get an item state. Optional with a default (fallback) value if the item state is undefined          |
-| postUpdate               | postUpdate(name, state, only_if_changed = False)                                      | Post an update. Optional only if the state is different to the current one                          |
-| sendCommand              | sendCommand(name, command, only_if_changed = False)                                   | Send a command. Optional only if the state is different to the current one                          |
+| Registry                 | see [Registry class](#class-registry)                                                 | Registry object                                                                                     |
+| Item                     | see [Item class](#class-item)                                                         | Item object                                                                                         |
+| GroupItem                | see [GroupItem class](#class-groupitem)                                               | GroupItem object                                                                                    |
+| Thing                    | see [Thing class](#class-thing)                                                       | Thing object                                                                                        |
+| Channel                  | see [Channel class](#class-channel)                                                   | Channel object                                                                                      |
+| Timer                    | see [Timer class](#class-timer)                                                       | Timer object                                                                                        |
 
 ## core.actions
 
@@ -80,10 +78,59 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | ItemStateChangeTrigger   | ItemStateChangeTrigger(item_name, state=None, previous_state=None, trigger_name=None) |                                                                                                     |
 | ItemCommandTrigger       | ItemCommandTrigger(item_name, command=None, trigger_name=None)                        |                                                                                                     |
 | ThingStatusUpdateTrigger | ThingStatusUpdateTrigger(thing_uid, status=None, trigger_name=None)                   |                                                                                                     |
-| ThingStatusChangeTrigger | ThingStatusChangeTrigger(thing_uid, status=None, previous_status=None, trigger_name=None)|                                                                                                     |
+| ThingStatusChangeTrigger | ThingStatusChangeTrigger(thing_uid, status=None, previous_status=None, trigger_name=None)|                                                                                                  |
 | ChannelEventTrigger      | ChannelEventTrigger(channel_uid, event=None, trigger_name=None)                       |                                                                                                     |
 | GenericEventTrigger      | GenericEventTrigger(event_source, event_types, event_topic="*/*", trigger_name=None)  |                                                                                                     |
 | ItemEventTrigger         | ItemEventTrigger(event_types, item_name=None, trigger_name=None)                      |                                                                                                     |
+
+## class Registry 
+
+| Function                 | Usage                                                                                 | Description                                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| getItemState             | getItemState(name, default = None)                                                    | returns a State object                                                                              |
+| getItem                  | getItem(name)                                                                         | returns an [item object](#class-item)                                                               |
+| getThing                 | getThing(name)                                                                        | returns an [thing object](#class-thing)                                                             |
+| getChannel               | getChannel(name)                                                                      | returns an [channel object](#class-channel)                                                         |
+
+## class Item 
+
+| Function                 | Usage                                                                                 | Description                                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| postUpdate               | postUpdate(self, state, only_if_different = False)                                    |                                                                                                     |
+| sendCommand              | sendCommand(self, command, only_if_different = False)                                 |                                                                                                     |
+|                          |                                                                                       |                                                                                                     |
+| <...>                    | see [openhab item api](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) | Item object supports all functions from core java Item class. [State objects are converted if needed](#state-conversion) |
+
+## class GroupItem 
+
+GroupItem is just an extended item helper which wraps results from getAllMembers & getMembers into [item objects](#class-item)
+
+## class Thing 
+
+| Function                 | Usage                                                                                 | Description                                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| <...>                    | see [openhab thing api](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/thing) | Thing object supports all functions from core java Thing class.                              |
+
+## class Channel 
+
+| Function                 | Usage                                                                                 | Description                                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| <...>                    | see [openhab channel api](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/type/channelgrouptype) | Channel object supports all functions from core java Channel class.        |
+
+## class Timer 
+
+| Function                 | Usage                                                                                 | Description                                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+
+TODO
+
+## state conversion
+
+| Python class   | Java class    |
+| -------------- | ------------- |
+| datetime       | ZonedDateTime |
+| timedelta      | Duration      |
+| list           | Collection    |
 
 ## limitations
 

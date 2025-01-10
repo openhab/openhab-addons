@@ -14,13 +14,15 @@ package org.openhab.automation.pythonscripting.internal;
 
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -30,10 +32,12 @@ import javax.script.ScriptContext;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Value;
 import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
+import org.openhab.core.items.Item;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -42,6 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * GraalPython ScriptEngine implementation
  *
+ * @author Holger Hees - initial contribution
  * @author Jeff James - initial contribution
  */
 public class OpenhabGraalPythonScriptEngine
@@ -64,11 +69,45 @@ public class OpenhabGraalPythonScriptEngine
     private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
             .option("engine.WarnInterpreterOnly", "false").build();
 
-    /** Provides unlimited host access as well as custom translations from Python to Java Objects */
-    private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL) //
-            .build();
+    private static final AtomicInteger counter = new AtomicInteger(1);
 
-    private final Bundle script_bundle;
+    /** Provides unlimited host access as well as custom translations from Python to Java Objects */
+    private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL)
+            // Translate python datetime to java.time.ZonedDateTime
+            .targetTypeMapping(Value.class, ZonedDateTime.class, v -> v.hasMember("ctime") && v.hasMember("isoformat"),
+                    v -> ZonedDateTime.parse(v.invokeMember("isoformat").asString()),
+                    HostAccess.TargetMappingPrecedence.LOW)
+
+            // Translate python timedelta to java.time.Duration
+            .targetTypeMapping(Value.class, Duration.class,
+                    // picking two members to check as Duration has many common function names
+                    v -> v.hasMember("total_seconds") && v.hasMember("total_seconds"),
+                    v -> Duration.ofNanos(v.invokeMember("total_seconds").asLong() * 10000000),
+                    HostAccess.TargetMappingPrecedence.LOW)
+
+            // .targetTypeMapping(Value.class, Instant.class,
+            // // picking two members to check as Instant has many common function names
+            // v -> v.hasMember("toEpochMilli") && v.hasMember("epochSecond"),
+            // v -> Instant.ofEpochMilli(v.invokeMember("toEpochMilli").asLong()),
+            // HostAccess.TargetMappingPrecedence.LOW)
+
+            // Translate python item to org.openhab.core.items.Item
+            .targetTypeMapping(Value.class, Item.class, v -> v.hasMember("raw_item"),
+                    v -> v.getMember("raw_item").as(Item.class), HostAccess.TargetMappingPrecedence.LOW)
+
+            // Translate python quantity to org.openhab.core.library.types.QuantityType
+            // .targetTypeMapping(Value.class, QuantityType.class, v -> v.hasMember("rawQtyType"),
+            // v -> v.getMember("rawQtyType").as(QuantityType.class), HostAccess.TargetMappingPrecedence.LOW)
+
+            // Translate python list to java.util.Collection
+            .targetTypeMapping(Value.class, Collection.class, (v) -> v.hasArrayElements(),
+                    (v) -> v.as(Collection.class), HostAccess.TargetMappingPrecedence.LOW)
+
+            // Translate python GraalWrapperSet to java.util.Set
+            .targetTypeMapping(Value.class, Set.class, v -> v.hasMember("getGraalWrapperSet"),
+                    OpenhabGraalPythonScriptEngine::transformGraalWrapperSet, HostAccess.TargetMappingPrecedence.LOW)
+
+            .build();
 
     private final Logger logger = LoggerFactory.getLogger(OpenhabGraalPythonScriptEngine.class);
 
@@ -89,10 +128,8 @@ public class OpenhabGraalPythonScriptEngine
         // JSDependencyTracker jsDependencyTracker) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
 
-        script_bundle = FrameworkUtil.getBundle(org.openhab.core.automation.module.script.ScriptEngineManager.class);
-
         Context.Builder contextConfig = Context.newBuilder("python") //
-                // .allowHostAccess(HOST_ACCESS) //
+                .allowHostAccess(HOST_ACCESS) //
                 // .allowHostClassLoading(true) //
                 .allowAllAccess(true) //
                 .allowNativeAccess(true) //
@@ -124,6 +161,10 @@ public class OpenhabGraalPythonScriptEngine
                 .option(PYTHON_OPTION_EMULATEJYTHON, String.valueOf(jythonEmulation));
 
         delegate = GraalPythonScriptEngine.create(ENGINE, contextConfig);
+
+        Bundle script_bundle = FrameworkUtil
+                .getBundle(org.openhab.core.automation.module.script.ScriptEngineManager.class);
+        delegate.getPolyglotContext().getBindings("python").putMember("scriptBundle", script_bundle);
     }
 
     @Override
@@ -157,8 +198,6 @@ public class OpenhabGraalPythonScriptEngine
             throw new IllegalStateException("Failed to retrieve script extension accessor from engine bindings");
         }
 
-        delegate.getPolyglotContext().getBindings("python").putMember("scriptBundle", script_bundle);
-
         initialized = true;
     }
 
@@ -177,35 +216,6 @@ public class OpenhabGraalPythonScriptEngine
 
     @Override
     public void close() {
-        try {
-            ENGINE.close();
-        } catch (Exception e) {
-        }
-    }
-
-    /**
-     * Converts a root node path to a class resource path for loading local modules
-     * Ex: C:\node_modules\foo.js -> /node_modules/foo.js
-     *
-     * @param path a root path, e.g. C:\node_modules\foo.js
-     * @return the class resource path for loading local modules
-     */
-    private static String nodeFileToResource(Path path) {
-        return "/" + path.subpath(0, path.getNameCount()).toString().replace('\\', '/');
-    }
-
-    /**
-     * @param fileName filename relative to the resources folder
-     * @return file as {@link InputStreamReader}
-     */
-    private static Reader getFileAsReader(String fileName) throws IOException {
-        InputStream ioStream = OpenhabGraalPythonScriptEngine.class.getClassLoader().getResourceAsStream(fileName);
-
-        if (ioStream == null) {
-            throw new IOException(fileName + " not found");
-        }
-
-        return new InputStreamReader(ioStream);
     }
 
     @Override
@@ -238,5 +248,15 @@ public class OpenhabGraalPythonScriptEngine
     @Override
     public Condition newCondition() {
         return lock.newCondition();
+    }
+
+    private static Set<String> transformGraalWrapperSet(Value value) {
+        Value raw_value = value.invokeMember("getGraalWrapperSet");
+        Set<String> set = new HashSet<String>();
+        for (int i = 0; i < raw_value.getArraySize(); ++i) {
+            Value element = raw_value.getArrayElement(i);
+            set.add(element.asString());
+        }
+        return set;
     }
 }
