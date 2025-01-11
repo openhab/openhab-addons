@@ -339,8 +339,7 @@ public class StateFilterProfile implements StateProfile {
                 if (rhsState == null) {
                     rhsItem = getItemOrNull(rhsString);
                 } else if (rhsState instanceof FunctionType rhsFunction) {
-                    if (acceptedState == UnDefType.UNDEF && (rhsFunction.getType() == FunctionType.Function.DELTA
-                            || rhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)) {
+                    if (rhsFunction.alwaysAccept()) {
                         return true;
                     }
                     rhsItem = getLinkedItem();
@@ -378,8 +377,7 @@ public class StateFilterProfile implements StateProfile {
                 }
 
                 if (lhsState instanceof FunctionType lhsFunction) {
-                    if (acceptedState == UnDefType.UNDEF && (lhsFunction.getType() == FunctionType.Function.DELTA
-                            || lhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)) {
+                    if (lhsFunction.alwaysAccept()) {
                         return true;
                     }
                     lhsItem = getLinkedItem();
@@ -565,6 +563,22 @@ public class StateFilterProfile implements StateProfile {
                 case MIN -> calculateMin(states);
                 case MAX -> calculateMax(states);
             };
+        }
+
+        public boolean alwaysAccept() {
+            if ((type == Function.DELTA || type == Function.DELTA_PERCENT) && acceptedState == UnDefType.UNDEF) {
+                return true;
+            }
+            if (type == Function.DELTA_PERCENT) {
+                // avoid division by zero
+                if (acceptedState instanceof QuantityType base) {
+                    return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
+                }
+                if (acceptedState instanceof DecimalType base) {
+                    return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
+                }
+            }
+            return false;
         }
 
         @Override
