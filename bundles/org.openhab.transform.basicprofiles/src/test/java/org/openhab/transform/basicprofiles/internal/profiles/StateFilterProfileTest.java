@@ -26,7 +26,10 @@ import static org.mockito.Mockito.when;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,6 +70,7 @@ import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.types.util.UnitUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 
@@ -657,14 +661,22 @@ public class StateFilterProfileTest {
 
     public static Stream<Arguments> testFunctions() {
         NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
+        NumberItem percentItem = new NumberItem("Number:Dimensionless", "percentItem", UNIT_PROVIDER);
         NumberItem decimalItem = new NumberItem("decimalItem");
         List<Number> numbers = List.of(1, 2, 3, 4, 5);
         List<Number> negatives = List.of(-1, -2, -3, -4, -5);
         List<QuantityType> quantities = numbers.stream().map(n -> new QuantityType(n, Units.WATT)).toList();
+        Unit percentUnit = Objects.requireNonNull(UnitUtils.parseUnit("%"));
+        List<QuantityType> percents = numbers.stream().map(n -> new QuantityType(n, percentUnit)).toList();
         List<DecimalType> decimals = numbers.stream().map(DecimalType::new).toList();
         List<DecimalType> negativeDecimals = negatives.stream().map(DecimalType::new).toList();
 
         return Stream.of( //
+                Arguments.of(decimalItem, "$INPUT < 10", decimals, DecimalType.valueOf("3"), true), //
+                Arguments.of(decimalItem, "$INPUT < 10", decimals, DecimalType.valueOf("10"), false), //
+                Arguments.of(percentItem, "$INPUT < 10 %", percents, QuantityType.valueOf("-10 %"), true), //
+                Arguments.of(percentItem, "$INPUT < 10 %", percents, QuantityType.valueOf("10 %"), false), //
+
                 // test custom window size
                 Arguments.of(decimalItem, "$AVERAGE(3) == 4", decimals, DecimalType.valueOf("5"), true), //
                 Arguments.of(decimalItem, "$AVERAGE(4) == 3.5", decimals, DecimalType.valueOf("5"), true), //

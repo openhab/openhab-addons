@@ -511,6 +511,7 @@ public class StateFilterProfile implements StateProfile {
      */
     class FunctionType implements State {
         enum Function {
+            INPUT,
             DELTA,
             DELTA_PERCENT,
             AVERAGE,
@@ -535,6 +536,7 @@ public class StateFilterProfile implements StateProfile {
             int start = windowSize.map(w -> size - w).orElse(0);
             List<State> states = start <= 0 ? previousStates : previousStates.subList(start, size);
             return switch (type) {
+                case INPUT -> newState;
                 case DELTA -> calculateDelta();
                 case DELTA_PERCENT -> calculateDeltaPercent();
                 case AVG, AVERAGE -> calculateAverage(states);

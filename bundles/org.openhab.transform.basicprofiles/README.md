@@ -231,11 +231,16 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
     It is calculated as `($DELTA / current_data) * 100`.
     Note that this can also be done by omitting the `LHS_OPERAND` and using a number followed with a percent sign `%` as the `RHS_OPERAND`.
     See the example below.
+  - `$INPUT` to represent the incoming value.
+    Conditions that compare QuantityType inputs to a constant must include the relevant unit (e.g. `> 100 W`).
+    However, when the unit is `%`, such conditions (e.g. `> 10 %`) will trigger a `$DELTA_PERCENT` check.
+    To avoid this, write the condition as `$INPUT > 10 %`.
   - `$AVERAGE`, or `$AVG` to represent the average of the previous unfiltered incoming values.
   - `$STDDEV` to represent the _population_ standard deviation of the previous unfiltered incoming values.
   - `$MEDIAN` to represent the median value of the previous unfiltered incoming values.
   - `$MIN` to represent the minimum value of the previous unfiltered incoming values.
   - `$MAX` to represent the maximum value of the previous unfiltered incoming values.
+
   These are only applicable to numeric states.
   By default, 5 samples of the previous values are kept.
   This can be customized by specifying the "window size" or sample count applicable to the function, e.g. `$MEDIAN(10)` will return the median of the last 10 values.
