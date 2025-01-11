@@ -61,9 +61,11 @@ import org.slf4j.LoggerFactory;
 public class PythonScriptEngineFactory implements ScriptEngineFactory {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngineFactory.class);
     private static final String CFG_HELPER_ENABLED = "helperEnabled";
+    private static final String CFG_CACHING_ENABLED = "cachingEnabled";
     private static final String CFG_JYTHON_EMULATION = "jythonEmulation";
 
     private boolean helperEnabled = false;
+    private boolean cachingEnabled = false;
     private boolean jythonEmulation = false;
 
     public static final String SCRIPT_TYPE = "py3";
@@ -103,12 +105,13 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
             return null;
         }
         // return new OpenhabGraalPythonScriptEngine(jythonEmulation);
-        return new DebuggingGraalScriptEngine<>(new OpenhabGraalPythonScriptEngine(jythonEmulation));
+        return new DebuggingGraalScriptEngine<>(new OpenhabGraalPythonScriptEngine(cachingEnabled, jythonEmulation));
     }
 
     @Modified
     protected void modified(Map<String, ?> config) {
         this.helperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_HELPER_ENABLED), Boolean.class, true);
+        this.cachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_CACHING_ENABLED), Boolean.class, true);
         this.jythonEmulation = ConfigParser.valueAsOrElse(config.get(CFG_JYTHON_EMULATION), Boolean.class, false);
     }
 

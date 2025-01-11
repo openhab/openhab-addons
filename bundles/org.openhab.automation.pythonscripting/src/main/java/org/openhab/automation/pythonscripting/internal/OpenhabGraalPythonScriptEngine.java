@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -32,6 +31,7 @@ import javax.script.ScriptContext;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.PolyglotAccess;
 import org.graalvm.polyglot.Value;
 import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
@@ -66,11 +66,13 @@ public class OpenhabGraalPythonScriptEngine
 
     public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
 
+    private static final String PYTHON_OPTION_CACHEDIR = "python.PyCachePrefix";
+    private static final String PYTHON_CACHEDIR_PATH = Paths.get(OpenHAB.getUserDataFolder(), "cache",
+            OpenhabGraalPythonScriptEngine.class.getPackageName(), "cachedir").toString();
+
     /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalPythonScriptEngine} */
     private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
             .option("engine.WarnInterpreterOnly", "false").build();
-
-    private static final AtomicInteger counter = new AtomicInteger(1);
 
     /** Provides unlimited host access as well as custom translations from Python to Java Objects */
     private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL)
@@ -124,8 +126,10 @@ public class OpenhabGraalPythonScriptEngine
     /**
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
+     *
+     * @param jythonEmulation
      */
-    public OpenhabGraalPythonScriptEngine(boolean jythonEmulation) {
+    public OpenhabGraalPythonScriptEngine(boolean cachingEnabled, boolean jythonEmulation) {
         // JSDependencyTracker jsDependencyTracker) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
 
@@ -133,23 +137,19 @@ public class OpenhabGraalPythonScriptEngine
                 .allowHostAccess(HOST_ACCESS) //
                 // .allowHostClassLoading(true) //
                 .allowAllAccess(true) //
-                .allowNativeAccess(true) //
-
-                // .allowNativeAccess(true) //
+                // allow creating python threads
+                .allowCreateThread(true)
                 // .allowCreateProcess(true) //
-                // .allowCreateThread(true) //
-                // .allowExperimentalOptions(true) //
-                // .fileSystem(...)
-                // allow exporting Python values to polyglot bindings and accessing Java
-                // from Python
+                // allow running Python native extensions
+                .allowNativeAccess(true) //
+                // allow exporting Python values to polyglot bindings and accessing Java from Python
+                .allowPolyglotAccess(PolyglotAccess.ALL)
+                // allow experimental options
+                .allowExperimentalOptions(true) //
                 // choose the backend for the POSIX module
                 .option(PYTHON_OPTION_POSIXMODULEBACKEND, "java") //
-                // equivalent to the Python -B flag
-                .option(PYTHON_OPTION_DONTWRITEBYTECODEFLAG, Boolean.toString(true)) //
                 // Force to automatically import site.py module, to make Python packages available
                 .option(PYTHON_OPTION_FORCEIMPORTSITE, Boolean.toString(true)) //
-                // causes the interpreter to always assume hash-based pycs are valid
-                .option(PYTHON_OPTION_CHECKHASHPYCSMODE, "never") //
                 // The sys.executable path, a virtual path that is used by the interpreter
                 // to discover packages
                 .option(PYTHON_OPTION_EXECUTABLE, PYTHON_DEFAULT_PATH.resolve("bin").resolve("python").toString())
@@ -163,6 +163,15 @@ public class OpenhabGraalPythonScriptEngine
                 .option(PYTHON_OPTION_ALWAYSRUNEXCEPTHOOK, Boolean.toString(true)) //
                 // emulate jython behavior (will slowdown the engine)
                 .option(PYTHON_OPTION_EMULATEJYTHON, String.valueOf(jythonEmulation));
+
+        if (cachingEnabled) {
+            contextConfig.option(PYTHON_OPTION_DONTWRITEBYTECODEFLAG, Boolean.toString(false)) //
+                    .option(PYTHON_OPTION_CACHEDIR, PYTHON_CACHEDIR_PATH);
+        } else {
+            contextConfig.option(PYTHON_OPTION_DONTWRITEBYTECODEFLAG, Boolean.toString(true)) //
+                    // causes the interpreter to always assume hash-based pycs are valid
+                    .option(PYTHON_OPTION_CHECKHASHPYCSMODE, "never");
+        }
 
         delegate = GraalPythonScriptEngine.create(ENGINE, contextConfig);
 

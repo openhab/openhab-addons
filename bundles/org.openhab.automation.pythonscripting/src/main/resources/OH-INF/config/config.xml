@@ -11,8 +11,20 @@
             If disabled, the openHAB Python helper module can be installed manually by copying it to /conf/automation/python/lib/openhab"
             ]]></description>
 			<options>
-				<option value="true">Install helper library automatically and keep it updated</option>
-				<option value="false">Do not install helper library</option>
+				<option value="true">Install helper modules automatically and keep it updated</option>
+				<option value="false">Do not install helper modules</option>
+			</options>
+			<default>true</default>
+		</parameter>
+		<parameter name="cachingEnabled" type="boolean" required="true">
+			<label>Cache compiled openHAB Python helper modules (.pyc files)</label>
+			<description><![CDATA[
+            Cache the openHAB python modules for improved startup performance.<br>
+            Disable this option will result in a slower startup performance, because scripts have to be recompiled every.
+            ]]></description>
+			<options>
+				<option value="true">Cache compiled modules</option>
+				<option value="false">Do not cache compiled modules</option>
 			</options>
 			<default>true</default>
 		</parameter>
