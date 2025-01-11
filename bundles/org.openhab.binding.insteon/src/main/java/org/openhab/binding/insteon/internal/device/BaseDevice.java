@@ -43,6 +43,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
         implements Device {
     private static final int DIRECT_ACK_TIMEOUT = 6000; // in milliseconds
     private static final int REQUEST_QUEUE_TIMEOUT = 30000; // in milliseconds
+    private static final int FAILED_REQUEST_THRESHOLD = 5;
 
     protected static enum DeviceStatus {
         INITIALIZED,
@@ -63,6 +64,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     private Map<Msg, DeviceRequest> requestQueueHash = new HashMap<>();
     private @Nullable DeviceFeature featureQueried;
     private long pollInterval = -1L; // in milliseconds
+    private volatile int failedRequestCount = 0;
     private volatile long lastRequestQueued = 0L;
     private volatile long lastRequestSent = 0L;
 
@@ -143,6 +145,10 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
         synchronized (requestQueue) {
             return featureQueried;
         }
+    }
+
+    public boolean isResponding() {
+        return failedRequestCount < FAILED_REQUEST_THRESHOLD;
     }
 
     public void setModem(@Nullable InsteonModem modem) {
@@ -403,10 +409,8 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     public void handleMessage(Msg msg) {
         getFeatures().stream().filter(feature -> feature.handleMessage(msg)).findFirst().ifPresent(feature -> {
             logger.trace("handled reply of direct for {}", feature.getName());
-            // mark feature queried as processed and answered
-            setFeatureQueried(null);
-            feature.setQueryMessage(null);
-            feature.setQueryStatus(QueryStatus.QUERY_ANSWERED);
+            // notify feature queried was answered
+            featureQueriedAnswered(feature);
         });
     }
 
@@ -527,9 +531,8 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
                         return now + 1000L; // retry in 1000 ms
                     }
                     logger.debug("gave up waiting for {} query to be sent to {}", feature.getName(), address);
-                    // reset feature queried as never queried
-                    feature.setQueryMessage(null);
-                    feature.setQueryStatus(QueryStatus.NEVER_QUERIED);
+                    // notify feature queried failed
+                    featureQueriedFailed(feature);
                     break;
                 case QUERY_SENT:
                 case QUERY_ACKED:
@@ -541,18 +544,59 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
                         return now + 500L; // retry in 500 ms
                     }
                     logger.debug("gave up waiting for {} query reply from {}", feature.getName(), address);
-                    // reset feature queried as never queried
-                    feature.setQueryMessage(null);
-                    feature.setQueryStatus(QueryStatus.NEVER_QUERIED);
+                    // notify feature queried failed
+                    featureQueriedFailed(feature);
                     break;
                 default:
                     logger.debug("unexpected feature {} query status {} for {}", feature.getName(), queryStatus,
                             address);
+                    // reset feature queried
+                    setFeatureQueried(null);
             }
-            // reset feature queried otheriwse
-            setFeatureQueried(null);
         }
         return 0L;
+    }
+
+    /**
+     * Notifies that the feature queried was answered
+     *
+     * @param feature the feature queried
+     */
+    protected void featureQueriedAnswered(DeviceFeature feature) {
+        // store current failed request count
+        int prevCount = failedRequestCount;
+        // reset failed request count
+        failedRequestCount = 0;
+        // mark feature queried as processed and answered
+        setFeatureQueried(null);
+        feature.setQueryMessage(null);
+        feature.setQueryStatus(QueryStatus.QUERY_ANSWERED);
+        // notify status changed if failed request count was above threshold
+        if (prevCount >= FAILED_REQUEST_THRESHOLD) {
+            statusChanged();
+        }
+    }
+
+    /**
+     * Notifies that the feature queried failed
+     *
+     * @param feature the feature queried
+     */
+    protected void featureQueriedFailed(DeviceFeature feature) {
+        // increase failed request count
+        failedRequestCount++;
+        // mark feature queried as processed and never queried
+        setFeatureQueried(null);
+        feature.setQueryMessage(null);
+        feature.setQueryStatus(QueryStatus.NEVER_QUERIED);
+        // poll feature again if device is responding
+        if (isResponding()) {
+            feature.doPoll(0L);
+        }
+        // notify status changed if failed request count at threshold
+        if (failedRequestCount == FAILED_REQUEST_THRESHOLD) {
+            statusChanged();
+        }
     }
 
     /**
@@ -564,10 +608,17 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     public void requestReplied(Msg msg) {
         DeviceFeature feature = getFeatureQueried();
         if (feature != null && feature.isMyReply(msg)) {
-            // mark feature queried as processed and answered
-            setFeatureQueried(null);
-            feature.setQueryMessage(null);
-            feature.setQueryStatus(QueryStatus.QUERY_ANSWERED);
+            if (msg.isReplyNack()) {
+                logger.debug("got a reply nack msg: {}", msg);
+                // notify feature queried failed
+                featureQueriedFailed(feature);
+            } else if (!msg.isInsteon()) {
+                // notify feature queried was answered
+                featureQueriedAnswered(feature);
+            } else {
+                // mark feature queried as acked
+                feature.setQueryStatus(QueryStatus.QUERY_ACKED);
+            }
         }
     }
 
@@ -585,6 +636,18 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
             feature.setQueryStatus(QueryStatus.QUERY_SENT);
             // set last request sent time
             lastRequestSent = time;
+        }
+    }
+
+    /**
+     * Notifies that the status has changed for this device
+     */
+    public void statusChanged() {
+        logger.trace("status for {} has changed", address);
+        @Nullable
+        S handler = getHandler();
+        if (handler != null) {
+            handler.updateStatus();
         }
     }
 
