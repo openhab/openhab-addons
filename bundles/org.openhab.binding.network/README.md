@@ -57,7 +57,7 @@ Use the following options for a **network:pingdevice**:
 - **useArpPing:** When set to true if the presence detection is allowed to use arp ping.
   This can speed up presence detection, but may lead to inaccurate ping latency measurements.
   Switch off if you want to use this for ping latency monitoring. Default: `true`.
-- **usePing:** When set to true if the presence detection is allowed to use ping.
+- **useIcmpPing:** When set to true if the presence detection is allowed to use icmp ping.
   When also using arp ping, the latency measurements will not be comparable.
   Switch off if you rather want to use arp ping latency monitoring. Default: `true`.
 - **networkInterfaceNames:** The network interface names used for communicating with the device.
