@@ -115,7 +115,6 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     private IHttpClientProvider httpClientProvider;
     private @Nullable ScheduledFuture<?> backgroundGwPollingScheduler;
     private @Nullable ScheduledFuture<?> connectRepair = null;
-    private @Nullable ScheduledFuture<?> delayedConfigReadRetry = null;
 
     protected ExpiringCache<String> lastGetConfigCache = new ExpiringCache<>(Duration.ofSeconds(10),
             LinkTapBridgeHandler::expireCacheContents);
@@ -187,10 +186,6 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         cancelReconnect();
         cancelGwPolling();
-        final ScheduledFuture<?> configRead = delayedConfigReadRetry;
-        if (configRead != null) {
-            configRead.cancel(true);
-        }
         deregisterBridge(this);
         GW_ID_LOOKUP.deregisterItem(currentGwId, this, () -> {
         });
