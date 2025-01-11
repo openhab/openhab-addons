@@ -31,11 +31,14 @@ class Test2Rule:
 
 the decorator will register the decorated class as a rule. It will wrap and extend the class with the following functionalities
 
-- register the class as a rule with the provided triggers
-- wrap the execute function with a try / except to provide meaningful error logs
-- provide logger object with the prefix 'org.automation.pythonscripting.<filename>.<classname>'
-- embedded profiler to analyze runtime (can be enabled by '@rule(profile=1)')
-- measure runtime and collect trigger reason create log entries with theese informations
+- Register the class as a rule
+- If name is not provided, a fallback name in the form "<filename>.<classname>" is created
+- Triggers can be added with argument "trigger" or with a function called "buildTrigger"
+- The execute function is wrapped within a try / except to provide meaningful error logs
+- A logger object (self.logger) with the prefix "org.automation.pythonscripting.<filename>.<classname>" is available
+- You can enable a profiler to analyze runtime with argument "profile=1"
+- CronTrigger based rules are tagged with "Schedule"
+- Every run is logging total runtime and trigger reasons
 
 ```
 2025-01-09 09:35:11.002 [INFO ] [tomation.pythonscripting.demo1.Test2] - Rule executed in    0.0 ms [Item: Item1]
