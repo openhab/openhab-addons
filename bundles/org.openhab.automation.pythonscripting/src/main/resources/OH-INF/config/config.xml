@@ -4,6 +4,18 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="automation:pythonscripting">
+		<parameter name="helperEnabled" type="boolean" required="true">
+			<label>Use openHAB Python helper modules</label>
+			<description><![CDATA[
+            Deploy and update openHAB Python helper modules like rule, logger, Registry, Timer etc...<br>
+            If disabled, the openHAB Python helper module can be installed manually by copying it to /conf/automation/python/lib/openhab"
+            ]]></description>
+			<options>
+				<option value="true">Install helper library automatically and keep it updated</option>
+				<option value="false">Do not install helper library</option>
+			</options>
+			<default>true</default>
+		</parameter>
 		<parameter name="jythonEmulation" type="boolean" required="true">
 			<label>Enable Jython emulation in GraalPy</label>
 			<description><![CDATA[

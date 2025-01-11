@@ -60,8 +60,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PythonScriptEngineFactory implements ScriptEngineFactory {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngineFactory.class);
+    private static final String CFG_HELPER_ENABLED = "helperEnabled";
     private static final String CFG_JYTHON_EMULATION = "jythonEmulation";
 
+    private boolean helperEnabled = false;
     private boolean jythonEmulation = false;
 
     public static final String SCRIPT_TYPE = "py3";
@@ -71,9 +73,11 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     public PythonScriptEngineFactory(Map<String, Object> config) {
         logger.debug("Loading PythonScriptEngineFactory");
 
-        initOpenhabLib();
-
         modified(config);
+
+        if (this.helperEnabled) {
+            initOpenhabLib();
+        }
     }
 
     @Deactivate
@@ -104,6 +108,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
     @Modified
     protected void modified(Map<String, ?> config) {
+        this.helperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_HELPER_ENABLED), Boolean.class, true);
         this.jythonEmulation = ConfigParser.valueAsOrElse(config.get(CFG_JYTHON_EMULATION), Boolean.class, false);
     }
 
