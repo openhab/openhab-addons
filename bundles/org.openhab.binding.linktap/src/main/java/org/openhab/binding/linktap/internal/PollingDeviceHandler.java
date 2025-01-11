@@ -56,6 +56,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class PollingDeviceHandler extends BaseThingHandler implements IBridgeData {
 
+    protected boolean initPending = true;
+
     protected static final String MARKER_INVALID_DEVICE_KEY = "---INVALID---";
 
     private final Logger logger = LoggerFactory.getLogger(PollingDeviceHandler.class);
@@ -154,6 +156,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
     }
 
     protected void initAfterBridge(final LinkTapBridgeHandler bridge) {
+        initPending = true;
         String deviceId = getValidatedIdString();
         if (MARKER_INVALID_DEVICE_KEY.equals(deviceId)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -167,17 +170,34 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
             registeredDeviceId = deviceId;
         }
 
+        // This can be called, and then the bridge data gets updated
         boolean knownToBridge = bridge.getDiscoveredDevices().anyMatch(x -> deviceId.equals(x.deviceId));
         if (knownToBridge) {
-            updateStatus(ThingStatus.ONLINE);
+            if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.ONLINE);
+            }
             registerDevice();
             scheduleInitialPoll();
             scheduler.execute(this::runStartInit);
             startStatusPolling();
+            initPending = false;
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     getLocalizedText("polling-device.error.unknown-device-id"));
         }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+        scheduler.execute(() -> {
+            if (initPending && ThingStatus.ONLINE.equals(status)) {
+                final BridgeHandler handler = getBridgeHandler();
+                if (handler instanceof LinkTapBridgeHandler linkTapBridge) {
+                    initAfterBridge(linkTapBridge);
+                }
+            }
+        });
     }
 
     protected abstract void runStartInit();
@@ -247,6 +267,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
                 final LinkTapDeviceMetadata metadata = vesyncBridgeHandler.getDeviceLookup().get(devId);
 
                 if (metadata != null) {
+                    logger.trace("Using matched Address ID (dev_id) {}", metadata.deviceId);
                     return metadata.deviceId;
                 }
             }
@@ -266,6 +287,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
                     return MARKER_INVALID_DEVICE_KEY;
                 }
 
+                logger.trace("Using matched Address ID (dev_name) {}", matchedAddressIds[0]);
                 return matchedAddressIds[0];
             }
         }

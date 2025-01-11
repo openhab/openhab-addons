@@ -57,7 +57,7 @@ public class GatewayDeviceResponse extends TLGatewayFrame {
 
     public boolean isRetryableError() {
         switch (getRes()) {
-            case RET_CONFLICT_WATER_PLAN: // Conflict with watering plan
+            case RET_GATEWAY_BUSY: // Gateway is busy (likely booting up)
             case RET_GW_INTERNAL_ERR: // Gateway internal error
                 return true;
             default:

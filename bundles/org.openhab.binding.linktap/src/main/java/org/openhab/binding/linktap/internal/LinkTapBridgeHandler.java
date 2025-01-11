@@ -13,9 +13,13 @@
 package org.openhab.binding.linktap.internal;
 
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.*;
+import static org.openhab.binding.linktap.internal.TransactionProcessor.MAX_COMMAND_RETRIES;
+import static org.openhab.binding.linktap.protocol.frames.GatewayDeviceResponse.ResultStatus.RET_GATEWAY_BUSY;
+import static org.openhab.binding.linktap.protocol.frames.GatewayDeviceResponse.ResultStatus.RET_GW_INTERNAL_ERR;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.*;
 import static org.openhab.binding.linktap.protocol.frames.ValidationError.Cause.BUG;
 import static org.openhab.binding.linktap.protocol.frames.ValidationError.Cause.USER;
+import static org.openhab.binding.linktap.protocol.http.TransientCommunicationIssueException.TransientExecptionDefinitions.GATEWAY_BUSY;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -105,6 +109,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     private volatile LinkTapBridgeConfiguration config = new LinkTapBridgeConfiguration();
     private volatile long lastGwCommandRecvTs = 0L;
     private volatile long lastMdnsScanMillis = -1L;
+    private volatile boolean readZeroDevices = false;
 
     private String bridgeKey = "";
     private IHttpClientProvider httpClientProvider;
@@ -143,7 +148,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             cancelGwPolling();
             backgroundGwPollingScheduler = scheduler.scheduleWithFixedDelay(() -> {
                 if (lastGwCommandRecvTs + 120000 < System.currentTimeMillis()) {
-                    getGatewayConfiguration();
+                    getGatewayConfiguration(false);
                 }
             }, 5000, 120000, TimeUnit.MILLISECONDS);
         }
@@ -227,7 +232,15 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
-    public void getGatewayConfiguration() {
+    public boolean getGatewayConfigurationFreshCheck() {
+        readZeroDevices = false;
+        return getGatewayConfiguration(true);
+    }
+
+    public boolean getGatewayConfiguration(final boolean forceFreshRead) {
+        if (forceFreshRead) {
+            lastGetConfigCache.invalidateValue();
+        }
         String resp = "";
         synchronized (getConfigLock) {
             resp = lastGetConfigCache.getValue();
@@ -251,13 +264,17 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 }
                 lastGetConfigCache.putValue(resp);
             }
-
         }
 
         final GatewayConfigResp gwConfig = LinkTapBindingConstants.GSON.fromJson(resp, GatewayConfigResp.class);
         if (gwConfig == null) {
-            return;
+            return false;
         }
+
+        if (gwConfig.isRetryableError()) {
+            return false;
+        }
+
         currentGwId = gwConfig.gatewayId;
 
         final String version = gwConfig.version;
@@ -269,7 +286,6 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             final Map<String, String> props = editProperties();
             props.put(BRIDGE_PROP_GW_VER, version);
             updateProperties(props);
-            return;
         }
         if (!volUnit.equals(editProperties().get(BRIDGE_PROP_VOL_UNIT))) {
             final Map<String, String> props = editProperties();
@@ -285,6 +301,20 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             }
         }
 
+        // Filter out the processing where we receive just a single response containing no device definitions, ensure
+        // this is confirmed by a second poll.
+        if (devIds.length == 0 || devNames.length == 0) {
+            if (!readZeroDevices) {
+                logger.trace("Detected ZERO devices in Gateway from CMD 16");
+                readZeroDevices = true;
+                lastGetConfigCache.invalidateValue();
+                return false; // Don't process the potentially incorrect data
+            }
+            logger.debug("Confirmed ZERO devices in Gateway from CMD 16");
+        } else {
+            readZeroDevices = false;
+        }
+
         boolean updatedDeviceInfo = devIds.length != discoveredDevices.size();
 
         for (int i = 0; i < devIds.length; ++i) {
@@ -298,19 +328,41 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
 
         handlers.forEach(x -> x.handleMetadataRetrieved(this));
 
-        if (updatedDeviceInfo) {
-            this.scheduler.execute(() -> {
-                for (Thing el : getThing().getThings()) {
-                    final ThingHandler th = el.getHandler();
-                    if (th instanceof IBridgeData bridgeData) {
+        final boolean forceDeviceInit = updatedDeviceInfo;
+        this.scheduler.execute(() -> {
+            for (Thing el : getThing().getThings()) {
+                final ThingHandler th = el.getHandler();
+                if (th instanceof IBridgeData bridgeData) {
+                    if (forceDeviceInit || ThingStatus.OFFLINE.equals(th.getThing().getStatus())) {
                         bridgeData.handleBridgeDataUpdated();
                     }
                 }
-            });
-        }
+            }
+        });
+
+        return true;
     }
 
-    public String sendApiRequest(final TLGatewayFrame req) {
+    public String sendApiRequest(final TLGatewayFrame request) {
+        int triesLeft = MAX_COMMAND_RETRIES;
+        int retry = 0;
+        while (triesLeft > 0) {
+            try {
+                return sendSingleApiRequest(request);
+            } catch (TransientCommunicationIssueException tcie) {
+                --triesLeft;
+                try {
+                    Thread.sleep(1000L * retry);
+                } catch (InterruptedException ie) {
+                    return "";
+                }
+                ++retry;
+            }
+        }
+        return "";
+    }
+
+    public String sendSingleApiRequest(final TLGatewayFrame req) throws TransientCommunicationIssueException {
         final UUID uid = UUID.randomUUID();
 
         final WebServerApi api = WebServerApi.getInstance();
@@ -329,17 +381,26 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             logger.debug("{} = APP BRIDGE -> GW -> Request {}", uid, reqData);
             final String respData = api.sendRequest(host, reqData);
             logger.debug("{} = APP BRIDGE -> GW -> Response {}", uid, respData);
-            final TLGatewayFrame gwResponseFrame = LinkTapBindingConstants.GSON.fromJson(respData,
-                    TLGatewayFrame.class);
-            if (confirmGateway && gwResponseFrame != null && !gwResponseFrame.gatewayId.equals(req.gatewayId)) {
-                logger.warn("{}", getLocalizedText("warning.response-from-wrong-gw-id", uid, req.gatewayId,
-                        gwResponseFrame.gatewayId));
-                return "";
-            }
-            if (gwResponseFrame != null && req.command != gwResponseFrame.command) {
-                logger.warn("{}",
-                        getLocalizedText("warning.incorrect-cmd-resp", uid, req.command, gwResponseFrame.command));
-                return "";
+            final GatewayDeviceResponse gwResponseFrame = LinkTapBindingConstants.GSON.fromJson(respData,
+                    GatewayDeviceResponse.class);
+
+            if (gwResponseFrame != null) {
+                if (confirmGateway && !gwResponseFrame.gatewayId.equals(req.gatewayId)) {
+                    logger.warn("{}", getLocalizedText("warning.response-from-wrong-gw-id", uid, req.gatewayId,
+                            gwResponseFrame.gatewayId));
+                    return "";
+                }
+
+                if (RET_GW_INTERNAL_ERR.equals(gwResponseFrame.getRes())
+                        || RET_GATEWAY_BUSY.equals(gwResponseFrame.getRes())) {
+                    throw new TransientCommunicationIssueException(GATEWAY_BUSY);
+                }
+
+                if (req.command != gwResponseFrame.command) {
+                    logger.warn("{}",
+                            getLocalizedText("warning.incorrect-cmd-resp", uid, req.command, gwResponseFrame.command));
+                    return "";
+                }
             }
             return respData;
         } catch (NotTapLinkGatewayException e) {
@@ -385,7 +446,11 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 }
             }
 
-            getGatewayConfiguration();
+            if (!getGatewayConfiguration(true)) {
+                logger.debug("{}", getLocalizedText("bridge.info.awaiting-init"));
+                scheduleReconnect();
+                return;
+            }
 
             // Update the GW ID -> this bridge lookup
             GW_ID_LOOKUP.registerItem(currentGwId, this, () -> {
@@ -418,12 +483,32 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             final Optional<String> servletEpOpt = (!servletEp.isEmpty()) ? Optional.of(servletEp) : Optional.empty();
             api.configureBridge(hostname, Optional.of(config.enableMDNS), Optional.of(config.enableJSONComms),
                     servletEpOpt);
-            updateStatus(ThingStatus.ONLINE);
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }
+
+            // Ensure we have a response with data in if not schedule a reconnect in 15 seconds, theres no reason
+            // for a gateway with no devices.
+            if (!getGatewayConfigurationFreshCheck()) {
+                logger.debug("{}", getLocalizedText("bridge.info.awaiting-init"));
+                scheduleReconnect();
+                return;
+            }
+
+            updateStatus(ThingStatus.ONLINE);
             startGwPolling();
             connectRepair = null;
+
+            // Force all child things run their init sequences to ensure they are registered by the
+            // device ID.
+            this.scheduler.execute(() -> {
+                for (Thing el : getThing().getThings()) {
+                    final ThingHandler th = el.getHandler();
+                    if (th instanceof IBridgeData bridgeData) {
+                        bridgeData.handleBridgeDataUpdated();
+                    }
+                }
+            });
 
             final Firmware firmware = new Firmware(getThing().getProperties().get(BRIDGE_PROP_GW_VER));
             if (!firmware.supportsLocalConfig()) {
@@ -622,13 +707,17 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         }
         if (fullScanRequired) {
             logger.trace("The configured devices have changed a full scan should be run");
-            scheduler.execute(this::getGatewayConfiguration);
+            scheduler.execute(() -> {
+                getGatewayConfiguration(true);
+            });
         }
     }
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        scheduler.execute(this::getGatewayConfiguration);
+        scheduler.execute(() -> {
+            getGatewayConfiguration(false);
+        });
         super.childHandlerDisposed(childHandler, childThing);
     }
 }
