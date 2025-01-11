@@ -330,8 +330,6 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
         updateStatus();
     }
 
-    public abstract void updateStatus();
-
     public void updateProperties(Device device) {
         Map<String, String> properties = editProperties();
 

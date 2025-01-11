@@ -66,7 +66,6 @@ import org.openhab.core.types.UnDefType;
 public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandler> {
     private static final int BCAST_STATE_TIMEOUT = 2000; // in milliseconds
     private static final int DEFAULT_HEARTBEAT_TIMEOUT = 1440; // in minutes
-    private static final int FAILED_MSG_COUNT_THRESHOLD = 5;
 
     private InsteonEngine engine = InsteonEngine.UNKNOWN;
     private LinkDB linkDB;
@@ -76,7 +75,6 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     private Map<Msg, DeviceRequest> deferredQueueHash = new HashMap<>();
     private Map<Byte, Long> lastBroadcastReceived = new HashMap<>();
     private Map<Integer, GroupMessageStateMachine> groupState = new HashMap<>();
-    private volatile int failedMsgCount = 0;
     private volatile long lastMsgReceived = 0L;
 
     public InsteonDevice() {
@@ -143,10 +141,6 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
 
     public @Nullable State getFeatureState(String type, int group) {
         return Optional.ofNullable(getFeature(type, group)).map(DeviceFeature::getState).orElse(null);
-    }
-
-    public boolean isResponding() {
-        return failedMsgCount < FAILED_MSG_COUNT_THRESHOLD;
     }
 
     public boolean isBatteryPowered() {
@@ -444,35 +438,21 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             }
             return;
         }
-        // store current responding state
-        boolean isPrevResponding = isResponding();
         // handle message depending if failure report or not
         if (msg.isFailureReport()) {
             getFeatures().stream().filter(feature -> feature.isMyDirectAckOrNack(msg)).findFirst()
                     .ifPresent(feature -> {
                         logger.debug("got a failure report reply of direct for {}", feature.getName());
-                        // increase failed message counter
-                        failedMsgCount++;
-                        // mark feature queried as processed and never queried
-                        setFeatureQueried(null);
-                        feature.setQueryMessage(null);
-                        feature.setQueryStatus(QueryStatus.NEVER_QUERIED);
-                        // poll feature again if device is responding
-                        if (isResponding()) {
-                            feature.doPoll(0L);
-                        }
+                        // notify feature queried failed
+                        featureQueriedFailed(feature);
                     });
         } else {
             // update non-status features
             getFeatures().stream().filter(feature -> !feature.isStatusFeature() && feature.handleMessage(msg))
                     .findFirst().ifPresent(feature -> {
                         logger.trace("handled reply of direct for {}", feature.getName());
-                        // reset failed message counter
-                        failedMsgCount = 0;
-                        // mark feature queried as processed and answered
-                        setFeatureQueried(null);
-                        feature.setQueryMessage(null);
-                        feature.setQueryStatus(QueryStatus.QUERY_ANSWERED);
+                        // notify feature queried was answered
+                        featureQueriedAnswered(feature);
                     });
             // update all status features (e.g. device last update time)
             getFeatures().stream().filter(DeviceFeature::isStatusFeature)
@@ -484,10 +464,6 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             // add poll delay for non-replayed all link broadcast allowing cleanup msg to be be processed beforehand
             long delay = msg.isAllLinkBroadcast() && !msg.isAllLinkSuccessReport() && !msg.isReplayed() ? 1500L : 0L;
             doPoll(delay);
-        }
-        // notify if responding state changed
-        if (isPrevResponding != isResponding()) {
-            statusChanged();
         }
     }
 
@@ -907,25 +883,6 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     }
 
     /**
-     * Notifies that a message request was replied for this device
-     *
-     * @param msg the message received
-     */
-    @Override
-    public void requestReplied(Msg msg) {
-        DeviceFeature feature = getFeatureQueried();
-        if (feature != null && feature.isMyReply(msg)) {
-            if (msg.isReplyAck()) {
-                // mark feature queried as acked
-                feature.setQueryStatus(QueryStatus.QUERY_ACKED);
-            } else {
-                logger.debug("got a reply nack msg: {}", msg);
-                super.requestReplied(msg);
-            }
-        }
-    }
-
-    /**
      * Notifies that the link db has been updated for this device
      */
     public void linkDBUpdated() {
@@ -963,18 +920,6 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             } else {
                 handler.updateProperties(this);
             }
-        }
-    }
-
-    /**
-     * Notifies that the status has changed for this device
-     */
-    public void statusChanged() {
-        logger.trace("status for {} has changed", address);
-
-        InsteonDeviceHandler handler = getHandler();
-        if (handler != null) {
-            handler.updateStatus();
         }
     }
 
