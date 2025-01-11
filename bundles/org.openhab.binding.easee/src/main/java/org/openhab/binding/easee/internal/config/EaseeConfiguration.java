@@ -102,9 +102,8 @@ public class EaseeConfiguration {
         builder.append("EaseeConfiguration [username=").append(username).append(", password=").append(password)
                 .append(", siteId=").append(siteId).append(", asyncTimeout=").append(asyncTimeout)
                 .append(", syncTimeout=").append(syncTimeout).append(", dataPollingInterval=")
-                .append(dataPollingInterval).append(", webRequestInitialDelay=")
-                .append(webRequestInitialDelay).append(", webRequestInterval=")
-                .append(webRequestInterval).append("]");
+                .append(dataPollingInterval).append(", webRequestInitialDelay=").append(webRequestInitialDelay)
+                .append(", webRequestInterval=").append(webRequestInterval).append("]");
         return builder.toString();
     }
 }
