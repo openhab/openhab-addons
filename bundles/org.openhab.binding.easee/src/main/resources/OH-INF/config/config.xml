@@ -45,7 +45,7 @@
 		<parameter name="webRequestInterval" type="integer" required="false" min="1" max="10" unit="s"
 			groupName="connection">
 			<label>Web Request Interval</label>
-			<description>Interval between two subsequent requests are sent to EaseeCloud (in seconds).</description>
+			<description>Interval between two subsequent requests to be sent to EaseeCloud (in seconds).</description>
 			<default>2</default>
 		</parameter>
 	</config-description>
