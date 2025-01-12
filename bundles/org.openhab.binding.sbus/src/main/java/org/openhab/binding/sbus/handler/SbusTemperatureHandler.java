@@ -68,7 +68,7 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
             SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
 
             // Read temperatures in Celsius from device
-            float[] temperatures = adapter.readTemperatures(config.subnetId, config.id);
+            float[] temperatures = adapter.readTemperatures(config.subnetId, config.id, 1);
 
             // Iterate over all channels and update their states with corresponding temperatures
             for (Channel channel : getThing().getChannels()) {

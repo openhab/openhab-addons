@@ -227,8 +227,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                         && command instanceof HSBType hsbCommand) {
                     // Handle color command
                     int[] rgbw = hsbToRgbw(hsbCommand);
-                    adapter.writeRgbw(config.subnetId, config.id, channelConfig.channelNumber, rgbw[0], rgbw[1],
-                            rgbw[2], rgbw[3]);
+                    adapter.writeRgbw(config.subnetId, config.id, channelConfig.channelNumber, rgbw);
                     updateState(channelUID, hsbCommand);
                 } else if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)
                         && command instanceof OnOffType onOffCommand) {

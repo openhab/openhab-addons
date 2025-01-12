@@ -43,6 +43,7 @@ public class SbusServiceImpl implements SbusService {
      * @param port the port number to use
      * @throws Exception if initialization fails
      */
+    @Override
     public void initialize(String host, int port) throws Exception {
         this.adapter = new SbusAdapter(host, port);
     }
@@ -53,12 +54,12 @@ public class SbusServiceImpl implements SbusService {
     }
 
     @Override
-    public float[] readTemperatures(int subnetId, int id) throws Exception {
+    public float[] readTemperatures(int subnetId, int id, int temperatureUnit) throws Exception {
         final SbusAdapter adapter = this.adapter;
         if (adapter == null) {
             throw new IllegalStateException("SbusAdapter not initialized");
         }
-        return adapter.readTemperatures(subnetId, id);
+        return adapter.readTemperatures(subnetId, id, temperatureUnit);
     }
 
     @Override
@@ -80,12 +81,12 @@ public class SbusServiceImpl implements SbusService {
     }
 
     @Override
-    public void writeRgbw(int subnetId, int id, int channelNumber, int r, int g, int b, int w) throws Exception {
+    public void writeRgbw(int subnetId, int id, int channelNumber, int[] color) throws Exception {
         final SbusAdapter adapter = this.adapter;
         if (adapter == null) {
             throw new IllegalStateException("SbusAdapter not initialized");
         }
-        adapter.writeRgbw(subnetId, id, channelNumber, r, g, b, w);
+        adapter.writeRgbw(subnetId, id, channelNumber, color);
     }
 
     @Override
