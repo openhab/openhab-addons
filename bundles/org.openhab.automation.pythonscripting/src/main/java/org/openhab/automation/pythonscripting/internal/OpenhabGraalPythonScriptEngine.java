@@ -107,7 +107,7 @@ public class OpenhabGraalPythonScriptEngine
                     (v) -> v.as(Collection.class), HostAccess.TargetMappingPrecedence.LOW)
 
             // Translate python GraalWrapperSet to java.util.Set
-            .targetTypeMapping(Value.class, Set.class, v -> v.hasMember("getGraalWrapperSet"),
+            .targetTypeMapping(Value.class, Set.class, v -> v.hasMember("getWrappedSetValues"),
                     OpenhabGraalPythonScriptEngine::transformGraalWrapperSet, HostAccess.TargetMappingPrecedence.LOW)
 
             .build();
@@ -264,7 +264,7 @@ public class OpenhabGraalPythonScriptEngine
     }
 
     private static Set<String> transformGraalWrapperSet(Value value) {
-        Value raw_value = value.invokeMember("getGraalWrapperSet");
+        Value raw_value = value.invokeMember("getWrappedSetValues");
         Set<String> set = new HashSet<String>();
         for (int i = 0; i < raw_value.getArraySize(); ++i) {
             Value element = raw_value.getArrayElement(i);

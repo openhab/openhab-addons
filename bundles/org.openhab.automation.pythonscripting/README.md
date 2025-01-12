@@ -22,9 +22,8 @@ class Test2Rule:
         ]
 
     def execute(self, module, input):
-        Registry.getItem("Item2").postUpdate("<myvalue>", only_if_different = True)
-        
-        self.logger.info("test log message")
+        if Registry.getItem("Item2").postUpdateIfDifferent("<myvalue>"):
+            self.logger.info("item was updated")
 ```
 
 ## @decorator 'rule'
@@ -99,8 +98,10 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 
 | Function                 | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| postUpdate               | postUpdate(self, state, only_if_different = False)                                    |                                                                                                     |
-| sendCommand              | sendCommand(self, command, only_if_different = False)                                 |                                                                                                     |
+| postUpdate               | postUpdate(state)                                                                     |                                                                                                     |
+| postUpdateIfDifferent    | postUpdateIfDifferent(state)                                                          |                                                                                                     |
+| sendCommand              | sendCommand(command)                                                                  |                                                                                                     |
+| sendCommandIfDifferent   | sendCommandIfDifferent(command)                                                       |                                                                                                     |
 |                          |                                                                                       |                                                                                                     |
 | <...>                    | see [openhab item api](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) | Item object supports all functions from core java Item class. [State objects are converted if needed](#state-conversion) |
 
@@ -127,7 +128,14 @@ GroupItem is just an extended item helper which wraps results from getAllMembers
 
 TODO
 
+## class Set
+
+This is a helper class which makes it possible to use a python 'set' as an argument for java class method calls
+
+
 ## state conversion
+
+Conversion occurs in both directions
 
 | Python class   | Java class    |
 | -------------- | ------------- |
@@ -138,4 +146,5 @@ TODO
 ## limitations
 
 - graalby can't handle arguments in constructors of java objects. Means you can't instantiate a javaobject in python with a parameter. https://github.com/oracle/graalpython/issues/367
-- graalpy does not support SET and LIST types as arguments of function calls to java objects https://github.com/oracle/graalpython/issues/260
+- graalpy does not really support SET types as arguments of function calls to java objects https://github.com/oracle/graalpython/issues/260
+  - The reason is that Java is not able to distinguish what is a list and what is a set. A workaround is to use the class [Set](#class-set)

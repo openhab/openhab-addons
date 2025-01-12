@@ -104,7 +104,7 @@ class rule(object):
                 proxy.tags = []
             proxy.tags.append("Schedule")
         if proxy.tags is not None:
-            _base_obj.setTags(GraalWrapperSet(proxy.tags))
+            _base_obj.setTags(Set(proxy.tags))
         automationManager.addRule(_base_obj)
 
         clazz.logger.info(u"Rule '{}' initialised".format(class_package))
@@ -188,16 +188,26 @@ class Item():
     def __init__(self, raw_item):
         self.raw_item = raw_item
 
-    def postUpdate(self, state, only_if_different = False):
-        if only_if_different and not Item._checkIfDifferent(self.getState(), state):
-            return False
+    def postUpdate(self, state):
         events.postUpdate(self.raw_item, state)
+
+    def postUpdateIfDifferent(self, state):
+        if not Item._checkIfDifferent(self.getState(), state):
+            return False
+
+        self.postUpdate(state)
+
         return True
 
-    def sendCommand(self, command, only_if_different = False):
-        if only_if_changed and not Item._checkIfDifferent(self.getState(), command):
-            return False
+    def sendCommand(self, command):
         events.sendCommand(self.raw_item, command)
+
+    def sendCommandIfDifferent(self, command):
+        if not Item._checkIfDifferent(self.getState(), command):
+            return False
+
+        self.sendCommand(command)
+
         return True
 
     def getState(self):
@@ -289,12 +299,12 @@ class Registry():
         return Channel(channel)
 
 # helper class to force graalpy to force a specific type cast. e.g. convert a list to to a java.util.Set instead of java.util.List
-class GraalWrapperSet():
-    def __init__(self, value):
-        self.value = value
+class Set():
+    def __init__(self, values):
+        self.values = values
 
-    def getGraalWrapperSet(self):
-        return self.value
+    def getWrappedSetValues(self):
+        return self.values
 
 class Timer():
     # could also be solved by storing it in a private cache => https://next.openhab.org/docs/configuration/jsr223.html
