@@ -70,6 +70,13 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
         this.sessionDataPollingJobReference = new AtomicReference<>(null);
     }
 
+    void reInit() {
+        if (isInitialized()) {
+            dispose();
+            initialize();
+        }
+    }
+
     @Override
     public void initialize() {
         logger.debug("About to initialize Charger");
