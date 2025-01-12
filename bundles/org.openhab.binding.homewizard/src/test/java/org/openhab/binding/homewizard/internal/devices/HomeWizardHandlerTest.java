@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
 /**
  * Tests for the HomeWizard Handler
  *
- * @author Gearrel Welvaart- Initial contribution
+ * @author Gearrel Welvaart - Initial contribution
  *
  */
 @NonNullByDefault
