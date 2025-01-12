@@ -120,11 +120,15 @@ GroupItem is just an extended item helper which wraps results from getAllMembers
 
 ## class ItemPersistance 
 
+The item parameter as the first argument in every function is not needed
+
 | Function                 | Usage                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------- |
 | <...>                    | see [openhab PersistenceExtensions api](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions) |
 
 ## class ItemSemantic 
+
+The item parameter as the first argument in every function is not needed
 
 | Function                 | Usage                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------- |
@@ -147,8 +151,6 @@ GroupItem is just an extended item helper which wraps results from getAllMembers
 | Function                 | Usage                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------- |
 | startTimer               | startTimer(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0 )  |
-
-
 
 ## class Set
 
