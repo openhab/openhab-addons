@@ -111,7 +111,6 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | sendCommandIfDifferent   | sendCommandIfDifferent(command)                                                       |                                                                                                     |
 | getPersistance           | getPersistance(service_id = None)                                                     | returns an [persistance object](#class-itempersistance)                                             |
 | getSemantic              | getSemantic()                                                                         | returns an [semantic object](#class-itemsemantic)                                                   |
-|                          |                                                                                       |                                                                                                     |
 | <...>                    | see [openhab Item api](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) |                                                                                                |
 
 ## class GroupItem 
@@ -122,9 +121,11 @@ GroupItem is just an extended item helper which wraps results from getAllMembers
 
 The item parameter as the first argument in every function is not needed
 
-| Function                 | Usage                                                                                 |
-| ------------------------ | ------------------------------------------------------------------------------------- |
-| <...>                    | see [openhab PersistenceExtensions api](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions) |
+| Function                 | Usage                                                                                 | Description                                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| getStableMinMaxState     | getStableMinMaxState(time_range)                                                      | Calculates the average, min and max value depending on the state duration of each individual value in a specific time range |
+| getStableState           |                                                                                       | Calculates the average value depending on the state duration of each individual value in a specific time range               |
+| <...>                    | see [openhab PersistenceExtensions api](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions) |                                             |
 
 ## class ItemSemantic 
 
@@ -148,9 +149,10 @@ The item parameter as the first argument in every function is not needed
 
 ## class Timer 
 
-| Function                 | Usage                                                                                 |
-| ------------------------ | ------------------------------------------------------------------------------------- |
-| startTimer               | startTimer(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0 )  |
+| Function                 | Usage                                                                                 | Description                                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| startTimer               | startTimer(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0 )  | Create a timer that will run callback with arguments args and keyword arguments kwargs, after duration seconds have passed. If old_timer from e.g previous call is provided, it will be stopped if not already triggered. If max_count together with old_timer is provided, then 'max_count' times the old timer will be stopped and recreated, before the callback will be triggered immediately |
+
 
 ## class Set
 
