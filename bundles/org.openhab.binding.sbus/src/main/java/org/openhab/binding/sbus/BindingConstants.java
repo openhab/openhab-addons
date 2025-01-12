@@ -49,4 +49,10 @@ public class BindingConstants {
     public static final String CHANNEL_BLUE = "blue";
     public static final String CHANNEL_WHITE = "white";
     public static final String CHANNEL_COLOR = "color";
+
+    // Channel Types
+    public static final String CHANNEL_TYPE_COLOR = "color-channel";
+    public static final String CHANNEL_TYPE_SWITCH = "switch-channel";
+    public static final String CHANNEL_TYPE_DIMMER = "dimmer-channel";
+    public static final String CHANNEL_TYPE_PAIRED = "paired-channel";
 }

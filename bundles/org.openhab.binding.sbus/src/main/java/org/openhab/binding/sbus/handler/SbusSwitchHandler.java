@@ -13,6 +13,7 @@
 package org.openhab.binding.sbus.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.sbus.BindingConstants;
 import org.openhab.binding.sbus.handler.config.SbusChannelConfig;
 import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
 import org.openhab.core.library.types.OnOffType;
@@ -79,11 +80,11 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                     // 100 when on, something else when off
                     boolean isActive = statuses[channelConfig.channelNumber - 1] == 0x64;
 
-                    if ("switch-channel".equals(channelTypeId)) {
-                        updateState(channel.getUID(), isActive ? OnOffType.ON : OnOffType.OFF);
-                    } else if ("dimmer-channel".equals(channelTypeId)) {
+                    if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)) {
+                        updateState(channel.getUID(), OnOffType.from(isActive));
+                    } else if (BindingConstants.CHANNEL_TYPE_DIMMER.equals(channelTypeId)) {
                         updateState(channel.getUID(), new PercentType(statuses[channelConfig.channelNumber - 1]));
-                    } else if ("paired-channel".equals(channelTypeId)) {
+                    } else if (BindingConstants.CHANNEL_TYPE_PAIRED.equals(channelTypeId)) {
                         updateState(channel.getUID(), isActive ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                     }
                 }
@@ -97,7 +98,6 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            logger.warn("Sbus adapter not initialized");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
             return;
         }
@@ -113,16 +113,16 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
 
                 SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
 
-                if (command instanceof OnOffType) {
-                    handleOnOffCommand((OnOffType) command, config, channelConfig, channelUID, adapter);
-                } else if (command instanceof PercentType) {
-                    handlePercentCommand((PercentType) command, config, channelConfig, channelUID, adapter);
-                } else if (command instanceof OpenClosedType) {
-                    handleOpenClosedCommand((OpenClosedType) command, config, channelConfig, channelUID, adapter);
+                if (command instanceof OnOffType onOffCommand) {
+                    handleOnOffCommand(onOffCommand, config, channelConfig, channelUID, adapter);
+                } else if (command instanceof PercentType percentCommand) {
+                    handlePercentCommand(percentCommand, config, channelConfig, channelUID, adapter);
+                } else if (command instanceof OpenClosedType openClosedCommand) {
+                    handleOpenClosedCommand(openClosedCommand, config, channelConfig, channelUID, adapter);
                 }
             }
         } catch (Exception e) {
-            logger.error("Error handling command", e);
+            logger.warn("Error handling command", e);
         }
     }
 
@@ -131,7 +131,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
         boolean isOn = command == OnOffType.ON;
         adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, isOn ? 100 : 0,
                 channelConfig.timer);
-        updateState(channelUID, isOn ? OnOffType.ON : OnOffType.OFF);
+        updateState(channelUID, OnOffType.from(isOn));
     }
 
     private void handlePercentCommand(PercentType command, SbusDeviceConfig config, SbusChannelConfig channelConfig,

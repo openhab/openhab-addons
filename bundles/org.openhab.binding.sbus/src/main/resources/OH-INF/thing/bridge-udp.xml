@@ -18,61 +18,6 @@
 				<description>Port of the slave</description>
 				<default>6000</default>
 			</parameter>
-
-			<parameter name="enableDiscovery" type="boolean">
-				<label>Discovery Enabled</label>
-				<description>When enabled we try to find a device specific handler. Turn this on if you're using one of the
-					supported devices.</description>
-				<default>false</default>
-			</parameter>
-
-			<parameter name="rtuEncoded" type="boolean">
-				<label>RTU Encoding</label>
-				<description>Use RTU Encoding over IP</description>
-				<default>false</default>
-			</parameter>
-
-			<!-- connection handling -->
-			<parameter name="timeBetweenTransactionsMillis" type="integer" min="0" unit="ms">
-				<label>Time Between Transactions</label>
-				<description>How long to delay we must have at minimum between two consecutive Sbus transactions. In milliseconds.
-				</description>
-				<default>60</default>
-			</parameter>
-			<parameter name="timeBetweenReconnectMillis" type="integer" min="0" unit="ms">
-				<label>Time Between Reconnections</label>
-				<description>How long to wait to before trying to establish a new connection after the previous one has been
-					disconnected. In milliseconds.</description>
-				<default>0</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="connectMaxTries" type="integer" min="1">
-				<label>Maximum Connection Tries</label>
-				<description>How many times we try to establish the connection. Should be at least 1.</description>
-				<default>1</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="afterConnectionDelayMillis" type="integer" min="0" unit="ms">
-				<label>Connection warm-up time</label>
-				<description>Connection warm-up time. Additional time which is spent on preparing connection which should be spent
-					waiting while end device is getting ready to answer first sbus call. In milliseconds.</description>
-				<default>0</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="reconnectAfterMillis" type="integer" min="0" unit="ms">
-				<label>Reconnect Again After</label>
-				<description>The connection is kept open at least the time specified here. Value of zero means that connection is
-					disconnected after every Sbus transaction. In milliseconds.</description>
-				<default>0</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="connectTimeoutMillis" type="integer" min="0" unit="ms">
-				<label>Timeout for Establishing the Connection</label>
-				<description>The maximum time that is waited when establishing the connection. Value of zero means that system/OS
-					default is respected. In milliseconds.</description>
-				<default>10000</default>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>

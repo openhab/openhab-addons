@@ -13,6 +13,7 @@
 package org.openhab.binding.sbus.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.sbus.BindingConstants;
 import org.openhab.binding.sbus.handler.config.SbusChannelConfig;
 import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
 import org.openhab.core.library.types.HSBType;
@@ -138,12 +139,12 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 continue;
             }
             String channelTypeId = channelTypeUID.getId();
-            if ("color-channel".equals(channelTypeId)) {
+            if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)) {
                 if (channelConfig.channelNumber <= 0) {
                     logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
                 }
             }
-            if ("switch-channel".equals(channelTypeId)) {
+            if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)) {
                 switchChannelCount++;
                 if (channelConfig.channelNumber <= 0) {
                     logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
@@ -151,9 +152,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
             }
         }
         if (switchChannelCount > 1) {
-            logger.error("Only one switch channel is allowed for RGBW thing {}", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Only one switch channel is allowed");
+                    "Only one switch channel is allowed for RGBW thing " + getThing().getUID());
             return;
         }
     }
@@ -179,7 +179,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 String channelTypeId = channelTypeUID.getId();
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
 
-                if ("color-channel".equals(channelTypeId)) {
+                if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)) {
                     // Read RGBW values for this channel
                     int[] rgbwValues = adapter.readRgbw(config.subnetId, config.id, channelConfig.channelNumber);
                     if (rgbwValues.length >= 4) {
@@ -187,7 +187,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                         HSBType hsbType = rgbwToHsb(rgbwValues);
                         updateState(channel.getUID(), hsbType);
                     }
-                } else if ("switch-channel".equals(channelTypeId)) {
+                } else if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)) {
                     // Read status channels for switch states
                     int[] statuses = adapter.readStatusChannels(config.subnetId, config.id);
 
@@ -207,7 +207,6 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            logger.warn("Sbus adapter not initialized");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
             return;
         }
@@ -224,22 +223,23 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
 
-                if ("color-channel".equals(channelTypeId) && command instanceof HSBType hsbCommand) {
+                if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)
+                        && command instanceof HSBType hsbCommand) {
                     // Handle color command
                     int[] rgbw = hsbToRgbw(hsbCommand);
                     adapter.writeRgbw(config.subnetId, config.id, channelConfig.channelNumber, rgbw[0], rgbw[1],
                             rgbw[2], rgbw[3]);
                     updateState(channelUID, hsbCommand);
-                } else if ("switch-channel".equals(channelTypeId) && command instanceof OnOffType onOffCommand) {
+                } else if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)
+                        && command instanceof OnOffType onOffCommand) {
                     // Handle switch command
                     boolean isOn = onOffCommand == OnOffType.ON;
                     adapter.writeSingleChannel(config.subnetId, config.id, channelConfig.channelNumber, isOn ? 100 : 0,
                             -1);
-                    updateState(channelUID, isOn ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channelUID, OnOffType.from(isOn));
                 }
             }
         } catch (Exception e) {
-            logger.error("Error handling command", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error sending command to device");
         }
     }
