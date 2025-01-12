@@ -1,0 +1,10 @@
+{
+   "energy_import_kwh": 123.456,
+   "energy_export_kwh": 123.456,
+   "power_w": 123,
+   "voltage_l1_v": 230,
+   "current_a": 1.5,
+   "frequency_hz": 50,
+   "state_of_charge_pct": 50,
+   "cycles": 123
+}
