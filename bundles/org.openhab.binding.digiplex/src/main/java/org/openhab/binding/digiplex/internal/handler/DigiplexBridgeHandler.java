@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -38,6 +38,7 @@ import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandle
 import org.openhab.binding.digiplex.internal.communication.DigiplexRequest;
 import org.openhab.binding.digiplex.internal.communication.DigiplexResponse;
 import org.openhab.binding.digiplex.internal.communication.DigiplexResponseResolver;
+import org.openhab.binding.digiplex.internal.communication.ErroneousResponse;
 import org.openhab.binding.digiplex.internal.communication.events.AbstractEvent;
 import org.openhab.binding.digiplex.internal.communication.events.TroubleEvent;
 import org.openhab.binding.digiplex.internal.communication.events.TroubleStatus;
@@ -294,6 +295,12 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
                 State state = OnOffType.from(troubleEvent.getStatus() == TroubleStatus.TROUBLE_STARTED);
                 updateState(channel, state);
             }
+        }
+
+        @Override
+        public void handleErroneousResponse(ErroneousResponse response) {
+            logger.debug("Erroneous response: {}", response.message);
+            handleCommunicationError();
         }
     }
 
