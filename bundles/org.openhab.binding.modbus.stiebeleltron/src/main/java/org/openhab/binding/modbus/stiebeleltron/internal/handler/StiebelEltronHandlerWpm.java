@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,7 +92,6 @@ public class StiebelEltronHandlerWpm extends BaseThingHandler {
          * Register poll task This is where we set up our regular poller
          */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
-
             logger.debug("Setting up regular polling");
 
             ModbusCommunicationInterface mycomms = StiebelEltronHandlerWpm.this.comms;
@@ -388,7 +387,6 @@ public class StiebelEltronHandlerWpm extends BaseThingHandler {
      * Start the periodic polling1
      */
     private void startUp() {
-
         if (comms != null) {
             return;
         }

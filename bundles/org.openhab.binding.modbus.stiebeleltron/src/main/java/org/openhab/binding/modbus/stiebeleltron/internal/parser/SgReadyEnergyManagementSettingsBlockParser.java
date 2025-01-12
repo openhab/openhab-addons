@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 public class SgReadyEnergyManagementSettingsBlockParser extends AbstractBaseParser {
 
     public SgReadyEnergyManagementSettingsBlock parse(ModbusRegisterArray raw) {
-
         SgReadyEnergyManagementSettingsBlock block = new SgReadyEnergyManagementSettingsBlock();
 
         block.sgReadyOnOffSwitch = extractUInt16(raw, 0, 0);
