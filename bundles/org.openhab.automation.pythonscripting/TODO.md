@@ -1,10 +1,10 @@
+TODO
 - fix binding reload
 - check why assigning tag 'Schedule' to rules with GenericCronTrigger is freezing webui schedule page
 
-
-
-
 DONE
+- implement persistence access
+- implement semantic access
 - implement caching
 - find a good concept for handling datetime conversion
 - find a way to use SET or Collection as arguments in python for native java objects

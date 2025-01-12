@@ -1,9 +1,8 @@
 import java
 #import sys
-from openhab.services import find_service
+#from openhab.services import find_service
 
-
-actions = find_service("org.openhab.core.model.script.engine.action.ActionService", None)
+#actions = find_service("org.openhab.core.model.script.engine.action.ActionService", None)
 
 #_MODULE = sys.modules[__name__]
 #logger.info(str(_MODULE))
@@ -14,14 +13,18 @@ actions = find_service("org.openhab.core.model.script.engine.action.ActionServic
 #    setattr(_MODULE, name, action_class)
 
 Audio = java.type("org.openhab.core.model.script.actions.Audio")
+BusEvent = java.type("org.openhab.core.model.script.actions.BusEvent")
+Ephemeris = java.type("org.openhab.core.model.script.actions.Ephemeris")
 Exec = java.type("org.openhab.core.model.script.actions.Exec")
 HTTP = java.type("org.openhab.core.model.script.actions.HTTP")
 Log = java.type("org.openhab.core.model.script.actions.Log")
 Ping = java.type("org.openhab.core.model.script.actions.Ping")
 ScriptExecution = java.type("org.openhab.core.model.script.actions.ScriptExecution")
 Semantics = java.type("org.openhab.core.model.script.actions.Semantics")
+ThingsAction = java.type("org.openhab.core.model.script.actions.Things")
 Transformation = java.type("org.openhab.core.model.script.actions.Transformation")
 Voice = java.type("org.openhab.core.model.script.actions.Voice")
+NotificationAction = java.type("org.openhab.io.openhabcloud.NotificationAction")
 
 #STATIC_IMPORTS = [Audio, Exec, HTTP, Log, Ping, ScriptExecution, Semantics, Transformation, Voice]
 #for action in STATIC_IMPORTS:

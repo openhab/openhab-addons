@@ -1,8 +1,8 @@
 ## Script Examples
 
 ```python
-from core.helper import rule, logger, Registry
-from core.triggers import GenericCronTrigger, ItemStateUpdateTrigger
+from openhab import rule, logger, Registry
+from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger
 
 @rule(
     trigger = [
@@ -43,61 +43,61 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 2025-01-09 09:35:15.472 [INFO ] [tomation.pythonscripting.demo1.Test1] - Rule executed in    0.0 ms [Other: TimerEvent]
 ```
 
-## core.helper
+## module openhab
 
 | Class                    | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| rule                     | @rule( name=None, tags=None, trigger=None, profile=None)                              | Decorate/Enable a class as a rule                                                                   |
+| rule                     | @rule( name=None, tags=None, trigger=None, profile=None)                              | Rule decorator class to wrap a custom class into a rule                                             |
 | logger                   | logger.info, logger.warn ...                                                          | Logger object with prefix 'org.automation.pythonscripting.<filename>'                               |
-| Registry                 | see [Registry class](#class-registry)                                                 | Registry object                                                                                     |
-| Item                     | see [Item class](#class-item)                                                         | Item object                                                                                         |
-| GroupItem                | see [GroupItem class](#class-groupitem)                                               | GroupItem object                                                                                    |
-| Thing                    | see [Thing class](#class-thing)                                                       | Thing object                                                                                        |
-| Channel                  | see [Channel class](#class-channel)                                                   | Channel object                                                                                      |
-| Timer                    | see [Timer class](#class-timer)                                                       | Timer object                                                                                        |
+| Registry                 | see [Registry class](#class-registry)                                                 | Static Registry class used to get items, things or channels                                         |
+| Timer                    | see [Timer class](#class-timer)                                                       | Static Timer class to create, start and stop timers                                                 |
+| Set                      | see [Set class](#class-set)                                                           | Set object                                                                                          |
 
-## core.actions
+## module openhab.actions
 
 | Class                    | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Audio                    |                                                                                       |                                                                                                     |
-| Exec                     |                                                                                       |                                                                                                     |
-| HTTP                     |                                                                                       |                                                                                                     |
-| Log                      |                                                                                       |                                                                                                     |
-| Ping                     |                                                                                       |                                                                                                     |
-| ScriptExecution          |                                                                                       |                                                                                                     |
-| Semantic                 |                                                                                       |                                                                                                     |
-| Transformation           |                                                                                       |                                                                                                     |
-| Voice                    |                                                                                       |                                                                                                     |
+| Audio                    | see [openhab Audio api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/audio)      |                                                                          |
+| BusEvent                 | see [openhab BusEvent api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/busevent) |                                                                          |
+| Exec                     | see [openhab Exec api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/exec)        |                                                                          |
+| HTTP                     | see [openhab HTTP api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/http)        |                                                                          |
+| Log                      | see [openhab Log api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/log)          |                                                                          |
+| Ping                     | see [openhab Ping api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/ping)        |                                                                          |
+| ScriptExecution          | see [openhab ScriptExecution api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/scriptexecution) |                                                           |
+| Semantic                 | see [openhab Semantic api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/semantic) |                                                                         |
+| ThingAction              | see [openhab ThingAction api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/thingaction) |                                                                   |
+| Transformation           | see [openhab Transformation api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/transformation) |                                                             |
+| Voice                    | see [openhab Voice api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/voice)      |                                                                          |
+| NotificationAction       |                                                                                       |
 
-## core.triggers
+## module openhab.triggers
 
-| Class                    | Usage                                                                                 | Description                                                                                         |
-| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| ChannelEventTrigger      | ChannelEventTrigger(channel_uid, event=None, trigger_name=None)                       |                                                                                                     |
-| ItemStateUpdateTrigger   | ItemStateUpdateTrigger(item_name, state=None, trigger_name=None)                      |                                                                                                     |
-| ItemStateChangeTrigger   | ItemStateChangeTrigger(item_name, state=None, previous_state=None, trigger_name=None) |                                                                                                     |
-| ItemCommandTrigger       | ItemCommandTrigger(item_name, command=None, trigger_name=None)                        |                                                                                                     |
-| GroupStateUpdateTrigger  | GroupStateUpdateTrigger(group_name, state=None, trigger_name=None)                    |                                                                                                     |
-| GroupStateChangeTrigger  | GroupStateChangeTrigger(group_name, state=None, previous_state=None, trigger_name=None)|                                                                                                     |
-| GroupCommandTrigger      | GroupCommandTrigger(group_name, command=None, trigger_name=None)                      |                                                                                                     |
-| ThingStatusUpdateTrigger | ThingStatusUpdateTrigger(thing_uid, status=None, trigger_name=None)                   |                                                                                                     |
-| ThingStatusChangeTrigger | ThingStatusChangeTrigger(thing_uid, status=None, previous_status=None, trigger_name=None)|                                                                                                  |
-| SystemStartlevelTrigger  | SystemStartlevelTrigger(startlevel, trigger_name=None)                                |                                                                                                     |
-| GenericCronTrigger       | GenericCronTrigger(cron_expression, trigger_name=None)                                |                                                                                                     |
-| TimeOfDayTrigger         | TimeOfDayTrigger(time_as_string, trigger_name=None)                                   |                                                                                                     |
-| DateTimeTrigger          | DateTimeTrigger(cron_expression, trigger_name=None)                                   |                                                                                                     |
-| PWMTrigger               | PWMTrigger(cron_expression, trigger_name=None)                                        |                                                                                                     |
-| GenericEventTrigger      | GenericEventTrigger(event_source, event_types, event_topic="*/*", trigger_name=None)  |                                                                                                     |
-| ItemEventTrigger         | ItemEventTrigger(event_types, item_name=None, trigger_name=None)                      |                                                                                                     |
-| ThingEventTrigger        | ThingEventTrigger(event_types, thing_uid=None, trigger_name=None)                     |                                                                                                     |
+| Class                    | Usage                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| ChannelEventTrigger      | ChannelEventTrigger(channel_uid, event=None, trigger_name=None)                       |
+| ItemStateUpdateTrigger   | ItemStateUpdateTrigger(item_name, state=None, trigger_name=None)                      |
+| ItemStateChangeTrigger   | ItemStateChangeTrigger(item_name, state=None, previous_state=None, trigger_name=None) |
+| ItemCommandTrigger       | ItemCommandTrigger(item_name, command=None, trigger_name=None)                        |
+| GroupStateUpdateTrigger  | GroupStateUpdateTrigger(group_name, state=None, trigger_name=None)                    |
+| GroupStateChangeTrigger  | GroupStateChangeTrigger(group_name, state=None, previous_state=None, trigger_name=None)|
+| GroupCommandTrigger      | GroupCommandTrigger(group_name, command=None, trigger_name=None)                      |
+| ThingStatusUpdateTrigger | ThingStatusUpdateTrigger(thing_uid, status=None, trigger_name=None)                   |
+| ThingStatusChangeTrigger | ThingStatusChangeTrigger(thing_uid, status=None, previous_status=None, trigger_name=None)|
+| SystemStartlevelTrigger  | SystemStartlevelTrigger(startlevel, trigger_name=None)                                |
+| GenericCronTrigger       | GenericCronTrigger(cron_expression, trigger_name=None)                                |
+| TimeOfDayTrigger         | TimeOfDayTrigger(time_as_string, trigger_name=None)                                   |
+| DateTimeTrigger          | DateTimeTrigger(cron_expression, trigger_name=None)                                   |
+| PWMTrigger               | PWMTrigger(cron_expression, trigger_name=None)                                        |
+| GenericEventTrigger      | GenericEventTrigger(event_source, event_types, event_topic="*/*", trigger_name=None)  |
+| ItemEventTrigger         | ItemEventTrigger(event_types, item_name=None, trigger_name=None)                      |
+| ThingEventTrigger        | ThingEventTrigger(event_types, thing_uid=None, trigger_name=None)                     |
 
 ## class Registry 
 
 | Function                 | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | getItemState             | getItemState(name, default = None)                                                    | returns a State object                                                                              |
-| getItem                  | getItem(name)                                                                         | returns an [item object](#class-item)                                                               |
+| getItem                  | getItem(name)                                                                         | returns an [item object](#class-item) or [group item object](#class-groupitem)                      |
 | getThing                 | getThing(name)                                                                        | returns an [thing object](#class-thing)                                                             |
 | getChannel               | getChannel(name)                                                                      | returns an [channel object](#class-channel)                                                         |
 
@@ -109,46 +109,64 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | postUpdateIfDifferent    | postUpdateIfDifferent(state)                                                          |                                                                                                     |
 | sendCommand              | sendCommand(command)                                                                  |                                                                                                     |
 | sendCommandIfDifferent   | sendCommandIfDifferent(command)                                                       |                                                                                                     |
+| getPersistance           | getPersistance(service_id = None)                                                     | returns an [persistance object](#class-itempersistance)                                             |
+| getSemantic              | getSemantic()                                                                         | returns an [semantic object](#class-itemsemantic)                                                   |
 |                          |                                                                                       |                                                                                                     |
-| <...>                    | see [openhab item api](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) | Item object supports all functions from core java Item class. [State objects are converted if needed](#state-conversion) |
+| <...>                    | see [openhab Item api](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) |                                                                                                |
 
 ## class GroupItem 
 
 GroupItem is just an extended item helper which wraps results from getAllMembers & getMembers into [item objects](#class-item)
 
+## class ItemPersistance 
+
+| Function                 | Usage                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| <...>                    | see [openhab PersistenceExtensions api](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions) |
+
+## class ItemSemantic 
+
+| Function                 | Usage                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| <...>                    | see [openhab Semantics api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/semantics) |
+
 ## class Thing 
 
-| Function                 | Usage                                                                                 | Description                                                                                         |
-| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| <...>                    | see [openhab thing api](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/thing) | Thing object supports all functions from core java Thing class.                              |
+| Function                 | Usage                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| <...>                    | see [openhab Thing api](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/thing) |
 
 ## class Channel 
 
-| Function                 | Usage                                                                                 | Description                                                                                         |
-| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| <...>                    | see [openhab channel api](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/type/channelgrouptype) | Channel object supports all functions from core java Channel class.        |
+| Function                 | Usage                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| <...>                    | see [openhab Channel api](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/type/channelgrouptype) |
 
 ## class Timer 
 
-| Function                 | Usage                                                                                 | Description                                                                                         |
-| ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Function                 | Usage                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| startTimer               | startTimer(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0 )  |
 
-TODO
+
 
 ## class Set
 
 This is a helper class which makes it possible to use a python 'set' as an argument for java class method calls
 
 
-## state conversion
+## python <=> java conversion
 
 Conversion occurs in both directions
 
-| Python class   | Java class    |
-| -------------- | ------------- |
-| datetime       | ZonedDateTime |
-| timedelta      | Duration      |
-| list           | Collection    |
+| Python class              | Java class    |
+| ------------------------- | ------------- |
+| datetime with timezone    | ZonedDateTime |
+| datetime without timezone | Instant       |
+| timedelta                 | Duration      |
+| list                      | Collection    |
+| Set                       | Set           |
+| Item                      | Item          |
 
 ## limitations
 

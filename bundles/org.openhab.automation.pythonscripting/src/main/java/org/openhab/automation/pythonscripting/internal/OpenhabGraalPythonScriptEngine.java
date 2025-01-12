@@ -17,6 +17,7 @@ import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
@@ -77,10 +78,18 @@ public class OpenhabGraalPythonScriptEngine
 
     /** Provides unlimited host access as well as custom translations from Python to Java Objects */
     private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL)
-            // Translate python datetime to java.time.ZonedDateTime
-            .targetTypeMapping(Value.class, ZonedDateTime.class, v -> v.hasMember("ctime") && v.hasMember("isoformat"),
+            // Translate python datetime with timezone to java.time.ZonedDateTime
+            .targetTypeMapping(Value.class, ZonedDateTime.class,
+                    v -> v.hasMember("ctime") && v.hasMember("isoformat") && v.hasMember("tzinfo")
+                            && !v.getMember("tzinfo").isNull(),
                     v -> ZonedDateTime.parse(v.invokeMember("isoformat").asString()),
                     HostAccess.TargetMappingPrecedence.LOW)
+
+            // Translate python datetime without timezone to java.time.Instant
+            .targetTypeMapping(Value.class, Instant.class,
+                    v -> v.hasMember("ctime") && v.hasMember("isoformat") && v.hasMember("tzinfo")
+                            && v.getMember("tzinfo").isNull(),
+                    v -> Instant.parse(v.invokeMember("isoformat").asString()), HostAccess.TargetMappingPrecedence.LOW)
 
             // Translate python timedelta to java.time.Duration
             .targetTypeMapping(Value.class, Duration.class,
@@ -88,12 +97,6 @@ public class OpenhabGraalPythonScriptEngine
                     v -> v.hasMember("total_seconds") && v.hasMember("total_seconds"),
                     v -> Duration.ofNanos(v.invokeMember("total_seconds").asLong() * 10000000),
                     HostAccess.TargetMappingPrecedence.LOW)
-
-            // .targetTypeMapping(Value.class, Instant.class,
-            // // picking two members to check as Instant has many common function names
-            // v -> v.hasMember("toEpochMilli") && v.hasMember("epochSecond"),
-            // v -> Instant.ofEpochMilli(v.invokeMember("toEpochMilli").asLong()),
-            // HostAccess.TargetMappingPrecedence.LOW)
 
             // Translate python item to org.openhab.core.items.Item
             .targetTypeMapping(Value.class, Item.class, v -> v.hasMember("raw_item"),

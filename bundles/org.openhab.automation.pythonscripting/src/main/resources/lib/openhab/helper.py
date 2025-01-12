@@ -27,18 +27,28 @@ scriptExtension.importPreset("RuleSimple")
 automationManager = scope.get("automationManager")
 lifecycleTracker = scope.get("lifecycleTracker")
 
-ChannelUID = java.type("org.openhab.core.thing.ChannelUID")
-ThingUID = java.type("org.openhab.core.thing.ThingUID")
-SimpleRule = java.type("org.openhab.core.automation.module.script.rulesupport.shared.simple.SimpleRule")
-#SimpleRule = scope.get("SimpleRule")
+Java_LogFactory = java.type("org.slf4j.LoggerFactory")
+Java_UnDefType = java.type("org.openhab.core.types.UnDefType")
 
-LoggerFactory = java.type("org.slf4j.LoggerFactory")
+Java_ChannelUID = java.type("org.openhab.core.thing.ChannelUID")
+Java_ThingUID = java.type("org.openhab.core.thing.ThingUID")
+Java_SimpleRule = java.type("org.openhab.core.automation.module.script.rulesupport.shared.simple.SimpleRule")
 
-UnDefType = java.type("org.openhab.core.types.UnDefType")
+Java_PersistenceExtensions = java.type("org.openhab.core.persistence.extensions.PersistenceExtensions")
+Java_Semantics = java.type("org.openhab.core.model.script.actions.Semantics")
+
+Java_Item = java.type("org.openhab.core.items.Item")
+Java_GroupItem = java.type("org.openhab.core.items.GroupItem")
+Java_State = java.type("org.openhab.core.types.State")
+Java_HistoricItem = java.type("org.openhab.core.persistence.HistoricItem")
+Java_DateTimeType = java.type("org.openhab.core.library.types.DateTimeType")
+Java_ZonedDateTime = java.type("java.time.ZonedDateTime")
+Java_Iterable = java.type("java.lang.Iterable")
+
 
 file_package = os.path.basename(scope['__file__'])[:-3]
 
-logger = LoggerFactory.getLogger( LOG_PREFIX + "." + file_package )
+logger = Java_LogFactory.getLogger( LOG_PREFIX + "." + file_package )
 
 def scriptUnloaded():
     logger.info("unload")
@@ -65,15 +75,15 @@ class rule(object):
 
         clazz.execute = proxy.executeWrapper(clazz.execute)
 
-        clazz.logger = LoggerFactory.getLogger( LOG_PREFIX + "." + file_package + "." + class_package )
+        clazz.logger = Java_LogFactory.getLogger( LOG_PREFIX + "." + file_package + "." + class_package )
 
         #subclass = type(clazz.__name__, (clazz, BaseSimpleRule,))
         _rule_obj = clazz()
 
         # dummy helper to avoid "org.graalvm.polyglot.PolyglotException: java.lang.IllegalStateException: unknown type com.oracle.truffle.host.HostObject"
-        class BaseSimpleRule(SimpleRule):
+        class BaseSimpleRule(Java_SimpleRule):
             def __init__(self):
-                SimpleRule.__init__(self)
+                Java_SimpleRule.__init__(self)
 
             def execute(self, module, input):
                 _rule_obj.execute(module, input)
@@ -183,6 +193,101 @@ class rule(object):
 
         return func_wrapper
 
+class JavaConversionHelper():
+    @staticmethod
+    def convertItem(item):
+        if java.instanceof(item, Java_GroupItem):
+            return GroupItem(item)
+        return Item(item)
+
+    @staticmethod
+    def convertHistoricItem(historic_item):
+        return HistoricItem(historic_item)
+
+    @staticmethod
+    def convertState(state):
+        if java.instanceof(state, Java_DateTimeType):
+            return JavaConversionHelper.convertZonedDateTime(state.getZonedDateTime())
+        #elif state.getClass().getName() == 'org.openhab.core.library.types.QuantityType':
+        #    return QuantityType(state)
+        return state
+
+    @staticmethod
+    def convertZonedDateTime(zoned_date_time):
+        return datetime.fromisoformat(zoned_date_time.toString().split("[")[0])
+
+    @staticmethod
+    def convertInstant(instant):
+        return datetime.fromisoformat(instant.toString())
+
+class ItemPersistance():
+    def __init__(self, item, service_id = None):
+        self.item = item
+        self.service_id = service_id
+
+    def _callWrapper(self, func, args):
+        args = tuple([self.item.raw_item]) + args
+        if self.service_id is not None:
+            args = args + tuple([self.service_id])
+        result = func(*args)
+
+        if java.instanceof(result, Java_ZonedDateTime):
+            return JavaConversionHelper.convertZonedDateTime(result)
+
+        if java.instanceof(result, Java_State):
+            return JavaConversionHelper.convertState(result)
+
+        if java.instanceof(result, Java_HistoricItem):
+            return JavaConversionHelper.convertHistoricItem(result)
+
+        if java.instanceof(result, Java_Iterable):
+            _result = []
+            for item in result:
+                result.append(JavaConversionHelper.convertHistoricItem(item))
+            return _result
+
+        return result
+
+    def __getattr__(self, name):
+        attr = getattr(Java_PersistenceExtensions, name)
+        if callable(attr):
+            return lambda *args, **kwargs: self._callWrapper( attr, args )
+        return attr
+
+class ItemSemantic():
+    def __init__(self, item):
+        self.item = item
+
+    def getEquipment(self):
+        return JavaConversionHelper.convertItem(self.self.item.raw_item.getEquipment())
+
+    def _callWrapper(self, func, args):
+        args = tuple([self.item.raw_item]) + args
+        result = func(*args)
+        return result
+
+    def __getattr__(self, name):
+        attr = getattr(Java_Semantics, name)
+        if callable(attr):
+            return lambda *args, **kwargs: self._callWrapper( attr, args )
+        return attr
+
+class HistoricItem():
+    def __init__(self, raw_historic_item):
+        self.raw_historic_item = raw_historic_item
+
+    def getInstant(self):
+        return JavaConversionHelper.convertInstant(self.raw_historic_item.getInstant())
+
+    def getTimestamp(self):
+        return JavaConversionHelper.convertZonedDateTime(self.raw_historic_item.getTimestamp())
+
+    def getState(self):
+        return JavaConversionHelper.convertState(self.raw_historic_item.getState())
+
+    def __getattr__(self, name):
+        return getattr(self.raw_historic_item, name)
+
 class Item():
     def __init__(self, raw_item):
         self.raw_item = raw_item
@@ -210,22 +315,20 @@ class Item():
         return True
 
     def getState(self):
-        return Item._convertState(self.raw_item.getState())
+        return JavaConversionHelper.convertState(self.raw_item.getState())
+
+    def getPersistance(self, service_id = None):
+        return ItemPersistance(self, service_id)
+
+    def getSemantic(self):
+        return ItemSemantic(self)
 
     def __getattr__(self, name):
         return getattr(self.raw_item, name)
 
     @staticmethod
-    def _convertState(state):
-        if state.getClass().getName() == 'org.openhab.core.library.types.DateTimeType':
-            return datetime.fromisoformat(state.getZonedDateTime().toString().split("[")[0])
-        #elif state.getClass().getName() == 'org.openhab.core.library.types.QuantityType':
-        #    return QuantityType(state)
-        return state
-
-    @staticmethod
     def _checkIfDifferent(current_state, new_state):
-        if type(current_state) is not UnDefType:
+        if not java.instanceof(current_state, Java_UnDefType):
             if isinstance(new_state, str):
                 if current_state.toString() == state:
                     return False
@@ -241,16 +344,16 @@ class Item():
 
     @staticmethod
     def _wrapItem(item):
-        if item.getClass().getName() == 'org.openhab.core.items.GroupItem':
+        if java.instanceof(item, Java_GroupItem):
             return GroupItem(item)
         return Item(item)
 
 class GroupItem(Item):
     def getAllMembers(self):
-        return [Item._wrapItem(raw_item) for raw_item in self.raw_item.getAllMembers()]
+        return [JavaConversionHelper.convertItem(raw_item) for raw_item in self.raw_item.getAllMembers()]
 
     def getMembers(self):
-        return [Item._wrapItem(raw_item) for raw_item in self.raw_item.getMembers()]
+        return [JavaConversionHelper.convertItem(raw_item) for raw_item in self.raw_item.getMembers()]
 
 class Thing():
     def __init__(self, raw_item):
@@ -272,27 +375,27 @@ class Registry():
         state = items.get(name)
         if state is None:
             raise NotInitialisedException(u"Item state for {} not found".format(name))
-        if default is not None and isinstance(state, UnDefType):
+        if default is not None and isinstance(state, Java_UnDefType):
             state = default
-        return Item._convertState(state)
+        return JavaConversionHelper.convertState(state)
 
     @staticmethod
     def getItem(name):
         item = itemRegistry.getItem(name)
         if item is None:
             raise NotInitialisedException(u"Item {} not found".format(name))
-        return Item._wrapItem(item)
+        return JavaConversionHelper.convertItem(item)
 
     @staticmethod
     def getThing(name):
-        thing = things.get(ThingUID(name))
+        thing = things.get(Java_ThingUID(name))
         if thing is None:
             raise NotInitialisedException(u"Thing {} not found".format(name))
         return Thing(thing)
 
     @staticmethod
     def getChannel(name):
-        channel = things.getChannel(ChannelUID(name))
+        channel = things.getChannel(Java_ChannelUID(name))
         if channel is None:
             raise NotInitialisedException(u"Channel {} not found".format(name))
         return Channel(channel)
