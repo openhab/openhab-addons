@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 public class OpenhabGraalPythonScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<GraalPythonScriptEngine>
         implements Lock {
+    private final Logger logger = LoggerFactory.getLogger(OpenhabGraalPythonScriptEngine.class);
 
     private static final String PYTHON_OPTION_EXECUTABLE = "python.Executable";
     // private static final String PYTHON_OPTION_PYTHONHOME = "python.PythonHome";
@@ -102,17 +103,15 @@ public class OpenhabGraalPythonScriptEngine
             // .targetTypeMapping(Value.class, QuantityType.class, v -> v.hasMember("rawQtyType"),
             // v -> v.getMember("rawQtyType").as(QuantityType.class), HostAccess.TargetMappingPrecedence.LOW)
 
+            // Translate python GraalWrapperSet to java.util.Set
+            .targetTypeMapping(Value.class, Set.class, v -> v.hasMember("isSetType"),
+                    OpenhabGraalPythonScriptEngine::transformGraalWrapperSet, HostAccess.TargetMappingPrecedence.LOW)
+
             // Translate python list to java.util.Collection
             .targetTypeMapping(Value.class, Collection.class, (v) -> v.hasArrayElements(),
                     (v) -> v.as(Collection.class), HostAccess.TargetMappingPrecedence.LOW)
 
-            // Translate python GraalWrapperSet to java.util.Set
-            .targetTypeMapping(Value.class, Set.class, v -> v.hasMember("getWrappedSetValues"),
-                    OpenhabGraalPythonScriptEngine::transformGraalWrapperSet, HostAccess.TargetMappingPrecedence.LOW)
-
             .build();
-
-    private final Logger logger = LoggerFactory.getLogger(OpenhabGraalPythonScriptEngine.class);
 
     /** {@link Lock} synchronization of multi-thread access */
     private final Lock lock = new ReentrantLock();
@@ -264,10 +263,10 @@ public class OpenhabGraalPythonScriptEngine
     }
 
     private static Set<String> transformGraalWrapperSet(Value value) {
-        Value raw_value = value.invokeMember("getWrappedSetValues");
+        // Value raw_value = value.invokeMember("getWrappedSetValues");
         Set<String> set = new HashSet<String>();
-        for (int i = 0; i < raw_value.getArraySize(); ++i) {
-            Value element = raw_value.getArrayElement(i);
+        for (int i = 0; i < value.getArraySize(); ++i) {
+            Value element = value.getArrayElement(i);
             set.add(element.asString());
         }
         return set;

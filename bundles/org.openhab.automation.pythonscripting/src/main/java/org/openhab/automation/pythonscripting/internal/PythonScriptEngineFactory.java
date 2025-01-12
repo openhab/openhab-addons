@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PythonScriptEngineFactory implements ScriptEngineFactory {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngineFactory.class);
+
     private static final String CFG_HELPER_ENABLED = "helperEnabled";
     private static final String CFG_CACHING_ENABLED = "cachingEnabled";
     private static final String CFG_JYTHON_EMULATION = "jythonEmulation";

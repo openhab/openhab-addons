@@ -299,12 +299,12 @@ class Registry():
         return Channel(channel)
 
 # helper class to force graalpy to force a specific type cast. e.g. convert a list to to a java.util.Set instead of java.util.List
-class Set():
+class Set(list):
     def __init__(self, values):
-        self.values = values
+        list.__init__(self, values)
 
-    def getWrappedSetValues(self):
-        return self.values
+    def isSetType(self):
+        return True
 
 class Timer():
     # could also be solved by storing it in a private cache => https://next.openhab.org/docs/configuration/jsr223.html

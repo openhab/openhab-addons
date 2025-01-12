@@ -23,19 +23,14 @@ def validate_uid(uid):
     uid = re.sub(r"__+", "_", uid)
     return uid
 
-class CronTrigger():
-    def __init__(self, cron_expression, trigger_name=None):
+class ChannelEventTrigger():
+    def __init__(self, channel_uid, event=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
-        configuration = {'cronExpression': cron_expression}
-        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("timer.GenericCronTrigger").withConfiguration(Configuration(configuration)).build()
-
-class ItemStateUpdateTrigger():
-    def __init__(self, item_name, state=None, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
-        configuration = {"itemName": item_name}
-        if state is not None:
-            configuration["state"] = state
-        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ItemStateUpdateTrigger").withConfiguration(Configuration(configuration)).build()
+        configuration = {"channelUID": channel_uid}
+        if event is not None:
+            configuration["event"] = event
+        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ChannelEventTrigger").withConfiguration(Configuration(configuration)).build()
+        return self
 
 class ItemStateChangeTrigger():
     def __init__(self, item_name, state=None, previous_state=None, trigger_name=None):
@@ -47,6 +42,14 @@ class ItemStateChangeTrigger():
             configuration["previousState"] = previous_state
         self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ItemStateChangeTrigger").withConfiguration(Configuration(configuration)).build()
 
+class ItemStateUpdateTrigger():
+    def __init__(self, item_name, state=None, trigger_name=None):
+        trigger_name = validate_uid(trigger_name)
+        configuration = {"itemName": item_name}
+        if state is not None:
+            configuration["state"] = state
+        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ItemStateUpdateTrigger").withConfiguration(Configuration(configuration)).build()
+
 class ItemCommandTrigger():
     def __init__(self, item_name, command=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
@@ -54,6 +57,32 @@ class ItemCommandTrigger():
         if command is not None:
             configuration["command"] = command
         self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ItemCommandTrigger").withConfiguration(Configuration(configuration)).build()
+
+class GroupStateChangeTrigger():
+    def __init__(self, group_name, state=None, previous_state=None, trigger_name=None):
+        trigger_name = validate_uid(trigger_name)
+        configuration = {"groupName": group_name}
+        if state is not None:
+            configuration["state"] = state
+        if previous_state is not None:
+            configuration["previousState"] = previous_state
+        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GroupStateChangeTrigger").withConfiguration(Configuration(configuration)).build()
+
+class GroupStateUpdateTrigger():
+    def __init__(self, group_name, state=None, trigger_name=None):
+        trigger_name = validate_uid(trigger_name)
+        configuration = {"groupName": group_name}
+        if state is not None:
+            configuration["state"] = state
+        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GroupStateUpdateTrigger").withConfiguration(Configuration(configuration)).build()
+
+class GroupCommandTrigger():
+    def __init__(self, group_name, command=None, trigger_name=None):
+        trigger_name = validate_uid(trigger_name)
+        configuration = {"groupName": group_name}
+        if command is not None:
+            configuration["command"] = command
+        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GroupCommandTrigger").withConfiguration(Configuration(configuration)).build()
 
 class ThingStatusUpdateTrigger():
     def __init__(self, thing_uid, status=None, trigger_name=None):
@@ -73,14 +102,35 @@ class ThingStatusChangeTrigger():
             configuration["previousStatus"] = previous_status
         self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ThingStatusChangeTrigger").withConfiguration(Configuration(configuration)).build()
 
-class ChannelEventTrigger():
-    def __init__(self, channel_uid, event=None, trigger_name=None):
+class SystemStartlevelTrigger():
+    def __init__(self, startlevel, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
-        configuration = {"channelUID": channel_uid}
-        if event is not None:
-            configuration["event"] = event
-        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ChannelEventTrigger").withConfiguration(Configuration(configuration)).build()
-        return self
+        configuration = {"startlevel": startlevel}
+        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("core.SystemStartlevelTrigger").withConfiguration(Configuration(configuration)).build()
+
+class GenericCronTrigger():
+    def __init__(self, cron_expression, trigger_name=None):
+        trigger_name = validate_uid(trigger_name)
+        configuration = {'cronExpression': cron_expression}
+        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("timer.GenericCronTrigger").withConfiguration(Configuration(configuration)).build()
+
+class TimeOfDayTrigger():
+    def __init__(self, time_as_string, trigger_name=None):
+        trigger_name = validate_uid(trigger_name)
+        configuration = [time_as_string]
+        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("timer.TimeOfDayTrigger").withConfiguration(Configuration(configuration)).build()
+
+class DateTimeTrigger():
+    def __init__(self, item_name, time_only = False, offset = 0, trigger_name=None):
+        trigger_name = validate_uid(trigger_name)
+        configuration = [item_name, time_only, offset]
+        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("timer.DateTimeTrigger").withConfiguration(Configuration(configuration)).build()
+
+class PWMTrigger():
+    def __init__(self, dutycycle_item, interval, min_duty_cycle, max_duty_cycle, dead_man_switch, trigger_name=None):
+        trigger_name = validate_uid(trigger_name)
+        configuration = [dutycycle_item, interval, min_duty_cycle, max_duty_cycle, dead_man_switch]
+        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("pwm.PWMTrigger").withConfiguration(Configuration(configuration)).build()
 
 class GenericEventTrigger():
     def __init__(self, event_source, event_types, event_topic="*/*", trigger_name=None):
@@ -108,18 +158,3 @@ class ThingEventTrigger():
             "eventSource": "/things/{}".format(thing_uid if thing_uid else ""),
             "eventTypes": event_types
         })).build()
-
-class StartupTrigger():
-    def __init__(self, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
-        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("jsr223.StartupTrigger").withConfiguration(Configuration()).build()
-
-class DirectoryEventTrigger():
-    def __init__(self, path, event_kinds=[ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY], watch_subdirectories=False, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
-        configuration = {
-            'path': path,
-            'event_kinds': str(event_kinds),
-            'watch_subdirectories': watch_subdirectories,
-        }
-        self.raw_trigger = TriggerBuilder.create().withId(trigger_name).withTypeUID("jsr223.DirectoryEventTrigger").withConfiguration(Configuration(configuration)).build()

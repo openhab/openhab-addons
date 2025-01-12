@@ -2,11 +2,11 @@
 
 ```python
 from core.helper import rule, logger, Registry
-from core.triggers import CronTrigger, ItemStateUpdateTrigger
+from core.triggers import GenericCronTrigger, ItemStateUpdateTrigger
 
 @rule(
     trigger = [
-        CronTrigger("*/5 * * * * ?"),
+        GenericCronTrigger("*/5 * * * * ?"),
         ItemStateUpdateTrigger("Item1")
     ]
 )
@@ -18,7 +18,7 @@ class Test1Rule:
 class Test2Rule:
     def buildTrigger(self):
         return [
-            CronTrigger("*/5 * * * * ?")
+            GenericCronTrigger("*/5 * * * * ?")
         ]
 
     def execute(self, module, input):
@@ -75,15 +75,23 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 
 | Class                    | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| CronTrigger              | CronTrigger(cron_expression, trigger_name=None)                                       |                                                                                                     |
+| ChannelEventTrigger      | ChannelEventTrigger(channel_uid, event=None, trigger_name=None)                       |                                                                                                     |
 | ItemStateUpdateTrigger   | ItemStateUpdateTrigger(item_name, state=None, trigger_name=None)                      |                                                                                                     |
 | ItemStateChangeTrigger   | ItemStateChangeTrigger(item_name, state=None, previous_state=None, trigger_name=None) |                                                                                                     |
 | ItemCommandTrigger       | ItemCommandTrigger(item_name, command=None, trigger_name=None)                        |                                                                                                     |
+| GroupStateUpdateTrigger  | GroupStateUpdateTrigger(group_name, state=None, trigger_name=None)                    |                                                                                                     |
+| GroupStateChangeTrigger  | GroupStateChangeTrigger(group_name, state=None, previous_state=None, trigger_name=None)|                                                                                                     |
+| GroupCommandTrigger      | GroupCommandTrigger(group_name, command=None, trigger_name=None)                      |                                                                                                     |
 | ThingStatusUpdateTrigger | ThingStatusUpdateTrigger(thing_uid, status=None, trigger_name=None)                   |                                                                                                     |
 | ThingStatusChangeTrigger | ThingStatusChangeTrigger(thing_uid, status=None, previous_status=None, trigger_name=None)|                                                                                                  |
-| ChannelEventTrigger      | ChannelEventTrigger(channel_uid, event=None, trigger_name=None)                       |                                                                                                     |
+| SystemStartlevelTrigger  | SystemStartlevelTrigger(startlevel, trigger_name=None)                                |                                                                                                     |
+| GenericCronTrigger       | GenericCronTrigger(cron_expression, trigger_name=None)                                |                                                                                                     |
+| TimeOfDayTrigger         | TimeOfDayTrigger(time_as_string, trigger_name=None)                                   |                                                                                                     |
+| DateTimeTrigger          | DateTimeTrigger(cron_expression, trigger_name=None)                                   |                                                                                                     |
+| PWMTrigger               | PWMTrigger(cron_expression, trigger_name=None)                                        |                                                                                                     |
 | GenericEventTrigger      | GenericEventTrigger(event_source, event_types, event_topic="*/*", trigger_name=None)  |                                                                                                     |
 | ItemEventTrigger         | ItemEventTrigger(event_types, item_name=None, trigger_name=None)                      |                                                                                                     |
+| ThingEventTrigger        | ThingEventTrigger(event_types, thing_uid=None, trigger_name=None)                     |                                                                                                     |
 
 ## class Registry 
 
