@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDevice;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
-import org.openhab.binding.huesync.internal.exceptions.HueSyncConnectionException;
+import org.openhab.binding.huesync.internal.types.HueSyncExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,10 +33,13 @@ public class HueSyncRegistrationTask implements Runnable {
 
     private final HueSyncDeviceConnection connection;
     private final HueSyncDevice deviceInfo;
+    private final HueSyncExceptionHandler exceptionHandler;
     private final Consumer<HueSyncRegistration> action;
 
     public HueSyncRegistrationTask(HueSyncDeviceConnection connection, HueSyncDevice deviceInfo,
-            Consumer<HueSyncRegistration> action) {
+            Consumer<HueSyncRegistration> action, HueSyncExceptionHandler exceptionHandler) {
+
+        this.exceptionHandler = exceptionHandler;
         this.connection = connection;
         this.deviceInfo = deviceInfo;
         this.action = action;
@@ -61,8 +64,8 @@ public class HueSyncRegistrationTask implements Runnable {
 
                 this.action.accept(registration);
             }
-        } catch (HueSyncConnectionException e) {
-            this.logger.warn("{}", e.getMessage());
+        } catch (Exception e) {
+            this.exceptionHandler.handle(e);
         }
     }
 }

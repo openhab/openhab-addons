@@ -102,25 +102,21 @@ public class HueSyncConnection {
 
     // #region protected
     protected @Nullable <T> T executeRequest(HttpMethod method, String endpoint, String payload,
-            @Nullable Class<T> type) {
+            @Nullable Class<T> type) throws Exception {
         try {
             return this.processedResponse(this.executeRequest(method, endpoint, payload), type);
-        } catch (ExecutionException e) {
-            this.handleExecutionException(e);
-        } catch (InterruptedException | TimeoutException e) {
-            this.logger.warn("{}", e.getMessage());
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            this.handleException(e);
         }
 
         return null;
     }
 
-    protected @Nullable <T> T executeGetRequest(String endpoint, Class<T> type) {
+    protected @Nullable <T> T executeGetRequest(String endpoint, Class<T> type) throws Exception {
         try {
             return this.processedResponse(this.executeGetRequest(endpoint), type);
-        } catch (ExecutionException e) {
-            this.handleExecutionException(e);
-        } catch (InterruptedException | TimeoutException e) {
-            this.logger.warn("{}", e.getMessage());
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            this.handleException(e);
         }
 
         return null;
@@ -151,39 +147,40 @@ public class HueSyncConnection {
     // #endregion
 
     // #region private
-    private @Nullable <T> T processedResponse(Response response, @Nullable Class<T> type) {
+    private @Nullable <T> T processedResponse(Response response, @Nullable Class<T> type)
+            throws HueSyncConnectionException {
         int status = response.getStatus();
-        try {
-            /*
-             * 400 Invalid State: Registration in progress
-             * 
-             * 401 Authentication failed: If credentials are missing or invalid, errors out. If
-             * credentials are missing, continues on to GET only the Configuration state when
-             * unauthenticated, to allow for device identification.
-             * 
-             * 404 Invalid URI Path: Accessing URI path which is not supported
-             * 
-             * 500 Internal: Internal errors like out of memory
-             */
-            switch (status) {
-                case HttpStatus.OK_200 -> {
-                    return (type != null && (response instanceof ContentResponse))
-                            ? this.deserialize(((ContentResponse) response).getContentAsString(), type)
-                            : null;
-                }
-                case HttpStatus.BAD_REQUEST_400 -> this.logger.debug("registration in progress: no token received yet");
-                case HttpStatus.UNAUTHORIZED_401 -> {
-                    this.authentication = Optional.empty();
-                    throw new HueSyncConnectionException("@text/connection.invalid-login");
-                }
-                case HttpStatus.NOT_FOUND_404 -> this.logger.warn("invalid device URI or API endpoint");
-                case HttpStatus.INTERNAL_SERVER_ERROR_500 -> this.logger.warn("hue sync box server problem");
-                default -> this.logger.warn("unexpected HTTP status: {}", status);
+        String exceptionMessage;
+        /*
+         * 400 Invalid State: Registration in progress
+         * 
+         * 401 Authentication failed: If credentials are missing or invalid, errors out. If
+         * credentials are missing, continues on to GET only the Configuration state when
+         * unauthenticated, to allow for device identification.
+         * 
+         * 404 Invalid URI Path: Accessing URI path which is not supported
+         * 
+         * 500 Internal: Internal errors like out of memory
+         */
+        switch (status) {
+            case HttpStatus.OK_200 -> {
+                return (type != null && (response instanceof ContentResponse))
+                        ? this.deserialize(((ContentResponse) response).getContentAsString(), type)
+                        : null;
             }
-        } catch (HueSyncConnectionException e) {
-            this.logger.warn("{}", e.getMessage());
+            case HttpStatus.BAD_REQUEST_400 -> {
+                this.logger.debug("registration in progress: no token received yet");
+                return null;
+            }
+            case HttpStatus.UNAUTHORIZED_401 -> exceptionMessage = "@text/connection.invalid-login";
+            case HttpStatus.NOT_FOUND_404 -> exceptionMessage = "@text/connection.generic-error";
+            default -> exceptionMessage = "@text/connection.generic-error";
         }
-        return null;
+
+        var exception = new HueSyncConnectionException(exceptionMessage);
+
+        this.logger.warn("{}", exception.getMessage());
+        throw (exception);
     }
 
     private @Nullable <T> T deserialize(String json, Class<T> type) {
@@ -226,12 +223,14 @@ public class HueSyncConnection {
         return request.send();
     }
 
-    private void handleExecutionException(ExecutionException e) {
-        this.logger.warn("{}", e.getMessage());
+    private void handleException(Exception e) throws Exception {
+        this.logger.warn("Exception: {}, Client State: {}", e.getMessage(), this.httpClient.getState());
 
         Throwable cause = e.getCause();
         if (cause != null && cause instanceof HttpResponseException) {
-            processedResponse(((HttpResponseException) cause).getResponse(), null);
+            this.processedResponse(((HttpResponseException) cause).getResponse(), null);
+        } else {
+            throw e;
         }
     }
 
