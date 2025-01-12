@@ -63,12 +63,11 @@ class rule(object):
 
         class_package = proxy.getClassPackage(clazz.__name__)
 
-        #subclass = type(clazz.__name__, (clazz, BaseSimpleRule,), {"__init__": init})
-
         clazz.execute = proxy.executeWrapper(clazz.execute)
 
         clazz.logger = LoggerFactory.getLogger( LOG_PREFIX + "." + file_package + "." + class_package )
 
+        #subclass = type(clazz.__name__, (clazz, BaseSimpleRule,))
         _rule_obj = clazz()
 
         # dummy helper to avoid "org.graalvm.polyglot.PolyglotException: java.lang.IllegalStateException: unknown type com.oracle.truffle.host.HostObject"
@@ -99,10 +98,10 @@ class rule(object):
         _rule_obj._trigger_items = _items
 
         _base_obj.setName(file_package + "." + class_package if proxy.name is None else proxy.name)
-        if _has_timer:
-            if proxy.tags is None:
-                proxy.tags = []
-            proxy.tags.append("Schedule")
+        #if _has_timer:
+        #    if proxy.tags is None:
+        #        proxy.tags = []
+        #    proxy.tags.append("Schedule")
         if proxy.tags is not None:
             _base_obj.setTags(Set(proxy.tags))
         automationManager.addRule(_base_obj)

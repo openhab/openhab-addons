@@ -36,7 +36,6 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 - The execute function is wrapped within a try / except to provide meaningful error logs
 - A logger object (self.logger) with the prefix "org.automation.pythonscripting.<filename>.<classname>" is available
 - You can enable a profiler to analyze runtime with argument "profile=1"
-- CronTrigger based rules are tagged with "Schedule"
 - Every run is logging total runtime and trigger reasons
 
 ```

@@ -1,5 +1,5 @@
 - fix binding reload
-
+- check why assigning tag 'Schedule' to rules with GenericCronTrigger is freezing webui schedule page
 
 
 
