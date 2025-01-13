@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.freeathome.internal.datamodel;
 
-import static org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDatapoint.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDatapoint.DatapointDirection;
 import org.openhab.binding.freeathome.internal.util.FreeAtHomeGeneralException;
 import org.openhab.binding.freeathome.internal.util.PidTranslationUtils;
 import org.openhab.binding.freeathome.internal.valuestateconverter.BooleanValueStateConverter;
@@ -56,6 +55,10 @@ public class FreeAtHomeDatapointGroup {
         datapointGroupDirection = DatapointGroupDirection.UNDEFINED;
         inputDatapoint = null;
         outputDatapoint = null;
+    }
+
+    public boolean isValid() {
+        return (inputDatapoint != null || outputDatapoint != null);
     }
 
     boolean addDatapointToGroup(DatapointDirection direction, int neededPairingId, String channelId,
