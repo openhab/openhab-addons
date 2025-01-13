@@ -80,8 +80,8 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 - Every run is logging total runtime and trigger reasons
 
 ```
-2025-01-09 09:35:11.002 [INFO ] [tomation.pythonscripting.demo1.Test2] - Rule executed in    0.0 ms [Item: Item1]
-2025-01-09 09:35:15.472 [INFO ] [tomation.pythonscripting.demo1.Test1] - Rule executed in    0.0 ms [Other: TimerEvent]
+2025-01-09 09:35:11.002 [INFO ] [tomation.pythonscripting.demo1.Test2] - Rule executed in    0.1 ms [Item: Item1]
+2025-01-09 09:35:15.472 [INFO ] [tomation.pythonscripting.demo1.Test1] - Rule executed in    0.1 ms [Other: TimerEvent]
 ```
 
 ## module openhab
