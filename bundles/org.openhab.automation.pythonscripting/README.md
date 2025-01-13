@@ -72,10 +72,10 @@ logger.info( historicItem.getState().toString() );
 the decorator will register the decorated class as a rule. It will wrap and extend the class with the following functionalities
 
 - Register the class as a rule
-- If name is not provided, a fallback name in the form "<filename>.<classname>" is created
+- If name is not provided, a fallback name in the form "{filename}.{classname}" is created
 - Triggers can be added with argument "trigger" or with a function called "buildTrigger"
 - The execute function is wrapped within a try / except to provide meaningful error logs
-- A logger object (self.logger) with the prefix "org.automation.pythonscripting.<filename>.<classname>" is available
+- A logger object (self.logger) with the prefix "org.automation.pythonscripting.{filename}.{classname}" is available
 - You can enable a profiler to analyze runtime with argument "profile=1"
 - Every run is logging total runtime and trigger reasons
 
@@ -89,7 +89,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | Class                    | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | rule                     | @rule( name=None, description=None, tags=None, trigger=None, profile=None)            | Rule decorator class to wrap a custom class into a rule                                             |
-| logger                   | logger.info, logger.warn ...                                                          | Logger object with prefix 'org.automation.pythonscripting.<filename>'                               |
+| logger                   | logger.info, logger.warn ...                                                          | Logger object with prefix 'org.automation.pythonscripting.{filename}'                               |
 | Registry                 | see [Registry class](#class-registry)                                                 | Static Registry class used to get items, things or channels                                         |
 | Timer                    | see [Timer class](#class-timer)                                                       | Static Timer class to create, start and stop timers                                                 |
 | Set                      | see [Set class](#class-set)                                                           | Set object                                                                                          |
