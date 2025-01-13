@@ -72,9 +72,25 @@ class rule(object):
     def __call__(self, clazz):
         proxy = self
 
+        _trigger = []
+        if proxy.trigger is not None:
+            _trigger = proxy.trigger
+        elif hasattr(_rule_obj, "buildTrigger") and callable(_rule_obj.buildTrigger):
+            _trigger = _rule_obj.buildTrigger()
+
+        _valid_items = {}
+        _raw_trigger = []
+        for trigger in _trigger:
+            cfg = trigger.raw_trigger.getConfiguration()
+            if cfg.containsKey("itemName"):
+                _valid_items[cfg.get("itemName") ] = True
+            elif cfg.containsKey("groupName"):
+                _valid_items[cfg.get("groupName") ] = True
+            _raw_trigger.append(trigger.raw_trigger)
+
         class_package = proxy.getClassPackage(clazz.__name__)
 
-        clazz.execute = proxy.executeWrapper(clazz.execute)
+        clazz.execute = proxy.executeWrapper(clazz.execute, _valid_items)
 
         clazz.logger = Java_LogFactory.getLogger( LOG_PREFIX + "." + file_package + "." + class_package )
 
@@ -92,36 +108,17 @@ class rule(object):
 
         _base_obj = BaseSimpleRule()
 
-        _trigger = []
-        if proxy.trigger is not None:
-            _trigger = proxy.trigger
-        elif hasattr(_rule_obj, "buildTrigger") and callable(_rule_obj.buildTrigger):
-            _trigger = _rule_obj.buildTrigger()
-
-        _has_timer = False
-        _raw_trigger = []
-        _items = {}
-        for trigger in _trigger:
-            _items[trigger.raw_trigger.getConfiguration().get("itemName") ] = True
-            _raw_trigger.append(trigger.raw_trigger)
-            if trigger.raw_trigger.getTypeUID() == "timer.GenericCronTrigger":
-                _has_timer = True
-
-        _base_obj.setTriggers(_raw_trigger)
-        _rule_obj._trigger_items = _items
-
         name = file_package + "." + class_package if proxy.name is None else proxy.name
         _base_obj.setName(name)
 
         if proxy.description is not None:
             _base_obj.setDescription(proxy.description)
 
-        #if _has_timer:
-        #    if proxy.tags is None:
-        #        proxy.tags = []
-        #    proxy.tags.append("Schedule")
         if proxy.tags is not None:
             _base_obj.setTags(Set(proxy.tags))
+
+        _base_obj.setTriggers(_raw_trigger)
+
         automationManager.addRule(_base_obj)
 
         clazz.logger.info(u"Rule '{}' initialised".format(name))
@@ -138,7 +135,7 @@ class rule(object):
             return class_name[:-4]
         return class_name
 
-    def executeWrapper(self,func):
+    def executeWrapper(self,func, valid_items):
         proxy = self
 
         def appendDetailInfo(self,event):
@@ -158,7 +155,7 @@ class rule(object):
             try:
                 event = input['event']
                 # *** Filter indirect events out (like for groups related to the configured item)
-                if getattr(event,"getItemName",None) is not None and event.getItemName() not in self._trigger_items:
+                if getattr(event,"getItemName",None) is not None and event.getItemName() not in valid_items:
                     self.logger.info("Rule skipped. Event is not related" + appendDetailInfo(self,event) )
                     return
             except KeyError:

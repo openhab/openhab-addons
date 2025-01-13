@@ -1,10 +1,11 @@
 TODO
 - fix binding reload
-- check why assigning tag 'Schedule' to rules with GenericCronTrigger is freezing webui schedule page
 - extend SimpleRule instead of wrapping in helper class (needs upcoming graalpy 24.2.0 release => register_interop_type) => expected March 18, 2025
-   maybe this will solve the freezing schedule tag assignment
+  - not high prio. maybe not needed
    
 DONE
+- check why assigning tag 'Schedule' to rules with GenericCronTrigger is freezing webui schedule page
+  - reason was the cron expression syntax which was not possible to visualize (unlimited and every 5 minutes) 
 - implement dependency tracker and reloader
 - implement persistence access
 - implement semantic access
