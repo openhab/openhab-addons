@@ -520,7 +520,7 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-            case FID_RAIN_ALARM_SENSOR: { // 0x000C Wind Alarm
+            case FID_RAIN_ALARM_SENSOR: { // 0x000E Wind Alarm
                 this.channelId = channelId;
                 logger.debug("Rain Alarm channel - Channel FID: 0x{}", channelFunctionID);
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
