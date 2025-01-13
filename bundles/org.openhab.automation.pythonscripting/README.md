@@ -60,11 +60,11 @@ Query historic item
 from openhab import logger, Registry
 from datetime import datetime
 
-historicItem = Registry.getItem("Item1").getPersistance().persistedState(datetime.now().astimezone())
-logger.info(historicItem.getState().toString());
+historicItem = Registry.getItem("Item1").getPersistance().persistedState( datetime.now().astimezone() )
+logger.info( historicItem.getState().toString() );
 
-historicItem = Registry.getItem("Item2").getPersistance("jdbc").persistedState(datetime.now().astimezone())
-logger.info(historicItem.getState().toString());
+historicItem = Registry.getItem("Item2").getPersistance("jdbc").persistedState( datetime.now().astimezone() )
+logger.info( historicItem.getState().toString() );
 ```
 
 ## @decorator 'rule'
