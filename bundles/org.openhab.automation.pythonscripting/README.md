@@ -115,11 +115,11 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 
 ## class GroupItem 
 
-GroupItem is just an extended item helper which wraps results from getAllMembers & getMembers into [item objects](#class-item)
+GroupItem is an extended [Item object](#class-item) which wraps results from getAllMembers & getMembers into [Item objects](#class-item)
 
 ## class ItemPersistance 
 
-The item parameter as the first argument in every function is not needed
+The parameters 'item' and 'serviceId', as part of the Wrapped Java API, are not needed, because they are inserted automatically.
 
 | Function                 | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -129,7 +129,7 @@ The item parameter as the first argument in every function is not needed
 
 ## class ItemSemantic 
 
-The item parameter as the first argument in every function is not needed
+The parameters 'item', as part of the Wrapped Java API, is not needed because it is inserted automatically.
 
 | Function                 | Usage                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------- |
