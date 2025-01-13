@@ -3,7 +3,7 @@ TODO
 - check why assigning tag 'Schedule' to rules with GenericCronTrigger is freezing webui schedule page
 - extend SimpleRule instead of wrapping in helper class (needs upcoming graalpy 24.2.0 release => register_interop_type) => expected March 18, 2025
    maybe this will solve the freezing schedule tag assignment
-
+   
 DONE
 - implement dependency tracker and reloader
 - implement persistence access

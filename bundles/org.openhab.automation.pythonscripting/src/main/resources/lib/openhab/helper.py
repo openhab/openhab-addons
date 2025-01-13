@@ -108,7 +108,8 @@ class rule(object):
         _base_obj.setTriggers(_raw_trigger)
         _rule_obj._trigger_items = _items
 
-        _base_obj.setName(file_package + "." + class_package if proxy.name is None else proxy.name)
+        name = file_package + "." + class_package if proxy.name is None else proxy.name
+        _base_obj.setName(name)
         #if _has_timer:
         #    if proxy.tags is None:
         #        proxy.tags = []
@@ -117,7 +118,7 @@ class rule(object):
             _base_obj.setTags(Set(proxy.tags))
         automationManager.addRule(_base_obj)
 
-        clazz.logger.info(u"Rule '{}' initialised".format(class_package))
+        clazz.logger.info(u"Rule '{}' initialised".format(name))
 
         return _rule_obj
 
@@ -376,13 +377,13 @@ class Item():
     def _checkIfDifferent(current_state, new_state):
         if not java.instanceof(current_state, Java_UnDefType):
             if isinstance(new_state, str):
-                if current_state.toString() == state:
+                if current_state.toString() == new_state:
                     return False
             elif isinstance(new_state, int):
-                if current_state.intValue() == state:
+                if current_state.intValue() == new_state:
                     return False
             elif isinstance(new_state, float):
-                if current_state.doubleValue() == state:
+                if current_state.doubleValue() == new_state:
                     return False
             elif current_state == new_state:
                 return False
