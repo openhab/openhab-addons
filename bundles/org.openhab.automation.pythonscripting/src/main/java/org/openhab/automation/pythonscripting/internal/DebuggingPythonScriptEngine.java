@@ -34,17 +34,16 @@ import org.slf4j.LoggerFactory;
 /**
  * Wraps ScriptEngines provided by Graal to provide error messages and stack traces for scripts.
  *
- * @author Holger Hees - initial contribution
- * @author Jeff James - initial contribution
+ * @author Holger Hees - Reuse / copied from jsscripting
  */
-class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & Lock>
+class DebuggingPythonScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & Lock>
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T> implements Lock {
 
     private static final int STACK_TRACE_LENGTH = 5;
 
     private @Nullable Logger logger;
 
-    public DebuggingGraalScriptEngine(T delegate) {
+    public DebuggingPythonScriptEngine(T delegate) {
         super(delegate);
     }
 

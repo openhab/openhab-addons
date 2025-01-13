@@ -124,7 +124,7 @@ The item parameter as the first argument in every function is not needed
 | Function                 | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | getStableMinMaxState     | getStableMinMaxState(time_range)                                                      | Calculates the average, min and max value depending on the state duration of each individual value in a specific time range |
-| getStableState           |                                                                                       | Calculates the average value depending on the state duration of each individual value in a specific time range               |
+| getStableState           | getStableState(time_range)                                                            | Calculates the average value depending on the state duration of each individual value in a specific time range              |
 | <...>                    | see [openhab PersistenceExtensions api](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions) |                                             |
 
 ## class ItemSemantic 
@@ -153,11 +153,9 @@ The item parameter as the first argument in every function is not needed
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | startTimer               | startTimer(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0 )  | Create a timer that will run callback with arguments args and keyword arguments kwargs, after duration seconds have passed. If old_timer from e.g previous call is provided, it will be stopped if not already triggered. If max_count together with old_timer is provided, then 'max_count' times the old timer will be stopped and recreated, before the callback will be triggered immediately |
 
-
 ## class Set
 
 This is a helper class which makes it possible to use a python 'set' as an argument for java class method calls
-
 
 ## python <=> java conversion
 
@@ -175,5 +173,5 @@ Conversion occurs in both directions
 ## limitations
 
 - graalby can't handle arguments in constructors of java objects. Means you can't instantiate a javaobject in python with a parameter. https://github.com/oracle/graalpython/issues/367
-- graalpy does not really support SET types as arguments of function calls to java objects https://github.com/oracle/graalpython/issues/260
-  - The reason is that Java is not able to distinguish what is a list and what is a set. A workaround is to use the class [Set](#class-set)
+- graalpy does not really support python 'set' types as arguments of function calls to java objects https://github.com/oracle/graalpython/issues/260
+  - The reason is that Java is not able to distinguish what is a python list and what is a python set. A workaround is to use the class [Set](#class-set)

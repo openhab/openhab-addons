@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.NonNull;
  * {@link ScriptEngine} implementation that delegates to a supplied ScriptEngine instance. Allows overriding specific
  * methods.
  *
- * @author Jonathan Gilbert - Initial contribution
+ * @author Holger Hees - Reuse / copied from jsscripting
  */
 public abstract class DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable<T extends ScriptEngine & Invocable & Compilable & AutoCloseable>
         implements ScriptEngine, Invocable, Compilable, AutoCloseable {

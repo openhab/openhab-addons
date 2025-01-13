@@ -14,6 +14,10 @@ package org.openhab.automation.pythonscripting.internal;
 
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 
+import java.io.IOException;
+import java.nio.file.AccessMode;
+import java.nio.file.FileSystems;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -26,18 +30,23 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 import javax.script.ScriptContext;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.PolyglotAccess;
 import org.graalvm.polyglot.Value;
+import org.graalvm.polyglot.io.IOAccess;
+import org.openhab.automation.pythonscripting.internal.fs.DelegatingFileSystem;
+import org.openhab.automation.pythonscripting.internal.fs.watch.PythonDependencyTracker;
 import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.core.OpenHAB;
-import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.items.Item;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -50,10 +59,14 @@ import org.slf4j.LoggerFactory;
  * @author Holger Hees - initial contribution
  * @author Jeff James - initial contribution
  */
-public class OpenhabGraalPythonScriptEngine
+public class PythonScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<GraalPythonScriptEngine>
         implements Lock {
-    private final Logger logger = LoggerFactory.getLogger(OpenhabGraalPythonScriptEngine.class);
+    private final Logger logger = LoggerFactory.getLogger(PythonScriptEngine.class);
+
+    public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
+    public static final Path PYTHON_LIB_PATH = PYTHON_DEFAULT_PATH.resolve("lib");
+    public static final Path PYTHON_OPENHAB_LIB_PATH = PYTHON_LIB_PATH.resolve("openhab");
 
     private static final String PYTHON_OPTION_EXECUTABLE = "python.Executable";
     // private static final String PYTHON_OPTION_PYTHONHOME = "python.PythonHome";
@@ -66,13 +79,12 @@ public class OpenhabGraalPythonScriptEngine
     private static final String PYTHON_OPTION_CHECKHASHPYCSMODE = "python.CheckHashPycsMode";
     private static final String PYTHON_OPTION_ALWAYSRUNEXCEPTHOOK = "python.AlwaysRunExcepthook";
 
-    public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
-
     private static final String PYTHON_OPTION_CACHEDIR = "python.PyCachePrefix";
-    private static final String PYTHON_CACHEDIR_PATH = Paths.get(OpenHAB.getUserDataFolder(), "cache",
-            OpenhabGraalPythonScriptEngine.class.getPackageName(), "cachedir").toString();
+    private static final String PYTHON_CACHEDIR_PATH = Paths
+            .get(OpenHAB.getUserDataFolder(), "cache", PythonScriptEngine.class.getPackageName(), "cachedir")
+            .toString();
 
-    /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalPythonScriptEngine} */
+    /** Shared Polyglot {@link Engine} across all instances of {@link PythonScriptEngine} */
     private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
             .option("engine.WarnInterpreterOnly", "false").build();
 
@@ -108,7 +120,7 @@ public class OpenhabGraalPythonScriptEngine
 
             // Translate python GraalWrapperSet to java.util.Set
             .targetTypeMapping(Value.class, Set.class, v -> v.hasMember("isSetType"),
-                    OpenhabGraalPythonScriptEngine::transformGraalWrapperSet, HostAccess.TargetMappingPrecedence.LOW)
+                    PythonScriptEngine::transformGraalWrapperSet, HostAccess.TargetMappingPrecedence.LOW)
 
             // Translate python list to java.util.Collection
             .targetTypeMapping(Value.class, Collection.class, (v) -> v.hasArrayElements(),
@@ -120,7 +132,7 @@ public class OpenhabGraalPythonScriptEngine
     private final Lock lock = new ReentrantLock();
 
     // these fields start as null because they are populated on first use
-    // private @Nullable Consumer<String> scriptDependencyListener;
+    private @Nullable Consumer<String> scriptDependencyListener;
     private String engineIdentifier; // this field is very helpful for debugging, please do not remove it
 
     private boolean initialized = false;
@@ -129,13 +141,32 @@ public class OpenhabGraalPythonScriptEngine
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
      *
+     * @param pythonDependencyTracker
+     *
      * @param jythonEmulation
      */
-    public OpenhabGraalPythonScriptEngine(boolean cachingEnabled, boolean jythonEmulation) {
-        // JSDependencyTracker jsDependencyTracker) {
+    public PythonScriptEngine(@NonNull PythonDependencyTracker pythonDependencyTracker, boolean cachingEnabled,
+            boolean jythonEmulation) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
 
         Context.Builder contextConfig = Context.newBuilder("python") //
+                .allowIO(IOAccess.newBuilder() //
+                        .allowHostSocketAccess(true) //
+                        .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
+                            @Override
+                            public void checkAccess(Path path, Set<? extends AccessMode> modes,
+                                    LinkOption... linkOptions) throws IOException {
+
+                                if (path.startsWith(PYTHON_LIB_PATH)) {
+                                    Consumer<String> localScriptDependencyListener = scriptDependencyListener;
+                                    if (localScriptDependencyListener != null) {
+                                        localScriptDependencyListener.accept(path.toString());
+                                    }
+                                }
+
+                                super.checkAccess(path, modes, linkOptions);
+                            }
+                        }).build()) //
                 .allowHostAccess(HOST_ACCESS) //
                 // .allowHostClassLoading(true) //
                 .allowAllAccess(true) //
@@ -201,17 +232,19 @@ public class OpenhabGraalPythonScriptEngine
         }
 
         // these are added post-construction, so we need to fetch them late
-        String localEngineIdentifier = (String) ctx.getAttribute(CONTEXT_KEY_ENGINE_IDENTIFIER);
-        if (localEngineIdentifier == null) {
+        String engineIdentifier = (String) ctx.getAttribute(CONTEXT_KEY_ENGINE_IDENTIFIER);
+        if (engineIdentifier == null) {
             throw new IllegalStateException("Failed to retrieve engine identifier from engine bindings");
         }
-        this.engineIdentifier = localEngineIdentifier;
+        this.engineIdentifier = engineIdentifier;
 
-        ScriptExtensionAccessor scriptExtensionAccessor = (ScriptExtensionAccessor) ctx
-                .getAttribute(CONTEXT_KEY_EXTENSION_ACCESSOR);
-        if (scriptExtensionAccessor == null) {
-            throw new IllegalStateException("Failed to retrieve script extension accessor from engine bindings");
+        Consumer<String> scriptDependencyListener = (Consumer<String>) ctx
+                .getAttribute(CONTEXT_KEY_DEPENDENCY_LISTENER);
+        if (scriptDependencyListener == null) {
+            logger.warn(
+                    "Failed to retrieve script script dependency listener from engine bindings. Script dependency tracking will be disabled.");
         }
+        this.scriptDependencyListener = scriptDependencyListener;
 
         initialized = true;
     }

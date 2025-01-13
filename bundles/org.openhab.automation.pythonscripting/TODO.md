@@ -3,6 +3,7 @@ TODO
 - check why assigning tag 'Schedule' to rules with GenericCronTrigger is freezing webui schedule page
 
 DONE
+- implement dependency tracker and reloader
 - implement persistence access
 - implement semantic access
 - implement caching

@@ -37,6 +37,8 @@ import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.automation.pythonscripting.internal.fs.watch.PythonDependencyTracker;
+import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.core.ConfigurableService;
@@ -45,6 +47,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,9 +75,14 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     public static final String SCRIPT_TYPE = "py3";
     private final List<String> scriptTypes = Arrays.asList(PythonScriptEngineFactory.SCRIPT_TYPE);
 
+    private final PythonDependencyTracker pythonDependencyTracker;
+
     @Activate
-    public PythonScriptEngineFactory(Map<String, Object> config) {
+    public PythonScriptEngineFactory(final @Reference PythonDependencyTracker pythonDependencyTracker,
+            Map<String, Object> config) {
         logger.debug("Loading PythonScriptEngineFactory");
+
+        this.pythonDependencyTracker = pythonDependencyTracker;
 
         modified(config);
 
@@ -106,7 +114,13 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
             return null;
         }
         // return new OpenhabGraalPythonScriptEngine(jythonEmulation);
-        return new DebuggingGraalScriptEngine<>(new OpenhabGraalPythonScriptEngine(cachingEnabled, jythonEmulation));
+        return new DebuggingPythonScriptEngine<>(
+                new PythonScriptEngine(pythonDependencyTracker, cachingEnabled, jythonEmulation));
+    }
+
+    @Override
+    public @Nullable ScriptDependencyTracker getDependencyTracker() {
+        return pythonDependencyTracker;
     }
 
     @Modified
@@ -117,14 +131,12 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     }
 
     private void initOpenhabLib() {
-        Path libPath = OpenhabGraalPythonScriptEngine.PYTHON_DEFAULT_PATH.resolve("lib");
-        Path helperLibPath = libPath.resolve("openhab");
-        Path versionFilePath = helperLibPath.resolve("__init__.py");
+        Path versionFilePath = PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
 
         List<String> resourceFiles = Arrays.asList("__init__.py", "actions.py", "helper.py", "jsr223.py", "services.py",
                 "triggers.py");
 
-        if (Files.exists(helperLibPath)) {
+        if (Files.exists(PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH)) {
             if (Files.exists(versionFilePath)) {
                 Pattern pattern = Pattern.compile("__version__\\s*=\\s*\"([0-9]+\\.[0-9]+\\.[0-9]+)\"",
                         Pattern.CASE_INSENSITIVE);
@@ -166,11 +178,11 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
             }
         }
 
-        logger.info("Deploy helper libs into {}.", helperLibPath.toString());
+        logger.info("Deploy helper libs into {}.", PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH.toString());
 
         try {
-            if (Files.exists(helperLibPath)) {
-                Files.walkFileTree(helperLibPath, new SimpleFileVisitor<Path>() {
+            if (Files.exists(PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH)) {
+                Files.walkFileTree(PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, @Nullable BasicFileAttributes attrs)
                             throws IOException {
@@ -186,12 +198,12 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
                 });
             }
 
-            Files.createDirectories(helperLibPath,
+            Files.createDirectories(PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH,
                     PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x")));
 
             for (String resourceFile : resourceFiles) {
                 InputStream is = this.getClass().getClassLoader().getResourceAsStream("/lib/openhab/" + resourceFile);
-                Path target = helperLibPath.resolve(resourceFile);
+                Path target = PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH.resolve(resourceFile);
                 Files.copy(is, target);
                 Files.setPosixFilePermissions(target, PosixFilePermissions.fromString("rw-r--r--"));
             }

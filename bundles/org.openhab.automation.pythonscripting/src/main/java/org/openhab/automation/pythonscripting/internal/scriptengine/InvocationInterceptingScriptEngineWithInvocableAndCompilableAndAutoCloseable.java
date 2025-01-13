@@ -28,7 +28,7 @@ import javax.script.ScriptException;
  * thrown.
  *
  * @param <T> The delegate class
- * @author Jonathan Gilbert - Initial contribution
+ * @author Holger Hees - Reuse / copied from jsscripting
  */
 public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T extends ScriptEngine & Invocable & Compilable & AutoCloseable>
         extends DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable<T> {

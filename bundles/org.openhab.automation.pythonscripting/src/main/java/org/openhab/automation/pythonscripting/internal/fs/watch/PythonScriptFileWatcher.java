@@ -10,13 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.automation.pythonscripting.internal.watch;
+package org.openhab.automation.pythonscripting.internal.fs.watch;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.automation.pythonscripting.internal.PythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.PythonScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
@@ -32,20 +32,18 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * Monitors {@code <openHAB-conf>/automation/python} for Python files, but not libraries
  *
- * @author Holger Hees - initial contribution
- * @author Jeff James - initial contribution
+ * @author Holger Hees - Reuse / copied from jsscripting
  */
 @Component(immediate = true, service = { ScriptFileWatcher.class, ScriptDependencyTracker.Listener.class })
 @NonNullByDefault
 public class PythonScriptFileWatcher extends AbstractScriptFileWatcher {
-    private static final String FILE_DIRECTORY = "automation" + File.separator + "python";
-
     @Activate
     public PythonScriptFileWatcher(
             final @Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService,
             final @Reference ScriptEngineManager manager, final @Reference ReadyService readyService,
             final @Reference StartLevelService startLevelService) {
-        super(watchService, manager, readyService, startLevelService, FILE_DIRECTORY, true);
+        super(watchService, manager, readyService, startLevelService, PythonScriptEngine.PYTHON_DEFAULT_PATH.toString(),
+                true);
     }
 
     @Override
