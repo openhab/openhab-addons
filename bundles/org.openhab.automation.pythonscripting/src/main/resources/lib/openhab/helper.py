@@ -62,8 +62,9 @@ class NotInitialisedException(Exception):
     pass
 
 class rule(object):
-    def __init__(self, name=None, tags=None, trigger=None, profile=None):
+    def __init__(self, name=None, description=None, tags=None, trigger=None, profile=None):
         self.name = name
+        self.description = description
         self.tags = tags
         self.trigger = trigger
         self.profile = profile
@@ -90,6 +91,7 @@ class rule(object):
                 _rule_obj.execute(module, input)
 
         _base_obj = BaseSimpleRule()
+
         _trigger = []
         if proxy.trigger is not None:
             _trigger = proxy.trigger
@@ -110,6 +112,10 @@ class rule(object):
 
         name = file_package + "." + class_package if proxy.name is None else proxy.name
         _base_obj.setName(name)
+
+        if proxy.description is not None:
+            _base_obj.setDescription(proxy.description)
+
         #if _has_timer:
         #    if proxy.tags is None:
         #        proxy.tags = []

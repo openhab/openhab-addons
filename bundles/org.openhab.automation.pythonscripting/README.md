@@ -88,7 +88,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 
 | Class                    | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| rule                     | @rule( name=None, tags=None, trigger=None, profile=None)                              | Rule decorator class to wrap a custom class into a rule                                             |
+| rule                     | @rule( name=None, description=None, tags=None, trigger=None, profile=None)            | Rule decorator class to wrap a custom class into a rule                                             |
 | logger                   | logger.info, logger.warn ...                                                          | Logger object with prefix 'org.automation.pythonscripting.<filename>'                               |
 | Registry                 | see [Registry class](#class-registry)                                                 | Static Registry class used to get items, things or channels                                         |
 | Timer                    | see [Timer class](#class-timer)                                                       | Static Timer class to create, start and stop timers                                                 |
