@@ -228,7 +228,7 @@ class ItemPersistance():
         self.service_id = service_id
 
     def getStableMinMaxState(self, time_range):
-        currentEndTime = datetime.now()
+        currentEndTime = datetime.now().astimezone()
         minTime = currentEndTime - datetime.timedelta(seconds=time_range*-1)
 
         minValue = None
