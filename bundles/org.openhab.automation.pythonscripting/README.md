@@ -167,7 +167,7 @@ Conversion occurs in both directions
 | datetime without timezone | Instant       |
 | timedelta                 | Duration      |
 | list                      | Collection    |
-| Set                       | Set           |
+| Set(set)                  | Set           |
 | Item                      | Item          |
 
 ## limitations
