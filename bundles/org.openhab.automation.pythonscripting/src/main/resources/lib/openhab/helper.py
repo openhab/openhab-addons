@@ -1,33 +1,32 @@
 import java
+#from polyglot import register_interop_type
+
+import os
 import sys
+
+from openhab.jsr223 import scope
+
+# **** REGISTER LOGGING AND EXCEPTION HOOK AS SOON AS POSSIBLE ****
+Java_LogFactory = java.type("org.slf4j.LoggerFactory")
+LOG_PREFIX = "org.openhab.core.automation.pythonscripting"
+file_package = os.path.basename(scope['__file__'])[:-3]
+logger = Java_LogFactory.getLogger( LOG_PREFIX + "." + file_package )
+
+#def scriptUnloaded():
+#    logger.info("unload")
+
+def handle_exception(e):
+    logger.info("handle_exception")
+    logger.info(e)
+sys.excepthook = handle_exception
+# *****************************************************************
+
 import traceback
 import time
-import os
 import threading
 import profile, pstats, io
 from datetime import datetime
 
-from openhab.jsr223 import scope
-
-LOG_PREFIX = "org.openhab.core.automation.pythonscripting"
-
-#actions           = scope.get("actions")
-
-itemRegistry      = scope.get("itemRegistry")
-items             = scope.get("items")
-things            = scope.get("things")
-
-events            = scope.get("events")
-
-scriptExtension   = scope.get("scriptExtension")
-
-scriptExtension.importPreset("RuleSupport")
-scriptExtension.importPreset("RuleSimple")
-
-automationManager = scope.get("automationManager")
-lifecycleTracker = scope.get("lifecycleTracker")
-
-Java_LogFactory = java.type("org.slf4j.LoggerFactory")
 Java_UnDefType = java.type("org.openhab.core.types.UnDefType")
 
 Java_ChannelUID = java.type("org.openhab.core.thing.ChannelUID")
@@ -45,18 +44,19 @@ Java_DateTimeType = java.type("org.openhab.core.library.types.DateTimeType")
 Java_ZonedDateTime = java.type("java.time.ZonedDateTime")
 Java_Iterable = java.type("java.lang.Iterable")
 
+itemRegistry      = scope.get("itemRegistry")
+items             = scope.get("items")
+things            = scope.get("things")
 
-file_package = os.path.basename(scope['__file__'])[:-3]
+events            = scope.get("events")
 
-logger = Java_LogFactory.getLogger( LOG_PREFIX + "." + file_package )
+scriptExtension   = scope.get("scriptExtension")
 
-def scriptUnloaded():
-    logger.info("unload")
+scriptExtension.importPreset("RuleSupport")
+scriptExtension.importPreset("RuleSimple")
 
-def handle_exception(e):
-    logger.info("handle_exception")
-    logger.info(e)
-sys.excepthook = handle_exception
+automationManager = scope.get("automationManager")
+lifecycleTracker = scope.get("lifecycleTracker")
 
 class NotInitialisedException(Exception):
     pass
@@ -77,6 +77,7 @@ class rule(object):
 
         clazz.logger = Java_LogFactory.getLogger( LOG_PREFIX + "." + file_package + "." + class_package )
 
+        #register_interop_type(Java_SimpleRule, clazz)
         #subclass = type(clazz.__name__, (clazz, BaseSimpleRule,))
         _rule_obj = clazz()
 
@@ -224,6 +225,51 @@ class ItemPersistance():
     def __init__(self, item, service_id = None):
         self.item = item
         self.service_id = service_id
+
+    def getStableMinMaxState(self, time_range):
+        currentEndTime = datetime.now()
+        minTime = currentEndTime - datetime.timedelta(seconds=time_range*-1)
+
+        minValue = None
+        maxValue = None
+
+        value = 0.0
+        duration = 0
+
+        entry = self.persistedState(currentEndTime)
+
+        while True:
+            currentStartTime = entry.getTimestamp()
+
+            if currentStartTime < minTime:
+                currentStartTime = minTime
+
+            _duration = ( currentStartTime - currentEndTime ).total_seconds()
+            _value = entry.getState().doubleValue()
+
+            if minValue == None or minValue > _value:
+                minValue = _value
+
+            if maxValue == None or maxValue < _value:
+                maxValue = _value
+
+            duration = duration + _duration
+            value = value + ( _value * _duration )
+
+            currentEndTime = currentStartTime - datetime.timedelta(microseconds=-1)
+
+            if currentEndTime < minTime:
+                break
+
+            entry = self.persistedState(currentEndTime)
+
+        value = ( value / duration )
+
+        return [ value, minValue, maxValue ]
+
+    def getStableState(self, time_range):
+        value, _, _ = self.getStableMinMaxItemState(time_range)
+        return value
 
     def _callWrapper(self, func, args):
         args = tuple([self.item.raw_item]) + args
@@ -387,17 +433,17 @@ class Registry():
         return JavaConversionHelper.convertItem(item)
 
     @staticmethod
-    def getThing(name):
-        thing = things.get(Java_ThingUID(name))
+    def getThing(uid):
+        thing = things.get(Java_ThingUID(uid))
         if thing is None:
-            raise NotInitialisedException(u"Thing {} not found".format(name))
+            raise NotInitialisedException(u"Thing {} not found".format(uid))
         return Thing(thing)
 
     @staticmethod
-    def getChannel(name):
-        channel = things.getChannel(Java_ChannelUID(name))
+    def getChannel(uid):
+        channel = things.getChannel(Java_ChannelUID(uid))
         if channel is None:
-            raise NotInitialisedException(u"Channel {} not found".format(name))
+            raise NotInitialisedException(u"Channel {} not found".format(uid))
         return Channel(channel)
 
 # helper class to force graalpy to force a specific type cast. e.g. convert a list to to a java.util.Set instead of java.util.List
@@ -459,7 +505,7 @@ class Timer():
             raise
 
     def start(self):
-        if not self.timer.isAlive():
+        if not self.timer.is_alive():
             #log.info("timer started")
             Timer.activeTimer.append(self)
             self.timer.start()
@@ -467,31 +513,10 @@ class Timer():
             pass
 
     def cancel(self):
-        if self.timer.isAlive():
+        if self.timer.is_alive():
             Timer.activeTimer.remove(self)
             self.timer.cancel()
         else:
             pass
 
 lifecycleTracker.addDisposeHook(Timer._cleanTimer)
-
-# *** Group Member getter ***
-#def _walkGroupMemberRecursive(parent):
-#    result = []
-#    items = parent.getAllMembers()
-#    for item in items:
-#        if item.getType() == "Group":
-#            result = result + _walkGroupMemberRecursive(item)
-#        else:
-#            result.append(item)
-#    return result
-
-#def getGroupMember(group_name, item_state = None):
-#    items = _walkGroupMemberRecursive(getItem(group_name))
-#    if item_state is not None:
-#        if isinstance(item_state, list):
-#            return filter(lambda child: child.getState() in item_state, items)
-#        else:
-#            return filter(lambda child: child.getState() == item_state, items)
-#    return items
-

@@ -98,8 +98,8 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | getItemState             | getItemState(name, default = None)                                                    | returns a State object                                                                              |
 | getItem                  | getItem(name)                                                                         | returns an [Item object](#class-item) or [GroupItem object](#class-groupitem)                       |
-| getThing                 | getThing(name)                                                                        | returns an [Thing object](#class-thing)                                                             |
-| getChannel               | getChannel(name)                                                                      | returns an [Channel object](#class-channel)                                                         |
+| getThing                 | getThing(uid)                                                                         | returns an [Thing object](#class-thing)                                                             |
+| getChannel               | getChannel(uid)                                                                       | returns an [Channel object](#class-channel)                                                         |
 
 ## class Item 
 
