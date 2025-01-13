@@ -65,6 +65,7 @@ public class GreeAirDevice {
     private int port = 0;
     private String encKey = "";
     private EncryptionTypes encType = EncryptionTypes.UNKNOWN;
+    private int refreshInterval = 5;
     private Optional<GreeScanResponseDTO> scanResponseGson = Optional.empty();
     private Optional<GreeStatusResponseDTO> statusResponseGson = Optional.empty();
     private Optional<GreeStatusResponsePackDTO> prevStatusResponsePackGson = Optional.empty();
@@ -541,6 +542,14 @@ public class GreeAirDevice {
 
     public EncryptionTypes getEncryptionType() {
         return encType;
+    }
+
+    public void setRefreshInterval(int value) {
+        refreshInterval = value;
+    }
+
+    public int getRefreshInterval() {
+        return refreshInterval;
     }
 
     public byte[] getKey() {
