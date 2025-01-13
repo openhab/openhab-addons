@@ -87,7 +87,8 @@ public class FreeAtHomeDatapoint {
                 this.channelId = channelId;
                 this.datapointId = datapointId;
 
-                logger.debug("Datapoint is found - channel {} - datapoint {}", this.channelId, this.datapointId);
+                logger.debug("Datapoint is found - channel {} - datapoint {} - pairngId {}", this.channelId,
+                        this.datapointId, neededPairingIDFunction);
 
                 foundId = true;
             }
