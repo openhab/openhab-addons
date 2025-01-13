@@ -413,7 +413,7 @@ public class ShellyManagerPage {
             fw = fromJson(gson, entry, FwRepoEntry.class);
 
             // Special case: RGW2 has a split firmware - xxx-white.zip vs. xxx-color.zip
-            if (!mode.isEmpty() && deviceType.equalsIgnoreCase(SHELLYDT_RGBW2)) {
+            if (SHELLYDT_RGBW2.equalsIgnoreCase(deviceType) && !mode.isEmpty()) {
                 // check for spilt firmware
                 String url = substringBefore(fw.url, ".zip") + "-" + mode + ".zip";
                 if (testUrl(url)) {
