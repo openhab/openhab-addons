@@ -97,9 +97,9 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | Function                 | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | getItemState             | getItemState(name, default = None)                                                    | returns a State object                                                                              |
-| getItem                  | getItem(name)                                                                         | returns an [item object](#class-item) or [group item object](#class-groupitem)                      |
-| getThing                 | getThing(name)                                                                        | returns an [thing object](#class-thing)                                                             |
-| getChannel               | getChannel(name)                                                                      | returns an [channel object](#class-channel)                                                         |
+| getItem                  | getItem(name)                                                                         | returns an [Item object](#class-item) or [GroupItem object](#class-groupitem)                       |
+| getThing                 | getThing(name)                                                                        | returns an [Thing object](#class-thing)                                                             |
+| getChannel               | getChannel(name)                                                                      | returns an [Channel object](#class-channel)                                                         |
 
 ## class Item 
 
@@ -109,8 +109,8 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | postUpdateIfDifferent    | postUpdateIfDifferent(state)                                                          |                                                                                                     |
 | sendCommand              | sendCommand(command)                                                                  |                                                                                                     |
 | sendCommandIfDifferent   | sendCommandIfDifferent(command)                                                       |                                                                                                     |
-| getPersistance           | getPersistance(service_id = None)                                                     | returns an [persistance object](#class-itempersistance)                                             |
-| getSemantic              | getSemantic()                                                                         | returns an [semantic object](#class-itemsemantic)                                                   |
+| getPersistance           | getPersistance(service_id = None)                                                     | returns an [ItemPersistance object](#class-itempersistance)                                         |
+| getSemantic              | getSemantic()                                                                         | returns an [ItemSemantic object](#class-itemsemantic)                                               |
 | <...>                    | see [openhab Item api](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) |                                                                                                |
 
 ## class GroupItem 
