@@ -35,18 +35,21 @@ Query thing status info
 ```python
 from openhab import logger, Registry
 
-logger.info(Registry.getThing("zwave:serial_zstick:512").getStatusInfo().toString());
+info = Registry.getThing("zwave:serial_zstick:512").getStatusInfo()
+logger.info(info.toString());
 ```
 
 Query historic item
 
 ```python
-from openhab import Registry
-
+from openhab import logger, Registry
 from datetime import datetime
 
-Registry.getItem("Item1").getPersistance().persistedState(datetime.now().astimezone())
-Registry.getItem("Item2").getPersistance("jdbc").persistedState(datetime.now().astimezone())
+historicItem = Registry.getItem("Item1").getPersistance().persistedState(datetime.now().astimezone())
+logger.info(historicItem.getState().toString());
+
+historicItem = Registry.getItem("Item2").getPersistance("jdbc").persistedState(datetime.now().astimezone())
+logger.info(historicItem.getState().toString());
 ```
 
 ## @decorator 'rule'
