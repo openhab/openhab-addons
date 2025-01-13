@@ -843,8 +843,8 @@ public class Clip2Bridge implements Closeable {
             }
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof HttpUnauthorizedException) {
-                throw (HttpUnauthorizedException) cause;
+            if (cause instanceof HttpUnauthorizedException unauthorizedException) {
+                throw unauthorizedException;
             }
             throw new ApiException("Error sending request", e);
         } catch (TimeoutException e) {

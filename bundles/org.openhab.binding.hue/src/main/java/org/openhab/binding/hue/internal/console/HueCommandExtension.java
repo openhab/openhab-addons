@@ -98,12 +98,12 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
             Clip2BridgeHandler clip2BridgeHandler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof Clip2BridgeHandler) {
-                    clip2BridgeHandler = (Clip2BridgeHandler) thingHandler;
-                } else if (thingHandler instanceof HueBridgeHandler) {
-                    bridgeHandler = (HueBridgeHandler) thingHandler;
-                } else if (thingHandler instanceof HueGroupHandler) {
-                    groupHandler = (HueGroupHandler) thingHandler;
+                if (thingHandler instanceof Clip2BridgeHandler clip2Bridge) {
+                    clip2BridgeHandler = clip2Bridge;
+                } else if (thingHandler instanceof HueBridgeHandler hueBridge) {
+                    bridgeHandler = hueBridge;
+                } else if (thingHandler instanceof HueGroupHandler hueGroup) {
+                    groupHandler = hueGroup;
                 }
             }
             if (thing == null) {
