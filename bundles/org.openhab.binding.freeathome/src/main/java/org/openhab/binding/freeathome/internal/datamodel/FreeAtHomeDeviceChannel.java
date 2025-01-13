@@ -533,7 +533,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_SCENE_SENSOR: {
                 this.channelId = channelId;
 
-                logger.error("Scene sensor channel - Channel FID: 0x{} is not yet implemented", channelFunctionID);
+                logger.warn("Scene sensor channel - Channel FID: 0x{} is not yet implemented", channelFunctionID);
 
                 break;
             }
