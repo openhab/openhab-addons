@@ -6,20 +6,35 @@ Simple rule
 
 ```python
 from openhab import rule, Registry
-from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger
+from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger, ItemCommandTrigger
 
 @rule(
     trigger = [
-        GenericCronTrigger("*/5 * * * * ?"),
-        ItemStateUpdateTrigger("Item1")
+        GenericCronTrigger("*/5 * * * * ?")
     ]
 )
 class Test1:
     def execute(self, module, input):
-        if Registry.getItem("Item2").postUpdateIfDifferent("<myvalue>"):
+        self.logger.info("rule triggered")
+       
+@rule(
+    trigger = [
+        ItemStateUpdateTrigger("Item1")
+    ]
+)
+class Test2:
+    def execute(self, module, input):
+        if Registry.getItem("Item2").postUpdateIfDifferent( input['event'].getItemState() ):
             self.logger.info("item was updated")
 
-        Registry.getItem("Item3").sendCommand(ON)
+@rule(
+    trigger = [
+        ItemCommandTrigger("Item1", command=ON)
+    ]
+)
+class Test3:
+    def execute(self, module, input):
+        Registry.getItem("Item1").sendCommand(OFF)
 ```
  
 Sending a notification
