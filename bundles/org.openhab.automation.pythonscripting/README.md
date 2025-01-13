@@ -1,7 +1,11 @@
 ## Script Examples
 
+### Examples 
+
+Simple rule
+
 ```python
-from openhab import rule, logger, Registry
+from openhab import rule, Registry
 from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger
 
 @rule(
@@ -10,20 +14,39 @@ from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger
         ItemStateUpdateTrigger("Item1")
     ]
 )
-class Test1Rule:
-    def execute(self, module, input):
-        Registry.getItem("Item1").postUpdate("<myvalue>")
-
-@rule(profile=1)
-class Test2Rule:
-    def buildTrigger(self):
-        return [
-            GenericCronTrigger("*/5 * * * * ?")
-        ]
-
+class Test1:
     def execute(self, module, input):
         if Registry.getItem("Item2").postUpdateIfDifferent("<myvalue>"):
             self.logger.info("item was updated")
+
+        Registry.getItem("Item3").sendCommand(ON)
+```
+ 
+Sending a notification
+
+```python
+from openhab.actions import NotificationAction
+
+NotificationAction.sendNotification("test@test.org", "Window is open");
+```
+
+Query thing status info
+
+```python
+from openhab import logger, Registry
+
+logger.info(Registry.getThing("zwave:serial_zstick:512").getStatusInfo().toString());
+```
+
+Query historic item
+
+```python
+from openhab import Registry
+
+from datetime import datetime
+
+Registry.getItem("Item1").getPersistance().persistedState(datetime.now().astimezone())
+Registry.getItem("Item2").getPersistance("jdbc").persistedState(datetime.now().astimezone())
 ```
 
 ## @decorator 'rule'
