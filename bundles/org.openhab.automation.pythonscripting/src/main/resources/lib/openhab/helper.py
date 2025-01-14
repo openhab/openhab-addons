@@ -5,6 +5,7 @@ import os
 import sys
 
 from openhab.jsr223 import scope
+from openhab.services import get_service
 
 # **** REGISTER LOGGING AND EXCEPTION HOOK AS SOON AS POSSIBLE ****
 Java_LogFactory = java.type("org.slf4j.LoggerFactory")
@@ -26,6 +27,8 @@ import time
 import threading
 import profile, pstats, io
 from datetime import datetime, timedelta
+
+Java_MetadataKey = java.type("org.openhab.core.items.MetadataKey")
 
 Java_UnDefType = java.type("org.openhab.core.types.UnDefType")
 
@@ -57,6 +60,8 @@ scriptExtension.importPreset("RuleSimple")
 
 automationManager = scope.get("automationManager")
 lifecycleTracker = scope.get("lifecycleTracker")
+
+METADATA_REGISTRY = get_service("org.openhab.core.items.MetadataRegistry")
 
 class NotInitialisedException(Exception):
     pass
@@ -421,6 +426,10 @@ class Channel():
         return getattr(self.raw_item, name)
 
 class Registry():
+    @staticmethod
+    def getItemMetadata(name, namespace):
+        return METADATA_REGISTRY.get(Java_MetadataKey(namespace, name))
+
     @staticmethod
     def getItemState(name, default = None):
         state = items.get(name)

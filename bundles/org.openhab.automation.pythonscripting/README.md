@@ -137,6 +137,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 
 | Function                 | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| getItemMetadata          | getItemMetadata(name, namespace)                                                      | returns a list of metadata                                                                              |
 | getItemState             | getItemState(name, default = None)                                                    | returns a State object                                                                              |
 | getItem                  | getItem(name)                                                                         | returns an [Item object](#class-item) or [GroupItem object](#class-groupitem)                       |
 | getThing                 | getThing(uid)                                                                         | returns an [Thing object](#class-thing)                                                             |
