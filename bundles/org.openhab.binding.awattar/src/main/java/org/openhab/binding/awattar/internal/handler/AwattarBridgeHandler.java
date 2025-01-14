@@ -15,9 +15,7 @@ package org.openhab.binding.awattar.internal.handler;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_MARKET_NET;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_TOTAL_NET;
 
-import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.SortedSet;
 import java.util.concurrent.ScheduledFuture;
@@ -33,6 +31,7 @@ import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
 import org.openhab.binding.awattar.internal.AwattarPrice;
 import org.openhab.binding.awattar.internal.api.AwattarApi;
 import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
+import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.CurrencyUnits;
 import org.openhab.core.thing.Bridge;
@@ -65,7 +64,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AwattarBridgeHandler.class);
     private final HttpClient httpClient;
-    private final Clock clock;
+    private final AwattarTimeProvider timeProvider;
 
     private @Nullable ScheduledFuture<?> dataRefresher;
     private Instant lastRefresh = Instant.EPOCH;
@@ -75,10 +74,10 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable AwattarApi awattarApi;
 
-    public AwattarBridgeHandler(Bridge thing, HttpClient httpClient, Clock clock) {
+    public AwattarBridgeHandler(Bridge thing, HttpClient httpClient, AwattarTimeProvider timeProvider) {
         super(thing);
         this.httpClient = httpClient;
-        this.clock = clock;
+        this.timeProvider = timeProvider;
     }
 
     @Override
@@ -87,7 +86,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         AwattarBridgeConfiguration config = getConfigAs(AwattarBridgeConfiguration.class);
 
         try {
-            awattarApi = new AwattarApi(httpClient, clock.getZone(), config);
+            awattarApi = new AwattarApi(httpClient, timeProvider, config);
 
             dataRefresher = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, DATA_REFRESH_INTERVAL * 1000L,
                     TimeUnit.MILLISECONDS);
@@ -184,13 +183,13 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     private boolean needRefresh() {
         // if the thing is offline, we need to refresh
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            lastRefresh = clock.instant();
+            lastRefresh = timeProvider.getInstant();
             return true;
         }
 
         // if the local cache is empty, we need to refresh
         if (prices == null) {
-            lastRefresh = clock.instant();
+            lastRefresh = timeProvider.getInstant();
             return true;
         }
 
@@ -200,7 +199,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
         // do not refresh before 15:00, since the prices for the next day are available
         // only after 14:00
-        ZonedDateTime now = ZonedDateTime.now(clock);
+        ZonedDateTime now = timeProvider.getInstant().atZone(timeProvider.getZoneId());
         if (now.getHour() < 15) {
             return false;
         }
@@ -208,17 +207,13 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         // refresh at 15:00, 18:00 and 21:00 if the last refresh was more than an hour ago
         if (now.getHour() % 3 == 0 && lastRefresh.getEpochSecond() < now.minusHours(1).toEpochSecond()) {
             // update the last refresh time
-            lastRefresh = clock.instant();
+            lastRefresh = timeProvider.getInstant();
 
             // return true to indicate an update is needed
             return true;
         }
 
         return false;
-    }
-
-    public ZoneId getTimeZone() {
-        return clock.getZone();
     }
 
     @Nullable

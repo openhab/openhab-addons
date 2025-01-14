@@ -23,7 +23,6 @@ import static org.openhab.binding.awattar.internal.AwattarUtil.getCalendarForHou
 import static org.openhab.binding.awattar.internal.AwattarUtil.getDuration;
 import static org.openhab.binding.awattar.internal.AwattarUtil.getMillisToNextMinute;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -40,6 +39,7 @@ import org.openhab.binding.awattar.internal.AwattarBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarConsecutiveBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarNonConsecutiveBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarPrice;
+import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AwattarBestPriceHandler extends BaseThingHandler {
-    private final Clock clock;
+    private final AwattarTimeProvider timeProvider;
 
     private static final int THING_REFRESH_INTERVAL = 60;
 
@@ -75,9 +75,9 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> thingRefresher;
 
-    public AwattarBestPriceHandler(Thing thing, Clock clock) {
+    public AwattarBestPriceHandler(Thing thing, AwattarTimeProvider timeProvider) {
         super(thing);
-        this.clock = clock;
+        this.timeProvider = timeProvider;
     }
 
     @Override
@@ -97,8 +97,9 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                  * here
                  */
                 thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
-                        getMillisToNextMinute(1, clock.getZone()), THING_REFRESH_INTERVAL * 1000L,
+                        getMillisToNextMinute(1, timeProvider.getZoneId()), THING_REFRESH_INTERVAL * 1000L,
                         TimeUnit.MILLISECONDS);
+
             }
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -141,7 +142,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
             return;
         }
 
-        ZoneId zoneId = bridgeHandler.getTimeZone();
+        ZoneId zoneId = timeProvider.getZoneId();
 
         AwattarBestPriceConfiguration config = getConfigAs(AwattarBestPriceConfiguration.class);
         TimeRange timerange = getRange(config.rangeStart, config.rangeDuration, zoneId);
@@ -163,7 +164,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         long diff;
         switch (channelId) {
             case CHANNEL_ACTIVE:
-                state = OnOffType.from(result.isActive(clock.instant()));
+                state = OnOffType.from(result.isActive(timeProvider.getInstant()));
                 break;
             case CHANNEL_START:
                 state = new DateTimeType(Instant.ofEpochMilli(result.getStart()));
@@ -172,7 +173,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                 state = new DateTimeType(Instant.ofEpochMilli(result.getEnd()));
                 break;
             case CHANNEL_COUNTDOWN:
-                diff = result.getStart() - clock.instant().toEpochMilli();
+                diff = result.getStart() - timeProvider.getInstant().toEpochMilli();
                 if (diff >= 0) {
                     state = getDuration(diff);
                 } else {
@@ -180,8 +181,8 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_REMAINING:
-                if (result.isActive(clock.instant())) {
-                    diff = result.getEnd() - clock.instant().toEpochMilli();
+                if (result.isActive(timeProvider.getInstant())) {
+                    diff = result.getEnd() - timeProvider.getInstant().toEpochMilli();
                     state = getDuration(diff);
                 } else {
                     state = QuantityType.valueOf(0, Units.MINUTE);
@@ -227,7 +228,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
     protected TimeRange getRange(int start, int duration, ZoneId zoneId) {
         ZonedDateTime startTime = getStartTime(start, zoneId);
         ZonedDateTime endTime = startTime.plusHours(duration);
-        ZonedDateTime now = clock.instant().atZone(zoneId);
+        ZonedDateTime now = timeProvider.getZonedDateTime();
         if (now.getHour() < start) {
             // we are before the range, so we might be still within the last range
             startTime = startTime.minusDays(1);

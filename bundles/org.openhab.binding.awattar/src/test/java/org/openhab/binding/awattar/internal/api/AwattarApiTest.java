@@ -17,12 +17,17 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
@@ -45,6 +50,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
 import org.openhab.binding.awattar.internal.AwattarPrice;
 import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
+import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.test.java.JavaTest;
 
 /**
@@ -62,6 +68,7 @@ class AwattarApiTest extends JavaTest {
     private @Mock @NonNullByDefault({}) Request requestMock;
     private @Mock @NonNullByDefault({}) ContentResponse contentResponseMock;
     private @Mock @NonNullByDefault({}) AwattarBridgeConfiguration config;
+    private @Mock @NonNullByDefault({}) AwattarTimeProvider timeProviderMock;
 
     // sut
     private @NonNullByDefault({}) AwattarApi api;
@@ -84,28 +91,34 @@ class AwattarApiTest extends JavaTest {
         when(requestMock.timeout(10, TimeUnit.SECONDS)).thenReturn(requestMock);
         when(requestMock.send()).thenReturn(contentResponseMock);
 
+        Clock clock = Clock.fixed(Instant.parse("2024-06-15T12:00:00Z"), ZoneId.of("GMT+2"));
+
+        when(timeProviderMock.getZonedDateTime()).thenReturn(ZonedDateTime.now(clock));
+
         config.basePrice = 0.0;
         config.vatPercent = 0.0;
         config.country = "DE";
 
-        api = new AwattarApi(httpClientMock, ZoneId.of("GMT+2"), config);
+        api = new AwattarApi(httpClientMock, timeProviderMock, config);
     }
 
     @Test
     void testDeUrl() throws AwattarApiException {
         api.getData();
 
-        assertThat(httpClientMock.newRequest("https://api.awattar.de/v1/marketdata"), is(requestMock));
+        verify(httpClientMock, times(1))
+                .newRequest("https://api.awattar.de/v1/marketdata?start=1718316000000&end=1718575200000");
     }
 
     @Test
     void testAtUrl() throws AwattarApiException {
         config.country = "AT";
-        api = new AwattarApi(httpClientMock, ZoneId.of("GMT+2"), config);
+        api = new AwattarApi(httpClientMock, timeProviderMock, config);
 
         api.getData();
 
-        assertThat(httpClientMock.newRequest("https://api.awattar.at/v1/marketdata"), is(requestMock));
+        verify(httpClientMock, times(1))
+                .newRequest("https://api.awattar.at/v1/marketdata?start=1718316000000&end=1718575200000");
     }
 
     @Test
@@ -113,7 +126,7 @@ class AwattarApiTest extends JavaTest {
         config.country = "CH";
 
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
-                () -> new AwattarApi(httpClientMock, ZoneId.of("GMT+2"), config));
+                () -> new AwattarApi(httpClientMock, timeProviderMock, config));
         assertThat(thrown.getMessage(), is("Country code must be 'DE' or 'AT'"));
     }
 

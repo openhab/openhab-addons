@@ -16,12 +16,12 @@ import static org.openhab.binding.awattar.internal.AwattarBindingConstants.THING
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.THING_TYPE_BRIDGE;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.THING_TYPE_PRICE;
 
-import java.time.Clock;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -51,13 +51,15 @@ public class AwattarHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PRICE, THING_TYPE_BESTPRICE,
             THING_TYPE_BRIDGE);
     private final HttpClient httpClient;
-    private final Clock systemClock;
+
+    private final AwattarTimeProvider timeProvider;
 
     @Activate
     public AwattarHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.systemClock = Clock.system(timeZoneProvider.getTimeZone());
+
+        this.timeProvider = new AwattarTimeProvider(timeZoneProvider);
     }
 
     @Override
@@ -70,11 +72,11 @@ public class AwattarHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new AwattarBridgeHandler((Bridge) thing, httpClient, systemClock);
+            return new AwattarBridgeHandler((Bridge) thing, httpClient, timeProvider);
         } else if (THING_TYPE_PRICE.equals(thingTypeUID)) {
-            return new AwattarPriceHandler(thing, systemClock);
+            return new AwattarPriceHandler(thing, timeProvider);
         } else if (THING_TYPE_BESTPRICE.equals(thingTypeUID)) {
-            return new AwattarBestPriceHandler(thing, systemClock);
+            return new AwattarBestPriceHandler(thing, timeProvider);
         }
 
         logger.warn("Unknown thing type {}, not creating handler!", thingTypeUID);

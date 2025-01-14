@@ -23,7 +23,6 @@ import static org.openhab.binding.awattar.internal.AwattarUtil.getMillisToNextMi
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.awattar.internal.AwattarPrice;
+import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -55,16 +55,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AwattarPriceHandler extends BaseThingHandler {
-    private final Clock clock;
+    private final AwattarTimeProvider timeProvider;
 
     private static final int THING_REFRESH_INTERVAL = 60;
     private final Logger logger = LoggerFactory.getLogger(AwattarPriceHandler.class);
 
     private @Nullable ScheduledFuture<?> thingRefresher;
 
-    public AwattarPriceHandler(Thing thing, Clock clock) {
+    public AwattarPriceHandler(Thing thing, AwattarTimeProvider timeProvider) {
         super(thing);
-        this.clock = clock;
+        this.timeProvider = timeProvider;
     }
 
     @Override
@@ -91,7 +91,7 @@ public class AwattarPriceHandler extends BaseThingHandler {
                  * here
                  */
                 thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
-                        getMillisToNextMinute(1, clock.getZone()), THING_REFRESH_INTERVAL * 1000L,
+                        getMillisToNextMinute(1, timeProvider.getZoneId()), THING_REFRESH_INTERVAL * 1000L,
                         TimeUnit.MILLISECONDS);
             }
         }
@@ -140,11 +140,11 @@ public class AwattarPriceHandler extends BaseThingHandler {
         ZonedDateTime target;
 
         if (group.equals(CHANNEL_GROUP_CURRENT)) {
-            target = ZonedDateTime.now(bridgeHandler.getTimeZone());
+            target = timeProvider.getZonedDateTime();
         } else if (group.startsWith("today")) {
-            target = getCalendarForHour(Integer.parseInt(group.substring(5)), bridgeHandler.getTimeZone());
+            target = getCalendarForHour(Integer.parseInt(group.substring(5)), timeProvider.getZoneId());
         } else if (group.startsWith("tomorrow")) {
-            target = getCalendarForHour(Integer.parseInt(group.substring(8)), bridgeHandler.getTimeZone()).plusDays(1);
+            target = getCalendarForHour(Integer.parseInt(group.substring(8)), timeProvider.getZoneId()).plusDays(1);
         } else {
             logger.warn("Unsupported channel group {}", group);
             updateState(channelUID, state);

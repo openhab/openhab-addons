@@ -42,6 +42,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.awattar.internal.AwattarBindingConstants;
 import org.openhab.binding.awattar.internal.api.AwattarApi;
 import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
+import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -67,9 +68,9 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
     private @Mock @NonNullByDefault({}) Bridge bridgeMock;
     private @Mock @NonNullByDefault({}) ThingHandlerCallback bridgeCallbackMock;
     private @Mock @NonNullByDefault({}) HttpClient httpClientMock;
-    private @Mock @NonNullByDefault({}) Clock clockMock;
     private @Mock @NonNullByDefault({}) Clock fixedClock;
     private @Mock @NonNullByDefault({}) AwattarApi awattarApiMock;
+    private @Mock @NonNullByDefault({}) AwattarTimeProvider timeProviderMock;
 
     // best price handler mocks
     private @Mock @NonNullByDefault({}) Thing bestpriceMock;
@@ -80,7 +81,10 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
     @BeforeEach
     public void setUp() throws IllegalArgumentException, IllegalAccessException {
         when(bridgeMock.getUID()).thenReturn(BRIDGE_UID);
-        bridgeHandler = new AwattarBridgeHandler(bridgeMock, httpClientMock, clockMock);
+
+        when(timeProviderMock.getZoneId()).thenReturn(ZoneId.of("GMT+2"));
+
+        bridgeHandler = new AwattarBridgeHandler(bridgeMock, httpClientMock, timeProviderMock);
         bridgeHandler.setCallback(bridgeCallbackMock);
 
         List<Field> fields = ReflectionSupport.findFields(AwattarBridgeHandler.class,
@@ -205,14 +209,14 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
         when(bridgeMock.getStatus()).thenReturn(ThingStatus.ONLINE);
 
         fixedClock = Clock.fixed(lastUpdate, ZoneId.of("GMT+2"));
-        when(clockMock.getZone()).thenReturn(fixedClock.getZone());
-        when(clockMock.instant()).thenReturn(fixedClock.instant());
+        when(timeProviderMock.getZoneId()).thenReturn(fixedClock.getZone());
+        when(timeProviderMock.getInstant()).thenReturn(fixedClock.instant());
 
         bridgeHandler.refreshIfNeeded();
 
         fixedClock = Clock.fixed(nowUpdate, ZoneId.of("GMT+2"));
-        when(clockMock.getZone()).thenReturn(fixedClock.getZone());
-        when(clockMock.instant()).thenReturn(fixedClock.instant());
+        when(timeProviderMock.getZoneId()).thenReturn(fixedClock.getZone());
+        when(timeProviderMock.getInstant()).thenReturn(fixedClock.instant());
 
         // get private method via reflection
         Method method = ReflectionSupport.findMethod(AwattarBridgeHandler.class, "needRefresh", "").get();

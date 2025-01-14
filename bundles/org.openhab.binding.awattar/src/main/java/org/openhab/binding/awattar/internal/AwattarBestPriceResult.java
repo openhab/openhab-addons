@@ -26,7 +26,7 @@ public abstract class AwattarBestPriceResult {
     private long start;
     private long end;
 
-    public AwattarBestPriceResult() {
+    protected AwattarBestPriceResult() {
     }
 
     public long getStart() {
