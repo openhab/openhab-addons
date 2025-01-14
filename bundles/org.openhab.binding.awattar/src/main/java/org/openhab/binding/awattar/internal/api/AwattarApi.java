@@ -112,7 +112,7 @@ public class AwattarApi {
     public SortedSet<AwattarPrice> getData() throws AwattarApiException {
         try {
             // we start one day in the past to cover ranges that already started yesterday
-            ZonedDateTime zdt = timeProvider.getZonedDateTime().truncatedTo(ChronoUnit.DAYS).minusDays(1);
+            ZonedDateTime zdt = timeProvider.getZonedDateTimeNow().truncatedTo(ChronoUnit.DAYS).minusDays(1);
             long start = zdt.toInstant().toEpochMilli();
             // Starting from midnight yesterday we add three days so that the range covers
             // the whole next day.

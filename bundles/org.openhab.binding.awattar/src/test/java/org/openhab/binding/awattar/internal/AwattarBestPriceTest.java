@@ -77,7 +77,7 @@ public class AwattarBestPriceTest {
     }
 
     @Test
-    void AwattarConsecutiveBestPriceResult() {
+    void awattarConsecutiveBestPriceResult() {
         int length = 8;
 
         List<AwattarPrice> range = new ArrayList<>(getPrices());
@@ -88,7 +88,7 @@ public class AwattarBestPriceTest {
     }
 
     @Test
-    void AwattarNonConsecutiveBestPriceResultNonInverted() {
+    void awattarNonConsecutiveBestPriceResultNonInverted() {
         int length = 6;
         boolean inverted = false;
 
@@ -101,7 +101,7 @@ public class AwattarBestPriceTest {
     }
 
     @Test
-    void AwattarNonConsecutiveBestPriceResultInverted() {
+    void awattarNonConsecutiveBestPriceResultInverted() {
         int length = 4;
         boolean inverted = true;
 

@@ -183,13 +183,13 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     private boolean needRefresh() {
         // if the thing is offline, we need to refresh
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            lastRefresh = timeProvider.getInstant();
+            lastRefresh = timeProvider.getInstantNow();
             return true;
         }
 
         // if the local cache is empty, we need to refresh
         if (prices == null) {
-            lastRefresh = timeProvider.getInstant();
+            lastRefresh = timeProvider.getInstantNow();
             return true;
         }
 
@@ -199,7 +199,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
         // do not refresh before 15:00, since the prices for the next day are available
         // only after 14:00
-        ZonedDateTime now = timeProvider.getInstant().atZone(timeProvider.getZoneId());
+        ZonedDateTime now = timeProvider.getZonedDateTimeNow();
         if (now.getHour() < 15) {
             return false;
         }
@@ -207,7 +207,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         // refresh at 15:00, 18:00 and 21:00 if the last refresh was more than an hour ago
         if (now.getHour() % 3 == 0 && lastRefresh.getEpochSecond() < now.minusHours(1).toEpochSecond()) {
             // update the last refresh time
-            lastRefresh = timeProvider.getInstant();
+            lastRefresh = timeProvider.getInstantNow();
 
             // return true to indicate an update is needed
             return true;

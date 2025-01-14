@@ -210,13 +210,14 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
 
         fixedClock = Clock.fixed(lastUpdate, ZoneId.of("GMT+2"));
         when(timeProviderMock.getZoneId()).thenReturn(fixedClock.getZone());
-        when(timeProviderMock.getInstant()).thenReturn(fixedClock.instant());
+        when(timeProviderMock.getInstantNow()).thenReturn(fixedClock.instant());
 
         bridgeHandler.refreshIfNeeded();
 
         fixedClock = Clock.fixed(nowUpdate, ZoneId.of("GMT+2"));
         when(timeProviderMock.getZoneId()).thenReturn(fixedClock.getZone());
-        when(timeProviderMock.getInstant()).thenReturn(fixedClock.instant());
+        when(timeProviderMock.getInstantNow()).thenReturn(fixedClock.instant());
+        when(timeProviderMock.getZonedDateTimeNow()).thenReturn(fixedClock.instant().atZone(fixedClock.getZone()));
 
         // get private method via reflection
         Method method = ReflectionSupport.findMethod(AwattarBridgeHandler.class, "needRefresh", "").get();

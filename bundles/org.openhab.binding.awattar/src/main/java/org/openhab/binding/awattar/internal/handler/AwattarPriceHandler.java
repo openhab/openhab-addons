@@ -140,7 +140,7 @@ public class AwattarPriceHandler extends BaseThingHandler {
         ZonedDateTime target;
 
         if (group.equals(CHANNEL_GROUP_CURRENT)) {
-            target = timeProvider.getZonedDateTime();
+            target = timeProvider.getZonedDateTimeNow();
         } else if (group.startsWith("today")) {
             target = getCalendarForHour(Integer.parseInt(group.substring(5)), timeProvider.getZoneId());
         } else if (group.startsWith("tomorrow")) {

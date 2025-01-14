@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.awattar.internal.dto;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.i18n.TimeZoneProvider;
 
 /**
@@ -26,6 +25,7 @@ import org.openhab.core.i18n.TimeZoneProvider;
  *
  * @author Thomas Leber - Initial contribution
  */
+@NonNullByDefault
 public class AwattarTimeProvider {
 
     private TimeZoneProvider timeZoneProvider;
@@ -39,7 +39,7 @@ public class AwattarTimeProvider {
      *
      * @return the current zone id
      */
-    public @NonNull ZoneId getZoneId() {
+    public ZoneId getZoneId() {
         return timeZoneProvider.getTimeZone();
     }
 
@@ -48,8 +48,8 @@ public class AwattarTimeProvider {
      *
      * @return the current instant
      */
-    public Instant getInstant() {
-        return Clock.systemDefaultZone().instant();
+    public Instant getInstantNow() {
+        return Instant.now();
     }
 
     /**
@@ -57,7 +57,7 @@ public class AwattarTimeProvider {
      *
      * @return the current zoned date time
      */
-    public ZonedDateTime getZonedDateTime() {
-        return ZonedDateTime.now(Clock.system(getZoneId()));
+    public ZonedDateTime getZonedDateTimeNow() {
+        return Instant.now().atZone(getZoneId());
     }
 }

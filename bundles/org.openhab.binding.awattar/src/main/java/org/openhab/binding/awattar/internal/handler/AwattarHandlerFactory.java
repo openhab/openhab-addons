@@ -51,14 +51,12 @@ public class AwattarHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PRICE, THING_TYPE_BESTPRICE,
             THING_TYPE_BRIDGE);
     private final HttpClient httpClient;
-
     private final AwattarTimeProvider timeProvider;
 
     @Activate
     public AwattarHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-
         this.timeProvider = new AwattarTimeProvider(timeZoneProvider);
     }
 

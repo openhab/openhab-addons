@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -91,9 +90,8 @@ class AwattarApiTest extends JavaTest {
         when(requestMock.timeout(10, TimeUnit.SECONDS)).thenReturn(requestMock);
         when(requestMock.send()).thenReturn(contentResponseMock);
 
-        Clock clock = Clock.fixed(Instant.parse("2024-06-15T12:00:00Z"), ZoneId.of("GMT+2"));
-
-        when(timeProviderMock.getZonedDateTime()).thenReturn(ZonedDateTime.now(clock));
+        ZonedDateTime zdt = Instant.parse("2024-06-15T12:00:00Z").atZone(ZoneId.of("GMT+2"));
+        when(timeProviderMock.getZonedDateTimeNow()).thenReturn(zdt);
 
         config.basePrice = 0.0;
         config.vatPercent = 0.0;
