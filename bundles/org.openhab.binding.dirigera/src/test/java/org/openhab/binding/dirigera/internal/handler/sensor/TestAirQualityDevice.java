@@ -107,8 +107,7 @@ class TestAirQualityDevice {
         assertEquals(11, ((QuantityType<?>) ppmState).intValue(), "ppm");
         State vocState = callback.getState("dirigera:air-quality:test-device:voc-index");
         assertNotNull(vocState);
-        assertTrue(vocState instanceof QuantityType);
-        assertTrue(((QuantityType<?>) vocState).getUnit().toString().equals("mg/m³"));
-        assertEquals(100, ((QuantityType<?>) vocState).intValue(), "VOC Index");
+        assertTrue(vocState instanceof DecimalType);
+        assertEquals(100, ((DecimalType) vocState).intValue(), "VOC Index");
     }
 }

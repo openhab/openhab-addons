@@ -27,7 +27,7 @@
 			</channel>
 			<channel id="voc-index" typeId="voc">
 				<label>VOC Index</label>
-				<description>Volatile organic compounds measure</description>
+				<description>Relative VOC intensity compared to recent history</description>
 			</channel>
 			<channel id="custom-name" typeId="custom-name"/>
 		</channels>
