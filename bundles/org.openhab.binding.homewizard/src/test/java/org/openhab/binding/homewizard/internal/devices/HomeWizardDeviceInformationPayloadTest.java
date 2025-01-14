@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal.devices.dto;
+package org.openhab.binding.homewizard.internal.devices;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.homewizard.internal.devices.HomeWizardDeviceInformationPayload;
 import org.openhab.binding.homewizard.internal.dto.DataUtil;
 
 /**
