@@ -139,7 +139,7 @@ Channel names in **bold** are read/write, everything else is read-only
 | locationChanged        | DateTime    | The time when the location was last changed                                         |
 | locationTimeoffset     | String      | Time-Command to set the pet location with a time offset. (10, 30 or 60 minutes ago) |
 | locationChangedThrough | Text        | The device name or username where the pet left/entered the house                    |
-| weight                 | Number:Mass | The pet's weight (in kilogram)                                                      |
+| weight                 | Number:Mass | The pet's weight (in gram)                                                          |
 | dateOfBirth            | DateTime    | The pet's date of birth                                                             |
 | feederDevice           | Text        | The device from which the pet last ate                                              |
 | feederLastChange       | Number:Mass | The last eaten change in gram (big bowl)                                            |
