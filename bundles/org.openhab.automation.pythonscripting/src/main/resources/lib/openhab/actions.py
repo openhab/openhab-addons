@@ -24,7 +24,10 @@ Semantics = java.type("org.openhab.core.model.script.actions.Semantics")
 ThingsAction = java.type("org.openhab.core.model.script.actions.Things")
 Transformation = java.type("org.openhab.core.model.script.actions.Transformation")
 Voice = java.type("org.openhab.core.model.script.actions.Voice")
-NotificationAction = java.type("org.openhab.io.openhabcloud.NotificationAction")
+try:
+    NotificationAction = java.type("org.openhab.io.openhabcloud.NotificationAction")
+except:
+    NotificationAction = None
 
 #STATIC_IMPORTS = [Audio, Exec, HTTP, Log, Ping, ScriptExecution, Semantics, Transformation, Voice]
 #for action in STATIC_IMPORTS:

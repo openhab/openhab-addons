@@ -62,41 +62,42 @@ class NotInitialisedException(Exception):
     pass
 
 class rule(object):
-    def __init__(self, name=None, description=None, tags=None, trigger=None, profile=None):
+    def __init__(self, name=None, description=None, tags=None, triggers=None, profile=None):
         self.name = name
         self.description = description
         self.tags = tags
-        self.trigger = trigger
+        self.triggers = triggers
         self.profile = profile
 
     def __call__(self, clazz):
         proxy = self
 
-        _trigger = []
-        if proxy.trigger is not None:
-            _trigger = proxy.trigger
-        elif hasattr(_rule_obj, "buildTrigger") and callable(_rule_obj.buildTrigger):
-            _trigger = _rule_obj.buildTrigger()
+        class_package = proxy.getClassPackage(clazz.__name__)
+
+        clazz.logger = Java_LogFactory.getLogger( LOG_PREFIX + "." + file_package + "." + class_package )
+
+        _rule_obj = clazz()
+
+        _triggers = []
+        if proxy.triggers is not None:
+            _triggers = proxy.triggers
+        elif hasattr(_rule_obj, "buildTriggers") and callable(_rule_obj.buildTriggers):
+            _triggers = _rule_obj.buildTriggers()
 
         _valid_items = {}
-        _raw_trigger = []
-        for trigger in _trigger:
+        _raw_triggers = []
+        for trigger in _triggers:
             cfg = trigger.raw_trigger.getConfiguration()
             if cfg.containsKey("itemName"):
                 _valid_items[cfg.get("itemName") ] = True
             elif cfg.containsKey("groupName"):
                 _valid_items[cfg.get("groupName") ] = True
-            _raw_trigger.append(trigger.raw_trigger)
-
-        class_package = proxy.getClassPackage(clazz.__name__)
+            _raw_triggers.append(trigger.raw_trigger)
 
         clazz.execute = proxy.executeWrapper(clazz.execute, _valid_items)
 
-        clazz.logger = Java_LogFactory.getLogger( LOG_PREFIX + "." + file_package + "." + class_package )
-
         #register_interop_type(Java_SimpleRule, clazz)
         #subclass = type(clazz.__name__, (clazz, BaseSimpleRule,))
-        _rule_obj = clazz()
 
         # dummy helper to avoid "org.graalvm.polyglot.PolyglotException: java.lang.IllegalStateException: unknown type com.oracle.truffle.host.HostObject"
         class BaseSimpleRule(Java_SimpleRule):
@@ -117,7 +118,7 @@ class rule(object):
         if proxy.tags is not None:
             _base_obj.setTags(Set(proxy.tags))
 
-        _base_obj.setTriggers(_raw_trigger)
+        _base_obj.setTriggers(_raw_triggers)
 
         automationManager.addRule(_base_obj)
 
@@ -464,12 +465,12 @@ class Timer():
     activeTimer = []
 
     @staticmethod
-    def _cleanTimer():
+    def _clean():
         for timer in list(Timer.activeTimer):
             timer.cancel()
 
     @staticmethod
-    def startTimer(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0 ):
+    def createTimeout(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0 ):
         if old_timer != None:
             old_timer.cancel()
             max_count = old_timer.max_count
@@ -523,4 +524,4 @@ class Timer():
         else:
             pass
 
-lifecycleTracker.addDisposeHook(Timer._cleanTimer)
+lifecycleTracker.addDisposeHook(Timer._clean)
