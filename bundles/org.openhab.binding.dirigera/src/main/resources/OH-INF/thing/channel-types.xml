@@ -217,9 +217,9 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="voc">
-		<item-type unitHint="mg/m³">Number:Density</item-type>
+		<item-type>Number</item-type>
 		<label>VOC Index</label>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="time">
 		<item-type unitHint="min">Number:Time</item-type>

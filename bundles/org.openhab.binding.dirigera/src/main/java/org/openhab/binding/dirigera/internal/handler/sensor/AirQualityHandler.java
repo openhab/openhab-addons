@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -86,7 +87,7 @@ public class AirQualityHandler extends BaseHandler {
                             break;
                         case CHANNEL_VOC_INDEX:
                             updateState(new ChannelUID(thing.getUID(), CHANNEL_VOC_INDEX),
-                                    QuantityType.valueOf(attributes.getDouble(key) + "mg/m³"));
+                                    new DecimalType(attributes.getDouble(key)));
                             break;
                     }
                 }

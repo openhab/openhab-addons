@@ -8,31 +8,31 @@ The DIRIGERA `bridge` is providing the connection to all devices and scenes.
 
 Refer to below sections which devices are supported and are covered by `things` connected to the DIRIGERA bridge.
 
-| ThingTypeUID          | Description                                                | Tested       | Section                                   | Products                                  |
-|-----------------------|------------------------------------------------------------|--------------|-------------------------------------------|-------------------------------------------|
-| `gateway`             | IKEA Gateway for smart products                            | personally   | [Gateway](#gateway-channels)              | DIRIGERA                                  |
-| `air-purifier`        | Air cleaning device with particle filter                   | no           | [Air Purifier](#air-purifier)             | STARKVIND                                 |
-| `air-quality`         | Air measure for temperature, humidity and particles        | no           | [Sensors](#air-quality-sensor)            | VINDSTYRKA                                |
-| `blind`               | Window or door blind                                       | no           | [Blinds](#blinds)                         | PRAKTLYSING ,KADRILJ ,FRYKTUR, TREDANSEN  |
-| `blind-controller`    | Controller to open and close blinds                        | no           | [Controller](#blind-controller)           | TRÅDFRI                                   |
-| `switch-light`        | Light with switch ON, OFF capability                       | no           | [Lights](#switch-lights)                  | TRÅDFRI                                   |
-| `dimmable-light`      | Light with brightness support                              | no           | [Lights](#dimmable-lights)                | TRÅDFRI                                   |
-| `temperature-light`   | Light with color temperature support                       | personally   | [Lights](#temperature-lights)             | TRÅDFRI, FLOALT                           |
-| `color-light`         | Light with color support                                   | personally   | [Lights](#color-lights)                   | TRÅDFRI, ORMANÅS                          |
-| `light-controller`    | Controller to handle light attributes                      | personally   | [Controller](#light-controller)           | TRÅDFRI, RODRET,STYRBAAR                  |
-| `motion-sensor`       | Sensor detecting motion events                             | no           | [Sensors](#motion-sensor)                 | TRÅDFRI                                   |
-| `motion-light-sensor` | Sensor detecting motion events and measures light level    | personally   | [Sensors](#motion-light-sensor)           | VALLHORN                                  |
-| `single-shortcut`     | Shortcut controller with one button                        | no           | [Controller](#single-shortcut-controller) | TRÅDFRI                                   |
-| `double-shortcut`     | Shortcut controller with two buttons                       | personally   | [Controller](#double-shortcut-controller) | SOMRIG                                    |
-| `simple-plug`         | Power plug                                                 | no           | [Plugs](#simple-plug)                     | TRÅDFRI, ÅSKVÄDER                         |
-| `power-plug`          | Power plug with status light and child lock                | personally   | [Plugs](#power-plug)                      | TRETAKT                                   |
-| `smart-plug`          | Power plug with electricity measurements                   | personally   | [Plugs](#smart-power-plug)                | INSPELNING                                |
-| `speaker`             | Speaker with player activities                             | personally   | [Speaker](#speaker)                       | SYMFONISK                                 |
-| `sound-controller`    | Controller for speakers                                    | no           | [Controller](#sound-controller)           | SYMFONISK, TRÅDFRI                        |
-| `contact-sensor`      | Sensor tracking if windows or doors are open               | personally   | [Sensors](#contact-sensor)                | PARASOLL                                  |
-| `water-sensor`        | Sensor to detect water leaks                               | no           | [Sensors](#water-sensor)                  | BADRING                                   |
-| `repeater`            | Repeater to strengthen signal                              | personally   | [Repeater](#repeater)                     | TRÅDFRI                                   |
-| `scene`               | Scene from IKEA Home smart app which can be triggered      | personally   | [Scenes](#scenes)                         | -                                         |
+| ThingTypeUID          | Description                                                | Section                                   | Products                                  |
+|-----------------------|------------------------------------------------------------|-------------------------------------------|-------------------------------------------|
+| `gateway`             | IKEA Gateway for smart products                            | [Gateway](#gateway-channels)              | DIRIGERA                                  |
+| `air-purifier`        | Air cleaning device with particle filter                   | [Air Purifier](#air-purifier)             | STARKVIND                                 |
+| `air-quality`         | Air measure for temperature, humidity and particles        | [Sensors](#air-quality-sensor)            | VINDSTYRKA                                |
+| `blind`               | Window or door blind                                       | [Blinds](#blinds)                         | PRAKTLYSING ,KADRILJ ,FRYKTUR, TREDANSEN  |
+| `blind-controller`    | Controller to open and close blinds                        | [Controller](#blind-controller)           | TRÅDFRI                                   |
+| `switch-light`        | Light with switch ON, OFF capability                       | [Lights](#switch-lights)                  | TRÅDFRI                                   |
+| `dimmable-light`      | Light with brightness support                              | [Lights](#dimmable-lights)                | TRÅDFRI                                   |
+| `temperature-light`   | Light with color temperature support                       | [Lights](#temperature-lights)             | TRÅDFRI, FLOALT                           |
+| `color-light`         | Light with color support                                   | [Lights](#color-lights)                   | TRÅDFRI, ORMANÅS                          |
+| `light-controller`    | Controller to handle light attributes                      | [Controller](#light-controller)           | TRÅDFRI, RODRET,STYRBAAR                  |
+| `motion-sensor`       | Sensor detecting motion events                             | [Sensors](#motion-sensor)                 | TRÅDFRI                                   |
+| `motion-light-sensor` | Sensor detecting motion events and measures light level    | [Sensors](#motion-light-sensor)           | VALLHORN                                  |
+| `single-shortcut`     | Shortcut controller with one button                        | [Controller](#single-shortcut-controller) | TRÅDFRI                                   |
+| `double-shortcut`     | Shortcut controller with two buttons                       | [Controller](#double-shortcut-controller) | SOMRIG                                    |
+| `simple-plug`         | Power plug                                                 | [Plugs](#simple-plug)                     | TRÅDFRI, ÅSKVÄDER                         |
+| `power-plug`          | Power plug with status light and child lock                | [Plugs](#power-plug)                      | TRETAKT                                   |
+| `smart-plug`          | Power plug with electricity measurements                   | [Plugs](#smart-power-plug)                | INSPELNING                                |
+| `speaker`             | Speaker with player activities                             | [Speaker](#speaker)                       | SYMFONISK                                 |
+| `sound-controller`    | Controller for speakers                                    | [Controller](#sound-controller)           | SYMFONISK, TRÅDFRI                        |
+| `contact-sensor`      | Sensor tracking if windows or doors are open               | [Sensors](#contact-sensor)                | PARASOLL                                  |
+| `water-sensor`        | Sensor to detect water leaks                               | [Sensors](#water-sensor)                  | BADRING                                   |
+| `repeater`            | Repeater to strengthen signal                              | [Repeater](#repeater)                     | TRÅDFRI                                   |
+| `scene`               | Scene from IKEA Home smart app which can be triggered      | [Scenes](#scenes)                         | -                                         |
 
 ## Discovery
 
@@ -71,13 +71,13 @@ Let's start pairing
 
 ### Gateway Channels
 
-| Channel         | Type      | Read/Write | Description                                  | Advanced |
-|-----------------|-----------|------------|----------------------------------------------|----------|
-| `pairing`       | Switch    | RW         | Sets DIRIGERA hub into pairing mode          |          |
-| `location`      | Location  | R(W)       | Location in lat.,lon. coordinates            |          |
-| `sunrise`       | DateTime  | R          | Date and time of next sunrise                |          |
-| `sunset`        | DateTime  | R          | Date and time of next sunset                 |          |
-| `statistics`    | String    | R          | Several statistics about gateway activities  |          |
+| Channel         | Type      | Read/Write | Description                                  |
+|-----------------|-----------|------------|----------------------------------------------|
+| `pairing`       | Switch    | RW         | Sets DIRIGERA hub into pairing mode          |
+| `location`      | Location  | R(W)       | Location in lat.,lon. coordinates            |
+| `sunrise`       | DateTime  | R          | Date and time of next sunrise                |
+| `sunset`        | DateTime  | R          | Date and time of next sunset                 |
+| `statistics`    | String    | R          | Several statistics about gateway activities  |
 
 Channel `location` can overwrite GPS position with openHAB location, but it's not possible to delete GPS data.
 See [Gateway Limitations](#gateway-limitations) for further information.
@@ -178,10 +178,10 @@ In this case it's possible not all links are shown in the UI, but the present on
 
 #### Other Channels
 
-| Channel               | Type              | Read/Write | Description                                  | Advanced |
-|-----------------------|-------------------|------------|----------------------------------------------|----------|
-| `startup`             | Number            | RW         | Startup behavior after power cutoff          |          |
-| `custom-name`         | String            | RW         | Name given from IKEA home smart app          |          |
+| Channel               | Type              | Read/Write | Description                                  |
+|-----------------------|-------------------|------------|----------------------------------------------|
+| `startup`             | Number            | RW         | Startup behavior after power cutoff          |
+| `custom-name`         | String            | RW         | Name given from IKEA home smart app          |
 
 `startup` defines how the device shall behave after a power cutoff.
 If there's a dedicated hardwired light switch which cuts power towards the bulb it makes sense to switch them on every time the switch is pressed.
@@ -213,18 +213,18 @@ The trace contains a JSON object at the end which is needed to implement a corre
 
 Air cleaning device with particle filter.
 
-| Channel               | Type              | Read/Write | Description                                  | Advanced |
-|-----------------------|-------------------|------------|----------------------------------------------|----------|
-| `fan-mode`            | Number            | RW         | Fan on, off, speed or automatic behavior     |          |
-| `fan-speed`           | Dimmer            | RW         | Manual regulation of fan speed               |          |
-| `fan-runtime`         | Number:Time       | R          | Fan runtime in minutes                       |          |
-| `filter-elapsed`      | Number:Time       | R          | Filter elapsed time in minutes               |          |
-| `filter-remain`       | Number:Time       | R          | Time to filter replacement in minutes        |          |
-| `filter-lifetime`     | Number:Time       | R          | Filter lifetime in minutes                   |          |
-| `filter-alarm`        | Switch            | R          | Filter alarm signal                          |          |
-| `particulate-matter`  | Number:Density    | R          | Category 2.5 particulate matter              |          |
-| `disable-light`       | Switch            | RW         | Disable status light on plug                 |          |
-| `child-lock`          | Switch            | RW         | Child lock for button on plug                |          |
+| Channel               | Type              | Read/Write | Description                                  |
+|-----------------------|-------------------|------------|----------------------------------------------|
+| `fan-mode`            | Number            | RW         | Fan on, off, speed or automatic behavior     |
+| `fan-speed`           | Dimmer            | RW         | Manual regulation of fan speed               |
+| `fan-runtime`         | Number:Time       | R          | Fan runtime in minutes                       |
+| `filter-elapsed`      | Number:Time       | R          | Filter elapsed time in minutes               |
+| `filter-remain`       | Number:Time       | R          | Time to filter replacement in minutes        |
+| `filter-lifetime`     | Number:Time       | R          | Filter lifetime in minutes                   |
+| `filter-alarm`        | Switch            | R          | Filter alarm signal                          |
+| `particulate-matter`  | Number:Density    | R          | Category 2.5 particulate matter              |
+| `disable-status-light`| Switch            | RW         | Disable status light on plug                 |
+| `child-lock`          | Switch            | RW         | Child lock for button on plug                |
 
 There are several `Number:Time` which are delivered in minutes as default.
 Note you can change the unit when connecting an item e.g. to `d` (days) for readability.
@@ -245,11 +245,11 @@ Mappings for `fan-mode`
 
 Window or door blind.
 
-| Channel               | Type                  | Read/Write | Description                                      | Advanced |
-|-----------------------|-----------------------|------------|--------------------------------------------------|----------|
-| `blind-state`         | Number                | RW         | State if blind is moving up, down or stopped     |          |
-| `blind-level`         | Dimmer                | RW         | Current blind level                              |          |
-| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent                  |          |
+| Channel               | Type                  | Read/Write | Description                                      |
+|-----------------------|-----------------------|------------|--------------------------------------------------|
+| `blind-state`         | Number                | RW         | State if blind is moving up, down or stopped     |
+| `blind-level`         | Dimmer                | RW         | Current blind level                              |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent                  |
 
 #### Blind Channel Mappings
 
@@ -305,18 +305,18 @@ During power OFF the lights will preserve some values until next power ON.
 
 Light with switch ON, OFF capability
 
-| Channel               | Type                  | Read/Write | Description                                      | Advanced |
-|-----------------------|-----------------------|------------|--------------------------------------------------|----------|
-| `power`               | Switch                | RW         | Power state of light                             |          |
+| Channel               | Type                  | Read/Write | Description                                      |
+|-----------------------|-----------------------|------------|--------------------------------------------------|
+| `power`               | Switch                | RW         | Power state of light                             |
 
 ## Dimmable Lights
 
 Light with brightness support.
 
-| Channel               | Type                  | Read/Write | Description                                      | Advanced |
-|-----------------------|-----------------------|------------|--------------------------------------------------|----------|
-| `power`               | Switch                | RW         | Power state of light                             |          |
-| `brightness`          | Dimmer                | RW         | Control brightness of light                      |          |
+| Channel               | Type                  | Read/Write | Description                                      |
+|-----------------------|-----------------------|------------|--------------------------------------------------|
+| `power`               | Switch                | RW         | Power state of light                             |
+| `brightness`          | Dimmer                | RW         | Control brightness of light                      |
 
 Channel `brightness` can receive
 
@@ -327,22 +327,22 @@ Channel `brightness` can receive
 
 Light with color temperature support.
 
-| Channel               | Type                  | Read/Write | Description                                          | Advanced |
-|-----------------------|-----------------------|------------|------------------------------------------------------|----------|
-| `power`               | Switch                | RW         | Power state of light                                 |          |
-| `brightness`          | Dimmer                | RW         | Control brightness of light                          |          |
-| `color-temperature`   | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
+| Channel               | Type                  | Read/Write | Description                                          |
+|-----------------------|-----------------------|------------|------------------------------------------------------|
+| `power`               | Switch                | RW         | Power state of light                                 |
+| `brightness`          | Dimmer                | RW         | Control brightness of light                          |
+| `color-temperature`   | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |
 
 ## Color Lights
 
 Light with color support.
 
-| Channel               | Type                  | Read/Write | Description                                          | Advanced |
-|-----------------------|-----------------------|------------|------------------------------------------------------|----------|
-| `power`               | Switch                | RW         | Power state of light                                 |          |
-| `brightness`          | Dimmer                | RW         | Brightness of light in percent                       |          |
-| `color-temperature`   | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
-| `color`               | Color                 | RW         | Color of light with hue, saturation and brightness   |          |
+| Channel               | Type                  | Read/Write | Description                                          |
+|-----------------------|-----------------------|------------|------------------------------------------------------|
+| `power`               | Switch                | RW         | Power state of light                                 |
+| `brightness`          | Dimmer                | RW         | Brightness of light in percent                       |
+| `color-temperature`   | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |
+| `color`               | Color                 | RW         | Color of light with hue, saturation and brightness   |
 
 Channel `color` can receive
 
@@ -358,36 +358,32 @@ Power plugs in different variants.
 
 Simple plug with control of power state and startup behavior.
 
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `power`               | Switch                | RW         | Power state of plug                          |          |
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `power`               | Switch                | RW         | Power state of plug                          |
 
 ## Power Plug
 
 Power plug with control of power state, startup behavior, hardware on/off button and status light.
 Same channels as [Simple Plug](#simple-plug) plus following channels.
 
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `power`               | Switch                | RW         | Power state of plug                          |          |
-| `child-lock`          | Switch                | RW         | Child lock for button on plug                |          |
-| `disable-light`       | Switch                | RW         | Disable status light on plug                 |          |
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `child-lock`          | Switch                | RW         | Child lock for button on plug                |
+| `disable-status-light`| Switch                | RW         | Disable status light on plug                 |
 
 ## Smart Power Plug
 
 Smart plug like [Power Plug](#power-plug) plus measuring capability.
 
-| Channel               | Type                      | Read/Write | Description                                  | Advanced |
-|-----------------------|---------------------------|------------|----------------------------------------------|----------|
-| `power`               | Switch                    | RW         | Power state of plug                          |          |
-| `child-lock`          | Switch                    | RW         | Child lock for button on plug                |          |
-| `disable-light`       | Switch                    | RW         | Disable status light on plug                 |          |
-| `electric-power`      | Number:Power              | R          | Electric power delivered by plug             |          |
-| `energy-total`        | Number:Energy             | R          | Total energy consumption                     |          |
-| `energy-reset`        | Number:Energy             | R          | Energy consumption since last reset          |          |
-| `reset-date`          | DateTime                  | RW         | Date and time of last reset                  |          |
-| `electric-current`    | Number:ElectricCurrent    | R          | Electric current measured by plug            |          | 
-| `electric-voltage`    | Number:ElectricPotential  | R          | Electric potential of plug                   |          |
+| Channel               | Type                      | Read/Write | Description                                  |
+|-----------------------|---------------------------|------------|----------------------------------------------|
+| `electric-power`      | Number:Power              | R          | Electric power delivered by plug             |
+| `energy-total`        | Number:Energy             | R          | Total energy consumption                     |
+| `energy-reset`        | Number:Energy             | R          | Energy consumption since last reset          |
+| `reset-date`          | DateTime                  | RW         | Date and time of last reset                  |
+| `electric-current`    | Number:ElectricCurrent    | R          | Electric current measured by plug            | 
+| `electric-voltage`    | Number:ElectricPotential  | R          | Electric potential of plug                   |
 
 Smart plug provides `energy-total` measuring energy consumption over lifetime and `energy-reset` measuring energy consumption from `reset-date` till now.
 Channel `reset-date` is writable and will set the date time to the timestamp of command execution.
@@ -401,15 +397,15 @@ Various sensors for detecting events and measuring.
 
 Sensor detecting motion events.
 
-| Channel               | Type                  | Read/Write | Description                                      | Advanced |
-|-----------------------|-----------------------|------------|--------------------------------------------------|----------|
-| `motion`              | Switch                | R          | Motion detected by the device                    |          |
-| `active-duration`     | Number:Time           | RW         | Keep connected devices active for this duration  |          |
-| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent                  |          |
-| `schedule`            | Number                | RW         | Schedule when the sensor shall be active         |          |
-| `schedule-start`      | DateTime              | RW         | Start time of sensor activity                    |          |
-| `schedule-end`        | DateTime              | RW         | End time of sensor activity                      |          |
-| `light-preset`        | String                | RW         | Light presets for different times of the day     |          |
+| Channel               | Type                  | Read/Write | Description                                      |
+|-----------------------|-----------------------|------------|--------------------------------------------------|
+| `motion`              | Switch                | R          | Motion detected by the device                    |
+| `active-duration`     | Number:Time           | RW         | Keep connected devices active for this duration  |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent                  |
+| `schedule`            | Number                | RW         | Schedule when the sensor shall be active         |
+| `schedule-start`      | DateTime              | RW         | Start time of sensor activity                    |
+| `schedule-end`        | DateTime              | RW         | End time of sensor activity                      |
+| `light-preset`        | String                | RW         | Light presets for different times of the day     |
 
 When motion is detected via `motion` channel all connected devices from `links` channel will be active for the time configured in `active-duration`.
 Standard duration is seconds if raw number is sent as command. 
@@ -430,38 +426,42 @@ See [Light Controller](#light-controller) for light-preset`.
 Sensor detecting motion events and measures light level.
 Same channels as [Motion Sensor](#motion-sensor) with an additional `illuminance` channel.
 
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `illuminance`         | Number:Illuminance    | R          | Illuminance in Lux                           |          |
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `illuminance`         | Number:Illuminance    | R          | Illuminance in Lux                           |
 
 ## Water Sensor
 
 Sensor to detect water leaks.
 
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `leak`                | Switch                | R          | Water leak detected                          |          |
-| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `leak`                | Switch                | R          | Water leak detected                          |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |
 
 ## Contact Sensor
 
 Sensor tracking if windows or doors are open
 
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `contact`             | Contact               | R          | State if door or window is open or closed    |          |
-| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `contact`             | Contact               | R          | State if door or window is open or closed    |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |
 
 ## Air Quality Sensor
 
 Air measure for temperature, humidity and particles.
 
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `temperature`         | Number:Temperature    | R          | Air Temperature                              |          |
-| `humidity`            | Number:Dimensionless  | R          | Air Humidity                                 |          |
-| `particulate-matter`  | Number:Density        | R          | Category 2.5 particulate matter              |          |
-| `voc-index`           | Number:Density        | R          | Volatile organic compounds measure           |          |
+| Channel               | Type                  | Read/Write | Description                                          |
+|-----------------------|-----------------------|------------|------------------------------------------------------|
+| `temperature`         | Number:Temperature    | R          | Air Temperature                                      |
+| `humidity`            | Number:Dimensionless  | R          | Air Humidity                                         |
+| `particulate-matter`  | Number:Density        | R          | Category 2.5 particulate matter                      |
+| `voc-index`           | Number                | R          | Relative VOC intensity compared to recent history    |
+
+The VOC Index mimics the human nose’s perception of odors with a relative intensity compared to recent history. 
+The VOC Index is also sensitive to odorless VOCs, but it cannot discriminate between them.
+See more information in the [sensor description](https://sensirion.com/media/documents/02232963/6294E043/Info_Note_VOC_Index.pdf).
 
 ## Controller
 
@@ -471,10 +471,10 @@ Controller for lights, plugs, blinds, shortcuts and speakers.
 
 Shortcut controller with one button.
 
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `button1`             | trigger               |            | Trigger of first button                      |          |
-| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `button1`             | trigger               |            | Trigger of first button                      |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |
 
 ### Button Triggers
 
@@ -488,9 +488,9 @@ Triggers for `button1`
 
 Shortcut controller with two buttons.
 
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `button2`             | trigger               |            | Trigger of second button                     |          |
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `button2`             | trigger               |            | Trigger of second button                     |
 
 Same as [Single Shortcut Controller](#single-shortcut-controller) with additional `button2` trigger channel.
 
@@ -498,10 +498,10 @@ Same as [Single Shortcut Controller](#single-shortcut-controller) with additiona
 
 Controller to handle light attributes.
 
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
-| `light-preset`        | String                | RW         | Light presets for different times of the day |          |
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |
+| `light-preset`        | String                | RW         | Light presets for different times of the day |
 
 <img align="right" width="150" src="doc/light-presets.png">
 
@@ -523,32 +523,32 @@ This feature is from IKEA test center and not officially present in the IKEA Hom
 
 Controller to open and close blinds.
 
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |
 
 ## Sound Controller
 
 Controller for speakers.
 
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |
 
 ## Speaker
 
 Speaker with player activities.
  
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `media-control`       | Player                | RW         | Media control  play, pause, next, previous   |          |
-| `volume`              | Dimmer                | RW         | Handle volume in percent                     |          |
-| `mute`                | Switch                | R(W)       | Mute current audio without stop playing      |          |
-| `shuffle`             | Switch                | RW         | Control shuffle mode                         |          |
-| `crossfade`           | Switch                | RW         | Cross fading between tracks                  |          |
-| `repeat`              | Number                | RW         | Over-the-air overall status                  |          |
-| `media-title`         | String                | R          | Title of a played media file                 |          |
-| `image`               | RawType               | R          | Current playing track image                  |          |
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `media-control`       | Player                | RW         | Media control  play, pause, next, previous   |
+| `volume`              | Dimmer                | RW         | Handle volume in percent                     |
+| `mute`                | Switch                | R(W)       | Mute current audio without stop playing      |
+| `shuffle`             | Switch                | RW         | Control shuffle mode                         |
+| `crossfade`           | Switch                | RW         | Cross fading between tracks                  |
+| `repeat`              | Number                | RW         | Over-the-air overall status                  |
+| `media-title`         | String                | R          | Title of a played media file                 |
+| `image`               | RawType               | R          | Current playing track image                  |
 
 Channel `mute` should be writable but this isnn't the case now.
 See [Known Limitations](#speaker-limitations). 
@@ -562,10 +562,10 @@ Sadly there's no further information like _signal strength_ available so only [O
 
 Scene from IKEA home smart app which can be triggered.
  
-| Channel               | Type                  | Read/Write | Description                                  | Advanced |
-|-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `trigger`             | Number                | RW         | Trigger / undo scene execution               |          |
-| `last-trigger`        | DateTime              | R          | Date and time when last trigger occurred     |    X     |
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `trigger`             | Number                | RW         | Trigger / undo scene execution               |
+| `last-trigger`        | DateTime              | R          | Date and time when last trigger occurred     |
 
 Scenes are defined in IKEA Home smart app and can be performed via `trigger` channel.
 Two commands are defined:
