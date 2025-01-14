@@ -164,8 +164,8 @@ The parameters 'item' and 'serviceId', as part of the Wrapped Java API, are not 
 
 | Function                 | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| getStableMinMaxState     | getStableMinMaxState(time_range)                                                      | Calculates the average, min and max value depending on the state duration of each individual value in a specific time range |
-| getStableState           | getStableState(time_range)                                                            | Calculates the average value depending on the state duration of each individual value in a specific time range              |
+| getStableMinMaxState     | getStableMinMaxState(time_slot, end_time = None)                                      | Calculates the average, min and max value depending on the state duration of each individual value in a specific time range |
+| getStableState           | getStableState(time_slot, end_time = None)                                            | Calculates the average value depending on the state duration of each individual value in a specific time range              |
 | <...>                    | see [openhab PersistenceExtensions api](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions) |                                             |
 
 ## class ItemSemantic 
@@ -192,7 +192,7 @@ The parameters 'item', as part of the Wrapped Java API, is not needed because it
 
 | Function                 | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| startTimer               | startTimer(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0 )  | Create a timer that will run callback with arguments args and keyword arguments kwargs, after duration seconds have passed. If old_timer from e.g previous call is provided, it will be stopped if not already triggered. If max_count together with old_timer is provided, then 'max_count' times the old timer will be stopped and recreated, before the callback will be triggered immediately |
+| createTimeout            | createTimeout(duration, callback, args=[], kwargs={}, old_timer = None, max_count = 0 ) | Create a timer that will run callback with arguments args and keyword arguments kwargs, after duration seconds have passed. If old_timer from e.g previous call is provided, it will be stopped if not already triggered. If max_count together with old_timer is provided, then 'max_count' times the old timer will be stopped and recreated, before the callback will be triggered immediately |
 
 ## class Set
 

@@ -25,7 +25,7 @@ import traceback
 import time
 import threading
 import profile, pstats, io
-from datetime import datetime
+from datetime import datetime, timedelta
 
 Java_UnDefType = java.type("org.openhab.core.types.UnDefType")
 
@@ -231,49 +231,49 @@ class ItemPersistance():
         self.item = item
         self.service_id = service_id
 
-    def getStableMinMaxState(self, time_range):
-        currentEndTime = datetime.now().astimezone()
-        minTime = currentEndTime - datetime.timedelta(seconds=time_range*-1)
+    def getStableMinMaxState(self, time_slot, end_time = None):
+        current_end_time = datetime.now().astimezone() if end_time is None else end_time
+        min_time = current_end_time - timedelta(seconds=time_slot*-1)
 
-        minValue = None
-        maxValue = None
+        min_value = None
+        max_value = None
 
         value = 0.0
         duration = 0
 
-        entry = self.persistedState(currentEndTime)
+        entry = self.persistedState(current_end_time)
 
         while True:
             currentStartTime = entry.getTimestamp()
 
-            if currentStartTime < minTime:
-                currentStartTime = minTime
+            if currentStartTime < min_time:
+                currentStartTime = min_time
 
-            _duration = ( currentStartTime - currentEndTime ).total_seconds()
+            _duration = ( currentStartTime - current_end_time ).total_seconds()
             _value = entry.getState().doubleValue()
 
-            if minValue == None or minValue > _value:
-                minValue = _value
+            if min_value == None or min_value > _value:
+                min_value = _value
 
-            if maxValue == None or maxValue < _value:
-                maxValue = _value
+            if max_value == None or max_value < _value:
+                max_value = _value
 
             duration = duration + _duration
             value = value + ( _value * _duration )
 
-            currentEndTime = currentStartTime - datetime.timedelta(microseconds=-1)
+            current_end_time = currentStartTime - timedelta(microseconds=1)
 
-            if currentEndTime < minTime:
+            if current_end_time < min_time:
                 break
 
-            entry = self.persistedState(currentEndTime)
+            entry = self.persistedState(current_end_time)
 
         value = ( value / duration )
 
-        return [ value, minValue, maxValue ]
+        return [ value, min_value, max_value ]
 
-    def getStableState(self, time_range):
-        value, _, _ = self.getStableMinMaxItemState(time_range)
+    def getStableState(self, time_slot, end_time = None):
+        value, _, _ = self.getStableMinMaxState(time_slot, end_time)
         return value
 
     def _callWrapper(self, func, args):
