@@ -165,8 +165,8 @@ The parameters 'item' and 'serviceId', as part of the Wrapped Java API, are not 
 
 | Function                 | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| getStableMinMaxState     | getStableMinMaxState(time_slot, end_time = None)                                      | Calculates the average, min and max value depending on the state duration of each individual value in a specific time range |
-| getStableState           | getStableState(time_slot, end_time = None)                                            | Calculates the average value depending on the state duration of each individual value in a specific time range              |
+| getStableMinMaxState     | getStableMinMaxState(time_slot, end_time = None)                                      | Average calculation which takes into account the values ​​depending on their duration                 |
+| getStableState           | getStableState(time_slot, end_time = None)                                            | Average calculation which takes into account the values ​​depending on their duration                 |
 | <...>                    | see [openhab PersistenceExtensions api](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions) |                                             |
 
 ## class ItemSemantic 

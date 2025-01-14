@@ -4,6 +4,8 @@ TODO
   - not high prio. maybe not needed
    
 DONE
+- implement metadata access
+- implement getStableState (average calculation which takes into account the values ​​depending on their duration)
 - check why assigning tag 'Schedule' to rules with GenericCronTrigger is freezing webui schedule page
   - reason was the cron expression syntax which was not possible to visualize (unlimited and every 5 minutes) 
 - implement dependency tracker and reloader
