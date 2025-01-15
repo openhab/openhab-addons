@@ -163,12 +163,12 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             }
 
             try {
-                if (value instanceof String && CHANNEL_TYPE_UID_COLOR.equals(channelTypeUID)) {
-                    oldColorMode = ((String) value).length() == 14;
-                    updateState(channelId, ConversionUtil.hexColorDecode((String) value));
+                if (value instanceof String stringValue && CHANNEL_TYPE_UID_COLOR.equals(channelTypeUID)) {
+                    oldColorMode = stringValue.length() == 14;
+                    updateState(channelId, ConversionUtil.hexColorDecode(stringValue));
                     return;
-                } else if (value instanceof String && CHANNEL_TYPE_UID_STRING.equals(channelTypeUID)) {
-                    updateState(channelId, new StringType((String) value));
+                } else if (value instanceof String stringValue && CHANNEL_TYPE_UID_STRING.equals(channelTypeUID)) {
+                    updateState(channelId, new StringType(stringValue));
                     return;
                 } else if (Double.class.isAssignableFrom(value.getClass())
                         && CHANNEL_TYPE_UID_DIMMER.equals(channelTypeUID)) {
@@ -278,7 +278,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 if (configuration.dp2 != 0) {
                     commandRequest.put(configuration.dp2, ((HSBType) command).getBrightness().doubleValue() > 0.0);
                 }
-            } else if (command instanceof PercentType) {
+            } else if (command instanceof PercentType percentCommand) {
                 State oldState = channelStateCache.get(channelUID.getId());
                 if (!(oldState instanceof HSBType)) {
                     logger.debug("Discarding command '{}' to channel '{}', cannot determine old state", command,
@@ -286,14 +286,14 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     return;
                 }
                 HSBType newState = new HSBType(((HSBType) oldState).getHue(), ((HSBType) oldState).getSaturation(),
-                        (PercentType) command);
+                        percentCommand);
                 commandRequest.put(configuration.dp, ConversionUtil.hexColorEncode(newState, oldColorMode));
                 ChannelConfiguration workModeConfig = channelIdToConfiguration.get("work_mode");
                 if (workModeConfig != null) {
                     commandRequest.put(workModeConfig.dp, "colour");
                 }
                 if (configuration.dp2 != 0) {
-                    commandRequest.put(configuration.dp2, ((PercentType) command).doubleValue() > 0.0);
+                    commandRequest.put(configuration.dp2, (percentCommand).doubleValue() > 0.0);
                 }
             } else if (command instanceof OnOffType) {
                 if (configuration.dp2 != 0) {
@@ -301,8 +301,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 }
             }
         } else if (CHANNEL_TYPE_UID_DIMMER.equals(channelTypeUID)) {
-            if (command instanceof PercentType) {
-                int value = ConversionUtil.brightnessEncode((PercentType) command, 0, configuration.max);
+            if (command instanceof PercentType percentCommand) {
+                int value = ConversionUtil.brightnessEncode(percentCommand, 0, configuration.max);
                 if (configuration.reversed) {
                     value = configuration.max - value;
                 }
@@ -578,7 +578,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     }
 
     private List<CommandOption> toCommandOptionList(List<String> options) {
-        return options.stream().map(c -> new CommandOption(c, c)).collect(Collectors.toList());
+        return options.stream().map(c -> new CommandOption(c, c)).toList();
     }
 
     private void addSingleExpiringCache(Integer key, Object value) {

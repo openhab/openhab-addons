@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * The {@link ConversionUtil} is a set of helper methods to convert data types
@@ -72,10 +73,9 @@ public class ConversionUtil {
             return String.format("%04x%04x%04x", hsb.getHue().intValue(),
                     (int) (hsb.getSaturation().doubleValue() * 10), (int) (hsb.getBrightness().doubleValue() * 10));
         } else {
-            return String.format("%02x%02x%02x%04x%02x%02x", (int) (hsb.getRed().doubleValue() * 2.55),
-                    (int) (hsb.getGreen().doubleValue() * 2.55), (int) (hsb.getBlue().doubleValue() * 2.55),
-                    hsb.getHue().intValue(), (int) (hsb.getSaturation().doubleValue() * 2.55),
-                    (int) (hsb.getBrightness().doubleValue() * 2.55));
+            int[] rgb = ColorUtil.hsbToRgb(hsb);
+            return String.format("%02x%02x%02x%04x%02x%02x", rgb[0], rgb[1], rgb[2], hsb.getHue().intValue(),
+                    (int) (hsb.getSaturation().doubleValue() * 2.55), (int) (hsb.getBrightness().doubleValue() * 2.55));
         }
     }
 

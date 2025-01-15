@@ -175,7 +175,7 @@
 			<parameter name="max" type="integer">
 				<label>Maximum</label>
 			</parameter>
-			<parameter name="sendAdString" type="boolean">
+			<parameter name="sendAsString" type="boolean">
 				<label>Send As String</label>
 				<description>Send the value as string instead of number.</description>
 				<default>false</default>

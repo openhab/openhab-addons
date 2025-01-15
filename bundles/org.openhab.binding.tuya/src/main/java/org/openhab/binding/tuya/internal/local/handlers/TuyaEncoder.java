@@ -21,7 +21,6 @@ import static org.openhab.binding.tuya.internal.local.CommandType.SESS_KEY_NEG_S
 import static org.openhab.binding.tuya.internal.local.ProtocolVersion.V3_3;
 import static org.openhab.binding.tuya.internal.local.ProtocolVersion.V3_4;
 import static org.openhab.binding.tuya.internal.local.TuyaDevice.*;
-import static org.openhab.binding.tuya.internal.local.TuyaDevice.SESSION_KEY_ATTR;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -112,8 +111,7 @@ public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
 
             String json = gson.toJson(payload);
             payloadBytes = json.getBytes(StandardCharsets.UTF_8);
-        } else if (msg.content instanceof byte[]) {
-            byte[] contentBytes = Objects.requireNonNull((byte[]) msg.content);
+        } else if (msg.content instanceof byte[] contentBytes) {
             if (logger.isDebugEnabled()) {
                 logger.debug("{}{}: Sending payload {}", deviceId,
                         Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""),

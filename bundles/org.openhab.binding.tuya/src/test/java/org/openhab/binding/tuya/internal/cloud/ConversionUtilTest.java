@@ -59,6 +59,6 @@ public class ConversionUtilTest extends JavaTest {
         HSBType hsb = new HSBType("240,100,50");
         String hex = ConversionUtil.hexColorEncode(hsb, true);
 
-        Assertions.assertEquals("00007f00f0fe7f", hex);
+        Assertions.assertEquals("00008000f0fe7f", hex);
     }
 }

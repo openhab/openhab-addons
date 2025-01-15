@@ -16,6 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -46,6 +47,7 @@ public class CryptoUtilTest {
         byte[] deviceKey = "5c8c3ccc1f0fbdbb".getBytes(StandardCharsets.UTF_8);
         byte[] localKey = HexUtils.hexToBytes("2F4311CF69649F40166D4B98E7F9ABAA");
         byte[] hmac = CryptoUtil.hmac(localKey, deviceKey);
-        // assertThat(HexUtils.bytesToHex(Objects.requireNonNull(hmac)), is(""));
+        assertThat(HexUtils.bytesToHex(Objects.requireNonNull(hmac)),
+                is("31FE0A4FEBB62025703E825E6867BA40AB91BD1F37D765A5396683BB97FC9C7F"));
     }
 }

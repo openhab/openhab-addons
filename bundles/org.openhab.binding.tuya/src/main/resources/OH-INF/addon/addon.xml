@@ -6,6 +6,6 @@
 	<type>binding</type>
 	<name>Tuya Binding</name>
 	<description>This is the binding for Tuya.</description>
-	<connection>local</connection>
+	<connection>hybrid</connection>
 
 </addon:addon>

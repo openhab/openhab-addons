@@ -18,7 +18,7 @@ import java.util.Arrays;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ProtocolVersion} maps the protocol version String to
+ * The {@link ProtocolVersion} maps the protocol version String to a an enum value
  *
  * @author Jan N. Klug - Initial contribution
  */

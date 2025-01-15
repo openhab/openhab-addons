@@ -44,7 +44,6 @@ Select "IoT Core", "Authorization" and "Device Status Notification" as APIs.
 Write down (or copy) "Access ID/Client ID" and "Access Secret/Client Secret" (you can always look it up in your account).
 - In the upper menu bar, select the "Devices" tab, then go to "Link Tuya App Account" and link you App account.
 
-
 The next steps are performed in openHAB's Main UI:
 
 Add a `project` and enter your credentials (`username`/`password`, from the app - not your cloud account!) and the cloud project credentials (`accessId`/`accessSecret`).
@@ -182,6 +181,7 @@ If type of channel `ir-code` is **_Tuya DIY-mode_** you will see a type of code 
 Pressing buttons and copying codes, then assign codes with Item which control device (adjust State Description and Command Options you want).
 
 After receiving the key code, the learning mode automatically continues until you send command `study_exit` or send key code by Item with code
+
 ## Troubleshooting
 
 - If the `project` thing is not coming `ONLINE` check if you see your devices in the cloud-account on `iot.tuya.com`.

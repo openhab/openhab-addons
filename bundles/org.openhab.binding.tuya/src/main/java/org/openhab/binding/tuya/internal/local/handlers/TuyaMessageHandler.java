@@ -89,8 +89,7 @@ public class TuyaMessageHandler extends ChannelDuplexHandler {
         if (msg instanceof MessageWrapper<?> m) {
             if (m.commandType == CommandType.DP_QUERY || m.commandType == CommandType.STATUS) {
                 Map<Integer, Object> stateMap = null;
-                if (m.content instanceof TcpStatusPayload) {
-                    TcpStatusPayload payload = (TcpStatusPayload) Objects.requireNonNull(m.content);
+                if (m.content instanceof TcpStatusPayload payload) {
                     stateMap = payload.protocol == 4 ? payload.data.dps : payload.dps;
                 }
 

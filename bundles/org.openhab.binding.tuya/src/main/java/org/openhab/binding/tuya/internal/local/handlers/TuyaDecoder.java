@@ -96,11 +96,11 @@ public class TuyaDecoder extends ByteToMessageDecoder {
 
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         int prefix = buffer.getInt();
-        int sequenceNumber = buffer.getInt();
+        // this method call is necessary to correctly move the pointer within the buffer.
+        buffer.getInt();
         CommandType commandType = CommandType.fromCode(buffer.getInt());
         int payloadLength = buffer.getInt();
 
-        //
         if (buffer.limit() < payloadLength + 16) {
             // there are less bytes than needed, exit early
             logger.trace("Did not receive enough bytes from '{}', exiting early", deviceId);

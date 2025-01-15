@@ -44,8 +44,7 @@ public class DiscoveryMessageHandler extends ChannelDuplexHandler {
     @Override
     public void channelRead(@NonNullByDefault({}) ChannelHandlerContext ctx, @NonNullByDefault({}) Object msg)
             throws Exception {
-        if (msg instanceof MessageWrapper<?>) {
-            MessageWrapper<?> messageWrapper = (MessageWrapper<?>) msg;
+        if (msg instanceof MessageWrapper<?> messageWrapper) {
             if ((messageWrapper.commandType == CommandType.UDP_NEW || messageWrapper.commandType == CommandType.UDP
                     || messageWrapper.commandType == CommandType.BROADCAST_LPV34)) {
                 DiscoveryMessage discoveryMessage = (DiscoveryMessage) Objects.requireNonNull(messageWrapper.content);
