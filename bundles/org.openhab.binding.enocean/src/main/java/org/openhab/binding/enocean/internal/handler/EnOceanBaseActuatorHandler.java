@@ -209,7 +209,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                             logger.debug("Elatko FSB14 will operate in blinds mode");
                             break;
                     }
-                    logger.info("STM initialized");
+                    logger.debug("STM initialized");
                 }
             }
 
