@@ -70,7 +70,7 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public TuyaHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
-            @Reference StorageService storageService) {
+            @Reference StorageService storageService) throws InterruptedException {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.dynamicCommandDescriptionProvider = dynamicCommandDescriptionProvider;
         this.eventLoopGroup = new NioEventLoopGroup();

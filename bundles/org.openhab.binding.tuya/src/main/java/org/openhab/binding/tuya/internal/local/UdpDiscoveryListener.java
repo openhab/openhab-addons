@@ -60,42 +60,36 @@ public class UdpDiscoveryListener implements ChannelFutureListener {
     private final EventLoopGroup group;
     private boolean deactivate = false;
 
-    public UdpDiscoveryListener(EventLoopGroup group) {
+    public UdpDiscoveryListener(EventLoopGroup group) throws InterruptedException {
         this.group = group;
         activate();
     }
 
-    private void activate() {
-        try {
-            Bootstrap b = new Bootstrap();
-            b.group(group).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, true)
-                    .handler(new ChannelInitializer<DatagramChannel>() {
-                        @Override
-                        protected void initChannel(DatagramChannel ch) throws Exception {
-                            ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast("udpDecoder", new DatagramToByteBufDecoder());
-                            pipeline.addLast("messageDecoder", new TuyaDecoder(gson));
-                            pipeline.addLast("discoveryHandler",
-                                    new DiscoveryMessageHandler(deviceInfos, deviceListeners));
-                            pipeline.addLast("userEventHandler", new UserEventHandler());
-                        }
-                    });
+    private void activate() throws InterruptedException {
+        Bootstrap b = new Bootstrap();
+        b.group(group).channel(NioDatagramChannel.class).option(ChannelOption.SO_BROADCAST, true)
+                .handler(new ChannelInitializer<DatagramChannel>() {
+                    @Override
+                    protected void initChannel(DatagramChannel ch) throws Exception {
+                        ChannelPipeline pipeline = ch.pipeline();
+                        pipeline.addLast("udpDecoder", new DatagramToByteBufDecoder());
+                        pipeline.addLast("messageDecoder", new TuyaDecoder(gson));
+                        pipeline.addLast("discoveryHandler", new DiscoveryMessageHandler(deviceInfos, deviceListeners));
+                        pipeline.addLast("userEventHandler", new UserEventHandler());
+                    }
+                });
 
-            ChannelFuture futureEncrypted = b.bind(6667).addListener(this).sync();
-            encryptedChannel = futureEncrypted.channel();
-            encryptedChannel.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
-            encryptedChannel.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_1);
-            encryptedChannel.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
+        ChannelFuture futureEncrypted = b.bind(6667).addListener(this).sync();
+        encryptedChannel = futureEncrypted.channel();
+        encryptedChannel.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
+        encryptedChannel.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_1);
+        encryptedChannel.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
 
-            ChannelFuture futureRaw = b.bind(6666).addListener(this).sync();
-            rawChannel = futureRaw.channel();
-            rawChannel.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
-            rawChannel.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_1);
-            rawChannel.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
-
-        } catch (InterruptedException e) {
-            throw new IllegalStateException(e);
-        }
+        ChannelFuture futureRaw = b.bind(6666).addListener(this).sync();
+        rawChannel = futureRaw.channel();
+        rawChannel.attr(TuyaDevice.DEVICE_ID_ATTR).set("udpListener");
+        rawChannel.attr(TuyaDevice.PROTOCOL_ATTR).set(ProtocolVersion.V3_1);
+        rawChannel.attr(TuyaDevice.SESSION_KEY_ATTR).set(TUYA_UDP_KEY);
     }
 
     public void deactivate() {
