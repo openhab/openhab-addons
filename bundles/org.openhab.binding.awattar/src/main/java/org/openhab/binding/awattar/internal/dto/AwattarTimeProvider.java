@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.i18n.TimeZoneProvider;
 
 /**
- *
  * The {@link AwattarTimeProvider} provides a time provider for aWATTar
  *
  * @author Thomas Leber - Initial contribution
