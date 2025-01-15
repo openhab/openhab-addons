@@ -26,6 +26,483 @@ public final class VehicleEvents {
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   /**
+   * Protobuf enum {@code proto.ChargeFlapsPositionState}
+   */
+  public enum ChargeFlapsPositionState
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>CHARGE_FLAPS_POSITION_STATE_DEFAULT = 0;</code>
+     */
+    CHARGE_FLAPS_POSITION_STATE_DEFAULT(0),
+    /**
+     * <code>CHARGE_FLAPS_POSITION_STATE_OPEN = 1;</code>
+     */
+    CHARGE_FLAPS_POSITION_STATE_OPEN(1),
+    /**
+     * <code>CHARGE_FLAPS_POSITION_STATE_CLOSED = 2;</code>
+     */
+    CHARGE_FLAPS_POSITION_STATE_CLOSED(2),
+    /**
+     * <code>CHARGE_FLAPS_POSITION_STATE_FLAP_PRESSED = 3;</code>
+     */
+    CHARGE_FLAPS_POSITION_STATE_FLAP_PRESSED(3),
+    /**
+     * <code>CHARGE_FLAPS_POSITION_STATE_UNKNOWN = 4;</code>
+     */
+    CHARGE_FLAPS_POSITION_STATE_UNKNOWN(4),
+    UNRECOGNIZED(-1),
+    ;
+
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargeFlapsPositionState.class.getName());
+    }
+    /**
+     * <code>CHARGE_FLAPS_POSITION_STATE_DEFAULT = 0;</code>
+     */
+    public static final int CHARGE_FLAPS_POSITION_STATE_DEFAULT_VALUE = 0;
+    /**
+     * <code>CHARGE_FLAPS_POSITION_STATE_OPEN = 1;</code>
+     */
+    public static final int CHARGE_FLAPS_POSITION_STATE_OPEN_VALUE = 1;
+    /**
+     * <code>CHARGE_FLAPS_POSITION_STATE_CLOSED = 2;</code>
+     */
+    public static final int CHARGE_FLAPS_POSITION_STATE_CLOSED_VALUE = 2;
+    /**
+     * <code>CHARGE_FLAPS_POSITION_STATE_FLAP_PRESSED = 3;</code>
+     */
+    public static final int CHARGE_FLAPS_POSITION_STATE_FLAP_PRESSED_VALUE = 3;
+    /**
+     * <code>CHARGE_FLAPS_POSITION_STATE_UNKNOWN = 4;</code>
+     */
+    public static final int CHARGE_FLAPS_POSITION_STATE_UNKNOWN_VALUE = 4;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static ChargeFlapsPositionState valueOf(int value) {
+      return forNumber(value);
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
+    public static ChargeFlapsPositionState forNumber(int value) {
+      switch (value) {
+        case 0: return CHARGE_FLAPS_POSITION_STATE_DEFAULT;
+        case 1: return CHARGE_FLAPS_POSITION_STATE_OPEN;
+        case 2: return CHARGE_FLAPS_POSITION_STATE_CLOSED;
+        case 3: return CHARGE_FLAPS_POSITION_STATE_FLAP_PRESSED;
+        case 4: return CHARGE_FLAPS_POSITION_STATE_UNKNOWN;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<ChargeFlapsPositionState>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        ChargeFlapsPositionState> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<ChargeFlapsPositionState>() {
+            public ChargeFlapsPositionState findValueByNumber(int number) {
+              return ChargeFlapsPositionState.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.getDescriptor().getEnumTypes().get(0);
+    }
+
+    private static final ChargeFlapsPositionState[] VALUES = values();
+
+    public static ChargeFlapsPositionState valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private ChargeFlapsPositionState(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:proto.ChargeFlapsPositionState)
+  }
+
+  /**
+   * Protobuf enum {@code proto.ChargingPowerRestriction}
+   */
+  public enum ChargingPowerRestriction
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_NO_RESTRICTION = 0;</code>
+     */
+    CHARGING_POWER_RESTRICTION_NO_RESTRICTION(0),
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_ECO_CHARGING_ACTIVE = 1;</code>
+     */
+    CHARGING_POWER_RESTRICTION_ECO_CHARGING_ACTIVE(1),
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CUSTOMER_SETTING = 2;</code>
+     */
+    CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CUSTOMER_SETTING(2),
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_VEHICLE_CHARGING_SYSTEM = 3;</code>
+     */
+    CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_VEHICLE_CHARGING_SYSTEM(3),
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_REMOTE_CONTROL = 4;</code>
+     */
+    CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_REMOTE_CONTROL(4),
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CHARGING_INFRASTRUCTURE = 5;</code>
+     */
+    CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CHARGING_INFRASTRUCTURE(5),
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CHARGING_STRATEGY = 6;</code>
+     */
+    CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CHARGING_STRATEGY(6),
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_LOW = 7;</code>
+     */
+    CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_LOW(7),
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_HIGH = 8;</code>
+     */
+    CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_HIGH(8),
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_BATTERY_TEMPERATURE_TOO_LOW = 9;</code>
+     */
+    CHARGING_POWER_RESTRICTION_BATTERY_TEMPERATURE_TOO_LOW(9),
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_BATTERY_TEMPERATURE_TOO_HIGH = 10;</code>
+     */
+    CHARGING_POWER_RESTRICTION_BATTERY_TEMPERATURE_TOO_HIGH(10),
+    UNRECOGNIZED(-1),
+    ;
+
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargingPowerRestriction.class.getName());
+    }
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_NO_RESTRICTION = 0;</code>
+     */
+    public static final int CHARGING_POWER_RESTRICTION_NO_RESTRICTION_VALUE = 0;
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_ECO_CHARGING_ACTIVE = 1;</code>
+     */
+    public static final int CHARGING_POWER_RESTRICTION_ECO_CHARGING_ACTIVE_VALUE = 1;
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CUSTOMER_SETTING = 2;</code>
+     */
+    public static final int CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CUSTOMER_SETTING_VALUE = 2;
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_VEHICLE_CHARGING_SYSTEM = 3;</code>
+     */
+    public static final int CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_VEHICLE_CHARGING_SYSTEM_VALUE = 3;
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_REMOTE_CONTROL = 4;</code>
+     */
+    public static final int CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_REMOTE_CONTROL_VALUE = 4;
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CHARGING_INFRASTRUCTURE = 5;</code>
+     */
+    public static final int CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CHARGING_INFRASTRUCTURE_VALUE = 5;
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CHARGING_STRATEGY = 6;</code>
+     */
+    public static final int CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CHARGING_STRATEGY_VALUE = 6;
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_LOW = 7;</code>
+     */
+    public static final int CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_LOW_VALUE = 7;
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_HIGH = 8;</code>
+     */
+    public static final int CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_HIGH_VALUE = 8;
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_BATTERY_TEMPERATURE_TOO_LOW = 9;</code>
+     */
+    public static final int CHARGING_POWER_RESTRICTION_BATTERY_TEMPERATURE_TOO_LOW_VALUE = 9;
+    /**
+     * <code>CHARGING_POWER_RESTRICTION_BATTERY_TEMPERATURE_TOO_HIGH = 10;</code>
+     */
+    public static final int CHARGING_POWER_RESTRICTION_BATTERY_TEMPERATURE_TOO_HIGH_VALUE = 10;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static ChargingPowerRestriction valueOf(int value) {
+      return forNumber(value);
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
+    public static ChargingPowerRestriction forNumber(int value) {
+      switch (value) {
+        case 0: return CHARGING_POWER_RESTRICTION_NO_RESTRICTION;
+        case 1: return CHARGING_POWER_RESTRICTION_ECO_CHARGING_ACTIVE;
+        case 2: return CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CUSTOMER_SETTING;
+        case 3: return CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_VEHICLE_CHARGING_SYSTEM;
+        case 4: return CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_REMOTE_CONTROL;
+        case 5: return CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CHARGING_INFRASTRUCTURE;
+        case 6: return CHARGING_POWER_RESTRICTION_REDUCED_DUE_TO_CHARGING_STRATEGY;
+        case 7: return CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_LOW;
+        case 8: return CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_HIGH;
+        case 9: return CHARGING_POWER_RESTRICTION_BATTERY_TEMPERATURE_TOO_LOW;
+        case 10: return CHARGING_POWER_RESTRICTION_BATTERY_TEMPERATURE_TOO_HIGH;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<ChargingPowerRestriction>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        ChargingPowerRestriction> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<ChargingPowerRestriction>() {
+            public ChargingPowerRestriction findValueByNumber(int number) {
+              return ChargingPowerRestriction.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.getDescriptor().getEnumTypes().get(1);
+    }
+
+    private static final ChargingPowerRestriction[] VALUES = values();
+
+    public static ChargingPowerRestriction valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private ChargingPowerRestriction(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:proto.ChargingPowerRestriction)
+  }
+
+  /**
+   * Protobuf enum {@code proto.PrecondStateType}
+   */
+  public enum PrecondStateType
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>PRECOND_STATE_TYPE_ON_UNLOCK = 0;</code>
+     */
+    PRECOND_STATE_TYPE_ON_UNLOCK(0),
+    /**
+     * <code>PRECOND_STATE_TYPE_AT_DEPARTURE_TIME = 1;</code>
+     */
+    PRECOND_STATE_TYPE_AT_DEPARTURE_TIME(1),
+    /**
+     * <code>PRECOND_STATE_TYPE_IMMEDIATE = 2;</code>
+     */
+    PRECOND_STATE_TYPE_IMMEDIATE(2),
+    /**
+     * <code>PRECOND_STATE_TYPE_CHILD_PRESENCE_DETECTION = 3;</code>
+     */
+    PRECOND_STATE_TYPE_CHILD_PRESENCE_DETECTION(3),
+    UNRECOGNIZED(-1),
+    ;
+
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        PrecondStateType.class.getName());
+    }
+    /**
+     * <code>PRECOND_STATE_TYPE_ON_UNLOCK = 0;</code>
+     */
+    public static final int PRECOND_STATE_TYPE_ON_UNLOCK_VALUE = 0;
+    /**
+     * <code>PRECOND_STATE_TYPE_AT_DEPARTURE_TIME = 1;</code>
+     */
+    public static final int PRECOND_STATE_TYPE_AT_DEPARTURE_TIME_VALUE = 1;
+    /**
+     * <code>PRECOND_STATE_TYPE_IMMEDIATE = 2;</code>
+     */
+    public static final int PRECOND_STATE_TYPE_IMMEDIATE_VALUE = 2;
+    /**
+     * <code>PRECOND_STATE_TYPE_CHILD_PRESENCE_DETECTION = 3;</code>
+     */
+    public static final int PRECOND_STATE_TYPE_CHILD_PRESENCE_DETECTION_VALUE = 3;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static PrecondStateType valueOf(int value) {
+      return forNumber(value);
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
+    public static PrecondStateType forNumber(int value) {
+      switch (value) {
+        case 0: return PRECOND_STATE_TYPE_ON_UNLOCK;
+        case 1: return PRECOND_STATE_TYPE_AT_DEPARTURE_TIME;
+        case 2: return PRECOND_STATE_TYPE_IMMEDIATE;
+        case 3: return PRECOND_STATE_TYPE_CHILD_PRESENCE_DETECTION;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<PrecondStateType>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        PrecondStateType> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<PrecondStateType>() {
+            public PrecondStateType findValueByNumber(int number) {
+              return PrecondStateType.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.getDescriptor().getEnumTypes().get(2);
+    }
+
+    private static final PrecondStateType[] VALUES = values();
+
+    public static PrecondStateType valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private PrecondStateType(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:proto.PrecondStateType)
+  }
+
+  /**
    * Protobuf enum {@code proto.ChargeProgram}
    */
   public enum ChargeProgram
@@ -134,7 +611,7 @@ public final class VehicleEvents {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return com.daimler.mbcarkit.proto.VehicleEvents.getDescriptor().getEnumTypes().get(0);
+      return com.daimler.mbcarkit.proto.VehicleEvents.getDescriptor().getEnumTypes().get(3);
     }
 
     private static final ChargeProgram[] VALUES = values();
@@ -307,7 +784,7 @@ public final class VehicleEvents {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return com.daimler.mbcarkit.proto.VehicleEvents.getDescriptor().getEnumTypes().get(1);
+      return com.daimler.mbcarkit.proto.VehicleEvents.getDescriptor().getEnumTypes().get(4);
     }
 
     private static final AttributeStatus[] VALUES = values();
@@ -331,6 +808,150 @@ public final class VehicleEvents {
     }
 
     // @@protoc_insertion_point(enum_scope:proto.AttributeStatus)
+  }
+
+  /**
+   * Protobuf enum {@code proto.Scope}
+   */
+  public enum Scope
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>USER = 0;</code>
+     */
+    USER(0),
+    /**
+     * <code>ONBOARD_FENCES = 1;</code>
+     */
+    ONBOARD_FENCES(1),
+    /**
+     * <code>USER_PIN = 3;</code>
+     */
+    USER_PIN(3),
+    /**
+     * <code>SERVICE_PREREQUISITE = 4;</code>
+     */
+    SERVICE_PREREQUISITE(4),
+    /**
+     * <code>USER_PROFILE_PICTURE = 5;</code>
+     */
+    USER_PROFILE_PICTURE(5),
+    UNRECOGNIZED(-1),
+    ;
+
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        Scope.class.getName());
+    }
+    /**
+     * <code>USER = 0;</code>
+     */
+    public static final int USER_VALUE = 0;
+    /**
+     * <code>ONBOARD_FENCES = 1;</code>
+     */
+    public static final int ONBOARD_FENCES_VALUE = 1;
+    /**
+     * <code>USER_PIN = 3;</code>
+     */
+    public static final int USER_PIN_VALUE = 3;
+    /**
+     * <code>SERVICE_PREREQUISITE = 4;</code>
+     */
+    public static final int SERVICE_PREREQUISITE_VALUE = 4;
+    /**
+     * <code>USER_PROFILE_PICTURE = 5;</code>
+     */
+    public static final int USER_PROFILE_PICTURE_VALUE = 5;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static Scope valueOf(int value) {
+      return forNumber(value);
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
+    public static Scope forNumber(int value) {
+      switch (value) {
+        case 0: return USER;
+        case 1: return ONBOARD_FENCES;
+        case 3: return USER_PIN;
+        case 4: return SERVICE_PREREQUISITE;
+        case 5: return USER_PROFILE_PICTURE;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<Scope>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        Scope> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<Scope>() {
+            public Scope findValueByNumber(int number) {
+              return Scope.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.getDescriptor().getEnumTypes().get(5);
+    }
+
+    private static final Scope[] VALUES = values();
+
+    public static Scope valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private Scope(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:proto.Scope)
   }
 
   public interface VEPUpdateOrBuilder extends
@@ -1636,7 +2257,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
      *
      * <code>int64 timestamp = 1 [deprecated = true];</code>
      * @deprecated proto.VehicleAttributeStatus.timestamp is deprecated.
-     *     See vehicle-events.proto;l=38
+     *     See vehicle-events.proto;l=39
      * @return The timestamp.
      */
     @java.lang.Deprecated long getTimestamp();
@@ -1765,7 +2386,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
      *
      * <code>.proto.VehicleAttributeStatus.SpeedDistanceUnit speed_distance_unit = 15 [deprecated = true];</code>
      * @deprecated proto.VehicleAttributeStatus.speed_distance_unit is deprecated.
-     *     See vehicle-events.proto;l=141
+     *     See vehicle-events.proto;l=173
      * @return Whether the speedDistanceUnit field is set.
      */
     @java.lang.Deprecated boolean hasSpeedDistanceUnit();
@@ -1776,7 +2397,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
      *
      * <code>.proto.VehicleAttributeStatus.SpeedDistanceUnit speed_distance_unit = 15 [deprecated = true];</code>
      * @deprecated proto.VehicleAttributeStatus.speed_distance_unit is deprecated.
-     *     See vehicle-events.proto;l=141
+     *     See vehicle-events.proto;l=173
      * @return The enum numeric value on the wire for speedDistanceUnit.
      */
     @java.lang.Deprecated int getSpeedDistanceUnitValue();
@@ -1787,7 +2408,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
      *
      * <code>.proto.VehicleAttributeStatus.SpeedDistanceUnit speed_distance_unit = 15 [deprecated = true];</code>
      * @deprecated proto.VehicleAttributeStatus.speed_distance_unit is deprecated.
-     *     See vehicle-events.proto;l=141
+     *     See vehicle-events.proto;l=173
      * @return The speedDistanceUnit.
      */
     @java.lang.Deprecated com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.SpeedDistanceUnit getSpeedDistanceUnit();
@@ -2100,6 +2721,218 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
      * <code>.proto.ChargeProgramsValue charge_programs_value = 31;</code>
      */
     com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValueOrBuilder getChargeProgramsValueOrBuilder();
+
+    /**
+     * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+     * @return Whether the chargingbreakClocktimerValue field is set.
+     */
+    boolean hasChargingbreakClocktimerValue();
+    /**
+     * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+     * @return The chargingbreakClocktimerValue.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue getChargingbreakClocktimerValue();
+    /**
+     * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValueOrBuilder getChargingbreakClocktimerValueOrBuilder();
+
+    /**
+     * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+     * @return Whether the chargingPowerControl field is set.
+     */
+    boolean hasChargingPowerControl();
+    /**
+     * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+     * @return The chargingPowerControl.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl getChargingPowerControl();
+    /**
+     * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControlOrBuilder getChargingPowerControlOrBuilder();
+
+    /**
+     * <code>.proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;</code>
+     * @return Whether the tcuConnectionStateLowChannel field is set.
+     */
+    boolean hasTcuConnectionStateLowChannel();
+    /**
+     * <code>.proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;</code>
+     * @return The enum numeric value on the wire for tcuConnectionStateLowChannel.
+     */
+    int getTcuConnectionStateLowChannelValue();
+    /**
+     * <code>.proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;</code>
+     * @return The tcuConnectionStateLowChannel.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus getTcuConnectionStateLowChannel();
+
+    /**
+     * <code>.proto.PrecondState precond_state = 44;</code>
+     * @return Whether the precondState field is set.
+     */
+    boolean hasPrecondState();
+    /**
+     * <code>.proto.PrecondState precond_state = 44;</code>
+     * @return The precondState.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.PrecondState getPrecondState();
+    /**
+     * <code>.proto.PrecondState precond_state = 44;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateOrBuilder getPrecondStateOrBuilder();
+
+    /**
+     * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+     * @return Whether the chargingPowerRestrictions field is set.
+     */
+    boolean hasChargingPowerRestrictions();
+    /**
+     * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+     * @return The chargingPowerRestrictions.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions getChargingPowerRestrictions();
+    /**
+     * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictionsOrBuilder getChargingPowerRestrictionsOrBuilder();
+
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingCouplerErrorDetails charging_coupler_error_details = 56;</code>
+     * @return Whether the chargingCouplerErrorDetails field is set.
+     */
+    boolean hasChargingCouplerErrorDetails();
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingCouplerErrorDetails charging_coupler_error_details = 56;</code>
+     * @return The enum numeric value on the wire for chargingCouplerErrorDetails.
+     */
+    int getChargingCouplerErrorDetailsValue();
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingCouplerErrorDetails charging_coupler_error_details = 56;</code>
+     * @return The chargingCouplerErrorDetails.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingCouplerErrorDetails getChargingCouplerErrorDetails();
+
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;</code>
+     * @return Whether the chargingErrorVehicleNoSupport400v field is set.
+     */
+    boolean hasChargingErrorVehicleNoSupport400V();
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;</code>
+     * @return The enum numeric value on the wire for chargingErrorVehicleNoSupport400v.
+     */
+    int getChargingErrorVehicleNoSupport400VValue();
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;</code>
+     * @return The chargingErrorVehicleNoSupport400v.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V getChargingErrorVehicleNoSupport400V();
+
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;</code>
+     * @return Whether the chargingErrorImpossibleChangeTo400v field is set.
+     */
+    boolean hasChargingErrorImpossibleChangeTo400V();
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;</code>
+     * @return The enum numeric value on the wire for chargingErrorImpossibleChangeTo400v.
+     */
+    int getChargingErrorImpossibleChangeTo400VValue();
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;</code>
+     * @return The chargingErrorImpossibleChangeTo400v.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V getChargingErrorImpossibleChangeTo400V();
+
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;</code>
+     * @return Whether the chargingErrorImpossibleChangeTo800v field is set.
+     */
+    boolean hasChargingErrorImpossibleChangeTo800V();
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;</code>
+     * @return The enum numeric value on the wire for chargingErrorImpossibleChangeTo800v.
+     */
+    int getChargingErrorImpossibleChangeTo800VValue();
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;</code>
+     * @return The chargingErrorImpossibleChangeTo800v.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V getChargingErrorImpossibleChangeTo800V();
+
+    /**
+     * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+     * @return Whether the chargingPredictionSoc field is set.
+     */
+    boolean hasChargingPredictionSoc();
+    /**
+     * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+     * @return The chargingPredictionSoc.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc getChargingPredictionSoc();
+    /**
+     * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSocOrBuilder getChargingPredictionSocOrBuilder();
+
+    /**
+     * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+     * @return Whether the chargingPredictionDepartureTime field is set.
+     */
+    boolean hasChargingPredictionDepartureTime();
+    /**
+     * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+     * @return The chargingPredictionDepartureTime.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime getChargingPredictionDepartureTime();
+    /**
+     * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTimeOrBuilder getChargingPredictionDepartureTimeOrBuilder();
+
+    /**
+     * <pre>
+     * ChargingScheduleActive charging_schedule_active = 82;
+     * </pre>
+     *
+     * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+     * @return Whether the chargeFlaps field is set.
+     */
+    boolean hasChargeFlaps();
+    /**
+     * <pre>
+     * ChargingScheduleActive charging_schedule_active = 82;
+     * </pre>
+     *
+     * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+     * @return The chargeFlaps.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps getChargeFlaps();
+    /**
+     * <pre>
+     * ChargingScheduleActive charging_schedule_active = 82;
+     * </pre>
+     *
+     * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsOrBuilder getChargeFlapsOrBuilder();
+
+    /**
+     * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+     * @return Whether the chargeInlets field is set.
+     */
+    boolean hasChargeInlets();
+    /**
+     * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+     * @return The chargeInlets.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets getChargeInlets();
+    /**
+     * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsOrBuilder getChargeInletsOrBuilder();
 
     com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.DisplayUnitCase getDisplayUnitCase();
 
@@ -3615,6 +4448,645 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
       // @@protoc_insertion_point(enum_scope:proto.VehicleAttributeStatus.ClockHourUnit)
     }
 
+    /**
+     * Protobuf enum {@code proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus}
+     */
+    public enum TcuConnectionStateLowChannelStatus
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>UNKNOWN_TCU_CONNECTION_STATE = 0;</code>
+       */
+      UNKNOWN_TCU_CONNECTION_STATE(0),
+      /**
+       * <code>INITIALLY_CONNECTED = 1;</code>
+       */
+      INITIALLY_CONNECTED(1),
+      /**
+       * <code>RECONNECTED = 2;</code>
+       */
+      RECONNECTED(2),
+      /**
+       * <code>DISCONNECTED = 3;</code>
+       */
+      DISCONNECTED(3),
+      /**
+       * <code>UNPLANNED_DISCONNECTED = 4;</code>
+       */
+      UNPLANNED_DISCONNECTED(4),
+      UNRECOGNIZED(-1),
+      ;
+
+      static {
+        com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+          com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+          /* major= */ 4,
+          /* minor= */ 27,
+          /* patch= */ 5,
+          /* suffix= */ "",
+          TcuConnectionStateLowChannelStatus.class.getName());
+      }
+      /**
+       * <code>UNKNOWN_TCU_CONNECTION_STATE = 0;</code>
+       */
+      public static final int UNKNOWN_TCU_CONNECTION_STATE_VALUE = 0;
+      /**
+       * <code>INITIALLY_CONNECTED = 1;</code>
+       */
+      public static final int INITIALLY_CONNECTED_VALUE = 1;
+      /**
+       * <code>RECONNECTED = 2;</code>
+       */
+      public static final int RECONNECTED_VALUE = 2;
+      /**
+       * <code>DISCONNECTED = 3;</code>
+       */
+      public static final int DISCONNECTED_VALUE = 3;
+      /**
+       * <code>UNPLANNED_DISCONNECTED = 4;</code>
+       */
+      public static final int UNPLANNED_DISCONNECTED_VALUE = 4;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static TcuConnectionStateLowChannelStatus valueOf(int value) {
+        return forNumber(value);
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
+      public static TcuConnectionStateLowChannelStatus forNumber(int value) {
+        switch (value) {
+          case 0: return UNKNOWN_TCU_CONNECTION_STATE;
+          case 1: return INITIALLY_CONNECTED;
+          case 2: return RECONNECTED;
+          case 3: return DISCONNECTED;
+          case 4: return UNPLANNED_DISCONNECTED;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<TcuConnectionStateLowChannelStatus>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          TcuConnectionStateLowChannelStatus> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<TcuConnectionStateLowChannelStatus>() {
+              public TcuConnectionStateLowChannelStatus findValueByNumber(int number) {
+                return TcuConnectionStateLowChannelStatus.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.getDescriptor().getEnumTypes().get(10);
+      }
+
+      private static final TcuConnectionStateLowChannelStatus[] VALUES = values();
+
+      public static TcuConnectionStateLowChannelStatus valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private TcuConnectionStateLowChannelStatus(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus)
+    }
+
+    /**
+     * Protobuf enum {@code proto.VehicleAttributeStatus.ChargingCouplerErrorDetails}
+     */
+    public enum ChargingCouplerErrorDetails
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>CHARING_COUPLER_ERROR_DETAILS_NO_INFO_OR_ERROR_MESSAGE = 0;</code>
+       */
+      CHARING_COUPLER_ERROR_DETAILS_NO_INFO_OR_ERROR_MESSAGE(0),
+      /**
+       * <code>CHARING_COUPLER_ERROR_DETAILS_RELIEVE_CHARGE_COUPLER_AND_RETRY = 1;</code>
+       */
+      CHARING_COUPLER_ERROR_DETAILS_RELIEVE_CHARGE_COUPLER_AND_RETRY(1),
+      /**
+       * <code>CHARING_COUPLER_ERROR_DETAILS_CONTACT_SERVICE_HOTLINE_FOR_EMERGENCY_UNLOCK = 2;</code>
+       */
+      CHARING_COUPLER_ERROR_DETAILS_CONTACT_SERVICE_HOTLINE_FOR_EMERGENCY_UNLOCK(2),
+      /**
+       * <code>CHARING_COUPLER_ERROR_DETAILS_UNPLUG_AND_REPLUG_CHARGE_COUPLER = 3;</code>
+       */
+      CHARING_COUPLER_ERROR_DETAILS_UNPLUG_AND_REPLUG_CHARGE_COUPLER(3),
+      /**
+       * <code>CHARING_COUPLER_ERROR_DETAILS_CHARGE_COUPLER_LOCK_DEFECT = 4;</code>
+       */
+      CHARING_COUPLER_ERROR_DETAILS_CHARGE_COUPLER_LOCK_DEFECT(4),
+      UNRECOGNIZED(-1),
+      ;
+
+      static {
+        com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+          com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+          /* major= */ 4,
+          /* minor= */ 27,
+          /* patch= */ 5,
+          /* suffix= */ "",
+          ChargingCouplerErrorDetails.class.getName());
+      }
+      /**
+       * <code>CHARING_COUPLER_ERROR_DETAILS_NO_INFO_OR_ERROR_MESSAGE = 0;</code>
+       */
+      public static final int CHARING_COUPLER_ERROR_DETAILS_NO_INFO_OR_ERROR_MESSAGE_VALUE = 0;
+      /**
+       * <code>CHARING_COUPLER_ERROR_DETAILS_RELIEVE_CHARGE_COUPLER_AND_RETRY = 1;</code>
+       */
+      public static final int CHARING_COUPLER_ERROR_DETAILS_RELIEVE_CHARGE_COUPLER_AND_RETRY_VALUE = 1;
+      /**
+       * <code>CHARING_COUPLER_ERROR_DETAILS_CONTACT_SERVICE_HOTLINE_FOR_EMERGENCY_UNLOCK = 2;</code>
+       */
+      public static final int CHARING_COUPLER_ERROR_DETAILS_CONTACT_SERVICE_HOTLINE_FOR_EMERGENCY_UNLOCK_VALUE = 2;
+      /**
+       * <code>CHARING_COUPLER_ERROR_DETAILS_UNPLUG_AND_REPLUG_CHARGE_COUPLER = 3;</code>
+       */
+      public static final int CHARING_COUPLER_ERROR_DETAILS_UNPLUG_AND_REPLUG_CHARGE_COUPLER_VALUE = 3;
+      /**
+       * <code>CHARING_COUPLER_ERROR_DETAILS_CHARGE_COUPLER_LOCK_DEFECT = 4;</code>
+       */
+      public static final int CHARING_COUPLER_ERROR_DETAILS_CHARGE_COUPLER_LOCK_DEFECT_VALUE = 4;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static ChargingCouplerErrorDetails valueOf(int value) {
+        return forNumber(value);
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
+      public static ChargingCouplerErrorDetails forNumber(int value) {
+        switch (value) {
+          case 0: return CHARING_COUPLER_ERROR_DETAILS_NO_INFO_OR_ERROR_MESSAGE;
+          case 1: return CHARING_COUPLER_ERROR_DETAILS_RELIEVE_CHARGE_COUPLER_AND_RETRY;
+          case 2: return CHARING_COUPLER_ERROR_DETAILS_CONTACT_SERVICE_HOTLINE_FOR_EMERGENCY_UNLOCK;
+          case 3: return CHARING_COUPLER_ERROR_DETAILS_UNPLUG_AND_REPLUG_CHARGE_COUPLER;
+          case 4: return CHARING_COUPLER_ERROR_DETAILS_CHARGE_COUPLER_LOCK_DEFECT;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<ChargingCouplerErrorDetails>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          ChargingCouplerErrorDetails> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<ChargingCouplerErrorDetails>() {
+              public ChargingCouplerErrorDetails findValueByNumber(int number) {
+                return ChargingCouplerErrorDetails.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.getDescriptor().getEnumTypes().get(11);
+      }
+
+      private static final ChargingCouplerErrorDetails[] VALUES = values();
+
+      public static ChargingCouplerErrorDetails valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private ChargingCouplerErrorDetails(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:proto.VehicleAttributeStatus.ChargingCouplerErrorDetails)
+    }
+
+    /**
+     * Protobuf enum {@code proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V}
+     */
+    public enum ChargingErrorImpossibleChangeTo400V
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_NO_INFO = 0;</code>
+       */
+      CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_NO_INFO(0),
+      /**
+       * <code>CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_400V_IMPOSSIBLE_STUCK_TO_800V = 1;</code>
+       */
+      CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_400V_IMPOSSIBLE_STUCK_TO_800V(1),
+      UNRECOGNIZED(-1),
+      ;
+
+      static {
+        com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+          com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+          /* major= */ 4,
+          /* minor= */ 27,
+          /* patch= */ 5,
+          /* suffix= */ "",
+          ChargingErrorImpossibleChangeTo400V.class.getName());
+      }
+      /**
+       * <code>CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_NO_INFO = 0;</code>
+       */
+      public static final int CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_NO_INFO_VALUE = 0;
+      /**
+       * <code>CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_400V_IMPOSSIBLE_STUCK_TO_800V = 1;</code>
+       */
+      public static final int CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_400V_IMPOSSIBLE_STUCK_TO_800V_VALUE = 1;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static ChargingErrorImpossibleChangeTo400V valueOf(int value) {
+        return forNumber(value);
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
+      public static ChargingErrorImpossibleChangeTo400V forNumber(int value) {
+        switch (value) {
+          case 0: return CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_NO_INFO;
+          case 1: return CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_400V_IMPOSSIBLE_STUCK_TO_800V;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<ChargingErrorImpossibleChangeTo400V>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          ChargingErrorImpossibleChangeTo400V> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<ChargingErrorImpossibleChangeTo400V>() {
+              public ChargingErrorImpossibleChangeTo400V findValueByNumber(int number) {
+                return ChargingErrorImpossibleChangeTo400V.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.getDescriptor().getEnumTypes().get(12);
+      }
+
+      private static final ChargingErrorImpossibleChangeTo400V[] VALUES = values();
+
+      public static ChargingErrorImpossibleChangeTo400V valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private ChargingErrorImpossibleChangeTo400V(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V)
+    }
+
+    /**
+     * Protobuf enum {@code proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V}
+     */
+    public enum ChargingErrorImpossibleChangeTo800V
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_NO_INFO = 0;</code>
+       */
+      CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_NO_INFO(0),
+      /**
+       * <code>CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_800V_IMPOSSIBLE_STUCK_TO_400V = 1;</code>
+       */
+      CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_800V_IMPOSSIBLE_STUCK_TO_400V(1),
+      UNRECOGNIZED(-1),
+      ;
+
+      static {
+        com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+          com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+          /* major= */ 4,
+          /* minor= */ 27,
+          /* patch= */ 5,
+          /* suffix= */ "",
+          ChargingErrorImpossibleChangeTo800V.class.getName());
+      }
+      /**
+       * <code>CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_NO_INFO = 0;</code>
+       */
+      public static final int CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_NO_INFO_VALUE = 0;
+      /**
+       * <code>CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_800V_IMPOSSIBLE_STUCK_TO_400V = 1;</code>
+       */
+      public static final int CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_800V_IMPOSSIBLE_STUCK_TO_400V_VALUE = 1;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static ChargingErrorImpossibleChangeTo800V valueOf(int value) {
+        return forNumber(value);
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
+      public static ChargingErrorImpossibleChangeTo800V forNumber(int value) {
+        switch (value) {
+          case 0: return CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_NO_INFO;
+          case 1: return CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_800V_IMPOSSIBLE_STUCK_TO_400V;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<ChargingErrorImpossibleChangeTo800V>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          ChargingErrorImpossibleChangeTo800V> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<ChargingErrorImpossibleChangeTo800V>() {
+              public ChargingErrorImpossibleChangeTo800V findValueByNumber(int number) {
+                return ChargingErrorImpossibleChangeTo800V.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.getDescriptor().getEnumTypes().get(13);
+      }
+
+      private static final ChargingErrorImpossibleChangeTo800V[] VALUES = values();
+
+      public static ChargingErrorImpossibleChangeTo800V valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private ChargingErrorImpossibleChangeTo800V(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V)
+    }
+
+    /**
+     * Protobuf enum {@code proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V}
+     */
+    public enum ChargingErrorVehicleNoSupport400V
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_NO_INFO = 0;</code>
+       */
+      CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_NO_INFO(0),
+      /**
+       * <code>CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_400V_CHARGING_NOT_POSSIBLE = 1;</code>
+       */
+      CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_400V_CHARGING_NOT_POSSIBLE(1),
+      UNRECOGNIZED(-1),
+      ;
+
+      static {
+        com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+          com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+          /* major= */ 4,
+          /* minor= */ 27,
+          /* patch= */ 5,
+          /* suffix= */ "",
+          ChargingErrorVehicleNoSupport400V.class.getName());
+      }
+      /**
+       * <code>CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_NO_INFO = 0;</code>
+       */
+      public static final int CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_NO_INFO_VALUE = 0;
+      /**
+       * <code>CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_400V_CHARGING_NOT_POSSIBLE = 1;</code>
+       */
+      public static final int CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_400V_CHARGING_NOT_POSSIBLE_VALUE = 1;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static ChargingErrorVehicleNoSupport400V valueOf(int value) {
+        return forNumber(value);
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
+      public static ChargingErrorVehicleNoSupport400V forNumber(int value) {
+        switch (value) {
+          case 0: return CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_NO_INFO;
+          case 1: return CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_400V_CHARGING_NOT_POSSIBLE;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<ChargingErrorVehicleNoSupport400V>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          ChargingErrorVehicleNoSupport400V> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<ChargingErrorVehicleNoSupport400V>() {
+              public ChargingErrorVehicleNoSupport400V findValueByNumber(int number) {
+                return ChargingErrorVehicleNoSupport400V.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.getDescriptor().getEnumTypes().get(14);
+      }
+
+      private static final ChargingErrorVehicleNoSupport400V[] VALUES = values();
+
+      public static ChargingErrorVehicleNoSupport400V valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private ChargingErrorVehicleNoSupport400V(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V)
+    }
+
     private int displayUnitCase_ = 0;
     @SuppressWarnings("serial")
     private java.lang.Object displayUnit_;
@@ -3694,6 +5166,19 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
       ECO_HISTOGRAM_VALUE(28),
       WEEKLY_PROFILE_VALUE(29),
       CHARGE_PROGRAMS_VALUE(31),
+      CHARGINGBREAK_CLOCKTIMER_VALUE(32),
+      CHARGING_POWER_CONTROL(33),
+      TCU_CONNECTION_STATE_LOW_CHANNEL(38),
+      PRECOND_STATE(44),
+      CHARGING_POWER_RESTRICTIONS(55),
+      CHARGING_COUPLER_ERROR_DETAILS(56),
+      CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V(58),
+      CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V(59),
+      CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V(60),
+      CHARGING_PREDICTION_SOC(80),
+      CHARGING_PREDICTION_DEPARTURE_TIME(81),
+      CHARGE_FLAPS(84),
+      CHARGE_INLETS(85),
       ATTRIBUTETYPE_NOT_SET(0);
       private final int value;
       private AttributeTypeCase(int value) {
@@ -3726,6 +5211,19 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
           case 28: return ECO_HISTOGRAM_VALUE;
           case 29: return WEEKLY_PROFILE_VALUE;
           case 31: return CHARGE_PROGRAMS_VALUE;
+          case 32: return CHARGINGBREAK_CLOCKTIMER_VALUE;
+          case 33: return CHARGING_POWER_CONTROL;
+          case 38: return TCU_CONNECTION_STATE_LOW_CHANNEL;
+          case 44: return PRECOND_STATE;
+          case 55: return CHARGING_POWER_RESTRICTIONS;
+          case 56: return CHARGING_COUPLER_ERROR_DETAILS;
+          case 58: return CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V;
+          case 59: return CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V;
+          case 60: return CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V;
+          case 80: return CHARGING_PREDICTION_SOC;
+          case 81: return CHARGING_PREDICTION_DEPARTURE_TIME;
+          case 84: return CHARGE_FLAPS;
+          case 85: return CHARGE_INLETS;
           case 0: return ATTRIBUTETYPE_NOT_SET;
           default: return null;
         }
@@ -3750,7 +5248,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
      *
      * <code>int64 timestamp = 1 [deprecated = true];</code>
      * @deprecated proto.VehicleAttributeStatus.timestamp is deprecated.
-     *     See vehicle-events.proto;l=38
+     *     See vehicle-events.proto;l=39
      * @return The timestamp.
      */
     @java.lang.Override
@@ -3983,7 +5481,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
      *
      * <code>.proto.VehicleAttributeStatus.SpeedDistanceUnit speed_distance_unit = 15 [deprecated = true];</code>
      * @deprecated proto.VehicleAttributeStatus.speed_distance_unit is deprecated.
-     *     See vehicle-events.proto;l=141
+     *     See vehicle-events.proto;l=173
      * @return Whether the speedDistanceUnit field is set.
      */
     @java.lang.Deprecated public boolean hasSpeedDistanceUnit() {
@@ -3996,7 +5494,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
      *
      * <code>.proto.VehicleAttributeStatus.SpeedDistanceUnit speed_distance_unit = 15 [deprecated = true];</code>
      * @deprecated proto.VehicleAttributeStatus.speed_distance_unit is deprecated.
-     *     See vehicle-events.proto;l=141
+     *     See vehicle-events.proto;l=173
      * @return The enum numeric value on the wire for speedDistanceUnit.
      */
     @java.lang.Deprecated public int getSpeedDistanceUnitValue() {
@@ -4012,7 +5510,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
      *
      * <code>.proto.VehicleAttributeStatus.SpeedDistanceUnit speed_distance_unit = 15 [deprecated = true];</code>
      * @deprecated proto.VehicleAttributeStatus.speed_distance_unit is deprecated.
-     *     See vehicle-events.proto;l=141
+     *     See vehicle-events.proto;l=173
      * @return The speedDistanceUnit.
      */
     @java.lang.Deprecated public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.SpeedDistanceUnit getSpeedDistanceUnit() {
@@ -4677,6 +6175,421 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
       return com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue.getDefaultInstance();
     }
 
+    public static final int CHARGINGBREAK_CLOCKTIMER_VALUE_FIELD_NUMBER = 32;
+    /**
+     * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+     * @return Whether the chargingbreakClocktimerValue field is set.
+     */
+    @java.lang.Override
+    public boolean hasChargingbreakClocktimerValue() {
+      return attributeTypeCase_ == 32;
+    }
+    /**
+     * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+     * @return The chargingbreakClocktimerValue.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue getChargingbreakClocktimerValue() {
+      if (attributeTypeCase_ == 32) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.getDefaultInstance();
+    }
+    /**
+     * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValueOrBuilder getChargingbreakClocktimerValueOrBuilder() {
+      if (attributeTypeCase_ == 32) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.getDefaultInstance();
+    }
+
+    public static final int CHARGING_POWER_CONTROL_FIELD_NUMBER = 33;
+    /**
+     * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+     * @return Whether the chargingPowerControl field is set.
+     */
+    @java.lang.Override
+    public boolean hasChargingPowerControl() {
+      return attributeTypeCase_ == 33;
+    }
+    /**
+     * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+     * @return The chargingPowerControl.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl getChargingPowerControl() {
+      if (attributeTypeCase_ == 33) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.getDefaultInstance();
+    }
+    /**
+     * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControlOrBuilder getChargingPowerControlOrBuilder() {
+      if (attributeTypeCase_ == 33) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.getDefaultInstance();
+    }
+
+    public static final int TCU_CONNECTION_STATE_LOW_CHANNEL_FIELD_NUMBER = 38;
+    /**
+     * <code>.proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;</code>
+     * @return Whether the tcuConnectionStateLowChannel field is set.
+     */
+    public boolean hasTcuConnectionStateLowChannel() {
+      return attributeTypeCase_ == 38;
+    }
+    /**
+     * <code>.proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;</code>
+     * @return The enum numeric value on the wire for tcuConnectionStateLowChannel.
+     */
+    public int getTcuConnectionStateLowChannelValue() {
+      if (attributeTypeCase_ == 38) {
+        return (java.lang.Integer) attributeType_;
+      }
+      return 0;
+    }
+    /**
+     * <code>.proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;</code>
+     * @return The tcuConnectionStateLowChannel.
+     */
+    public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus getTcuConnectionStateLowChannel() {
+      if (attributeTypeCase_ == 38) {
+        com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus result = com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus.forNumber(
+            (java.lang.Integer) attributeType_);
+        return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus.UNRECOGNIZED : result;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus.UNKNOWN_TCU_CONNECTION_STATE;
+    }
+
+    public static final int PRECOND_STATE_FIELD_NUMBER = 44;
+    /**
+     * <code>.proto.PrecondState precond_state = 44;</code>
+     * @return Whether the precondState field is set.
+     */
+    @java.lang.Override
+    public boolean hasPrecondState() {
+      return attributeTypeCase_ == 44;
+    }
+    /**
+     * <code>.proto.PrecondState precond_state = 44;</code>
+     * @return The precondState.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.PrecondState getPrecondState() {
+      if (attributeTypeCase_ == 44) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.PrecondState) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.getDefaultInstance();
+    }
+    /**
+     * <code>.proto.PrecondState precond_state = 44;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateOrBuilder getPrecondStateOrBuilder() {
+      if (attributeTypeCase_ == 44) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.PrecondState) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.getDefaultInstance();
+    }
+
+    public static final int CHARGING_POWER_RESTRICTIONS_FIELD_NUMBER = 55;
+    /**
+     * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+     * @return Whether the chargingPowerRestrictions field is set.
+     */
+    @java.lang.Override
+    public boolean hasChargingPowerRestrictions() {
+      return attributeTypeCase_ == 55;
+    }
+    /**
+     * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+     * @return The chargingPowerRestrictions.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions getChargingPowerRestrictions() {
+      if (attributeTypeCase_ == 55) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.getDefaultInstance();
+    }
+    /**
+     * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictionsOrBuilder getChargingPowerRestrictionsOrBuilder() {
+      if (attributeTypeCase_ == 55) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.getDefaultInstance();
+    }
+
+    public static final int CHARGING_COUPLER_ERROR_DETAILS_FIELD_NUMBER = 56;
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingCouplerErrorDetails charging_coupler_error_details = 56;</code>
+     * @return Whether the chargingCouplerErrorDetails field is set.
+     */
+    public boolean hasChargingCouplerErrorDetails() {
+      return attributeTypeCase_ == 56;
+    }
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingCouplerErrorDetails charging_coupler_error_details = 56;</code>
+     * @return The enum numeric value on the wire for chargingCouplerErrorDetails.
+     */
+    public int getChargingCouplerErrorDetailsValue() {
+      if (attributeTypeCase_ == 56) {
+        return (java.lang.Integer) attributeType_;
+      }
+      return 0;
+    }
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingCouplerErrorDetails charging_coupler_error_details = 56;</code>
+     * @return The chargingCouplerErrorDetails.
+     */
+    public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingCouplerErrorDetails getChargingCouplerErrorDetails() {
+      if (attributeTypeCase_ == 56) {
+        com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingCouplerErrorDetails result = com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingCouplerErrorDetails.forNumber(
+            (java.lang.Integer) attributeType_);
+        return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingCouplerErrorDetails.UNRECOGNIZED : result;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingCouplerErrorDetails.CHARING_COUPLER_ERROR_DETAILS_NO_INFO_OR_ERROR_MESSAGE;
+    }
+
+    public static final int CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_FIELD_NUMBER = 58;
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;</code>
+     * @return Whether the chargingErrorVehicleNoSupport400v field is set.
+     */
+    public boolean hasChargingErrorVehicleNoSupport400V() {
+      return attributeTypeCase_ == 58;
+    }
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;</code>
+     * @return The enum numeric value on the wire for chargingErrorVehicleNoSupport400v.
+     */
+    public int getChargingErrorVehicleNoSupport400VValue() {
+      if (attributeTypeCase_ == 58) {
+        return (java.lang.Integer) attributeType_;
+      }
+      return 0;
+    }
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;</code>
+     * @return The chargingErrorVehicleNoSupport400v.
+     */
+    public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V getChargingErrorVehicleNoSupport400V() {
+      if (attributeTypeCase_ == 58) {
+        com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V result = com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V.forNumber(
+            (java.lang.Integer) attributeType_);
+        return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V.UNRECOGNIZED : result;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V.CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_NO_INFO;
+    }
+
+    public static final int CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_FIELD_NUMBER = 59;
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;</code>
+     * @return Whether the chargingErrorImpossibleChangeTo400v field is set.
+     */
+    public boolean hasChargingErrorImpossibleChangeTo400V() {
+      return attributeTypeCase_ == 59;
+    }
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;</code>
+     * @return The enum numeric value on the wire for chargingErrorImpossibleChangeTo400v.
+     */
+    public int getChargingErrorImpossibleChangeTo400VValue() {
+      if (attributeTypeCase_ == 59) {
+        return (java.lang.Integer) attributeType_;
+      }
+      return 0;
+    }
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;</code>
+     * @return The chargingErrorImpossibleChangeTo400v.
+     */
+    public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V getChargingErrorImpossibleChangeTo400V() {
+      if (attributeTypeCase_ == 59) {
+        com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V result = com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V.forNumber(
+            (java.lang.Integer) attributeType_);
+        return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V.UNRECOGNIZED : result;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V.CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_NO_INFO;
+    }
+
+    public static final int CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_FIELD_NUMBER = 60;
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;</code>
+     * @return Whether the chargingErrorImpossibleChangeTo800v field is set.
+     */
+    public boolean hasChargingErrorImpossibleChangeTo800V() {
+      return attributeTypeCase_ == 60;
+    }
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;</code>
+     * @return The enum numeric value on the wire for chargingErrorImpossibleChangeTo800v.
+     */
+    public int getChargingErrorImpossibleChangeTo800VValue() {
+      if (attributeTypeCase_ == 60) {
+        return (java.lang.Integer) attributeType_;
+      }
+      return 0;
+    }
+    /**
+     * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;</code>
+     * @return The chargingErrorImpossibleChangeTo800v.
+     */
+    public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V getChargingErrorImpossibleChangeTo800V() {
+      if (attributeTypeCase_ == 60) {
+        com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V result = com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V.forNumber(
+            (java.lang.Integer) attributeType_);
+        return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V.UNRECOGNIZED : result;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V.CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_NO_INFO;
+    }
+
+    public static final int CHARGING_PREDICTION_SOC_FIELD_NUMBER = 80;
+    /**
+     * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+     * @return Whether the chargingPredictionSoc field is set.
+     */
+    @java.lang.Override
+    public boolean hasChargingPredictionSoc() {
+      return attributeTypeCase_ == 80;
+    }
+    /**
+     * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+     * @return The chargingPredictionSoc.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc getChargingPredictionSoc() {
+      if (attributeTypeCase_ == 80) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.getDefaultInstance();
+    }
+    /**
+     * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSocOrBuilder getChargingPredictionSocOrBuilder() {
+      if (attributeTypeCase_ == 80) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.getDefaultInstance();
+    }
+
+    public static final int CHARGING_PREDICTION_DEPARTURE_TIME_FIELD_NUMBER = 81;
+    /**
+     * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+     * @return Whether the chargingPredictionDepartureTime field is set.
+     */
+    @java.lang.Override
+    public boolean hasChargingPredictionDepartureTime() {
+      return attributeTypeCase_ == 81;
+    }
+    /**
+     * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+     * @return The chargingPredictionDepartureTime.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime getChargingPredictionDepartureTime() {
+      if (attributeTypeCase_ == 81) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.getDefaultInstance();
+    }
+    /**
+     * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTimeOrBuilder getChargingPredictionDepartureTimeOrBuilder() {
+      if (attributeTypeCase_ == 81) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.getDefaultInstance();
+    }
+
+    public static final int CHARGE_FLAPS_FIELD_NUMBER = 84;
+    /**
+     * <pre>
+     * ChargingScheduleActive charging_schedule_active = 82;
+     * </pre>
+     *
+     * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+     * @return Whether the chargeFlaps field is set.
+     */
+    @java.lang.Override
+    public boolean hasChargeFlaps() {
+      return attributeTypeCase_ == 84;
+    }
+    /**
+     * <pre>
+     * ChargingScheduleActive charging_schedule_active = 82;
+     * </pre>
+     *
+     * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+     * @return The chargeFlaps.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps getChargeFlaps() {
+      if (attributeTypeCase_ == 84) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.getDefaultInstance();
+    }
+    /**
+     * <pre>
+     * ChargingScheduleActive charging_schedule_active = 82;
+     * </pre>
+     *
+     * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsOrBuilder getChargeFlapsOrBuilder() {
+      if (attributeTypeCase_ == 84) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.getDefaultInstance();
+    }
+
+    public static final int CHARGE_INLETS_FIELD_NUMBER = 85;
+    /**
+     * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+     * @return Whether the chargeInlets field is set.
+     */
+    @java.lang.Override
+    public boolean hasChargeInlets() {
+      return attributeTypeCase_ == 85;
+    }
+    /**
+     * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+     * @return The chargeInlets.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets getChargeInlets() {
+      if (attributeTypeCase_ == 85) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.getDefaultInstance();
+    }
+    /**
+     * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsOrBuilder getChargeInletsOrBuilder() {
+      if (attributeTypeCase_ == 85) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets) attributeType_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.getDefaultInstance();
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -4792,6 +6705,45 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
       }
       if (attributeTypeCase_ == 31) {
         output.writeMessage(31, (com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue) attributeType_);
+      }
+      if (attributeTypeCase_ == 32) {
+        output.writeMessage(32, (com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue) attributeType_);
+      }
+      if (attributeTypeCase_ == 33) {
+        output.writeMessage(33, (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl) attributeType_);
+      }
+      if (attributeTypeCase_ == 38) {
+        output.writeEnum(38, ((java.lang.Integer) attributeType_));
+      }
+      if (attributeTypeCase_ == 44) {
+        output.writeMessage(44, (com.daimler.mbcarkit.proto.VehicleEvents.PrecondState) attributeType_);
+      }
+      if (attributeTypeCase_ == 55) {
+        output.writeMessage(55, (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions) attributeType_);
+      }
+      if (attributeTypeCase_ == 56) {
+        output.writeEnum(56, ((java.lang.Integer) attributeType_));
+      }
+      if (attributeTypeCase_ == 58) {
+        output.writeEnum(58, ((java.lang.Integer) attributeType_));
+      }
+      if (attributeTypeCase_ == 59) {
+        output.writeEnum(59, ((java.lang.Integer) attributeType_));
+      }
+      if (attributeTypeCase_ == 60) {
+        output.writeEnum(60, ((java.lang.Integer) attributeType_));
+      }
+      if (attributeTypeCase_ == 80) {
+        output.writeMessage(80, (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc) attributeType_);
+      }
+      if (attributeTypeCase_ == 81) {
+        output.writeMessage(81, (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime) attributeType_);
+      }
+      if (attributeTypeCase_ == 84) {
+        output.writeMessage(84, (com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps) attributeType_);
+      }
+      if (attributeTypeCase_ == 85) {
+        output.writeMessage(85, (com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets) attributeType_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -4937,6 +6889,58 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(31, (com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue) attributeType_);
       }
+      if (attributeTypeCase_ == 32) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(32, (com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue) attributeType_);
+      }
+      if (attributeTypeCase_ == 33) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(33, (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl) attributeType_);
+      }
+      if (attributeTypeCase_ == 38) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(38, ((java.lang.Integer) attributeType_));
+      }
+      if (attributeTypeCase_ == 44) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(44, (com.daimler.mbcarkit.proto.VehicleEvents.PrecondState) attributeType_);
+      }
+      if (attributeTypeCase_ == 55) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(55, (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions) attributeType_);
+      }
+      if (attributeTypeCase_ == 56) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(56, ((java.lang.Integer) attributeType_));
+      }
+      if (attributeTypeCase_ == 58) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(58, ((java.lang.Integer) attributeType_));
+      }
+      if (attributeTypeCase_ == 59) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(59, ((java.lang.Integer) attributeType_));
+      }
+      if (attributeTypeCase_ == 60) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(60, ((java.lang.Integer) attributeType_));
+      }
+      if (attributeTypeCase_ == 80) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(80, (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc) attributeType_);
+      }
+      if (attributeTypeCase_ == 81) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(81, (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime) attributeType_);
+      }
+      if (attributeTypeCase_ == 84) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(84, (com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps) attributeType_);
+      }
+      if (attributeTypeCase_ == 85) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(85, (com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets) attributeType_);
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
@@ -5071,6 +7075,58 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
         case 31:
           if (!getChargeProgramsValue()
               .equals(other.getChargeProgramsValue())) return false;
+          break;
+        case 32:
+          if (!getChargingbreakClocktimerValue()
+              .equals(other.getChargingbreakClocktimerValue())) return false;
+          break;
+        case 33:
+          if (!getChargingPowerControl()
+              .equals(other.getChargingPowerControl())) return false;
+          break;
+        case 38:
+          if (getTcuConnectionStateLowChannelValue()
+              != other.getTcuConnectionStateLowChannelValue()) return false;
+          break;
+        case 44:
+          if (!getPrecondState()
+              .equals(other.getPrecondState())) return false;
+          break;
+        case 55:
+          if (!getChargingPowerRestrictions()
+              .equals(other.getChargingPowerRestrictions())) return false;
+          break;
+        case 56:
+          if (getChargingCouplerErrorDetailsValue()
+              != other.getChargingCouplerErrorDetailsValue()) return false;
+          break;
+        case 58:
+          if (getChargingErrorVehicleNoSupport400VValue()
+              != other.getChargingErrorVehicleNoSupport400VValue()) return false;
+          break;
+        case 59:
+          if (getChargingErrorImpossibleChangeTo400VValue()
+              != other.getChargingErrorImpossibleChangeTo400VValue()) return false;
+          break;
+        case 60:
+          if (getChargingErrorImpossibleChangeTo800VValue()
+              != other.getChargingErrorImpossibleChangeTo800VValue()) return false;
+          break;
+        case 80:
+          if (!getChargingPredictionSoc()
+              .equals(other.getChargingPredictionSoc())) return false;
+          break;
+        case 81:
+          if (!getChargingPredictionDepartureTime()
+              .equals(other.getChargingPredictionDepartureTime())) return false;
+          break;
+        case 84:
+          if (!getChargeFlaps()
+              .equals(other.getChargeFlaps())) return false;
+          break;
+        case 85:
+          if (!getChargeInlets()
+              .equals(other.getChargeInlets())) return false;
           break;
         case 0:
         default:
@@ -5212,6 +7268,58 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
           hash = (37 * hash) + CHARGE_PROGRAMS_VALUE_FIELD_NUMBER;
           hash = (53 * hash) + getChargeProgramsValue().hashCode();
           break;
+        case 32:
+          hash = (37 * hash) + CHARGINGBREAK_CLOCKTIMER_VALUE_FIELD_NUMBER;
+          hash = (53 * hash) + getChargingbreakClocktimerValue().hashCode();
+          break;
+        case 33:
+          hash = (37 * hash) + CHARGING_POWER_CONTROL_FIELD_NUMBER;
+          hash = (53 * hash) + getChargingPowerControl().hashCode();
+          break;
+        case 38:
+          hash = (37 * hash) + TCU_CONNECTION_STATE_LOW_CHANNEL_FIELD_NUMBER;
+          hash = (53 * hash) + getTcuConnectionStateLowChannelValue();
+          break;
+        case 44:
+          hash = (37 * hash) + PRECOND_STATE_FIELD_NUMBER;
+          hash = (53 * hash) + getPrecondState().hashCode();
+          break;
+        case 55:
+          hash = (37 * hash) + CHARGING_POWER_RESTRICTIONS_FIELD_NUMBER;
+          hash = (53 * hash) + getChargingPowerRestrictions().hashCode();
+          break;
+        case 56:
+          hash = (37 * hash) + CHARGING_COUPLER_ERROR_DETAILS_FIELD_NUMBER;
+          hash = (53 * hash) + getChargingCouplerErrorDetailsValue();
+          break;
+        case 58:
+          hash = (37 * hash) + CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_FIELD_NUMBER;
+          hash = (53 * hash) + getChargingErrorVehicleNoSupport400VValue();
+          break;
+        case 59:
+          hash = (37 * hash) + CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_FIELD_NUMBER;
+          hash = (53 * hash) + getChargingErrorImpossibleChangeTo400VValue();
+          break;
+        case 60:
+          hash = (37 * hash) + CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_FIELD_NUMBER;
+          hash = (53 * hash) + getChargingErrorImpossibleChangeTo800VValue();
+          break;
+        case 80:
+          hash = (37 * hash) + CHARGING_PREDICTION_SOC_FIELD_NUMBER;
+          hash = (53 * hash) + getChargingPredictionSoc().hashCode();
+          break;
+        case 81:
+          hash = (37 * hash) + CHARGING_PREDICTION_DEPARTURE_TIME_FIELD_NUMBER;
+          hash = (53 * hash) + getChargingPredictionDepartureTime().hashCode();
+          break;
+        case 84:
+          hash = (37 * hash) + CHARGE_FLAPS_FIELD_NUMBER;
+          hash = (53 * hash) + getChargeFlaps().hashCode();
+          break;
+        case 85:
+          hash = (37 * hash) + CHARGE_INLETS_FIELD_NUMBER;
+          hash = (53 * hash) + getChargeInlets().hashCode();
+          break;
         case 0:
         default:
       }
@@ -5351,6 +7459,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
+        bitField1_ = 0;
         timestamp_ = 0L;
         timestampInMs_ = 0L;
         changed_ = false;
@@ -5384,6 +7493,30 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
         if (chargeProgramsValueBuilder_ != null) {
           chargeProgramsValueBuilder_.clear();
         }
+        if (chargingbreakClocktimerValueBuilder_ != null) {
+          chargingbreakClocktimerValueBuilder_.clear();
+        }
+        if (chargingPowerControlBuilder_ != null) {
+          chargingPowerControlBuilder_.clear();
+        }
+        if (precondStateBuilder_ != null) {
+          precondStateBuilder_.clear();
+        }
+        if (chargingPowerRestrictionsBuilder_ != null) {
+          chargingPowerRestrictionsBuilder_.clear();
+        }
+        if (chargingPredictionSocBuilder_ != null) {
+          chargingPredictionSocBuilder_.clear();
+        }
+        if (chargingPredictionDepartureTimeBuilder_ != null) {
+          chargingPredictionDepartureTimeBuilder_.clear();
+        }
+        if (chargeFlapsBuilder_ != null) {
+          chargeFlapsBuilder_.clear();
+        }
+        if (chargeInletsBuilder_ != null) {
+          chargeInletsBuilder_.clear();
+        }
         displayUnitCase_ = 0;
         displayUnit_ = null;
         attributeTypeCase_ = 0;
@@ -5415,6 +7548,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
       public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus buildPartial() {
         com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus result = new com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus(this);
         if (bitField0_ != 0) { buildPartial0(result); }
+        if (bitField1_ != 0) { buildPartial1(result); }
         buildPartialOneofs(result);
         onBuilt();
         return result;
@@ -5441,6 +7575,10 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
         if (((from_bitField0_ & 0x00000020) != 0)) {
           result.displayValue_ = displayValue_;
         }
+      }
+
+      private void buildPartial1(com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus result) {
+        int from_bitField1_ = bitField1_;
       }
 
       private void buildPartialOneofs(com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus result) {
@@ -5483,6 +7621,38 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
         if (attributeTypeCase_ == 31 &&
             chargeProgramsValueBuilder_ != null) {
           result.attributeType_ = chargeProgramsValueBuilder_.build();
+        }
+        if (attributeTypeCase_ == 32 &&
+            chargingbreakClocktimerValueBuilder_ != null) {
+          result.attributeType_ = chargingbreakClocktimerValueBuilder_.build();
+        }
+        if (attributeTypeCase_ == 33 &&
+            chargingPowerControlBuilder_ != null) {
+          result.attributeType_ = chargingPowerControlBuilder_.build();
+        }
+        if (attributeTypeCase_ == 44 &&
+            precondStateBuilder_ != null) {
+          result.attributeType_ = precondStateBuilder_.build();
+        }
+        if (attributeTypeCase_ == 55 &&
+            chargingPowerRestrictionsBuilder_ != null) {
+          result.attributeType_ = chargingPowerRestrictionsBuilder_.build();
+        }
+        if (attributeTypeCase_ == 80 &&
+            chargingPredictionSocBuilder_ != null) {
+          result.attributeType_ = chargingPredictionSocBuilder_.build();
+        }
+        if (attributeTypeCase_ == 81 &&
+            chargingPredictionDepartureTimeBuilder_ != null) {
+          result.attributeType_ = chargingPredictionDepartureTimeBuilder_.build();
+        }
+        if (attributeTypeCase_ == 84 &&
+            chargeFlapsBuilder_ != null) {
+          result.attributeType_ = chargeFlapsBuilder_.build();
+        }
+        if (attributeTypeCase_ == 85 &&
+            chargeInletsBuilder_ != null) {
+          result.attributeType_ = chargeInletsBuilder_.build();
         }
       }
 
@@ -5634,6 +7804,58 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
           }
           case CHARGE_PROGRAMS_VALUE: {
             mergeChargeProgramsValue(other.getChargeProgramsValue());
+            break;
+          }
+          case CHARGINGBREAK_CLOCKTIMER_VALUE: {
+            mergeChargingbreakClocktimerValue(other.getChargingbreakClocktimerValue());
+            break;
+          }
+          case CHARGING_POWER_CONTROL: {
+            mergeChargingPowerControl(other.getChargingPowerControl());
+            break;
+          }
+          case TCU_CONNECTION_STATE_LOW_CHANNEL: {
+            setTcuConnectionStateLowChannelValue(other.getTcuConnectionStateLowChannelValue());
+            break;
+          }
+          case PRECOND_STATE: {
+            mergePrecondState(other.getPrecondState());
+            break;
+          }
+          case CHARGING_POWER_RESTRICTIONS: {
+            mergeChargingPowerRestrictions(other.getChargingPowerRestrictions());
+            break;
+          }
+          case CHARGING_COUPLER_ERROR_DETAILS: {
+            setChargingCouplerErrorDetailsValue(other.getChargingCouplerErrorDetailsValue());
+            break;
+          }
+          case CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V: {
+            setChargingErrorVehicleNoSupport400VValue(other.getChargingErrorVehicleNoSupport400VValue());
+            break;
+          }
+          case CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V: {
+            setChargingErrorImpossibleChangeTo400VValue(other.getChargingErrorImpossibleChangeTo400VValue());
+            break;
+          }
+          case CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V: {
+            setChargingErrorImpossibleChangeTo800VValue(other.getChargingErrorImpossibleChangeTo800VValue());
+            break;
+          }
+          case CHARGING_PREDICTION_SOC: {
+            mergeChargingPredictionSoc(other.getChargingPredictionSoc());
+            break;
+          }
+          case CHARGING_PREDICTION_DEPARTURE_TIME: {
+            mergeChargingPredictionDepartureTime(other.getChargingPredictionDepartureTime());
+            break;
+          }
+          case CHARGE_FLAPS: {
+            mergeChargeFlaps(other.getChargeFlaps());
+            break;
+          }
+          case CHARGE_INLETS: {
+            mergeChargeInlets(other.getChargeInlets());
             break;
           }
           case ATTRIBUTETYPE_NOT_SET: {
@@ -5862,6 +8084,92 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
                 attributeTypeCase_ = 31;
                 break;
               } // case 250
+              case 258: {
+                input.readMessage(
+                    getChargingbreakClocktimerValueFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                attributeTypeCase_ = 32;
+                break;
+              } // case 258
+              case 266: {
+                input.readMessage(
+                    getChargingPowerControlFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                attributeTypeCase_ = 33;
+                break;
+              } // case 266
+              case 304: {
+                int rawValue = input.readEnum();
+                attributeTypeCase_ = 38;
+                attributeType_ = rawValue;
+                break;
+              } // case 304
+              case 354: {
+                input.readMessage(
+                    getPrecondStateFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                attributeTypeCase_ = 44;
+                break;
+              } // case 354
+              case 442: {
+                input.readMessage(
+                    getChargingPowerRestrictionsFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                attributeTypeCase_ = 55;
+                break;
+              } // case 442
+              case 448: {
+                int rawValue = input.readEnum();
+                attributeTypeCase_ = 56;
+                attributeType_ = rawValue;
+                break;
+              } // case 448
+              case 464: {
+                int rawValue = input.readEnum();
+                attributeTypeCase_ = 58;
+                attributeType_ = rawValue;
+                break;
+              } // case 464
+              case 472: {
+                int rawValue = input.readEnum();
+                attributeTypeCase_ = 59;
+                attributeType_ = rawValue;
+                break;
+              } // case 472
+              case 480: {
+                int rawValue = input.readEnum();
+                attributeTypeCase_ = 60;
+                attributeType_ = rawValue;
+                break;
+              } // case 480
+              case 642: {
+                input.readMessage(
+                    getChargingPredictionSocFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                attributeTypeCase_ = 80;
+                break;
+              } // case 642
+              case 650: {
+                input.readMessage(
+                    getChargingPredictionDepartureTimeFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                attributeTypeCase_ = 81;
+                break;
+              } // case 650
+              case 674: {
+                input.readMessage(
+                    getChargeFlapsFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                attributeTypeCase_ = 84;
+                break;
+              } // case 674
+              case 682: {
+                input.readMessage(
+                    getChargeInletsFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                attributeTypeCase_ = 85;
+                break;
+              } // case 682
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -5908,6 +8216,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
       }
 
       private int bitField0_;
+      private int bitField1_;
 
       private long timestamp_ ;
       /**
@@ -5917,7 +8226,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
        *
        * <code>int64 timestamp = 1 [deprecated = true];</code>
        * @deprecated proto.VehicleAttributeStatus.timestamp is deprecated.
-       *     See vehicle-events.proto;l=38
+       *     See vehicle-events.proto;l=39
        * @return The timestamp.
        */
       @java.lang.Override
@@ -5931,7 +8240,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
        *
        * <code>int64 timestamp = 1 [deprecated = true];</code>
        * @deprecated proto.VehicleAttributeStatus.timestamp is deprecated.
-       *     See vehicle-events.proto;l=38
+       *     See vehicle-events.proto;l=39
        * @param value The timestamp to set.
        * @return This builder for chaining.
        */
@@ -5949,7 +8258,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
        *
        * <code>int64 timestamp = 1 [deprecated = true];</code>
        * @deprecated proto.VehicleAttributeStatus.timestamp is deprecated.
-       *     See vehicle-events.proto;l=38
+       *     See vehicle-events.proto;l=39
        * @return This builder for chaining.
        */
       @java.lang.Deprecated public Builder clearTimestamp() {
@@ -6482,7 +8791,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
        *
        * <code>.proto.VehicleAttributeStatus.SpeedDistanceUnit speed_distance_unit = 15 [deprecated = true];</code>
        * @deprecated proto.VehicleAttributeStatus.speed_distance_unit is deprecated.
-       *     See vehicle-events.proto;l=141
+       *     See vehicle-events.proto;l=173
        * @return Whether the speedDistanceUnit field is set.
        */
       @java.lang.Override
@@ -6496,7 +8805,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
        *
        * <code>.proto.VehicleAttributeStatus.SpeedDistanceUnit speed_distance_unit = 15 [deprecated = true];</code>
        * @deprecated proto.VehicleAttributeStatus.speed_distance_unit is deprecated.
-       *     See vehicle-events.proto;l=141
+       *     See vehicle-events.proto;l=173
        * @return The enum numeric value on the wire for speedDistanceUnit.
        */
       @java.lang.Override
@@ -6513,7 +8822,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
        *
        * <code>.proto.VehicleAttributeStatus.SpeedDistanceUnit speed_distance_unit = 15 [deprecated = true];</code>
        * @deprecated proto.VehicleAttributeStatus.speed_distance_unit is deprecated.
-       *     See vehicle-events.proto;l=141
+       *     See vehicle-events.proto;l=173
        * @param value The enum numeric value on the wire for speedDistanceUnit to set.
        * @return This builder for chaining.
        */
@@ -6530,7 +8839,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
        *
        * <code>.proto.VehicleAttributeStatus.SpeedDistanceUnit speed_distance_unit = 15 [deprecated = true];</code>
        * @deprecated proto.VehicleAttributeStatus.speed_distance_unit is deprecated.
-       *     See vehicle-events.proto;l=141
+       *     See vehicle-events.proto;l=173
        * @return The speedDistanceUnit.
        */
       @java.lang.Override
@@ -6549,7 +8858,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
        *
        * <code>.proto.VehicleAttributeStatus.SpeedDistanceUnit speed_distance_unit = 15 [deprecated = true];</code>
        * @deprecated proto.VehicleAttributeStatus.speed_distance_unit is deprecated.
-       *     See vehicle-events.proto;l=141
+       *     See vehicle-events.proto;l=173
        * @param value The speedDistanceUnit to set.
        * @return This builder for chaining.
        */
@@ -6569,7 +8878,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
        *
        * <code>.proto.VehicleAttributeStatus.SpeedDistanceUnit speed_distance_unit = 15 [deprecated = true];</code>
        * @deprecated proto.VehicleAttributeStatus.speed_distance_unit is deprecated.
-       *     See vehicle-events.proto;l=141
+       *     See vehicle-events.proto;l=173
        * @return This builder for chaining.
        */
       @java.lang.Deprecated public Builder clearSpeedDistanceUnit() {
@@ -8633,6 +10942,1528 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
         return chargeProgramsValueBuilder_;
       }
 
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValueOrBuilder> chargingbreakClocktimerValueBuilder_;
+      /**
+       * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+       * @return Whether the chargingbreakClocktimerValue field is set.
+       */
+      @java.lang.Override
+      public boolean hasChargingbreakClocktimerValue() {
+        return attributeTypeCase_ == 32;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+       * @return The chargingbreakClocktimerValue.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue getChargingbreakClocktimerValue() {
+        if (chargingbreakClocktimerValueBuilder_ == null) {
+          if (attributeTypeCase_ == 32) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.getDefaultInstance();
+        } else {
+          if (attributeTypeCase_ == 32) {
+            return chargingbreakClocktimerValueBuilder_.getMessage();
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+       */
+      public Builder setChargingbreakClocktimerValue(com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue value) {
+        if (chargingbreakClocktimerValueBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          attributeType_ = value;
+          onChanged();
+        } else {
+          chargingbreakClocktimerValueBuilder_.setMessage(value);
+        }
+        attributeTypeCase_ = 32;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+       */
+      public Builder setChargingbreakClocktimerValue(
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.Builder builderForValue) {
+        if (chargingbreakClocktimerValueBuilder_ == null) {
+          attributeType_ = builderForValue.build();
+          onChanged();
+        } else {
+          chargingbreakClocktimerValueBuilder_.setMessage(builderForValue.build());
+        }
+        attributeTypeCase_ = 32;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+       */
+      public Builder mergeChargingbreakClocktimerValue(com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue value) {
+        if (chargingbreakClocktimerValueBuilder_ == null) {
+          if (attributeTypeCase_ == 32 &&
+              attributeType_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.getDefaultInstance()) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.newBuilder((com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue) attributeType_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            attributeType_ = value;
+          }
+          onChanged();
+        } else {
+          if (attributeTypeCase_ == 32) {
+            chargingbreakClocktimerValueBuilder_.mergeFrom(value);
+          } else {
+            chargingbreakClocktimerValueBuilder_.setMessage(value);
+          }
+        }
+        attributeTypeCase_ = 32;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+       */
+      public Builder clearChargingbreakClocktimerValue() {
+        if (chargingbreakClocktimerValueBuilder_ == null) {
+          if (attributeTypeCase_ == 32) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+            onChanged();
+          }
+        } else {
+          if (attributeTypeCase_ == 32) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+          }
+          chargingbreakClocktimerValueBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.Builder getChargingbreakClocktimerValueBuilder() {
+        return getChargingbreakClocktimerValueFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValueOrBuilder getChargingbreakClocktimerValueOrBuilder() {
+        if ((attributeTypeCase_ == 32) && (chargingbreakClocktimerValueBuilder_ != null)) {
+          return chargingbreakClocktimerValueBuilder_.getMessageOrBuilder();
+        } else {
+          if (attributeTypeCase_ == 32) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerValue chargingbreak_clocktimer_value = 32;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValueOrBuilder> 
+          getChargingbreakClocktimerValueFieldBuilder() {
+        if (chargingbreakClocktimerValueBuilder_ == null) {
+          if (!(attributeTypeCase_ == 32)) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.getDefaultInstance();
+          }
+          chargingbreakClocktimerValueBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValueOrBuilder>(
+                  (com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue) attributeType_,
+                  getParentForChildren(),
+                  isClean());
+          attributeType_ = null;
+        }
+        attributeTypeCase_ = 32;
+        onChanged();
+        return chargingbreakClocktimerValueBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControlOrBuilder> chargingPowerControlBuilder_;
+      /**
+       * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+       * @return Whether the chargingPowerControl field is set.
+       */
+      @java.lang.Override
+      public boolean hasChargingPowerControl() {
+        return attributeTypeCase_ == 33;
+      }
+      /**
+       * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+       * @return The chargingPowerControl.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl getChargingPowerControl() {
+        if (chargingPowerControlBuilder_ == null) {
+          if (attributeTypeCase_ == 33) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.getDefaultInstance();
+        } else {
+          if (attributeTypeCase_ == 33) {
+            return chargingPowerControlBuilder_.getMessage();
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+       */
+      public Builder setChargingPowerControl(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl value) {
+        if (chargingPowerControlBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          attributeType_ = value;
+          onChanged();
+        } else {
+          chargingPowerControlBuilder_.setMessage(value);
+        }
+        attributeTypeCase_ = 33;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+       */
+      public Builder setChargingPowerControl(
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.Builder builderForValue) {
+        if (chargingPowerControlBuilder_ == null) {
+          attributeType_ = builderForValue.build();
+          onChanged();
+        } else {
+          chargingPowerControlBuilder_.setMessage(builderForValue.build());
+        }
+        attributeTypeCase_ = 33;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+       */
+      public Builder mergeChargingPowerControl(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl value) {
+        if (chargingPowerControlBuilder_ == null) {
+          if (attributeTypeCase_ == 33 &&
+              attributeType_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.getDefaultInstance()) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.newBuilder((com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl) attributeType_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            attributeType_ = value;
+          }
+          onChanged();
+        } else {
+          if (attributeTypeCase_ == 33) {
+            chargingPowerControlBuilder_.mergeFrom(value);
+          } else {
+            chargingPowerControlBuilder_.setMessage(value);
+          }
+        }
+        attributeTypeCase_ = 33;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+       */
+      public Builder clearChargingPowerControl() {
+        if (chargingPowerControlBuilder_ == null) {
+          if (attributeTypeCase_ == 33) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+            onChanged();
+          }
+        } else {
+          if (attributeTypeCase_ == 33) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+          }
+          chargingPowerControlBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.Builder getChargingPowerControlBuilder() {
+        return getChargingPowerControlFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControlOrBuilder getChargingPowerControlOrBuilder() {
+        if ((attributeTypeCase_ == 33) && (chargingPowerControlBuilder_ != null)) {
+          return chargingPowerControlBuilder_.getMessageOrBuilder();
+        } else {
+          if (attributeTypeCase_ == 33) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargingPowerControl charging_power_control = 33;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControlOrBuilder> 
+          getChargingPowerControlFieldBuilder() {
+        if (chargingPowerControlBuilder_ == null) {
+          if (!(attributeTypeCase_ == 33)) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.getDefaultInstance();
+          }
+          chargingPowerControlBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControlOrBuilder>(
+                  (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl) attributeType_,
+                  getParentForChildren(),
+                  isClean());
+          attributeType_ = null;
+        }
+        attributeTypeCase_ = 33;
+        onChanged();
+        return chargingPowerControlBuilder_;
+      }
+
+      /**
+       * <code>.proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;</code>
+       * @return Whether the tcuConnectionStateLowChannel field is set.
+       */
+      @java.lang.Override
+      public boolean hasTcuConnectionStateLowChannel() {
+        return attributeTypeCase_ == 38;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;</code>
+       * @return The enum numeric value on the wire for tcuConnectionStateLowChannel.
+       */
+      @java.lang.Override
+      public int getTcuConnectionStateLowChannelValue() {
+        if (attributeTypeCase_ == 38) {
+          return ((java.lang.Integer) attributeType_).intValue();
+        }
+        return 0;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;</code>
+       * @param value The enum numeric value on the wire for tcuConnectionStateLowChannel to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTcuConnectionStateLowChannelValue(int value) {
+        attributeTypeCase_ = 38;
+        attributeType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;</code>
+       * @return The tcuConnectionStateLowChannel.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus getTcuConnectionStateLowChannel() {
+        if (attributeTypeCase_ == 38) {
+          com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus result = com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus.forNumber(
+              (java.lang.Integer) attributeType_);
+          return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus.UNRECOGNIZED : result;
+        }
+        return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus.UNKNOWN_TCU_CONNECTION_STATE;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;</code>
+       * @param value The tcuConnectionStateLowChannel to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTcuConnectionStateLowChannel(com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        attributeTypeCase_ = 38;
+        attributeType_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.TcuConnectionStateLowChannelStatus tcu_connection_state_low_channel = 38;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTcuConnectionStateLowChannel() {
+        if (attributeTypeCase_ == 38) {
+          attributeTypeCase_ = 0;
+          attributeType_ = null;
+          onChanged();
+        }
+        return this;
+      }
+
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.PrecondState, com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.Builder, com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateOrBuilder> precondStateBuilder_;
+      /**
+       * <code>.proto.PrecondState precond_state = 44;</code>
+       * @return Whether the precondState field is set.
+       */
+      @java.lang.Override
+      public boolean hasPrecondState() {
+        return attributeTypeCase_ == 44;
+      }
+      /**
+       * <code>.proto.PrecondState precond_state = 44;</code>
+       * @return The precondState.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.PrecondState getPrecondState() {
+        if (precondStateBuilder_ == null) {
+          if (attributeTypeCase_ == 44) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.PrecondState) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.getDefaultInstance();
+        } else {
+          if (attributeTypeCase_ == 44) {
+            return precondStateBuilder_.getMessage();
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.PrecondState precond_state = 44;</code>
+       */
+      public Builder setPrecondState(com.daimler.mbcarkit.proto.VehicleEvents.PrecondState value) {
+        if (precondStateBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          attributeType_ = value;
+          onChanged();
+        } else {
+          precondStateBuilder_.setMessage(value);
+        }
+        attributeTypeCase_ = 44;
+        return this;
+      }
+      /**
+       * <code>.proto.PrecondState precond_state = 44;</code>
+       */
+      public Builder setPrecondState(
+          com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.Builder builderForValue) {
+        if (precondStateBuilder_ == null) {
+          attributeType_ = builderForValue.build();
+          onChanged();
+        } else {
+          precondStateBuilder_.setMessage(builderForValue.build());
+        }
+        attributeTypeCase_ = 44;
+        return this;
+      }
+      /**
+       * <code>.proto.PrecondState precond_state = 44;</code>
+       */
+      public Builder mergePrecondState(com.daimler.mbcarkit.proto.VehicleEvents.PrecondState value) {
+        if (precondStateBuilder_ == null) {
+          if (attributeTypeCase_ == 44 &&
+              attributeType_ != com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.getDefaultInstance()) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.newBuilder((com.daimler.mbcarkit.proto.VehicleEvents.PrecondState) attributeType_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            attributeType_ = value;
+          }
+          onChanged();
+        } else {
+          if (attributeTypeCase_ == 44) {
+            precondStateBuilder_.mergeFrom(value);
+          } else {
+            precondStateBuilder_.setMessage(value);
+          }
+        }
+        attributeTypeCase_ = 44;
+        return this;
+      }
+      /**
+       * <code>.proto.PrecondState precond_state = 44;</code>
+       */
+      public Builder clearPrecondState() {
+        if (precondStateBuilder_ == null) {
+          if (attributeTypeCase_ == 44) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+            onChanged();
+          }
+        } else {
+          if (attributeTypeCase_ == 44) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+          }
+          precondStateBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.proto.PrecondState precond_state = 44;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.Builder getPrecondStateBuilder() {
+        return getPrecondStateFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.proto.PrecondState precond_state = 44;</code>
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateOrBuilder getPrecondStateOrBuilder() {
+        if ((attributeTypeCase_ == 44) && (precondStateBuilder_ != null)) {
+          return precondStateBuilder_.getMessageOrBuilder();
+        } else {
+          if (attributeTypeCase_ == 44) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.PrecondState) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.PrecondState precond_state = 44;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.PrecondState, com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.Builder, com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateOrBuilder> 
+          getPrecondStateFieldBuilder() {
+        if (precondStateBuilder_ == null) {
+          if (!(attributeTypeCase_ == 44)) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.getDefaultInstance();
+          }
+          precondStateBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.PrecondState, com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.Builder, com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateOrBuilder>(
+                  (com.daimler.mbcarkit.proto.VehicleEvents.PrecondState) attributeType_,
+                  getParentForChildren(),
+                  isClean());
+          attributeType_ = null;
+        }
+        attributeTypeCase_ = 44;
+        onChanged();
+        return precondStateBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictionsOrBuilder> chargingPowerRestrictionsBuilder_;
+      /**
+       * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+       * @return Whether the chargingPowerRestrictions field is set.
+       */
+      @java.lang.Override
+      public boolean hasChargingPowerRestrictions() {
+        return attributeTypeCase_ == 55;
+      }
+      /**
+       * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+       * @return The chargingPowerRestrictions.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions getChargingPowerRestrictions() {
+        if (chargingPowerRestrictionsBuilder_ == null) {
+          if (attributeTypeCase_ == 55) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.getDefaultInstance();
+        } else {
+          if (attributeTypeCase_ == 55) {
+            return chargingPowerRestrictionsBuilder_.getMessage();
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+       */
+      public Builder setChargingPowerRestrictions(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions value) {
+        if (chargingPowerRestrictionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          attributeType_ = value;
+          onChanged();
+        } else {
+          chargingPowerRestrictionsBuilder_.setMessage(value);
+        }
+        attributeTypeCase_ = 55;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+       */
+      public Builder setChargingPowerRestrictions(
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.Builder builderForValue) {
+        if (chargingPowerRestrictionsBuilder_ == null) {
+          attributeType_ = builderForValue.build();
+          onChanged();
+        } else {
+          chargingPowerRestrictionsBuilder_.setMessage(builderForValue.build());
+        }
+        attributeTypeCase_ = 55;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+       */
+      public Builder mergeChargingPowerRestrictions(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions value) {
+        if (chargingPowerRestrictionsBuilder_ == null) {
+          if (attributeTypeCase_ == 55 &&
+              attributeType_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.getDefaultInstance()) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.newBuilder((com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions) attributeType_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            attributeType_ = value;
+          }
+          onChanged();
+        } else {
+          if (attributeTypeCase_ == 55) {
+            chargingPowerRestrictionsBuilder_.mergeFrom(value);
+          } else {
+            chargingPowerRestrictionsBuilder_.setMessage(value);
+          }
+        }
+        attributeTypeCase_ = 55;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+       */
+      public Builder clearChargingPowerRestrictions() {
+        if (chargingPowerRestrictionsBuilder_ == null) {
+          if (attributeTypeCase_ == 55) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+            onChanged();
+          }
+        } else {
+          if (attributeTypeCase_ == 55) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+          }
+          chargingPowerRestrictionsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.Builder getChargingPowerRestrictionsBuilder() {
+        return getChargingPowerRestrictionsFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictionsOrBuilder getChargingPowerRestrictionsOrBuilder() {
+        if ((attributeTypeCase_ == 55) && (chargingPowerRestrictionsBuilder_ != null)) {
+          return chargingPowerRestrictionsBuilder_.getMessageOrBuilder();
+        } else {
+          if (attributeTypeCase_ == 55) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargingPowerRestrictions charging_power_restrictions = 55;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictionsOrBuilder> 
+          getChargingPowerRestrictionsFieldBuilder() {
+        if (chargingPowerRestrictionsBuilder_ == null) {
+          if (!(attributeTypeCase_ == 55)) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.getDefaultInstance();
+          }
+          chargingPowerRestrictionsBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictionsOrBuilder>(
+                  (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions) attributeType_,
+                  getParentForChildren(),
+                  isClean());
+          attributeType_ = null;
+        }
+        attributeTypeCase_ = 55;
+        onChanged();
+        return chargingPowerRestrictionsBuilder_;
+      }
+
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingCouplerErrorDetails charging_coupler_error_details = 56;</code>
+       * @return Whether the chargingCouplerErrorDetails field is set.
+       */
+      @java.lang.Override
+      public boolean hasChargingCouplerErrorDetails() {
+        return attributeTypeCase_ == 56;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingCouplerErrorDetails charging_coupler_error_details = 56;</code>
+       * @return The enum numeric value on the wire for chargingCouplerErrorDetails.
+       */
+      @java.lang.Override
+      public int getChargingCouplerErrorDetailsValue() {
+        if (attributeTypeCase_ == 56) {
+          return ((java.lang.Integer) attributeType_).intValue();
+        }
+        return 0;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingCouplerErrorDetails charging_coupler_error_details = 56;</code>
+       * @param value The enum numeric value on the wire for chargingCouplerErrorDetails to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargingCouplerErrorDetailsValue(int value) {
+        attributeTypeCase_ = 56;
+        attributeType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingCouplerErrorDetails charging_coupler_error_details = 56;</code>
+       * @return The chargingCouplerErrorDetails.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingCouplerErrorDetails getChargingCouplerErrorDetails() {
+        if (attributeTypeCase_ == 56) {
+          com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingCouplerErrorDetails result = com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingCouplerErrorDetails.forNumber(
+              (java.lang.Integer) attributeType_);
+          return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingCouplerErrorDetails.UNRECOGNIZED : result;
+        }
+        return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingCouplerErrorDetails.CHARING_COUPLER_ERROR_DETAILS_NO_INFO_OR_ERROR_MESSAGE;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingCouplerErrorDetails charging_coupler_error_details = 56;</code>
+       * @param value The chargingCouplerErrorDetails to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargingCouplerErrorDetails(com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingCouplerErrorDetails value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        attributeTypeCase_ = 56;
+        attributeType_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingCouplerErrorDetails charging_coupler_error_details = 56;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearChargingCouplerErrorDetails() {
+        if (attributeTypeCase_ == 56) {
+          attributeTypeCase_ = 0;
+          attributeType_ = null;
+          onChanged();
+        }
+        return this;
+      }
+
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;</code>
+       * @return Whether the chargingErrorVehicleNoSupport400v field is set.
+       */
+      @java.lang.Override
+      public boolean hasChargingErrorVehicleNoSupport400V() {
+        return attributeTypeCase_ == 58;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;</code>
+       * @return The enum numeric value on the wire for chargingErrorVehicleNoSupport400v.
+       */
+      @java.lang.Override
+      public int getChargingErrorVehicleNoSupport400VValue() {
+        if (attributeTypeCase_ == 58) {
+          return ((java.lang.Integer) attributeType_).intValue();
+        }
+        return 0;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;</code>
+       * @param value The enum numeric value on the wire for chargingErrorVehicleNoSupport400v to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargingErrorVehicleNoSupport400VValue(int value) {
+        attributeTypeCase_ = 58;
+        attributeType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;</code>
+       * @return The chargingErrorVehicleNoSupport400v.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V getChargingErrorVehicleNoSupport400V() {
+        if (attributeTypeCase_ == 58) {
+          com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V result = com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V.forNumber(
+              (java.lang.Integer) attributeType_);
+          return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V.UNRECOGNIZED : result;
+        }
+        return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V.CHARGING_ERROR_VEHICLE_NO_SUPPORT_400V_NO_INFO;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;</code>
+       * @param value The chargingErrorVehicleNoSupport400v to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargingErrorVehicleNoSupport400V(com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        attributeTypeCase_ = 58;
+        attributeType_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorVehicleNoSupport400V charging_error_vehicle_no_support_400v = 58;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearChargingErrorVehicleNoSupport400V() {
+        if (attributeTypeCase_ == 58) {
+          attributeTypeCase_ = 0;
+          attributeType_ = null;
+          onChanged();
+        }
+        return this;
+      }
+
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;</code>
+       * @return Whether the chargingErrorImpossibleChangeTo400v field is set.
+       */
+      @java.lang.Override
+      public boolean hasChargingErrorImpossibleChangeTo400V() {
+        return attributeTypeCase_ == 59;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;</code>
+       * @return The enum numeric value on the wire for chargingErrorImpossibleChangeTo400v.
+       */
+      @java.lang.Override
+      public int getChargingErrorImpossibleChangeTo400VValue() {
+        if (attributeTypeCase_ == 59) {
+          return ((java.lang.Integer) attributeType_).intValue();
+        }
+        return 0;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;</code>
+       * @param value The enum numeric value on the wire for chargingErrorImpossibleChangeTo400v to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargingErrorImpossibleChangeTo400VValue(int value) {
+        attributeTypeCase_ = 59;
+        attributeType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;</code>
+       * @return The chargingErrorImpossibleChangeTo400v.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V getChargingErrorImpossibleChangeTo400V() {
+        if (attributeTypeCase_ == 59) {
+          com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V result = com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V.forNumber(
+              (java.lang.Integer) attributeType_);
+          return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V.UNRECOGNIZED : result;
+        }
+        return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V.CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_400V_NO_INFO;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;</code>
+       * @param value The chargingErrorImpossibleChangeTo400v to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargingErrorImpossibleChangeTo400V(com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        attributeTypeCase_ = 59;
+        attributeType_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo400V charging_error_impossible_change_to_400v = 59;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearChargingErrorImpossibleChangeTo400V() {
+        if (attributeTypeCase_ == 59) {
+          attributeTypeCase_ = 0;
+          attributeType_ = null;
+          onChanged();
+        }
+        return this;
+      }
+
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;</code>
+       * @return Whether the chargingErrorImpossibleChangeTo800v field is set.
+       */
+      @java.lang.Override
+      public boolean hasChargingErrorImpossibleChangeTo800V() {
+        return attributeTypeCase_ == 60;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;</code>
+       * @return The enum numeric value on the wire for chargingErrorImpossibleChangeTo800v.
+       */
+      @java.lang.Override
+      public int getChargingErrorImpossibleChangeTo800VValue() {
+        if (attributeTypeCase_ == 60) {
+          return ((java.lang.Integer) attributeType_).intValue();
+        }
+        return 0;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;</code>
+       * @param value The enum numeric value on the wire for chargingErrorImpossibleChangeTo800v to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargingErrorImpossibleChangeTo800VValue(int value) {
+        attributeTypeCase_ = 60;
+        attributeType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;</code>
+       * @return The chargingErrorImpossibleChangeTo800v.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V getChargingErrorImpossibleChangeTo800V() {
+        if (attributeTypeCase_ == 60) {
+          com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V result = com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V.forNumber(
+              (java.lang.Integer) attributeType_);
+          return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V.UNRECOGNIZED : result;
+        }
+        return com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V.CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO_800V_NO_INFO;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;</code>
+       * @param value The chargingErrorImpossibleChangeTo800v to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargingErrorImpossibleChangeTo800V(com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        attributeTypeCase_ = 60;
+        attributeType_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.VehicleAttributeStatus.ChargingErrorImpossibleChangeTo800V charging_error_impossible_change_to_800v = 60;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearChargingErrorImpossibleChangeTo800V() {
+        if (attributeTypeCase_ == 60) {
+          attributeTypeCase_ = 0;
+          attributeType_ = null;
+          onChanged();
+        }
+        return this;
+      }
+
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSocOrBuilder> chargingPredictionSocBuilder_;
+      /**
+       * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+       * @return Whether the chargingPredictionSoc field is set.
+       */
+      @java.lang.Override
+      public boolean hasChargingPredictionSoc() {
+        return attributeTypeCase_ == 80;
+      }
+      /**
+       * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+       * @return The chargingPredictionSoc.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc getChargingPredictionSoc() {
+        if (chargingPredictionSocBuilder_ == null) {
+          if (attributeTypeCase_ == 80) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.getDefaultInstance();
+        } else {
+          if (attributeTypeCase_ == 80) {
+            return chargingPredictionSocBuilder_.getMessage();
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+       */
+      public Builder setChargingPredictionSoc(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc value) {
+        if (chargingPredictionSocBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          attributeType_ = value;
+          onChanged();
+        } else {
+          chargingPredictionSocBuilder_.setMessage(value);
+        }
+        attributeTypeCase_ = 80;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+       */
+      public Builder setChargingPredictionSoc(
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.Builder builderForValue) {
+        if (chargingPredictionSocBuilder_ == null) {
+          attributeType_ = builderForValue.build();
+          onChanged();
+        } else {
+          chargingPredictionSocBuilder_.setMessage(builderForValue.build());
+        }
+        attributeTypeCase_ = 80;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+       */
+      public Builder mergeChargingPredictionSoc(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc value) {
+        if (chargingPredictionSocBuilder_ == null) {
+          if (attributeTypeCase_ == 80 &&
+              attributeType_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.getDefaultInstance()) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.newBuilder((com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc) attributeType_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            attributeType_ = value;
+          }
+          onChanged();
+        } else {
+          if (attributeTypeCase_ == 80) {
+            chargingPredictionSocBuilder_.mergeFrom(value);
+          } else {
+            chargingPredictionSocBuilder_.setMessage(value);
+          }
+        }
+        attributeTypeCase_ = 80;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+       */
+      public Builder clearChargingPredictionSoc() {
+        if (chargingPredictionSocBuilder_ == null) {
+          if (attributeTypeCase_ == 80) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+            onChanged();
+          }
+        } else {
+          if (attributeTypeCase_ == 80) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+          }
+          chargingPredictionSocBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.Builder getChargingPredictionSocBuilder() {
+        return getChargingPredictionSocFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSocOrBuilder getChargingPredictionSocOrBuilder() {
+        if ((attributeTypeCase_ == 80) && (chargingPredictionSocBuilder_ != null)) {
+          return chargingPredictionSocBuilder_.getMessageOrBuilder();
+        } else {
+          if (attributeTypeCase_ == 80) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargingPredictionSoc charging_prediction_soc = 80;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSocOrBuilder> 
+          getChargingPredictionSocFieldBuilder() {
+        if (chargingPredictionSocBuilder_ == null) {
+          if (!(attributeTypeCase_ == 80)) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.getDefaultInstance();
+          }
+          chargingPredictionSocBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSocOrBuilder>(
+                  (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc) attributeType_,
+                  getParentForChildren(),
+                  isClean());
+          attributeType_ = null;
+        }
+        attributeTypeCase_ = 80;
+        onChanged();
+        return chargingPredictionSocBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTimeOrBuilder> chargingPredictionDepartureTimeBuilder_;
+      /**
+       * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+       * @return Whether the chargingPredictionDepartureTime field is set.
+       */
+      @java.lang.Override
+      public boolean hasChargingPredictionDepartureTime() {
+        return attributeTypeCase_ == 81;
+      }
+      /**
+       * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+       * @return The chargingPredictionDepartureTime.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime getChargingPredictionDepartureTime() {
+        if (chargingPredictionDepartureTimeBuilder_ == null) {
+          if (attributeTypeCase_ == 81) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.getDefaultInstance();
+        } else {
+          if (attributeTypeCase_ == 81) {
+            return chargingPredictionDepartureTimeBuilder_.getMessage();
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+       */
+      public Builder setChargingPredictionDepartureTime(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime value) {
+        if (chargingPredictionDepartureTimeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          attributeType_ = value;
+          onChanged();
+        } else {
+          chargingPredictionDepartureTimeBuilder_.setMessage(value);
+        }
+        attributeTypeCase_ = 81;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+       */
+      public Builder setChargingPredictionDepartureTime(
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.Builder builderForValue) {
+        if (chargingPredictionDepartureTimeBuilder_ == null) {
+          attributeType_ = builderForValue.build();
+          onChanged();
+        } else {
+          chargingPredictionDepartureTimeBuilder_.setMessage(builderForValue.build());
+        }
+        attributeTypeCase_ = 81;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+       */
+      public Builder mergeChargingPredictionDepartureTime(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime value) {
+        if (chargingPredictionDepartureTimeBuilder_ == null) {
+          if (attributeTypeCase_ == 81 &&
+              attributeType_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.getDefaultInstance()) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.newBuilder((com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime) attributeType_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            attributeType_ = value;
+          }
+          onChanged();
+        } else {
+          if (attributeTypeCase_ == 81) {
+            chargingPredictionDepartureTimeBuilder_.mergeFrom(value);
+          } else {
+            chargingPredictionDepartureTimeBuilder_.setMessage(value);
+          }
+        }
+        attributeTypeCase_ = 81;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+       */
+      public Builder clearChargingPredictionDepartureTime() {
+        if (chargingPredictionDepartureTimeBuilder_ == null) {
+          if (attributeTypeCase_ == 81) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+            onChanged();
+          }
+        } else {
+          if (attributeTypeCase_ == 81) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+          }
+          chargingPredictionDepartureTimeBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.Builder getChargingPredictionDepartureTimeBuilder() {
+        return getChargingPredictionDepartureTimeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTimeOrBuilder getChargingPredictionDepartureTimeOrBuilder() {
+        if ((attributeTypeCase_ == 81) && (chargingPredictionDepartureTimeBuilder_ != null)) {
+          return chargingPredictionDepartureTimeBuilder_.getMessageOrBuilder();
+        } else {
+          if (attributeTypeCase_ == 81) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargingPredictionDepartureTime charging_prediction_departure_time = 81;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTimeOrBuilder> 
+          getChargingPredictionDepartureTimeFieldBuilder() {
+        if (chargingPredictionDepartureTimeBuilder_ == null) {
+          if (!(attributeTypeCase_ == 81)) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.getDefaultInstance();
+          }
+          chargingPredictionDepartureTimeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTimeOrBuilder>(
+                  (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime) attributeType_,
+                  getParentForChildren(),
+                  isClean());
+          attributeType_ = null;
+        }
+        attributeTypeCase_ = 81;
+        onChanged();
+        return chargingPredictionDepartureTimeBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsOrBuilder> chargeFlapsBuilder_;
+      /**
+       * <pre>
+       * ChargingScheduleActive charging_schedule_active = 82;
+       * </pre>
+       *
+       * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+       * @return Whether the chargeFlaps field is set.
+       */
+      @java.lang.Override
+      public boolean hasChargeFlaps() {
+        return attributeTypeCase_ == 84;
+      }
+      /**
+       * <pre>
+       * ChargingScheduleActive charging_schedule_active = 82;
+       * </pre>
+       *
+       * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+       * @return The chargeFlaps.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps getChargeFlaps() {
+        if (chargeFlapsBuilder_ == null) {
+          if (attributeTypeCase_ == 84) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.getDefaultInstance();
+        } else {
+          if (attributeTypeCase_ == 84) {
+            return chargeFlapsBuilder_.getMessage();
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.getDefaultInstance();
+        }
+      }
+      /**
+       * <pre>
+       * ChargingScheduleActive charging_schedule_active = 82;
+       * </pre>
+       *
+       * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+       */
+      public Builder setChargeFlaps(com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps value) {
+        if (chargeFlapsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          attributeType_ = value;
+          onChanged();
+        } else {
+          chargeFlapsBuilder_.setMessage(value);
+        }
+        attributeTypeCase_ = 84;
+        return this;
+      }
+      /**
+       * <pre>
+       * ChargingScheduleActive charging_schedule_active = 82;
+       * </pre>
+       *
+       * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+       */
+      public Builder setChargeFlaps(
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.Builder builderForValue) {
+        if (chargeFlapsBuilder_ == null) {
+          attributeType_ = builderForValue.build();
+          onChanged();
+        } else {
+          chargeFlapsBuilder_.setMessage(builderForValue.build());
+        }
+        attributeTypeCase_ = 84;
+        return this;
+      }
+      /**
+       * <pre>
+       * ChargingScheduleActive charging_schedule_active = 82;
+       * </pre>
+       *
+       * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+       */
+      public Builder mergeChargeFlaps(com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps value) {
+        if (chargeFlapsBuilder_ == null) {
+          if (attributeTypeCase_ == 84 &&
+              attributeType_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.getDefaultInstance()) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.newBuilder((com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps) attributeType_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            attributeType_ = value;
+          }
+          onChanged();
+        } else {
+          if (attributeTypeCase_ == 84) {
+            chargeFlapsBuilder_.mergeFrom(value);
+          } else {
+            chargeFlapsBuilder_.setMessage(value);
+          }
+        }
+        attributeTypeCase_ = 84;
+        return this;
+      }
+      /**
+       * <pre>
+       * ChargingScheduleActive charging_schedule_active = 82;
+       * </pre>
+       *
+       * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+       */
+      public Builder clearChargeFlaps() {
+        if (chargeFlapsBuilder_ == null) {
+          if (attributeTypeCase_ == 84) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+            onChanged();
+          }
+        } else {
+          if (attributeTypeCase_ == 84) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+          }
+          chargeFlapsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * ChargingScheduleActive charging_schedule_active = 82;
+       * </pre>
+       *
+       * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.Builder getChargeFlapsBuilder() {
+        return getChargeFlapsFieldBuilder().getBuilder();
+      }
+      /**
+       * <pre>
+       * ChargingScheduleActive charging_schedule_active = 82;
+       * </pre>
+       *
+       * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsOrBuilder getChargeFlapsOrBuilder() {
+        if ((attributeTypeCase_ == 84) && (chargeFlapsBuilder_ != null)) {
+          return chargeFlapsBuilder_.getMessageOrBuilder();
+        } else {
+          if (attributeTypeCase_ == 84) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.getDefaultInstance();
+        }
+      }
+      /**
+       * <pre>
+       * ChargingScheduleActive charging_schedule_active = 82;
+       * </pre>
+       *
+       * <code>.proto.ChargeFlaps charge_flaps = 84;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsOrBuilder> 
+          getChargeFlapsFieldBuilder() {
+        if (chargeFlapsBuilder_ == null) {
+          if (!(attributeTypeCase_ == 84)) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.getDefaultInstance();
+          }
+          chargeFlapsBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsOrBuilder>(
+                  (com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps) attributeType_,
+                  getParentForChildren(),
+                  isClean());
+          attributeType_ = null;
+        }
+        attributeTypeCase_ = 84;
+        onChanged();
+        return chargeFlapsBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsOrBuilder> chargeInletsBuilder_;
+      /**
+       * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+       * @return Whether the chargeInlets field is set.
+       */
+      @java.lang.Override
+      public boolean hasChargeInlets() {
+        return attributeTypeCase_ == 85;
+      }
+      /**
+       * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+       * @return The chargeInlets.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets getChargeInlets() {
+        if (chargeInletsBuilder_ == null) {
+          if (attributeTypeCase_ == 85) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.getDefaultInstance();
+        } else {
+          if (attributeTypeCase_ == 85) {
+            return chargeInletsBuilder_.getMessage();
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+       */
+      public Builder setChargeInlets(com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets value) {
+        if (chargeInletsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          attributeType_ = value;
+          onChanged();
+        } else {
+          chargeInletsBuilder_.setMessage(value);
+        }
+        attributeTypeCase_ = 85;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+       */
+      public Builder setChargeInlets(
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.Builder builderForValue) {
+        if (chargeInletsBuilder_ == null) {
+          attributeType_ = builderForValue.build();
+          onChanged();
+        } else {
+          chargeInletsBuilder_.setMessage(builderForValue.build());
+        }
+        attributeTypeCase_ = 85;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+       */
+      public Builder mergeChargeInlets(com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets value) {
+        if (chargeInletsBuilder_ == null) {
+          if (attributeTypeCase_ == 85 &&
+              attributeType_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.getDefaultInstance()) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.newBuilder((com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets) attributeType_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            attributeType_ = value;
+          }
+          onChanged();
+        } else {
+          if (attributeTypeCase_ == 85) {
+            chargeInletsBuilder_.mergeFrom(value);
+          } else {
+            chargeInletsBuilder_.setMessage(value);
+          }
+        }
+        attributeTypeCase_ = 85;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+       */
+      public Builder clearChargeInlets() {
+        if (chargeInletsBuilder_ == null) {
+          if (attributeTypeCase_ == 85) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+            onChanged();
+          }
+        } else {
+          if (attributeTypeCase_ == 85) {
+            attributeTypeCase_ = 0;
+            attributeType_ = null;
+          }
+          chargeInletsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.Builder getChargeInletsBuilder() {
+        return getChargeInletsFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsOrBuilder getChargeInletsOrBuilder() {
+        if ((attributeTypeCase_ == 85) && (chargeInletsBuilder_ != null)) {
+          return chargeInletsBuilder_.getMessageOrBuilder();
+        } else {
+          if (attributeTypeCase_ == 85) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets) attributeType_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargeInlets charge_inlets = 85;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsOrBuilder> 
+          getChargeInletsFieldBuilder() {
+        if (chargeInletsBuilder_ == null) {
+          if (!(attributeTypeCase_ == 85)) {
+            attributeType_ = com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.getDefaultInstance();
+          }
+          chargeInletsBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsOrBuilder>(
+                  (com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets) attributeType_,
+                  getParentForChildren(),
+                  isClean());
+          attributeType_ = null;
+        }
+        attributeTypeCase_ = 85;
+        onChanged();
+        return chargeInletsBuilder_;
+      }
+
       // @@protoc_insertion_point(builder_scope:proto.VehicleAttributeStatus)
     }
 
@@ -8679,6 +12510,8153 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
 
     @java.lang.Override
     public com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ChargingPredictionSocOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.ChargingPredictionSoc)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+     * @return Whether the predictedEndTime field is set.
+     */
+    boolean hasPredictedEndTime();
+    /**
+     * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+     * @return The predictedEndTime.
+     */
+    com.google.protobuf.Timestamp getPredictedEndTime();
+    /**
+     * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+     */
+    com.google.protobuf.TimestampOrBuilder getPredictedEndTimeOrBuilder();
+
+    /**
+     * <code>int64 predicted_electrical_energy_range = 2;</code>
+     * @return The predictedElectricalEnergyRange.
+     */
+    long getPredictedElectricalEnergyRange();
+  }
+  /**
+   * Protobuf type {@code proto.ChargingPredictionSoc}
+   */
+  public static final class ChargingPredictionSoc extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.ChargingPredictionSoc)
+      ChargingPredictionSocOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargingPredictionSoc.class.getName());
+    }
+    // Use ChargingPredictionSoc.newBuilder() to construct.
+    private ChargingPredictionSoc(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ChargingPredictionSoc() {
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPredictionSoc_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPredictionSoc_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int PREDICTED_END_TIME_FIELD_NUMBER = 1;
+    private com.google.protobuf.Timestamp predictedEndTime_;
+    /**
+     * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+     * @return Whether the predictedEndTime field is set.
+     */
+    @java.lang.Override
+    public boolean hasPredictedEndTime() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+     * @return The predictedEndTime.
+     */
+    @java.lang.Override
+    public com.google.protobuf.Timestamp getPredictedEndTime() {
+      return predictedEndTime_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : predictedEndTime_;
+    }
+    /**
+     * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+     */
+    @java.lang.Override
+    public com.google.protobuf.TimestampOrBuilder getPredictedEndTimeOrBuilder() {
+      return predictedEndTime_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : predictedEndTime_;
+    }
+
+    public static final int PREDICTED_ELECTRICAL_ENERGY_RANGE_FIELD_NUMBER = 2;
+    private long predictedElectricalEnergyRange_ = 0L;
+    /**
+     * <code>int64 predicted_electrical_energy_range = 2;</code>
+     * @return The predictedElectricalEnergyRange.
+     */
+    @java.lang.Override
+    public long getPredictedElectricalEnergyRange() {
+      return predictedElectricalEnergyRange_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) != 0)) {
+        output.writeMessage(1, getPredictedEndTime());
+      }
+      if (predictedElectricalEnergyRange_ != 0L) {
+        output.writeInt64(2, predictedElectricalEnergyRange_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getPredictedEndTime());
+      }
+      if (predictedElectricalEnergyRange_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, predictedElectricalEnergyRange_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc other = (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc) obj;
+
+      if (hasPredictedEndTime() != other.hasPredictedEndTime()) return false;
+      if (hasPredictedEndTime()) {
+        if (!getPredictedEndTime()
+            .equals(other.getPredictedEndTime())) return false;
+      }
+      if (getPredictedElectricalEnergyRange()
+          != other.getPredictedElectricalEnergyRange()) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasPredictedEndTime()) {
+        hash = (37 * hash) + PREDICTED_END_TIME_FIELD_NUMBER;
+        hash = (53 * hash) + getPredictedEndTime().hashCode();
+      }
+      hash = (37 * hash) + PREDICTED_ELECTRICAL_ENERGY_RANGE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getPredictedElectricalEnergyRange());
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.ChargingPredictionSoc}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.ChargingPredictionSoc)
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSocOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPredictionSoc_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPredictionSoc_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage
+                .alwaysUseFieldBuilders) {
+          getPredictedEndTimeFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        predictedEndTime_ = null;
+        if (predictedEndTimeBuilder_ != null) {
+          predictedEndTimeBuilder_.dispose();
+          predictedEndTimeBuilder_ = null;
+        }
+        predictedElectricalEnergyRange_ = 0L;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPredictionSoc_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc result = new com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.predictedEndTime_ = predictedEndTimeBuilder_ == null
+              ? predictedEndTime_
+              : predictedEndTimeBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.predictedElectricalEnergyRange_ = predictedElectricalEnergyRange_;
+        }
+        result.bitField0_ |= to_bitField0_;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc.getDefaultInstance()) return this;
+        if (other.hasPredictedEndTime()) {
+          mergePredictedEndTime(other.getPredictedEndTime());
+        }
+        if (other.getPredictedElectricalEnergyRange() != 0L) {
+          setPredictedElectricalEnergyRange(other.getPredictedElectricalEnergyRange());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                input.readMessage(
+                    getPredictedEndTimeFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 16: {
+                predictedElectricalEnergyRange_ = input.readInt64();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private com.google.protobuf.Timestamp predictedEndTime_;
+      private com.google.protobuf.SingleFieldBuilder<
+          com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> predictedEndTimeBuilder_;
+      /**
+       * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+       * @return Whether the predictedEndTime field is set.
+       */
+      public boolean hasPredictedEndTime() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+       * @return The predictedEndTime.
+       */
+      public com.google.protobuf.Timestamp getPredictedEndTime() {
+        if (predictedEndTimeBuilder_ == null) {
+          return predictedEndTime_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : predictedEndTime_;
+        } else {
+          return predictedEndTimeBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+       */
+      public Builder setPredictedEndTime(com.google.protobuf.Timestamp value) {
+        if (predictedEndTimeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          predictedEndTime_ = value;
+        } else {
+          predictedEndTimeBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+       */
+      public Builder setPredictedEndTime(
+          com.google.protobuf.Timestamp.Builder builderForValue) {
+        if (predictedEndTimeBuilder_ == null) {
+          predictedEndTime_ = builderForValue.build();
+        } else {
+          predictedEndTimeBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+       */
+      public Builder mergePredictedEndTime(com.google.protobuf.Timestamp value) {
+        if (predictedEndTimeBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0) &&
+            predictedEndTime_ != null &&
+            predictedEndTime_ != com.google.protobuf.Timestamp.getDefaultInstance()) {
+            getPredictedEndTimeBuilder().mergeFrom(value);
+          } else {
+            predictedEndTime_ = value;
+          }
+        } else {
+          predictedEndTimeBuilder_.mergeFrom(value);
+        }
+        if (predictedEndTime_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+       */
+      public Builder clearPredictedEndTime() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        predictedEndTime_ = null;
+        if (predictedEndTimeBuilder_ != null) {
+          predictedEndTimeBuilder_.dispose();
+          predictedEndTimeBuilder_ = null;
+        }
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+       */
+      public com.google.protobuf.Timestamp.Builder getPredictedEndTimeBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getPredictedEndTimeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+       */
+      public com.google.protobuf.TimestampOrBuilder getPredictedEndTimeOrBuilder() {
+        if (predictedEndTimeBuilder_ != null) {
+          return predictedEndTimeBuilder_.getMessageOrBuilder();
+        } else {
+          return predictedEndTime_ == null ?
+              com.google.protobuf.Timestamp.getDefaultInstance() : predictedEndTime_;
+        }
+      }
+      /**
+       * <code>.google.protobuf.Timestamp predicted_end_time = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+          getPredictedEndTimeFieldBuilder() {
+        if (predictedEndTimeBuilder_ == null) {
+          predictedEndTimeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>(
+                  getPredictedEndTime(),
+                  getParentForChildren(),
+                  isClean());
+          predictedEndTime_ = null;
+        }
+        return predictedEndTimeBuilder_;
+      }
+
+      private long predictedElectricalEnergyRange_ ;
+      /**
+       * <code>int64 predicted_electrical_energy_range = 2;</code>
+       * @return The predictedElectricalEnergyRange.
+       */
+      @java.lang.Override
+      public long getPredictedElectricalEnergyRange() {
+        return predictedElectricalEnergyRange_;
+      }
+      /**
+       * <code>int64 predicted_electrical_energy_range = 2;</code>
+       * @param value The predictedElectricalEnergyRange to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPredictedElectricalEnergyRange(long value) {
+
+        predictedElectricalEnergyRange_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 predicted_electrical_energy_range = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPredictedElectricalEnergyRange() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        predictedElectricalEnergyRange_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.ChargingPredictionSoc)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.ChargingPredictionSoc)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ChargingPredictionSoc>
+        PARSER = new com.google.protobuf.AbstractParser<ChargingPredictionSoc>() {
+      @java.lang.Override
+      public ChargingPredictionSoc parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ChargingPredictionSoc> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChargingPredictionSoc> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ChargingPredictionDepartureTimeOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.ChargingPredictionDepartureTime)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 predicted_soc = 1;</code>
+     * @return The predictedSoc.
+     */
+    int getPredictedSoc();
+
+    /**
+     * <code>int64 predicted_electrical_energy_range = 2;</code>
+     * @return The predictedElectricalEnergyRange.
+     */
+    long getPredictedElectricalEnergyRange();
+  }
+  /**
+   * Protobuf type {@code proto.ChargingPredictionDepartureTime}
+   */
+  public static final class ChargingPredictionDepartureTime extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.ChargingPredictionDepartureTime)
+      ChargingPredictionDepartureTimeOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargingPredictionDepartureTime.class.getName());
+    }
+    // Use ChargingPredictionDepartureTime.newBuilder() to construct.
+    private ChargingPredictionDepartureTime(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ChargingPredictionDepartureTime() {
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPredictionDepartureTime_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPredictionDepartureTime_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.Builder.class);
+    }
+
+    public static final int PREDICTED_SOC_FIELD_NUMBER = 1;
+    private int predictedSoc_ = 0;
+    /**
+     * <code>int32 predicted_soc = 1;</code>
+     * @return The predictedSoc.
+     */
+    @java.lang.Override
+    public int getPredictedSoc() {
+      return predictedSoc_;
+    }
+
+    public static final int PREDICTED_ELECTRICAL_ENERGY_RANGE_FIELD_NUMBER = 2;
+    private long predictedElectricalEnergyRange_ = 0L;
+    /**
+     * <code>int64 predicted_electrical_energy_range = 2;</code>
+     * @return The predictedElectricalEnergyRange.
+     */
+    @java.lang.Override
+    public long getPredictedElectricalEnergyRange() {
+      return predictedElectricalEnergyRange_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (predictedSoc_ != 0) {
+        output.writeInt32(1, predictedSoc_);
+      }
+      if (predictedElectricalEnergyRange_ != 0L) {
+        output.writeInt64(2, predictedElectricalEnergyRange_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (predictedSoc_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, predictedSoc_);
+      }
+      if (predictedElectricalEnergyRange_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, predictedElectricalEnergyRange_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime other = (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime) obj;
+
+      if (getPredictedSoc()
+          != other.getPredictedSoc()) return false;
+      if (getPredictedElectricalEnergyRange()
+          != other.getPredictedElectricalEnergyRange()) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + PREDICTED_SOC_FIELD_NUMBER;
+      hash = (53 * hash) + getPredictedSoc();
+      hash = (37 * hash) + PREDICTED_ELECTRICAL_ENERGY_RANGE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getPredictedElectricalEnergyRange());
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.ChargingPredictionDepartureTime}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.ChargingPredictionDepartureTime)
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTimeOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPredictionDepartureTime_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPredictionDepartureTime_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        predictedSoc_ = 0;
+        predictedElectricalEnergyRange_ = 0L;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPredictionDepartureTime_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime result = new com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.predictedSoc_ = predictedSoc_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.predictedElectricalEnergyRange_ = predictedElectricalEnergyRange_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime.getDefaultInstance()) return this;
+        if (other.getPredictedSoc() != 0) {
+          setPredictedSoc(other.getPredictedSoc());
+        }
+        if (other.getPredictedElectricalEnergyRange() != 0L) {
+          setPredictedElectricalEnergyRange(other.getPredictedElectricalEnergyRange());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                predictedSoc_ = input.readInt32();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 16: {
+                predictedElectricalEnergyRange_ = input.readInt64();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private int predictedSoc_ ;
+      /**
+       * <code>int32 predicted_soc = 1;</code>
+       * @return The predictedSoc.
+       */
+      @java.lang.Override
+      public int getPredictedSoc() {
+        return predictedSoc_;
+      }
+      /**
+       * <code>int32 predicted_soc = 1;</code>
+       * @param value The predictedSoc to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPredictedSoc(int value) {
+
+        predictedSoc_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 predicted_soc = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPredictedSoc() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        predictedSoc_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private long predictedElectricalEnergyRange_ ;
+      /**
+       * <code>int64 predicted_electrical_energy_range = 2;</code>
+       * @return The predictedElectricalEnergyRange.
+       */
+      @java.lang.Override
+      public long getPredictedElectricalEnergyRange() {
+        return predictedElectricalEnergyRange_;
+      }
+      /**
+       * <code>int64 predicted_electrical_energy_range = 2;</code>
+       * @param value The predictedElectricalEnergyRange to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPredictedElectricalEnergyRange(long value) {
+
+        predictedElectricalEnergyRange_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 predicted_electrical_energy_range = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPredictedElectricalEnergyRange() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        predictedElectricalEnergyRange_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.ChargingPredictionDepartureTime)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.ChargingPredictionDepartureTime)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ChargingPredictionDepartureTime>
+        PARSER = new com.google.protobuf.AbstractParser<ChargingPredictionDepartureTime>() {
+      @java.lang.Override
+      public ChargingPredictionDepartureTime parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ChargingPredictionDepartureTime> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChargingPredictionDepartureTime> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionDepartureTime getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ChargeInletsEntryOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.ChargeInletsEntry)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int64 id = 1;</code>
+     * @return The id.
+     */
+    long getId();
+
+    /**
+     * <code>.proto.ChargeInletsEntry.ChargeInletsCouplerState coupler_state = 2;</code>
+     * @return The enum numeric value on the wire for couplerState.
+     */
+    int getCouplerStateValue();
+    /**
+     * <code>.proto.ChargeInletsEntry.ChargeInletsCouplerState coupler_state = 2;</code>
+     * @return The couplerState.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState getCouplerState();
+
+    /**
+     * <code>.proto.ChargeInletsEntry.ChargeInletsLockState lock_state = 3;</code>
+     * @return The enum numeric value on the wire for lockState.
+     */
+    int getLockStateValue();
+    /**
+     * <code>.proto.ChargeInletsEntry.ChargeInletsLockState lock_state = 3;</code>
+     * @return The lockState.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState getLockState();
+  }
+  /**
+   * Protobuf type {@code proto.ChargeInletsEntry}
+   */
+  public static final class ChargeInletsEntry extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.ChargeInletsEntry)
+      ChargeInletsEntryOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargeInletsEntry.class.getName());
+    }
+    // Use ChargeInletsEntry.newBuilder() to construct.
+    private ChargeInletsEntry(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ChargeInletsEntry() {
+      couplerState_ = 0;
+      lockState_ = 0;
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeInletsEntry_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeInletsEntry_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.Builder.class);
+    }
+
+    /**
+     * Protobuf enum {@code proto.ChargeInletsEntry.ChargeInletsCouplerState}
+     */
+    public enum ChargeInletsCouplerState
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>CHARGE_INLETS_COUPLER_STATE_UNKNOWN = 0;</code>
+       */
+      CHARGE_INLETS_COUPLER_STATE_UNKNOWN(0),
+      /**
+       * <code>CHARGE_INLETS_COUPLER_STATE_PLUGGED = 1;</code>
+       */
+      CHARGE_INLETS_COUPLER_STATE_PLUGGED(1),
+      /**
+       * <code>CHARGE_INLETS_COUPLER_STATE_VEHICLE_PLUGGED = 2;</code>
+       */
+      CHARGE_INLETS_COUPLER_STATE_VEHICLE_PLUGGED(2),
+      /**
+       * <code>CHARGE_INLETS_COUPLER_STATE_VEHICLE_NOT_PLUGGED = 3;</code>
+       */
+      CHARGE_INLETS_COUPLER_STATE_VEHICLE_NOT_PLUGGED(3),
+      /**
+       * <code>CHARGE_INLETS_COUPLER_STATE_DEFECT = 4;</code>
+       */
+      CHARGE_INLETS_COUPLER_STATE_DEFECT(4),
+      UNRECOGNIZED(-1),
+      ;
+
+      static {
+        com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+          com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+          /* major= */ 4,
+          /* minor= */ 27,
+          /* patch= */ 5,
+          /* suffix= */ "",
+          ChargeInletsCouplerState.class.getName());
+      }
+      /**
+       * <code>CHARGE_INLETS_COUPLER_STATE_UNKNOWN = 0;</code>
+       */
+      public static final int CHARGE_INLETS_COUPLER_STATE_UNKNOWN_VALUE = 0;
+      /**
+       * <code>CHARGE_INLETS_COUPLER_STATE_PLUGGED = 1;</code>
+       */
+      public static final int CHARGE_INLETS_COUPLER_STATE_PLUGGED_VALUE = 1;
+      /**
+       * <code>CHARGE_INLETS_COUPLER_STATE_VEHICLE_PLUGGED = 2;</code>
+       */
+      public static final int CHARGE_INLETS_COUPLER_STATE_VEHICLE_PLUGGED_VALUE = 2;
+      /**
+       * <code>CHARGE_INLETS_COUPLER_STATE_VEHICLE_NOT_PLUGGED = 3;</code>
+       */
+      public static final int CHARGE_INLETS_COUPLER_STATE_VEHICLE_NOT_PLUGGED_VALUE = 3;
+      /**
+       * <code>CHARGE_INLETS_COUPLER_STATE_DEFECT = 4;</code>
+       */
+      public static final int CHARGE_INLETS_COUPLER_STATE_DEFECT_VALUE = 4;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static ChargeInletsCouplerState valueOf(int value) {
+        return forNumber(value);
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
+      public static ChargeInletsCouplerState forNumber(int value) {
+        switch (value) {
+          case 0: return CHARGE_INLETS_COUPLER_STATE_UNKNOWN;
+          case 1: return CHARGE_INLETS_COUPLER_STATE_PLUGGED;
+          case 2: return CHARGE_INLETS_COUPLER_STATE_VEHICLE_PLUGGED;
+          case 3: return CHARGE_INLETS_COUPLER_STATE_VEHICLE_NOT_PLUGGED;
+          case 4: return CHARGE_INLETS_COUPLER_STATE_DEFECT;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<ChargeInletsCouplerState>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          ChargeInletsCouplerState> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<ChargeInletsCouplerState>() {
+              public ChargeInletsCouplerState findValueByNumber(int number) {
+                return ChargeInletsCouplerState.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.getDescriptor().getEnumTypes().get(0);
+      }
+
+      private static final ChargeInletsCouplerState[] VALUES = values();
+
+      public static ChargeInletsCouplerState valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private ChargeInletsCouplerState(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:proto.ChargeInletsEntry.ChargeInletsCouplerState)
+    }
+
+    /**
+     * Protobuf enum {@code proto.ChargeInletsEntry.ChargeInletsLockState}
+     */
+    public enum ChargeInletsLockState
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>CHARGE_INLETS_LOCK_STATE_UNKNOWN = 0;</code>
+       */
+      CHARGE_INLETS_LOCK_STATE_UNKNOWN(0),
+      /**
+       * <code>CHARGE_INLETS_LOCK_STATE_UNLOCKED = 1;</code>
+       */
+      CHARGE_INLETS_LOCK_STATE_UNLOCKED(1),
+      /**
+       * <code>CHARGE_INLETS_LOCK_STATE_LOCKED = 2;</code>
+       */
+      CHARGE_INLETS_LOCK_STATE_LOCKED(2),
+      /**
+       * <code>CHARGE_INLETS_LOCK_STATE_LOCK_STATE_NOT_CLEAR = 3;</code>
+       */
+      CHARGE_INLETS_LOCK_STATE_LOCK_STATE_NOT_CLEAR(3),
+      /**
+       * <code>CHARGE_INLETS_LOCK_STATE_NOT_AVAILABLE = 4;</code>
+       */
+      CHARGE_INLETS_LOCK_STATE_NOT_AVAILABLE(4),
+      UNRECOGNIZED(-1),
+      ;
+
+      static {
+        com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+          com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+          /* major= */ 4,
+          /* minor= */ 27,
+          /* patch= */ 5,
+          /* suffix= */ "",
+          ChargeInletsLockState.class.getName());
+      }
+      /**
+       * <code>CHARGE_INLETS_LOCK_STATE_UNKNOWN = 0;</code>
+       */
+      public static final int CHARGE_INLETS_LOCK_STATE_UNKNOWN_VALUE = 0;
+      /**
+       * <code>CHARGE_INLETS_LOCK_STATE_UNLOCKED = 1;</code>
+       */
+      public static final int CHARGE_INLETS_LOCK_STATE_UNLOCKED_VALUE = 1;
+      /**
+       * <code>CHARGE_INLETS_LOCK_STATE_LOCKED = 2;</code>
+       */
+      public static final int CHARGE_INLETS_LOCK_STATE_LOCKED_VALUE = 2;
+      /**
+       * <code>CHARGE_INLETS_LOCK_STATE_LOCK_STATE_NOT_CLEAR = 3;</code>
+       */
+      public static final int CHARGE_INLETS_LOCK_STATE_LOCK_STATE_NOT_CLEAR_VALUE = 3;
+      /**
+       * <code>CHARGE_INLETS_LOCK_STATE_NOT_AVAILABLE = 4;</code>
+       */
+      public static final int CHARGE_INLETS_LOCK_STATE_NOT_AVAILABLE_VALUE = 4;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static ChargeInletsLockState valueOf(int value) {
+        return forNumber(value);
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
+      public static ChargeInletsLockState forNumber(int value) {
+        switch (value) {
+          case 0: return CHARGE_INLETS_LOCK_STATE_UNKNOWN;
+          case 1: return CHARGE_INLETS_LOCK_STATE_UNLOCKED;
+          case 2: return CHARGE_INLETS_LOCK_STATE_LOCKED;
+          case 3: return CHARGE_INLETS_LOCK_STATE_LOCK_STATE_NOT_CLEAR;
+          case 4: return CHARGE_INLETS_LOCK_STATE_NOT_AVAILABLE;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<ChargeInletsLockState>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          ChargeInletsLockState> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<ChargeInletsLockState>() {
+              public ChargeInletsLockState findValueByNumber(int number) {
+                return ChargeInletsLockState.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.getDescriptor().getEnumTypes().get(1);
+      }
+
+      private static final ChargeInletsLockState[] VALUES = values();
+
+      public static ChargeInletsLockState valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private ChargeInletsLockState(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:proto.ChargeInletsEntry.ChargeInletsLockState)
+    }
+
+    public static final int ID_FIELD_NUMBER = 1;
+    private long id_ = 0L;
+    /**
+     * <code>int64 id = 1;</code>
+     * @return The id.
+     */
+    @java.lang.Override
+    public long getId() {
+      return id_;
+    }
+
+    public static final int COUPLER_STATE_FIELD_NUMBER = 2;
+    private int couplerState_ = 0;
+    /**
+     * <code>.proto.ChargeInletsEntry.ChargeInletsCouplerState coupler_state = 2;</code>
+     * @return The enum numeric value on the wire for couplerState.
+     */
+    @java.lang.Override public int getCouplerStateValue() {
+      return couplerState_;
+    }
+    /**
+     * <code>.proto.ChargeInletsEntry.ChargeInletsCouplerState coupler_state = 2;</code>
+     * @return The couplerState.
+     */
+    @java.lang.Override public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState getCouplerState() {
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState result = com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState.forNumber(couplerState_);
+      return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState.UNRECOGNIZED : result;
+    }
+
+    public static final int LOCK_STATE_FIELD_NUMBER = 3;
+    private int lockState_ = 0;
+    /**
+     * <code>.proto.ChargeInletsEntry.ChargeInletsLockState lock_state = 3;</code>
+     * @return The enum numeric value on the wire for lockState.
+     */
+    @java.lang.Override public int getLockStateValue() {
+      return lockState_;
+    }
+    /**
+     * <code>.proto.ChargeInletsEntry.ChargeInletsLockState lock_state = 3;</code>
+     * @return The lockState.
+     */
+    @java.lang.Override public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState getLockState() {
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState result = com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState.forNumber(lockState_);
+      return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState.UNRECOGNIZED : result;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (id_ != 0L) {
+        output.writeInt64(1, id_);
+      }
+      if (couplerState_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState.CHARGE_INLETS_COUPLER_STATE_UNKNOWN.getNumber()) {
+        output.writeEnum(2, couplerState_);
+      }
+      if (lockState_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState.CHARGE_INLETS_LOCK_STATE_UNKNOWN.getNumber()) {
+        output.writeEnum(3, lockState_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (id_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, id_);
+      }
+      if (couplerState_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState.CHARGE_INLETS_COUPLER_STATE_UNKNOWN.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, couplerState_);
+      }
+      if (lockState_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState.CHARGE_INLETS_LOCK_STATE_UNKNOWN.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(3, lockState_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry other = (com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry) obj;
+
+      if (getId()
+          != other.getId()) return false;
+      if (couplerState_ != other.couplerState_) return false;
+      if (lockState_ != other.lockState_) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + ID_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getId());
+      hash = (37 * hash) + COUPLER_STATE_FIELD_NUMBER;
+      hash = (53 * hash) + couplerState_;
+      hash = (37 * hash) + LOCK_STATE_FIELD_NUMBER;
+      hash = (53 * hash) + lockState_;
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.ChargeInletsEntry}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.ChargeInletsEntry)
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntryOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeInletsEntry_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeInletsEntry_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        id_ = 0L;
+        couplerState_ = 0;
+        lockState_ = 0;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeInletsEntry_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry result = new com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.id_ = id_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.couplerState_ = couplerState_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.lockState_ = lockState_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.getDefaultInstance()) return this;
+        if (other.getId() != 0L) {
+          setId(other.getId());
+        }
+        if (other.couplerState_ != 0) {
+          setCouplerStateValue(other.getCouplerStateValue());
+        }
+        if (other.lockState_ != 0) {
+          setLockStateValue(other.getLockStateValue());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                id_ = input.readInt64();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 16: {
+                couplerState_ = input.readEnum();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              case 24: {
+                lockState_ = input.readEnum();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private long id_ ;
+      /**
+       * <code>int64 id = 1;</code>
+       * @return The id.
+       */
+      @java.lang.Override
+      public long getId() {
+        return id_;
+      }
+      /**
+       * <code>int64 id = 1;</code>
+       * @param value The id to set.
+       * @return This builder for chaining.
+       */
+      public Builder setId(long value) {
+
+        id_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 id = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        id_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private int couplerState_ = 0;
+      /**
+       * <code>.proto.ChargeInletsEntry.ChargeInletsCouplerState coupler_state = 2;</code>
+       * @return The enum numeric value on the wire for couplerState.
+       */
+      @java.lang.Override public int getCouplerStateValue() {
+        return couplerState_;
+      }
+      /**
+       * <code>.proto.ChargeInletsEntry.ChargeInletsCouplerState coupler_state = 2;</code>
+       * @param value The enum numeric value on the wire for couplerState to set.
+       * @return This builder for chaining.
+       */
+      public Builder setCouplerStateValue(int value) {
+        couplerState_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.ChargeInletsEntry.ChargeInletsCouplerState coupler_state = 2;</code>
+       * @return The couplerState.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState getCouplerState() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState result = com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState.forNumber(couplerState_);
+        return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.proto.ChargeInletsEntry.ChargeInletsCouplerState coupler_state = 2;</code>
+       * @param value The couplerState to set.
+       * @return This builder for chaining.
+       */
+      public Builder setCouplerState(com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
+        couplerState_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.ChargeInletsEntry.ChargeInletsCouplerState coupler_state = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearCouplerState() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        couplerState_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int lockState_ = 0;
+      /**
+       * <code>.proto.ChargeInletsEntry.ChargeInletsLockState lock_state = 3;</code>
+       * @return The enum numeric value on the wire for lockState.
+       */
+      @java.lang.Override public int getLockStateValue() {
+        return lockState_;
+      }
+      /**
+       * <code>.proto.ChargeInletsEntry.ChargeInletsLockState lock_state = 3;</code>
+       * @param value The enum numeric value on the wire for lockState to set.
+       * @return This builder for chaining.
+       */
+      public Builder setLockStateValue(int value) {
+        lockState_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.ChargeInletsEntry.ChargeInletsLockState lock_state = 3;</code>
+       * @return The lockState.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState getLockState() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState result = com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState.forNumber(lockState_);
+        return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.proto.ChargeInletsEntry.ChargeInletsLockState lock_state = 3;</code>
+       * @param value The lockState to set.
+       * @return This builder for chaining.
+       */
+      public Builder setLockState(com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000004;
+        lockState_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.ChargeInletsEntry.ChargeInletsLockState lock_state = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearLockState() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        lockState_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.ChargeInletsEntry)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.ChargeInletsEntry)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ChargeInletsEntry>
+        PARSER = new com.google.protobuf.AbstractParser<ChargeInletsEntry>() {
+      @java.lang.Override
+      public ChargeInletsEntry parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ChargeInletsEntry> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChargeInletsEntry> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ChargeInletsOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.ChargeInlets)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+     */
+    java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry> 
+        getEntriesList();
+    /**
+     * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry getEntries(int index);
+    /**
+     * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+     */
+    int getEntriesCount();
+    /**
+     * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+     */
+    java.util.List<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntryOrBuilder> 
+        getEntriesOrBuilderList();
+    /**
+     * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntryOrBuilder getEntriesOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code proto.ChargeInlets}
+   */
+  public static final class ChargeInlets extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.ChargeInlets)
+      ChargeInletsOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargeInlets.class.getName());
+    }
+    // Use ChargeInlets.newBuilder() to construct.
+    private ChargeInlets(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ChargeInlets() {
+      entries_ = java.util.Collections.emptyList();
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeInlets_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeInlets_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.Builder.class);
+    }
+
+    public static final int ENTRIES_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
+    private java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry> entries_;
+    /**
+     * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry> getEntriesList() {
+      return entries_;
+    }
+    /**
+     * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntryOrBuilder> 
+        getEntriesOrBuilderList() {
+      return entries_;
+    }
+    /**
+     * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+     */
+    @java.lang.Override
+    public int getEntriesCount() {
+      return entries_.size();
+    }
+    /**
+     * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry getEntries(int index) {
+      return entries_.get(index);
+    }
+    /**
+     * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntryOrBuilder getEntriesOrBuilder(
+        int index) {
+      return entries_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < entries_.size(); i++) {
+        output.writeMessage(1, entries_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < entries_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, entries_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets other = (com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets) obj;
+
+      if (!getEntriesList()
+          .equals(other.getEntriesList())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getEntriesCount() > 0) {
+        hash = (37 * hash) + ENTRIES_FIELD_NUMBER;
+        hash = (53 * hash) + getEntriesList().hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.ChargeInlets}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.ChargeInlets)
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeInlets_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeInlets_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        if (entriesBuilder_ == null) {
+          entries_ = java.util.Collections.emptyList();
+        } else {
+          entries_ = null;
+          entriesBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeInlets_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets result = new com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets(this);
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets result) {
+        if (entriesBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            entries_ = java.util.Collections.unmodifiableList(entries_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.entries_ = entries_;
+        } else {
+          result.entries_ = entriesBuilder_.build();
+        }
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets result) {
+        int from_bitField0_ = bitField0_;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets.getDefaultInstance()) return this;
+        if (entriesBuilder_ == null) {
+          if (!other.entries_.isEmpty()) {
+            if (entries_.isEmpty()) {
+              entries_ = other.entries_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureEntriesIsMutable();
+              entries_.addAll(other.entries_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.entries_.isEmpty()) {
+            if (entriesBuilder_.isEmpty()) {
+              entriesBuilder_.dispose();
+              entriesBuilder_ = null;
+              entries_ = other.entries_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              entriesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getEntriesFieldBuilder() : null;
+            } else {
+              entriesBuilder_.addAllMessages(other.entries_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry m =
+                    input.readMessage(
+                        com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.parser(),
+                        extensionRegistry);
+                if (entriesBuilder_ == null) {
+                  ensureEntriesIsMutable();
+                  entries_.add(m);
+                } else {
+                  entriesBuilder_.addMessage(m);
+                }
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry> entries_ =
+        java.util.Collections.emptyList();
+      private void ensureEntriesIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          entries_ = new java.util.ArrayList<com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry>(entries_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntryOrBuilder> entriesBuilder_;
+
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry> getEntriesList() {
+        if (entriesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(entries_);
+        } else {
+          return entriesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public int getEntriesCount() {
+        if (entriesBuilder_ == null) {
+          return entries_.size();
+        } else {
+          return entriesBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry getEntries(int index) {
+        if (entriesBuilder_ == null) {
+          return entries_.get(index);
+        } else {
+          return entriesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public Builder setEntries(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry value) {
+        if (entriesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntriesIsMutable();
+          entries_.set(index, value);
+          onChanged();
+        } else {
+          entriesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public Builder setEntries(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.Builder builderForValue) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          entries_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          entriesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public Builder addEntries(com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry value) {
+        if (entriesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntriesIsMutable();
+          entries_.add(value);
+          onChanged();
+        } else {
+          entriesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public Builder addEntries(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry value) {
+        if (entriesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntriesIsMutable();
+          entries_.add(index, value);
+          onChanged();
+        } else {
+          entriesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public Builder addEntries(
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.Builder builderForValue) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          entries_.add(builderForValue.build());
+          onChanged();
+        } else {
+          entriesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public Builder addEntries(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.Builder builderForValue) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          entries_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          entriesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public Builder addAllEntries(
+          java.lang.Iterable<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry> values) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, entries_);
+          onChanged();
+        } else {
+          entriesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public Builder clearEntries() {
+        if (entriesBuilder_ == null) {
+          entries_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          entriesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public Builder removeEntries(int index) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          entries_.remove(index);
+          onChanged();
+        } else {
+          entriesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.Builder getEntriesBuilder(
+          int index) {
+        return getEntriesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntryOrBuilder getEntriesOrBuilder(
+          int index) {
+        if (entriesBuilder_ == null) {
+          return entries_.get(index);  } else {
+          return entriesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public java.util.List<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntryOrBuilder> 
+           getEntriesOrBuilderList() {
+        if (entriesBuilder_ != null) {
+          return entriesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(entries_);
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.Builder addEntriesBuilder() {
+        return getEntriesFieldBuilder().addBuilder(
+            com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.Builder addEntriesBuilder(
+          int index) {
+        return getEntriesFieldBuilder().addBuilder(
+            index, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .proto.ChargeInletsEntry entries = 1;</code>
+       */
+      public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.Builder> 
+           getEntriesBuilderList() {
+        return getEntriesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntryOrBuilder> 
+          getEntriesFieldBuilder() {
+        if (entriesBuilder_ == null) {
+          entriesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntryOrBuilder>(
+                  entries_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          entries_ = null;
+        }
+        return entriesBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.ChargeInlets)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.ChargeInlets)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ChargeInlets>
+        PARSER = new com.google.protobuf.AbstractParser<ChargeInlets>() {
+      @java.lang.Override
+      public ChargeInlets parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ChargeInlets> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChargeInlets> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargeInlets getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ChargeFlapsEntryOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.ChargeFlapsEntry)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int64 id = 1;</code>
+     * @return The id.
+     */
+    long getId();
+
+    /**
+     * <code>.proto.ChargeFlapsPositionState position_state = 2;</code>
+     * @return The enum numeric value on the wire for positionState.
+     */
+    int getPositionStateValue();
+    /**
+     * <code>.proto.ChargeFlapsPositionState position_state = 2;</code>
+     * @return The positionState.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState getPositionState();
+  }
+  /**
+   * Protobuf type {@code proto.ChargeFlapsEntry}
+   */
+  public static final class ChargeFlapsEntry extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.ChargeFlapsEntry)
+      ChargeFlapsEntryOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargeFlapsEntry.class.getName());
+    }
+    // Use ChargeFlapsEntry.newBuilder() to construct.
+    private ChargeFlapsEntry(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ChargeFlapsEntry() {
+      positionState_ = 0;
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeFlapsEntry_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeFlapsEntry_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.Builder.class);
+    }
+
+    public static final int ID_FIELD_NUMBER = 1;
+    private long id_ = 0L;
+    /**
+     * <code>int64 id = 1;</code>
+     * @return The id.
+     */
+    @java.lang.Override
+    public long getId() {
+      return id_;
+    }
+
+    public static final int POSITION_STATE_FIELD_NUMBER = 2;
+    private int positionState_ = 0;
+    /**
+     * <code>.proto.ChargeFlapsPositionState position_state = 2;</code>
+     * @return The enum numeric value on the wire for positionState.
+     */
+    @java.lang.Override public int getPositionStateValue() {
+      return positionState_;
+    }
+    /**
+     * <code>.proto.ChargeFlapsPositionState position_state = 2;</code>
+     * @return The positionState.
+     */
+    @java.lang.Override public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState getPositionState() {
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState result = com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState.forNumber(positionState_);
+      return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState.UNRECOGNIZED : result;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (id_ != 0L) {
+        output.writeInt64(1, id_);
+      }
+      if (positionState_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState.CHARGE_FLAPS_POSITION_STATE_DEFAULT.getNumber()) {
+        output.writeEnum(2, positionState_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (id_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, id_);
+      }
+      if (positionState_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState.CHARGE_FLAPS_POSITION_STATE_DEFAULT.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, positionState_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry other = (com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry) obj;
+
+      if (getId()
+          != other.getId()) return false;
+      if (positionState_ != other.positionState_) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + ID_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getId());
+      hash = (37 * hash) + POSITION_STATE_FIELD_NUMBER;
+      hash = (53 * hash) + positionState_;
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.ChargeFlapsEntry}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.ChargeFlapsEntry)
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntryOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeFlapsEntry_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeFlapsEntry_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        id_ = 0L;
+        positionState_ = 0;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeFlapsEntry_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry result = new com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.id_ = id_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.positionState_ = positionState_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.getDefaultInstance()) return this;
+        if (other.getId() != 0L) {
+          setId(other.getId());
+        }
+        if (other.positionState_ != 0) {
+          setPositionStateValue(other.getPositionStateValue());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                id_ = input.readInt64();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 16: {
+                positionState_ = input.readEnum();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private long id_ ;
+      /**
+       * <code>int64 id = 1;</code>
+       * @return The id.
+       */
+      @java.lang.Override
+      public long getId() {
+        return id_;
+      }
+      /**
+       * <code>int64 id = 1;</code>
+       * @param value The id to set.
+       * @return This builder for chaining.
+       */
+      public Builder setId(long value) {
+
+        id_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 id = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        id_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private int positionState_ = 0;
+      /**
+       * <code>.proto.ChargeFlapsPositionState position_state = 2;</code>
+       * @return The enum numeric value on the wire for positionState.
+       */
+      @java.lang.Override public int getPositionStateValue() {
+        return positionState_;
+      }
+      /**
+       * <code>.proto.ChargeFlapsPositionState position_state = 2;</code>
+       * @param value The enum numeric value on the wire for positionState to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPositionStateValue(int value) {
+        positionState_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.ChargeFlapsPositionState position_state = 2;</code>
+       * @return The positionState.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState getPositionState() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState result = com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState.forNumber(positionState_);
+        return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.proto.ChargeFlapsPositionState position_state = 2;</code>
+       * @param value The positionState to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPositionState(com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
+        positionState_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.ChargeFlapsPositionState position_state = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPositionState() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        positionState_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.ChargeFlapsEntry)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.ChargeFlapsEntry)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ChargeFlapsEntry>
+        PARSER = new com.google.protobuf.AbstractParser<ChargeFlapsEntry>() {
+      @java.lang.Override
+      public ChargeFlapsEntry parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ChargeFlapsEntry> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChargeFlapsEntry> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ChargeFlapsOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.ChargeFlaps)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+     */
+    java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry> 
+        getEntriesList();
+    /**
+     * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry getEntries(int index);
+    /**
+     * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+     */
+    int getEntriesCount();
+    /**
+     * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+     */
+    java.util.List<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntryOrBuilder> 
+        getEntriesOrBuilderList();
+    /**
+     * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntryOrBuilder getEntriesOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code proto.ChargeFlaps}
+   */
+  public static final class ChargeFlaps extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.ChargeFlaps)
+      ChargeFlapsOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargeFlaps.class.getName());
+    }
+    // Use ChargeFlaps.newBuilder() to construct.
+    private ChargeFlaps(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ChargeFlaps() {
+      entries_ = java.util.Collections.emptyList();
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeFlaps_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeFlaps_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.Builder.class);
+    }
+
+    public static final int ENTRIES_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
+    private java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry> entries_;
+    /**
+     * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry> getEntriesList() {
+      return entries_;
+    }
+    /**
+     * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntryOrBuilder> 
+        getEntriesOrBuilderList() {
+      return entries_;
+    }
+    /**
+     * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+     */
+    @java.lang.Override
+    public int getEntriesCount() {
+      return entries_.size();
+    }
+    /**
+     * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry getEntries(int index) {
+      return entries_.get(index);
+    }
+    /**
+     * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntryOrBuilder getEntriesOrBuilder(
+        int index) {
+      return entries_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < entries_.size(); i++) {
+        output.writeMessage(1, entries_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < entries_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, entries_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps other = (com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps) obj;
+
+      if (!getEntriesList()
+          .equals(other.getEntriesList())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getEntriesCount() > 0) {
+        hash = (37 * hash) + ENTRIES_FIELD_NUMBER;
+        hash = (53 * hash) + getEntriesList().hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.ChargeFlaps}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.ChargeFlaps)
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeFlaps_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeFlaps_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        if (entriesBuilder_ == null) {
+          entries_ = java.util.Collections.emptyList();
+        } else {
+          entries_ = null;
+          entriesBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargeFlaps_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps result = new com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps(this);
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps result) {
+        if (entriesBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            entries_ = java.util.Collections.unmodifiableList(entries_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.entries_ = entries_;
+        } else {
+          result.entries_ = entriesBuilder_.build();
+        }
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps result) {
+        int from_bitField0_ = bitField0_;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps.getDefaultInstance()) return this;
+        if (entriesBuilder_ == null) {
+          if (!other.entries_.isEmpty()) {
+            if (entries_.isEmpty()) {
+              entries_ = other.entries_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureEntriesIsMutable();
+              entries_.addAll(other.entries_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.entries_.isEmpty()) {
+            if (entriesBuilder_.isEmpty()) {
+              entriesBuilder_.dispose();
+              entriesBuilder_ = null;
+              entries_ = other.entries_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              entriesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getEntriesFieldBuilder() : null;
+            } else {
+              entriesBuilder_.addAllMessages(other.entries_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry m =
+                    input.readMessage(
+                        com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.parser(),
+                        extensionRegistry);
+                if (entriesBuilder_ == null) {
+                  ensureEntriesIsMutable();
+                  entries_.add(m);
+                } else {
+                  entriesBuilder_.addMessage(m);
+                }
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry> entries_ =
+        java.util.Collections.emptyList();
+      private void ensureEntriesIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          entries_ = new java.util.ArrayList<com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry>(entries_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntryOrBuilder> entriesBuilder_;
+
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry> getEntriesList() {
+        if (entriesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(entries_);
+        } else {
+          return entriesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public int getEntriesCount() {
+        if (entriesBuilder_ == null) {
+          return entries_.size();
+        } else {
+          return entriesBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry getEntries(int index) {
+        if (entriesBuilder_ == null) {
+          return entries_.get(index);
+        } else {
+          return entriesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public Builder setEntries(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry value) {
+        if (entriesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntriesIsMutable();
+          entries_.set(index, value);
+          onChanged();
+        } else {
+          entriesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public Builder setEntries(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.Builder builderForValue) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          entries_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          entriesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public Builder addEntries(com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry value) {
+        if (entriesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntriesIsMutable();
+          entries_.add(value);
+          onChanged();
+        } else {
+          entriesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public Builder addEntries(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry value) {
+        if (entriesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntriesIsMutable();
+          entries_.add(index, value);
+          onChanged();
+        } else {
+          entriesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public Builder addEntries(
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.Builder builderForValue) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          entries_.add(builderForValue.build());
+          onChanged();
+        } else {
+          entriesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public Builder addEntries(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.Builder builderForValue) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          entries_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          entriesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public Builder addAllEntries(
+          java.lang.Iterable<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry> values) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, entries_);
+          onChanged();
+        } else {
+          entriesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public Builder clearEntries() {
+        if (entriesBuilder_ == null) {
+          entries_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          entriesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public Builder removeEntries(int index) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          entries_.remove(index);
+          onChanged();
+        } else {
+          entriesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.Builder getEntriesBuilder(
+          int index) {
+        return getEntriesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntryOrBuilder getEntriesOrBuilder(
+          int index) {
+        if (entriesBuilder_ == null) {
+          return entries_.get(index);  } else {
+          return entriesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public java.util.List<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntryOrBuilder> 
+           getEntriesOrBuilderList() {
+        if (entriesBuilder_ != null) {
+          return entriesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(entries_);
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.Builder addEntriesBuilder() {
+        return getEntriesFieldBuilder().addBuilder(
+            com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.Builder addEntriesBuilder(
+          int index) {
+        return getEntriesFieldBuilder().addBuilder(
+            index, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .proto.ChargeFlapsEntry entries = 1;</code>
+       */
+      public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.Builder> 
+           getEntriesBuilderList() {
+        return getEntriesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntryOrBuilder> 
+          getEntriesFieldBuilder() {
+        if (entriesBuilder_ == null) {
+          entriesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntryOrBuilder>(
+                  entries_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          entries_ = null;
+        }
+        return entriesBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.ChargeFlaps)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.ChargeFlaps)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ChargeFlaps>
+        PARSER = new com.google.protobuf.AbstractParser<ChargeFlaps>() {
+      @java.lang.Override
+      public ChargeFlaps parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ChargeFlaps> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChargeFlaps> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlaps getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ChargingPowerRestrictionsOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.ChargingPowerRestrictions)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+     * @return A list containing the chargingPowerRestriction.
+     */
+    java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction> getChargingPowerRestrictionList();
+    /**
+     * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+     * @return The count of chargingPowerRestriction.
+     */
+    int getChargingPowerRestrictionCount();
+    /**
+     * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+     * @param index The index of the element to return.
+     * @return The chargingPowerRestriction at the given index.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction getChargingPowerRestriction(int index);
+    /**
+     * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+     * @return A list containing the enum numeric values on the wire for chargingPowerRestriction.
+     */
+    java.util.List<java.lang.Integer>
+    getChargingPowerRestrictionValueList();
+    /**
+     * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+     * @param index The index of the value to return.
+     * @return The enum numeric value on the wire of chargingPowerRestriction at the given index.
+     */
+    int getChargingPowerRestrictionValue(int index);
+  }
+  /**
+   * Protobuf type {@code proto.ChargingPowerRestrictions}
+   */
+  public static final class ChargingPowerRestrictions extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.ChargingPowerRestrictions)
+      ChargingPowerRestrictionsOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargingPowerRestrictions.class.getName());
+    }
+    // Use ChargingPowerRestrictions.newBuilder() to construct.
+    private ChargingPowerRestrictions(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ChargingPowerRestrictions() {
+      chargingPowerRestriction_ = java.util.Collections.emptyList();
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPowerRestrictions_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPowerRestrictions_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.Builder.class);
+    }
+
+    public static final int CHARGING_POWER_RESTRICTION_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
+    private java.util.List<java.lang.Integer> chargingPowerRestriction_;
+    private static final com.google.protobuf.Internal.ListAdapter.Converter<
+        java.lang.Integer, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction> chargingPowerRestriction_converter_ =
+            new com.google.protobuf.Internal.ListAdapter.Converter<
+                java.lang.Integer, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction>() {
+              public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction convert(java.lang.Integer from) {
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction result = com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction.forNumber(from);
+                return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction.UNRECOGNIZED : result;
+              }
+            };
+    /**
+     * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+     * @return A list containing the chargingPowerRestriction.
+     */
+    @java.lang.Override
+    public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction> getChargingPowerRestrictionList() {
+      return new com.google.protobuf.Internal.ListAdapter<
+          java.lang.Integer, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction>(chargingPowerRestriction_, chargingPowerRestriction_converter_);
+    }
+    /**
+     * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+     * @return The count of chargingPowerRestriction.
+     */
+    @java.lang.Override
+    public int getChargingPowerRestrictionCount() {
+      return chargingPowerRestriction_.size();
+    }
+    /**
+     * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+     * @param index The index of the element to return.
+     * @return The chargingPowerRestriction at the given index.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction getChargingPowerRestriction(int index) {
+      return chargingPowerRestriction_converter_.convert(chargingPowerRestriction_.get(index));
+    }
+    /**
+     * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+     * @return A list containing the enum numeric values on the wire for chargingPowerRestriction.
+     */
+    @java.lang.Override
+    public java.util.List<java.lang.Integer>
+    getChargingPowerRestrictionValueList() {
+      return chargingPowerRestriction_;
+    }
+    /**
+     * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+     * @param index The index of the value to return.
+     * @return The enum numeric value on the wire of chargingPowerRestriction at the given index.
+     */
+    @java.lang.Override
+    public int getChargingPowerRestrictionValue(int index) {
+      return chargingPowerRestriction_.get(index);
+    }
+    private int chargingPowerRestrictionMemoizedSerializedSize;
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (getChargingPowerRestrictionList().size() > 0) {
+        output.writeUInt32NoTag(10);
+        output.writeUInt32NoTag(chargingPowerRestrictionMemoizedSerializedSize);
+      }
+      for (int i = 0; i < chargingPowerRestriction_.size(); i++) {
+        output.writeEnumNoTag(chargingPowerRestriction_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      {
+        int dataSize = 0;
+        for (int i = 0; i < chargingPowerRestriction_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeEnumSizeNoTag(chargingPowerRestriction_.get(i));
+        }
+        size += dataSize;
+        if (!getChargingPowerRestrictionList().isEmpty()) {  size += 1;
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(dataSize);
+        }chargingPowerRestrictionMemoizedSerializedSize = dataSize;
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions other = (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions) obj;
+
+      if (!chargingPowerRestriction_.equals(other.chargingPowerRestriction_)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getChargingPowerRestrictionCount() > 0) {
+        hash = (37 * hash) + CHARGING_POWER_RESTRICTION_FIELD_NUMBER;
+        hash = (53 * hash) + chargingPowerRestriction_.hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.ChargingPowerRestrictions}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.ChargingPowerRestrictions)
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictionsOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPowerRestrictions_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPowerRestrictions_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        chargingPowerRestriction_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPowerRestrictions_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions result = new com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions(this);
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions result) {
+        if (((bitField0_ & 0x00000001) != 0)) {
+          chargingPowerRestriction_ = java.util.Collections.unmodifiableList(chargingPowerRestriction_);
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.chargingPowerRestriction_ = chargingPowerRestriction_;
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions result) {
+        int from_bitField0_ = bitField0_;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions.getDefaultInstance()) return this;
+        if (!other.chargingPowerRestriction_.isEmpty()) {
+          if (chargingPowerRestriction_.isEmpty()) {
+            chargingPowerRestriction_ = other.chargingPowerRestriction_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureChargingPowerRestrictionIsMutable();
+            chargingPowerRestriction_.addAll(other.chargingPowerRestriction_);
+          }
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                int tmpRaw = input.readEnum();
+                ensureChargingPowerRestrictionIsMutable();
+                chargingPowerRestriction_.add(tmpRaw);
+                break;
+              } // case 8
+              case 10: {
+                int length = input.readRawVarint32();
+                int oldLimit = input.pushLimit(length);
+                while(input.getBytesUntilLimit() > 0) {
+                  int tmpRaw = input.readEnum();
+                  ensureChargingPowerRestrictionIsMutable();
+                  chargingPowerRestriction_.add(tmpRaw);
+                }
+                input.popLimit(oldLimit);
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<java.lang.Integer> chargingPowerRestriction_ =
+        java.util.Collections.emptyList();
+      private void ensureChargingPowerRestrictionIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          chargingPowerRestriction_ = new java.util.ArrayList<java.lang.Integer>(chargingPowerRestriction_);
+          bitField0_ |= 0x00000001;
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+       * @return A list containing the chargingPowerRestriction.
+       */
+      public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction> getChargingPowerRestrictionList() {
+        return new com.google.protobuf.Internal.ListAdapter<
+            java.lang.Integer, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction>(chargingPowerRestriction_, chargingPowerRestriction_converter_);
+      }
+      /**
+       * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+       * @return The count of chargingPowerRestriction.
+       */
+      public int getChargingPowerRestrictionCount() {
+        return chargingPowerRestriction_.size();
+      }
+      /**
+       * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+       * @param index The index of the element to return.
+       * @return The chargingPowerRestriction at the given index.
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction getChargingPowerRestriction(int index) {
+        return chargingPowerRestriction_converter_.convert(chargingPowerRestriction_.get(index));
+      }
+      /**
+       * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+       * @param index The index to set the value at.
+       * @param value The chargingPowerRestriction to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargingPowerRestriction(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureChargingPowerRestrictionIsMutable();
+        chargingPowerRestriction_.set(index, value.getNumber());
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+       * @param value The chargingPowerRestriction to add.
+       * @return This builder for chaining.
+       */
+      public Builder addChargingPowerRestriction(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureChargingPowerRestrictionIsMutable();
+        chargingPowerRestriction_.add(value.getNumber());
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+       * @param values The chargingPowerRestriction to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAllChargingPowerRestriction(
+          java.lang.Iterable<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction> values) {
+        ensureChargingPowerRestrictionIsMutable();
+        for (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestriction value : values) {
+          chargingPowerRestriction_.add(value.getNumber());
+        }
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearChargingPowerRestriction() {
+        chargingPowerRestriction_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+       * @return A list containing the enum numeric values on the wire for chargingPowerRestriction.
+       */
+      public java.util.List<java.lang.Integer>
+      getChargingPowerRestrictionValueList() {
+        return java.util.Collections.unmodifiableList(chargingPowerRestriction_);
+      }
+      /**
+       * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+       * @param index The index of the value to return.
+       * @return The enum numeric value on the wire of chargingPowerRestriction at the given index.
+       */
+      public int getChargingPowerRestrictionValue(int index) {
+        return chargingPowerRestriction_.get(index);
+      }
+      /**
+       * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+       * @param index The index to set the value at.
+       * @param value The enum numeric value on the wire for chargingPowerRestriction to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargingPowerRestrictionValue(
+          int index, int value) {
+        ensureChargingPowerRestrictionIsMutable();
+        chargingPowerRestriction_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+       * @param value The enum numeric value on the wire for chargingPowerRestriction to add.
+       * @return This builder for chaining.
+       */
+      public Builder addChargingPowerRestrictionValue(int value) {
+        ensureChargingPowerRestrictionIsMutable();
+        chargingPowerRestriction_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingPowerRestriction charging_power_restriction = 1;</code>
+       * @param values The enum numeric values on the wire for chargingPowerRestriction to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAllChargingPowerRestrictionValue(
+          java.lang.Iterable<java.lang.Integer> values) {
+        ensureChargingPowerRestrictionIsMutable();
+        for (int value : values) {
+          chargingPowerRestriction_.add(value);
+        }
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.ChargingPowerRestrictions)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.ChargingPowerRestrictions)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ChargingPowerRestrictions>
+        PARSER = new com.google.protobuf.AbstractParser<ChargingPowerRestrictions>() {
+      @java.lang.Override
+      public ChargingPowerRestrictions parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ChargingPowerRestrictions> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChargingPowerRestrictions> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerRestrictions getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ChargingBreakClockTimerValueOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.ChargingBreakClockTimerValue)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+     */
+    java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry> 
+        getChargingbreakClocktimerEntryList();
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry getChargingbreakClocktimerEntry(int index);
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+     */
+    int getChargingbreakClocktimerEntryCount();
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+     */
+    java.util.List<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntryOrBuilder> 
+        getChargingbreakClocktimerEntryOrBuilderList();
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntryOrBuilder getChargingbreakClocktimerEntryOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code proto.ChargingBreakClockTimerValue}
+   */
+  public static final class ChargingBreakClockTimerValue extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.ChargingBreakClockTimerValue)
+      ChargingBreakClockTimerValueOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargingBreakClockTimerValue.class.getName());
+    }
+    // Use ChargingBreakClockTimerValue.newBuilder() to construct.
+    private ChargingBreakClockTimerValue(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ChargingBreakClockTimerValue() {
+      chargingbreakClocktimerEntry_ = java.util.Collections.emptyList();
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingBreakClockTimerValue_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingBreakClockTimerValue_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.Builder.class);
+    }
+
+    public static final int CHARGINGBREAK_CLOCKTIMER_ENTRY_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
+    private java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry> chargingbreakClocktimerEntry_;
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry> getChargingbreakClocktimerEntryList() {
+      return chargingbreakClocktimerEntry_;
+    }
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntryOrBuilder> 
+        getChargingbreakClocktimerEntryOrBuilderList() {
+      return chargingbreakClocktimerEntry_;
+    }
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+     */
+    @java.lang.Override
+    public int getChargingbreakClocktimerEntryCount() {
+      return chargingbreakClocktimerEntry_.size();
+    }
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry getChargingbreakClocktimerEntry(int index) {
+      return chargingbreakClocktimerEntry_.get(index);
+    }
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntryOrBuilder getChargingbreakClocktimerEntryOrBuilder(
+        int index) {
+      return chargingbreakClocktimerEntry_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < chargingbreakClocktimerEntry_.size(); i++) {
+        output.writeMessage(1, chargingbreakClocktimerEntry_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < chargingbreakClocktimerEntry_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, chargingbreakClocktimerEntry_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue other = (com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue) obj;
+
+      if (!getChargingbreakClocktimerEntryList()
+          .equals(other.getChargingbreakClocktimerEntryList())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getChargingbreakClocktimerEntryCount() > 0) {
+        hash = (37 * hash) + CHARGINGBREAK_CLOCKTIMER_ENTRY_FIELD_NUMBER;
+        hash = (53 * hash) + getChargingbreakClocktimerEntryList().hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.ChargingBreakClockTimerValue}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.ChargingBreakClockTimerValue)
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValueOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingBreakClockTimerValue_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingBreakClockTimerValue_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          chargingbreakClocktimerEntry_ = java.util.Collections.emptyList();
+        } else {
+          chargingbreakClocktimerEntry_ = null;
+          chargingbreakClocktimerEntryBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingBreakClockTimerValue_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue result = new com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue(this);
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue result) {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            chargingbreakClocktimerEntry_ = java.util.Collections.unmodifiableList(chargingbreakClocktimerEntry_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.chargingbreakClocktimerEntry_ = chargingbreakClocktimerEntry_;
+        } else {
+          result.chargingbreakClocktimerEntry_ = chargingbreakClocktimerEntryBuilder_.build();
+        }
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue result) {
+        int from_bitField0_ = bitField0_;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue.getDefaultInstance()) return this;
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          if (!other.chargingbreakClocktimerEntry_.isEmpty()) {
+            if (chargingbreakClocktimerEntry_.isEmpty()) {
+              chargingbreakClocktimerEntry_ = other.chargingbreakClocktimerEntry_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureChargingbreakClocktimerEntryIsMutable();
+              chargingbreakClocktimerEntry_.addAll(other.chargingbreakClocktimerEntry_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.chargingbreakClocktimerEntry_.isEmpty()) {
+            if (chargingbreakClocktimerEntryBuilder_.isEmpty()) {
+              chargingbreakClocktimerEntryBuilder_.dispose();
+              chargingbreakClocktimerEntryBuilder_ = null;
+              chargingbreakClocktimerEntry_ = other.chargingbreakClocktimerEntry_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              chargingbreakClocktimerEntryBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getChargingbreakClocktimerEntryFieldBuilder() : null;
+            } else {
+              chargingbreakClocktimerEntryBuilder_.addAllMessages(other.chargingbreakClocktimerEntry_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry m =
+                    input.readMessage(
+                        com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.parser(),
+                        extensionRegistry);
+                if (chargingbreakClocktimerEntryBuilder_ == null) {
+                  ensureChargingbreakClocktimerEntryIsMutable();
+                  chargingbreakClocktimerEntry_.add(m);
+                } else {
+                  chargingbreakClocktimerEntryBuilder_.addMessage(m);
+                }
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry> chargingbreakClocktimerEntry_ =
+        java.util.Collections.emptyList();
+      private void ensureChargingbreakClocktimerEntryIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          chargingbreakClocktimerEntry_ = new java.util.ArrayList<com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry>(chargingbreakClocktimerEntry_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntryOrBuilder> chargingbreakClocktimerEntryBuilder_;
+
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry> getChargingbreakClocktimerEntryList() {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(chargingbreakClocktimerEntry_);
+        } else {
+          return chargingbreakClocktimerEntryBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public int getChargingbreakClocktimerEntryCount() {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          return chargingbreakClocktimerEntry_.size();
+        } else {
+          return chargingbreakClocktimerEntryBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry getChargingbreakClocktimerEntry(int index) {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          return chargingbreakClocktimerEntry_.get(index);
+        } else {
+          return chargingbreakClocktimerEntryBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public Builder setChargingbreakClocktimerEntry(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry value) {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChargingbreakClocktimerEntryIsMutable();
+          chargingbreakClocktimerEntry_.set(index, value);
+          onChanged();
+        } else {
+          chargingbreakClocktimerEntryBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public Builder setChargingbreakClocktimerEntry(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.Builder builderForValue) {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          ensureChargingbreakClocktimerEntryIsMutable();
+          chargingbreakClocktimerEntry_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          chargingbreakClocktimerEntryBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public Builder addChargingbreakClocktimerEntry(com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry value) {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChargingbreakClocktimerEntryIsMutable();
+          chargingbreakClocktimerEntry_.add(value);
+          onChanged();
+        } else {
+          chargingbreakClocktimerEntryBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public Builder addChargingbreakClocktimerEntry(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry value) {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChargingbreakClocktimerEntryIsMutable();
+          chargingbreakClocktimerEntry_.add(index, value);
+          onChanged();
+        } else {
+          chargingbreakClocktimerEntryBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public Builder addChargingbreakClocktimerEntry(
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.Builder builderForValue) {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          ensureChargingbreakClocktimerEntryIsMutable();
+          chargingbreakClocktimerEntry_.add(builderForValue.build());
+          onChanged();
+        } else {
+          chargingbreakClocktimerEntryBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public Builder addChargingbreakClocktimerEntry(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.Builder builderForValue) {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          ensureChargingbreakClocktimerEntryIsMutable();
+          chargingbreakClocktimerEntry_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          chargingbreakClocktimerEntryBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public Builder addAllChargingbreakClocktimerEntry(
+          java.lang.Iterable<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry> values) {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          ensureChargingbreakClocktimerEntryIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, chargingbreakClocktimerEntry_);
+          onChanged();
+        } else {
+          chargingbreakClocktimerEntryBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public Builder clearChargingbreakClocktimerEntry() {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          chargingbreakClocktimerEntry_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          chargingbreakClocktimerEntryBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public Builder removeChargingbreakClocktimerEntry(int index) {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          ensureChargingbreakClocktimerEntryIsMutable();
+          chargingbreakClocktimerEntry_.remove(index);
+          onChanged();
+        } else {
+          chargingbreakClocktimerEntryBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.Builder getChargingbreakClocktimerEntryBuilder(
+          int index) {
+        return getChargingbreakClocktimerEntryFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntryOrBuilder getChargingbreakClocktimerEntryOrBuilder(
+          int index) {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          return chargingbreakClocktimerEntry_.get(index);  } else {
+          return chargingbreakClocktimerEntryBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public java.util.List<? extends com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntryOrBuilder> 
+           getChargingbreakClocktimerEntryOrBuilderList() {
+        if (chargingbreakClocktimerEntryBuilder_ != null) {
+          return chargingbreakClocktimerEntryBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(chargingbreakClocktimerEntry_);
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.Builder addChargingbreakClocktimerEntryBuilder() {
+        return getChargingbreakClocktimerEntryFieldBuilder().addBuilder(
+            com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.Builder addChargingbreakClocktimerEntryBuilder(
+          int index) {
+        return getChargingbreakClocktimerEntryFieldBuilder().addBuilder(
+            index, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerEntry chargingbreak_clocktimer_entry = 1;</code>
+       */
+      public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.Builder> 
+           getChargingbreakClocktimerEntryBuilderList() {
+        return getChargingbreakClocktimerEntryFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntryOrBuilder> 
+          getChargingbreakClocktimerEntryFieldBuilder() {
+        if (chargingbreakClocktimerEntryBuilder_ == null) {
+          chargingbreakClocktimerEntryBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntryOrBuilder>(
+                  chargingbreakClocktimerEntry_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          chargingbreakClocktimerEntry_ = null;
+        }
+        return chargingbreakClocktimerEntryBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.ChargingBreakClockTimerValue)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.ChargingBreakClockTimerValue)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ChargingBreakClockTimerValue>
+        PARSER = new com.google.protobuf.AbstractParser<ChargingBreakClockTimerValue>() {
+      @java.lang.Override
+      public ChargingBreakClockTimerValue parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ChargingBreakClockTimerValue> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChargingBreakClockTimerValue> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerValue getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface PrecondStateOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.PrecondState)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bool activation_state = 1;</code>
+     * @return The activationState.
+     */
+    boolean getActivationState();
+
+    /**
+     * <code>bool precond_immediate_support = 2;</code>
+     * @return The precondImmediateSupport.
+     */
+    boolean getPrecondImmediateSupport();
+
+    /**
+     * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+     * @return A list containing the precondStateTypes.
+     */
+    java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType> getPrecondStateTypesList();
+    /**
+     * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+     * @return The count of precondStateTypes.
+     */
+    int getPrecondStateTypesCount();
+    /**
+     * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+     * @param index The index of the element to return.
+     * @return The precondStateTypes at the given index.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType getPrecondStateTypes(int index);
+    /**
+     * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+     * @return A list containing the enum numeric values on the wire for precondStateTypes.
+     */
+    java.util.List<java.lang.Integer>
+    getPrecondStateTypesValueList();
+    /**
+     * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+     * @param index The index of the value to return.
+     * @return The enum numeric value on the wire of precondStateTypes at the given index.
+     */
+    int getPrecondStateTypesValue(int index);
+  }
+  /**
+   * Protobuf type {@code proto.PrecondState}
+   */
+  public static final class PrecondState extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.PrecondState)
+      PrecondStateOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        PrecondState.class.getName());
+    }
+    // Use PrecondState.newBuilder() to construct.
+    private PrecondState(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private PrecondState() {
+      precondStateTypes_ = java.util.Collections.emptyList();
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_PrecondState_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_PrecondState_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.class, com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.Builder.class);
+    }
+
+    public static final int ACTIVATION_STATE_FIELD_NUMBER = 1;
+    private boolean activationState_ = false;
+    /**
+     * <code>bool activation_state = 1;</code>
+     * @return The activationState.
+     */
+    @java.lang.Override
+    public boolean getActivationState() {
+      return activationState_;
+    }
+
+    public static final int PRECOND_IMMEDIATE_SUPPORT_FIELD_NUMBER = 2;
+    private boolean precondImmediateSupport_ = false;
+    /**
+     * <code>bool precond_immediate_support = 2;</code>
+     * @return The precondImmediateSupport.
+     */
+    @java.lang.Override
+    public boolean getPrecondImmediateSupport() {
+      return precondImmediateSupport_;
+    }
+
+    public static final int PRECOND_STATE_TYPES_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
+    private java.util.List<java.lang.Integer> precondStateTypes_;
+    private static final com.google.protobuf.Internal.ListAdapter.Converter<
+        java.lang.Integer, com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType> precondStateTypes_converter_ =
+            new com.google.protobuf.Internal.ListAdapter.Converter<
+                java.lang.Integer, com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType>() {
+              public com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType convert(java.lang.Integer from) {
+                com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType result = com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType.forNumber(from);
+                return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType.UNRECOGNIZED : result;
+              }
+            };
+    /**
+     * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+     * @return A list containing the precondStateTypes.
+     */
+    @java.lang.Override
+    public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType> getPrecondStateTypesList() {
+      return new com.google.protobuf.Internal.ListAdapter<
+          java.lang.Integer, com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType>(precondStateTypes_, precondStateTypes_converter_);
+    }
+    /**
+     * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+     * @return The count of precondStateTypes.
+     */
+    @java.lang.Override
+    public int getPrecondStateTypesCount() {
+      return precondStateTypes_.size();
+    }
+    /**
+     * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+     * @param index The index of the element to return.
+     * @return The precondStateTypes at the given index.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType getPrecondStateTypes(int index) {
+      return precondStateTypes_converter_.convert(precondStateTypes_.get(index));
+    }
+    /**
+     * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+     * @return A list containing the enum numeric values on the wire for precondStateTypes.
+     */
+    @java.lang.Override
+    public java.util.List<java.lang.Integer>
+    getPrecondStateTypesValueList() {
+      return precondStateTypes_;
+    }
+    /**
+     * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+     * @param index The index of the value to return.
+     * @return The enum numeric value on the wire of precondStateTypes at the given index.
+     */
+    @java.lang.Override
+    public int getPrecondStateTypesValue(int index) {
+      return precondStateTypes_.get(index);
+    }
+    private int precondStateTypesMemoizedSerializedSize;
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (activationState_ != false) {
+        output.writeBool(1, activationState_);
+      }
+      if (precondImmediateSupport_ != false) {
+        output.writeBool(2, precondImmediateSupport_);
+      }
+      if (getPrecondStateTypesList().size() > 0) {
+        output.writeUInt32NoTag(26);
+        output.writeUInt32NoTag(precondStateTypesMemoizedSerializedSize);
+      }
+      for (int i = 0; i < precondStateTypes_.size(); i++) {
+        output.writeEnumNoTag(precondStateTypes_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (activationState_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(1, activationState_);
+      }
+      if (precondImmediateSupport_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(2, precondImmediateSupport_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < precondStateTypes_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeEnumSizeNoTag(precondStateTypes_.get(i));
+        }
+        size += dataSize;
+        if (!getPrecondStateTypesList().isEmpty()) {  size += 1;
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(dataSize);
+        }precondStateTypesMemoizedSerializedSize = dataSize;
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.PrecondState)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.PrecondState other = (com.daimler.mbcarkit.proto.VehicleEvents.PrecondState) obj;
+
+      if (getActivationState()
+          != other.getActivationState()) return false;
+      if (getPrecondImmediateSupport()
+          != other.getPrecondImmediateSupport()) return false;
+      if (!precondStateTypes_.equals(other.precondStateTypes_)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + ACTIVATION_STATE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getActivationState());
+      hash = (37 * hash) + PRECOND_IMMEDIATE_SUPPORT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getPrecondImmediateSupport());
+      if (getPrecondStateTypesCount() > 0) {
+        hash = (37 * hash) + PRECOND_STATE_TYPES_FIELD_NUMBER;
+        hash = (53 * hash) + precondStateTypes_.hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.PrecondState prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.PrecondState}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.PrecondState)
+        com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_PrecondState_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_PrecondState_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.class, com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        activationState_ = false;
+        precondImmediateSupport_ = false;
+        precondStateTypes_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_PrecondState_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.PrecondState getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.PrecondState build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.PrecondState result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.PrecondState buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.PrecondState result = new com.daimler.mbcarkit.proto.VehicleEvents.PrecondState(this);
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(com.daimler.mbcarkit.proto.VehicleEvents.PrecondState result) {
+        if (((bitField0_ & 0x00000004) != 0)) {
+          precondStateTypes_ = java.util.Collections.unmodifiableList(precondStateTypes_);
+          bitField0_ = (bitField0_ & ~0x00000004);
+        }
+        result.precondStateTypes_ = precondStateTypes_;
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.PrecondState result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.activationState_ = activationState_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.precondImmediateSupport_ = precondImmediateSupport_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.PrecondState) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.PrecondState)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.PrecondState other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.PrecondState.getDefaultInstance()) return this;
+        if (other.getActivationState() != false) {
+          setActivationState(other.getActivationState());
+        }
+        if (other.getPrecondImmediateSupport() != false) {
+          setPrecondImmediateSupport(other.getPrecondImmediateSupport());
+        }
+        if (!other.precondStateTypes_.isEmpty()) {
+          if (precondStateTypes_.isEmpty()) {
+            precondStateTypes_ = other.precondStateTypes_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensurePrecondStateTypesIsMutable();
+            precondStateTypes_.addAll(other.precondStateTypes_);
+          }
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                activationState_ = input.readBool();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 16: {
+                precondImmediateSupport_ = input.readBool();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              case 24: {
+                int tmpRaw = input.readEnum();
+                ensurePrecondStateTypesIsMutable();
+                precondStateTypes_.add(tmpRaw);
+                break;
+              } // case 24
+              case 26: {
+                int length = input.readRawVarint32();
+                int oldLimit = input.pushLimit(length);
+                while(input.getBytesUntilLimit() > 0) {
+                  int tmpRaw = input.readEnum();
+                  ensurePrecondStateTypesIsMutable();
+                  precondStateTypes_.add(tmpRaw);
+                }
+                input.popLimit(oldLimit);
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private boolean activationState_ ;
+      /**
+       * <code>bool activation_state = 1;</code>
+       * @return The activationState.
+       */
+      @java.lang.Override
+      public boolean getActivationState() {
+        return activationState_;
+      }
+      /**
+       * <code>bool activation_state = 1;</code>
+       * @param value The activationState to set.
+       * @return This builder for chaining.
+       */
+      public Builder setActivationState(boolean value) {
+
+        activationState_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool activation_state = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearActivationState() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        activationState_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean precondImmediateSupport_ ;
+      /**
+       * <code>bool precond_immediate_support = 2;</code>
+       * @return The precondImmediateSupport.
+       */
+      @java.lang.Override
+      public boolean getPrecondImmediateSupport() {
+        return precondImmediateSupport_;
+      }
+      /**
+       * <code>bool precond_immediate_support = 2;</code>
+       * @param value The precondImmediateSupport to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPrecondImmediateSupport(boolean value) {
+
+        precondImmediateSupport_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool precond_immediate_support = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPrecondImmediateSupport() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        precondImmediateSupport_ = false;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> precondStateTypes_ =
+        java.util.Collections.emptyList();
+      private void ensurePrecondStateTypesIsMutable() {
+        if (!((bitField0_ & 0x00000004) != 0)) {
+          precondStateTypes_ = new java.util.ArrayList<java.lang.Integer>(precondStateTypes_);
+          bitField0_ |= 0x00000004;
+        }
+      }
+      /**
+       * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+       * @return A list containing the precondStateTypes.
+       */
+      public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType> getPrecondStateTypesList() {
+        return new com.google.protobuf.Internal.ListAdapter<
+            java.lang.Integer, com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType>(precondStateTypes_, precondStateTypes_converter_);
+      }
+      /**
+       * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+       * @return The count of precondStateTypes.
+       */
+      public int getPrecondStateTypesCount() {
+        return precondStateTypes_.size();
+      }
+      /**
+       * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+       * @param index The index of the element to return.
+       * @return The precondStateTypes at the given index.
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType getPrecondStateTypes(int index) {
+        return precondStateTypes_converter_.convert(precondStateTypes_.get(index));
+      }
+      /**
+       * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+       * @param index The index to set the value at.
+       * @param value The precondStateTypes to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPrecondStateTypes(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensurePrecondStateTypesIsMutable();
+        precondStateTypes_.set(index, value.getNumber());
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+       * @param value The precondStateTypes to add.
+       * @return This builder for chaining.
+       */
+      public Builder addPrecondStateTypes(com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensurePrecondStateTypesIsMutable();
+        precondStateTypes_.add(value.getNumber());
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+       * @param values The precondStateTypes to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAllPrecondStateTypes(
+          java.lang.Iterable<? extends com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType> values) {
+        ensurePrecondStateTypesIsMutable();
+        for (com.daimler.mbcarkit.proto.VehicleEvents.PrecondStateType value : values) {
+          precondStateTypes_.add(value.getNumber());
+        }
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPrecondStateTypes() {
+        precondStateTypes_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+       * @return A list containing the enum numeric values on the wire for precondStateTypes.
+       */
+      public java.util.List<java.lang.Integer>
+      getPrecondStateTypesValueList() {
+        return java.util.Collections.unmodifiableList(precondStateTypes_);
+      }
+      /**
+       * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+       * @param index The index of the value to return.
+       * @return The enum numeric value on the wire of precondStateTypes at the given index.
+       */
+      public int getPrecondStateTypesValue(int index) {
+        return precondStateTypes_.get(index);
+      }
+      /**
+       * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+       * @param index The index to set the value at.
+       * @param value The enum numeric value on the wire for precondStateTypes to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPrecondStateTypesValue(
+          int index, int value) {
+        ensurePrecondStateTypesIsMutable();
+        precondStateTypes_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+       * @param value The enum numeric value on the wire for precondStateTypes to add.
+       * @return This builder for chaining.
+       */
+      public Builder addPrecondStateTypesValue(int value) {
+        ensurePrecondStateTypesIsMutable();
+        precondStateTypes_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .proto.PrecondStateType precond_state_types = 3;</code>
+       * @param values The enum numeric values on the wire for precondStateTypes to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAllPrecondStateTypesValue(
+          java.lang.Iterable<java.lang.Integer> values) {
+        ensurePrecondStateTypesIsMutable();
+        for (int value : values) {
+          precondStateTypes_.add(value);
+        }
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.PrecondState)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.PrecondState)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.PrecondState DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.PrecondState();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.PrecondState getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<PrecondState>
+        PARSER = new com.google.protobuf.AbstractParser<PrecondState>() {
+      @java.lang.Override
+      public PrecondState parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<PrecondState> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PrecondState> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.PrecondState getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ChargingPowerControlOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.ChargingPowerControl)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.proto.ChargingPowerControl.ChargingStatusForPowerControl charge_status = 1;</code>
+     * @return The enum numeric value on the wire for chargeStatus.
+     */
+    int getChargeStatusValue();
+    /**
+     * <code>.proto.ChargingPowerControl.ChargingStatusForPowerControl charge_status = 1;</code>
+     * @return The chargeStatus.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.ChargingStatusForPowerControl getChargeStatus();
+
+    /**
+     * <code>int32 ctrl_duration = 2;</code>
+     * @return The ctrlDuration.
+     */
+    int getCtrlDuration();
+
+    /**
+     * <code>int32 ctrl_info = 3;</code>
+     * @return The ctrlInfo.
+     */
+    int getCtrlInfo();
+
+    /**
+     * <code>int32 charge_power = 4;</code>
+     * @return The chargePower.
+     */
+    int getChargePower();
+
+    /**
+     * <code>int32 serv_stat = 5;</code>
+     * @return The servStat.
+     */
+    int getServStat();
+
+    /**
+     * <code>int32 serv_avail = 6;</code>
+     * @return The servAvail.
+     */
+    int getServAvail();
+
+    /**
+     * <code>int32 use_case = 7;</code>
+     * @return The useCase.
+     */
+    int getUseCase();
+  }
+  /**
+   * Protobuf type {@code proto.ChargingPowerControl}
+   */
+  public static final class ChargingPowerControl extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.ChargingPowerControl)
+      ChargingPowerControlOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargingPowerControl.class.getName());
+    }
+    // Use ChargingPowerControl.newBuilder() to construct.
+    private ChargingPowerControl(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ChargingPowerControl() {
+      chargeStatus_ = 0;
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPowerControl_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPowerControl_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.Builder.class);
+    }
+
+    /**
+     * Protobuf enum {@code proto.ChargingPowerControl.ChargingStatusForPowerControl}
+     */
+    public enum ChargingStatusForPowerControl
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>NOT_DEFINED = 0;</code>
+       */
+      NOT_DEFINED(0),
+      /**
+       * <code>DEACTIVATED = 1;</code>
+       */
+      DEACTIVATED(1),
+      /**
+       * <code>ACTIVATED = 2;</code>
+       */
+      ACTIVATED(2),
+      UNRECOGNIZED(-1),
+      ;
+
+      static {
+        com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+          com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+          /* major= */ 4,
+          /* minor= */ 27,
+          /* patch= */ 5,
+          /* suffix= */ "",
+          ChargingStatusForPowerControl.class.getName());
+      }
+      /**
+       * <code>NOT_DEFINED = 0;</code>
+       */
+      public static final int NOT_DEFINED_VALUE = 0;
+      /**
+       * <code>DEACTIVATED = 1;</code>
+       */
+      public static final int DEACTIVATED_VALUE = 1;
+      /**
+       * <code>ACTIVATED = 2;</code>
+       */
+      public static final int ACTIVATED_VALUE = 2;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static ChargingStatusForPowerControl valueOf(int value) {
+        return forNumber(value);
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
+      public static ChargingStatusForPowerControl forNumber(int value) {
+        switch (value) {
+          case 0: return NOT_DEFINED;
+          case 1: return DEACTIVATED;
+          case 2: return ACTIVATED;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<ChargingStatusForPowerControl>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          ChargingStatusForPowerControl> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<ChargingStatusForPowerControl>() {
+              public ChargingStatusForPowerControl findValueByNumber(int number) {
+                return ChargingStatusForPowerControl.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.getDescriptor().getEnumTypes().get(0);
+      }
+
+      private static final ChargingStatusForPowerControl[] VALUES = values();
+
+      public static ChargingStatusForPowerControl valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private ChargingStatusForPowerControl(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:proto.ChargingPowerControl.ChargingStatusForPowerControl)
+    }
+
+    public static final int CHARGE_STATUS_FIELD_NUMBER = 1;
+    private int chargeStatus_ = 0;
+    /**
+     * <code>.proto.ChargingPowerControl.ChargingStatusForPowerControl charge_status = 1;</code>
+     * @return The enum numeric value on the wire for chargeStatus.
+     */
+    @java.lang.Override public int getChargeStatusValue() {
+      return chargeStatus_;
+    }
+    /**
+     * <code>.proto.ChargingPowerControl.ChargingStatusForPowerControl charge_status = 1;</code>
+     * @return The chargeStatus.
+     */
+    @java.lang.Override public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.ChargingStatusForPowerControl getChargeStatus() {
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.ChargingStatusForPowerControl result = com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.ChargingStatusForPowerControl.forNumber(chargeStatus_);
+      return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.ChargingStatusForPowerControl.UNRECOGNIZED : result;
+    }
+
+    public static final int CTRL_DURATION_FIELD_NUMBER = 2;
+    private int ctrlDuration_ = 0;
+    /**
+     * <code>int32 ctrl_duration = 2;</code>
+     * @return The ctrlDuration.
+     */
+    @java.lang.Override
+    public int getCtrlDuration() {
+      return ctrlDuration_;
+    }
+
+    public static final int CTRL_INFO_FIELD_NUMBER = 3;
+    private int ctrlInfo_ = 0;
+    /**
+     * <code>int32 ctrl_info = 3;</code>
+     * @return The ctrlInfo.
+     */
+    @java.lang.Override
+    public int getCtrlInfo() {
+      return ctrlInfo_;
+    }
+
+    public static final int CHARGE_POWER_FIELD_NUMBER = 4;
+    private int chargePower_ = 0;
+    /**
+     * <code>int32 charge_power = 4;</code>
+     * @return The chargePower.
+     */
+    @java.lang.Override
+    public int getChargePower() {
+      return chargePower_;
+    }
+
+    public static final int SERV_STAT_FIELD_NUMBER = 5;
+    private int servStat_ = 0;
+    /**
+     * <code>int32 serv_stat = 5;</code>
+     * @return The servStat.
+     */
+    @java.lang.Override
+    public int getServStat() {
+      return servStat_;
+    }
+
+    public static final int SERV_AVAIL_FIELD_NUMBER = 6;
+    private int servAvail_ = 0;
+    /**
+     * <code>int32 serv_avail = 6;</code>
+     * @return The servAvail.
+     */
+    @java.lang.Override
+    public int getServAvail() {
+      return servAvail_;
+    }
+
+    public static final int USE_CASE_FIELD_NUMBER = 7;
+    private int useCase_ = 0;
+    /**
+     * <code>int32 use_case = 7;</code>
+     * @return The useCase.
+     */
+    @java.lang.Override
+    public int getUseCase() {
+      return useCase_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (chargeStatus_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.ChargingStatusForPowerControl.NOT_DEFINED.getNumber()) {
+        output.writeEnum(1, chargeStatus_);
+      }
+      if (ctrlDuration_ != 0) {
+        output.writeInt32(2, ctrlDuration_);
+      }
+      if (ctrlInfo_ != 0) {
+        output.writeInt32(3, ctrlInfo_);
+      }
+      if (chargePower_ != 0) {
+        output.writeInt32(4, chargePower_);
+      }
+      if (servStat_ != 0) {
+        output.writeInt32(5, servStat_);
+      }
+      if (servAvail_ != 0) {
+        output.writeInt32(6, servAvail_);
+      }
+      if (useCase_ != 0) {
+        output.writeInt32(7, useCase_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (chargeStatus_ != com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.ChargingStatusForPowerControl.NOT_DEFINED.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, chargeStatus_);
+      }
+      if (ctrlDuration_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, ctrlDuration_);
+      }
+      if (ctrlInfo_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, ctrlInfo_);
+      }
+      if (chargePower_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, chargePower_);
+      }
+      if (servStat_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(5, servStat_);
+      }
+      if (servAvail_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(6, servAvail_);
+      }
+      if (useCase_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(7, useCase_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl other = (com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl) obj;
+
+      if (chargeStatus_ != other.chargeStatus_) return false;
+      if (getCtrlDuration()
+          != other.getCtrlDuration()) return false;
+      if (getCtrlInfo()
+          != other.getCtrlInfo()) return false;
+      if (getChargePower()
+          != other.getChargePower()) return false;
+      if (getServStat()
+          != other.getServStat()) return false;
+      if (getServAvail()
+          != other.getServAvail()) return false;
+      if (getUseCase()
+          != other.getUseCase()) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + CHARGE_STATUS_FIELD_NUMBER;
+      hash = (53 * hash) + chargeStatus_;
+      hash = (37 * hash) + CTRL_DURATION_FIELD_NUMBER;
+      hash = (53 * hash) + getCtrlDuration();
+      hash = (37 * hash) + CTRL_INFO_FIELD_NUMBER;
+      hash = (53 * hash) + getCtrlInfo();
+      hash = (37 * hash) + CHARGE_POWER_FIELD_NUMBER;
+      hash = (53 * hash) + getChargePower();
+      hash = (37 * hash) + SERV_STAT_FIELD_NUMBER;
+      hash = (53 * hash) + getServStat();
+      hash = (37 * hash) + SERV_AVAIL_FIELD_NUMBER;
+      hash = (53 * hash) + getServAvail();
+      hash = (37 * hash) + USE_CASE_FIELD_NUMBER;
+      hash = (53 * hash) + getUseCase();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.ChargingPowerControl}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.ChargingPowerControl)
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControlOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPowerControl_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPowerControl_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        chargeStatus_ = 0;
+        ctrlDuration_ = 0;
+        ctrlInfo_ = 0;
+        chargePower_ = 0;
+        servStat_ = 0;
+        servAvail_ = 0;
+        useCase_ = 0;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingPowerControl_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl result = new com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.chargeStatus_ = chargeStatus_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.ctrlDuration_ = ctrlDuration_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.ctrlInfo_ = ctrlInfo_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.chargePower_ = chargePower_;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.servStat_ = servStat_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.servAvail_ = servAvail_;
+        }
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.useCase_ = useCase_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.getDefaultInstance()) return this;
+        if (other.chargeStatus_ != 0) {
+          setChargeStatusValue(other.getChargeStatusValue());
+        }
+        if (other.getCtrlDuration() != 0) {
+          setCtrlDuration(other.getCtrlDuration());
+        }
+        if (other.getCtrlInfo() != 0) {
+          setCtrlInfo(other.getCtrlInfo());
+        }
+        if (other.getChargePower() != 0) {
+          setChargePower(other.getChargePower());
+        }
+        if (other.getServStat() != 0) {
+          setServStat(other.getServStat());
+        }
+        if (other.getServAvail() != 0) {
+          setServAvail(other.getServAvail());
+        }
+        if (other.getUseCase() != 0) {
+          setUseCase(other.getUseCase());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                chargeStatus_ = input.readEnum();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 16: {
+                ctrlDuration_ = input.readInt32();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              case 24: {
+                ctrlInfo_ = input.readInt32();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              case 32: {
+                chargePower_ = input.readInt32();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 32
+              case 40: {
+                servStat_ = input.readInt32();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 40
+              case 48: {
+                servAvail_ = input.readInt32();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 48
+              case 56: {
+                useCase_ = input.readInt32();
+                bitField0_ |= 0x00000040;
+                break;
+              } // case 56
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private int chargeStatus_ = 0;
+      /**
+       * <code>.proto.ChargingPowerControl.ChargingStatusForPowerControl charge_status = 1;</code>
+       * @return The enum numeric value on the wire for chargeStatus.
+       */
+      @java.lang.Override public int getChargeStatusValue() {
+        return chargeStatus_;
+      }
+      /**
+       * <code>.proto.ChargingPowerControl.ChargingStatusForPowerControl charge_status = 1;</code>
+       * @param value The enum numeric value on the wire for chargeStatus to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargeStatusValue(int value) {
+        chargeStatus_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPowerControl.ChargingStatusForPowerControl charge_status = 1;</code>
+       * @return The chargeStatus.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.ChargingStatusForPowerControl getChargeStatus() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.ChargingStatusForPowerControl result = com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.ChargingStatusForPowerControl.forNumber(chargeStatus_);
+        return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.ChargingStatusForPowerControl.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.proto.ChargingPowerControl.ChargingStatusForPowerControl charge_status = 1;</code>
+       * @param value The chargeStatus to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargeStatus(com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl.ChargingStatusForPowerControl value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
+        chargeStatus_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingPowerControl.ChargingStatusForPowerControl charge_status = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearChargeStatus() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        chargeStatus_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int ctrlDuration_ ;
+      /**
+       * <code>int32 ctrl_duration = 2;</code>
+       * @return The ctrlDuration.
+       */
+      @java.lang.Override
+      public int getCtrlDuration() {
+        return ctrlDuration_;
+      }
+      /**
+       * <code>int32 ctrl_duration = 2;</code>
+       * @param value The ctrlDuration to set.
+       * @return This builder for chaining.
+       */
+      public Builder setCtrlDuration(int value) {
+
+        ctrlDuration_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 ctrl_duration = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearCtrlDuration() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        ctrlDuration_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int ctrlInfo_ ;
+      /**
+       * <code>int32 ctrl_info = 3;</code>
+       * @return The ctrlInfo.
+       */
+      @java.lang.Override
+      public int getCtrlInfo() {
+        return ctrlInfo_;
+      }
+      /**
+       * <code>int32 ctrl_info = 3;</code>
+       * @param value The ctrlInfo to set.
+       * @return This builder for chaining.
+       */
+      public Builder setCtrlInfo(int value) {
+
+        ctrlInfo_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 ctrl_info = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearCtrlInfo() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        ctrlInfo_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int chargePower_ ;
+      /**
+       * <code>int32 charge_power = 4;</code>
+       * @return The chargePower.
+       */
+      @java.lang.Override
+      public int getChargePower() {
+        return chargePower_;
+      }
+      /**
+       * <code>int32 charge_power = 4;</code>
+       * @param value The chargePower to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChargePower(int value) {
+
+        chargePower_ = value;
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 charge_power = 4;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearChargePower() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        chargePower_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int servStat_ ;
+      /**
+       * <code>int32 serv_stat = 5;</code>
+       * @return The servStat.
+       */
+      @java.lang.Override
+      public int getServStat() {
+        return servStat_;
+      }
+      /**
+       * <code>int32 serv_stat = 5;</code>
+       * @param value The servStat to set.
+       * @return This builder for chaining.
+       */
+      public Builder setServStat(int value) {
+
+        servStat_ = value;
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 serv_stat = 5;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearServStat() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        servStat_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int servAvail_ ;
+      /**
+       * <code>int32 serv_avail = 6;</code>
+       * @return The servAvail.
+       */
+      @java.lang.Override
+      public int getServAvail() {
+        return servAvail_;
+      }
+      /**
+       * <code>int32 serv_avail = 6;</code>
+       * @param value The servAvail to set.
+       * @return This builder for chaining.
+       */
+      public Builder setServAvail(int value) {
+
+        servAvail_ = value;
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 serv_avail = 6;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearServAvail() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        servAvail_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int useCase_ ;
+      /**
+       * <code>int32 use_case = 7;</code>
+       * @return The useCase.
+       */
+      @java.lang.Override
+      public int getUseCase() {
+        return useCase_;
+      }
+      /**
+       * <code>int32 use_case = 7;</code>
+       * @param value The useCase to set.
+       * @return This builder for chaining.
+       */
+      public Builder setUseCase(int value) {
+
+        useCase_ = value;
+        bitField0_ |= 0x00000040;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 use_case = 7;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearUseCase() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        useCase_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.ChargingPowerControl)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.ChargingPowerControl)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ChargingPowerControl>
+        PARSER = new com.google.protobuf.AbstractParser<ChargingPowerControl>() {
+      @java.lang.Override
+      public ChargingPowerControl parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ChargingPowerControl> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChargingPowerControl> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingPowerControl getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ChargingBreakClockTimerEntryOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.ChargingBreakClockTimerEntry)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.proto.ChargingBreakClockTimerEntryStatus status = 1;</code>
+     * @return The enum numeric value on the wire for status.
+     */
+    int getStatusValue();
+    /**
+     * <code>.proto.ChargingBreakClockTimerEntryStatus status = 1;</code>
+     * @return The status.
+     */
+    com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus getStatus();
+
+    /**
+     * <code>int32 endTimeHour = 2;</code>
+     * @return The endTimeHour.
+     */
+    int getEndTimeHour();
+
+    /**
+     * <code>int32 endTimeMinute = 3;</code>
+     * @return The endTimeMinute.
+     */
+    int getEndTimeMinute();
+
+    /**
+     * <code>int32 startTimeHour = 4;</code>
+     * @return The startTimeHour.
+     */
+    int getStartTimeHour();
+
+    /**
+     * <code>int32 startTimeMinute = 5;</code>
+     * @return The startTimeMinute.
+     */
+    int getStartTimeMinute();
+
+    /**
+     * <code>int32 timerId = 6;</code>
+     * @return The timerId.
+     */
+    int getTimerId();
+  }
+  /**
+   * Protobuf type {@code proto.ChargingBreakClockTimerEntry}
+   */
+  public static final class ChargingBreakClockTimerEntry extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.ChargingBreakClockTimerEntry)
+      ChargingBreakClockTimerEntryOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargingBreakClockTimerEntry.class.getName());
+    }
+    // Use ChargingBreakClockTimerEntry.newBuilder() to construct.
+    private ChargingBreakClockTimerEntry(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ChargingBreakClockTimerEntry() {
+      status_ = 0;
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingBreakClockTimerEntry_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingBreakClockTimerEntry_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.Builder.class);
+    }
+
+    public static final int STATUS_FIELD_NUMBER = 1;
+    private int status_ = 0;
+    /**
+     * <code>.proto.ChargingBreakClockTimerEntryStatus status = 1;</code>
+     * @return The enum numeric value on the wire for status.
+     */
+    @java.lang.Override public int getStatusValue() {
+      return status_;
+    }
+    /**
+     * <code>.proto.ChargingBreakClockTimerEntryStatus status = 1;</code>
+     * @return The status.
+     */
+    @java.lang.Override public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus getStatus() {
+      com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus result = com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus.forNumber(status_);
+      return result == null ? com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus.UNRECOGNIZED : result;
+    }
+
+    public static final int ENDTIMEHOUR_FIELD_NUMBER = 2;
+    private int endTimeHour_ = 0;
+    /**
+     * <code>int32 endTimeHour = 2;</code>
+     * @return The endTimeHour.
+     */
+    @java.lang.Override
+    public int getEndTimeHour() {
+      return endTimeHour_;
+    }
+
+    public static final int ENDTIMEMINUTE_FIELD_NUMBER = 3;
+    private int endTimeMinute_ = 0;
+    /**
+     * <code>int32 endTimeMinute = 3;</code>
+     * @return The endTimeMinute.
+     */
+    @java.lang.Override
+    public int getEndTimeMinute() {
+      return endTimeMinute_;
+    }
+
+    public static final int STARTTIMEHOUR_FIELD_NUMBER = 4;
+    private int startTimeHour_ = 0;
+    /**
+     * <code>int32 startTimeHour = 4;</code>
+     * @return The startTimeHour.
+     */
+    @java.lang.Override
+    public int getStartTimeHour() {
+      return startTimeHour_;
+    }
+
+    public static final int STARTTIMEMINUTE_FIELD_NUMBER = 5;
+    private int startTimeMinute_ = 0;
+    /**
+     * <code>int32 startTimeMinute = 5;</code>
+     * @return The startTimeMinute.
+     */
+    @java.lang.Override
+    public int getStartTimeMinute() {
+      return startTimeMinute_;
+    }
+
+    public static final int TIMERID_FIELD_NUMBER = 6;
+    private int timerId_ = 0;
+    /**
+     * <code>int32 timerId = 6;</code>
+     * @return The timerId.
+     */
+    @java.lang.Override
+    public int getTimerId() {
+      return timerId_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (status_ != com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus.DELETE.getNumber()) {
+        output.writeEnum(1, status_);
+      }
+      if (endTimeHour_ != 0) {
+        output.writeInt32(2, endTimeHour_);
+      }
+      if (endTimeMinute_ != 0) {
+        output.writeInt32(3, endTimeMinute_);
+      }
+      if (startTimeHour_ != 0) {
+        output.writeInt32(4, startTimeHour_);
+      }
+      if (startTimeMinute_ != 0) {
+        output.writeInt32(5, startTimeMinute_);
+      }
+      if (timerId_ != 0) {
+        output.writeInt32(6, timerId_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (status_ != com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus.DELETE.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, status_);
+      }
+      if (endTimeHour_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, endTimeHour_);
+      }
+      if (endTimeMinute_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, endTimeMinute_);
+      }
+      if (startTimeHour_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, startTimeHour_);
+      }
+      if (startTimeMinute_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(5, startTimeMinute_);
+      }
+      if (timerId_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(6, timerId_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry other = (com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry) obj;
+
+      if (status_ != other.status_) return false;
+      if (getEndTimeHour()
+          != other.getEndTimeHour()) return false;
+      if (getEndTimeMinute()
+          != other.getEndTimeMinute()) return false;
+      if (getStartTimeHour()
+          != other.getStartTimeHour()) return false;
+      if (getStartTimeMinute()
+          != other.getStartTimeMinute()) return false;
+      if (getTimerId()
+          != other.getTimerId()) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + STATUS_FIELD_NUMBER;
+      hash = (53 * hash) + status_;
+      hash = (37 * hash) + ENDTIMEHOUR_FIELD_NUMBER;
+      hash = (53 * hash) + getEndTimeHour();
+      hash = (37 * hash) + ENDTIMEMINUTE_FIELD_NUMBER;
+      hash = (53 * hash) + getEndTimeMinute();
+      hash = (37 * hash) + STARTTIMEHOUR_FIELD_NUMBER;
+      hash = (53 * hash) + getStartTimeHour();
+      hash = (37 * hash) + STARTTIMEMINUTE_FIELD_NUMBER;
+      hash = (53 * hash) + getStartTimeMinute();
+      hash = (37 * hash) + TIMERID_FIELD_NUMBER;
+      hash = (53 * hash) + getTimerId();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.ChargingBreakClockTimerEntry}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.ChargingBreakClockTimerEntry)
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntryOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingBreakClockTimerEntry_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingBreakClockTimerEntry_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.class, com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        status_ = 0;
+        endTimeHour_ = 0;
+        endTimeMinute_ = 0;
+        startTimeHour_ = 0;
+        startTimeMinute_ = 0;
+        timerId_ = 0;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_ChargingBreakClockTimerEntry_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry result = new com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.status_ = status_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.endTimeHour_ = endTimeHour_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.endTimeMinute_ = endTimeMinute_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.startTimeHour_ = startTimeHour_;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.startTimeMinute_ = startTimeMinute_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.timerId_ = timerId_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry.getDefaultInstance()) return this;
+        if (other.status_ != 0) {
+          setStatusValue(other.getStatusValue());
+        }
+        if (other.getEndTimeHour() != 0) {
+          setEndTimeHour(other.getEndTimeHour());
+        }
+        if (other.getEndTimeMinute() != 0) {
+          setEndTimeMinute(other.getEndTimeMinute());
+        }
+        if (other.getStartTimeHour() != 0) {
+          setStartTimeHour(other.getStartTimeHour());
+        }
+        if (other.getStartTimeMinute() != 0) {
+          setStartTimeMinute(other.getStartTimeMinute());
+        }
+        if (other.getTimerId() != 0) {
+          setTimerId(other.getTimerId());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                status_ = input.readEnum();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 16: {
+                endTimeHour_ = input.readInt32();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              case 24: {
+                endTimeMinute_ = input.readInt32();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              case 32: {
+                startTimeHour_ = input.readInt32();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 32
+              case 40: {
+                startTimeMinute_ = input.readInt32();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 40
+              case 48: {
+                timerId_ = input.readInt32();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 48
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private int status_ = 0;
+      /**
+       * <code>.proto.ChargingBreakClockTimerEntryStatus status = 1;</code>
+       * @return The enum numeric value on the wire for status.
+       */
+      @java.lang.Override public int getStatusValue() {
+        return status_;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerEntryStatus status = 1;</code>
+       * @param value The enum numeric value on the wire for status to set.
+       * @return This builder for chaining.
+       */
+      public Builder setStatusValue(int value) {
+        status_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerEntryStatus status = 1;</code>
+       * @return The status.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus getStatus() {
+        com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus result = com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus.forNumber(status_);
+        return result == null ? com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerEntryStatus status = 1;</code>
+       * @param value The status to set.
+       * @return This builder for chaining.
+       */
+      public Builder setStatus(com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
+        status_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerEntryStatus status = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearStatus() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        status_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int endTimeHour_ ;
+      /**
+       * <code>int32 endTimeHour = 2;</code>
+       * @return The endTimeHour.
+       */
+      @java.lang.Override
+      public int getEndTimeHour() {
+        return endTimeHour_;
+      }
+      /**
+       * <code>int32 endTimeHour = 2;</code>
+       * @param value The endTimeHour to set.
+       * @return This builder for chaining.
+       */
+      public Builder setEndTimeHour(int value) {
+
+        endTimeHour_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 endTimeHour = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearEndTimeHour() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        endTimeHour_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int endTimeMinute_ ;
+      /**
+       * <code>int32 endTimeMinute = 3;</code>
+       * @return The endTimeMinute.
+       */
+      @java.lang.Override
+      public int getEndTimeMinute() {
+        return endTimeMinute_;
+      }
+      /**
+       * <code>int32 endTimeMinute = 3;</code>
+       * @param value The endTimeMinute to set.
+       * @return This builder for chaining.
+       */
+      public Builder setEndTimeMinute(int value) {
+
+        endTimeMinute_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 endTimeMinute = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearEndTimeMinute() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        endTimeMinute_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int startTimeHour_ ;
+      /**
+       * <code>int32 startTimeHour = 4;</code>
+       * @return The startTimeHour.
+       */
+      @java.lang.Override
+      public int getStartTimeHour() {
+        return startTimeHour_;
+      }
+      /**
+       * <code>int32 startTimeHour = 4;</code>
+       * @param value The startTimeHour to set.
+       * @return This builder for chaining.
+       */
+      public Builder setStartTimeHour(int value) {
+
+        startTimeHour_ = value;
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 startTimeHour = 4;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearStartTimeHour() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        startTimeHour_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int startTimeMinute_ ;
+      /**
+       * <code>int32 startTimeMinute = 5;</code>
+       * @return The startTimeMinute.
+       */
+      @java.lang.Override
+      public int getStartTimeMinute() {
+        return startTimeMinute_;
+      }
+      /**
+       * <code>int32 startTimeMinute = 5;</code>
+       * @param value The startTimeMinute to set.
+       * @return This builder for chaining.
+       */
+      public Builder setStartTimeMinute(int value) {
+
+        startTimeMinute_ = value;
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 startTimeMinute = 5;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearStartTimeMinute() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        startTimeMinute_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int timerId_ ;
+      /**
+       * <code>int32 timerId = 6;</code>
+       * @return The timerId.
+       */
+      @java.lang.Override
+      public int getTimerId() {
+        return timerId_;
+      }
+      /**
+       * <code>int32 timerId = 6;</code>
+       * @param value The timerId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTimerId(int value) {
+
+        timerId_ = value;
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 timerId = 6;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTimerId() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        timerId_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.ChargingBreakClockTimerEntry)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.ChargingBreakClockTimerEntry)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ChargingBreakClockTimerEntry>
+        PARSER = new com.google.protobuf.AbstractParser<ChargingBreakClockTimerEntry>() {
+      @java.lang.Override
+      public ChargingBreakClockTimerEntry parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ChargingBreakClockTimerEntry> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChargingBreakClockTimerEntry> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ChargingBreakClockTimerEntry getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -24643,6 +36621,21 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
      */
     com.daimler.mbcarkit.proto.Protos.AssignedVehiclesOrBuilder getAssignedVehiclesOrBuilder();
 
+    /**
+     * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+     * @return Whether the dataChangeEvent field is set.
+     */
+    boolean hasDataChangeEvent();
+    /**
+     * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+     * @return The dataChangeEvent.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent getDataChangeEvent();
+    /**
+     * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEventOrBuilder getDataChangeEventOrBuilder();
+
     com.daimler.mbcarkit.proto.VehicleEvents.PushMessage.MsgCase getMsgCase();
   }
   /**
@@ -24708,6 +36701,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
       APPTWIN_COMMAND_STATUS_UPDATES_BY_VIN(17),
       APPTWIN_PENDING_COMMAND_REQUEST(18),
       ASSIGNED_VEHICLES(19),
+      DATA_CHANGE_EVENT(21),
       MSG_NOT_SET(0);
       private final int value;
       private MsgCase(int value) {
@@ -24739,6 +36733,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
           case 17: return APPTWIN_COMMAND_STATUS_UPDATES_BY_VIN;
           case 18: return APPTWIN_PENDING_COMMAND_REQUEST;
           case 19: return ASSIGNED_VEHICLES;
+          case 21: return DATA_CHANGE_EVENT;
           case 0: return MSG_NOT_SET;
           default: return null;
         }
@@ -25227,6 +37222,37 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
       return com.daimler.mbcarkit.proto.Protos.AssignedVehicles.getDefaultInstance();
     }
 
+    public static final int DATA_CHANGE_EVENT_FIELD_NUMBER = 21;
+    /**
+     * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+     * @return Whether the dataChangeEvent field is set.
+     */
+    @java.lang.Override
+    public boolean hasDataChangeEvent() {
+      return msgCase_ == 21;
+    }
+    /**
+     * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+     * @return The dataChangeEvent.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent getDataChangeEvent() {
+      if (msgCase_ == 21) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent) msg_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.getDefaultInstance();
+    }
+    /**
+     * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEventOrBuilder getDataChangeEventOrBuilder() {
+      if (msgCase_ == 21) {
+         return (com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent) msg_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.getDefaultInstance();
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -25285,6 +37311,9 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
       }
       if (msgCase_ == 19) {
         output.writeMessage(19, (com.daimler.mbcarkit.proto.Protos.AssignedVehicles) msg_);
+      }
+      if (msgCase_ == 21) {
+        output.writeMessage(21, (com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent) msg_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -25353,6 +37382,10 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
       if (msgCase_ == 19) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(19, (com.daimler.mbcarkit.proto.Protos.AssignedVehicles) msg_);
+      }
+      if (msgCase_ == 21) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(21, (com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent) msg_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -25429,6 +37462,10 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
           if (!getAssignedVehicles()
               .equals(other.getAssignedVehicles())) return false;
           break;
+        case 21:
+          if (!getDataChangeEvent()
+              .equals(other.getDataChangeEvent())) return false;
+          break;
         case 0:
         default:
       }
@@ -25501,6 +37538,10 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
         case 19:
           hash = (37 * hash) + ASSIGNED_VEHICLES_FIELD_NUMBER;
           hash = (53 * hash) + getAssignedVehicles().hashCode();
+          break;
+        case 21:
+          hash = (37 * hash) + DATA_CHANGE_EVENT_FIELD_NUMBER;
+          hash = (53 * hash) + getDataChangeEvent().hashCode();
           break;
         case 0:
         default:
@@ -25684,6 +37725,9 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
         if (assignedVehiclesBuilder_ != null) {
           assignedVehiclesBuilder_.clear();
         }
+        if (dataChangeEventBuilder_ != null) {
+          dataChangeEventBuilder_.clear();
+        }
         msgCase_ = 0;
         msg_ = null;
         return this;
@@ -25784,6 +37828,10 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
             assignedVehiclesBuilder_ != null) {
           result.msg_ = assignedVehiclesBuilder_.build();
         }
+        if (msgCase_ == 21 &&
+            dataChangeEventBuilder_ != null) {
+          result.msg_ = dataChangeEventBuilder_.build();
+        }
       }
 
       @java.lang.Override
@@ -25858,6 +37906,10 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
           }
           case ASSIGNED_VEHICLES: {
             mergeAssignedVehicles(other.getAssignedVehicles());
+            break;
+          }
+          case DATA_CHANGE_EVENT: {
+            mergeDataChangeEvent(other.getDataChangeEvent());
             break;
           }
           case MSG_NOT_SET: {
@@ -25993,6 +38045,13 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
                 msgCase_ = 19;
                 break;
               } // case 154
+              case 170: {
+                input.readMessage(
+                    getDataChangeEventFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                msgCase_ = 21;
+                break;
+              } // case 170
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -28083,6 +40142,148 @@ com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus defaultValue) {
         msgCase_ = 19;
         onChanged();
         return assignedVehiclesBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent, com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.Builder, com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEventOrBuilder> dataChangeEventBuilder_;
+      /**
+       * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+       * @return Whether the dataChangeEvent field is set.
+       */
+      @java.lang.Override
+      public boolean hasDataChangeEvent() {
+        return msgCase_ == 21;
+      }
+      /**
+       * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+       * @return The dataChangeEvent.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent getDataChangeEvent() {
+        if (dataChangeEventBuilder_ == null) {
+          if (msgCase_ == 21) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent) msg_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.getDefaultInstance();
+        } else {
+          if (msgCase_ == 21) {
+            return dataChangeEventBuilder_.getMessage();
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+       */
+      public Builder setDataChangeEvent(com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent value) {
+        if (dataChangeEventBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          msg_ = value;
+          onChanged();
+        } else {
+          dataChangeEventBuilder_.setMessage(value);
+        }
+        msgCase_ = 21;
+        return this;
+      }
+      /**
+       * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+       */
+      public Builder setDataChangeEvent(
+          com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.Builder builderForValue) {
+        if (dataChangeEventBuilder_ == null) {
+          msg_ = builderForValue.build();
+          onChanged();
+        } else {
+          dataChangeEventBuilder_.setMessage(builderForValue.build());
+        }
+        msgCase_ = 21;
+        return this;
+      }
+      /**
+       * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+       */
+      public Builder mergeDataChangeEvent(com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent value) {
+        if (dataChangeEventBuilder_ == null) {
+          if (msgCase_ == 21 &&
+              msg_ != com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.getDefaultInstance()) {
+            msg_ = com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.newBuilder((com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent) msg_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            msg_ = value;
+          }
+          onChanged();
+        } else {
+          if (msgCase_ == 21) {
+            dataChangeEventBuilder_.mergeFrom(value);
+          } else {
+            dataChangeEventBuilder_.setMessage(value);
+          }
+        }
+        msgCase_ = 21;
+        return this;
+      }
+      /**
+       * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+       */
+      public Builder clearDataChangeEvent() {
+        if (dataChangeEventBuilder_ == null) {
+          if (msgCase_ == 21) {
+            msgCase_ = 0;
+            msg_ = null;
+            onChanged();
+          }
+        } else {
+          if (msgCase_ == 21) {
+            msgCase_ = 0;
+            msg_ = null;
+          }
+          dataChangeEventBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.Builder getDataChangeEventBuilder() {
+        return getDataChangeEventFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEventOrBuilder getDataChangeEventOrBuilder() {
+        if ((msgCase_ == 21) && (dataChangeEventBuilder_ != null)) {
+          return dataChangeEventBuilder_.getMessageOrBuilder();
+        } else {
+          if (msgCase_ == 21) {
+            return (com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent) msg_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.DataChangeEvent data_change_event = 21;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent, com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.Builder, com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEventOrBuilder> 
+          getDataChangeEventFieldBuilder() {
+        if (dataChangeEventBuilder_ == null) {
+          if (!(msgCase_ == 21)) {
+            msg_ = com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.getDefaultInstance();
+          }
+          dataChangeEventBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent, com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.Builder, com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEventOrBuilder>(
+                  (com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent) msg_,
+                  getParentForChildren(),
+                  isClean());
+          msg_ = null;
+        }
+        msgCase_ = 21;
+        onChanged();
+        return dataChangeEventBuilder_;
       }
 
       // @@protoc_insertion_point(builder_scope:proto.PushMessage)
@@ -34163,6 +46364,2772 @@ com.daimler.mbcarkit.proto.VehicleEvents.PayloadValue defaultValue) {
 
   }
 
+  public interface AcknowledgeDataChangeEventOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.AcknowledgeDataChangeEvent)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 sequence_number = 1;</code>
+     * @return The sequenceNumber.
+     */
+    int getSequenceNumber();
+  }
+  /**
+   * Protobuf type {@code proto.AcknowledgeDataChangeEvent}
+   */
+  public static final class AcknowledgeDataChangeEvent extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.AcknowledgeDataChangeEvent)
+      AcknowledgeDataChangeEventOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        AcknowledgeDataChangeEvent.class.getName());
+    }
+    // Use AcknowledgeDataChangeEvent.newBuilder() to construct.
+    private AcknowledgeDataChangeEvent(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private AcknowledgeDataChangeEvent() {
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_AcknowledgeDataChangeEvent_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_AcknowledgeDataChangeEvent_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.class, com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.Builder.class);
+    }
+
+    public static final int SEQUENCE_NUMBER_FIELD_NUMBER = 1;
+    private int sequenceNumber_ = 0;
+    /**
+     * <code>int32 sequence_number = 1;</code>
+     * @return The sequenceNumber.
+     */
+    @java.lang.Override
+    public int getSequenceNumber() {
+      return sequenceNumber_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (sequenceNumber_ != 0) {
+        output.writeInt32(1, sequenceNumber_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (sequenceNumber_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, sequenceNumber_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent other = (com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent) obj;
+
+      if (getSequenceNumber()
+          != other.getSequenceNumber()) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + SEQUENCE_NUMBER_FIELD_NUMBER;
+      hash = (53 * hash) + getSequenceNumber();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.AcknowledgeDataChangeEvent}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.AcknowledgeDataChangeEvent)
+        com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEventOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_AcknowledgeDataChangeEvent_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_AcknowledgeDataChangeEvent_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.class, com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        sequenceNumber_ = 0;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_AcknowledgeDataChangeEvent_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent result = new com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.sequenceNumber_ = sequenceNumber_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent.getDefaultInstance()) return this;
+        if (other.getSequenceNumber() != 0) {
+          setSequenceNumber(other.getSequenceNumber());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                sequenceNumber_ = input.readInt32();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private int sequenceNumber_ ;
+      /**
+       * <code>int32 sequence_number = 1;</code>
+       * @return The sequenceNumber.
+       */
+      @java.lang.Override
+      public int getSequenceNumber() {
+        return sequenceNumber_;
+      }
+      /**
+       * <code>int32 sequence_number = 1;</code>
+       * @param value The sequenceNumber to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSequenceNumber(int value) {
+
+        sequenceNumber_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 sequence_number = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSequenceNumber() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        sequenceNumber_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.AcknowledgeDataChangeEvent)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.AcknowledgeDataChangeEvent)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<AcknowledgeDataChangeEvent>
+        PARSER = new com.google.protobuf.AbstractParser<AcknowledgeDataChangeEvent>() {
+      @java.lang.Override
+      public AcknowledgeDataChangeEvent parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<AcknowledgeDataChangeEvent> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<AcknowledgeDataChangeEvent> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeDataChangeEvent getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ScopesOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.Scopes)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.proto.Scope scope = 1;</code>
+     * @return The enum numeric value on the wire for scope.
+     */
+    int getScopeValue();
+    /**
+     * <code>.proto.Scope scope = 1;</code>
+     * @return The scope.
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.Scope getScope();
+
+    /**
+     * <code>string ciamId = 2;</code>
+     * @return The ciamId.
+     */
+    java.lang.String getCiamId();
+    /**
+     * <code>string ciamId = 2;</code>
+     * @return The bytes for ciamId.
+     */
+    com.google.protobuf.ByteString
+        getCiamIdBytes();
+
+    /**
+     * <code>string vin = 3;</code>
+     * @return The vin.
+     */
+    java.lang.String getVin();
+    /**
+     * <code>string vin = 3;</code>
+     * @return The bytes for vin.
+     */
+    com.google.protobuf.ByteString
+        getVinBytes();
+
+    /**
+     * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+     */
+    int getAdditionalResourcesCount();
+    /**
+     * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+     */
+    boolean containsAdditionalResources(
+        java.lang.String key);
+    /**
+     * Use {@link #getAdditionalResourcesMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String>
+    getAdditionalResources();
+    /**
+     * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+     */
+    java.util.Map<java.lang.String, java.lang.String>
+    getAdditionalResourcesMap();
+    /**
+     * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+     */
+    /* nullable */
+java.lang.String getAdditionalResourcesOrDefault(
+        java.lang.String key,
+        /* nullable */
+java.lang.String defaultValue);
+    /**
+     * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+     */
+    java.lang.String getAdditionalResourcesOrThrow(
+        java.lang.String key);
+
+    /**
+     * <code>string resource_ciam_id = 5;</code>
+     * @return The resourceCiamId.
+     */
+    java.lang.String getResourceCiamId();
+    /**
+     * <code>string resource_ciam_id = 5;</code>
+     * @return The bytes for resourceCiamId.
+     */
+    com.google.protobuf.ByteString
+        getResourceCiamIdBytes();
+
+    /**
+     * <code>string resource_vin = 6;</code>
+     * @return The resourceVin.
+     */
+    java.lang.String getResourceVin();
+    /**
+     * <code>string resource_vin = 6;</code>
+     * @return The bytes for resourceVin.
+     */
+    com.google.protobuf.ByteString
+        getResourceVinBytes();
+  }
+  /**
+   * Protobuf type {@code proto.Scopes}
+   */
+  public static final class Scopes extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.Scopes)
+      ScopesOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        Scopes.class.getName());
+    }
+    // Use Scopes.newBuilder() to construct.
+    private Scopes(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private Scopes() {
+      scope_ = 0;
+      ciamId_ = "";
+      vin_ = "";
+      resourceCiamId_ = "";
+      resourceVin_ = "";
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_Scopes_descriptor;
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    @java.lang.Override
+    protected com.google.protobuf.MapFieldReflectionAccessor internalGetMapFieldReflection(
+        int number) {
+      switch (number) {
+        case 4:
+          return internalGetAdditionalResources();
+        default:
+          throw new RuntimeException(
+              "Invalid map field number: " + number);
+      }
+    }
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_Scopes_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.Scopes.class, com.daimler.mbcarkit.proto.VehicleEvents.Scopes.Builder.class);
+    }
+
+    public static final int SCOPE_FIELD_NUMBER = 1;
+    private int scope_ = 0;
+    /**
+     * <code>.proto.Scope scope = 1;</code>
+     * @return The enum numeric value on the wire for scope.
+     */
+    @java.lang.Override public int getScopeValue() {
+      return scope_;
+    }
+    /**
+     * <code>.proto.Scope scope = 1;</code>
+     * @return The scope.
+     */
+    @java.lang.Override public com.daimler.mbcarkit.proto.VehicleEvents.Scope getScope() {
+      com.daimler.mbcarkit.proto.VehicleEvents.Scope result = com.daimler.mbcarkit.proto.VehicleEvents.Scope.forNumber(scope_);
+      return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.Scope.UNRECOGNIZED : result;
+    }
+
+    public static final int CIAMID_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object ciamId_ = "";
+    /**
+     * <code>string ciamId = 2;</code>
+     * @return The ciamId.
+     */
+    @java.lang.Override
+    public java.lang.String getCiamId() {
+      java.lang.Object ref = ciamId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        ciamId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string ciamId = 2;</code>
+     * @return The bytes for ciamId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getCiamIdBytes() {
+      java.lang.Object ref = ciamId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        ciamId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int VIN_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object vin_ = "";
+    /**
+     * <code>string vin = 3;</code>
+     * @return The vin.
+     */
+    @java.lang.Override
+    public java.lang.String getVin() {
+      java.lang.Object ref = vin_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        vin_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string vin = 3;</code>
+     * @return The bytes for vin.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getVinBytes() {
+      java.lang.Object ref = vin_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        vin_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ADDITIONAL_RESOURCES_FIELD_NUMBER = 4;
+    private static final class AdditionalResourcesDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<
+          java.lang.String, java.lang.String> defaultEntry =
+              com.google.protobuf.MapEntry
+              .<java.lang.String, java.lang.String>newDefaultInstance(
+                  com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_Scopes_AdditionalResourcesEntry_descriptor, 
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "",
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "");
+    }
+    @SuppressWarnings("serial")
+    private com.google.protobuf.MapField<
+        java.lang.String, java.lang.String> additionalResources_;
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+    internalGetAdditionalResources() {
+      if (additionalResources_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(
+            AdditionalResourcesDefaultEntryHolder.defaultEntry);
+      }
+      return additionalResources_;
+    }
+    public int getAdditionalResourcesCount() {
+      return internalGetAdditionalResources().getMap().size();
+    }
+    /**
+     * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+     */
+    @java.lang.Override
+    public boolean containsAdditionalResources(
+        java.lang.String key) {
+      if (key == null) { throw new NullPointerException("map key"); }
+      return internalGetAdditionalResources().getMap().containsKey(key);
+    }
+    /**
+     * Use {@link #getAdditionalResourcesMap()} instead.
+     */
+    @java.lang.Override
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getAdditionalResources() {
+      return getAdditionalResourcesMap();
+    }
+    /**
+     * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+     */
+    @java.lang.Override
+    public java.util.Map<java.lang.String, java.lang.String> getAdditionalResourcesMap() {
+      return internalGetAdditionalResources().getMap();
+    }
+    /**
+     * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+     */
+    @java.lang.Override
+    public /* nullable */
+java.lang.String getAdditionalResourcesOrDefault(
+        java.lang.String key,
+        /* nullable */
+java.lang.String defaultValue) {
+      if (key == null) { throw new NullPointerException("map key"); }
+      java.util.Map<java.lang.String, java.lang.String> map =
+          internalGetAdditionalResources().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+    /**
+     * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+     */
+    @java.lang.Override
+    public java.lang.String getAdditionalResourcesOrThrow(
+        java.lang.String key) {
+      if (key == null) { throw new NullPointerException("map key"); }
+      java.util.Map<java.lang.String, java.lang.String> map =
+          internalGetAdditionalResources().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+
+    public static final int RESOURCE_CIAM_ID_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object resourceCiamId_ = "";
+    /**
+     * <code>string resource_ciam_id = 5;</code>
+     * @return The resourceCiamId.
+     */
+    @java.lang.Override
+    public java.lang.String getResourceCiamId() {
+      java.lang.Object ref = resourceCiamId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        resourceCiamId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string resource_ciam_id = 5;</code>
+     * @return The bytes for resourceCiamId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getResourceCiamIdBytes() {
+      java.lang.Object ref = resourceCiamId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        resourceCiamId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int RESOURCE_VIN_FIELD_NUMBER = 6;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object resourceVin_ = "";
+    /**
+     * <code>string resource_vin = 6;</code>
+     * @return The resourceVin.
+     */
+    @java.lang.Override
+    public java.lang.String getResourceVin() {
+      java.lang.Object ref = resourceVin_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        resourceVin_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string resource_vin = 6;</code>
+     * @return The bytes for resourceVin.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getResourceVinBytes() {
+      java.lang.Object ref = resourceVin_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        resourceVin_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (scope_ != com.daimler.mbcarkit.proto.VehicleEvents.Scope.USER.getNumber()) {
+        output.writeEnum(1, scope_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(ciamId_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 2, ciamId_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(vin_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 3, vin_);
+      }
+      com.google.protobuf.GeneratedMessage
+        .serializeStringMapTo(
+          output,
+          internalGetAdditionalResources(),
+          AdditionalResourcesDefaultEntryHolder.defaultEntry,
+          4);
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(resourceCiamId_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 5, resourceCiamId_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(resourceVin_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 6, resourceVin_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (scope_ != com.daimler.mbcarkit.proto.VehicleEvents.Scope.USER.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, scope_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(ciamId_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, ciamId_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(vin_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, vin_);
+      }
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry
+           : internalGetAdditionalResources().getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+        additionalResources__ = AdditionalResourcesDefaultEntryHolder.defaultEntry.newBuilderForType()
+            .setKey(entry.getKey())
+            .setValue(entry.getValue())
+            .build();
+        size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(4, additionalResources__);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(resourceCiamId_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(5, resourceCiamId_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(resourceVin_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(6, resourceVin_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.Scopes)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.Scopes other = (com.daimler.mbcarkit.proto.VehicleEvents.Scopes) obj;
+
+      if (scope_ != other.scope_) return false;
+      if (!getCiamId()
+          .equals(other.getCiamId())) return false;
+      if (!getVin()
+          .equals(other.getVin())) return false;
+      if (!internalGetAdditionalResources().equals(
+          other.internalGetAdditionalResources())) return false;
+      if (!getResourceCiamId()
+          .equals(other.getResourceCiamId())) return false;
+      if (!getResourceVin()
+          .equals(other.getResourceVin())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + SCOPE_FIELD_NUMBER;
+      hash = (53 * hash) + scope_;
+      hash = (37 * hash) + CIAMID_FIELD_NUMBER;
+      hash = (53 * hash) + getCiamId().hashCode();
+      hash = (37 * hash) + VIN_FIELD_NUMBER;
+      hash = (53 * hash) + getVin().hashCode();
+      if (!internalGetAdditionalResources().getMap().isEmpty()) {
+        hash = (37 * hash) + ADDITIONAL_RESOURCES_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetAdditionalResources().hashCode();
+      }
+      hash = (37 * hash) + RESOURCE_CIAM_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getResourceCiamId().hashCode();
+      hash = (37 * hash) + RESOURCE_VIN_FIELD_NUMBER;
+      hash = (53 * hash) + getResourceVin().hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.Scopes prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.Scopes}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.Scopes)
+        com.daimler.mbcarkit.proto.VehicleEvents.ScopesOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_Scopes_descriptor;
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapFieldReflectionAccessor internalGetMapFieldReflection(
+          int number) {
+        switch (number) {
+          case 4:
+            return internalGetAdditionalResources();
+          default:
+            throw new RuntimeException(
+                "Invalid map field number: " + number);
+        }
+      }
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapFieldReflectionAccessor internalGetMutableMapFieldReflection(
+          int number) {
+        switch (number) {
+          case 4:
+            return internalGetMutableAdditionalResources();
+          default:
+            throw new RuntimeException(
+                "Invalid map field number: " + number);
+        }
+      }
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_Scopes_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.Scopes.class, com.daimler.mbcarkit.proto.VehicleEvents.Scopes.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.Scopes.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        scope_ = 0;
+        ciamId_ = "";
+        vin_ = "";
+        internalGetMutableAdditionalResources().clear();
+        resourceCiamId_ = "";
+        resourceVin_ = "";
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_Scopes_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.Scopes getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.Scopes.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.Scopes build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.Scopes result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.Scopes buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.Scopes result = new com.daimler.mbcarkit.proto.VehicleEvents.Scopes(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.Scopes result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.scope_ = scope_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.ciamId_ = ciamId_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.vin_ = vin_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.additionalResources_ = internalGetAdditionalResources();
+          result.additionalResources_.makeImmutable();
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.resourceCiamId_ = resourceCiamId_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.resourceVin_ = resourceVin_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.Scopes) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.Scopes)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.Scopes other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.Scopes.getDefaultInstance()) return this;
+        if (other.scope_ != 0) {
+          setScopeValue(other.getScopeValue());
+        }
+        if (!other.getCiamId().isEmpty()) {
+          ciamId_ = other.ciamId_;
+          bitField0_ |= 0x00000002;
+          onChanged();
+        }
+        if (!other.getVin().isEmpty()) {
+          vin_ = other.vin_;
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
+        internalGetMutableAdditionalResources().mergeFrom(
+            other.internalGetAdditionalResources());
+        bitField0_ |= 0x00000008;
+        if (!other.getResourceCiamId().isEmpty()) {
+          resourceCiamId_ = other.resourceCiamId_;
+          bitField0_ |= 0x00000010;
+          onChanged();
+        }
+        if (!other.getResourceVin().isEmpty()) {
+          resourceVin_ = other.resourceVin_;
+          bitField0_ |= 0x00000020;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                scope_ = input.readEnum();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 18: {
+                ciamId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                vin_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 34: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                additionalResources__ = input.readMessage(
+                    AdditionalResourcesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableAdditionalResources().getMutableMap().put(
+                    additionalResources__.getKey(), additionalResources__.getValue());
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+              case 42: {
+                resourceCiamId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 42
+              case 50: {
+                resourceVin_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 50
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private int scope_ = 0;
+      /**
+       * <code>.proto.Scope scope = 1;</code>
+       * @return The enum numeric value on the wire for scope.
+       */
+      @java.lang.Override public int getScopeValue() {
+        return scope_;
+      }
+      /**
+       * <code>.proto.Scope scope = 1;</code>
+       * @param value The enum numeric value on the wire for scope to set.
+       * @return This builder for chaining.
+       */
+      public Builder setScopeValue(int value) {
+        scope_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.Scope scope = 1;</code>
+       * @return The scope.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.Scope getScope() {
+        com.daimler.mbcarkit.proto.VehicleEvents.Scope result = com.daimler.mbcarkit.proto.VehicleEvents.Scope.forNumber(scope_);
+        return result == null ? com.daimler.mbcarkit.proto.VehicleEvents.Scope.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.proto.Scope scope = 1;</code>
+       * @param value The scope to set.
+       * @return This builder for chaining.
+       */
+      public Builder setScope(com.daimler.mbcarkit.proto.VehicleEvents.Scope value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
+        scope_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.Scope scope = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearScope() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        scope_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object ciamId_ = "";
+      /**
+       * <code>string ciamId = 2;</code>
+       * @return The ciamId.
+       */
+      public java.lang.String getCiamId() {
+        java.lang.Object ref = ciamId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          ciamId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string ciamId = 2;</code>
+       * @return The bytes for ciamId.
+       */
+      public com.google.protobuf.ByteString
+          getCiamIdBytes() {
+        java.lang.Object ref = ciamId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          ciamId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string ciamId = 2;</code>
+       * @param value The ciamId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setCiamId(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        ciamId_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string ciamId = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearCiamId() {
+        ciamId_ = getDefaultInstance().getCiamId();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string ciamId = 2;</code>
+       * @param value The bytes for ciamId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setCiamIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        ciamId_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object vin_ = "";
+      /**
+       * <code>string vin = 3;</code>
+       * @return The vin.
+       */
+      public java.lang.String getVin() {
+        java.lang.Object ref = vin_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          vin_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string vin = 3;</code>
+       * @return The bytes for vin.
+       */
+      public com.google.protobuf.ByteString
+          getVinBytes() {
+        java.lang.Object ref = vin_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          vin_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string vin = 3;</code>
+       * @param value The vin to set.
+       * @return This builder for chaining.
+       */
+      public Builder setVin(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        vin_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string vin = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearVin() {
+        vin_ = getDefaultInstance().getVin();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string vin = 3;</code>
+       * @param value The bytes for vin to set.
+       * @return This builder for chaining.
+       */
+      public Builder setVinBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        vin_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.MapField<
+          java.lang.String, java.lang.String> additionalResources_;
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+          internalGetAdditionalResources() {
+        if (additionalResources_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(
+              AdditionalResourcesDefaultEntryHolder.defaultEntry);
+        }
+        return additionalResources_;
+      }
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+          internalGetMutableAdditionalResources() {
+        if (additionalResources_ == null) {
+          additionalResources_ = com.google.protobuf.MapField.newMapField(
+              AdditionalResourcesDefaultEntryHolder.defaultEntry);
+        }
+        if (!additionalResources_.isMutable()) {
+          additionalResources_ = additionalResources_.copy();
+        }
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return additionalResources_;
+      }
+      public int getAdditionalResourcesCount() {
+        return internalGetAdditionalResources().getMap().size();
+      }
+      /**
+       * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+       */
+      @java.lang.Override
+      public boolean containsAdditionalResources(
+          java.lang.String key) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        return internalGetAdditionalResources().getMap().containsKey(key);
+      }
+      /**
+       * Use {@link #getAdditionalResourcesMap()} instead.
+       */
+      @java.lang.Override
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getAdditionalResources() {
+        return getAdditionalResourcesMap();
+      }
+      /**
+       * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+       */
+      @java.lang.Override
+      public java.util.Map<java.lang.String, java.lang.String> getAdditionalResourcesMap() {
+        return internalGetAdditionalResources().getMap();
+      }
+      /**
+       * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+       */
+      @java.lang.Override
+      public /* nullable */
+java.lang.String getAdditionalResourcesOrDefault(
+          java.lang.String key,
+          /* nullable */
+java.lang.String defaultValue) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        java.util.Map<java.lang.String, java.lang.String> map =
+            internalGetAdditionalResources().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+      /**
+       * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+       */
+      @java.lang.Override
+      public java.lang.String getAdditionalResourcesOrThrow(
+          java.lang.String key) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        java.util.Map<java.lang.String, java.lang.String> map =
+            internalGetAdditionalResources().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+      public Builder clearAdditionalResources() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        internalGetMutableAdditionalResources().getMutableMap()
+            .clear();
+        return this;
+      }
+      /**
+       * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+       */
+      public Builder removeAdditionalResources(
+          java.lang.String key) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        internalGetMutableAdditionalResources().getMutableMap()
+            .remove(key);
+        return this;
+      }
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String>
+          getMutableAdditionalResources() {
+        bitField0_ |= 0x00000008;
+        return internalGetMutableAdditionalResources().getMutableMap();
+      }
+      /**
+       * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+       */
+      public Builder putAdditionalResources(
+          java.lang.String key,
+          java.lang.String value) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        if (value == null) { throw new NullPointerException("map value"); }
+        internalGetMutableAdditionalResources().getMutableMap()
+            .put(key, value);
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      /**
+       * <code>map&lt;string, string&gt; additional_resources = 4;</code>
+       */
+      public Builder putAllAdditionalResources(
+          java.util.Map<java.lang.String, java.lang.String> values) {
+        internalGetMutableAdditionalResources().getMutableMap()
+            .putAll(values);
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+
+      private java.lang.Object resourceCiamId_ = "";
+      /**
+       * <code>string resource_ciam_id = 5;</code>
+       * @return The resourceCiamId.
+       */
+      public java.lang.String getResourceCiamId() {
+        java.lang.Object ref = resourceCiamId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          resourceCiamId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string resource_ciam_id = 5;</code>
+       * @return The bytes for resourceCiamId.
+       */
+      public com.google.protobuf.ByteString
+          getResourceCiamIdBytes() {
+        java.lang.Object ref = resourceCiamId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          resourceCiamId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string resource_ciam_id = 5;</code>
+       * @param value The resourceCiamId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setResourceCiamId(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        resourceCiamId_ = value;
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string resource_ciam_id = 5;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearResourceCiamId() {
+        resourceCiamId_ = getDefaultInstance().getResourceCiamId();
+        bitField0_ = (bitField0_ & ~0x00000010);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string resource_ciam_id = 5;</code>
+       * @param value The bytes for resourceCiamId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setResourceCiamIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        resourceCiamId_ = value;
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object resourceVin_ = "";
+      /**
+       * <code>string resource_vin = 6;</code>
+       * @return The resourceVin.
+       */
+      public java.lang.String getResourceVin() {
+        java.lang.Object ref = resourceVin_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          resourceVin_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string resource_vin = 6;</code>
+       * @return The bytes for resourceVin.
+       */
+      public com.google.protobuf.ByteString
+          getResourceVinBytes() {
+        java.lang.Object ref = resourceVin_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          resourceVin_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string resource_vin = 6;</code>
+       * @param value The resourceVin to set.
+       * @return This builder for chaining.
+       */
+      public Builder setResourceVin(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        resourceVin_ = value;
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string resource_vin = 6;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearResourceVin() {
+        resourceVin_ = getDefaultInstance().getResourceVin();
+        bitField0_ = (bitField0_ & ~0x00000020);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string resource_vin = 6;</code>
+       * @param value The bytes for resourceVin to set.
+       * @return This builder for chaining.
+       */
+      public Builder setResourceVinBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        resourceVin_ = value;
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.Scopes)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.Scopes)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.Scopes DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.Scopes();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.Scopes getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Scopes>
+        PARSER = new com.google.protobuf.AbstractParser<Scopes>() {
+      @java.lang.Override
+      public Scopes parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<Scopes> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Scopes> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.Scopes getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface DataChangeEventOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.DataChangeEvent)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .proto.Scopes scopes = 1;</code>
+     */
+    java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.Scopes> 
+        getScopesList();
+    /**
+     * <code>repeated .proto.Scopes scopes = 1;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.Scopes getScopes(int index);
+    /**
+     * <code>repeated .proto.Scopes scopes = 1;</code>
+     */
+    int getScopesCount();
+    /**
+     * <code>repeated .proto.Scopes scopes = 1;</code>
+     */
+    java.util.List<? extends com.daimler.mbcarkit.proto.VehicleEvents.ScopesOrBuilder> 
+        getScopesOrBuilderList();
+    /**
+     * <code>repeated .proto.Scopes scopes = 1;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleEvents.ScopesOrBuilder getScopesOrBuilder(
+        int index);
+
+    /**
+     * <code>string tracking_id = 2;</code>
+     * @return The trackingId.
+     */
+    java.lang.String getTrackingId();
+    /**
+     * <code>string tracking_id = 2;</code>
+     * @return The bytes for trackingId.
+     */
+    com.google.protobuf.ByteString
+        getTrackingIdBytes();
+
+    /**
+     * <code>int32 sequence_number = 3;</code>
+     * @return The sequenceNumber.
+     */
+    int getSequenceNumber();
+  }
+  /**
+   * Protobuf type {@code proto.DataChangeEvent}
+   */
+  public static final class DataChangeEvent extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.DataChangeEvent)
+      DataChangeEventOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        DataChangeEvent.class.getName());
+    }
+    // Use DataChangeEvent.newBuilder() to construct.
+    private DataChangeEvent(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private DataChangeEvent() {
+      scopes_ = java.util.Collections.emptyList();
+      trackingId_ = "";
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_DataChangeEvent_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_DataChangeEvent_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.class, com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.Builder.class);
+    }
+
+    public static final int SCOPES_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
+    private java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.Scopes> scopes_;
+    /**
+     * <code>repeated .proto.Scopes scopes = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.Scopes> getScopesList() {
+      return scopes_;
+    }
+    /**
+     * <code>repeated .proto.Scopes scopes = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends com.daimler.mbcarkit.proto.VehicleEvents.ScopesOrBuilder> 
+        getScopesOrBuilderList() {
+      return scopes_;
+    }
+    /**
+     * <code>repeated .proto.Scopes scopes = 1;</code>
+     */
+    @java.lang.Override
+    public int getScopesCount() {
+      return scopes_.size();
+    }
+    /**
+     * <code>repeated .proto.Scopes scopes = 1;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.Scopes getScopes(int index) {
+      return scopes_.get(index);
+    }
+    /**
+     * <code>repeated .proto.Scopes scopes = 1;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.ScopesOrBuilder getScopesOrBuilder(
+        int index) {
+      return scopes_.get(index);
+    }
+
+    public static final int TRACKING_ID_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object trackingId_ = "";
+    /**
+     * <code>string tracking_id = 2;</code>
+     * @return The trackingId.
+     */
+    @java.lang.Override
+    public java.lang.String getTrackingId() {
+      java.lang.Object ref = trackingId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        trackingId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string tracking_id = 2;</code>
+     * @return The bytes for trackingId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getTrackingIdBytes() {
+      java.lang.Object ref = trackingId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        trackingId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int SEQUENCE_NUMBER_FIELD_NUMBER = 3;
+    private int sequenceNumber_ = 0;
+    /**
+     * <code>int32 sequence_number = 3;</code>
+     * @return The sequenceNumber.
+     */
+    @java.lang.Override
+    public int getSequenceNumber() {
+      return sequenceNumber_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < scopes_.size(); i++) {
+        output.writeMessage(1, scopes_.get(i));
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(trackingId_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 2, trackingId_);
+      }
+      if (sequenceNumber_ != 0) {
+        output.writeInt32(3, sequenceNumber_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < scopes_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, scopes_.get(i));
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(trackingId_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, trackingId_);
+      }
+      if (sequenceNumber_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, sequenceNumber_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent other = (com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent) obj;
+
+      if (!getScopesList()
+          .equals(other.getScopesList())) return false;
+      if (!getTrackingId()
+          .equals(other.getTrackingId())) return false;
+      if (getSequenceNumber()
+          != other.getSequenceNumber()) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getScopesCount() > 0) {
+        hash = (37 * hash) + SCOPES_FIELD_NUMBER;
+        hash = (53 * hash) + getScopesList().hashCode();
+      }
+      hash = (37 * hash) + TRACKING_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getTrackingId().hashCode();
+      hash = (37 * hash) + SEQUENCE_NUMBER_FIELD_NUMBER;
+      hash = (53 * hash) + getSequenceNumber();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.DataChangeEvent}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.DataChangeEvent)
+        com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEventOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_DataChangeEvent_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_DataChangeEvent_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.class, com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        if (scopesBuilder_ == null) {
+          scopes_ = java.util.Collections.emptyList();
+        } else {
+          scopes_ = null;
+          scopesBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        trackingId_ = "";
+        sequenceNumber_ = 0;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.internal_static_proto_DataChangeEvent_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent build() {
+        com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent result = new com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent(this);
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent result) {
+        if (scopesBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            scopes_ = java.util.Collections.unmodifiableList(scopes_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.scopes_ = scopes_;
+        } else {
+          result.scopes_ = scopesBuilder_.build();
+        }
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.trackingId_ = trackingId_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.sequenceNumber_ = sequenceNumber_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent.getDefaultInstance()) return this;
+        if (scopesBuilder_ == null) {
+          if (!other.scopes_.isEmpty()) {
+            if (scopes_.isEmpty()) {
+              scopes_ = other.scopes_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureScopesIsMutable();
+              scopes_.addAll(other.scopes_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.scopes_.isEmpty()) {
+            if (scopesBuilder_.isEmpty()) {
+              scopesBuilder_.dispose();
+              scopesBuilder_ = null;
+              scopes_ = other.scopes_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              scopesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getScopesFieldBuilder() : null;
+            } else {
+              scopesBuilder_.addAllMessages(other.scopes_);
+            }
+          }
+        }
+        if (!other.getTrackingId().isEmpty()) {
+          trackingId_ = other.trackingId_;
+          bitField0_ |= 0x00000002;
+          onChanged();
+        }
+        if (other.getSequenceNumber() != 0) {
+          setSequenceNumber(other.getSequenceNumber());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.daimler.mbcarkit.proto.VehicleEvents.Scopes m =
+                    input.readMessage(
+                        com.daimler.mbcarkit.proto.VehicleEvents.Scopes.parser(),
+                        extensionRegistry);
+                if (scopesBuilder_ == null) {
+                  ensureScopesIsMutable();
+                  scopes_.add(m);
+                } else {
+                  scopesBuilder_.addMessage(m);
+                }
+                break;
+              } // case 10
+              case 18: {
+                trackingId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 24: {
+                sequenceNumber_ = input.readInt32();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.Scopes> scopes_ =
+        java.util.Collections.emptyList();
+      private void ensureScopesIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          scopes_ = new java.util.ArrayList<com.daimler.mbcarkit.proto.VehicleEvents.Scopes>(scopes_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.Scopes, com.daimler.mbcarkit.proto.VehicleEvents.Scopes.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ScopesOrBuilder> scopesBuilder_;
+
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.Scopes> getScopesList() {
+        if (scopesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(scopes_);
+        } else {
+          return scopesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public int getScopesCount() {
+        if (scopesBuilder_ == null) {
+          return scopes_.size();
+        } else {
+          return scopesBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.Scopes getScopes(int index) {
+        if (scopesBuilder_ == null) {
+          return scopes_.get(index);
+        } else {
+          return scopesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public Builder setScopes(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.Scopes value) {
+        if (scopesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureScopesIsMutable();
+          scopes_.set(index, value);
+          onChanged();
+        } else {
+          scopesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public Builder setScopes(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.Scopes.Builder builderForValue) {
+        if (scopesBuilder_ == null) {
+          ensureScopesIsMutable();
+          scopes_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          scopesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public Builder addScopes(com.daimler.mbcarkit.proto.VehicleEvents.Scopes value) {
+        if (scopesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureScopesIsMutable();
+          scopes_.add(value);
+          onChanged();
+        } else {
+          scopesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public Builder addScopes(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.Scopes value) {
+        if (scopesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureScopesIsMutable();
+          scopes_.add(index, value);
+          onChanged();
+        } else {
+          scopesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public Builder addScopes(
+          com.daimler.mbcarkit.proto.VehicleEvents.Scopes.Builder builderForValue) {
+        if (scopesBuilder_ == null) {
+          ensureScopesIsMutable();
+          scopes_.add(builderForValue.build());
+          onChanged();
+        } else {
+          scopesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public Builder addScopes(
+          int index, com.daimler.mbcarkit.proto.VehicleEvents.Scopes.Builder builderForValue) {
+        if (scopesBuilder_ == null) {
+          ensureScopesIsMutable();
+          scopes_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          scopesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public Builder addAllScopes(
+          java.lang.Iterable<? extends com.daimler.mbcarkit.proto.VehicleEvents.Scopes> values) {
+        if (scopesBuilder_ == null) {
+          ensureScopesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, scopes_);
+          onChanged();
+        } else {
+          scopesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public Builder clearScopes() {
+        if (scopesBuilder_ == null) {
+          scopes_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          scopesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public Builder removeScopes(int index) {
+        if (scopesBuilder_ == null) {
+          ensureScopesIsMutable();
+          scopes_.remove(index);
+          onChanged();
+        } else {
+          scopesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.Scopes.Builder getScopesBuilder(
+          int index) {
+        return getScopesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.ScopesOrBuilder getScopesOrBuilder(
+          int index) {
+        if (scopesBuilder_ == null) {
+          return scopes_.get(index);  } else {
+          return scopesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public java.util.List<? extends com.daimler.mbcarkit.proto.VehicleEvents.ScopesOrBuilder> 
+           getScopesOrBuilderList() {
+        if (scopesBuilder_ != null) {
+          return scopesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(scopes_);
+        }
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.Scopes.Builder addScopesBuilder() {
+        return getScopesFieldBuilder().addBuilder(
+            com.daimler.mbcarkit.proto.VehicleEvents.Scopes.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleEvents.Scopes.Builder addScopesBuilder(
+          int index) {
+        return getScopesFieldBuilder().addBuilder(
+            index, com.daimler.mbcarkit.proto.VehicleEvents.Scopes.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .proto.Scopes scopes = 1;</code>
+       */
+      public java.util.List<com.daimler.mbcarkit.proto.VehicleEvents.Scopes.Builder> 
+           getScopesBuilderList() {
+        return getScopesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleEvents.Scopes, com.daimler.mbcarkit.proto.VehicleEvents.Scopes.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ScopesOrBuilder> 
+          getScopesFieldBuilder() {
+        if (scopesBuilder_ == null) {
+          scopesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleEvents.Scopes, com.daimler.mbcarkit.proto.VehicleEvents.Scopes.Builder, com.daimler.mbcarkit.proto.VehicleEvents.ScopesOrBuilder>(
+                  scopes_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          scopes_ = null;
+        }
+        return scopesBuilder_;
+      }
+
+      private java.lang.Object trackingId_ = "";
+      /**
+       * <code>string tracking_id = 2;</code>
+       * @return The trackingId.
+       */
+      public java.lang.String getTrackingId() {
+        java.lang.Object ref = trackingId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          trackingId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string tracking_id = 2;</code>
+       * @return The bytes for trackingId.
+       */
+      public com.google.protobuf.ByteString
+          getTrackingIdBytes() {
+        java.lang.Object ref = trackingId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          trackingId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string tracking_id = 2;</code>
+       * @param value The trackingId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTrackingId(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        trackingId_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string tracking_id = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTrackingId() {
+        trackingId_ = getDefaultInstance().getTrackingId();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string tracking_id = 2;</code>
+       * @param value The bytes for trackingId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTrackingIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        trackingId_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+
+      private int sequenceNumber_ ;
+      /**
+       * <code>int32 sequence_number = 3;</code>
+       * @return The sequenceNumber.
+       */
+      @java.lang.Override
+      public int getSequenceNumber() {
+        return sequenceNumber_;
+      }
+      /**
+       * <code>int32 sequence_number = 3;</code>
+       * @param value The sequenceNumber to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSequenceNumber(int value) {
+
+        sequenceNumber_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 sequence_number = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSequenceNumber() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        sequenceNumber_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.DataChangeEvent)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.DataChangeEvent)
+    private static final com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<DataChangeEvent>
+        PARSER = new com.google.protobuf.AbstractParser<DataChangeEvent>() {
+      @java.lang.Override
+      public DataChangeEvent parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<DataChangeEvent> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DataChangeEvent> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleEvents.DataChangeEvent getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_VEPUpdate_descriptor;
   private static final 
@@ -34178,6 +49145,61 @@ com.daimler.mbcarkit.proto.VehicleEvents.PayloadValue defaultValue) {
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_proto_VehicleAttributeStatus_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_ChargingPredictionSoc_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_ChargingPredictionSoc_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_ChargingPredictionDepartureTime_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_ChargingPredictionDepartureTime_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_ChargeInletsEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_ChargeInletsEntry_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_ChargeInlets_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_ChargeInlets_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_ChargeFlapsEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_ChargeFlapsEntry_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_ChargeFlaps_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_ChargeFlaps_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_ChargingPowerRestrictions_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_ChargingPowerRestrictions_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_ChargingBreakClockTimerValue_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_ChargingBreakClockTimerValue_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_PrecondState_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_PrecondState_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_ChargingPowerControl_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_ChargingPowerControl_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_ChargingBreakClockTimerEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_ChargingBreakClockTimerEntry_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_ChargeProgramsValue_descriptor;
   private static final 
@@ -34343,6 +49365,26 @@ com.daimler.mbcarkit.proto.VehicleEvents.PayloadValue defaultValue) {
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_proto_PreferredDealerChange_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_AcknowledgeDataChangeEvent_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_AcknowledgeDataChangeEvent_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_Scopes_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_Scopes_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_Scopes_AdditionalResourcesEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_Scopes_AdditionalResourcesEntry_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_DataChangeEvent_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_DataChangeEvent_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -34355,188 +49397,332 @@ com.daimler.mbcarkit.proto.VehicleEvents.PayloadValue defaultValue) {
       "\n\024vehicle-events.proto\022\005proto\032\030service-a" +
       "ctivation.proto\032\021user-events.proto\032\026vehi" +
       "cle-commands.proto\032\014protos.proto\032\020vehicl" +
-      "eapi.proto\"\204\002\n\tVEPUpdate\022\027\n\017sequence_num" +
-      "ber\030\001 \001(\005\022\013\n\003vin\030\002 \001(\t\022\023\n\013full_update\030\017 " +
-      "\001(\010\022\026\n\016emit_timestamp\030\n \001(\003\022\034\n\024emit_time" +
-      "stamp_in_ms\030\016 \001(\003\0224\n\nattributes\030\013 \003(\0132 ." +
-      "proto.VEPUpdate.AttributesEntry\032P\n\017Attri" +
-      "butesEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035" +
-      ".proto.VehicleAttributeStatus:\0028\001\"\261\024\n\026Ve" +
-      "hicleAttributeStatus\022\025\n\ttimestamp\030\001 \001(\003B" +
-      "\002\030\001\022\027\n\017timestamp_in_ms\030\n \001(\003\022\017\n\007changed\030" +
-      "\002 \001(\010\022\016\n\006status\030\003 \001(\005\022\023\n\013service_ids\030\036 \003" +
-      "(\005\022\025\n\rdisplay_value\030\013 \001(\t\022^\n\033combustion_" +
-      "consumption_unit\030\014 \001(\01627.proto.VehicleAt" +
-      "tributeStatus.CombustionConsumptionUnitH" +
-      "\000\022P\n\024gas_consumption_unit\030\r \001(\01620.proto." +
-      "VehicleAttributeStatus.GasConsumptionUni" +
-      "tH\000\022`\n\034electricity_consumption_unit\030\016 \001(" +
-      "\01628.proto.VehicleAttributeStatus.Electri" +
-      "cityConsumptionUnitH\000\022R\n\023speed_distance_" +
-      "unit\030\017 \001(\0162/.proto.VehicleAttributeStatu" +
-      "s.SpeedDistanceUnitB\002\030\001H\000\022=\n\nspeed_unit\030" +
-      "\031 \001(\0162\'.proto.VehicleAttributeStatus.Spe" +
-      "edUnitH\000\022C\n\rdistance_unit\030\032 \001(\0162*.proto." +
-      "VehicleAttributeStatus.DistanceUnitH\000\022I\n" +
-      "\020temperature_unit\030\020 \001(\0162-.proto.VehicleA" +
-      "ttributeStatus.TemperatureUnitH\000\022C\n\rpres" +
-      "sure_unit\030\021 \001(\0162*.proto.VehicleAttribute" +
-      "Status.PressureUnitH\000\022=\n\nratio_unit\030\022 \001(" +
-      "\0162\'.proto.VehicleAttributeStatus.RatioUn" +
-      "itH\000\022F\n\017clock_hour_unit\030\023 \001(\0162+.proto.Ve" +
-      "hicleAttributeStatus.ClockHourUnitH\000\022\023\n\t" +
-      "int_value\030\004 \001(\003H\001\022\024\n\nbool_value\030\005 \001(\010H\001\022" +
-      "\026\n\014string_value\030\006 \001(\tH\001\022\026\n\014double_value\030" +
-      "\007 \001(\001H\001\022\023\n\tnil_value\030\010 \001(\010H\001\022\033\n\021unsuppor" +
-      "ted_value\030\t \001(\tH\001\022A\n\030temperature_points_" +
-      "value\030\024 \001(\0132\035.proto.TemperaturePointsVal" +
-      "ueH\001\0229\n\024weekday_tariff_value\030\025 \001(\0132\031.pro" +
-      "to.WeekdayTariffValueH\001\0229\n\024weekend_tarif" +
-      "f_value\030\026 \001(\0132\031.proto.WeekendTariffValue" +
-      "H\001\022I\n\035state_of_charge_profile_value\030\027 \001(" +
-      "\0132 .proto.StateOfChargeProfileValueH\001\022M\n" +
-      "\037weekly_settings_head_unit_value\030\030 \001(\0132\"" +
-      ".proto.WeeklySettingsHeadUnitValueH\001\022N\n\037" +
-      "speed_alert_configuration_value\030\033 \001(\0132#." +
-      "proto.SpeedAlertConfigurationValueH\001\0227\n\023" +
-      "eco_histogram_value\030\034 \001(\0132\030.proto.EcoHis" +
-      "togramValueH\001\0229\n\024weekly_profile_value\030\035 " +
-      "\001(\0132\031.proto.WeeklyProfileValueH\001\022;\n\025char" +
-      "ge_programs_value\030\037 \001(\0132\032.proto.ChargePr" +
-      "ogramsValueH\001\"\207\001\n\031CombustionConsumptionU" +
-      "nit\022+\n\'UNSPECIFIED_COMBUSTION_CONSUMPTIO" +
-      "N_UNIT\020\000\022\023\n\017LITER_PER_100KM\020\001\022\020\n\014KM_PER_" +
-      "LITER\020\002\022\n\n\006MPG_UK\020\003\022\n\n\006MPG_US\020\004\"\231\001\n\032Elec" +
-      "tricityConsumptionUnit\022,\n(UNSPECIFIED_EL" +
-      "ECTRICITY_CONSUMPTION_UNIT\020\000\022\021\n\rKWH_PER_" +
-      "100KM\020\001\022\016\n\nKM_PER_KWH\020\002\022\021\n\rKWH_PER_100MI" +
-      "\020\003\022\r\n\tM_PER_KWH\020\004\022\010\n\004MPGE\020\005\"i\n\022GasConsum" +
-      "ptionUnit\022$\n UNSPECIFIED_GAS_CONSUMPTION" +
-      "_UNIT\020\000\022\020\n\014KG_PER_100KM\020\001\022\r\n\tKM_PER_KG\020\002" +
-      "\022\014\n\010M_PER_KG\020\003\"W\n\021SpeedDistanceUnit\022#\n\037U" +
-      "NSPECIFIED_SPEED_DISTANCE_UNIT\020\000\022\014\n\010KM_P" +
-      "ER_H\020\001\022\013\n\007M_PER_H\020\002\032\002\030\001\"H\n\tSpeedUnit\022\032\n\026" +
-      "UNSPECIFIED_SPEED_UNIT\020\000\022\017\n\013KM_PER_HOUR\020" +
-      "\001\022\016\n\nM_PER_HOUR\020\002\"H\n\014DistanceUnit\022\035\n\031UNS" +
-      "PECIFIED_DISTANCE_UNIT\020\000\022\016\n\nKILOMETERS\020\001" +
-      "\022\t\n\005MILES\020\002\"P\n\017TemperatureUnit\022 \n\034UNSPEC" +
-      "IFIED_TEMPERATURE_UNIT\020\000\022\013\n\007CELSIUS\020\001\022\016\n" +
-      "\nFAHRENHEIT\020\002\"H\n\014PressureUnit\022\035\n\031UNSPECI" +
-      "FIED_PRESSURE_UNIT\020\000\022\007\n\003KPA\020\001\022\007\n\003BAR\020\002\022\007" +
-      "\n\003PSI\020\003\"4\n\tRatioUnit\022\032\n\026UNSPECIFIED_RATI" +
-      "O_UNIT\020\000\022\013\n\007PERCENT\020\001\"D\n\rClockHourUnit\022\037" +
-      "\n\033UNSPECIFIED_CLOCK_HOUR_UNIT\020\000\022\010\n\004T12H\020" +
-      "\001\022\010\n\004T24H\020\002B\016\n\014display_unitB\020\n\016attribute" +
-      "_type\"X\n\023ChargeProgramsValue\022A\n\031charge_p" +
-      "rogram_parameters\030\001 \003(\0132\036.proto.ChargePr" +
-      "ogramParameters\"\344\002\n\027ChargeProgramParamet" +
-      "ers\022;\n\016charge_program\030\001 \001(\0162\024.proto.Char" +
-      "geProgramR\rchargeprogram\022\027\n\007max_soc\030\002 \001(" +
-      "\005R\006maxSoc\022\037\n\013auto_unlock\030\003 \001(\010R\nautounlo" +
-      "ck\0226\n\027location_based_charging\030\004 \001(\010R\025loc" +
-      "ationbasedcharging\022%\n\016weekly_profile\030\005 \001" +
-      "(\010R\rweeklyprofile\022\036\n\nclockTimer\030\006 \001(\010R\nc" +
-      "lockTimer\0220\n\024max_charging_current\030\007 \001(\005R" +
-      "\022MaxChargingCurrent\022!\n\014eco_charging\030\010 \001(" +
-      "\010R\013EcoCharging\"\315\003\n\022WeeklyProfileValue\022T\n" +
-      "\'single_time_profile_entries_activatable" +
-      "\030\001 \001(\010R#singleTimeProfileEntriesActivata" +
-      "ble\022R\n\'max_number_of_weekly_time_profile" +
-      "_slots\030\002 \001(\005R!maxNumberOfWeeklyTimeProfi" +
-      "leSlots\022<\n\033max_number_of_time_profiles\030\003" +
-      " \001(\005R\027maxNumberOfTimeProfiles\022M\n$current" +
-      "_number_of_time_profile_slots\030\004 \001(\005R\037cur" +
-      "rentNumberOfTimeProfileSlots\022D\n\037current_" +
-      "number_of_time_profiles\030\005 \001(\005R\033currentNu" +
-      "mberOfTimeProfiles\022:\n\rtime_profiles\030\006 \003(" +
-      "\0132\025.proto.VVRTimeProfileR\014timeProfiles\"\302" +
-      "\001\n\016VVRTimeProfile\022\026\n\nidentifier\030\001 \001(\005R\002i" +
-      "d\022\022\n\004hour\030\002 \001(\005R\004hour\022\023\n\006minute\030\003 \001(\005R\003m" +
-      "in\022(\n\004days\030\004 \003(\0162\025.proto.TimeProfileDayR" +
-      "\003day\022\026\n\006active\030\005 \001(\010R\006active\022-\n\026applicat" +
-      "ion_identifier\030\006 \001(\005R\rapplicationId\"G\n\021E" +
-      "coHistogramValue\0222\n\022eco_histogram_bins\030\001" +
-      " \003(\0132\026.proto.EcoHistogramBin\"2\n\017EcoHisto" +
-      "gramBin\022\020\n\010interval\030\001 \001(\001\022\r\n\005value\030\002 \001(\001" +
-      "\"b\n\034SpeedAlertConfigurationValue\022B\n\032spee" +
-      "d_alert_configurations\030\001 \003(\0132\036.proto.Spe" +
-      "edAlertConfiguration\"p\n\027SpeedAlertConfig" +
-      "uration\022\032\n\022end_timestamp_in_s\030\001 \001(\003\022\030\n\020t" +
-      "hreshold_in_kph\030\002 \001(\005\022\037\n\027threshold_displ" +
-      "ay_value\030\003 \001(\t\"L\n\033WeeklySettingsHeadUnit" +
-      "Value\022-\n\017weekly_settings\030\001 \003(\0132\024.proto.W" +
-      "eeklySetting\"<\n\rWeeklySetting\022\013\n\003day\030\001 \001" +
-      "(\005\022\036\n\026minutes_since_midnight\030\002 \001(\005\"M\n\026Te" +
-      "mperaturePointsValue\0223\n\022temperature_poin" +
-      "ts\030\001 \003(\0132\027.proto.TemperaturePoint\"X\n\020Tem" +
-      "peraturePoint\022\014\n\004zone\030\001 \001(\t\022\023\n\013temperatu" +
-      "re\030\002 \001(\001\022!\n\031temperature_display_value\030\003 " +
-      "\001(\t\"4\n\022WeekdayTariffValue\022\036\n\007tariffs\030\001 \003" +
-      "(\0132\r.proto.Tariff\"4\n\022WeekendTariffValue\022" +
-      "\036\n\007tariffs\030\001 \003(\0132\r.proto.Tariff\"$\n\006Tarif" +
-      "f\022\014\n\004rate\030\001 \001(\005\022\014\n\004time\030\002 \001(\005\"K\n\031StateOf" +
-      "ChargeProfileValue\022.\n\020states_of_charge\030\001" +
-      " \003(\0132\024.proto.StateOfCharge\"@\n\rStateOfCha" +
-      "rge\022\026\n\016timestamp_in_s\030\001 \001(\003\022\027\n\017state_of_" +
-      "charge\030\002 \001(\005\"\242\001\n\017VEPUpdatesByVIN\022\027\n\017sequ" +
-      "ence_number\030\002 \001(\005\0224\n\007updates\030\001 \003(\0132#.pro" +
-      "to.VEPUpdatesByVIN.UpdatesEntry\032@\n\014Updat" +
-      "esEntry\022\013\n\003key\030\001 \001(\t\022\037\n\005value\030\002 \001(\0132\020.pr" +
-      "oto.VEPUpdate:\0028\001\"\037\n\014DebugMessage\022\017\n\007mes" +
-      "sage\030\001 \001(\t\"\250\001\n\rVehicleStatus\022\013\n\003vin\030\001 \001(" +
-      "\t\0228\n\nattributes\030\002 \003(\0132$.proto.VehicleSta" +
-      "tus.AttributesEntry\032P\n\017AttributesEntry\022\013" +
-      "\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.proto.Vehic" +
-      "leAttributeStatus:\0028\001\"\372\006\n\013PushMessage\022\023\n" +
-      "\013tracking_id\030\005 \001(\t\022%\n\tvepUpdate\030\001 \001(\0132\020." +
-      "proto.VEPUpdateH\000\022,\n\nvepUpdates\030\002 \001(\0132\026." +
-      "proto.VEPUpdatesByVINH\000\022+\n\014debugMessage\030" +
-      "\003 \001(\0132\023.proto.DebugMessageH\000\022B\n\026service_" +
-      "status_updates\030\t \001(\0132 .proto.ServiceStat" +
-      "usUpdatesByVINH\000\022;\n\025service_status_updat" +
-      "e\030\r \001(\0132\032.proto.ServiceStatusUpdateH\000\0221\n" +
-      "\020user_data_update\030\n \001(\0132\025.proto.UserData" +
-      "UpdateH\000\022O\n user_vehicle_auth_changed_up" +
-      "date\030\016 \001(\0132#.proto.UserVehicleAuthChange" +
-      "dUpdateH\000\0227\n\023user_picture_update\030\013 \001(\0132\030" +
-      ".proto.UserPictureUpdateH\000\022/\n\017user_pin_u" +
-      "pdate\030\014 \001(\0132\024.proto.UserPINUpdateH\000\0220\n\017v" +
-      "ehicle_updated\030\017 \001(\0132\025.proto.VehicleUpda" +
-      "tedH\000\022?\n\027preferred_dealer_change\030\020 \001(\0132\034" +
-      ".proto.PreferredDealerChangeH\000\022X\n%apptwi" +
-      "n_command_status_updates_by_vin\030\021 \001(\0132\'." +
-      "proto.AppTwinCommandStatusUpdatesByVINH\000" +
-      "\022O\n\037apptwin_pending_command_request\030\022 \001(" +
-      "\0132$.proto.AppTwinPendingCommandsRequestH" +
-      "\000\0224\n\021assigned_vehicles\030\023 \001(\0132\027.proto.Ass" +
-      "ignedVehiclesH\000B\005\n\003msgJ\004\010\007\020\010J\004\010\010\020\t\"\304\001\n\rT" +
-      "rackingEvent\022\023\n\013tracking_id\030\001 \001(\t\022\021\n\ttim" +
-      "estamp\030\002 \001(\003\022\022\n\nevent_type\030\003 \001(\t\0222\n\007payl" +
-      "oad\030\004 \003(\0132!.proto.TrackingEvent.PayloadE" +
-      "ntry\032C\n\014PayloadEntry\022\013\n\003key\030\001 \001(\t\022\"\n\005val" +
-      "ue\030\002 \001(\0132\023.proto.PayloadValue:\0028\001\"p\n\014Pay" +
-      "loadValue\022\026\n\014string_value\030\001 \001(\tH\000\022\023\n\tint" +
-      "_value\030\002 \001(\005H\000\022\024\n\nbool_value\030\003 \001(\010H\000\022\026\n\014" +
-      "double_value\030\004 \001(\001H\000B\005\n\003msg\"4\n\025Acknowled" +
-      "geVEPRequest\022\027\n\017sequence_number\030\001 \001(\005:\002\030" +
-      "\001\"5\n\032AcknowledgeVEPUpdatesByVIN\022\027\n\017seque" +
-      "nce_number\030\001 \001(\005\"1\n\025ConfigurePingInterva" +
-      "l\022\030\n\020ping_time_millis\030\001 \001(\005\"4\n\031Acknowled" +
-      "geVehicleUpdated\022\027\n\017sequence_number\030\001 \001(" +
-      "\005\";\n AcknowledgePreferredDealerChange\022\027\n" +
-      "\017sequence_number\030\001 \001(\005\"e\n\016VehicleUpdated" +
-      "\022\027\n\017sequence_number\030\001 \001(\005\022\017\n\007ciam_id\030\002 \001" +
-      "(\t\022\013\n\003vin\030\003 \001(\t\022\034\n\024emit_timestamp_in_ms\030" +
-      "\n \001(\003\"l\n\025PreferredDealerChange\022\027\n\017sequen" +
-      "ce_number\030\001 \001(\005\022\017\n\007ciam_id\030\002 \001(\t\022\013\n\003vin\030" +
-      "\003 \001(\t\022\034\n\024emit_timestamp_in_ms\030\n \001(\003*y\n\rC" +
-      "hargeProgram\022\032\n\026DEFAULT_CHARGE_PROGRAM\020\000" +
-      "\022\032\n\026INSTANT_CHARGE_PROGRAM\020\001\022\027\n\023HOME_CHA" +
-      "RGE_PROGRAM\020\002\022\027\n\023WORK_CHARGE_PROGRAM\020\003*f" +
-      "\n\017AttributeStatus\022\017\n\013VALUE_VALID\020\000\022\026\n\022VA" +
-      "LUE_NOT_RECEIVED\020\001\022\021\n\rVALUE_INVALID\020\003\022\027\n" +
-      "\023VALUE_NOT_AVAILABLE\020\004B\034\n\032com.daimler.mb" +
-      "carkit.protob\006proto3"
+      "eapi.proto\032\037google/protobuf/timestamp.pr" +
+      "oto\"\204\002\n\tVEPUpdate\022\027\n\017sequence_number\030\001 \001" +
+      "(\005\022\013\n\003vin\030\002 \001(\t\022\023\n\013full_update\030\017 \001(\010\022\026\n\016" +
+      "emit_timestamp\030\n \001(\003\022\034\n\024emit_timestamp_i" +
+      "n_ms\030\016 \001(\003\0224\n\nattributes\030\013 \003(\0132 .proto.V" +
+      "EPUpdate.AttributesEntry\032P\n\017AttributesEn" +
+      "try\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.proto." +
+      "VehicleAttributeStatus:\0028\001\"\343$\n\026VehicleAt" +
+      "tributeStatus\022\025\n\ttimestamp\030\001 \001(\003B\002\030\001\022\027\n\017" +
+      "timestamp_in_ms\030\n \001(\003\022\017\n\007changed\030\002 \001(\010\022\016" +
+      "\n\006status\030\003 \001(\005\022\023\n\013service_ids\030\036 \003(\005\022\025\n\rd" +
+      "isplay_value\030\013 \001(\t\022^\n\033combustion_consump" +
+      "tion_unit\030\014 \001(\01627.proto.VehicleAttribute" +
+      "Status.CombustionConsumptionUnitH\000\022P\n\024ga" +
+      "s_consumption_unit\030\r \001(\01620.proto.Vehicle" +
+      "AttributeStatus.GasConsumptionUnitH\000\022`\n\034" +
+      "electricity_consumption_unit\030\016 \001(\01628.pro" +
+      "to.VehicleAttributeStatus.ElectricityCon" +
+      "sumptionUnitH\000\022R\n\023speed_distance_unit\030\017 " +
+      "\001(\0162/.proto.VehicleAttributeStatus.Speed" +
+      "DistanceUnitB\002\030\001H\000\022=\n\nspeed_unit\030\031 \001(\0162\'" +
+      ".proto.VehicleAttributeStatus.SpeedUnitH" +
+      "\000\022C\n\rdistance_unit\030\032 \001(\0162*.proto.Vehicle" +
+      "AttributeStatus.DistanceUnitH\000\022I\n\020temper" +
+      "ature_unit\030\020 \001(\0162-.proto.VehicleAttribut" +
+      "eStatus.TemperatureUnitH\000\022C\n\rpressure_un" +
+      "it\030\021 \001(\0162*.proto.VehicleAttributeStatus." +
+      "PressureUnitH\000\022=\n\nratio_unit\030\022 \001(\0162\'.pro" +
+      "to.VehicleAttributeStatus.RatioUnitH\000\022F\n" +
+      "\017clock_hour_unit\030\023 \001(\0162+.proto.VehicleAt" +
+      "tributeStatus.ClockHourUnitH\000\022\023\n\tint_val" +
+      "ue\030\004 \001(\003H\001\022\024\n\nbool_value\030\005 \001(\010H\001\022\026\n\014stri" +
+      "ng_value\030\006 \001(\tH\001\022\026\n\014double_value\030\007 \001(\001H\001" +
+      "\022\023\n\tnil_value\030\010 \001(\010H\001\022\033\n\021unsupported_val" +
+      "ue\030\t \001(\tH\001\022A\n\030temperature_points_value\030\024" +
+      " \001(\0132\035.proto.TemperaturePointsValueH\001\0229\n" +
+      "\024weekday_tariff_value\030\025 \001(\0132\031.proto.Week" +
+      "dayTariffValueH\001\0229\n\024weekend_tariff_value" +
+      "\030\026 \001(\0132\031.proto.WeekendTariffValueH\001\022I\n\035s" +
+      "tate_of_charge_profile_value\030\027 \001(\0132 .pro" +
+      "to.StateOfChargeProfileValueH\001\022M\n\037weekly" +
+      "_settings_head_unit_value\030\030 \001(\0132\".proto." +
+      "WeeklySettingsHeadUnitValueH\001\022N\n\037speed_a" +
+      "lert_configuration_value\030\033 \001(\0132#.proto.S" +
+      "peedAlertConfigurationValueH\001\0227\n\023eco_his" +
+      "togram_value\030\034 \001(\0132\030.proto.EcoHistogramV" +
+      "alueH\001\0229\n\024weekly_profile_value\030\035 \001(\0132\031.p" +
+      "roto.WeeklyProfileValueH\001\022;\n\025charge_prog" +
+      "rams_value\030\037 \001(\0132\032.proto.ChargeProgramsV" +
+      "alueH\001\022M\n\036chargingbreak_clocktimer_value" +
+      "\030  \001(\0132#.proto.ChargingBreakClockTimerVa" +
+      "lueH\001\022=\n\026charging_power_control\030! \001(\0132\033." +
+      "proto.ChargingPowerControlH\001\022l\n tcu_conn" +
+      "ection_state_low_channel\030& \001(\0162@.proto.V" +
+      "ehicleAttributeStatus.TcuConnectionState" +
+      "LowChannelStatusH\001\022,\n\rprecond_state\030, \001(" +
+      "\0132\023.proto.PrecondStateH\001\022G\n\033charging_pow" +
+      "er_restrictions\0307 \001(\0132 .proto.ChargingPo" +
+      "werRestrictionsH\001\022c\n\036charging_coupler_er" +
+      "ror_details\0308 \001(\01629.proto.VehicleAttribu" +
+      "teStatus.ChargingCouplerErrorDetailsH\001\022q" +
+      "\n&charging_error_vehicle_no_support_400v" +
+      "\030: \001(\0162?.proto.VehicleAttributeStatus.Ch" +
+      "argingErrorVehicleNoSupport400VH\001\022u\n(cha" +
+      "rging_error_impossible_change_to_400v\030; " +
+      "\001(\0162A.proto.VehicleAttributeStatus.Charg" +
+      "ingErrorImpossibleChangeTo400VH\001\022u\n(char" +
+      "ging_error_impossible_change_to_800v\030< \001" +
+      "(\0162A.proto.VehicleAttributeStatus.Chargi" +
+      "ngErrorImpossibleChangeTo800VH\001\022?\n\027charg" +
+      "ing_prediction_soc\030P \001(\0132\034.proto.Chargin" +
+      "gPredictionSocH\001\022T\n\"charging_prediction_" +
+      "departure_time\030Q \001(\0132&.proto.ChargingPre" +
+      "dictionDepartureTimeH\001\022*\n\014charge_flaps\030T" +
+      " \001(\0132\022.proto.ChargeFlapsH\001\022,\n\rcharge_inl" +
+      "ets\030U \001(\0132\023.proto.ChargeInletsH\001\"\207\001\n\031Com" +
+      "bustionConsumptionUnit\022+\n\'UNSPECIFIED_CO" +
+      "MBUSTION_CONSUMPTION_UNIT\020\000\022\023\n\017LITER_PER" +
+      "_100KM\020\001\022\020\n\014KM_PER_LITER\020\002\022\n\n\006MPG_UK\020\003\022\n" +
+      "\n\006MPG_US\020\004\"\231\001\n\032ElectricityConsumptionUni" +
+      "t\022,\n(UNSPECIFIED_ELECTRICITY_CONSUMPTION" +
+      "_UNIT\020\000\022\021\n\rKWH_PER_100KM\020\001\022\016\n\nKM_PER_KWH" +
+      "\020\002\022\021\n\rKWH_PER_100MI\020\003\022\r\n\tM_PER_KWH\020\004\022\010\n\004" +
+      "MPGE\020\005\"i\n\022GasConsumptionUnit\022$\n UNSPECIF" +
+      "IED_GAS_CONSUMPTION_UNIT\020\000\022\020\n\014KG_PER_100" +
+      "KM\020\001\022\r\n\tKM_PER_KG\020\002\022\014\n\010M_PER_KG\020\003\"W\n\021Spe" +
+      "edDistanceUnit\022#\n\037UNSPECIFIED_SPEED_DIST" +
+      "ANCE_UNIT\020\000\022\014\n\010KM_PER_H\020\001\022\013\n\007M_PER_H\020\002\032\002" +
+      "\030\001\"H\n\tSpeedUnit\022\032\n\026UNSPECIFIED_SPEED_UNI" +
+      "T\020\000\022\017\n\013KM_PER_HOUR\020\001\022\016\n\nM_PER_HOUR\020\002\"H\n\014" +
+      "DistanceUnit\022\035\n\031UNSPECIFIED_DISTANCE_UNI" +
+      "T\020\000\022\016\n\nKILOMETERS\020\001\022\t\n\005MILES\020\002\"P\n\017Temper" +
+      "atureUnit\022 \n\034UNSPECIFIED_TEMPERATURE_UNI" +
+      "T\020\000\022\013\n\007CELSIUS\020\001\022\016\n\nFAHRENHEIT\020\002\"H\n\014Pres" +
+      "sureUnit\022\035\n\031UNSPECIFIED_PRESSURE_UNIT\020\000\022" +
+      "\007\n\003KPA\020\001\022\007\n\003BAR\020\002\022\007\n\003PSI\020\003\"4\n\tRatioUnit\022" +
+      "\032\n\026UNSPECIFIED_RATIO_UNIT\020\000\022\013\n\007PERCENT\020\001" +
+      "\"D\n\rClockHourUnit\022\037\n\033UNSPECIFIED_CLOCK_H" +
+      "OUR_UNIT\020\000\022\010\n\004T12H\020\001\022\010\n\004T24H\020\002\"\236\001\n\"TcuCo" +
+      "nnectionStateLowChannelStatus\022 \n\034UNKNOWN" +
+      "_TCU_CONNECTION_STATE\020\000\022\027\n\023INITIALLY_CON" +
+      "NECTED\020\001\022\017\n\013RECONNECTED\020\002\022\020\n\014DISCONNECTE" +
+      "D\020\003\022\032\n\026UNPLANNED_DISCONNECTED\020\004\"\357\002\n\033Char" +
+      "gingCouplerErrorDetails\022:\n6CHARING_COUPL" +
+      "ER_ERROR_DETAILS_NO_INFO_OR_ERROR_MESSAG" +
+      "E\020\000\022B\n>CHARING_COUPLER_ERROR_DETAILS_REL" +
+      "IEVE_CHARGE_COUPLER_AND_RETRY\020\001\022N\nJCHARI" +
+      "NG_COUPLER_ERROR_DETAILS_CONTACT_SERVICE" +
+      "_HOTLINE_FOR_EMERGENCY_UNLOCK\020\002\022B\n>CHARI" +
+      "NG_COUPLER_ERROR_DETAILS_UNPLUG_AND_REPL" +
+      "UG_CHARGE_COUPLER\020\003\022<\n8CHARING_COUPLER_E" +
+      "RROR_DETAILS_CHARGE_COUPLER_LOCK_DEFECT\020" +
+      "\004\"\247\001\n#ChargingErrorImpossibleChangeTo400" +
+      "V\0224\n0CHARGING_ERROR_IMPOSSIBLE_CHANGE_TO" +
+      "_400V_NO_INFO\020\000\022J\nFCHARGING_ERROR_IMPOSS" +
+      "IBLE_CHANGE_TO_400V_400V_IMPOSSIBLE_STUC" +
+      "K_TO_800V\020\001\"\247\001\n#ChargingErrorImpossibleC" +
+      "hangeTo800V\0224\n0CHARGING_ERROR_IMPOSSIBLE" +
+      "_CHANGE_TO_800V_NO_INFO\020\000\022J\nFCHARGING_ER" +
+      "ROR_IMPOSSIBLE_CHANGE_TO_800V_800V_IMPOS" +
+      "SIBLE_STUCK_TO_400V\020\001\"\236\001\n!ChargingErrorV" +
+      "ehicleNoSupport400V\0222\n.CHARGING_ERROR_VE" +
+      "HICLE_NO_SUPPORT_400V_NO_INFO\020\000\022E\nACHARG" +
+      "ING_ERROR_VEHICLE_NO_SUPPORT_400V_400V_C" +
+      "HARGING_NOT_POSSIBLE\020\001B\016\n\014display_unitB\020" +
+      "\n\016attribute_type\"z\n\025ChargingPredictionSo" +
+      "c\0226\n\022predicted_end_time\030\001 \001(\0132\032.google.p" +
+      "rotobuf.Timestamp\022)\n!predicted_electrica" +
+      "l_energy_range\030\002 \001(\003\"c\n\037ChargingPredicti" +
+      "onDepartureTime\022\025\n\rpredicted_soc\030\001 \001(\005\022)" +
+      "\n!predicted_electrical_energy_range\030\002 \001(" +
+      "\003\"\225\005\n\021ChargeInletsEntry\022\n\n\002id\030\001 \001(\003\022H\n\rc" +
+      "oupler_state\030\002 \001(\01621.proto.ChargeInletsE" +
+      "ntry.ChargeInletsCouplerState\022B\n\nlock_st" +
+      "ate\030\003 \001(\0162..proto.ChargeInletsEntry.Char" +
+      "geInletsLockState\"\372\001\n\030ChargeInletsCouple" +
+      "rState\022\'\n#CHARGE_INLETS_COUPLER_STATE_UN" +
+      "KNOWN\020\000\022\'\n#CHARGE_INLETS_COUPLER_STATE_P" +
+      "LUGGED\020\001\022/\n+CHARGE_INLETS_COUPLER_STATE_" +
+      "VEHICLE_PLUGGED\020\002\0223\n/CHARGE_INLETS_COUPL" +
+      "ER_STATE_VEHICLE_NOT_PLUGGED\020\003\022&\n\"CHARGE" +
+      "_INLETS_COUPLER_STATE_DEFECT\020\004\"\350\001\n\025Charg" +
+      "eInletsLockState\022$\n CHARGE_INLETS_LOCK_S" +
+      "TATE_UNKNOWN\020\000\022%\n!CHARGE_INLETS_LOCK_STA" +
+      "TE_UNLOCKED\020\001\022#\n\037CHARGE_INLETS_LOCK_STAT" +
+      "E_LOCKED\020\002\0221\n-CHARGE_INLETS_LOCK_STATE_L" +
+      "OCK_STATE_NOT_CLEAR\020\003\022*\n&CHARGE_INLETS_L" +
+      "OCK_STATE_NOT_AVAILABLE\020\004\"9\n\014ChargeInlet" +
+      "s\022)\n\007entries\030\001 \003(\0132\030.proto.ChargeInletsE" +
+      "ntry\"W\n\020ChargeFlapsEntry\022\n\n\002id\030\001 \001(\003\0227\n\016" +
+      "position_state\030\002 \001(\0162\037.proto.ChargeFlaps" +
+      "PositionState\"7\n\013ChargeFlaps\022(\n\007entries\030" +
+      "\001 \003(\0132\027.proto.ChargeFlapsEntry\"`\n\031Chargi" +
+      "ngPowerRestrictions\022C\n\032charging_power_re" +
+      "striction\030\001 \003(\0162\037.proto.ChargingPowerRes" +
+      "triction\"k\n\034ChargingBreakClockTimerValue" +
+      "\022K\n\036chargingbreak_clocktimer_entry\030\001 \003(\013" +
+      "2#.proto.ChargingBreakClockTimerEntry\"\201\001" +
+      "\n\014PrecondState\022\030\n\020activation_state\030\001 \001(\010" +
+      "\022!\n\031precond_immediate_support\030\002 \001(\010\0224\n\023p" +
+      "recond_state_types\030\003 \003(\0162\027.proto.Precond" +
+      "StateType\"\263\002\n\024ChargingPowerControl\022P\n\rch" +
+      "arge_status\030\001 \001(\01629.proto.ChargingPowerC" +
+      "ontrol.ChargingStatusForPowerControl\022\025\n\r" +
+      "ctrl_duration\030\002 \001(\005\022\021\n\tctrl_info\030\003 \001(\005\022\024" +
+      "\n\014charge_power\030\004 \001(\005\022\021\n\tserv_stat\030\005 \001(\005\022" +
+      "\022\n\nserv_avail\030\006 \001(\005\022\020\n\010use_case\030\007 \001(\005\"P\n" +
+      "\035ChargingStatusForPowerControl\022\017\n\013NOT_DE" +
+      "FINED\020\000\022\017\n\013DEACTIVATED\020\001\022\r\n\tACTIVATED\020\002\"" +
+      "\306\001\n\034ChargingBreakClockTimerEntry\0229\n\006stat" +
+      "us\030\001 \001(\0162).proto.ChargingBreakClockTimer" +
+      "EntryStatus\022\023\n\013endTimeHour\030\002 \001(\005\022\025\n\rendT" +
+      "imeMinute\030\003 \001(\005\022\025\n\rstartTimeHour\030\004 \001(\005\022\027" +
+      "\n\017startTimeMinute\030\005 \001(\005\022\017\n\007timerId\030\006 \001(\005" +
+      "\"X\n\023ChargeProgramsValue\022A\n\031charge_progra" +
+      "m_parameters\030\001 \003(\0132\036.proto.ChargeProgram" +
+      "Parameters\"\344\002\n\027ChargeProgramParameters\022;" +
+      "\n\016charge_program\030\001 \001(\0162\024.proto.ChargePro" +
+      "gramR\rchargeprogram\022\027\n\007max_soc\030\002 \001(\005R\006ma" +
+      "xSoc\022\037\n\013auto_unlock\030\003 \001(\010R\nautounlock\0226\n" +
+      "\027location_based_charging\030\004 \001(\010R\025location" +
+      "basedcharging\022%\n\016weekly_profile\030\005 \001(\010R\rw" +
+      "eeklyprofile\022\036\n\nclockTimer\030\006 \001(\010R\nclockT" +
+      "imer\0220\n\024max_charging_current\030\007 \001(\005R\022MaxC" +
+      "hargingCurrent\022!\n\014eco_charging\030\010 \001(\010R\013Ec" +
+      "oCharging\"\315\003\n\022WeeklyProfileValue\022T\n\'sing" +
+      "le_time_profile_entries_activatable\030\001 \001(" +
+      "\010R#singleTimeProfileEntriesActivatable\022R" +
+      "\n\'max_number_of_weekly_time_profile_slot" +
+      "s\030\002 \001(\005R!maxNumberOfWeeklyTimeProfileSlo" +
+      "ts\022<\n\033max_number_of_time_profiles\030\003 \001(\005R" +
+      "\027maxNumberOfTimeProfiles\022M\n$current_numb" +
+      "er_of_time_profile_slots\030\004 \001(\005R\037currentN" +
+      "umberOfTimeProfileSlots\022D\n\037current_numbe" +
+      "r_of_time_profiles\030\005 \001(\005R\033currentNumberO" +
+      "fTimeProfiles\022:\n\rtime_profiles\030\006 \003(\0132\025.p" +
+      "roto.VVRTimeProfileR\014timeProfiles\"\302\001\n\016VV" +
+      "RTimeProfile\022\026\n\nidentifier\030\001 \001(\005R\002id\022\022\n\004" +
+      "hour\030\002 \001(\005R\004hour\022\023\n\006minute\030\003 \001(\005R\003min\022(\n" +
+      "\004days\030\004 \003(\0162\025.proto.TimeProfileDayR\003day\022" +
+      "\026\n\006active\030\005 \001(\010R\006active\022-\n\026application_i" +
+      "dentifier\030\006 \001(\005R\rapplicationId\"G\n\021EcoHis" +
+      "togramValue\0222\n\022eco_histogram_bins\030\001 \003(\0132" +
+      "\026.proto.EcoHistogramBin\"2\n\017EcoHistogramB" +
+      "in\022\020\n\010interval\030\001 \001(\001\022\r\n\005value\030\002 \001(\001\"b\n\034S" +
+      "peedAlertConfigurationValue\022B\n\032speed_ale" +
+      "rt_configurations\030\001 \003(\0132\036.proto.SpeedAle" +
+      "rtConfiguration\"p\n\027SpeedAlertConfigurati" +
+      "on\022\032\n\022end_timestamp_in_s\030\001 \001(\003\022\030\n\020thresh" +
+      "old_in_kph\030\002 \001(\005\022\037\n\027threshold_display_va" +
+      "lue\030\003 \001(\t\"L\n\033WeeklySettingsHeadUnitValue" +
+      "\022-\n\017weekly_settings\030\001 \003(\0132\024.proto.Weekly" +
+      "Setting\"<\n\rWeeklySetting\022\013\n\003day\030\001 \001(\005\022\036\n" +
+      "\026minutes_since_midnight\030\002 \001(\005\"M\n\026Tempera" +
+      "turePointsValue\0223\n\022temperature_points\030\001 " +
+      "\003(\0132\027.proto.TemperaturePoint\"X\n\020Temperat" +
+      "urePoint\022\014\n\004zone\030\001 \001(\t\022\023\n\013temperature\030\002 " +
+      "\001(\001\022!\n\031temperature_display_value\030\003 \001(\t\"4" +
+      "\n\022WeekdayTariffValue\022\036\n\007tariffs\030\001 \003(\0132\r." +
+      "proto.Tariff\"4\n\022WeekendTariffValue\022\036\n\007ta" +
+      "riffs\030\001 \003(\0132\r.proto.Tariff\"$\n\006Tariff\022\014\n\004" +
+      "rate\030\001 \001(\005\022\014\n\004time\030\002 \001(\005\"K\n\031StateOfCharg" +
+      "eProfileValue\022.\n\020states_of_charge\030\001 \003(\0132" +
+      "\024.proto.StateOfCharge\"@\n\rStateOfCharge\022\026" +
+      "\n\016timestamp_in_s\030\001 \001(\003\022\027\n\017state_of_charg" +
+      "e\030\002 \001(\005\"\242\001\n\017VEPUpdatesByVIN\022\027\n\017sequence_" +
+      "number\030\002 \001(\005\0224\n\007updates\030\001 \003(\0132#.proto.VE" +
+      "PUpdatesByVIN.UpdatesEntry\032@\n\014UpdatesEnt" +
+      "ry\022\013\n\003key\030\001 \001(\t\022\037\n\005value\030\002 \001(\0132\020.proto.V" +
+      "EPUpdate:\0028\001\"\037\n\014DebugMessage\022\017\n\007message\030" +
+      "\001 \001(\t\"\250\001\n\rVehicleStatus\022\013\n\003vin\030\001 \001(\t\0228\n\n" +
+      "attributes\030\002 \003(\0132$.proto.VehicleStatus.A" +
+      "ttributesEntry\032P\n\017AttributesEntry\022\013\n\003key" +
+      "\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.proto.VehicleAtt" +
+      "ributeStatus:\0028\001\"\257\007\n\013PushMessage\022\023\n\013trac" +
+      "king_id\030\005 \001(\t\022%\n\tvepUpdate\030\001 \001(\0132\020.proto" +
+      ".VEPUpdateH\000\022,\n\nvepUpdates\030\002 \001(\0132\026.proto" +
+      ".VEPUpdatesByVINH\000\022+\n\014debugMessage\030\003 \001(\013" +
+      "2\023.proto.DebugMessageH\000\022B\n\026service_statu" +
+      "s_updates\030\t \001(\0132 .proto.ServiceStatusUpd" +
+      "atesByVINH\000\022;\n\025service_status_update\030\r \001" +
+      "(\0132\032.proto.ServiceStatusUpdateH\000\0221\n\020user" +
+      "_data_update\030\n \001(\0132\025.proto.UserDataUpdat" +
+      "eH\000\022O\n user_vehicle_auth_changed_update\030" +
+      "\016 \001(\0132#.proto.UserVehicleAuthChangedUpda" +
+      "teH\000\0227\n\023user_picture_update\030\013 \001(\0132\030.prot" +
+      "o.UserPictureUpdateH\000\022/\n\017user_pin_update" +
+      "\030\014 \001(\0132\024.proto.UserPINUpdateH\000\0220\n\017vehicl" +
+      "e_updated\030\017 \001(\0132\025.proto.VehicleUpdatedH\000" +
+      "\022?\n\027preferred_dealer_change\030\020 \001(\0132\034.prot" +
+      "o.PreferredDealerChangeH\000\022X\n%apptwin_com" +
+      "mand_status_updates_by_vin\030\021 \001(\0132\'.proto" +
+      ".AppTwinCommandStatusUpdatesByVINH\000\022O\n\037a" +
+      "pptwin_pending_command_request\030\022 \001(\0132$.p" +
+      "roto.AppTwinPendingCommandsRequestH\000\0224\n\021" +
+      "assigned_vehicles\030\023 \001(\0132\027.proto.Assigned" +
+      "VehiclesH\000\0223\n\021data_change_event\030\025 \001(\0132\026." +
+      "proto.DataChangeEventH\000B\005\n\003msgJ\004\010\007\020\010J\004\010\010" +
+      "\020\t\"\304\001\n\rTrackingEvent\022\023\n\013tracking_id\030\001 \001(" +
+      "\t\022\021\n\ttimestamp\030\002 \001(\003\022\022\n\nevent_type\030\003 \001(\t" +
+      "\0222\n\007payload\030\004 \003(\0132!.proto.TrackingEvent." +
+      "PayloadEntry\032C\n\014PayloadEntry\022\013\n\003key\030\001 \001(" +
+      "\t\022\"\n\005value\030\002 \001(\0132\023.proto.PayloadValue:\0028" +
+      "\001\"p\n\014PayloadValue\022\026\n\014string_value\030\001 \001(\tH" +
+      "\000\022\023\n\tint_value\030\002 \001(\005H\000\022\024\n\nbool_value\030\003 \001" +
+      "(\010H\000\022\026\n\014double_value\030\004 \001(\001H\000B\005\n\003msg\"4\n\025A" +
+      "cknowledgeVEPRequest\022\027\n\017sequence_number\030" +
+      "\001 \001(\005:\002\030\001\"5\n\032AcknowledgeVEPUpdatesByVIN\022" +
+      "\027\n\017sequence_number\030\001 \001(\005\"1\n\025ConfigurePin" +
+      "gInterval\022\030\n\020ping_time_millis\030\001 \001(\005\"4\n\031A" +
+      "cknowledgeVehicleUpdated\022\027\n\017sequence_num" +
+      "ber\030\001 \001(\005\";\n AcknowledgePreferredDealerC" +
+      "hange\022\027\n\017sequence_number\030\001 \001(\005\"e\n\016Vehicl" +
+      "eUpdated\022\027\n\017sequence_number\030\001 \001(\005\022\017\n\007cia" +
+      "m_id\030\002 \001(\t\022\013\n\003vin\030\003 \001(\t\022\034\n\024emit_timestam" +
+      "p_in_ms\030\n \001(\003\"l\n\025PreferredDealerChange\022\027" +
+      "\n\017sequence_number\030\001 \001(\005\022\017\n\007ciam_id\030\002 \001(\t" +
+      "\022\013\n\003vin\030\003 \001(\t\022\034\n\024emit_timestamp_in_ms\030\n " +
+      "\001(\003\"5\n\032AcknowledgeDataChangeEvent\022\027\n\017seq" +
+      "uence_number\030\001 \001(\005\"\364\001\n\006Scopes\022\033\n\005scope\030\001" +
+      " \001(\0162\014.proto.Scope\022\016\n\006ciamId\030\002 \001(\t\022\013\n\003vi" +
+      "n\030\003 \001(\t\022D\n\024additional_resources\030\004 \003(\0132&." +
+      "proto.Scopes.AdditionalResourcesEntry\022\030\n" +
+      "\020resource_ciam_id\030\005 \001(\t\022\024\n\014resource_vin\030" +
+      "\006 \001(\t\032:\n\030AdditionalResourcesEntry\022\013\n\003key" +
+      "\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"^\n\017DataChangeE" +
+      "vent\022\035\n\006scopes\030\001 \003(\0132\r.proto.Scopes\022\023\n\013t" +
+      "racking_id\030\002 \001(\t\022\027\n\017sequence_number\030\003 \001(" +
+      "\005*\350\001\n\030ChargeFlapsPositionState\022\'\n#CHARGE" +
+      "_FLAPS_POSITION_STATE_DEFAULT\020\000\022$\n CHARG" +
+      "E_FLAPS_POSITION_STATE_OPEN\020\001\022&\n\"CHARGE_" +
+      "FLAPS_POSITION_STATE_CLOSED\020\002\022,\n(CHARGE_" +
+      "FLAPS_POSITION_STATE_FLAP_PRESSED\020\003\022\'\n#C" +
+      "HARGE_FLAPS_POSITION_STATE_UNKNOWN\020\004*\264\005\n" +
+      "\030ChargingPowerRestriction\022-\n)CHARGING_PO" +
+      "WER_RESTRICTION_NO_RESTRICTION\020\000\0222\n.CHAR" +
+      "GING_POWER_RESTRICTION_ECO_CHARGING_ACTI" +
+      "VE\020\001\022>\n:CHARGING_POWER_RESTRICTION_REDUC" +
+      "ED_DUE_TO_CUSTOMER_SETTING\020\002\022E\nACHARGING" +
+      "_POWER_RESTRICTION_REDUCED_DUE_TO_VEHICL" +
+      "E_CHARGING_SYSTEM\020\003\022<\n8CHARGING_POWER_RE" +
+      "STRICTION_REDUCED_DUE_TO_REMOTE_CONTROL\020" +
+      "\004\022E\nACHARGING_POWER_RESTRICTION_REDUCED_" +
+      "DUE_TO_CHARGING_INFRASTRUCTURE\020\005\022?\n;CHAR" +
+      "GING_POWER_RESTRICTION_REDUCED_DUE_TO_CH" +
+      "ARGING_STRATEGY\020\006\0226\n2CHARGING_POWER_REST" +
+      "RICTION_STATE_OF_CHARGE_TOO_LOW\020\007\0227\n3CHA" +
+      "RGING_POWER_RESTRICTION_STATE_OF_CHARGE_" +
+      "TOO_HIGH\020\010\022:\n6CHARGING_POWER_RESTRICTION" +
+      "_BATTERY_TEMPERATURE_TOO_LOW\020\t\022;\n7CHARGI" +
+      "NG_POWER_RESTRICTION_BATTERY_TEMPERATURE" +
+      "_TOO_HIGH\020\n*\261\001\n\020PrecondStateType\022 \n\034PREC" +
+      "OND_STATE_TYPE_ON_UNLOCK\020\000\022(\n$PRECOND_ST" +
+      "ATE_TYPE_AT_DEPARTURE_TIME\020\001\022 \n\034PRECOND_" +
+      "STATE_TYPE_IMMEDIATE\020\002\022/\n+PRECOND_STATE_" +
+      "TYPE_CHILD_PRESENCE_DETECTION\020\003*y\n\rCharg" +
+      "eProgram\022\032\n\026DEFAULT_CHARGE_PROGRAM\020\000\022\032\n\026" +
+      "INSTANT_CHARGE_PROGRAM\020\001\022\027\n\023HOME_CHARGE_" +
+      "PROGRAM\020\002\022\027\n\023WORK_CHARGE_PROGRAM\020\003*f\n\017At" +
+      "tributeStatus\022\017\n\013VALUE_VALID\020\000\022\026\n\022VALUE_" +
+      "NOT_RECEIVED\020\001\022\021\n\rVALUE_INVALID\020\003\022\027\n\023VAL" +
+      "UE_NOT_AVAILABLE\020\004*g\n\005Scope\022\010\n\004USER\020\000\022\022\n" +
+      "\016ONBOARD_FENCES\020\001\022\014\n\010USER_PIN\020\003\022\030\n\024SERVI" +
+      "CE_PREREQUISITE\020\004\022\030\n\024USER_PROFILE_PICTUR" +
+      "E\020\005B\034\n\032com.daimler.mbcarkit.protob\006proto" +
+      "3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -34546,6 +49732,7 @@ com.daimler.mbcarkit.proto.VehicleEvents.PayloadValue defaultValue) {
           com.daimler.mbcarkit.proto.VehicleCommands.getDescriptor(),
           com.daimler.mbcarkit.proto.Protos.getDescriptor(),
           com.daimler.mbcarkit.proto.Vehicleapi.getDescriptor(),
+          com.google.protobuf.TimestampProto.getDescriptor(),
         });
     internal_static_proto_VEPUpdate_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -34564,111 +49751,177 @@ com.daimler.mbcarkit.proto.VehicleEvents.PayloadValue defaultValue) {
     internal_static_proto_VehicleAttributeStatus_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_VehicleAttributeStatus_descriptor,
-        new java.lang.String[] { "Timestamp", "TimestampInMs", "Changed", "Status", "ServiceIds", "DisplayValue", "CombustionConsumptionUnit", "GasConsumptionUnit", "ElectricityConsumptionUnit", "SpeedDistanceUnit", "SpeedUnit", "DistanceUnit", "TemperatureUnit", "PressureUnit", "RatioUnit", "ClockHourUnit", "IntValue", "BoolValue", "StringValue", "DoubleValue", "NilValue", "UnsupportedValue", "TemperaturePointsValue", "WeekdayTariffValue", "WeekendTariffValue", "StateOfChargeProfileValue", "WeeklySettingsHeadUnitValue", "SpeedAlertConfigurationValue", "EcoHistogramValue", "WeeklyProfileValue", "ChargeProgramsValue", "DisplayUnit", "AttributeType", });
-    internal_static_proto_ChargeProgramsValue_descriptor =
+        new java.lang.String[] { "Timestamp", "TimestampInMs", "Changed", "Status", "ServiceIds", "DisplayValue", "CombustionConsumptionUnit", "GasConsumptionUnit", "ElectricityConsumptionUnit", "SpeedDistanceUnit", "SpeedUnit", "DistanceUnit", "TemperatureUnit", "PressureUnit", "RatioUnit", "ClockHourUnit", "IntValue", "BoolValue", "StringValue", "DoubleValue", "NilValue", "UnsupportedValue", "TemperaturePointsValue", "WeekdayTariffValue", "WeekendTariffValue", "StateOfChargeProfileValue", "WeeklySettingsHeadUnitValue", "SpeedAlertConfigurationValue", "EcoHistogramValue", "WeeklyProfileValue", "ChargeProgramsValue", "ChargingbreakClocktimerValue", "ChargingPowerControl", "TcuConnectionStateLowChannel", "PrecondState", "ChargingPowerRestrictions", "ChargingCouplerErrorDetails", "ChargingErrorVehicleNoSupport400V", "ChargingErrorImpossibleChangeTo400V", "ChargingErrorImpossibleChangeTo800V", "ChargingPredictionSoc", "ChargingPredictionDepartureTime", "ChargeFlaps", "ChargeInlets", "DisplayUnit", "AttributeType", });
+    internal_static_proto_ChargingPredictionSoc_descriptor =
       getDescriptor().getMessageTypes().get(2);
+    internal_static_proto_ChargingPredictionSoc_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_ChargingPredictionSoc_descriptor,
+        new java.lang.String[] { "PredictedEndTime", "PredictedElectricalEnergyRange", });
+    internal_static_proto_ChargingPredictionDepartureTime_descriptor =
+      getDescriptor().getMessageTypes().get(3);
+    internal_static_proto_ChargingPredictionDepartureTime_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_ChargingPredictionDepartureTime_descriptor,
+        new java.lang.String[] { "PredictedSoc", "PredictedElectricalEnergyRange", });
+    internal_static_proto_ChargeInletsEntry_descriptor =
+      getDescriptor().getMessageTypes().get(4);
+    internal_static_proto_ChargeInletsEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_ChargeInletsEntry_descriptor,
+        new java.lang.String[] { "Id", "CouplerState", "LockState", });
+    internal_static_proto_ChargeInlets_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_proto_ChargeInlets_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_ChargeInlets_descriptor,
+        new java.lang.String[] { "Entries", });
+    internal_static_proto_ChargeFlapsEntry_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_proto_ChargeFlapsEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_ChargeFlapsEntry_descriptor,
+        new java.lang.String[] { "Id", "PositionState", });
+    internal_static_proto_ChargeFlaps_descriptor =
+      getDescriptor().getMessageTypes().get(7);
+    internal_static_proto_ChargeFlaps_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_ChargeFlaps_descriptor,
+        new java.lang.String[] { "Entries", });
+    internal_static_proto_ChargingPowerRestrictions_descriptor =
+      getDescriptor().getMessageTypes().get(8);
+    internal_static_proto_ChargingPowerRestrictions_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_ChargingPowerRestrictions_descriptor,
+        new java.lang.String[] { "ChargingPowerRestriction", });
+    internal_static_proto_ChargingBreakClockTimerValue_descriptor =
+      getDescriptor().getMessageTypes().get(9);
+    internal_static_proto_ChargingBreakClockTimerValue_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_ChargingBreakClockTimerValue_descriptor,
+        new java.lang.String[] { "ChargingbreakClocktimerEntry", });
+    internal_static_proto_PrecondState_descriptor =
+      getDescriptor().getMessageTypes().get(10);
+    internal_static_proto_PrecondState_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_PrecondState_descriptor,
+        new java.lang.String[] { "ActivationState", "PrecondImmediateSupport", "PrecondStateTypes", });
+    internal_static_proto_ChargingPowerControl_descriptor =
+      getDescriptor().getMessageTypes().get(11);
+    internal_static_proto_ChargingPowerControl_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_ChargingPowerControl_descriptor,
+        new java.lang.String[] { "ChargeStatus", "CtrlDuration", "CtrlInfo", "ChargePower", "ServStat", "ServAvail", "UseCase", });
+    internal_static_proto_ChargingBreakClockTimerEntry_descriptor =
+      getDescriptor().getMessageTypes().get(12);
+    internal_static_proto_ChargingBreakClockTimerEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_ChargingBreakClockTimerEntry_descriptor,
+        new java.lang.String[] { "Status", "EndTimeHour", "EndTimeMinute", "StartTimeHour", "StartTimeMinute", "TimerId", });
+    internal_static_proto_ChargeProgramsValue_descriptor =
+      getDescriptor().getMessageTypes().get(13);
     internal_static_proto_ChargeProgramsValue_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_ChargeProgramsValue_descriptor,
         new java.lang.String[] { "ChargeProgramParameters", });
     internal_static_proto_ChargeProgramParameters_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(14);
     internal_static_proto_ChargeProgramParameters_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_ChargeProgramParameters_descriptor,
         new java.lang.String[] { "ChargeProgram", "MaxSoc", "AutoUnlock", "LocationBasedCharging", "WeeklyProfile", "ClockTimer", "MaxChargingCurrent", "EcoCharging", });
     internal_static_proto_WeeklyProfileValue_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(15);
     internal_static_proto_WeeklyProfileValue_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_WeeklyProfileValue_descriptor,
         new java.lang.String[] { "SingleTimeProfileEntriesActivatable", "MaxNumberOfWeeklyTimeProfileSlots", "MaxNumberOfTimeProfiles", "CurrentNumberOfTimeProfileSlots", "CurrentNumberOfTimeProfiles", "TimeProfiles", });
     internal_static_proto_VVRTimeProfile_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(16);
     internal_static_proto_VVRTimeProfile_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_VVRTimeProfile_descriptor,
         new java.lang.String[] { "Identifier", "Hour", "Minute", "Days", "Active", "ApplicationIdentifier", });
     internal_static_proto_EcoHistogramValue_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(17);
     internal_static_proto_EcoHistogramValue_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_EcoHistogramValue_descriptor,
         new java.lang.String[] { "EcoHistogramBins", });
     internal_static_proto_EcoHistogramBin_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(18);
     internal_static_proto_EcoHistogramBin_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_EcoHistogramBin_descriptor,
         new java.lang.String[] { "Interval", "Value", });
     internal_static_proto_SpeedAlertConfigurationValue_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(19);
     internal_static_proto_SpeedAlertConfigurationValue_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_SpeedAlertConfigurationValue_descriptor,
         new java.lang.String[] { "SpeedAlertConfigurations", });
     internal_static_proto_SpeedAlertConfiguration_descriptor =
-      getDescriptor().getMessageTypes().get(9);
+      getDescriptor().getMessageTypes().get(20);
     internal_static_proto_SpeedAlertConfiguration_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_SpeedAlertConfiguration_descriptor,
         new java.lang.String[] { "EndTimestampInS", "ThresholdInKph", "ThresholdDisplayValue", });
     internal_static_proto_WeeklySettingsHeadUnitValue_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(21);
     internal_static_proto_WeeklySettingsHeadUnitValue_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_WeeklySettingsHeadUnitValue_descriptor,
         new java.lang.String[] { "WeeklySettings", });
     internal_static_proto_WeeklySetting_descriptor =
-      getDescriptor().getMessageTypes().get(11);
+      getDescriptor().getMessageTypes().get(22);
     internal_static_proto_WeeklySetting_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_WeeklySetting_descriptor,
         new java.lang.String[] { "Day", "MinutesSinceMidnight", });
     internal_static_proto_TemperaturePointsValue_descriptor =
-      getDescriptor().getMessageTypes().get(12);
+      getDescriptor().getMessageTypes().get(23);
     internal_static_proto_TemperaturePointsValue_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_TemperaturePointsValue_descriptor,
         new java.lang.String[] { "TemperaturePoints", });
     internal_static_proto_TemperaturePoint_descriptor =
-      getDescriptor().getMessageTypes().get(13);
+      getDescriptor().getMessageTypes().get(24);
     internal_static_proto_TemperaturePoint_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_TemperaturePoint_descriptor,
         new java.lang.String[] { "Zone", "Temperature", "TemperatureDisplayValue", });
     internal_static_proto_WeekdayTariffValue_descriptor =
-      getDescriptor().getMessageTypes().get(14);
+      getDescriptor().getMessageTypes().get(25);
     internal_static_proto_WeekdayTariffValue_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_WeekdayTariffValue_descriptor,
         new java.lang.String[] { "Tariffs", });
     internal_static_proto_WeekendTariffValue_descriptor =
-      getDescriptor().getMessageTypes().get(15);
+      getDescriptor().getMessageTypes().get(26);
     internal_static_proto_WeekendTariffValue_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_WeekendTariffValue_descriptor,
         new java.lang.String[] { "Tariffs", });
     internal_static_proto_Tariff_descriptor =
-      getDescriptor().getMessageTypes().get(16);
+      getDescriptor().getMessageTypes().get(27);
     internal_static_proto_Tariff_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_Tariff_descriptor,
         new java.lang.String[] { "Rate", "Time", });
     internal_static_proto_StateOfChargeProfileValue_descriptor =
-      getDescriptor().getMessageTypes().get(17);
+      getDescriptor().getMessageTypes().get(28);
     internal_static_proto_StateOfChargeProfileValue_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_StateOfChargeProfileValue_descriptor,
         new java.lang.String[] { "StatesOfCharge", });
     internal_static_proto_StateOfCharge_descriptor =
-      getDescriptor().getMessageTypes().get(18);
+      getDescriptor().getMessageTypes().get(29);
     internal_static_proto_StateOfCharge_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_StateOfCharge_descriptor,
         new java.lang.String[] { "TimestampInS", "StateOfCharge", });
     internal_static_proto_VEPUpdatesByVIN_descriptor =
-      getDescriptor().getMessageTypes().get(19);
+      getDescriptor().getMessageTypes().get(30);
     internal_static_proto_VEPUpdatesByVIN_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_VEPUpdatesByVIN_descriptor,
@@ -34680,13 +49933,13 @@ com.daimler.mbcarkit.proto.VehicleEvents.PayloadValue defaultValue) {
         internal_static_proto_VEPUpdatesByVIN_UpdatesEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
     internal_static_proto_DebugMessage_descriptor =
-      getDescriptor().getMessageTypes().get(20);
+      getDescriptor().getMessageTypes().get(31);
     internal_static_proto_DebugMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_DebugMessage_descriptor,
         new java.lang.String[] { "Message", });
     internal_static_proto_VehicleStatus_descriptor =
-      getDescriptor().getMessageTypes().get(21);
+      getDescriptor().getMessageTypes().get(32);
     internal_static_proto_VehicleStatus_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_VehicleStatus_descriptor,
@@ -34698,13 +49951,13 @@ com.daimler.mbcarkit.proto.VehicleEvents.PayloadValue defaultValue) {
         internal_static_proto_VehicleStatus_AttributesEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
     internal_static_proto_PushMessage_descriptor =
-      getDescriptor().getMessageTypes().get(22);
+      getDescriptor().getMessageTypes().get(33);
     internal_static_proto_PushMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_PushMessage_descriptor,
-        new java.lang.String[] { "TrackingId", "VepUpdate", "VepUpdates", "DebugMessage", "ServiceStatusUpdates", "ServiceStatusUpdate", "UserDataUpdate", "UserVehicleAuthChangedUpdate", "UserPictureUpdate", "UserPinUpdate", "VehicleUpdated", "PreferredDealerChange", "ApptwinCommandStatusUpdatesByVin", "ApptwinPendingCommandRequest", "AssignedVehicles", "Msg", });
+        new java.lang.String[] { "TrackingId", "VepUpdate", "VepUpdates", "DebugMessage", "ServiceStatusUpdates", "ServiceStatusUpdate", "UserDataUpdate", "UserVehicleAuthChangedUpdate", "UserPictureUpdate", "UserPinUpdate", "VehicleUpdated", "PreferredDealerChange", "ApptwinCommandStatusUpdatesByVin", "ApptwinPendingCommandRequest", "AssignedVehicles", "DataChangeEvent", "Msg", });
     internal_static_proto_TrackingEvent_descriptor =
-      getDescriptor().getMessageTypes().get(23);
+      getDescriptor().getMessageTypes().get(34);
     internal_static_proto_TrackingEvent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_TrackingEvent_descriptor,
@@ -34716,59 +49969,84 @@ com.daimler.mbcarkit.proto.VehicleEvents.PayloadValue defaultValue) {
         internal_static_proto_TrackingEvent_PayloadEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
     internal_static_proto_PayloadValue_descriptor =
-      getDescriptor().getMessageTypes().get(24);
+      getDescriptor().getMessageTypes().get(35);
     internal_static_proto_PayloadValue_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_PayloadValue_descriptor,
         new java.lang.String[] { "StringValue", "IntValue", "BoolValue", "DoubleValue", "Msg", });
     internal_static_proto_AcknowledgeVEPRequest_descriptor =
-      getDescriptor().getMessageTypes().get(25);
+      getDescriptor().getMessageTypes().get(36);
     internal_static_proto_AcknowledgeVEPRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_AcknowledgeVEPRequest_descriptor,
         new java.lang.String[] { "SequenceNumber", });
     internal_static_proto_AcknowledgeVEPUpdatesByVIN_descriptor =
-      getDescriptor().getMessageTypes().get(26);
+      getDescriptor().getMessageTypes().get(37);
     internal_static_proto_AcknowledgeVEPUpdatesByVIN_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_AcknowledgeVEPUpdatesByVIN_descriptor,
         new java.lang.String[] { "SequenceNumber", });
     internal_static_proto_ConfigurePingInterval_descriptor =
-      getDescriptor().getMessageTypes().get(27);
+      getDescriptor().getMessageTypes().get(38);
     internal_static_proto_ConfigurePingInterval_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_ConfigurePingInterval_descriptor,
         new java.lang.String[] { "PingTimeMillis", });
     internal_static_proto_AcknowledgeVehicleUpdated_descriptor =
-      getDescriptor().getMessageTypes().get(28);
+      getDescriptor().getMessageTypes().get(39);
     internal_static_proto_AcknowledgeVehicleUpdated_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_AcknowledgeVehicleUpdated_descriptor,
         new java.lang.String[] { "SequenceNumber", });
     internal_static_proto_AcknowledgePreferredDealerChange_descriptor =
-      getDescriptor().getMessageTypes().get(29);
+      getDescriptor().getMessageTypes().get(40);
     internal_static_proto_AcknowledgePreferredDealerChange_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_AcknowledgePreferredDealerChange_descriptor,
         new java.lang.String[] { "SequenceNumber", });
     internal_static_proto_VehicleUpdated_descriptor =
-      getDescriptor().getMessageTypes().get(30);
+      getDescriptor().getMessageTypes().get(41);
     internal_static_proto_VehicleUpdated_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_VehicleUpdated_descriptor,
         new java.lang.String[] { "SequenceNumber", "CiamId", "Vin", "EmitTimestampInMs", });
     internal_static_proto_PreferredDealerChange_descriptor =
-      getDescriptor().getMessageTypes().get(31);
+      getDescriptor().getMessageTypes().get(42);
     internal_static_proto_PreferredDealerChange_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_PreferredDealerChange_descriptor,
         new java.lang.String[] { "SequenceNumber", "CiamId", "Vin", "EmitTimestampInMs", });
+    internal_static_proto_AcknowledgeDataChangeEvent_descriptor =
+      getDescriptor().getMessageTypes().get(43);
+    internal_static_proto_AcknowledgeDataChangeEvent_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_AcknowledgeDataChangeEvent_descriptor,
+        new java.lang.String[] { "SequenceNumber", });
+    internal_static_proto_Scopes_descriptor =
+      getDescriptor().getMessageTypes().get(44);
+    internal_static_proto_Scopes_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_Scopes_descriptor,
+        new java.lang.String[] { "Scope", "CiamId", "Vin", "AdditionalResources", "ResourceCiamId", "ResourceVin", });
+    internal_static_proto_Scopes_AdditionalResourcesEntry_descriptor =
+      internal_static_proto_Scopes_descriptor.getNestedTypes().get(0);
+    internal_static_proto_Scopes_AdditionalResourcesEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_Scopes_AdditionalResourcesEntry_descriptor,
+        new java.lang.String[] { "Key", "Value", });
+    internal_static_proto_DataChangeEvent_descriptor =
+      getDescriptor().getMessageTypes().get(45);
+    internal_static_proto_DataChangeEvent_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_DataChangeEvent_descriptor,
+        new java.lang.String[] { "Scopes", "TrackingId", "SequenceNumber", });
     descriptor.resolveAllFeaturesImmutable();
     com.daimler.mbcarkit.proto.ServiceActivation.getDescriptor();
     com.daimler.mbcarkit.proto.UserEvents.getDescriptor();
     com.daimler.mbcarkit.proto.VehicleCommands.getDescriptor();
     com.daimler.mbcarkit.proto.Protos.getDescriptor();
     com.daimler.mbcarkit.proto.Vehicleapi.getDescriptor();
+    com.google.protobuf.TimestampProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

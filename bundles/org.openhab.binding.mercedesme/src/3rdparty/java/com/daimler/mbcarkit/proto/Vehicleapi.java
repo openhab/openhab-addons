@@ -2342,7 +2342,7 @@ com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus defaultValue) {
      *
      * <code>int64 blocking_time_seconds = 5 [deprecated = true];</code>
      * @deprecated proto.AppTwinCommandStatus.blocking_time_seconds is deprecated.
-     *     See vehicleapi.proto;l=53
+     *     See vehicleapi.proto;l=52
      * @return The blockingTimeSeconds.
      */
     @java.lang.Deprecated long getBlockingTimeSeconds();
@@ -2354,7 +2354,7 @@ com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus defaultValue) {
      *
      * <code>int32 pin_attempts = 6 [deprecated = true];</code>
      * @deprecated proto.AppTwinCommandStatus.pin_attempts is deprecated.
-     *     See vehicleapi.proto;l=56
+     *     See vehicleapi.proto;l=55
      * @return The pinAttempts.
      */
     @java.lang.Deprecated int getPinAttempts();
@@ -2593,7 +2593,7 @@ com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus defaultValue) {
      *
      * <code>int64 blocking_time_seconds = 5 [deprecated = true];</code>
      * @deprecated proto.AppTwinCommandStatus.blocking_time_seconds is deprecated.
-     *     See vehicleapi.proto;l=53
+     *     See vehicleapi.proto;l=52
      * @return The blockingTimeSeconds.
      */
     @java.lang.Override
@@ -2610,7 +2610,7 @@ com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus defaultValue) {
      *
      * <code>int32 pin_attempts = 6 [deprecated = true];</code>
      * @deprecated proto.AppTwinCommandStatus.pin_attempts is deprecated.
-     *     See vehicleapi.proto;l=56
+     *     See vehicleapi.proto;l=55
      * @return The pinAttempts.
      */
     @java.lang.Override
@@ -3688,7 +3688,7 @@ com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus defaultValue) {
        *
        * <code>int64 blocking_time_seconds = 5 [deprecated = true];</code>
        * @deprecated proto.AppTwinCommandStatus.blocking_time_seconds is deprecated.
-       *     See vehicleapi.proto;l=53
+       *     See vehicleapi.proto;l=52
        * @return The blockingTimeSeconds.
        */
       @java.lang.Override
@@ -3703,7 +3703,7 @@ com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus defaultValue) {
        *
        * <code>int64 blocking_time_seconds = 5 [deprecated = true];</code>
        * @deprecated proto.AppTwinCommandStatus.blocking_time_seconds is deprecated.
-       *     See vehicleapi.proto;l=53
+       *     See vehicleapi.proto;l=52
        * @param value The blockingTimeSeconds to set.
        * @return This builder for chaining.
        */
@@ -3722,7 +3722,7 @@ com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus defaultValue) {
        *
        * <code>int64 blocking_time_seconds = 5 [deprecated = true];</code>
        * @deprecated proto.AppTwinCommandStatus.blocking_time_seconds is deprecated.
-       *     See vehicleapi.proto;l=53
+       *     See vehicleapi.proto;l=52
        * @return This builder for chaining.
        */
       @java.lang.Deprecated public Builder clearBlockingTimeSeconds() {
@@ -3740,7 +3740,7 @@ com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus defaultValue) {
        *
        * <code>int32 pin_attempts = 6 [deprecated = true];</code>
        * @deprecated proto.AppTwinCommandStatus.pin_attempts is deprecated.
-       *     See vehicleapi.proto;l=56
+       *     See vehicleapi.proto;l=55
        * @return The pinAttempts.
        */
       @java.lang.Override
@@ -3754,7 +3754,7 @@ com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus defaultValue) {
        *
        * <code>int32 pin_attempts = 6 [deprecated = true];</code>
        * @deprecated proto.AppTwinCommandStatus.pin_attempts is deprecated.
-       *     See vehicleapi.proto;l=56
+       *     See vehicleapi.proto;l=55
        * @param value The pinAttempts to set.
        * @return This builder for chaining.
        */
@@ -3772,7 +3772,7 @@ com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus defaultValue) {
        *
        * <code>int32 pin_attempts = 6 [deprecated = true];</code>
        * @deprecated proto.AppTwinCommandStatus.pin_attempts is deprecated.
-       *     See vehicleapi.proto;l=56
+       *     See vehicleapi.proto;l=55
        * @return This builder for chaining.
        */
       @java.lang.Deprecated public Builder clearPinAttempts() {
