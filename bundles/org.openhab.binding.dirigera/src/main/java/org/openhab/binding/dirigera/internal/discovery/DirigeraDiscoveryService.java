@@ -25,8 +25,6 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link DirigeraDiscoveryService} will be notified from Bridge {@link AccountHandler} regarding
@@ -37,7 +35,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.dirigera")
 public class DirigeraDiscoveryService extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(DirigeraDiscoveryService.class);
 
     private DirigeraDiscoveryManager dirigeraDiscoveryManager;
 
