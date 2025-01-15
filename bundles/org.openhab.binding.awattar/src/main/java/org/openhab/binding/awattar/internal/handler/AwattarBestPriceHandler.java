@@ -67,7 +67,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AwattarBestPriceHandler extends BaseThingHandler {
-
     private static final int THING_REFRESH_INTERVAL = 60;
 
     private final Logger logger = LoggerFactory.getLogger(AwattarBestPriceHandler.class);
