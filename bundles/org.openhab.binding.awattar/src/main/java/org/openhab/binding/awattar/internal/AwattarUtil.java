@@ -20,7 +20,6 @@ import java.time.temporal.ChronoUnit;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
@@ -32,9 +31,9 @@ import org.openhab.core.library.unit.Units;
 @NonNullByDefault
 public class AwattarUtil {
 
-    public static long getMillisToNextMinute(int mod, TimeZoneProvider timeZoneProvider) {
+    public static long getMillisToNextMinute(int mod, ZoneId zoneId) {
         long now = Instant.now().toEpochMilli();
-        ZonedDateTime dt = ZonedDateTime.now(timeZoneProvider.getTimeZone()).truncatedTo(ChronoUnit.MINUTES);
+        ZonedDateTime dt = ZonedDateTime.now(zoneId).truncatedTo(ChronoUnit.MINUTES);
         int min = dt.getMinute();
         int offset = min % mod;
         offset = offset == 0 ? mod : offset;
