@@ -67,11 +67,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AwattarBestPriceHandler extends BaseThingHandler {
-    private final AwattarTimeProvider timeProvider;
 
     private static final int THING_REFRESH_INTERVAL = 60;
 
     private final Logger logger = LoggerFactory.getLogger(AwattarBestPriceHandler.class);
+    private final AwattarTimeProvider timeProvider;
 
     private @Nullable ScheduledFuture<?> thingRefresher;
 
