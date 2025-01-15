@@ -15,9 +15,8 @@ package org.openhab.binding.awattar.internal.api;
 import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -31,6 +30,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
 import org.openhab.binding.awattar.internal.AwattarPrice;
 import org.openhab.binding.awattar.internal.dto.AwattarApiData;
+import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.binding.awattar.internal.dto.Datum;
 import org.openhab.binding.awattar.internal.handler.TimeRange;
 import org.slf4j.Logger;
@@ -58,7 +58,7 @@ public class AwattarApi {
     private double vatFactor;
     private double basePrice;
 
-    private ZoneId zone;
+    private AwattarTimeProvider timeProvider;
 
     private Gson gson;
 
@@ -79,8 +79,8 @@ public class AwattarApi {
      * @param httpClient the HTTP client to use
      * @param zone the time zone to use
      */
-    public AwattarApi(HttpClient httpClient, ZoneId zone, AwattarBridgeConfiguration config) {
-        this.zone = zone;
+    public AwattarApi(HttpClient httpClient, AwattarTimeProvider timeProvider, AwattarBridgeConfiguration config) {
+        this.timeProvider = timeProvider;
         this.httpClient = httpClient;
 
         this.gson = new Gson();
@@ -112,7 +112,7 @@ public class AwattarApi {
     public SortedSet<AwattarPrice> getData() throws AwattarApiException {
         try {
             // we start one day in the past to cover ranges that already started yesterday
-            ZonedDateTime zdt = LocalDate.now(zone).atStartOfDay(zone).minusDays(1);
+            ZonedDateTime zdt = timeProvider.getZonedDateTimeNow().truncatedTo(ChronoUnit.DAYS).minusDays(1);
             long start = zdt.toInstant().toEpochMilli();
             // Starting from midnight yesterday we add three days so that the range covers
             // the whole next day.
