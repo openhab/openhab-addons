@@ -87,6 +87,8 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EcobeeThermostatBridgeHandler.class);
 
+    private static final int MIN_VALID_ACTUAL_TEMPERATURE = 0;
+
     private TimeZoneProvider timeZoneProvider;
     private ChannelTypeRegistry channelTypeRegistry;
 
@@ -396,7 +398,12 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
                 EcobeeUtils.undefOrDate(runtime.lastStatusModified, timeZoneProvider));
         updateChannel(grp + CH_RUNTIME_DATE, EcobeeUtils.undefOrString(runtime.runtimeDate));
         updateChannel(grp + CH_RUNTIME_INTERVAL, EcobeeUtils.undefOrDecimal(runtime.runtimeInterval));
-        updateChannel(grp + CH_ACTUAL_TEMPERATURE, EcobeeUtils.undefOrTemperature(runtime.actualTemperature));
+        if (runtime.actualTemperature > MIN_VALID_ACTUAL_TEMPERATURE) {
+            updateChannel(grp + CH_ACTUAL_TEMPERATURE, EcobeeUtils.undefOrTemperature(runtime.actualTemperature));
+        } else {
+            logger.debug("Skipping update of actual temperature because temperature {} below min threshold of {}",
+                    runtime.actualTemperature, MIN_VALID_ACTUAL_TEMPERATURE);
+        }
         updateChannel(grp + CH_ACTUAL_HUMIDITY, EcobeeUtils.undefOrQuantity(runtime.actualHumidity, Units.PERCENT));
         updateChannel(grp + CH_RAW_TEMPERATURE, EcobeeUtils.undefOrTemperature(runtime.rawTemperature));
         updateChannel(grp + CH_SHOW_ICON_MODE, EcobeeUtils.undefOrDecimal(runtime.showIconMode));
