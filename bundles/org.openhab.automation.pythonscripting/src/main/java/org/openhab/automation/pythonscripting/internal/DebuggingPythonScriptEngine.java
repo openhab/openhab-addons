@@ -82,9 +82,13 @@ class DebuggingPythonScriptEngine<T extends ScriptEngine & Invocable & AutoClose
     private String stringifyThrowable(Throwable throwable) {
         String message = throwable.getMessage();
         StackTraceElement[] stackTraceElements = throwable.getStackTrace();
-        String stackTrace = Arrays.stream(stackTraceElements).limit(STACK_TRACE_LENGTH)
-                .map(t -> "        at " + t.toString()).collect(Collectors.joining(System.lineSeparator()))
-                + System.lineSeparator() + "        ... " + stackTraceElements.length + " more";
+        String stackTrace = Arrays.stream(stackTraceElements).map(t -> "        at " + t.toString())
+                .collect(Collectors.joining(System.lineSeparator()));
+        /*
+         * String stackTrace = Arrays.stream(stackTraceElements).limit(STACK_TRACE_LENGTH)
+         * .map(t -> "        at " + t.toString()).collect(Collectors.joining(System.lineSeparator()))
+         * + System.lineSeparator() + "        ... " + stackTraceElements.length + " more";
+         */
         return (message != null) ? message + System.lineSeparator() + stackTrace : stackTrace;
     }
 

@@ -3,6 +3,7 @@ import java
 
 import os
 import sys
+import traceback
 
 from openhab.jsr223 import scope
 from openhab.services import get_service
@@ -17,12 +18,10 @@ logger = Java_LogFactory.getLogger( LOG_PREFIX + "." + file_package )
 #    logger.info("unload")
 
 def handle_exception(e):
-    logger.info("handle_exception")
-    logger.info(e)
+    self.logger.error("Handle exception:\n" + traceback.format_exc())
 sys.excepthook = handle_exception
 # *****************************************************************
 
-import traceback
 import time
 import threading
 import profile, pstats, io
@@ -46,6 +45,8 @@ Java_HistoricItem = java.type("org.openhab.core.persistence.HistoricItem")
 Java_DateTimeType = java.type("org.openhab.core.library.types.DateTimeType")
 Java_ZonedDateTime = java.type("java.time.ZonedDateTime")
 Java_Iterable = java.type("java.lang.Iterable")
+
+Java_DecimalType = java.type("org.openhab.core.library.types.DecimalType")
 
 itemRegistry      = scope.get("itemRegistry")
 items             = scope.get("items")
@@ -123,11 +124,13 @@ class rule(object):
         if proxy.tags is not None:
             _base_obj.setTags(Set(proxy.tags))
 
-        _base_obj.setTriggers(_raw_triggers)
+        if len(_raw_triggers) == 0:
+            clazz.logger.warn("Rule '{}' has no triggers".format(name))
+        else:
+            _base_obj.setTriggers(_raw_triggers)
 
-        automationManager.addRule(_base_obj)
-
-        clazz.logger.info(u"Rule '{}' initialised".format(name))
+            automationManager.addRule(_base_obj)
+            clazz.logger.info("Rule '{}' initialised".format(name))
 
         return _rule_obj
 
@@ -147,13 +150,13 @@ class rule(object):
         def appendDetailInfo(self,event):
             if event is not None:
                 if event.getType().startswith("Item"):
-                    return u" [Item: {}]".format(event.getItemName())
+                    return " [Item: {}]".format(event.getItemName())
                 elif event.getType().startswith("Group"):
-                    return u" [Group: {}]".format(event.getItemName())
+                    return " [Group: {}]".format(event.getItemName())
                 elif event.getType().startswith("Thing"):
-                    return u" [Thing: {}]".format(event.getThingUID())
+                    return " [Thing: {}]".format(event.getThingUID())
                 else:
-                    return u" [Other: {}]".format(event.getType())
+                    return " [Other: {}]".format(event.getType())
             return ""
 
         def func_wrapper(self, module, input):
@@ -238,7 +241,7 @@ class ItemPersistance():
 
     def getStableMinMaxState(self, time_slot, end_time = None):
         current_end_time = datetime.now().astimezone() if end_time is None else end_time
-        min_time = current_end_time - timedelta(seconds=time_slot*-1)
+        min_time = current_end_time - timedelta(seconds=time_slot)
 
         min_value = None
         max_value = None
@@ -275,7 +278,7 @@ class ItemPersistance():
 
         value = ( value / duration )
 
-        return [ value, min_value, max_value ]
+        return [ Java_DecimalType(value), Java_DecimalType(min_value), Java_DecimalType(max_value) ]
 
     def getStableState(self, time_slot, end_time = None):
         value, _, _ = self.getStableMinMaxState(time_slot, end_time)
@@ -349,6 +352,8 @@ class Item():
         self.raw_item = raw_item
 
     def postUpdate(self, state):
+        if isinstance(state, datetime):
+            state = state.isoformat()
         events.postUpdate(self.raw_item, state)
 
     def postUpdateIfDifferent(self, state):
@@ -356,7 +361,6 @@ class Item():
             return False
 
         self.postUpdate(state)
-
         return True
 
     def sendCommand(self, command):
@@ -386,7 +390,10 @@ class Item():
     def _checkIfDifferent(current_state, new_state):
         if not java.instanceof(current_state, Java_UnDefType):
             if isinstance(new_state, str):
-                if current_state.toString() == new_state:
+                if isinstance(current_state, datetime):
+                    if current_state.isoformat() == new_state:
+                        return False
+                elif current_state.toString() == new_state:
                     return False
             elif isinstance(new_state, int):
                 if current_state.intValue() == new_state:
@@ -427,38 +434,58 @@ class Channel():
 
 class Registry():
     @staticmethod
-    def getItemMetadata(name, namespace):
-        return METADATA_REGISTRY.get(Java_MetadataKey(namespace, name))
-
-    @staticmethod
-    def getItemState(name, default = None):
-        state = items.get(name)
-        if state is None:
-            raise NotInitialisedException(u"Item state for {} not found".format(name))
-        if default is not None and isinstance(state, Java_UnDefType):
-            state = default
-        return JavaConversionHelper.convertState(state)
-
-    @staticmethod
-    def getItem(name):
-        item = itemRegistry.getItem(name)
-        if item is None:
-            raise NotInitialisedException(u"Item {} not found".format(name))
-        return JavaConversionHelper.convertItem(item)
-
-    @staticmethod
     def getThing(uid):
         thing = things.get(Java_ThingUID(uid))
         if thing is None:
-            raise NotInitialisedException(u"Thing {} not found".format(uid))
+            raise NotInitialisedException("Thing {} not found".format(uid))
         return Thing(thing)
 
     @staticmethod
     def getChannel(uid):
         channel = things.getChannel(Java_ChannelUID(uid))
         if channel is None:
-            raise NotInitialisedException(u"Channel {} not found".format(uid))
+            raise NotInitialisedException("Channel {} not found".format(uid))
         return Channel(channel)
+
+    @staticmethod
+    def getItem(item_name):
+        if isinstance(item_name, str):
+            item = itemRegistry.getItem(item_name)
+            if item is None:
+                raise NotInitialisedException("Item {} not found".format(item_name))
+            return JavaConversionHelper.convertItem(item)
+        raise Exception("Unsupported parameter type {}".format(type(item_name)))
+
+    @staticmethod
+    def resolveItem(item_or_item_name):
+        if isinstance(item_or_item_name, Item):
+            return item_or_item_name
+        return Registry.getItem(item_or_item_name)
+
+    @staticmethod
+    def getItemState(item_name, default = None):
+        if isinstance(item_name, str):
+            state = items.get(item_name)
+            if state is None:
+                raise NotInitialisedException("Item state for {} not found".format(item_name))
+            if default is not None and java.instanceof(state, Java_UnDefType):
+                state = default
+            return JavaConversionHelper.convertState(state)
+        raise Exception("Unsupported parameter type {}".format(type(item_name)))
+
+    @staticmethod
+    def getItemMetadata(item_or_item_name, namespace):
+        item_name = Registry._getItemName(item_or_item_name)
+        return METADATA_REGISTRY.get(Java_MetadataKey(namespace, item_name))
+
+    @staticmethod
+    def _getItemName(item_or_item_name):
+        if isinstance(item_or_item_name, str):
+            return item_or_item_name
+        elif isinstance(item_or_item_name, Item):
+            return item_or_item_name.getName()
+        raise Exception("Unsupported parameter type {}".format(type(item_or_item_name)))
+
 
 # helper class to force graalpy to force a specific type cast. e.g. convert a list to to a java.util.Set instead of java.util.List
 class Set(list):
@@ -515,7 +542,7 @@ class Timer():
                 # could be solved with a LOCK, but this solution is more efficient, because it works without a LOCK
                 pass
         except:
-            logger.error(u"{}".format(traceback.format_exc()))
+            logger.error("{}".format(traceback.format_exc()))
             raise
 
     def start(self):
