@@ -47,6 +47,8 @@ public class ModemCommand extends InsteonCommand {
 
     private static final String LIST_ALL = "listAll";
     private static final String LIST_DATABASE = "listDatabase";
+    private static final String LIST_FEATURES = "listFeatures";
+    private static final String LIST_PRODUCT_DATA = "listProductData";
     private static final String RELOAD_DATABASE = "reloadDatabase";
     private static final String BACKUP_DATABASE = "backupDatabase";
     private static final String RESTORE_DATABASE = "restoreDatabase";
@@ -60,9 +62,10 @@ public class ModemCommand extends InsteonCommand {
     private static final String RESET = "reset";
     private static final String SWITCH = "switch";
 
-    private static final List<String> SUBCMDS = List.of(LIST_ALL, LIST_DATABASE, RELOAD_DATABASE, BACKUP_DATABASE,
-            RESTORE_DATABASE, ADD_DATABASE_CONTROLLER, ADD_DATABASE_RESPONDER, DELETE_DATABASE_RECORD,
-            APPLY_DATABASE_CHANGES, CLEAR_DATABASE_CHANGES, ADD_DEVICE, REMOVE_DEVICE, RESET, SWITCH);
+    private static final List<String> SUBCMDS = List.of(LIST_ALL, LIST_DATABASE, LIST_FEATURES, LIST_PRODUCT_DATA,
+            RELOAD_DATABASE, BACKUP_DATABASE, RESTORE_DATABASE, ADD_DATABASE_CONTROLLER, ADD_DATABASE_RESPONDER,
+            DELETE_DATABASE_RECORD, APPLY_DATABASE_CHANGES, CLEAR_DATABASE_CHANGES, ADD_DEVICE, REMOVE_DEVICE, RESET,
+            SWITCH);
 
     private static final String CONFIRM_OPTION = "--confirm";
     private static final String FORCE_OPTION = "--force";
@@ -80,6 +83,8 @@ public class ModemCommand extends InsteonCommand {
                 buildCommandUsage(LIST_ALL, "list configured Insteon modem bridges with related channels and status"),
                 buildCommandUsage(LIST_DATABASE + " [" + RECORDS_OPTION + "]",
                         "list all-link database summary or records and pending changes for the Insteon modem"),
+                buildCommandUsage(LIST_FEATURES, "list features for the Insteon modem"),
+                buildCommandUsage(LIST_PRODUCT_DATA, "list product data for the Insteon modem"),
                 buildCommandUsage(RELOAD_DATABASE, "reload all-link database from the Insteon modem"),
                 buildCommandUsage(BACKUP_DATABASE, "backup all-link database from the Insteon modem to a file"),
                 buildCommandUsage(RESTORE_DATABASE + " <filename> " + CONFIRM_OPTION,
@@ -123,6 +128,20 @@ public class ModemCommand extends InsteonCommand {
                     listDatabaseSummary(console);
                 } else if (args.length == 2 && RECORDS_OPTION.equals(args[1])) {
                     listDatabaseRecords(console);
+                } else {
+                    printUsage(console, args[0]);
+                }
+                break;
+            case LIST_FEATURES:
+                if (args.length == 1) {
+                    listFeatures(console);
+                } else {
+                    printUsage(console, args[0]);
+                }
+                break;
+            case LIST_PRODUCT_DATA:
+                if (args.length == 1) {
+                    listProductData(console);
                 } else {
                     printUsage(console, args[0]);
                 }
@@ -320,6 +339,32 @@ public class ModemCommand extends InsteonCommand {
             console.println(
                     "The all-link database for modem " + address + " has " + changes.size() + " pending changes:");
             print(console, changes);
+        }
+    }
+
+    private void listFeatures(Console console) {
+        InsteonAddress address = getModem().getAddress();
+        List<String> features = getModem().getFeatures().stream()
+                .filter(feature -> !feature.isEventFeature() && !feature.isGroupFeature())
+                .map(feature -> String.format("%s: type=%s state=%s isHidden=%s", feature.getName(), feature.getType(),
+                        feature.getState().toFullString(), feature.isHiddenFeature()))
+                .sorted().toList();
+        if (features.isEmpty()) {
+            console.println("The features for modem " + address + " are not defined");
+        } else {
+            console.println("The features for modem " + address + " are:");
+            print(console, features);
+        }
+    }
+
+    private void listProductData(Console console) {
+        InsteonAddress address = getModem().getAddress();
+        ProductData productData = getModem().getProductData();
+        if (productData == null) {
+            console.println("The product data for modem " + address + " is not defined");
+        } else {
+            console.println("The product data for modem " + address + " is:");
+            console.println(productData.toString().replace("|", "\n"));
         }
     }
 
