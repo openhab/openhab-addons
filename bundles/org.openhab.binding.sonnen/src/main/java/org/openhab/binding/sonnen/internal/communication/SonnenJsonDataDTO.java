@@ -47,6 +47,10 @@ public class SonnenJsonDataDTO {
     boolean flowProductionGrid;
     @SerializedName("Pac_total_W")
     int batteryCurrent;
+    @SerializedName("EM_OperatingMode")
+    String em_operatingMode;
+    @SerializedName("OperatingMode")
+    String operatingMode;
 
     /**
      * @return the batteryCurrent
@@ -137,5 +141,19 @@ public class SonnenJsonDataDTO {
      */
     public boolean isFlowProductionGrid() {
         return flowProductionGrid;
+    }
+
+    /**
+     * @return the em_operatingMode
+     */
+    public String em_getOperationMode() {
+        return em_operatingMode;
+    }
+
+    /**
+     * @return the operatingMode
+     */
+    public String getOperationMode() {
+        return operatingMode;
     }
 }

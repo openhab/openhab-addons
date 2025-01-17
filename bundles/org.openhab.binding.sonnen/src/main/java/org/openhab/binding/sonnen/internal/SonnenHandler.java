@@ -163,7 +163,7 @@ public class SonnenHandler extends BaseThingHandler {
     private void refreshChannels() {
         updateBatteryData();
         for (Channel channel : getThing().getChannels()) {
-            updateChannel(channel.getUID().getId());
+            updateChannel(channel.getUID().getId(), null);
         }
     }
 
@@ -175,7 +175,7 @@ public class SonnenHandler extends BaseThingHandler {
             automaticRefreshing = true;
         }
         verifyLinkedChannel(channelUID.getId());
-        updateChannel(channelUID.getId());
+        updateChannel(channelUID.getId(), null);
     }
 
     @Override
@@ -188,7 +188,7 @@ public class SonnenHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChannel(String channelId) {
+    private void updateChannel(String channelId, @Nullable String putData) {
         if (isLinked(channelId)) {
             State state = null;
             SonnenJsonDataDTO data = serviceCommunication.getBatteryData();
@@ -278,6 +278,12 @@ public class SonnenHandler extends BaseThingHandler {
                     case CHANNELFLOWPRODUCTIONGRIDSTATE:
                         update(OnOffType.from(data.isFlowProductionGrid()), channelId);
                         break;
+                    case CHANNELBATTERYCHARGINGGRID:
+                        if (putData != null) {
+                            serviceCommunication.startStopBatteryCharging(putData);
+                            update(OnOffType.from(data.em_getOperationMode()), channelId);
+                        }
+                        break;
                 }
             }
         } else {
@@ -315,7 +321,21 @@ public class SonnenHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
             updateBatteryData();
-            updateChannel(channelUID.getId());
+            updateChannel(channelUID.getId(), null);
+        }
+        if (channelUID.getId().equals(CHANNELBATTERYCHARGINGGRID)) {
+            String putData = null;
+            if (command.equals(OnOffType.ON)) {
+                // Set battery to manual mode with 1
+                putData = "EM_OperatingMode=1";
+            } else if (command.equals(OnOffType.OFF)) {
+                // set battery to automatic mode with 2
+                putData = "EM_OperatingMode=2";
+            }
+            if (putData != null) {
+                logger.debug("Executing {} command", CHANNELBATTERYCHARGINGGRID);
+                updateChannel(channelUID.getId(), putData);
+            }
         }
     }
 }

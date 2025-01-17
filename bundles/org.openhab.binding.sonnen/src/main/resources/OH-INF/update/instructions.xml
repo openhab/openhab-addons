@@ -40,5 +40,10 @@
 				<type>sonnen:solarProduction</type>
 			</update-channel>
 		</instruction-set>
+		<instruction-set targetVersion="3">
+            <update-channel id="batteryChargingFromGrid">
+                <type>sonnen:batteryChargingFromGrid</type>
+            </update-channel>
+        </instruction-set>
 	</thing-type>
 </update:update-descriptions>
