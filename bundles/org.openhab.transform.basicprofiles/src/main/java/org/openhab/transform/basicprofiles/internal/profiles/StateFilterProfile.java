@@ -248,7 +248,7 @@ public class StateFilterProfile implements StateProfile {
         // Quoted strings are parsed as StringType
         if (stateString == null || stateString.isEmpty()) {
             return null;
-        } else if (stateString.startsWith("'") && stateString.endsWith("'")) {
+        } else if (isQuotedString(stateString)) {
             return new StringType(stateString.substring(1, stateString.length() - 1));
         } else if (parseFunction(stateString) instanceof FunctionType function) {
             return function;
@@ -256,6 +256,11 @@ public class StateFilterProfile implements StateProfile {
             return state;
         }
         return null;
+    }
+
+    private boolean isQuotedString(String value) {
+        return (value.startsWith("'") && value.endsWith("'")) || //
+                (value.startsWith("\"") && value.endsWith("\""));
     }
 
     @Nullable
