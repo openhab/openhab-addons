@@ -173,8 +173,21 @@ public class StateFilterProfileTest {
     }
 
     @Test
-    public void testSingleConditionMatchQuoted() throws ItemNotFoundException {
+    public void testSingleConditionMatchSingleQuoted() throws ItemNotFoundException {
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", "ItemName eq 'Value'")));
+        when(mockItemRegistry.getItem("ItemName")).thenReturn(stringItemWithState("ItemName", "Value"));
+
+        StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
+
+        State expectation = new StringType("NewValue");
+        profile.onStateUpdateFromHandler(expectation);
+        verify(mockCallback, times(1)).sendUpdate(eq(expectation));
+    }
+
+    @Test
+    public void testSingleConditionMatchDoubleQuoted() throws ItemNotFoundException {
+        when(mockContext.getConfiguration())
+                .thenReturn(new Configuration(Map.of("conditions", "ItemName eq \"Value\"")));
         when(mockItemRegistry.getItem("ItemName")).thenReturn(stringItemWithState("ItemName", "Value"));
 
         StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
