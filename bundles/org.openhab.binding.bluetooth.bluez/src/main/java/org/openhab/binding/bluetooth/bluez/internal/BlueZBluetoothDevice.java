@@ -104,10 +104,9 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         this.name = blueZDevice.getName();
         Map<UInt16, byte[]> manData = blueZDevice.getManufacturerData();
         if (manData != null) {
-            manData.entrySet().stream().map(Map.Entry::getKey).filter(Objects::nonNull).findFirst()
-                    .ifPresent((UInt16 manufacturerId) ->
-                    // Convert to unsigned int to match the convention in BluetoothCompanyIdentifiers
-                    this.manufacturer = manufacturerId.intValue() & 0xFFFF);
+            manData.keySet().stream().filter(Objects::nonNull).findFirst().ifPresent((UInt16 manufacturerId) ->
+            // Convert to unsigned int to match the convention in BluetoothCompanyIdentifiers
+            this.manufacturer = manufacturerId.intValue() & 0xFFFF);
         }
 
         if (Boolean.TRUE.equals(blueZDevice.isConnected())) {
@@ -208,7 +207,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     private void ensureConnected() {
         BluetoothDevice dev = device;
-        if (dev == null || !dev.isConnected()) {
+        if (dev == null || Boolean.FALSE.equals(dev.isConnected())) {
             throw new IllegalStateException("DBusBlueZ device is not set or not connected");
         }
     }
@@ -265,7 +264,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     @Override
     public CompletableFuture<@Nullable Void> enableNotifications(BluetoothCharacteristic characteristic) {
         BluetoothDevice dev = device;
-        if (dev == null || !dev.isConnected()) {
+        if (dev == null || Boolean.FALSE.equals(dev.isConnected())) {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
         }
@@ -301,7 +300,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         logger.debug("writeCharacteristic()");
 
         BluetoothDevice dev = device;
-        if (dev == null || !dev.isConnected()) {
+        if (dev == null || Boolean.FALSE.equals(dev.isConnected())) {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
         }
@@ -346,13 +345,13 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     @Override
     public void onManufacturerDataUpdate(ManufacturerDataEvent event) {
-        for (Map.Entry<Short, byte[]> entry : event.getData().entrySet()) {
+        event.getData().forEach((key, value) -> {
             BluetoothScanNotification notification = new BluetoothScanNotification();
-            byte[] data = new byte[entry.getValue().length + 2];
-            data[0] = (byte) (entry.getKey() & 0xFF);
-            data[1] = (byte) (entry.getKey() >>> 8);
+            byte[] data = new byte[value.length + 2];
+            data[0] = (byte) (key & 0xFF);
+            data[1] = (byte) (key >>> 8);
 
-            System.arraycopy(entry.getValue(), 0, data, 2, entry.getValue().length);
+            System.arraycopy(value, 0, data, 2, value.length);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Received manufacturer data for '{}': {}", address, HexUtils.bytesToHex(data, " "));
@@ -360,7 +359,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
             notification.setManufacturerData(data);
             notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
-        }
+        });
     }
 
     @Override
@@ -513,7 +512,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     @Override
     public CompletableFuture<@Nullable Void> disableNotifications(BluetoothCharacteristic characteristic) {
         BluetoothDevice dev = device;
-        if (dev == null || !dev.isConnected()) {
+        if (dev == null || Boolean.FALSE.equals(dev.isConnected())) {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
         }
