@@ -167,7 +167,8 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
             out.setWriter(ctxt.getWriter());
             err.setWriter(ctxt.getErrorWriter());
         }
-        builder.in(in).out(out).err(err);
+        // commented out, otherwise out/err setting in PythonScriptEngine has no effect
+        // builder.in(in).out(out).err(err);
         Context ctx = builder.build();
         ctx.getPolyglotBindings().putMember(OUT_SYMBOL, out);
         ctx.getPolyglotBindings().putMember(ERR_SYMBOL, err);
@@ -605,43 +606,8 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
         return true;
     }
 
-    /**
-     * Detects jrunscript "init.js" and installs a JSAdapter polyfill if needed.
-     */
-    /*
-     * private static void jrunscriptInitWorkaround(Source source, Context polyglotContext) {
-     * if (source.getName().equals(JRUNSCRIPT_INIT_NAME)) {
-     * String initCode = source.getCharacters().toString();
-     * if (initCode.contains("jrunscript") && initCode.contains("JSAdapter")
-     * && !polyglotContext.getBindings(ID).hasMember("JSAdapter")) {
-     * polyglotContext.eval(ID, JSADAPTER_POLYFILL);
-     * }
-     * }
-     * }
-     */
-
-    //
-    /*
-     * private static final String JRUNSCRIPT_INIT_NAME = "<system-init>";
-     * private static final String JSADAPTER_POLYFILL = "this.JSAdapter || "
-     * +
-     * "Object.defineProperty(this, \"JSAdapter\", {configurable:true, writable:true, enumerable: false, value: function(t) {\n"
-     * + "    var target = {};\n" + "    var handler = {\n"
-     * +
-     * "        get: function(target, name) {return typeof t.__get__ == 'function' ? t.__get__.call(target, name) : undefined;},\n"
-     * +
-     * "        has: function(target, name) {return typeof t.__has__ == 'function' ? t.__has__.call(target, name) : false;},\n"
-     * +
-     * "        deleteProperty: function(target, name) {return typeof t.__delete__ == 'function' ? t.__delete__.call(target, name) : true;},\n"
-     * +
-     * "        set: function(target, name, value) {return typeof t.__put__ == 'function' ? t.__put__.call(target, name, value) : undefined;},\n"
-     * +
-     * "        ownKeys: function(target) {return typeof t.__getIds__ == 'function' ? t.__getIds__.call(target) : [];},\n"
-     * + "    }\n" + "    return new Proxy(target, handler);\n" + "}});\n";
-     */
-
     private static IllegalArgumentException magicOptionValueErrorBool(String name, Object v) {
         return new IllegalArgumentException(
-                String.format("failed to set graal-js option \"%s\": expected a boolean value, got \"%s\"", name, v));
+                String.format("failed to set graal-py option \"%s\": expected a boolean value, got \"%s\"", name, v));
     }
 }

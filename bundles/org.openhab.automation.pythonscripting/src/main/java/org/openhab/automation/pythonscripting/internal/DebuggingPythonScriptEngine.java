@@ -12,8 +12,6 @@
  */
 package org.openhab.automation.pythonscripting.internal;
 
-import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
-
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -22,14 +20,13 @@ import java.util.stream.Collectors;
 
 import javax.script.Compilable;
 import javax.script.Invocable;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.PolyglotException;
+import org.graalvm.polyglot.PolyglotException.StackFrame;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Wraps ScriptEngines provided by Graal to provide error messages and stack traces for scripts.
@@ -50,15 +47,16 @@ class DebuggingPythonScriptEngine<T extends ScriptEngine & Invocable & AutoClose
     @Override
     protected void beforeInvocation() {
         super.beforeInvocation();
-        // OpenhabGraalJSScriptEngine::beforeInvocation will be executed after
-        // DebuggingGraalScriptEngine::beforeInvocation, because GraalJSScriptEngineFactory::createScriptEngine returns
+        // PythonScriptEngine::beforeInvocation will be executed after
+        // DebuggingPythonScriptEngine::beforeInvocation, because PythonScriptEngine::createScriptEngine returns
         // a DebuggingGraalScriptEngine instance.
         // We therefore need to synchronize logger setup here and cannot rely on the synchronization in
-        // OpenhabGraalJSScriptEngine.
+        // PythonScriptEngine.
         delegate.lock();
         try {
             if (logger == null) {
-                initializeLogger();
+                logger = PythonScriptEngine.initScriptLogger(delegate);
+
             }
         } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid deadlocks
             delegate.unlock();
@@ -74,6 +72,25 @@ class DebuggingPythonScriptEngine<T extends ScriptEngine & Invocable & AutoClose
         if (cause instanceof IllegalArgumentException) {
             logger.error("Failed to execute script: {}", stringifyThrowable(cause));
         } else if (cause instanceof PolyglotException) {
+            PolyglotException pe = (PolyglotException) cause;
+            if (pe.isSyntaxError()) {
+                logger.error("Syntax Error {}", pe.getSourceLocation());
+            } else if (pe.isHostException()) {
+                for (StackFrame frame : pe.getPolyglotStackTrace()) {
+                    if (frame.isHostFrame()) {
+                        logger.error("Host error {}", frame.getSourceLocation());
+                        break;
+                    }
+                }
+            } else if (pe.isGuestException()) {
+                for (StackFrame frame : pe.getPolyglotStackTrace()) {
+                    if (frame.isGuestFrame()) {
+                        logger.error("Guest error {}", frame.getSourceLocation());
+                        break;
+                    }
+                }
+            }
+
             logger.error("Failed to execute script: {}", stringifyThrowable(cause));
         }
         return e;
@@ -82,39 +99,10 @@ class DebuggingPythonScriptEngine<T extends ScriptEngine & Invocable & AutoClose
     private String stringifyThrowable(Throwable throwable) {
         String message = throwable.getMessage();
         StackTraceElement[] stackTraceElements = throwable.getStackTrace();
-        String stackTrace = Arrays.stream(stackTraceElements).map(t -> "        at " + t.toString())
-                .collect(Collectors.joining(System.lineSeparator()));
-        /*
-         * String stackTrace = Arrays.stream(stackTraceElements).limit(STACK_TRACE_LENGTH)
-         * .map(t -> "        at " + t.toString()).collect(Collectors.joining(System.lineSeparator()))
-         * + System.lineSeparator() + "        ... " + stackTraceElements.length + " more";
-         */
+        String stackTrace = Arrays.stream(stackTraceElements).limit(STACK_TRACE_LENGTH)
+                .map(t -> "        at " + t.toString()).collect(Collectors.joining(System.lineSeparator()))
+                + System.lineSeparator() + "        ... " + stackTraceElements.length + " more";
         return (message != null) ? message + System.lineSeparator() + stackTrace : stackTrace;
-    }
-
-    /**
-     * Initializes the logger.
-     * This cannot be done on script engine creation because the context variables are not yet initialized.
-     * Therefore, the logger needs to be initialized on the first use after script engine creation.
-     */
-    private void initializeLogger() {
-        ScriptContext ctx = delegate.getContext();
-        Object fileName = ctx.getAttribute("javax.script.filename");
-        Object ruleUID = ctx.getAttribute("ruleUID");
-        Object ohEngineIdentifier = ctx.getAttribute("oh.engine-identifier");
-
-        String identifier = "stack";
-        if (fileName != null) {
-            identifier = fileName.toString().replaceAll("^.*[/\\\\]", "");
-        } else if (ruleUID != null) {
-            identifier = ruleUID.toString();
-        } else if (ohEngineIdentifier != null) {
-            if (ohEngineIdentifier.toString().startsWith(OPENHAB_TRANSFORMATION_SCRIPT)) {
-                identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT, "transformation.");
-            }
-        }
-
-        logger = LoggerFactory.getLogger("org.openhab.automation.pythonscripting." + identifier);
     }
 
     @Override

@@ -3,8 +3,13 @@ TODO
 - extend SimpleRule instead of wrapping in helper class (needs upcoming graalpy 24.2.0 release => register_interop_type) => expected March 18, 2025
   - not high prio. maybe not needed
 - better error messages if error is not catched by "helper.py => handle_exception". In java stack trace we do not get correct file and line number
-   
+  - handle import errors => "Failed to execute script: ModuleNotFoundError: No module named 'Time'"
+  - handle name errors => "Failed to execute script: NameError: name 'txf' is not defined"
+
 DONE
+- better error messages if error is not catched by "helper.py => handle_exception". In java stack trace we do not get correct file and line number
+  - stdout and stderr redirect to Logger => syntax errors
+
 - implement metadata access
 - implement getStableState (average calculation which takes into account the values ​​depending on their duration)
 - check why assigning tag 'Schedule' to rules with GenericCronTrigger is freezing webui schedule page

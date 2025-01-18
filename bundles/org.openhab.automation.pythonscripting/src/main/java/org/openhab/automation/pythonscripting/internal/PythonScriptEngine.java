@@ -13,6 +13,7 @@
 package org.openhab.automation.pythonscripting.internal;
 
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
+import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
 import java.io.IOException;
 import java.nio.file.AccessMode;
@@ -33,6 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,12 +48,14 @@ import org.openhab.automation.pythonscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.pythonscripting.internal.fs.watch.PythonDependencyTracker;
 import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
+import org.openhab.automation.pythonscripting.internal.scriptengine.LogOutputStream;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.items.Item;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 /**
  * GraalPython ScriptEngine implementation
@@ -137,6 +141,9 @@ public class PythonScriptEngine
 
     private boolean initialized = false;
 
+    private LogOutputStream scriptOutputStream = new LogOutputStream(logger, Level.INFO);
+    private LogOutputStream scriptErrorStream = new LogOutputStream(logger, Level.ERROR);
+
     /**
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
@@ -150,6 +157,8 @@ public class PythonScriptEngine
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
 
         Context.Builder contextConfig = Context.newBuilder("python") //
+                .out(scriptOutputStream) //
+                .err(scriptErrorStream) //
                 .allowIO(IOAccess.newBuilder() //
                         .allowHostSocketAccess(true) //
                         .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
@@ -246,6 +255,10 @@ public class PythonScriptEngine
         }
         this.scriptDependencyListener = scriptDependencyListener;
 
+        Logger scriptLogger = initScriptLogger(delegate);
+        scriptOutputStream.setLogger(scriptLogger);
+        scriptErrorStream.setLogger(scriptLogger);
+
         initialized = true;
     }
 
@@ -306,5 +319,30 @@ public class PythonScriptEngine
             set.add(element.asString());
         }
         return set;
+    }
+
+    /**
+     * Initializes the logger.
+     * This cannot be done on script engine creation because the context variables are not yet initialized.
+     * Therefore, the logger needs to be initialized on the first use after script engine creation.
+     */
+    public static Logger initScriptLogger(ScriptEngine scriptEngine) {
+        ScriptContext ctx = scriptEngine.getContext();
+        Object fileName = ctx.getAttribute("javax.script.filename");
+        Object ruleUID = ctx.getAttribute("ruleUID");
+        Object ohEngineIdentifier = ctx.getAttribute("oh.engine-identifier");
+
+        String identifier = "stack";
+        if (fileName != null) {
+            identifier = fileName.toString().replaceAll("^.*[/\\\\]", "");
+        } else if (ruleUID != null) {
+            identifier = ruleUID.toString();
+        } else if (ohEngineIdentifier != null) {
+            if (ohEngineIdentifier.toString().startsWith(OPENHAB_TRANSFORMATION_SCRIPT)) {
+                identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT, "transformation.");
+            }
+        }
+
+        return LoggerFactory.getLogger("org.openhab.automation.pythonscripting." + identifier);
     }
 }
