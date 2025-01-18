@@ -2,6 +2,7 @@ TODO
 - fix binding reload
 - extend SimpleRule instead of wrapping in helper class (needs upcoming graalpy 24.2.0 release => register_interop_type) => expected March 18, 2025
   - not high prio. maybe not needed
+- better error messages if error is not catched by "helper.py => handle_exception". In java stack trace we do not get correct file and line number
    
 DONE
 - implement metadata access
