@@ -69,6 +69,9 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
 
             // Iterate over all channels and update their states
             for (Channel channel : getThing().getChannels()) {
+                if (!isLinked(channel.getUID())) {
+                    continue;
+                }
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
                 if (channelConfig.channelNumber > 0 && channelConfig.channelNumber <= statuses.length) {
                     var channelTypeUID = channel.getChannelTypeUID();

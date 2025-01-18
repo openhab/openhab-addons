@@ -25,6 +25,7 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,12 @@ import org.slf4j.LoggerFactory;
 public class SbusHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SbusHandlerFactory.class);
+    private @Nullable SbusService sbusService;
+
+    @Reference
+    public void setSbusService(final SbusService service) {
+        this.sbusService = service;
+    }
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_UDP_BRIDGE, THING_TYPE_SWITCH,
             THING_TYPE_TEMPERATURE, THING_TYPE_RGBW);
@@ -53,7 +60,7 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_UDP_BRIDGE)) {
             logger.debug("Creating Sbus UDP bridge handler for thing {}", thing.getUID());
-            return new SbusBridgeHandler((Bridge) thing);
+            return new SbusBridgeHandler((Bridge) thing, sbusService);
         }
 
         if (thingTypeUID.equals(THING_TYPE_SWITCH)) {

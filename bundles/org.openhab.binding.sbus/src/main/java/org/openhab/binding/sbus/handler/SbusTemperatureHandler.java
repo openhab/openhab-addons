@@ -72,6 +72,9 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
 
             // Iterate over all channels and update their states with corresponding temperatures
             for (Channel channel : getThing().getChannels()) {
+                if (!isLinked(channel.getUID())) {
+                    continue;
+                }
                 TemperatureChannelConfig channelConfig = channel.getConfiguration().as(TemperatureChannelConfig.class);
                 if (channelConfig.channelNumber > 0 && channelConfig.channelNumber <= temperatures.length) {
                     float temperatureCelsius = temperatures[channelConfig.channelNumber - 1];

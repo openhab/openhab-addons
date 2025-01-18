@@ -21,7 +21,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,17 +33,17 @@ import org.slf4j.LoggerFactory;
 public class SbusBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusBridgeHandler.class);
-
-    @Reference
-    private @Nullable SbusService sbusService;
+    private final @Nullable SbusService sbusService;
 
     /**
      * Constructs a new SbusBridgeHandler.
      *
      * @param bridge the bridge
+     * @param sbusService the Sbus service
      */
-    public SbusBridgeHandler(Bridge bridge) {
+    public SbusBridgeHandler(Bridge bridge, @Nullable SbusService sbusService) {
         super(bridge);
+        this.sbusService = sbusService;
     }
 
     /**

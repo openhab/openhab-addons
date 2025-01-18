@@ -171,6 +171,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
             // Update all channels
             for (Channel channel : getThing().getChannels()) {
+                if (!isLinked(channel.getUID())) {
+                    continue;
+                }
                 var channelTypeUID = channel.getChannelTypeUID();
                 if (channelTypeUID == null) {
                     logger.warn("Channel {} has no channel type", channel.getUID());
