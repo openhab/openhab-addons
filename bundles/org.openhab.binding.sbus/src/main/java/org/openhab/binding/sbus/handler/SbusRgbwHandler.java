@@ -18,7 +18,6 @@ import org.openhab.binding.sbus.handler.config.SbusChannelConfig;
 import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -42,70 +41,6 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
     public SbusRgbwHandler(Thing thing) {
         super(thing);
-    }
-
-    /**
-     * Converts an openHAB HSBType into an RGBW array ([R, G, B, W]),
-     * with each channel in [0..255].
-     *
-     * We extract 'white' by taking the minimum of R, G, B and
-     * subtracting it from each color channel.
-     *
-     * @param hsbType the openHAB HSBType (hue [0..360], sat [0..100], bri [0..100])
-     * @return an int array [R, G, B, W] each in [0..255]
-     */
-    private int[] hsbToRgbw(HSBType hsbType) {
-        // Convert HSBType to standard RGB [0..255]
-        PercentType[] rgb = ColorUtil.hsbToRgbPercent(hsbType);
-        // Convert each channel from 0..100 to 0..255
-        int r = (int) Math.round(rgb[0].floatValue() * 2.55);
-        int g = (int) Math.round(rgb[1].floatValue() * 2.55);
-        int b = (int) Math.round(rgb[2].floatValue() * 2.55);
-
-        // Determine the white component as the min of R, G, B
-        int w = Math.min(r, Math.min(g, b));
-
-        // Subtract W from each
-        r -= w;
-        g -= w;
-        b -= w;
-
-        return new int[] { r, g, b, w };
-    }
-
-    /**
-     * Converts an RGBW array ([R, G, B, W]) back to an openHAB HSBType.
-     *
-     * We add the W channel back into R, G, and B, then clamp to [0..255].
-     * Finally, we create an HSBType via fromRGB().
-     *
-     * @param rgbw an int array [R, G, B, W] each in [0..255]
-     * @return an HSBType (hue [0..360], saturation/brightness [0..100])
-     */
-    private HSBType rgbwToHsb(int[] rgbw) {
-        if (rgbw.length < 4) {
-            throw new IllegalArgumentException("rgbw must have 4 elements: [R, G, B, W].");
-        }
-
-        int r = rgbw[0];
-        int g = rgbw[1];
-        int b = rgbw[2];
-        int w = rgbw[3];
-
-        // Restore the combined R, G, B
-        int rTotal = r + w;
-        int gTotal = g + w;
-        int bTotal = b + w;
-
-        // Clamp to [0..255]
-        rTotal = Math.min(255, Math.max(0, rTotal));
-        gTotal = Math.min(255, Math.max(0, gTotal));
-        bTotal = Math.min(255, Math.max(0, bTotal));
-
-        // Convert back to an HSBType via fromRGB
-        HSBType hsbType = HSBType.fromRGB(rTotal, gTotal, bTotal);
-
-        return hsbType;
     }
 
     /**
@@ -187,7 +122,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                     int[] rgbwValues = adapter.readRgbw(config.subnetId, config.id, channelConfig.channelNumber);
                     if (rgbwValues.length >= 4) {
                         // Convert RGBW to HSB using our custom conversion
-                        HSBType hsbType = rgbwToHsb(rgbwValues);
+                        HSBType hsbType = ColorUtil.rgbToHsb(rgbwValues);
                         updateState(channel.getUID(), hsbType);
                     }
                 } else if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)) {
@@ -229,7 +164,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)
                         && command instanceof HSBType hsbCommand) {
                     // Handle color command
-                    int[] rgbw = hsbToRgbw(hsbCommand);
+                    int[] rgbw = ColorUtil.hsbToRgbw(hsbCommand);
                     adapter.writeRgbw(config.subnetId, config.id, channelConfig.channelNumber, rgbw);
                     updateState(channelUID, hsbCommand);
                 } else if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)
