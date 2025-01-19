@@ -85,5 +85,5 @@ Fragment-Host: org.openhab.automation.jsscriptingnashorn
 	stax2-api;version='[4.2.2,4.2.3)',\
 	biz.aQute.tester.junit-platform;version='[7.1.0,7.1.1)',\
 	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
-	de.focus_shift.jollyday-core;version='[0.35.1,0.35.2)',\
-	de.focus_shift.jollyday-jackson;version='[0.35.1,0.35.2)'
+	de.focus_shift.jollyday-core;version='[1.4.0,1.4.1)',\
+	de.focus_shift.jollyday-jackson;version='[1.4.0,1.4.1)'
