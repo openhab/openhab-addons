@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.fronius.internal.api.dto.inverter.PostConfigResponse;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.ScheduleType;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.TimeOfUseRecord;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.TimeOfUseRecords;
@@ -120,8 +121,13 @@ public class FroniusBatteryControl {
 
         // Set the time of use settings
         String json = gson.toJson(records);
-        FroniusHttpUtil.executeUrl(HttpMethod.POST, timeOfUseUri.toString(), headers,
+        String responseString = FroniusHttpUtil.executeUrl(HttpMethod.POST, timeOfUseUri.toString(), headers,
                 new ByteArrayInputStream(json.getBytes()), "application/json", API_TIMEOUT);
+        PostConfigResponse response = gson.fromJson(responseString, PostConfigResponse.class);
+        if (!response.writeSuccess().contains("timeofuse")) {
+            LOGGER.debug("{}", responseString);
+            throw new FroniusCommunicationException("Failed to write configuration to inverter");
+        }
         LOGGER.trace("Time of Use settings set successfully");
     }
 
