@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -202,7 +202,8 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
                     PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x")));
 
             for (String resourceFile : resourceFiles) {
-                InputStream is = this.getClass().getClassLoader().getResourceAsStream("/lib/openhab/" + resourceFile);
+                InputStream is = PythonScriptEngineFactory.class.getClassLoader()
+                        .getResourceAsStream("/lib/openhab/" + resourceFile);
                 Path target = PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH.resolve(resourceFile);
                 Files.copy(is, target);
                 Files.setPosixFilePermissions(target, PosixFilePermissions.fromString("rw-r--r--"));
@@ -224,7 +225,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     }
 
     private @Nullable String getResourceFileAsString(String fileName) throws IOException {
-        try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(fileName)) {
+        try (InputStream is = PythonScriptEngineFactory.class.getClassLoader().getResourceAsStream(fileName)) {
             if (is == null) {
                 return null;
             }

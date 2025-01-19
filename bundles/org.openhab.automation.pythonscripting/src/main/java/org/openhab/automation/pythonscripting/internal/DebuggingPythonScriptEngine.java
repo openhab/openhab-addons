@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 /**
  * Wraps ScriptEngines provided by Graal to provide error messages and stack traces for scripts.
  *
- * @author Holger Hees - Reuse / copied from jsscripting
+ * @author Holger Hees - Initial contribution (Reused from jsscripting)
  */
 class DebuggingPythonScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & Lock>
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T> implements Lock {

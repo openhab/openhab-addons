@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * Monitors {@code <openHAB-conf>/automation/python} for Python files, but not libraries
  *
- * @author Holger Hees - Reuse / copied from jsscripting
+ * @author Holger Hees - Initial contribution (Reused from jsscripting)
  */
 @Component(immediate = true, service = { ScriptFileWatcher.class, ScriptDependencyTracker.Listener.class })
 @NonNullByDefault

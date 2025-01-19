@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 /**
  * Tracks Python module dependencies
  *
- * @author Holger Hees - Reuse / copied from jsscripting
+ * @author Holger Hees - Initial contribution (Reused from jsscripting)
  */
 @Component(service = PythonDependencyTracker.class)
 @NonNullByDefault

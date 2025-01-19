@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -29,13 +29,13 @@ import org.eclipse.jdt.annotation.NonNull;
  * {@link ScriptEngine} implementation that delegates to a supplied ScriptEngine instance. Allows overriding specific
  * methods.
  *
- * @author Holger Hees - Reuse / copied from jsscripting
+ * @author Holger Hees - Initial contribution (Reused from jsscripting)
  */
 public abstract class DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable<T extends ScriptEngine & Invocable & Compilable & AutoCloseable>
         implements ScriptEngine, Invocable, Compilable, AutoCloseable {
     protected @NonNull T delegate;
 
-    public DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable(@NonNull T delegate) {
+    public DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable(T delegate) {
         this.delegate = delegate;
     }
 

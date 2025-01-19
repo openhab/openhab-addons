@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -16,5 +16,5 @@ package org.openhab.automation.pythonscripting.internal;
 /**
  * Additional information for the Python Scripting package
  *
- * @author Holger Hees - Further development
+ * @author Holger Hees - Initial contribution
  */

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -14,8 +14,6 @@ package org.openhab.automation.pythonscripting.internal.graal;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -37,15 +35,13 @@ import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.SourceSection;
 import org.graalvm.polyglot.Value;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A Graal.Python implementation of the script engine. It provides access to the polyglot context using
  * {@link #getPolyglotContext()}.
  *
- * @author Holger Hees - initial contribution
- * @author Jeff James - initial contribution
+ * @author Holger Hees - Initial contribution
+ * @author Jeff James - Initial contribution
  */
 public final class GraalPythonScriptEngine extends AbstractScriptEngine
         implements Compilable, Invocable, AutoCloseable {
@@ -62,8 +58,6 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
     // "graalpy.insecure-scriptengine-access";
 
     static final String MAGIC_OPTION_PREFIX = "polyglot.py.";
-
-    private final Logger logger = LoggerFactory.getLogger(GraalPythonScriptEngine.class);
 
     interface MagicBindingsOptionSetter {
 

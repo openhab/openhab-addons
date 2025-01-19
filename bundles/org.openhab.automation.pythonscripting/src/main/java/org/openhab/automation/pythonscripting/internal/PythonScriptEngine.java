@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -37,7 +37,6 @@ import java.util.function.Consumer;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
@@ -60,8 +59,8 @@ import org.slf4j.event.Level;
 /**
  * GraalPython ScriptEngine implementation
  *
- * @author Holger Hees - initial contribution
- * @author Jeff James - initial contribution
+ * @author Holger Hees - Initial contribution
+ * @author Jeff James - Initial contribution
  */
 public class PythonScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<GraalPythonScriptEngine>
@@ -185,7 +184,7 @@ public class PythonScriptEngine
      *
      * @param jythonEmulation
      */
-    public PythonScriptEngine(@NonNull PythonDependencyTracker pythonDependencyTracker, boolean cachingEnabled,
+    public PythonScriptEngine(PythonDependencyTracker pythonDependencyTracker, boolean cachingEnabled,
             boolean jythonEmulation) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
 

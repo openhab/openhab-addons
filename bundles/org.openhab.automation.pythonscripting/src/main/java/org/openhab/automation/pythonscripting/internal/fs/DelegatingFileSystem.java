@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -31,7 +31,7 @@ import org.graalvm.polyglot.io.FileSystem;
 /**
  * Delegate wrapping a {@link FileSystem}
  *
- * @author Holger Hees - Reuse / copied from jsscripting
+ * @author Holger Hees - Initial contribution (Reused from jsscripting)
  */
 public class DelegatingFileSystem implements FileSystem {
     private FileSystemProvider delegate;

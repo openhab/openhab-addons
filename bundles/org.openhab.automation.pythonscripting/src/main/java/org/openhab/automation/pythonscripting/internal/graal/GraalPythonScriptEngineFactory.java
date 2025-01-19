@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -13,8 +13,6 @@
 package org.openhab.automation.pythonscripting.internal.graal;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,16 +21,13 @@ import javax.script.ScriptEngineFactory;
 
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.Language;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * @author Holger Hees - initial contribution
- * @author Jeff James - initial contribution
+ * @author Holger Hees - Initial contribution
+ * @author Jeff James - Initial contribution
  */
 public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory {
     private static final String LANGUAGE = "python";
-    private final Logger logger = LoggerFactory.getLogger(GraalPythonScriptEngineFactory.class);
 
     private WeakReference<Engine> defaultEngine;
     private final Engine userDefinedEngine;
@@ -174,36 +169,5 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
         }
 
         return sb.toString();
-    }
-
-    private static void clearEngineFactory(ScriptEngineFactory factory) {
-        assert factory != null;
-
-        try {
-            Class<?> clazz = factory.getClass();
-            for (String immutableListFieldName : new String[] { "names", "mimeTypes", "extensions" }) {
-                Field immutableListField = clazz.getDeclaredField(immutableListFieldName);
-                immutableListField.setAccessible(true);
-                Object immutableList = immutableListField.get(null);
-
-                Class<?> unmodifiableListClazz = Class.forName("java.util.Collections$UnmodifiableList");
-                Field unmodifiableListField = unmodifiableListClazz.getDeclaredField("list");
-                unmodifiableListField.setAccessible(true);
-
-                Class<?> unmodifiableCollectionClazz = Class.forName("java.util.Collections$UnmodifiableCollection");
-                Field unmodifiableCField = unmodifiableCollectionClazz.getDeclaredField("c");
-                unmodifiableCField.setAccessible(true);
-
-                List<?> list = (List<?>) unmodifiableListField.get(immutableList);
-                List<Object> filteredList = new ArrayList<>();
-
-                unmodifiableListField.set(immutableList, filteredList);
-                unmodifiableCField.set(immutableList, filteredList);
-            }
-        } catch (NullPointerException | ClassNotFoundException | IllegalAccessException | IllegalArgumentException
-                | NoSuchFieldException | SecurityException e) {
-            System.err.println("Failed to clear engine names [" + factory.getEngineName() + "]");
-            // e.printStackTrace();
-        }
     }
 }
