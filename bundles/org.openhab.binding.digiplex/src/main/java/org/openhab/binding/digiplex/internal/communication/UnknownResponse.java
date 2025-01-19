@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -15,7 +15,9 @@ package org.openhab.binding.digiplex.internal.communication;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Unknown message from PRT3
+ * Unknown message from PRT3.
+ *
+ * Message that is otherwise valid, but not handled in this binding.
  *
  * @author Robert Michalak - Initial contribution
  *

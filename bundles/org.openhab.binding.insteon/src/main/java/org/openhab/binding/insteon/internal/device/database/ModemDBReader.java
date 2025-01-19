@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -175,9 +175,6 @@ public class ModemDBReader implements PortListener {
             } else if (msg.getCommand() == 0x53) {
                 // we got a linking completed message
                 handleLinkingCompleted(msg);
-            } else if (msg.getCommand() == 0x55 || msg.getCommand() == 0x67 && msg.isReplyAck()) {
-                // we got a user reset detected message or im reset reply ack
-                handleIMReset();
             } else if (msg.getCommand() == 0x57) {
                 // we got a link record response
                 handleLinkRecord(msg);
@@ -304,9 +301,5 @@ public class ModemDBReader implements PortListener {
         synchronized (productQueries) {
             productQueries.remove(address);
         }
-    }
-
-    private void handleIMReset() {
-        modem.resetInitiated();
     }
 }

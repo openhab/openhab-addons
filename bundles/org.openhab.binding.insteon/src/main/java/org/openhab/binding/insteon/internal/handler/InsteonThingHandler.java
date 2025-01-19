@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -91,4 +91,9 @@ public interface InsteonThingHandler extends ThingHandler {
      * Refreshes the thing
      */
     public void refresh();
+
+    /**
+     * Updates the thing status
+     */
+    public void updateStatus();
 }

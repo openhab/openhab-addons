@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:velbus:6channelDevice">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 Name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 Name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 Name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 Name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 Name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 Name</label>
+			<description>The name of CH6.</description>
+			<default>CH6</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
