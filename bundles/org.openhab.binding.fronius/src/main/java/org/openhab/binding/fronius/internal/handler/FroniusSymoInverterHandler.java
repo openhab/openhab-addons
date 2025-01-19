@@ -29,6 +29,7 @@ import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.action.FroniusSymoInverterActions;
 import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
+import org.openhab.binding.fronius.internal.api.FroniusUnauthorizedException;
 import org.openhab.binding.fronius.internal.api.dto.ValueUnit;
 import org.openhab.binding.fronius.internal.api.dto.inverter.InverterDeviceStatus;
 import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeBody;
@@ -115,6 +116,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to reset battery control", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to reset battery control: Invalid username or password");
             }
         }
         return false;
@@ -128,6 +131,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to set battery control to hold battery charge", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to set battery control to hold battery charge: Invalid username or password");
             }
         }
         return false;
@@ -141,6 +146,9 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to add hold battery charge schedule to battery control", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn(
+                        "Failed to add hold battery charge schedule to battery control: Invalid username or password");
             }
         }
         return false;
@@ -154,6 +162,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to set battery control to force battery charge", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to set battery control to force battery charge: Invalid username or password");
             }
         }
         return false;
@@ -167,6 +177,9 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to add forced battery charge schedule to battery control", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn(
+                        "Failed to add forced battery charge schedule to battery control: Invalid username or password");
             }
         }
         return false;
