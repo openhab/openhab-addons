@@ -6,7 +6,7 @@
 	<channel-group-type id="generic-values">
 		<label>Generic Values</label>
 		<channels>
-			<channel id="light-control" typeId="light-control"/>
+			<channel id="light-switch" typeId="light-switch"/>
 			<channel id="hint" typeId="hint"/>
 			<channel id="last-update" typeId="last-update"/>
 		</channels>

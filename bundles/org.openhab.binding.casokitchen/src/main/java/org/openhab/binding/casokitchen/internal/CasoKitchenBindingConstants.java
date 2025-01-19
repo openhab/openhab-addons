@@ -39,7 +39,7 @@ public class CasoKitchenBindingConstants {
     public static final String TEMPERATURE = "temperature";
     public static final String TARGET_TEMPERATURE = "set-temperature";
     public static final String POWER = "power";
-    public static final String LIGHT = "light-control";
+    public static final String LIGHT = "light-switch";
     public static final String HINT = "hint";
     public static final String LAST_UPDATE = "last-update";
 

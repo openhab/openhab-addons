@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="winecooler-2z">
-		<label>Winecooler 2 Zones</label>
-		<description>Winecooler with 2 cooling zones</description>
+		<label>Wine Cooler 2 Zones</label>
+		<description>Wine cooler with 2 cooling zones</description>
 
 		<channel-groups>
 			<channel-group id="top" typeId="top-values"/>

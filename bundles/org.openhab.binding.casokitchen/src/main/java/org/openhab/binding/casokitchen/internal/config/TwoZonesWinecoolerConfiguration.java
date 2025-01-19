@@ -17,13 +17,12 @@ import static org.openhab.binding.casokitchen.internal.CasoKitchenBindingConstan
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link CasoKitchenConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link TwoZonesWinecoolerConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class CasoKitchenConfiguration {
-
+public class TwoZonesWinecoolerConfiguration {
     public String apiKey = EMPTY;
     public String deviceId = EMPTY;
     public int refreshInterval = 5;

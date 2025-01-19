@@ -1,10 +1,10 @@
 # CasoKitchen Binding
 
-Gives you control on Caso WineCooler.
-
+Provides access towards CASO Smart Kitchen devices which are connected within the [CASO Control App](https://www.casocontrol.de/).
+ 
 ## Supported Things
 
-- `winecooler`: Wine cooler
+- `winecooler-2z`: Wine cooler with two zones
 
 ## Discovery
 
@@ -12,13 +12,15 @@ There's no automatic discovery.
 
 ## Thing Configuration
 
-You need a [Caso Account](https://www.casoapp.com/Account/Create) to get configuration parameters.
+You need a [CASO Account](https://www.casoapp.com/Account/Create) to get configuration parameters.
 After register you'll get the
 
 - API key
 - Device ID 
 
-### `sample` Thing Configuration
+## Wine Cooler with 2 Zones 
+
+### Configuration winecooler-2z
 
 | Name            | Type    | Description                                          | Default | 
 |-----------------|---------|------------------------------------------------------|---------|
@@ -26,59 +28,74 @@ After register you'll get the
 | deviceId        | text    | Device Id obtained from thing configuration          | N/A     |
 | refreshInterval | integer | Interval the device is polled in minutes             | 5       |
 
-## Channels
+### Channels winecooler-2z
 
-### Generic
+Channels are separated in 3 groups
+
+- `generic` group channels for states covering the whole device
+- `top` group channels for states covering the top zone
+- `generic` group channels for states covering the bottom zone
+
+#### Group Generic
+
+Group name `generic`.
 
 | Channel       | Type     | Read/Write | Description                  |
 |---------------|----------|------------|------------------------------|
-| light-control | Switch   | RW         | Control lights for all zones |
-| hint          | text     | R          | General command description  |
+| light-switch  | Switch   | RW         | Control lights for all zones |
 | last-update   | DateTime | R          | Date and Time of last update |
+| hint          | String   | R          | General command description  |
 
-### Top Zone
+#### Group Top Zone
 
-| Channel          | Type                  | Read/Write | Description                  |
-|------------------|-----------------------|------------|------------------------------|
-| temperature      | Number:Temperature    | R          | Current Zone Temperature     |
-| set-temperature  | Number:Temperature    | R          | Wanted Zone Temperature      |
-| light-control    | Switch                | RW         | Control lights for this zone |
-| power            | Switch                | R          | Zone Power                   |
+Group name `top`.
 
-### Bottom Zone
+The `set-temperature` channel is holding the desired temperature controlled via buttons on the wine cooler device.
+Currently it cannot be changed using the API.
 
 | Channel          | Type                  | Read/Write | Description                  |
 |------------------|-----------------------|------------|------------------------------|
-| temperature      | Number:Temperature    | R          | Current Zone Temperature     |
-| set-temperature  | Number:Temperature    | R          | Wanted Zone Temperature      |
-| light-control    | Switch                | RW         | Control lights for this zone |
 | power            | Switch                | R          | Zone Power                   |
+| temperature      | Number:Temperature    | R          | Current Zone Temperature     |
+| set-temperature  | Number:Temperature    | R          | Desired Zone Temperature     |
+| light-switch     | Switch                | RW         | Control lights for this zone |
+
+#### Group Bottom Zone
+
+Group name `bottom`.
+
+The `set-temperature` channel is holding the desired temperature controlled via buttons on the wine cooler device.
+Currently it cannot be changed using the API.
+
+| Channel          | Type                  | Read/Write | Description                  |
+|------------------|-----------------------|------------|------------------------------|
+| power            | Switch                | R          | Zone Power                   |
+| temperature      | Number:Temperature    | R          | Current Zone Temperature     |
+| set-temperature  | Number:Temperature    | R          | Desired Zone Temperature     |
+| light-switch     | Switch                | RW         | Control lights for this zone |
 
 ## Full Example
-
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
 
 ### Thing Configuration
 
 ```java
-Example thing configuration goes here.
+Thing       casokitchen:winecooler-2z:whiny           "Whiny Wine Cooler"        [ apiKey="ABC", deviceId="XYZ" ]
 ```
 
 ### Item Configuration
 
 ```java
-Example item configuration goes here.
+Switch                  Whiny_Generic_LightSwitch           {channel="casokitchen:winecooler-2z:whiny:generic#light-switch" }
+DateTime                Whiny_Generic_LastUpdate            {channel="casokitchen:winecooler-2z:whiny:generic#last-update" }
+String                  Whiny_Generic_Hint                  {channel="casokitchen:winecooler-2z:whiny:generic#hint" }
+
+Switch                  Whiny_Top_Power                     {channel="casokitchen:winecooler-2z:whiny:top#power" }
+Number:Temperature      Whiny_Top_CurrentTemperature        {channel="casokitchen:winecooler-2z:whiny:top#temperature" }
+Number:Temperature      Whiny_Top_DesiredTemperature        {channel="casokitchen:winecooler-2z:whiny:top#set-temperature" }
+Switch                  Whiny_Top_LightSwitch               {channel="casokitchen:winecooler-2z:whiny:top#light-switch" }
+
+Switch                  Whiny_Bottom_Power                  {channel="casokitchen:winecooler-2z:whiny:bottom#power" }
+Number:Temperature      Whiny_Bottom_CurrentTemperature     {channel="casokitchen:winecooler-2z:whiny:bottom#temperature" }
+Number:Temperature      Whiny_Bottom_DesiredTemperature     {channel="casokitchen:winecooler-2z:whiny:bottom#set-temperature" }
+Switch                  Whiny_Bottom_LightSwitch            {channel="casokitchen:winecooler-2z:whiny:bottom#light-switch" }
 ```
-
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
-```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
