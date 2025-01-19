@@ -17,14 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.io.Writer;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
 
 import javax.script.AbstractScriptEngine;
 import javax.script.Bindings;
@@ -43,7 +37,6 @@ import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.SourceSection;
 import org.graalvm.polyglot.Value;
-import org.graalvm.polyglot.proxy.Proxy;
 
 /**
  * A Graal.Python implementation of the script engine. It provides access to the polyglot context using
@@ -56,9 +49,6 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
         implements Compilable, Invocable, AutoCloseable {
     private static final String ID = "python";
     private static final String POLYGLOT_CONTEXT = "polyglot.context";
-    private static final String OUT_SYMBOL = "$$internal.out$$";
-    private static final String IN_SYMBOL = "$$internal.in$$";
-    private static final String ERR_SYMBOL = "$$internal.err$$";
     // private static final String PYTHON_SCRIPT_ENGINE_GLOBAL_SCOPE_IMPORT_OPTION =
     // "python.script-engine-global-scope-import";
 
@@ -71,51 +61,11 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
 
     static final String MAGIC_OPTION_PREFIX = "polyglot.py.";
 
-    // ToString() operation
-    private static String toString(Value value) {
-        return toPrimitive(value).toString();
-    }
-
-    // "Type(result) is not Object" heuristic for the purpose of ToPrimitive() conversion
-    private static boolean isPrimitive(Value value) {
-        return value.isString() || value.isNumber() || value.isBoolean() || value.isNull();
-    }
-
-    // ToPrimitive()/OrdinaryToPrimitive() operation
-    private static Value toPrimitive(Value value) {
-        if (value.hasMembers()) {
-            for (String methodName : new String[] { "toString", "valueOf" }) {
-                if (value.canInvokeMember(methodName)) {
-                    Value maybePrimitive = value.invokeMember(methodName);
-                    if (isPrimitive(maybePrimitive)) {
-                        return maybePrimitive;
-                    }
-                }
-            }
-        }
-        if (isPrimitive(value)) {
-            return value;
-        } else {
-            throw new ClassCastException();
-        }
-    }
-
-    private static boolean toBoolean(double d) {
-        return d != 0.0 && !Double.isNaN(d);
-    }
-
     interface MagicBindingsOptionSetter {
 
         String getOptionKey();
 
         Context.Builder setOption(Builder builder, Object value);
-    }
-
-    private static boolean toBoolean(MagicBindingsOptionSetter optionSetter, Object value) {
-        if (!(value instanceof Boolean)) {
-            throw magicOptionValueErrorBool(optionSetter.getOptionKey(), value);
-        }
-        return (Boolean) value;
     }
 
     private final GraalPythonScriptEngineFactory factory;
@@ -159,21 +109,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
     }
 
     static Context createDefaultContext(Context.Builder builder, ScriptContext ctxt) {
-        DelegatingInputStream in = new DelegatingInputStream();
-        DelegatingOutputStream out = new DelegatingOutputStream();
-        DelegatingOutputStream err = new DelegatingOutputStream();
-        if (ctxt != null) {
-            in.setReader(ctxt.getReader());
-            out.setWriter(ctxt.getWriter());
-            err.setWriter(ctxt.getErrorWriter());
-        }
-        // commented out, otherwise out/err setting in PythonScriptEngine has no effect
-        // builder.in(in).out(out).err(err);
-        Context ctx = builder.build();
-        ctx.getPolyglotBindings().putMember(OUT_SYMBOL, out);
-        ctx.getPolyglotBindings().putMember(ERR_SYMBOL, err);
-        ctx.getPolyglotBindings().putMember(IN_SYMBOL, in);
-        return ctx;
+        return builder.build();
     }
 
     /**
@@ -278,20 +214,9 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
         }
     }
 
-    private static void updateDelegatingIOStreams(Context polyglotContext, ScriptContext scriptContext) {
-        Value polyglotBindings = polyglotContext.getPolyglotBindings();
-        ((DelegatingOutputStream) polyglotBindings.getMember(OUT_SYMBOL).asProxyObject())
-                .setWriter(scriptContext.getWriter());
-        ((DelegatingOutputStream) polyglotBindings.getMember(ERR_SYMBOL).asProxyObject())
-                .setWriter(scriptContext.getErrorWriter());
-        ((DelegatingInputStream) polyglotBindings.getMember(IN_SYMBOL).asProxyObject())
-                .setReader(scriptContext.getReader());
-    }
-
     private Object eval(Source source, ScriptContext scriptContext) throws ScriptException {
         GraalPythonBindings engineBindings = getOrCreateGraalPythonBindings(scriptContext);
         Context polyglotContext = engineBindings.getContext();
-        updateDelegatingIOStreams(polyglotContext, scriptContext);
         try {
             /*
              * if (!evalCalled) {
@@ -485,78 +410,6 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
             getPolyglotContext().parse(source);
         } catch (PolyglotException pex) {
             throw toScriptException(pex);
-        }
-    }
-
-    private static class DelegatingInputStream extends InputStream implements Proxy {
-
-        private Reader reader;
-        private CharsetEncoder encoder = Charset.defaultCharset().newEncoder();
-        private CharBuffer charBuffer = CharBuffer.allocate(2);
-        private ByteBuffer byteBuffer = ByteBuffer.allocate((int) encoder.maxBytesPerChar() * 2);
-
-        DelegatingInputStream() {
-            byteBuffer.flip();
-        }
-
-        @Override
-        public int read() throws IOException {
-            if (reader != null) {
-                while (!byteBuffer.hasRemaining()) {
-                    int c = reader.read();
-                    if (c == -1) {
-                        return -1;
-                    }
-                    byteBuffer.clear();
-                    charBuffer.put((char) c);
-                    charBuffer.flip();
-                    encoder.encode(charBuffer, byteBuffer, false);
-                    charBuffer.compact();
-                    byteBuffer.flip();
-                }
-                return byteBuffer.get();
-            }
-            return 0;
-        }
-
-        void setReader(Reader reader) {
-            this.reader = reader;
-        }
-    }
-
-    private static class DelegatingOutputStream extends OutputStream implements Proxy {
-
-        private Writer writer;
-        private CharsetDecoder decoder = Charset.defaultCharset().newDecoder();
-        private ByteBuffer byteBuffer = ByteBuffer
-                .allocate((int) Charset.defaultCharset().newEncoder().maxBytesPerChar() * 2);
-        private CharBuffer charBuffer = CharBuffer.allocate(byteBuffer.capacity() * (int) decoder.maxCharsPerByte());
-
-        @Override
-        public void write(int b) throws IOException {
-            if (writer != null) {
-                byteBuffer.put((byte) b);
-                byteBuffer.flip();
-                decoder.decode(byteBuffer, charBuffer, false);
-                byteBuffer.compact();
-                charBuffer.flip();
-                while (charBuffer.hasRemaining()) {
-                    char c = charBuffer.get();
-                    writer.write(c);
-                }
-                charBuffer.clear();
-            }
-        }
-
-        @Override
-        public void flush() throws IOException {
-            if (writer != null) {
-                writer.flush();
-            }
-        }
-
-        void setWriter(Writer writer) {
-            this.writer = writer;
         }
     }
 

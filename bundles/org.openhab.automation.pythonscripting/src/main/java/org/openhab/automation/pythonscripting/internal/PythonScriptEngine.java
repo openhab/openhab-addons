@@ -16,6 +16,7 @@ import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.AccessMode;
 import java.nio.file.FileSystems;
 import java.nio.file.LinkOption;
@@ -48,7 +49,6 @@ import org.openhab.automation.pythonscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.pythonscripting.internal.fs.watch.PythonDependencyTracker;
 import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
-import org.openhab.automation.pythonscripting.internal.scriptengine.LogOutputStream;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.items.Item;
 import org.osgi.framework.Bundle;
@@ -131,6 +131,39 @@ public class PythonScriptEngine
                     (v) -> v.as(Collection.class), HostAccess.TargetMappingPrecedence.LOW)
 
             .build();
+
+    private static class LogOutputStream extends OutputStream {
+        private Logger logger;
+        private Level level;
+        private String mem;
+
+        public LogOutputStream(Logger logger, Level level) {
+            this.logger = logger;
+            this.level = level;
+            mem = "";
+        }
+
+        public void setLogger(Logger logger) {
+            this.logger = logger;
+        }
+
+        @Override
+        public void write(int b) {
+            byte[] bytes = new byte[1];
+            bytes[0] = (byte) (b & 0xff);
+            mem = mem + new String(bytes);
+            if (mem.endsWith("\n")) {
+                mem = mem.substring(0, mem.length() - 1);
+                flush();
+            }
+        }
+
+        @Override
+        public void flush() {
+            logger.atLevel(level).log(mem);
+            mem = "";
+        }
+    }
 
     /** {@link Lock} synchronization of multi-thread access */
     private final Lock lock = new ReentrantLock();
