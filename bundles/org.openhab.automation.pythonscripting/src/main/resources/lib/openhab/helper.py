@@ -17,9 +17,13 @@ logger = Java_LogFactory.getLogger( LOG_PREFIX + "." + file_package )
 #def scriptUnloaded():
 #    logger.info("unload")
 
-def handle_exception(e):
-    self.logger.error("Handle exception:\n" + traceback.format_exc())
-sys.excepthook = handle_exception
+def excepthook(exctype, excvalue, tb):
+    filename = tb.tb_frame.f_code.co_filename
+    name = tb.tb_frame.f_code.co_name
+    line_no = tb.tb_lineno
+    logger.error("  File \"{}\", line {}, in {}".format(filename, line_no, name))
+    logger.error("  {}, Message: {}".format(exctype.__name__, excvalue))
+sys.excepthook = excepthook
 # *****************************************************************
 
 import time
