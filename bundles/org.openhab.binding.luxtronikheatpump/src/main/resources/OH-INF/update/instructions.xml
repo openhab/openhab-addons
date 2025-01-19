@@ -10,6 +10,71 @@
 				<label>Fixed Heating Target Return Temperature</label>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<!-- remove renamed channels -->
+			<remove-channel id="channel232"/>
+			<remove-channel id="channel233"/>
+			<remove-channel id="channel237"/>
+			<remove-channel id="channel238"/>
+			<remove-channel id="channel239"/>
+			<remove-channel id="channel240"/>
+			<remove-channel id="channel241"/>
+			<remove-channel id="channel242"/>
+			<remove-channel id="channel243"/>
+			<remove-channel id="channel252"/>
+			<remove-channel id="channel258"/>
+			<remove-channel id="channel260"/>
+
+			<!-- add renamed channels -->
+			<add-channel id="temperatureVapourisation">
+				<type>Number:Temperature</type>
+				<label>Temperature Vapourisation</label>
+			</add-channel>
+			<add-channel id="temperatureLiquefaction">
+				<type>Number:Temperature</type>
+				<label>Temperature Liquefaction</label>
+			</add-channel>
+			<add-channel id="frequencyCompressorMin">
+				<type>Number:Frequency</type>
+				<label>Compressor Min Frequency</label>
+			</add-channel>
+			<add-channel id="frequencyCompressorMax">
+				<type>Number:Frequency</type>
+				<label>Compressor Max Frequency</label>
+			</add-channel>
+			<add-channel id="temperatureVBOTarget">
+				<type>Number:Temperature</type>
+				<label>Temperature VBO Target</label>
+			</add-channel>
+			<add-channel id="temperatureVBO">
+				<type>Number:Temperature</type>
+				<label>Temperature VBO</label>
+			</add-channel>
+			<add-channel id="controlSignalHeatingCirculationPump">
+				<type>Number:Dimensionless</type>
+				<label>Control Signal HUP</label>
+			</add-channel>
+			<add-channel id="temperatureHeatingCirculationPumpTarget">
+				<type>Number:Temperature</type>
+				<label>Temperature HUP Target</label>
+			</add-channel>
+			<add-channel id="temperatureHeatingCirculationPump">
+				<type>Number:Temperature</type>
+				<label>Temperature HUP</label>
+			</add-channel>
+			<add-channel id="temperatureHotGasMax">
+				<type>Number:Temperature</type>
+				<label>Temperature Hot Gas Max</label>
+			</add-channel>
+			<add-channel id="controlSignalHeatingCirculationPump">
+				<type>Number:Dimensionless</type>
+				<label>Control Signal HUP</label>
+			</add-channel>
+			<add-channel id="timeCoolingRelease">
+				<type>Number:Time</type>
+				<label>Release Cooling Time</label>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
