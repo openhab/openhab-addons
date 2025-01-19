@@ -77,8 +77,9 @@ public class FroniusBatteryControl {
      *
      * @return the time of use settings
      * @throws FroniusCommunicationException if an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
-    private TimeOfUseRecords getTimeOfUse() throws FroniusCommunicationException {
+    private TimeOfUseRecords getTimeOfUse() throws FroniusCommunicationException, FroniusUnauthorizedException {
         // Login and get the auth header for the next request
         String authHeader = FroniusConfigAuthUtil.login(httpClient, baseUri, username, password, HttpMethod.GET,
                 timeOfUseUri.getPath(), API_TIMEOUT);
@@ -107,8 +108,10 @@ public class FroniusBatteryControl {
      *
      * @param records the time of use settings
      * @throws FroniusCommunicationException if an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
-    private void setTimeOfUse(TimeOfUseRecords records) throws FroniusCommunicationException {
+    private void setTimeOfUse(TimeOfUseRecords records)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
         // Login and get the auth header for the next request
         String authHeader = FroniusConfigAuthUtil.login(httpClient, baseUri, username, password, HttpMethod.POST,
                 timeOfUseUri.getPath(), API_TIMEOUT);
@@ -127,8 +130,9 @@ public class FroniusBatteryControl {
      * inverter.
      *
      * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
-    public void reset() throws FroniusCommunicationException {
+    public void reset() throws FroniusCommunicationException, FroniusUnauthorizedException {
         setTimeOfUse(new TimeOfUseRecords(new TimeOfUseRecord[0]));
     }
 
@@ -136,8 +140,9 @@ public class FroniusBatteryControl {
      * Holds the battery charge right now, i.e. prevents the battery from discharging.
      *
      * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
-    public void holdBatteryCharge() throws FroniusCommunicationException {
+    public void holdBatteryCharge() throws FroniusCommunicationException, FroniusUnauthorizedException {
         reset();
         addHoldBatteryChargeSchedule(BEGIN_OF_DAY, END_OF_DAY);
     }
@@ -149,8 +154,10 @@ public class FroniusBatteryControl {
      * @param from start time of the hold charge period
      * @param until end time of the hold charge period
      * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
-    public void addHoldBatteryChargeSchedule(LocalTime from, LocalTime until) throws FroniusCommunicationException {
+    public void addHoldBatteryChargeSchedule(LocalTime from, LocalTime until)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
         TimeOfUseRecord[] currentTimeOfUse = getTimeOfUse().records();
         TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.length + 1];
         System.arraycopy(currentTimeOfUse, 0, timeOfUse, 0, currentTimeOfUse.length);
@@ -166,8 +173,10 @@ public class FroniusBatteryControl {
      *
      * @param power the power to charge the battery with
      * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
-    public void forceBatteryCharging(QuantityType<Power> power) throws FroniusCommunicationException {
+    public void forceBatteryCharging(QuantityType<Power> power)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
         reset();
         addForcedBatteryChargingSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
     }
@@ -179,9 +188,10 @@ public class FroniusBatteryControl {
      * @param until end time of the forced charge period
      * @param power the power to charge the battery with
      * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
     public void addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)
-            throws FroniusCommunicationException {
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
         TimeOfUseRecords currentTimeOfUse = getTimeOfUse();
         TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
         System.arraycopy(currentTimeOfUse.records(), 0, timeOfUse, 0, currentTimeOfUse.records().length);
