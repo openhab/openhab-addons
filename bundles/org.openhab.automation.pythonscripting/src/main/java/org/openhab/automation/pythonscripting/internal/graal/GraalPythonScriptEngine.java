@@ -37,6 +37,8 @@ import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.SourceSection;
 import org.graalvm.polyglot.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Graal.Python implementation of the script engine. It provides access to the polyglot context using
@@ -61,6 +63,8 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
 
     static final String MAGIC_OPTION_PREFIX = "polyglot.py.";
 
+    private final Logger logger = LoggerFactory.getLogger(GraalPythonScriptEngine.class);
+
     interface MagicBindingsOptionSetter {
 
         String getOptionKey();
@@ -70,8 +74,6 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
 
     private final GraalPythonScriptEngineFactory factory;
     private final Context.Builder contextConfig;
-
-    private boolean evalCalled;
 
     GraalPythonScriptEngine(GraalPythonScriptEngineFactory factory) {
         this(factory, factory.getPolyglotEngine(), null);
@@ -218,17 +220,10 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
         GraalPythonBindings engineBindings = getOrCreateGraalPythonBindings(scriptContext);
         Context polyglotContext = engineBindings.getContext();
         try {
-            /*
-             * if (!evalCalled) {
-             * jrunscriptInitWorkaround(source, polyglotContext);
-             * }
-             */
             engineBindings.importGlobalBindings(scriptContext);
             return polyglotContext.eval(source).as(Object.class);
         } catch (PolyglotException e) {
             throw toScriptException(e);
-        } finally {
-            evalCalled = true;
         }
     }
 

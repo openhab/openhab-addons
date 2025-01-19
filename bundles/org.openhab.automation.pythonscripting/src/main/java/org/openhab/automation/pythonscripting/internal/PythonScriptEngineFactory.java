@@ -113,7 +113,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
         if (!scriptTypes.contains(scriptType)) {
             return null;
         }
-        // return new OpenhabGraalPythonScriptEngine(jythonEmulation);
+        // return new PythonScriptEngine(pythonDependencyTracker, cachingEnabled, jythonEmulation);
         return new DebuggingPythonScriptEngine<>(
                 new PythonScriptEngine(pythonDependencyTracker, cachingEnabled, jythonEmulation));
     }

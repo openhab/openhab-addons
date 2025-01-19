@@ -21,10 +21,9 @@ import java.util.stream.Collectors;
 import javax.script.Compilable;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.graalvm.polyglot.PolyglotException;
-import org.graalvm.polyglot.PolyglotException.StackFrame;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.slf4j.Logger;
 
@@ -65,34 +64,19 @@ class DebuggingPythonScriptEngine<T extends ScriptEngine & Invocable & AutoClose
 
     @Override
     public Exception afterThrowsInvocation(Exception e) {
-        Throwable cause = e.getCause();
         // OPS4J Pax Logging holds a reference to the exception, which causes the OpenhabGraalJSScriptEngine to not be
         // removed from heap by garbage collection and causing a memory leak.
         // Therefore, don't pass the exceptions itself to the logger, but only their message!
-        if (cause instanceof IllegalArgumentException) {
-            logger.error("Failed to execute script: {}", stringifyThrowable(cause));
-        } else if (cause instanceof PolyglotException) {
-            PolyglotException pe = (PolyglotException) cause;
-            if (pe.isSyntaxError()) {
-                logger.error("Syntax Error {}", pe.getSourceLocation());
-            } else if (pe.isHostException()) {
-                for (StackFrame frame : pe.getPolyglotStackTrace()) {
-                    if (frame.isHostFrame()) {
-                        logger.error("Host error {}", frame.getSourceLocation());
-                        break;
-                    }
-                }
-            } else if (pe.isGuestException()) {
-                for (StackFrame frame : pe.getPolyglotStackTrace()) {
-                    if (frame.isGuestFrame()) {
-                        logger.error("Guest error {}", frame.getSourceLocation());
-                        break;
-                    }
-                }
+        if (e instanceof ScriptException) {
+            // PolyglotException will always be wrapped into ScriptException and they will be visualized in
+            // org.openhab.core.automation.module.script.internal.ScriptEngineManagerImpl
+            if (logger.isDebugEnabled()) {
+                logger.debug("Failed to execute script (PolyglotException): {}", stringifyThrowable(e.getCause()));
             }
-
-            logger.error("Failed to execute script: {}", stringifyThrowable(cause));
+        } else if (e.getCause() instanceof IllegalArgumentException) {
+            logger.error("Failed to execute script (IllegalArgumentException): {}", stringifyThrowable(e.getCause()));
         }
+
         return e;
     }
 
