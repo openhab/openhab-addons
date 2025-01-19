@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.awattar.internal.handler.TimeRange;
 
@@ -33,6 +34,7 @@ import org.openhab.binding.awattar.internal.handler.TimeRange;
  *
  * @author Thomas Leber - Initial contribution
  */
+@NonNullByDefault
 public class AwattarBestPriceTest {
 
     private ZoneId zoneId = ZoneId.of("GMT");
@@ -74,7 +76,7 @@ public class AwattarBestPriceTest {
     }
 
     @Test
-    void AwattarConsecutiveBestPriceResult() {
+    void awattarConsecutiveBestPriceResult() {
         int length = 8;
 
         List<AwattarPrice> range = new ArrayList<>(getPrices());
@@ -85,7 +87,7 @@ public class AwattarBestPriceTest {
     }
 
     @Test
-    void AwattarNonConsecutiveBestPriceResult_nonInverted() {
+    void awattarNonConsecutiveBestPriceResultNonInverted() {
         int length = 6;
         boolean inverted = false;
 
@@ -98,7 +100,7 @@ public class AwattarBestPriceTest {
     }
 
     @Test
-    void AwattarNonConsecutiveBestPriceResult_inverted() {
+    void awattarNonConsecutiveBestPriceResultInverted() {
         int length = 4;
         boolean inverted = true;
 

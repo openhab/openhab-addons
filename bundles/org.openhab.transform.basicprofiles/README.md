@@ -218,7 +218,7 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
 - An item name, which will be evaluated to its state.
 - A type constant, such as `ON`, `OFF`, `UNDEF`, `NULL`, `OPEN`, `CLOSED`, `PLAY`, `PAUSE`, `UP`, `DOWN`, etc.
   Note that these are unquoted.
-- A String value, enclosed with single quotes, e.g. `'ON'`.
+- A String value, enclosed with single or double quotes, e.g. `'ON'`, `"FOO"`.
   A string value is different to the actual `OnOffType.ON`.
   To compare against an actual OnOffType, use an unquoted `ON`.
 - A plain number to represent a `DecimalType`.
