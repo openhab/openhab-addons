@@ -25,7 +25,6 @@ import org.bluez.exceptions.BluezNotReadyException;
 import org.bluez.exceptions.BluezNotSupportedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.freedesktop.dbus.types.Variant;
 import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
 import org.openhab.binding.bluetooth.BluetoothAddress;
@@ -153,7 +152,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             localAdapter.setDiscoveryFilter(filter);
         } catch (BluezInvalidArgumentsException | BluezFailedException | BluezNotSupportedException
                 | BluezNotReadyException e) {
-            throw new DBusExecutionException("failed to set the discovery filter", e);
+            throw new RuntimeException("failed to set the discovery filter", e);
         }
 
         // now lets make sure that discovery is turned on
