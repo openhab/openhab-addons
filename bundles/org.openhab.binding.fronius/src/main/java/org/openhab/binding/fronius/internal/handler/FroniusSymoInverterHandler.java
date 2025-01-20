@@ -41,6 +41,7 @@ import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeI
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeResponse;
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeSite;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
@@ -180,6 +181,23 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             } catch (FroniusUnauthorizedException e) {
                 logger.warn(
                         "Failed to add forced battery charge schedule to battery control: Invalid username or password");
+            }
+        }
+        return false;
+    }
+
+    public boolean setBackupReservedBatteryCapacity(PercentType percent) {
+        FroniusBatteryControl batteryControl = getBatteryControl();
+        if (batteryControl != null) {
+            try {
+                batteryControl.setBackupReservedCapacity(percent);
+                return true;
+            } catch (IllegalArgumentException e) {
+                logger.warn("Failed to set backup reserved battery capacity: {}", e.getMessage());
+            } catch (FroniusCommunicationException e) {
+                logger.warn("Failed to set backup reserved battery capacity", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to set backup reserved battery capacity: Invalid username or password");
             }
         }
         return false;
