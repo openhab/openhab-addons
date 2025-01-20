@@ -15,11 +15,7 @@ This service is provided "AS IS", and the user takes full responsibility of any 
 
 ## Table of Contents
 
-{::options toc_levels="2..4"/}
-<!-- markdownlint-disable-next-line ul-style -->
-- TOC
-
-{:toc}
+[[toc]]
 
 ## Prerequisites
 
