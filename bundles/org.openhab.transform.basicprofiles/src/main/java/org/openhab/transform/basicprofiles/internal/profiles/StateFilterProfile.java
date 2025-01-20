@@ -37,9 +37,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
@@ -108,6 +110,8 @@ public class StateFilterProfile implements StateProfile {
 
     private final int windowSize;
 
+    private @Nullable Unit<?> targetUnit = null;
+
     public StateFilterProfile(ProfileCallback callback, ProfileContext context, ItemRegistry itemRegistry) {
         this.callback = callback;
         this.itemRegistry = itemRegistry;
@@ -145,6 +149,37 @@ public class StateFilterProfile implements StateProfile {
             configMismatchState = null;
             windowSize = 0;
         }
+    }
+
+    /**
+     * Get the unit of the linked item. If there is no linked item, or it is not a {@link NumberItem} or if the item
+     * does not have a unit, then return {@link Units.ONE} as a default value.
+     *
+     * @return the actual {@link Unit} or {@link Units.ONE}
+     */
+    protected synchronized Unit<?> targetUnit() {
+        if (targetUnit == null) {
+            targetUnit = getLinkedItem() instanceof NumberItem numberItem ? numberItem.getUnit() : null;
+            targetUnit = targetUnit != null ? targetUnit : Units.ONE;
+        }
+        return Objects.requireNonNull(targetUnit);
+    }
+
+    /**
+     * Return a {@link QuantityType} with zero value in targetUnit().
+     */
+    protected QuantityType<?> zeroQuantityType() {
+        return QuantityType.valueOf(0, targetUnit());
+    }
+
+    /**
+     * Convert a {@link State} to a {@link QuantityType} with its value converted to the targetUnit() result. If the
+     * state is not a a {@link QuantityType} or if does not convert to the targetUnit() then returns null
+     *
+     * @return a {@link QuantityType} based on targetUnit()
+     */
+    protected @Nullable QuantityType<?> normalizedQuantityType(State state) {
+        return state instanceof QuantityType<?> quantity ? quantity.toInvertibleUnit(targetUnit()) : null;
     }
 
     private List<StateCondition> parseConditions(List<String> conditions, String separator) {
@@ -325,7 +360,7 @@ public class StateFilterProfile implements StateProfile {
 
         /**
          * Check if the condition is met.
-         * 
+         *
          * If the lhs is empty, the condition is checked against the input state.
          *
          * @param input the state to check against
@@ -435,13 +470,28 @@ public class StateFilterProfile implements StateProfile {
                     }
                 }
 
+                if (lhs instanceof QuantityType qty) {
+                    qty = normalizedQuantityType(qty);
+                    if (qty == null) {
+                        logger.debug("Error normalizing LHS QuantityType:{} to Unit:{}", lhs, targetUnit());
+                    }
+                    lhs = qty == null ? lhs : qty;
+                }
+                if (rhs instanceof QuantityType qty) {
+                    qty = normalizedQuantityType(qty);
+                    if (qty == null) {
+                        logger.debug("Error normalizing RHS QuantityType:{} to Unit:{}", rhs, targetUnit());
+                    }
+                    rhs = qty == null ? rhs : qty;
+                }
+
                 boolean result = switch (comparisonType) {
                     case EQ -> lhs.equals(rhs);
                     case NEQ, NEQ_ALT -> !lhs.equals(rhs);
-                    case GT -> ((Comparable) lhs).compareTo(rhs) > 0;
-                    case GTE -> ((Comparable) lhs).compareTo(rhs) >= 0;
-                    case LT -> ((Comparable) lhs).compareTo(rhs) < 0;
-                    case LTE -> ((Comparable) lhs).compareTo(rhs) <= 0;
+                    case GT -> ((Comparable<Object>) lhs).compareTo(rhs) > 0;
+                    case GTE -> ((Comparable<Object>) lhs).compareTo(rhs) >= 0;
+                    case LT -> ((Comparable<Object>) lhs).compareTo(rhs) < 0;
+                    case LTE -> ((Comparable<Object>) lhs).compareTo(rhs) <= 0;
                 };
 
                 if (result) {
@@ -449,7 +499,9 @@ public class StateFilterProfile implements StateProfile {
                 }
 
                 return result;
-            } catch (IllegalArgumentException | ClassCastException e) {
+            } catch (IllegalArgumentException |
+
+                    ClassCastException e) {
                 logger.warn("Error evaluating condition: {} in link '{}': {}", this, callback.getItemChannelLink(),
                         e.getMessage());
             }
@@ -591,9 +643,9 @@ public class StateFilterProfile implements StateProfile {
                 logger.debug("Not enough states to calculate sum");
                 return null;
             }
-            if (newState instanceof QuantityType newStateQuantity) {
-                QuantityType zero = new QuantityType(0, newStateQuantity.getUnit());
-                QuantityType sum = states.stream().map(s -> (QuantityType) s).reduce(zero, QuantityType::add);
+            if (newState instanceof QuantityType) {
+                QuantityType<?> sum = states.stream().map(s -> normalizedQuantityType(s)).filter(Objects::nonNull)
+                        .reduce((QuantityType) zeroQuantityType(), QuantityType::add);
                 return sum.divide(BigDecimal.valueOf(states.size()));
             }
             BigDecimal sum = states.stream().map(s -> ((DecimalType) s).toBigDecimal()).reduce(BigDecimal.ZERO,
@@ -606,12 +658,11 @@ public class StateFilterProfile implements StateProfile {
                 logger.debug("Not enough states to calculate median");
                 return null;
             }
-            if (newState instanceof QuantityType newStateQuantity) {
-                Unit<?> unit = newStateQuantity.getUnit();
-                List<BigDecimal> bdStates = states.stream()
-                        .map(s -> ((QuantityType) s).toInvertibleUnit(unit).toBigDecimal()).toList();
-                return Optional.ofNullable(Statistics.median(bdStates)).map(median -> new QuantityType(median, unit))
-                        .orElse(null);
+            if (newState instanceof QuantityType) {
+                List<BigDecimal> bdStates = states.stream().map(s -> normalizedQuantityType(s)).filter(Objects::nonNull)
+                        .map(q -> q.toBigDecimal()).toList();
+                BigDecimal median = Statistics.median(bdStates);
+                return median == null ? null : QuantityType.valueOf(median.doubleValue(), targetUnit());
             }
             List<BigDecimal> bdStates = states.stream().map(s -> ((DecimalType) s).toBigDecimal()).toList();
             return Optional.ofNullable(Statistics.median(bdStates)).map(median -> new DecimalType(median)).orElse(null);
@@ -627,15 +678,16 @@ public class StateFilterProfile implements StateProfile {
                 if (average == null) {
                     return null;
                 }
-                QuantityType zero = new QuantityType(0, newStateQuantity.getUnit());
                 QuantityType variance = states.stream() //
+                        .map(s -> normalizedQuantityType(s)).filter(Objects::nonNull) //
                         .map(s -> {
-                            QuantityType delta = ((QuantityType) s).subtract(average);
-                            return (QuantityType) delta.multiply(delta.toBigDecimal()); // don't square the unit
+                            QuantityType delta = normalizedQuantityType(s).subtract(average);
+                            return delta.multiply(delta.toBigDecimal()); // don't square the unit
                         }) //
-                        .reduce(zero, QuantityType::add) // This reduced into a QuantityType
+                        .reduce(zeroQuantityType(), QuantityType::add) // This reduced into a QuantityType
                         .divide(BigDecimal.valueOf(states.size()));
-                return new QuantityType(variance.toBigDecimal().sqrt(MathContext.DECIMAL32), variance.getUnit());
+                return QuantityType.valueOf(variance.toBigDecimal().sqrt(MathContext.DECIMAL32).doubleValue(),
+                        targetUnit());
             }
             BigDecimal average = Optional.ofNullable((DecimalType) calculateAverage(states))
                     .map(DecimalType::toBigDecimal).orElse(null);
@@ -655,8 +707,9 @@ public class StateFilterProfile implements StateProfile {
                 logger.debug("Not enough states to calculate min");
                 return null;
             }
-            if (newState instanceof QuantityType newStateQuantity) {
-                return states.stream().map(s -> (QuantityType) s).min(QuantityType::compareTo).orElse(null);
+            if (newState instanceof QuantityType) {
+                return states.stream().map(s -> normalizedQuantityType(s)).filter(Objects::nonNull)
+                        .min(QuantityType::compareTo).orElse(null);
             }
             return states.stream().map(s -> ((DecimalType) s).toBigDecimal()).min(BigDecimal::compareTo)
                     .map(DecimalType::new).orElse(null);
@@ -667,16 +720,19 @@ public class StateFilterProfile implements StateProfile {
                 logger.debug("Not enough states to calculate max");
                 return null;
             }
-            if (newState instanceof QuantityType newStateQuantity) {
-                return states.stream().map(s -> (QuantityType) s).max(QuantityType::compareTo).orElse(null);
+            if (newState instanceof QuantityType) {
+                return states.stream().map(s -> normalizedQuantityType(s)).filter(Objects::nonNull)
+                        .max(QuantityType::compareTo).orElse(null);
             }
             return states.stream().map(s -> ((DecimalType) s).toBigDecimal()).max(BigDecimal::compareTo)
                     .map(DecimalType::new).orElse(null);
         }
 
         private @Nullable State calculateDelta() {
-            if (newState instanceof QuantityType newStateQuantity) {
-                QuantityType result = newStateQuantity.subtract((QuantityType) acceptedState);
+            QuantityType<?> newQuantity = normalizedQuantityType(newState);
+            QuantityType<?> oldQuantity = normalizedQuantityType(acceptedState);
+            if (newQuantity != null && oldQuantity != null) {
+                QuantityType<?> result = newQuantity.subtract((QuantityType) oldQuantity);
                 return result.toBigDecimal().compareTo(BigDecimal.ZERO) < 0 ? result.negate() : result;
             }
             BigDecimal result = ((DecimalType) newState).toBigDecimal()
@@ -689,10 +745,10 @@ public class StateFilterProfile implements StateProfile {
             State calculatedDelta = calculateDelta();
             BigDecimal bdDelta;
             BigDecimal bdBase;
-            if (acceptedState instanceof QuantityType acceptedStateQuantity) {
-                // Assume that delta and base are in the same unit
+            QuantityType<?> oldQuantity = normalizedQuantityType(acceptedState);
+            if (oldQuantity != null) {
                 bdDelta = ((QuantityType) calculatedDelta).toBigDecimal();
-                bdBase = acceptedStateQuantity.toBigDecimal();
+                bdBase = oldQuantity.toBigDecimal();
             } else {
                 bdDelta = ((DecimalType) calculatedDelta).toBigDecimal();
                 bdBase = ((DecimalType) acceptedState).toBigDecimal();
