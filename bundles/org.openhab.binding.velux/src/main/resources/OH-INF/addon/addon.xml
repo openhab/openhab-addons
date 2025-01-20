@@ -4,8 +4,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>@text/addon.velux.name</name>
-	<description>@text/addon.velux.description</description>
+	<name>Velux Binding</name>
+	<description>A binding for the Velux KLF200 Bridge. The Velux Binding interacts via a Velux Bridge with the different
+		Velux devices like controlling window openers, shutters and others. For example a KLF200 can act as interface between
+		the HomeAutomation and the VELUX INTEGRA products with wireless connectivity based on the io-homecontrol standard.</description>
 	<connection>local</connection>
 
 	<discovery-methods>
