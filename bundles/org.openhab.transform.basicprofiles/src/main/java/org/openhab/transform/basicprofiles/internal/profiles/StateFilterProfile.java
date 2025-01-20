@@ -499,9 +499,7 @@ public class StateFilterProfile implements StateProfile {
                 }
 
                 return result;
-            } catch (IllegalArgumentException |
-
-                    ClassCastException e) {
+            } catch (IllegalArgumentException | ClassCastException e) {
                 logger.warn("Error evaluating condition: {} in link '{}': {}", this, callback.getItemChannelLink(),
                         e.getMessage());
             }
