@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>@text/bindingName</name>
-	<description>@text/bindingDescription</description>
+	<name>SagerCaster Binding</name>
+	<description>The Sager Weathercaster is a scientific instrument for accurate prediction of the weather.</description>
 	<connection>local</connection>
 
 </addon:addon>
