@@ -21,7 +21,10 @@ def excepthook(exctype, excvalue, tb):
     filename = tb.tb_frame.f_code.co_filename
     name = tb.tb_frame.f_code.co_name
     line_no = tb.tb_lineno
-    logger.error("{}, {} in file \"{}\", line {}, in {}".format(exctype.__name__, excvalue, filename, line_no, name))
+    logger.error("Traceback (most recent call last):")
+    logger.error("  File \"{}\", line {}, in {}".format(filename, line_no, name))
+    logger.error("{}, {}".format(exctype.__name__, excvalue))
+    #logger.error("{}, {} in file \"{}\", line {}, in {}".format(exctype.__name__, excvalue, filename, line_no, name))
 sys.excepthook = excepthook
 # *****************************************************************
 
