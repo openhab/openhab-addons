@@ -563,7 +563,6 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      * @param feature the feature queried
      */
     protected void featureQueriedAnswered(DeviceFeature feature) {
-        // store current failed request count
         int prevCount = failedRequestCount;
         // reset failed request count
         failedRequestCount = 0;
@@ -583,8 +582,11 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      * @param feature the feature queried
      */
     protected void featureQueriedFailed(DeviceFeature feature) {
-        // increase failed request count
-        failedRequestCount++;
+        QueryStatus queryStatus = feature.getQueryStatus();
+        // increase failed request count if in sent or acked status
+        if (queryStatus == QueryStatus.QUERY_SENT || queryStatus == QueryStatus.QUERY_ACKED) {
+            failedRequestCount++;
+        }
         // mark feature queried as processed and never queried
         setFeatureQueried(null);
         feature.setQueryMessage(null);
