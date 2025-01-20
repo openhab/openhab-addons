@@ -52,7 +52,7 @@ See section [Discovery](#discovery) for details.
 | shellydimmer      | Shelly Dimmer                                          | SHDM-1              |
 | shellydimmer2     | Shelly Dimmer2                                         | SHDM-2              |
 | shellyix3         | Shelly ix3                                             | SHIX3-1             |
-| shellyuni         | Shelly UNI, Shelly Plus UNI                            | SHUNI-1, SNSN-0043X |
+| shellyuni         | Shelly UNI, Shelly Plus UNI                            | SHUNI-1             |
 | shellyplug        | Shelly Plug                                            | SHPLG2-1            |
 | shellyplugs       | Shelly Plug-S                                          | SHPLG-S             |
 | shellyem          | Shelly EM with integrated Power Meters                 | SHEM                |
@@ -86,13 +86,14 @@ See section [Discovery](#discovery) for details.
 | shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU |
 | shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU |
 | shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU |
-| shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU                 |
-| shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                 |
-| shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                 |
-| shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                 |
+| shellyplusplug       | Shelly Plus Plug                                         | SNPL-00112EU                 |
+| shellyplusplug       | Shelly Plus Plug-IT                                      | SNPL-00110IT                 |
+| shellyplusplug       | Shelly Plus Plug-UK                                      | SNPL-00112UK                 |
+| shellyplusplugus     | Shelly Plus Plug-US                                      | SNPL-00116US                 |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X       |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
 | shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW    |
+| shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                   |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
 | shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                   |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |

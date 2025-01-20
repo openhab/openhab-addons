@@ -129,6 +129,25 @@
 		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
+	<thing-type id="shellyplusuni">
+		<label>Shelly Plus UNI</label>
+		<description>@text/thing-type.shelly.shellyplusuni.description</description>
+
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
+			</channel-group>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
 	<thing-type id="shelly1mini">
 		<label>ShellyPlus 1 Mini</label>
 		<description>@text/thing-type.shelly.shelly1mini.description</description>
