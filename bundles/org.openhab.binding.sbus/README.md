@@ -121,7 +121,7 @@ Switch  rgbwPower    "Power"        <switch>     (gLight)   ["Switch", "Light"] 
 
 ### Sitemap Configuration
 
-```
+```perl
 sitemap sbus label="Sbus Demo"
 {
     Frame label="Sbus Controls" {
