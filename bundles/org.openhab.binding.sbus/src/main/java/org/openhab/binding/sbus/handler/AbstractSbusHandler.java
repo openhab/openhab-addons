@@ -122,7 +122,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
                 try {
                     pollDevice();
                 } catch (Exception e) {
-                    logger.error("Error polling Sbus device", e);
+                    logger.warn("Error polling Sbus device", e);
                 }
             }, 0, config.refresh, TimeUnit.SECONDS);
         }
