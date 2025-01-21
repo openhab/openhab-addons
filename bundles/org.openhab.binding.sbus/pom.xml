@@ -23,5 +23,24 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>6.0.0</version>
+        <configuration>
+          <instructions>
+            <Import-Package>
+              ro.ciprianpascu.sbus.facade,
+              *
+            </Import-Package>
+            <Embed-Dependency>j2sbus;scope=compile</Embed-Dependency>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 
 </project>
