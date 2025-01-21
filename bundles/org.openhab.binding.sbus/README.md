@@ -24,7 +24,7 @@ The binding itself does not require any special configuration.
 
 ### Bridge Configuration
 
-The Sbus Bridge requires the following configuration parameters:
+The Sbus Bridge has the following configuration parameters:
 
 | Name    | Type    | Description                                          | Default | Required | Advanced |
 |---------|---------|------------------------------------------------------|---------|----------|-----------|
