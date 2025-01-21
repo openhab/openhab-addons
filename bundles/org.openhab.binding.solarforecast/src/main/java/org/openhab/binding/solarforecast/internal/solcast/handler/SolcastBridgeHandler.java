@@ -109,6 +109,8 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                 case CHANNEL_ENERGY_REMAIN:
                 case CHANNEL_ENERGY_TODAY:
                 case CHANNEL_POWER_ACTUAL:
+                case CHANNEL_API_COUNT:
+                case CHANNEL_LATEST_UPDATE:
                     getData();
                     break;
                 case CHANNEL_POWER_ESTIMATE:
