@@ -65,7 +65,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
 
         SbusBridgeHandler bridgeHandler = (SbusBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null || bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not online");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
