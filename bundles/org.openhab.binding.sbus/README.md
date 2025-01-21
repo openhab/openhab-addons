@@ -82,7 +82,7 @@ The Sbus Bridge has the following configuration parameters:
 
 ### Thing Configuration
 
-```
+```java
 Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000 ] {
     Thing rgbw colorctrl [ id=72, refresh=30 ] {
         Channels:
