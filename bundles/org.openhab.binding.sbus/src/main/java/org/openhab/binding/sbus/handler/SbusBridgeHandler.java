@@ -56,7 +56,7 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
         // Get configuration using the config class
         SbusBridgeConfig config = getConfigAs(SbusBridgeConfig.class);
         if (config.host.isBlank()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, "Host address not configured");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address not configured");
             return;
         }
         try {
