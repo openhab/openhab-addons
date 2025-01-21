@@ -106,7 +106,7 @@ Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000 ] {
 
 ### Item Configuration
 
-```
+```java
 // Temperature Sensor
 Number:Temperature Temp_Sensor "Temperature [%.1f °C]" { channel="sbus:temperature:mybridge:temp1:temperature" }
 
