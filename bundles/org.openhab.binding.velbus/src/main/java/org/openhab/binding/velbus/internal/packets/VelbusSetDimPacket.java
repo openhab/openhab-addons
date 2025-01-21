@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -34,6 +34,10 @@ public class VelbusSetDimPacket extends VelbusPacket {
 
     public void setDim(byte dim) {
         data[2] = dim;
+    }
+
+    public void setMode(byte mode) {
+        data[3] = mode;
     }
 
     @Override

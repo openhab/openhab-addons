@@ -8,38 +8,38 @@
 		<parameter name="uom" type="text">
 			<label>Unit of Measurement</label>
 			<description>The unit of measurement used for this channel</description>
-			<advanced>true</advanced>
+			<advanced>false</advanced>
 		</parameter>
 		<parameter name="scale" type="decimal">
 			<label>Scale</label>
 			<description>The scaling factor, the final value will be scaled by this</description>
-			<advanced>true</advanced>
+			<advanced>false</advanced>
 		</parameter>
-		<parameter name="rule" type="integer">
+		<parameter name="rule" type="integer" required="true">
 			<label>Rule</label>
 			<description>The type of measurement. See explanation for possible values</description>
-			<advanced>true</advanced>
+			<advanced>false</advanced>
 			<options>
-				<option value="1">Unsigned Short</option>
-				<option value="2">Signed Short</option>
-				<option value="3">Unsigned Integer</option>
-				<option value="4">Signed Integer</option>
-				<option value="5">Text</option>
-				<option value="6">Bytes</option>
-				<option value="7">Version</option>
-				<option value="8">Date Time</option>
-				<option value="9">Time</option>
+				<option value="1">Unsigned Short (Rule 1)</option>
+				<option value="2">Signed Short (Rule 2)</option>
+				<option value="3">Unsigned Integer (Rule 3)</option>
+				<option value="4">Signed Integer (Rule 4)</option>
+				<option value="5">Text (Rule 5)</option>
+				<option value="6">Bytes (Rule 6)</option>
+				<option value="7">Version (Rule 7)</option>
+				<option value="8">Date Time (Rule 8)</option>
+				<option value="9">Time (Rule 9)</option>
 			</options>
 		</parameter>
 		<parameter name="offset" type="decimal">
 			<label>Offset</label>
 			<description>The offset subtracted from the measurement</description>
-			<advanced>true</advanced>
+			<advanced>false</advanced>
 		</parameter>
-		<parameter name="registers" type="text">
+		<parameter name="registers" type="text" required="true">
 			<label>Registers</label>
 			<description>Comma separated list of registers to read for the measurement</description>
-			<advanced>true</advanced>
+			<advanced>false</advanced>
 		</parameter>
 	</config-description>
 

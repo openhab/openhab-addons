@@ -35,6 +35,7 @@ Each service needs one `xx-site` for your location and at least one photovoltaic
 
 [Solcast service](https://solcast.com/) requires a personal registration with an e-mail address.
 A free version for your personal home PV system is available in [Hobbyist Plan](https://toolkit.solcast.com.au/register/hobbyist)
+(Limited to 10 API requests per day).
 You need to configure your home photovoltaic system within the web interface.
 The `resourceId` for each PV plane is provided afterwards.
 
@@ -325,7 +326,7 @@ rule "Exception Handling"
     when
         System started
     then
-        val solcastActions = getActions("solarforecast","solarforecast:sc-site:3cadcde4dc")
+        val solcastActions = getActions("solarforecast","solarforecast:sc-site:homeSite")
         try {
             val forecast = solcastActions.getPower(solcastActions.getForecastEnd.plus(30,ChronoUnit.MINUTES))
         } catch(RuntimeException e) {
@@ -354,10 +355,10 @@ rule "Solcast Actions"
         val sixDayPessimistic = solarforecastActions.getEnergy(startTimestamp,endTimestamp, "pessimistic")
         logInfo("SF Tests","Forecast Pessimist 6 days "+ sixDayPessimistic)
 
-        // Query forecast TimesSeries Items via historicStata
-        val energyAverage =  (Solcast_Site_Average_Energyestimate.historicState(now.plusDays(1)).state as Number)
+        // Query forecast TimesSeries Items via persistedState
+        val energyAverage =  (Solcast_Site_Average_Energyestimate.persistedState(now.plusDays(1)).state as Number)
         logInfo("SF Tests","Average energy {}",energyAverage)
-        val energyOptimistic =  (Solcast_Site_Optimistic_Energyestimate.historicState(now.plusDays(1)).state as Number)
+        val energyOptimistic =  (Solcast_Site_Optimistic_Energyestimate.persistedState(now.plusDays(1)).state as Number)
         logInfo("SF Tests","Optimist energy {}",energyOptimistic)
 end
 ```
@@ -381,11 +382,11 @@ end
 
 rule "Solacast Updates"
     when
-        Thing "solarforecast:sc-plane:homeSouthWest" changed to INITIALIZING or // Thing status changed to INITIALIZING
+        Thing "solarforecast:sc-plane:homeSite:homeSouthWest" changed to INITIALIZING or // Thing status changed to INITIALIZING
         Time cron "0 30 0/2 ? * * *" // every 2 hours at minute 30
     then
         if(PV_Daytime.state == ON) {
-            val solarforecastActions = getActions("solarforecast","solarforecast:sc-plane:homeSouthWest")
+            val solarforecastActions = getActions("solarforecast","solarforecast:sc-plane:homeSite:homeSouthWest")
             solarforecastActions.triggerUpdate
         } // reject updates during night
 end

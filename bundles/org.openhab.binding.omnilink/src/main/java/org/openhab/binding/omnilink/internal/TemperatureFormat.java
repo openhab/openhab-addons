@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -51,7 +51,7 @@ public enum TemperatureFormat {
 
     private final int formatNumber;
 
-    private TemperatureFormat(int formatNumber) {
+    TemperatureFormat(int formatNumber) {
         this.formatNumber = formatNumber;
     }
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -42,4 +42,7 @@ public class BenqProjectorBindingConstants {
     // Config properties
     public static final String THING_PROPERTY_HOST = "host";
     public static final String THING_PROPERTY_PORT = "port";
+
+    // Unsupported item response
+    public static final String UNSUPPORTED_ITM = "Unsupported item";
 }

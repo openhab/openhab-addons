@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -87,7 +87,7 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
                 return localizationService.createLocalizedThingType(bundle,
                         moduleType.isABridge() ? thingTypeBuilder.buildBridge() : thingTypeBuilder.build(), locale);
             } catch (IllegalArgumentException e) {
-                logger.warn("Unable to define ModuleType for thingType {} : {}", thingTypeUID.getId(), e.getMessage());
+                logger.warn("Unable to define ModuleType for thingType {}: {}", thingTypeUID.getId(), e.getMessage());
             }
         }
         return null;

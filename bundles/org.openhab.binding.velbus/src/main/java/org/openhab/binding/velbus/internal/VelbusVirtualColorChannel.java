@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class VelbusVirtualColorChannel extends VelbusColorChannel {
-    private final byte NOT_CONFIGURED = (byte) 0x00;
+    private static final byte NOT_CONFIGURED = (byte) 0x00;
 
     private byte redChannel;
     private byte greenChannel;

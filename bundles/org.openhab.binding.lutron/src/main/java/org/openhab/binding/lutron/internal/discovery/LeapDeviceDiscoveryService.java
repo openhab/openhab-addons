@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -93,6 +93,7 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
                             break;
                         case "WallSwitch":
                         case "PlugInSwitch":
+                        case "DivaSmartSwitch":
                             notifyDiscovery(THING_TYPE_SWITCH, deviceId, label);
                             break;
                         case "CasetaFanSpeedController":

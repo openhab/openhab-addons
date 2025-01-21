@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
 
 /**
- * @author Peter Kretz - Added RAW Modbus for LAN Stick
+ * @author Peter Kretz - Initial contribution
  */
 @NonNullByDefault
 public class SolarmanProtocolFactory {

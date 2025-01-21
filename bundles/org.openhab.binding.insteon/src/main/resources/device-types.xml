@@ -811,7 +811,6 @@
 	<device-type name="SensorsActuators_IOLinc">
 		<feature name="switch">GenericSwitch</feature>
 		<feature name="contact" group="2">GenericSensorContact</feature>
-		<feature name="eventButton">GenericButtonEvent</feature>
 		<feature-group name="extDataGroup" type="ExtDataGroup">
 			<feature name="momentaryDuration">IOLincMomentaryDuration</feature>
 		</feature-group>
