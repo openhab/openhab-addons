@@ -76,6 +76,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPLUSI4, //
             THING_TYPE_SHELLYPLUSI4DC, //
             THING_TYPE_SHELLYPLUSDIMMER10V, //
+            THING_TYPE_SHELLYPLUSUNI, //
             THING_TYPE_SHELLYPLUSHT, //
             THING_TYPE_SHELLYPLUSHTG3, //
             THING_TYPE_SHELLYPLUSSMOKE, //
