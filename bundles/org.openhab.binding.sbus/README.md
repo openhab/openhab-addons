@@ -6,10 +6,10 @@ The binding supports various device types including RGB/RGBW controllers, temper
 
 ## Supported Things
 
-* `udp` - Sbus Bridge for UDP communication
-* `rgbw` - RGB/RGBW Controllers for color and brightness control
-* `temperature` - Temperature Sensors for monitoring environmental conditions
-* `switch` - Switch Controllers for basic on/off and dimming control
+- `udp` - Sbus Bridge for UDP communication
+- `rgbw` - RGB/RGBW Controllers for color and brightness control
+- `temperature` - Temperature Sensors for monitoring environmental conditions
+- `switch` - Switch Controllers for basic on/off and dimming control
 
 ## Discovery
 
