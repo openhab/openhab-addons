@@ -102,14 +102,13 @@ public class SonnenJSONCommunication {
         String urlStr = "http://" + config.hostIP + "/api/v2/configurations";
         String urlStr2 = "http://" + config.hostIP + "/api/v2/setpoint/charge/"
                 + Integer.toString(config.chargingPower);
-        Properties httpHeader = new Properties();
-        httpHeader = createHeader(config.authToken);
+        Properties header = createHeader(config.authToken);
         try {
             // in putData there is 1 or 2 inside to turn on or off the manual mode of the battery
             // it will be executed by a change of the switch an either turn on or off the manual mode of the battery
             InputStream targetStream = new ByteArrayInputStream(putData.getBytes(StandardCharsets.UTF_8));
-            String response = "";// = HttpUtil.executeUrl("PUT", urlStr, httpHeader,
-                                 // targetStream,"application/x-www-form-urlencoded", 10000);
+            String response = HttpUtil.executeUrl("PUT", urlStr, header, targetStream,
+                    "application/x-www-form-urlencoded", 10000);
             logger.debug("ChargingOperationMode = {}", response);
             if (response == null) {
                 throw new IOException("HttpUtil.executeUrl returned null");
@@ -120,12 +119,11 @@ public class SonnenJSONCommunication {
                 throw new IllegalArgumentException(
                         "Max battery charging power in watt needs to be in the range of greater 0 and smaller 10000.");
             }
-            if (getBatteryData().em_getOperationMode() != null
-                    && Integer.parseInt(getBatteryData().em_getOperationMode()) == 1 && config.chargingPower > 0
-                    && config.chargingPower <= 10000) {
+            SonnenJsonDataDTO batteryData2 = getBatteryData();
+            if (batteryData2.emgetOperationMode() != null && Integer.parseInt(batteryData2.emgetOperationMode()) == 1
+                    && config.chargingPower > 0 && config.chargingPower <= 10000) {
                 // start charging
-                String response2 = ""; // = HttpUtil.executeUrl("POST", urlStr2, httpHeader, null, "application/json",
-                                       // 10000);
+                String response2 = HttpUtil.executeUrl("POST", urlStr2, header, null, "application/json", 10000);
                 logger.debug("ChargingOperationMode = {}", response2);
                 if (response2 == null) {
                     throw new IOException("HttpUtil.executeUrl returned null");

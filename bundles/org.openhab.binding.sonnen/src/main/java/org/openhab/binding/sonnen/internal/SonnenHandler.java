@@ -26,6 +26,7 @@ import org.openhab.binding.sonnen.internal.communication.SonnenJsonDataDTO;
 import org.openhab.binding.sonnen.internal.communication.SonnenJsonPowerMeterDataDTO;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -76,7 +77,7 @@ public class SonnenHandler extends BaseThingHandler {
         config = getConfigAs(SonnenConfiguration.class);
         if (config.refreshInterval < 0 || config.refreshInterval > 1000) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Parameter 'refresh Rate' msut be in the range 0-1000!");
+                    "Parameter 'refresh Rate' must be in the range 0-1000!");
             return;
         }
         if (config.hostIP.isBlank()) {
@@ -281,8 +282,24 @@ public class SonnenHandler extends BaseThingHandler {
                     case CHANNELBATTERYCHARGINGGRID:
                         if (putData != null) {
                             serviceCommunication.startStopBatteryCharging(putData);
-                            update(OnOffType.from(data.em_getOperationMode()), channelId);
+                            // put it to true as switch was turned on if it goes into manual mode
+                            if (putData.contains("1")) {
+                                update(OnOffType.from(true), channelId);
+                            } else if (putData.contains("2")) {
+                                update(OnOffType.from(false), channelId);
+                            }
+                        } else {
+                            // Reflect the status of operation mode in the switch
+                            update(OnOffType.from(!data.isInAutomaticMode()), channelId);
                         }
+                        break;
+                    case CHANNELBATTERYOPERATIONMODE:
+                        if (!data.isInAutomaticMode()) {
+                            state = new StringType("Manual");
+                        } else if (data.isInAutomaticMode()) {
+                            state = new StringType("Automatic");
+                        }
+                        update(state, channelId);
                         break;
                 }
             }
