@@ -12,21 +12,16 @@
  */
 package org.openhab.transform.basicprofiles.internal.profiles;
 
-import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import javax.measure.MetricPrefix;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -806,5 +801,75 @@ public class StateFilterProfileTest {
 
         profile.onStateUpdateFromHandler(DecimalType.valueOf("1"));
         verify(mockCallback, times(1)).sendUpdate(DecimalType.valueOf("1"));
+    }
+
+    public static Stream<Arguments> testMixedStates() {
+        NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
+
+        List<State> states = List.of( //
+                UnDefType.UNDEF, //
+                QuantityType.valueOf(99, SIUnits.METRE), //
+                QuantityType.valueOf(1, Units.WATT), //
+                DecimalType.valueOf("2"), //
+                QuantityType.valueOf(3000, MetricPrefix.MILLI(Units.WATT))); //
+
+        return Stream.of(
+                // average function
+                Arguments.of(powerItem, "== $AVG", states, QuantityType.valueOf("2 W"), true),
+                Arguments.of(powerItem, "== $AVG", states, QuantityType.valueOf("2000 mW"), true),
+                Arguments.of(powerItem, "== $AVERAGE", states, QuantityType.valueOf("0.002 kW"), true),
+                Arguments.of(powerItem, "> $AVERAGE", states, QuantityType.valueOf("2 W"), false),
+                Arguments.of(powerItem, "> $AVERAGE", states, QuantityType.valueOf("3 W"), true),
+
+                Arguments.of(powerItem, "== $AVERAGE", states, DecimalType.valueOf("2"), false),
+
+                // min function
+                Arguments.of(powerItem, "== $MIN", states, QuantityType.valueOf("1 W"), true),
+                Arguments.of(powerItem, "== $MIN", states, QuantityType.valueOf("1000 mW"), true),
+
+                Arguments.of(powerItem, "== $MIN", states, DecimalType.valueOf("1"), false),
+
+                // max function
+                Arguments.of(powerItem, "== $MAX", states, QuantityType.valueOf("3 W"), true),
+                Arguments.of(powerItem, "== $MAX", states, QuantityType.valueOf("0.003 kW"), true),
+
+                Arguments.of(powerItem, "== $MAX", states, DecimalType.valueOf("1"), false),
+
+                // delta function
+                Arguments.of(powerItem, "$DELTA == 1", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "$DELTA == 0.001 kW", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "1 == $DELTA", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "1000 mW == $DELTA", states, QuantityType.valueOf("4 W"), true),
+
+                // delta percent function
+                Arguments.of(powerItem, "$DELTA_PERCENT == 50", states, QuantityType.valueOf("4.5 W"), true),
+                Arguments.of(powerItem, "50 == $DELTA_PERCENT", states, QuantityType.valueOf("4.5 W"), true),
+
+                // last no comma
+                Arguments.of(powerItem, "== $MAX", states, QuantityType.valueOf("0.004 kW"), true),
+                Arguments.of(powerItem, "!= $MAX", states, QuantityType.valueOf("0.004 kW"), true)
+        //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testMixedStates(Item item, String condition, List<State> states, State input, boolean expected)
+            throws ItemNotFoundException {
+        when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", condition)));
+        when(mockItemRegistry.getItem(item.getName())).thenReturn(item);
+        when(mockItemChannelLink.getItemName()).thenReturn(item.getName());
+
+        StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
+
+        for (State state : states) {
+            profile.onStateUpdateFromHandler(state);
+        }
+
+        reset(mockCallback);
+        when(mockCallback.getItemChannelLink()).thenReturn(mockItemChannelLink);
+
+        profile.onStateUpdateFromHandler(input);
+        verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(input);
     }
 }
