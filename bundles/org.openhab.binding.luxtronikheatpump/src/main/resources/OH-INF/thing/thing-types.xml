@@ -264,9 +264,7 @@
 				<label>Channel 256</label>
 			</channel>
 			<channel id="heatingPowerActualValue" typeId="heatingPowerActualValue"/>
-			<channel id="channel259" typeId="unknown">
-				<label>Channel 259</label>
-			</channel>
+			<channel id="outputControlSignalCooling" typeId="outputControlSignalCooling"/>
 			<channel id="timeCoolingRelease" typeId="timeCoolingRelease"/>
 
 			<channel id="temperatureHeatingParallelShift" typeId="temperatureHeatingParallelShift"/>

@@ -280,7 +280,7 @@ The following channels are holding read only values:
 | channel255                              | Number                    | x        | Channel 255                                                    |
 | channel256                              | Number                    | x        | Channel 256                                                    |
 | heatingPowerActualValue                 | Number:Power              | x        | Heating Power Actual Value                                     |
-| channel259                              | Number                    | x        | Channel 259                                                    |
+| outputControlSignalCooling              | Switch                    | x        | Output "Control Signal Cooling"                                |
 | timeCoolingRelease                      | Number:Time               | x        | Release Cooling Time                                           |
 
 The usage of the numbered channels above is currently unknown. If you are able to directly match one of the values to any value reported by your heat pump, feel free to report back on the forum, so we are able to give the channel a proper name instead.

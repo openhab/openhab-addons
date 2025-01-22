@@ -1232,7 +1232,7 @@ public enum HeatpumpChannel {
      */
     // CHANNEL_258(258, "versionRBE", NumberItem.class, null, false, null),
 
-    CHANNEL_259(259, "channel259", SwitchItem.class, null, false, null),
+    CHANNEL_259(259, "outputControlSignalCooling", SwitchItem.class, null, false, null),
     CHANNEL_260(260, "timeCoolingRelease", NumberItem.class, Units.SECOND, false, null),
 
     // Changeable Parameters

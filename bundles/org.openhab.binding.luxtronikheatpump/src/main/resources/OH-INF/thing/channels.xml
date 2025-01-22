@@ -2030,6 +2030,12 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="outputControlSignalCooling" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Control Signal Cooling"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="timeCoolingRelease" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Release Cooling Time</label>

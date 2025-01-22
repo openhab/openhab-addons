@@ -23,6 +23,7 @@
 			<remove-channel id="channel243"/>
 			<remove-channel id="channel252"/>
 			<remove-channel id="channel258"/>
+			<remove-channel id="channel259"/>
 			<remove-channel id="channel260"/>
 
 			<!-- add renamed channels -->
@@ -37,6 +38,7 @@
 			<add-channel id="temperatureHeatingCirculationPump"/>
 			<add-channel id="temperatureHotGasMax"/>
 			<add-channel id="controlSignalHeatingCirculationPump"/>
+			<add-channel id="outputControlSignalCooling"/>
 			<add-channel id="timeCoolingRelease"/>
 		</instruction-set>
 	</thing-type>
