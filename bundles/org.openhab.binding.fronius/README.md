@@ -185,6 +185,8 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `forceBatteryCharging(QuantityType<Power> power)`: Force the battery to charge with the specified power (removes all battery control schedules first and applies all the time).
 - `addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 - `addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
+- `setBackupReservedBatteryCapacity(int percent)`: Set the reserved battery capacity for backup power.
+- `setBackupReservedBatteryCapacity(PercentType percent)`: Set the reserved battery capacity for backup power.
 
 All methods return a boolean value indicating whether the action was successful.
 
@@ -201,6 +203,8 @@ froniusInverterActions.resetBatteryControl();
 froniusInverterActions.addHoldBatteryChargeSchedule(time.toZDT('18:00'), time.toZDT('22:00'));
 froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('22:00'), time.toZDT('23:59'), Quantity('5 kW'));
 froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('00:00'), time.toZDT('06:00'), Quantity('5 kW'));
+
+froniusInverterActions.setBackupReservedBatteryCapacity(50);
 ```
 
 ## Full Example
