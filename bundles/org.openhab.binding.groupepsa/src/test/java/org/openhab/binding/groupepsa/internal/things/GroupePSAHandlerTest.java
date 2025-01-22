@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import static org.mockito.Mockito.*;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.time.ZoneId;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,7 +34,6 @@ import org.openhab.binding.groupepsa.internal.rest.api.GroupePSAConnectApi;
 import org.openhab.binding.groupepsa.internal.rest.exceptions.GroupePSACommunicationException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -67,7 +65,6 @@ public class GroupePSAHandlerTest {
 
     private @NonNullByDefault({}) @Mock OAuthFactory oAuthFactory;
     private @NonNullByDefault({}) @Mock HttpClient httpClient;
-    private @NonNullByDefault({}) @Mock TimeZoneProvider timeZoneProvider;
 
     static String getResourceFileAsString(String fileName) throws GroupePSACommunicationException {
         try (InputStream is = GroupePSAConnectApi.class.getResourceAsStream(fileName)) {
@@ -90,7 +87,7 @@ public class GroupePSAHandlerTest {
 
         // Create real objects
         bridgeHandler = spy(new GroupePSABridgeHandler(bridge, oAuthFactory, httpClient));
-        thingHandler = spy(new GroupePSAHandler(thing, timeZoneProvider));
+        thingHandler = spy(new GroupePSAHandler(thing));
         api = spy(new GroupePSAConnectApi(httpClient, bridgeHandler, "clientId", "realm"));
 
         // Setup API mock
@@ -124,7 +121,6 @@ public class GroupePSAHandlerTest {
         thingHandler.setCallback(thingCallback);
         doReturn(bridge).when(thingHandler).getBridge();
         doNothing().when(thingHandler).buildDoorChannels(any());
-        doReturn(ZoneId.systemDefault()).when(timeZoneProvider).getTimeZone();
     }
 
     @AfterEach

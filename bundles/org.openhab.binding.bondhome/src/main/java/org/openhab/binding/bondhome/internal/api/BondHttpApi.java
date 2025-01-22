@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -244,7 +244,7 @@ public class BondHttpApi {
 
                 logger.debug("HTTP response from request to {}: {}", uri, httpResponse);
                 return httpResponse;
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            } catch (InterruptedException | TimeoutException | ExecutionException | IllegalArgumentException e) {
                 logger.debug("Last request to Bond Bridge failed; {} retries remaining: {}", numRetriesRemaining,
                         e.getMessage());
                 numRetriesRemaining--;

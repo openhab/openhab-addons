@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -552,12 +552,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         JsonObject historyRecord = GSON.toJsonTree(historyRecordDTO).getAsJsonObject();
         if (historyRecordDTO.getStart() != null) {
             DateTimeType start = new DateTimeType(historyRecordDTO.getStart());
-            historyRecord.addProperty("start", start.toLocaleZone().format(null));
+            historyRecord.addProperty("start", start.format(null));
             updateState(CHANNEL_HISTORY_START_TIME, start);
         }
         if (historyRecordDTO.getEnd() != null) {
             DateTimeType end = new DateTimeType(historyRecordDTO.getEnd());
-            historyRecord.addProperty("end", end.toLocaleZone().format(null));
+            historyRecord.addProperty("end", end.format(null));
             updateState(CHANNEL_HISTORY_END_TIME, end);
         }
         if (historyRecordDTO.getDuration() != null) {

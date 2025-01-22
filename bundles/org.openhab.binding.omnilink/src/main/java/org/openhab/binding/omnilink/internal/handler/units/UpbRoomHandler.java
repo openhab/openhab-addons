@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -146,7 +146,7 @@ public class UpbRoomHandler extends UnitHandler {
                 param2 = ((roomNum * 6) - 3) + cmdValue - 2;
                 break;
             default:
-                logger.warn("Unexpected UPB Room state: {}", Integer.toString(cmdValue));
+                logger.warn("Unexpected UPB Room state: {}", cmdValue);
                 return;
         }
 

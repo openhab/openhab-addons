@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,8 @@
  */
 package org.openhab.binding.govee.internal;
 
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -87,7 +83,10 @@ public class GoveeSerializeGoveeHandlerTest {
 
     private static GoveeHandlerMock createAndInitHandler(final ThingHandlerCallback callback, final Thing thing) {
         CommunicationManager communicationManager = mock(CommunicationManager.class);
-        final GoveeHandlerMock handler = spy(new GoveeHandlerMock(thing, communicationManager));
+        GoveeStateDescriptionProvider stateDescriptionProvider = mock(GoveeStateDescriptionProvider.class);
+
+        final GoveeHandlerMock handler = spy(
+                new GoveeHandlerMock(thing, communicationManager, stateDescriptionProvider));
 
         handler.setCallback(callback);
         handler.initialize();
@@ -135,7 +134,7 @@ public class GoveeSerializeGoveeHandlerTest {
 
             verify(callback).stateUpdated(
                     new ChannelUID(thing.getUID(), GoveeBindingConstants.CHANNEL_COLOR_TEMPERATURE_ABS),
-                    getState(2000, Units.KELVIN));
+                    getState(9000, Units.KELVIN));
         } finally {
             handler.dispose();
         }

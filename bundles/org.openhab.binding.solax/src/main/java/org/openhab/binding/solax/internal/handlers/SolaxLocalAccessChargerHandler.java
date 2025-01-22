@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.solax.internal.handlers;
 
-import java.time.ZonedDateTime;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -124,6 +123,6 @@ public class SolaxLocalAccessChargerHandler extends SolaxLocalAccessAbstractHand
                 SIUnits.CELSIUS, supportedChannels);
 
         // Binding provided data
-        updateState(SolaxBindingConstants.CHANNEL_TIMESTAMP, new DateTimeType(ZonedDateTime.now()));
+        updateState(SolaxBindingConstants.CHANNEL_TIMESTAMP, new DateTimeType());
     }
 }

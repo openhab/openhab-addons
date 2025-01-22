@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.vesync.internal.handlers;
 
-import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
+import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_PROP_BRIDGE_ACCEPT_LANG;
+import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_PROP_BRIDGE_COUNTRY_CODE;
+import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_PROP_BRIDGE_REG_TS;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -189,6 +191,14 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
                         .getDeviceFamilyMetadata(x.getDeviceType(),
                                 VeSyncDeviceAirHumidifierHandler.DEV_TYPE_FAMILY_AIR_HUMIDIFIER,
                                 VeSyncDeviceAirHumidifierHandler.SUPPORTED_MODEL_FAMILIES)
+                        .equals(VeSyncBaseDeviceHandler.UNKNOWN));
+    }
+
+    public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getOutletMetaData() {
+        return api.getMacLookupMap().values().stream()
+                .filter(x -> !VeSyncBaseDeviceHandler
+                        .getDeviceFamilyMetadata(x.getDeviceType(), VeSyncDeviceOutletHandler.DEV_TYPE_FAMILY_OUTLET,
+                                VeSyncDeviceOutletHandler.SUPPORTED_MODEL_FAMILIES)
                         .equals(VeSyncBaseDeviceHandler.UNKNOWN));
     }
 

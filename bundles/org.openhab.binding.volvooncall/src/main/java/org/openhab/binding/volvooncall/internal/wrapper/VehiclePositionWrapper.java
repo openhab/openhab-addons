@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.volvooncall.internal.wrapper;
 
-import java.time.ZoneId;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -86,7 +85,6 @@ public class VehiclePositionWrapper {
 
     public State getTimestamp() {
         return Objects.requireNonNull(Optional.ofNullable(this.position).flatMap(pos -> pos.getTimestamp())
-                .map(dt -> (State) new DateTimeType(dt.withZoneSameInstant(ZoneId.systemDefault())))
-                .orElse(UnDefType.NULL));
+                .map(dt -> (State) new DateTimeType(dt)).orElse(UnDefType.NULL));
     }
 }

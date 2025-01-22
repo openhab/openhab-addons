@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
-import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -97,23 +95,13 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setColorTemperatureAbsolute(Resource target, Command command, @Nullable Resource source) {
-        QuantityType<?> mirek;
-        if (command instanceof QuantityType<?> quantity) {
-            Unit<?> unit = quantity.getUnit();
-            if (Units.KELVIN.equals(unit)) {
-                mirek = quantity.toInvertibleUnit(Units.MIRED);
-            } else if (Units.MIRED.equals(unit)) {
-                mirek = quantity;
-            } else {
-                QuantityType<?> kelvin = quantity.toInvertibleUnit(Units.KELVIN);
-                mirek = Objects.nonNull(kelvin) ? kelvin.toInvertibleUnit(Units.MIRED) : null;
-            }
+        QuantityType<?> mirekQuantity = null;
+        if (command instanceof QuantityType<?> genericQuantity) {
+            mirekQuantity = genericQuantity.toInvertibleUnit(Units.MIRED);
         } else if (command instanceof DecimalType decimal) {
-            mirek = QuantityType.valueOf(decimal.doubleValue(), Units.KELVIN).toInvertibleUnit(Units.MIRED);
-        } else {
-            mirek = null;
+            mirekQuantity = QuantityType.valueOf(decimal.intValue(), Units.KELVIN).toInvertibleUnit(Units.MIRED);
         }
-        if (Objects.nonNull(mirek)) {
+        if (Objects.nonNull(mirekQuantity)) {
             MirekSchema schema = target.getMirekSchema();
             schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
             schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
@@ -121,7 +109,7 @@ public class Setters {
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
             double min = schema.getMirekMinimum();
             double max = schema.getMirekMaximum();
-            double val = Math.max(min, Math.min(max, mirek.doubleValue()));
+            double val = Math.max(min, Math.min(max, mirekQuantity.doubleValue()));
             target.setColorTemperature(colorTemperature.setMirek(val));
         }
         return target;

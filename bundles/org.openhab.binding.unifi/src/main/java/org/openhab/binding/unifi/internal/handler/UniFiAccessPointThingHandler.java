@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,6 @@ package org.openhab.binding.unifi.internal.handler;
 
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -144,7 +142,7 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
                 break;
             case CHANNEL_LAST_SEEN:
                 if (device.getLastSeen() != null) {
-                    state = new DateTimeType(ZonedDateTime.ofInstant(device.getLastSeen(), ZoneId.systemDefault()));
+                    state = new DateTimeType(device.getLastSeen());
                 }
                 break;
             case CHANNEL_EXPERIENCE:

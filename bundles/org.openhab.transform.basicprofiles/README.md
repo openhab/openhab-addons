@@ -1,6 +1,18 @@
 # Basic Profiles
 
-This bundle provides a list of useful Profiles.
+This bundle provides a list of useful Profiles:
+
+| Profile                                                         | Description                                                                                  |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| [Generic Command Profile](#generic-command-profile)             | Sends a Command towards the Item when an event is triggered                                  |
+| [Generic Toggle Switch Profile](#generic-toggle-switch-profile) | Toggles a Switch Item when an event is triggered                                             |
+| [Debounce (Counting) Profile](#debounce-counting-profile)       | Counts and skip a number of State changes                                                    |
+| [Debounce (Time) Profile](#debounce-time-profile)               | Reduces the frequency of commands/state updates                                              |
+| [Invert / Negate Profile](#invert--negate-profile)              | Inverts or negate a Command / State                                                          |
+| [Round Profile](#round-profile)                                 | Reduces the number of decimal places from input data                                         |
+| [Threshold Profile](#threshold-profile)                         | Translates numeric input data to `ON` or `OFF` based on a threshold value                    |
+| [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType` |
+| [State Filter Profile](#state-filter-profile)                   | Filters input data using arithmetic comparison conditions                                    |
 
 ## Generic Command Profile
 
@@ -106,7 +118,7 @@ Switch invertedSwitch { channel="xxx" [profile="basic-profiles:invert"] }
 ## Round Profile
 
 The Round Profile scales the State to a specific number of decimal places based on the power of ten.
-Optionally the [Rounding mode](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/math/RoundingMode.html) can be set.
+Optionally the [Rounding mode](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/RoundingMode.html) can be set.
 Source Channels should accept Item Type `Number`.
 
 ### Round Profile Configuration
@@ -206,7 +218,7 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
 - An item name, which will be evaluated to its state.
 - A type constant, such as `ON`, `OFF`, `UNDEF`, `NULL`, `OPEN`, `CLOSED`, `PLAY`, `PAUSE`, `UP`, `DOWN`, etc.
   Note that these are unquoted.
-- A String value, enclosed with single quotes, e.g. `'ON'`.
+- A String value, enclosed with single or double quotes, e.g. `'ON'`, `"FOO"`.
   A string value is different to the actual `OnOffType.ON`.
   To compare against an actual OnOffType, use an unquoted `ON`.
 - A plain number to represent a `DecimalType`.

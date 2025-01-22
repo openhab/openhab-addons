@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,11 +20,14 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonHub1Configuration;
 import org.openhab.binding.insteon.internal.config.InsteonHub2Configuration;
 import org.openhab.binding.insteon.internal.config.InsteonPLMConfiguration;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class for implementation for I/O stream with anything that looks
@@ -37,6 +40,7 @@ import org.openhab.core.io.transport.serial.SerialPortManager;
  */
 @NonNullByDefault
 public abstract class IOStream {
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected @Nullable InputStream in;
     protected @Nullable OutputStream out;
@@ -46,20 +50,17 @@ public abstract class IOStream {
      *
      * @param b byte array (output)
      * @return number of bytes read
+     * @throws InterruptedException
+     * @throws IOException
      */
     public int read(byte @Nullable [] b) throws InterruptedException, IOException {
+        InputStream in = this.in;
+        if (in == null) {
+            throw new IOException("input stream not defined");
+        }
         int len = 0;
         while (len == 0) {
-            if (!isOpen()) {
-                throw new IOException("io stream not open");
-            }
-
-            InputStream in = this.in;
-            if (in != null) {
-                len = in.read(b);
-            } else {
-                throw new IOException("input stream not defined");
-            }
+            len = in.read(b);
 
             if (Thread.interrupted()) {
                 throw new InterruptedException();
@@ -76,26 +77,15 @@ public abstract class IOStream {
      * Writes data to IOStream
      *
      * @param b byte array to write
+     * @throws IOException
      */
-    public void write(byte @Nullable [] b) throws InterruptedException, IOException {
-        if (!isOpen()) {
-            throw new IOException("io stream not open");
-        }
-
+    public void write(byte @Nullable [] b) throws IOException {
         OutputStream out = this.out;
-        if (out != null) {
-            out.write(b);
-        } else {
+        if (out == null) {
             throw new IOException("output stream not defined");
         }
+        out.write(b);
     }
-
-    /**
-     * Returns if IOStream is open
-     *
-     * @return true if stream is open, false if not
-     */
-    public abstract boolean isOpen();
 
     /**
      * Opens the IOStream
@@ -107,22 +97,43 @@ public abstract class IOStream {
     /**
      * Closes the IOStream
      */
-    public abstract void close();
+    public void close() {
+        InputStream in = this.in;
+        if (in != null) {
+            try {
+                in.close();
+            } catch (IOException e) {
+                logger.debug("failed to close input stream", e);
+            }
+            this.in = null;
+        }
+
+        OutputStream out = this.out;
+        if (out != null) {
+            try {
+                out.close();
+            } catch (IOException e) {
+                logger.debug("failed to close output stream", e);
+            }
+            this.out = null;
+        }
+    }
 
     /**
      * Creates an IOStream from an insteon bridge config object
      *
      * @param config
+     * @param httpClient
      * @param scheduler
      * @param serialPortManager
      * @return reference to IOStream
      */
-    public static IOStream create(InsteonBridgeConfiguration config, ScheduledExecutorService scheduler,
-            SerialPortManager serialPortManager) {
+    public static IOStream create(InsteonBridgeConfiguration config, HttpClient httpClient,
+            ScheduledExecutorService scheduler, SerialPortManager serialPortManager) {
         if (config instanceof InsteonHub1Configuration hub1Config) {
             return makeTcpIOStream(hub1Config);
         } else if (config instanceof InsteonHub2Configuration hub2Config) {
-            return makeHubIOStream(hub2Config, scheduler);
+            return makeHubIOStream(hub2Config, httpClient, scheduler);
         } else if (config instanceof InsteonPLMConfiguration plmConfig) {
             return makeSerialIOStream(plmConfig, serialPortManager);
         } else {
@@ -130,13 +141,14 @@ public abstract class IOStream {
         }
     }
 
-    private static HubIOStream makeHubIOStream(InsteonHub2Configuration config, ScheduledExecutorService scheduler) {
+    private static HubIOStream makeHubIOStream(InsteonHub2Configuration config, HttpClient httpClient,
+            ScheduledExecutorService scheduler) {
         String host = config.getHostname();
         int port = config.getPort();
         String user = config.getUsername();
         String pass = config.getPassword();
         int pollInterval = config.getHubPollInterval();
-        return new HubIOStream(host, port, user, pass, pollInterval, scheduler);
+        return new HubIOStream(host, port, user, pass, pollInterval, httpClient, scheduler);
     }
 
     private static SerialIOStream makeSerialIOStream(InsteonPLMConfiguration config,

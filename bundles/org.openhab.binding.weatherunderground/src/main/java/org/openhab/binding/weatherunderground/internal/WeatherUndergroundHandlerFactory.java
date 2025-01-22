@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,6 @@ import org.openhab.binding.weatherunderground.internal.handler.WeatherUndergroun
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -64,16 +63,13 @@ public class WeatherUndergroundHandlerFactory extends BaseThingHandlerFactory {
     private final LocaleProvider localeProvider;
     private final LocationProvider locationProvider;
     private final UnitProvider unitProvider;
-    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public WeatherUndergroundHandlerFactory(final @Reference LocaleProvider localeProvider,
-            final @Reference LocationProvider locationProvider, final @Reference UnitProvider unitProvider,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference LocationProvider locationProvider, final @Reference UnitProvider unitProvider) {
         this.localeProvider = localeProvider;
         this.locationProvider = locationProvider;
         this.unitProvider = unitProvider;
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -86,7 +82,7 @@ public class WeatherUndergroundHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_WEATHER)) {
-            return new WeatherUndergroundHandler(thing, localeProvider, unitProvider, timeZoneProvider);
+            return new WeatherUndergroundHandler(thing, localeProvider, unitProvider);
         }
 
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {

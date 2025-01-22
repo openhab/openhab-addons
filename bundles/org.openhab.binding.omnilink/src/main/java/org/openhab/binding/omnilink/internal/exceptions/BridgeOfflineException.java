@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,8 +21,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Craig Hamilton - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("serial")
 public class BridgeOfflineException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     public BridgeOfflineException(Exception e) {
         super(e);
     }

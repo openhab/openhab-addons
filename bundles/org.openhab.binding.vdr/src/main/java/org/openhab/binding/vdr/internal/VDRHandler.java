@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.vdr.internal;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +27,6 @@ import org.openhab.binding.vdr.internal.svdrp.SVDRPEpgEvent;
 import org.openhab.binding.vdr.internal.svdrp.SVDRPException;
 import org.openhab.binding.vdr.internal.svdrp.SVDRPParseResponseException;
 import org.openhab.binding.vdr.internal.svdrp.SVDRPVolume;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -60,15 +57,12 @@ public class VDRHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(VDRHandler.class);
 
-    private final TimeZoneProvider timeZoneProvider;
-
     private VDRConfiguration config = new VDRConfiguration();
 
     private @Nullable ScheduledFuture<?> refreshThreadFuture = null;
 
-    public VDRHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public VDRHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -229,13 +223,11 @@ public class VDRHandler extends BaseThingHandler {
                             break;
                         case VDRBindingConstants.CHANNEL_UID_CURRENT_EVENT_BEGIN:
                             entry = con.getEpgEvent(SVDRPEpgEvent.TYPE.NOW);
-                            result = new DateTimeType(LocalDateTime.ofInstant(entry.getBegin(), ZoneId.systemDefault())
-                                    .atZone(timeZoneProvider.getTimeZone()));
+                            result = new DateTimeType(entry.getBegin());
                             break;
                         case VDRBindingConstants.CHANNEL_UID_CURRENT_EVENT_END:
                             entry = con.getEpgEvent(SVDRPEpgEvent.TYPE.NOW);
-                            result = new DateTimeType(LocalDateTime.ofInstant(entry.getEnd(), ZoneId.systemDefault())
-                                    .atZone(timeZoneProvider.getTimeZone()));
+                            result = new DateTimeType(entry.getEnd());
                             break;
                         case VDRBindingConstants.CHANNEL_UID_NEXT_EVENT_TITLE:
                             entry = con.getEpgEvent(SVDRPEpgEvent.TYPE.NEXT);
@@ -251,13 +243,11 @@ public class VDRHandler extends BaseThingHandler {
                             break;
                         case VDRBindingConstants.CHANNEL_UID_NEXT_EVENT_BEGIN:
                             entry = con.getEpgEvent(SVDRPEpgEvent.TYPE.NEXT);
-                            result = new DateTimeType(LocalDateTime.ofInstant(entry.getBegin(), ZoneId.systemDefault())
-                                    .atZone(timeZoneProvider.getTimeZone()));
+                            result = new DateTimeType(entry.getBegin());
                             break;
                         case VDRBindingConstants.CHANNEL_UID_NEXT_EVENT_END:
                             entry = con.getEpgEvent(SVDRPEpgEvent.TYPE.NEXT);
-                            result = new DateTimeType(LocalDateTime.ofInstant(entry.getEnd(), ZoneId.systemDefault())
-                                    .atZone(timeZoneProvider.getTimeZone()));
+                            result = new DateTimeType(entry.getEnd());
                             break;
 
                     }

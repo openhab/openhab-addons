@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.ecobee.internal.handler;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -89,8 +88,7 @@ public final class EcobeeUtils {
     }
 
     public static State undefOrDate(@Nullable Instant instant, TimeZoneProvider timeZoneProvider) {
-        return instant == null ? UnDefType.UNDEF
-                : new DateTimeType(ZonedDateTime.ofInstant(instant, timeZoneProvider.getTimeZone()));
+        return instant == null ? UnDefType.UNDEF : new DateTimeType(instant);
     }
 
     public static State undefOrDate(@Nullable LocalDateTime ldt, TimeZoneProvider timeZoneProvider) {

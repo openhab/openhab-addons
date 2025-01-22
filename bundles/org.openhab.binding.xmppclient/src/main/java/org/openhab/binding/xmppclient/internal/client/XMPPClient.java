@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,8 +37,11 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo.Identity;
 import org.jivesoftware.smackx.httpfileupload.HttpFileUploadManager;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 import org.openhab.binding.xmppclient.internal.handler.XMPPClientMessageSubscriber;
 import org.slf4j.Logger;
@@ -55,9 +58,11 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     private final Logger logger = LoggerFactory.getLogger(XMPPClient.class);
     private @Nullable AbstractXMPPConnection connection;
     private @Nullable ChatManager chatManager;
+    private @Nullable MultiUserChatManager multiUserChatManager;
     private @Nullable HttpFileUploadManager httpFileUploadManager;
     private Set<XMPPClientMessageSubscriber> subscribers = new HashSet<>();
     private final XMPPClientEventlistener eventListener;
+    private String nickname = "";
 
     public XMPPClient(XMPPClientEventlistener eventListener) {
         this.eventListener = eventListener;
@@ -73,12 +78,18 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         subscribers.remove(channel);
     }
 
-    public void connect(String host, Integer port, String login, String domain, String password,
+    public void connect(String host, Integer port, String login, String nick, String domain, String password,
             SecurityMode securityMode) throws XMPPClientConfigException, XMPPClientException {
         disconnect();
         String serverHost = domain;
         if (!host.isBlank()) {
             serverHost = host;
+        }
+
+        if (!nick.isBlank()) {
+            nickname = nick;
+        } else {
+            nickname = login;
         }
 
         XMPPTCPConnectionConfiguration config;
@@ -115,6 +126,10 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         ChatManager chatManager = ChatManager.getInstanceFor(connection);
         chatManager.addIncomingListener(this);
         this.chatManager = chatManager;
+
+        MultiUserChatManager multiUserChatManager = MultiUserChatManager.getInstanceFor(connection);
+        multiUserChatManager.setAutoJoinOnReconnect(true);
+        this.multiUserChatManager = multiUserChatManager;
         httpFileUploadManager = HttpFileUploadManager.getInstanceFor(connection);
     }
 
@@ -142,6 +157,33 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
             chat.send(message);
         } catch (XmppStringprepException | SmackException.NotConnectedException | InterruptedException e) {
             logger.warn("XMPP message sending error", e);
+        }
+    }
+
+    public void sendGroupMessage(String to, String message) {
+        if (connection == null) {
+            eventListener.onErrorEvent("XMPP connection is null");
+            return;
+        }
+
+        MultiUserChatManager chatManager = this.multiUserChatManager;
+        if (chatManager == null) {
+            eventListener.onErrorEvent("XMPP chatManager is null");
+            return;
+        }
+        try {
+            EntityBareJid jid = JidCreate.entityBareFrom(to);
+            MultiUserChat chat = multiUserChatManager.getMultiUserChat(jid);
+
+            if (!chat.isJoined()) {
+                chat.join(Resourcepart.from(nickname));
+            }
+
+            chat.sendMessage(message);
+        } catch (XmppStringprepException | SmackException.NotConnectedException | InterruptedException e) {
+            logger.warn("XMPP message sending error", e);
+        } catch (SmackException | XMPPException e) {
+            logger.warn("XMPP message group join error", e);
         }
     }
 

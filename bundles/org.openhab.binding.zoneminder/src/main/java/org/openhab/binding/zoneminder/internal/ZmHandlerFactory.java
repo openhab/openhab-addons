@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.zoneminder.internal.handler.ZmBridgeHandler;
 import org.openhab.binding.zoneminder.internal.handler.ZmMonitorHandler;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -40,16 +39,13 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.zoneminder", service = ThingHandlerFactory.class)
 public class ZmHandlerFactory extends BaseThingHandlerFactory {
 
-    private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
     private final ZmStateDescriptionOptionsProvider stateDescriptionProvider;
 
     @Activate
-    public ZmHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
-            @Reference HttpClientFactory httpClientFactory,
+    public ZmHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference ZmStateDescriptionOptionsProvider stateDescriptionProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.timeZoneProvider = timeZoneProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -64,7 +60,7 @@ public class ZmHandlerFactory extends BaseThingHandlerFactory {
         if (SUPPORTED_SERVER_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new ZmBridgeHandler((Bridge) thing, httpClient, stateDescriptionProvider);
         } else if (SUPPORTED_MONITOR_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new ZmMonitorHandler(thing, timeZoneProvider);
+            return new ZmMonitorHandler(thing);
         }
         return null;
     }

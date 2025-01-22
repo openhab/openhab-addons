@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -125,7 +125,7 @@ public class MongoDBTypeConversions {
             HSBType.class, State::toString, //
             QuantityType.class, state -> ((QuantityType<?>) state).toBigDecimal().doubleValue(), //
             PercentType.class, state -> ((PercentType) state).intValue(), //
-            DateTimeType.class, state -> ((DateTimeType) state).getZonedDateTime().toString(), //
+            DateTimeType.class, state -> ((DateTimeType) state).getZonedDateTime(ZoneId.systemDefault()).toString(), //
             StringListType.class, State::toString, //
             DecimalType.class, state -> ((DecimalType) state).toBigDecimal().doubleValue(), //
             RawType.class, MongoDBTypeConversions::handleRawType//
@@ -237,7 +237,7 @@ public class MongoDBTypeConversions {
         if (value instanceof String) {
             return new DateTimeType(ZonedDateTime.parse(doc.getString(MongoDBFields.FIELD_VALUE)));
         } else {
-            return new DateTimeType(ZonedDateTime.ofInstant(((Date) value).toInstant(), ZoneId.systemDefault()));
+            return new DateTimeType(((Date) value).toInstant());
         }
     }
 

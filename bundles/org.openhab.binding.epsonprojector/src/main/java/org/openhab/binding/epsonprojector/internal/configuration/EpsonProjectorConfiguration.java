@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,4 +46,9 @@ public class EpsonProjectorConfiguration {
      * Maximum volume setting of this projector, ie 20, 40, etc.
      */
     public int maxVolume = 20;
+
+    /**
+     * Boolean to indicate if source list should be retrieved from projector
+     */
+    public boolean loadSourceList;
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,12 +17,10 @@ import static org.openhab.binding.network.internal.utils.NetworkUtils.durationTo
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.network.internal.NetworkBindingConfiguration;
@@ -102,12 +100,11 @@ public class NetworkHandler extends BaseThingHandler
                 });
                 break;
             case CHANNEL_LASTSEEN:
+                // We should not set the last seen state to UNDEF, it prevents restoreOnStartup from working
+                // For reference: https://github.com/openhab/openhab-addons/issues/17404
                 Instant lastSeen = presenceDetection.getLastSeen();
                 if (lastSeen != null) {
-                    updateState(CHANNEL_LASTSEEN, new DateTimeType(
-                            ZonedDateTime.ofInstant(lastSeen, TimeZone.getDefault().toZoneId()).withFixedOffsetZone()));
-                } else {
-                    updateState(CHANNEL_LASTSEEN, UnDefType.UNDEF);
+                    updateState(CHANNEL_LASTSEEN, new DateTimeType(lastSeen));
                 }
                 break;
             default:
@@ -146,11 +143,10 @@ public class NetworkHandler extends BaseThingHandler
 
         Instant lastSeen = presenceDetection.getLastSeen();
         if (value.isReachable() && lastSeen != null) {
-            updateState(CHANNEL_LASTSEEN, new DateTimeType(
-                    ZonedDateTime.ofInstant(lastSeen, TimeZone.getDefault().toZoneId()).withFixedOffsetZone()));
-        } else if (!value.isReachable() && lastSeen == null) {
-            updateState(CHANNEL_LASTSEEN, UnDefType.UNDEF);
+            updateState(CHANNEL_LASTSEEN, new DateTimeType(lastSeen));
         }
+        // We should not set the last seen state to UNDEF, it prevents restoreOnStartup from working
+        // For reference: https://github.com/openhab/openhab-addons/issues/17404
 
         updateNetworkProperties();
     }
@@ -187,8 +183,9 @@ public class NetworkHandler extends BaseThingHandler
             presenceDetection.setIOSDevice(handlerConfiguration.useIOSWakeUp);
             // Hand over binding configurations to the network service
             presenceDetection.setUseDhcpSniffing(configuration.allowDHCPlisten);
-            presenceDetection.setUseIcmpPing(configuration.allowSystemPings);
-            presenceDetection.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
+            presenceDetection.setUseIcmpPing(handlerConfiguration.useIcmpPing ? configuration.allowSystemPings : null);
+            presenceDetection.setUseArpPing(handlerConfiguration.useArpPing, configuration.arpPingToolPath,
+                    configuration.arpPingUtilMethod);
         }
 
         this.retries = handlerConfiguration.retry.intValue();

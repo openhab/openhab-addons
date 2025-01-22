@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.openhab.binding.vesync.internal.handlers.VeSyncBaseDeviceHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
+import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceOutletHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -37,6 +38,7 @@ import org.osgi.service.component.annotations.ServiceScope;
  * read by the bridge, and the discovery data updated via a callback implemented by the DeviceMetaDataUpdatedHandler.
  *
  * @author David Godyear - Initial contribution
+ * @author Marcel Goerentz - Add support for outlets
  */
 @NonNullByDefault
 @Component(scope = ServiceScope.PROTOTYPE, service = VeSyncDiscoveryService.class, configurationPid = "discovery.vesync")
@@ -94,6 +96,24 @@ public class VeSyncDiscoveryService extends AbstractThingHandlerDiscoveryService
 
     @Override
     public void handleMetadataRetrieved(VeSyncBridgeHandler handler) {
+        thingHandler.getOutletMetaData().map(apMeta -> {
+            final Map<String, Object> properties = new HashMap<>(6);
+            final String deviceUUID = apMeta.getUuid();
+            properties.put(DEVICE_PROP_DEVICE_NAME, apMeta.getDeviceName());
+            properties.put(DEVICE_PROP_DEVICE_TYPE, apMeta.getDeviceType());
+            properties.put(DEVICE_PROP_DEVICE_FAMILY,
+                    VeSyncBaseDeviceHandler.getDeviceFamilyMetadata(apMeta.getDeviceType(),
+                            VeSyncDeviceOutletHandler.DEV_TYPE_FAMILY_OUTLET,
+                            VeSyncDeviceOutletHandler.SUPPORTED_MODEL_FAMILIES));
+            properties.put(DEVICE_PROP_DEVICE_MAC_ID, apMeta.getMacId());
+            properties.put(DEVICE_PROP_DEVICE_UUID, deviceUUID);
+            properties.put(DEVICE_PROP_CONFIG_DEVICE_MAC, apMeta.getMacId());
+            properties.put(DEVICE_PROP_CONFIG_DEVICE_NAME, apMeta.getDeviceName());
+            return DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_OUTLET, bridgeUID, deviceUUID))
+                    .withLabel(apMeta.getDeviceName()).withBridge(bridgeUID).withProperties(properties)
+                    .withRepresentationProperty(DEVICE_PROP_DEVICE_MAC_ID).build();
+        }).forEach(this::thingDiscovered);
+
         thingHandler.getAirPurifiersMetadata().map(apMeta -> {
             final Map<String, Object> properties = new HashMap<>(6);
             final String deviceUUID = apMeta.getUuid();

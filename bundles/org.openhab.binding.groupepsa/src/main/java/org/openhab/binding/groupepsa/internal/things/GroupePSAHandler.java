@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,6 @@ import org.openhab.binding.groupepsa.internal.rest.api.dto.Safety;
 import org.openhab.binding.groupepsa.internal.rest.api.dto.Service;
 import org.openhab.binding.groupepsa.internal.rest.api.dto.VehicleStatus;
 import org.openhab.binding.groupepsa.internal.rest.exceptions.GroupePSACommunicationException;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -93,8 +92,6 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GroupePSAHandler.class);
 
-    private final TimeZoneProvider timeZoneProvider;
-
     private @Nullable String id = null;
     private long lastQueryTimeNs = 0L;
 
@@ -102,9 +99,8 @@ public class GroupePSAHandler extends BaseThingHandler {
     private long maxQueryFrequencyNanos = TimeUnit.MINUTES.toNanos(1);
     private long onlineIntervalM;
 
-    public GroupePSAHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public GroupePSAHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -424,7 +420,7 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     protected void updateState(String channelID, @Nullable ZonedDateTime date) {
         if (date != null) {
-            updateState(channelID, new DateTimeType(date).toZone(timeZoneProvider.getTimeZone()));
+            updateState(channelID, new DateTimeType(date));
         } else {
             updateState(channelID, UnDefType.UNDEF);
         }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.foobot.internal.handler;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Map;
 
 import javax.measure.Unit;
@@ -201,8 +199,7 @@ public class FoobotDeviceHandler extends BaseThingHandler {
         } else {
             final Unit<?> stateUnit = sensor.getUnit(unit);
             if (sensor == FoobotSensor.TIME) {
-                return new DateTimeType(
-                        ZonedDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(value)), ZoneId.systemDefault()));
+                return new DateTimeType(Instant.ofEpochSecond(Long.parseLong(value)));
             } else if (stateUnit == null) {
                 return new DecimalType(value);
             } else {

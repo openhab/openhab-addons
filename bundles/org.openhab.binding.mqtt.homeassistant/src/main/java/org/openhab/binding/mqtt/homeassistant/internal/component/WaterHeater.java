@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,8 +113,8 @@ public class WaterHeater extends AbstractComponent<WaterHeater.ChannelConfigurat
         protected List<String> modes = DEFAULT_MODES;
     }
 
-    public WaterHeater(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public WaterHeater(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         if (!PLATFORM_WATER_HEATER.equals(channelConfiguration.platform)) {
             throw new ConfigurationException("platform must be " + PLATFORM_WATER_HEATER);

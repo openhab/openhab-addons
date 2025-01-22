@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.ecovacs.internal.handler;
 
 import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -584,8 +583,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             if (!cleanLogRecords.isEmpty()) {
                 CleanLogRecord record = cleanLogRecords.get(0);
 
-                updateState(CHANNEL_ID_LAST_CLEAN_START,
-                        new DateTimeType(record.timestamp.toInstant().atZone(ZoneId.systemDefault())));
+                updateState(CHANNEL_ID_LAST_CLEAN_START, new DateTimeType(record.timestamp.toInstant()));
                 updateState(CHANNEL_ID_LAST_CLEAN_DURATION, new QuantityType<>(record.cleaningDuration, Units.SECOND));
                 updateState(CHANNEL_ID_LAST_CLEAN_AREA, new QuantityType<>(record.cleanedArea, SIUnits.SQUARE_METRE));
                 if (device.hasCapability(DeviceCapability.EXTENDED_CLEAN_LOG_RECORD)) {

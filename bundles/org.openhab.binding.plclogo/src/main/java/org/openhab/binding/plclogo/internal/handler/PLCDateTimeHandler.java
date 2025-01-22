@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.plclogo.internal.handler;
 
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
                 byte[] buffer = new byte[2];
                 String type = channel.getAcceptedItemType();
                 if (DATE_TIME_ITEM.equalsIgnoreCase(type)) {
-                    ZonedDateTime datetime = dateTimeCommand.getZonedDateTime();
+                    ZonedDateTime datetime = dateTimeCommand.getZonedDateTime(ZoneId.systemDefault());
                     if ("Time".equalsIgnoreCase(channelUID.getId())) {
                         buffer[0] = S7.ByteToBCD(datetime.getHour());
                         buffer[1] = S7.ByteToBCD(datetime.getMinute());

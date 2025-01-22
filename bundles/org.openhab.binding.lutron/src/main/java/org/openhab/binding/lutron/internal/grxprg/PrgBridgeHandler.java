@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.lutron.internal.grxprg;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
 import java.util.concurrent.ScheduledFuture;
@@ -165,8 +166,8 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
         } else if (id.equals(PrgConstants.CHANNEL_ZONERAISESTOP)) {
             protocolHandler.setZoneRaiseStop();
         } else if (id.equals(PrgConstants.CHANNEL_TIMECLOCK)) {
-            if (command instanceof DateTimeType dateTime) {
-                final ZonedDateTime zdt = dateTime.getZonedDateTime();
+            if (command instanceof DateTimeType dateTimeCommand) {
+                final ZonedDateTime zdt = dateTimeCommand.getZonedDateTime(ZoneId.systemDefault());
                 protocolHandler.setTime(GregorianCalendar.from(zdt));
             } else {
                 logger.error("Received a TIMECLOCK channel command with a non DateTimeType: {}", command);

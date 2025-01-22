@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.wemo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.time.ZoneId;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,7 +46,7 @@ public class InsightParserTest {
                 "1|1645800647|109676|80323|1196960|1209600|44|41400|30288361|483361410|8000");
         Map<String, State> result = parser.parse();
         assertEquals(OnOffType.ON, result.get(WemoBindingConstants.CHANNEL_STATE));
-        assertEquals(DateTimeType.valueOf("2022-02-25T15:50:47.000+0100").toZone(ZoneId.systemDefault()),
+        assertEquals(DateTimeType.valueOf("2022-02-25T15:50:47.000+0100"),
                 result.get(WemoBindingConstants.CHANNEL_LAST_CHANGED_AT));
         assertEquals(new DecimalType(109_676), result.get(WemoBindingConstants.CHANNEL_LAST_ON_FOR));
         assertEquals(new DecimalType(80_323), result.get(WemoBindingConstants.CHANNEL_ON_TODAY));
@@ -69,7 +68,7 @@ public class InsightParserTest {
         InsightParser parser = new InsightParser("8|1645967627|0|0|0|1209600|13|0|0|0.000000|8000");
         Map<String, State> result = parser.parse();
         assertEquals(OnOffType.ON, result.get(WemoBindingConstants.CHANNEL_STATE));
-        assertEquals(DateTimeType.valueOf("2022-02-27T14:13:47.000+0100").toZone(ZoneId.systemDefault()),
+        assertEquals(DateTimeType.valueOf("2022-02-27T14:13:47.000+0100"),
                 result.get(WemoBindingConstants.CHANNEL_LAST_CHANGED_AT));
         assertEquals(new DecimalType(0), result.get(WemoBindingConstants.CHANNEL_LAST_ON_FOR));
         assertEquals(new DecimalType(0), result.get(WemoBindingConstants.CHANNEL_ON_TODAY));
@@ -92,7 +91,7 @@ public class InsightParserTest {
                 "1|1645800647|109676|80323|1196960|1209600|44|41400|30288361|483361410");
         Map<String, State> result = parser.parse();
         assertEquals(OnOffType.ON, result.get(WemoBindingConstants.CHANNEL_STATE));
-        assertEquals(DateTimeType.valueOf("2022-02-25T15:50:47.000+0100").toZone(ZoneId.systemDefault()),
+        assertEquals(DateTimeType.valueOf("2022-02-25T15:50:47.000+0100"),
                 result.get(WemoBindingConstants.CHANNEL_LAST_CHANGED_AT));
         assertEquals(new DecimalType(109_676), result.get(WemoBindingConstants.CHANNEL_LAST_ON_FOR));
         assertEquals(new DecimalType(80_323), result.get(WemoBindingConstants.CHANNEL_ON_TODAY));

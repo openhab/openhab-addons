@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,14 +15,12 @@ package org.openhab.binding.meater.internal.handler;
 import static org.openhab.binding.meater.internal.MeaterBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meater.internal.MeaterConfiguration;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO.Cook;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO.Device;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -49,11 +47,9 @@ import org.openhab.core.types.UnDefType;
 public class MeaterHandler extends BaseThingHandler {
 
     private String deviceId = "";
-    private TimeZoneProvider timeZoneProvider;
 
-    public MeaterHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public MeaterHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -147,14 +143,13 @@ public class MeaterHandler extends BaseThingHandler {
             case CHANNEL_LAST_CONNECTION:
                 Instant instant = meaterProbe.getLastConnection();
                 if (instant != null) {
-                    return new DateTimeType(ZonedDateTime.ofInstant(instant, timeZoneProvider.getTimeZone()));
+                    return new DateTimeType(instant);
                 }
                 break;
             case CHANNEL_COOK_ESTIMATED_END_TIME:
                 if (cook != null) {
                     if (cook.time.remaining > -1) {
-                        return new DateTimeType(
-                                ZonedDateTime.now(timeZoneProvider.getTimeZone()).plusSeconds(cook.time.remaining));
+                        return new DateTimeType(Instant.now().plusSeconds(cook.time.remaining));
                     }
                 }
         }

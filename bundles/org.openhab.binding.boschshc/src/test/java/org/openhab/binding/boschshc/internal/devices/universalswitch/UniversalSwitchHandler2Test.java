@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.boschshc.internal.devices.universalswitch;
-
-import java.time.ZoneId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
@@ -29,7 +27,7 @@ class UniversalSwitchHandler2Test extends UniversalSwitchHandlerTest {
 
     @Override
     protected UniversalSwitchHandler createFixture() {
-        return new UniversalSwitch2Handler(getThing(), () -> ZoneId.systemDefault());
+        return new UniversalSwitch2Handler(getThing());
     }
 
     @Override

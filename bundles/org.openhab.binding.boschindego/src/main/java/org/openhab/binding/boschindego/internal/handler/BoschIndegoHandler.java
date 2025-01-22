@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Optional;
@@ -448,12 +447,7 @@ public class BoschIndegoHandler extends BaseThingHandler implements Authorizatio
     private void refreshLastCuttingTime() throws IndegoAuthenticationException, IndegoException {
         if (isLinked(LAST_CUTTING)) {
             Instant lastCutting = controller.getPredictiveLastCutting();
-            if (lastCutting != null) {
-                updateState(LAST_CUTTING,
-                        new DateTimeType(ZonedDateTime.ofInstant(lastCutting, timeZoneProvider.getTimeZone())));
-            } else {
-                updateState(LAST_CUTTING, UnDefType.UNDEF);
-            }
+            updateState(LAST_CUTTING, lastCutting == null ? UnDefType.UNDEF : new DateTimeType(lastCutting));
         }
     }
 
@@ -472,8 +466,7 @@ public class BoschIndegoHandler extends BaseThingHandler implements Authorizatio
         if (isLinked(NEXT_CUTTING)) {
             Instant nextCutting = controller.getPredictiveNextCutting();
             if (nextCutting != null) {
-                updateState(NEXT_CUTTING,
-                        new DateTimeType(ZonedDateTime.ofInstant(nextCutting, timeZoneProvider.getTimeZone())));
+                updateState(NEXT_CUTTING, new DateTimeType(nextCutting));
                 scheduleCuttingTimesRefresh(nextCutting);
             } else {
                 updateState(NEXT_CUTTING, UnDefType.UNDEF);

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.freedesktop.dbus.DBusMap;
 import org.freedesktop.dbus.handlers.AbstractPropertiesChangedHandler;
 import org.freedesktop.dbus.interfaces.Properties.PropertiesChanged;
 import org.freedesktop.dbus.types.UInt16;
@@ -138,102 +137,84 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
     }
 
     private void onDiscoveringUpdate(String dbusPath, Variant<?> variant) {
-        Object discovered = variant.getValue();
-        if (discovered instanceof Boolean) {
-            notifyListeners(new AdapterDiscoveringChangedEvent(dbusPath, (boolean) discovered));
+        if (variant.getValue() instanceof Boolean discovered) {
+            notifyListeners(new AdapterDiscoveringChangedEvent(dbusPath, discovered));
         }
     }
 
     private void onPoweredUpdate(String dbusPath, Variant<?> variant) {
-        Object powered = variant.getValue();
-        if (powered instanceof Boolean) {
-            notifyListeners(new AdapterPoweredChangedEvent(dbusPath, (boolean) powered));
+        if (variant.getValue() instanceof Boolean powered) {
+            notifyListeners(new AdapterPoweredChangedEvent(dbusPath, powered));
         }
     }
 
     private void onServicesResolved(String dbusPath, Variant<?> variant) {
-        Object resolved = variant.getValue();
-        if (resolved instanceof Boolean) {
-            notifyListeners(new ServicesResolvedEvent(dbusPath, (boolean) resolved));
+        if (variant.getValue() instanceof Boolean resolved) {
+            notifyListeners(new ServicesResolvedEvent(dbusPath, resolved));
         }
     }
 
     private void onNameUpdate(String dbusPath, Variant<?> variant) {
-        Object name = variant.getValue();
-        if (name instanceof String) {
-            notifyListeners(new NameEvent(dbusPath, (String) name));
+        if (variant.getValue() instanceof String name) {
+            notifyListeners(new NameEvent(dbusPath, name));
         }
     }
 
     private void onTXPowerUpdate(String dbusPath, Variant<?> variant) {
-        Object txPower = variant.getValue();
-        if (txPower instanceof Short) {
-            notifyListeners(new TXPowerEvent(dbusPath, (short) txPower));
+        if (variant.getValue() instanceof Short txPower) {
+            notifyListeners(new TXPowerEvent(dbusPath, txPower));
         }
     }
 
     private void onConnectedUpdate(String dbusPath, Variant<?> variant) {
-        Object connected = variant.getValue();
-        if (connected instanceof Boolean) {
-            notifyListeners(new ConnectedEvent(dbusPath, (boolean) connected));
+        if (variant.getValue() instanceof Boolean connected) {
+            notifyListeners(new ConnectedEvent(dbusPath, connected));
         }
     }
 
     private void onManufacturerDataUpdate(String dbusPath, Variant<?> variant) {
-        Map<Short, byte[]> eventData = new HashMap<>();
+        if (variant.getValue() instanceof Map<?, ?> map) {
+            Map<Short, byte[]> eventData = new HashMap<>();
 
-        Object map = variant.getValue();
-        if (map instanceof DBusMap) {
-            DBusMap<?, ?> dbm = (DBusMap<?, ?>) map;
-            for (Map.Entry<?, ?> entry : dbm.entrySet()) {
-                Object key = entry.getKey();
-                Object value = entry.getValue();
-                if (key instanceof UInt16 && value instanceof Variant<?>) {
-                    value = ((Variant<?>) value).getValue();
-                    if (value instanceof byte[]) {
-                        eventData.put(((UInt16) key).shortValue(), ((byte[]) value));
-                    }
+            map.forEach((key, value) -> {
+                if (key instanceof UInt16 iKey && value instanceof Variant<?> vValue
+                        && vValue.getValue() instanceof byte[] bValue) {
+                    eventData.put(iKey.shortValue(), bValue);
                 }
+            });
+
+            if (!eventData.isEmpty()) {
+                notifyListeners(new ManufacturerDataEvent(dbusPath, eventData));
             }
-        }
-        if (!eventData.isEmpty()) {
-            notifyListeners(new ManufacturerDataEvent(dbusPath, eventData));
         }
     }
 
     private void onServiceDataUpdate(String dbusPath, Variant<?> variant) {
-        Map<String, byte[]> serviceData = new HashMap<>();
+        if (variant.getValue() instanceof Map<?, ?> map) {
+            Map<String, byte[]> serviceData = new HashMap<>();
 
-        Object map = variant.getValue();
-        if (map instanceof DBusMap) {
-            DBusMap<?, ?> dbm = (DBusMap<?, ?>) map;
-            for (Map.Entry<?, ?> entry : dbm.entrySet()) {
-                Object key = entry.getKey();
-                Object value = entry.getValue();
-                if (key instanceof String && value instanceof Variant<?>) {
-                    value = ((Variant<?>) value).getValue();
-                    if (value instanceof byte[]) {
-                        serviceData.put(((String) key), ((byte[]) value));
-                    }
+            map.forEach((key, value) -> {
+                if (key instanceof String sKey && value instanceof Variant<?> vValue
+                        && vValue.getValue() instanceof byte[] bValue) {
+                    serviceData.put(sKey, bValue);
                 }
+            });
+
+            if (!serviceData.isEmpty()) {
+                notifyListeners(new ServiceDataEvent(dbusPath, serviceData));
             }
-        }
-        if (!serviceData.isEmpty()) {
-            notifyListeners(new ServiceDataEvent(dbusPath, serviceData));
         }
     }
 
     private void onValueUpdate(String dbusPath, Variant<?> variant) {
-        Object value = variant.getValue();
-        if (value instanceof byte[]) {
-            notifyListeners(new CharacteristicUpdateEvent(dbusPath, (byte[]) value));
+        if (variant.getValue() instanceof byte[] bytes) {
+            notifyListeners(new CharacteristicUpdateEvent(dbusPath, bytes));
         }
     }
 
     private void onRSSIUpdate(String dbusPath, Variant<?> variant) {
-        Object rssi = variant.getValue();
-        if (rssi instanceof Short) {
-            notifyListeners(new RssiEvent(dbusPath, (short) rssi));
+        if (variant.getValue() instanceof Short rssi) {
+            notifyListeners(new RssiEvent(dbusPath, rssi));
         }
     }
 }

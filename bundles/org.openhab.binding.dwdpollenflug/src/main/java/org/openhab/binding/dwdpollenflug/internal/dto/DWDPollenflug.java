@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,6 @@ import static org.openhab.binding.dwdpollenflug.internal.DWDPollenflugBindingCon
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -91,8 +89,7 @@ public class DWDPollenflug {
         if (date == null) {
             return UnDefType.NULL;
         } else {
-            ZonedDateTime zoned = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-            return new DateTimeType(zoned);
+            return new DateTimeType(date.toInstant());
         }
     }
 

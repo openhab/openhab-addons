@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -125,7 +125,7 @@ public class HumiditySensorHandler extends AbstractOmnilinkStatusHandler<Extende
                         thingID);
                 break;
             default:
-                logger.warn("Unknown channel for Humdity Sensor thing: {}", channelUID);
+                logger.warn("Unknown channel for Humidity Sensor thing: {}", channelUID);
         }
     }
 

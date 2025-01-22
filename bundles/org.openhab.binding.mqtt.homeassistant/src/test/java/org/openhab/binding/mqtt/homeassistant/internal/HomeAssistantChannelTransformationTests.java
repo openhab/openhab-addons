@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -98,6 +98,24 @@ public class HomeAssistantChannelTransformationTests {
     public void testIsDefined() {
         assertThat(transform("{{ value_json.val | is_defined }}", "{}"), is(nullValue()));
         assertThat(transform("{{ 'hi' | is_defined }}", "{}"), is("hi"));
+    }
+
+    @Test
+    public void testRegexFindall() {
+        assertThat(transform("{{ 'Flight from JFK to LHR' | regex_findall('([A-Z]{3})') }}", ""), is("[JFK, LHR]"));
+        assertThat(transform(
+                "{{ 'button_up_press' | regex_findall('^(?P<button>(?:button_)?[a-z0-9]+)_(?P<action>(?:press|hold)(?:_release)?)$') }}",
+                ""), is("[[button_up, press]]"));
+    }
+
+    @Test
+    public void testRegexFindallIndex() {
+        assertThat(transform("{{ 'Flight from JFK to LHR' | regex_findall_index('([A-Z]{3})', 0) }}", ""), is("JFK"));
+        assertThat(transform("{{ 'Flight from JFK to LHR' | regex_findall_index('([A-Z]{3})', 1) }}", ""), is("LHR"));
+        assertThat(transform("{{ ['JFK', 'LHR'] | regex_findall_index('([A-Z]{3})', 1) }}", ""), is("LHR"));
+        assertThat(transform(
+                "{{ 'button_up_press' | regex_findall_index('^(?P<button>(?:button_)?[a-z0-9]+)_(?P<action>(?:press|hold)(?:_release)?)$') }}",
+                ""), is("[button_up, press]"));
     }
 
     protected @Nullable String transform(String template, String value) {

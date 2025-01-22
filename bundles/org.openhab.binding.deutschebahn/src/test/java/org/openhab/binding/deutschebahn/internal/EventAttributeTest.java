@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.deutschebahn.internal;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
@@ -147,8 +145,7 @@ public class EventAttributeTest {
     public void testPlannedTime() {
         String time = "2109111825";
         GregorianCalendar expectedValue = new GregorianCalendar(2021, 8, 11, 18, 25, 0);
-        DateTimeType expectedState = new DateTimeType(
-                ZonedDateTime.ofInstant(expectedValue.toInstant(), ZoneId.systemDefault()));
+        DateTimeType expectedState = new DateTimeType(expectedValue.toInstant());
         doTestEventAttribute("planned-time", null, (Event e) -> e.setPt(time), expectedValue.getTime(), expectedState,
                 EventType.DEPARTURE, true);
     }
@@ -157,8 +154,7 @@ public class EventAttributeTest {
     public void testChangedTime() {
         String time = "2109111825";
         GregorianCalendar expectedValue = new GregorianCalendar(2021, 8, 11, 18, 25, 0);
-        DateTimeType expectedState = new DateTimeType(
-                ZonedDateTime.ofInstant(expectedValue.toInstant(), ZoneId.systemDefault()));
+        DateTimeType expectedState = new DateTimeType(expectedValue.toInstant());
         doTestEventAttribute("changed-time", null, (Event e) -> e.setCt(time), expectedValue.getTime(), expectedState,
                 EventType.DEPARTURE, true);
     }
@@ -167,8 +163,7 @@ public class EventAttributeTest {
     public void testCancellationTime() {
         String time = "2109111825";
         GregorianCalendar expectedValue = new GregorianCalendar(2021, 8, 11, 18, 25, 0);
-        DateTimeType expectedState = new DateTimeType(
-                ZonedDateTime.ofInstant(expectedValue.toInstant(), ZoneId.systemDefault()));
+        DateTimeType expectedState = new DateTimeType(expectedValue.toInstant());
         doTestEventAttribute("cancellation-time", null, (Event e) -> e.setClt(time), expectedValue.getTime(),
                 expectedState, EventType.DEPARTURE, true);
     }

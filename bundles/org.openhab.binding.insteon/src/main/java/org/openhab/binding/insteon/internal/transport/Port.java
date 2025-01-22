@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
 import org.openhab.binding.insteon.internal.transport.message.MsgFactory;
@@ -64,8 +65,8 @@ public class Port {
     private String name;
     private ScheduledExecutorService scheduler;
     private IOStream ioStream;
-    private IOStreamReader reader;
-    private IOStreamWriter writer;
+    private IOStreamReader reader = new IOStreamReader();
+    private IOStreamWriter writer = new IOStreamWriter();
     private @Nullable ScheduledFuture<?> readJob;
     private @Nullable ScheduledFuture<?> writeJob;
     private MsgFactory msgFactory = new MsgFactory();
@@ -73,13 +74,11 @@ public class Port {
     private LinkedBlockingQueue<Msg> writeQueue = new LinkedBlockingQueue<>();
     private AtomicBoolean connected = new AtomicBoolean(false);
 
-    public Port(InsteonBridgeConfiguration config, ScheduledExecutorService scheduler,
+    public Port(InsteonBridgeConfiguration config, HttpClient httpClient, ScheduledExecutorService scheduler,
             SerialPortManager serialPortManager) {
         this.name = config.getId();
         this.scheduler = scheduler;
-        this.ioStream = IOStream.create(config, scheduler, serialPortManager);
-        this.reader = new IOStreamReader();
-        this.writer = new IOStreamWriter();
+        this.ioStream = IOStream.create(config, httpClient, scheduler, serialPortManager);
     }
 
     public String getName() {
@@ -136,9 +135,7 @@ public class Port {
 
         connected.set(false);
 
-        if (ioStream.isOpen()) {
-            ioStream.close();
-        }
+        ioStream.close();
 
         ScheduledFuture<?> readJob = this.readJob;
         if (readJob != null) {
@@ -233,9 +230,9 @@ public class Port {
                     }
                 }
             } catch (InterruptedException e) {
-                logger.debug("reader thread got interrupted!");
+                logger.trace("reader thread got interrupted!");
             } catch (IOException e) {
-                logger.debug("reader thread got an io exception", e);
+                logger.trace("reader thread got an io exception", e);
                 disconnected();
             }
             logger.debug("exiting reader thread!");
@@ -333,9 +330,9 @@ public class Port {
                     Thread.sleep(WRITE_WAIT_TIME);
                 }
             } catch (InterruptedException e) {
-                logger.debug("writer thread got interrupted!");
+                logger.trace("writer thread got interrupted!");
             } catch (IOException e) {
-                logger.debug("writer thread got an io exception", e);
+                logger.trace("writer thread got an io exception", e);
                 disconnected();
             }
             logger.debug("exiting writer thread!");

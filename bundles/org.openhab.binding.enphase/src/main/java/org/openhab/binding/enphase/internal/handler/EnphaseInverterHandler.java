@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.enphase.internal.handler;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -92,11 +90,7 @@ public class EnphaseInverterHandler extends EnphaseDeviceHandler {
         if (inverterDTO == null) {
             state = UnDefType.UNDEF;
         } else {
-            final Instant instant = Instant.ofEpochSecond(inverterDTO.lastReportDate);
-            final ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
-            logger.trace("[{}] Epoch time {}, zonedDateTime: {}", getThing().getUID(), inverterDTO.lastReportDate,
-                    zonedDateTime);
-            state = new DateTimeType(zonedDateTime);
+            state = new DateTimeType(Instant.ofEpochSecond(inverterDTO.lastReportDate));
         }
         updateState(INVERTER_CHANNEL_LAST_REPORT_DATE, state);
     }

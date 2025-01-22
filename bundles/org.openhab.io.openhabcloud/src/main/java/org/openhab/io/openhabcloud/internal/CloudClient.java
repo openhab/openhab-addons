@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -468,7 +468,7 @@ public class CloudClient {
                     responseJson.put("id", requestId);
                     responseJson.put("headers", getJSONHeaders(response.getHeaders()));
                     responseJson.put("responseStatusCode", response.getStatus());
-                    responseJson.put("responseStatusText", "OK");
+                    responseJson.put("responseStatusText", response.getReason());
                     socket.emit("responseHeader", responseJson);
                     logger.trace("Sent headers to request {}", requestId);
                     logger.trace("{}", responseJson.toString());

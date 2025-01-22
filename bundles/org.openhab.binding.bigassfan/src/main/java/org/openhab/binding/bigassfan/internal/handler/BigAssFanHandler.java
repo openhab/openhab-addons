@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,8 +26,6 @@ import java.nio.BufferOverflowException;
 import java.nio.channels.IllegalBlockingModeException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -978,7 +976,7 @@ public class BigAssFanHandler extends BaseThingHandler {
             // (mac|name;TIME;VALUE;2017-03-26T14:06:27Z)
             try {
                 Instant instant = Instant.parse(messageParts[3]);
-                DateTimeType state = new DateTimeType(ZonedDateTime.ofInstant(instant, ZoneId.systemDefault()));
+                DateTimeType state = new DateTimeType(instant);
                 updateChannel(CHANNEL_TIME, state);
                 fanStateMap.put(CHANNEL_TIME, state);
             } catch (DateTimeParseException e) {

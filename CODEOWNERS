@@ -58,7 +58,7 @@
 /bundles/org.openhab.binding.boschindego/ @jofleck @jlaur
 /bundles/org.openhab.binding.boschshc/ @david-pace @GerdZanker
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
-/bundles/org.openhab.binding.broadlink/ @dag81
+/bundles/org.openhab.binding.broadlink/ @AntonJansen
 /bundles/org.openhab.binding.broadlinkthermostat/ @flo-02-mu
 /bundles/org.openhab.binding.bsblan/ @hypetsch
 /bundles/org.openhab.binding.bticinosmarther/ @MrRonfo
@@ -465,6 +465,7 @@
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.marytts/ @kaikreuzer
 /bundles/org.openhab.voice.mimictts/ @dalgwen
+/bundles/org.openhab.voice.openaitts/ @Artur-Fedjukevits
 /bundles/org.openhab.voice.picotts/ @FlorianSW
 /bundles/org.openhab.voice.pipertts/ @GiviMAD
 /bundles/org.openhab.voice.pollytts/ @openhab/add-ons-maintainers

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -142,8 +142,7 @@ public class JpaHistoricItem implements HistoricItem {
         } else if (item instanceof RollershutterItem) {
             state = PercentType.valueOf(pItem.getValue());
         } else if (item instanceof DateTimeItem) {
-            state = new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(pItem.getValue())),
-                    ZoneId.systemDefault()));
+            state = new DateTimeType(Instant.ofEpochMilli(Long.parseLong(pItem.getValue())));
         } else if (item instanceof LocationItem) {
             PointType pType = null;
             String[] comps = pItem.getValue().split(";");

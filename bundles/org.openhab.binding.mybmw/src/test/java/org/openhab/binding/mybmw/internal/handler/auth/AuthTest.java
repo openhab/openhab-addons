@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -317,9 +317,9 @@ class AuthTest {
             HttpClientFactory mockHCF = mock(HttpClientFactory.class);
             when(mockHCF.getCommonHttpClient()).thenReturn(authHttpClient);
             MyBMWBridgeConfiguration config = new MyBMWBridgeConfiguration();
-            config.region = BimmerConstants.REGION_CHINA;
-            config.userName = "Hello User";
-            config.password = "Hello Password";
+            config.setRegion(BimmerConstants.REGION_CHINA);
+            config.setUserName("Hello User");
+            config.setPassword("Hello Password");
             MyBMWTokenController tokenHandler = new MyBMWTokenController(config, authHttpClient);
             Token token = tokenHandler.getToken();
             assertNotNull(token);

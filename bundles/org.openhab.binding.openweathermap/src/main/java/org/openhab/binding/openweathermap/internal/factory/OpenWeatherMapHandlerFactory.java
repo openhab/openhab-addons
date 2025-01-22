@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,6 @@ import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapWeather
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -67,17 +66,15 @@ public class OpenWeatherMapHandlerFactory extends BaseThingHandlerFactory {
     private final LocaleProvider localeProvider;
     private final LocationProvider locationProvider;
     private final TranslationProvider i18nProvider;
-    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public OpenWeatherMapHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference LocaleProvider localeProvider, final @Reference LocationProvider locationProvider,
-            final @Reference TranslationProvider i18nProvider, final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference TranslationProvider i18nProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.localeProvider = localeProvider;
         this.locationProvider = locationProvider;
         this.i18nProvider = i18nProvider;
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -98,13 +95,13 @@ public class OpenWeatherMapHandlerFactory extends BaseThingHandlerFactory {
                     bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
             return handler;
         } else if (THING_TYPE_WEATHER_AND_FORECAST.equals(thingTypeUID)) {
-            return new OpenWeatherMapWeatherAndForecastHandler(thing, timeZoneProvider);
+            return new OpenWeatherMapWeatherAndForecastHandler(thing);
         } else if (THING_TYPE_AIR_POLLUTION.equals(thingTypeUID)) {
-            return new OpenWeatherMapAirPollutionHandler(thing, timeZoneProvider);
+            return new OpenWeatherMapAirPollutionHandler(thing);
         } else if (THING_TYPE_ONECALL_WEATHER_AND_FORECAST.equals(thingTypeUID)) {
-            return new OpenWeatherMapOneCallHandler(thing, timeZoneProvider);
+            return new OpenWeatherMapOneCallHandler(thing);
         } else if (THING_TYPE_ONECALL_HISTORY.equals(thingTypeUID)) {
-            return new OpenWeatherMapOneCallHistoryHandler(thing, timeZoneProvider);
+            return new OpenWeatherMapOneCallHistoryHandler(thing);
         }
 
         return null;

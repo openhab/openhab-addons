@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.ihc.internal.ws.datatypes;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 /**
  * Class for WSDate complex type.
@@ -159,11 +159,11 @@ public class WSDate {
     }
 
     /**
-     * Gets WSDate as ZonedDateTime.
+     * Gets WSDate as {@link Instant}.
      *
-     * @return LocalDateTime
+     * @return Instant
      */
-    public ZonedDateTime getAsZonedDateTime(ZoneId zoneId) {
-        return ZonedDateTime.of(getAsLocalDateTime(), zoneId);
+    public Instant getAsInstant(ZoneId zoneId) {
+        return getAsLocalDateTime().atZone(zoneId).toInstant();
     }
 }

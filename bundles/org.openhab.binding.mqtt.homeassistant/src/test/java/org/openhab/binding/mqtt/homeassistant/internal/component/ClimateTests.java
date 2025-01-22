@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ import org.openhab.core.library.unit.Units;
 @NonNullByDefault
 public class ClimateTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "climate/0x847127fffe11dd6a_climate_zigbee2mqtt";
+    public static final String TION_CONFIG_TOPIC = "climate/living-room-tion-3s/living-room-tion-3s";
 
     @SuppressWarnings("null")
     @Test
@@ -75,10 +76,9 @@ public class ClimateTests extends AbstractComponentTests {
         assertThat(component.getName(), is("th1"));
 
         assertChannel(component, Climate.ACTION_CH_ID, "zigbee2mqtt/th1", "", "th1", TextValue.class);
-        assertChannel(component, Climate.AWAY_MODE_CH_ID_DEPRECATED, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/away_mode",
-                "th1", OnOffValue.class);
-        assertChannel(component, Climate.CURRENT_TEMPERATURE_CH_ID_DEPRECATED, "zigbee2mqtt/th1", "", "th1",
-                NumberValue.class);
+        assertChannel(component, Climate.AWAY_MODE_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/away_mode", "th1",
+                OnOffValue.class);
+        assertChannel(component, Climate.CURRENT_TEMPERATURE_CH_ID, "zigbee2mqtt/th1", "", "th1", NumberValue.class);
         assertChannel(component, Climate.HOLD_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/preset", "th1",
                 TextValue.class);
         assertChannel(component, Climate.MODE_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/system_mode", "th1",
@@ -94,13 +94,13 @@ public class ClimateTests extends AbstractComponentTests {
                 "current_heating_setpoint": "24"}\
                 """);
         assertState(component, Climate.ACTION_CH_ID, new StringType("off"));
-        assertState(component, Climate.AWAY_MODE_CH_ID_DEPRECATED, OnOffType.ON);
-        assertState(component, Climate.CURRENT_TEMPERATURE_CH_ID_DEPRECATED, new QuantityType<>(22.2, SIUnits.CELSIUS));
+        assertState(component, Climate.AWAY_MODE_CH_ID, OnOffType.ON);
+        assertState(component, Climate.CURRENT_TEMPERATURE_CH_ID, new QuantityType<>(22.2, SIUnits.CELSIUS));
         assertState(component, Climate.HOLD_CH_ID, new StringType("schedule"));
         assertState(component, Climate.MODE_CH_ID, new StringType("heat"));
         assertState(component, Climate.TEMPERATURE_CH_ID, new QuantityType<>(24, SIUnits.CELSIUS));
 
-        component.getChannel(Climate.AWAY_MODE_CH_ID_DEPRECATED).getState().publishValue(OnOffType.OFF);
+        component.getChannel(Climate.AWAY_MODE_CH_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/th1/set/away_mode", "OFF");
         component.getChannel(Climate.HOLD_CH_ID).getState().publishValue(new StringType("eco"));
         assertPublished("zigbee2mqtt/th1/set/preset", "eco");
@@ -147,10 +147,9 @@ public class ClimateTests extends AbstractComponentTests {
         assertThat(component.getName(), is("th1"));
 
         assertChannel(component, Climate.ACTION_CH_ID, "zigbee2mqtt/th1", "", "th1", TextValue.class);
-        assertChannel(component, Climate.AWAY_MODE_CH_ID_DEPRECATED, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/away_mode",
-                "th1", OnOffValue.class);
-        assertChannel(component, Climate.CURRENT_TEMPERATURE_CH_ID_DEPRECATED, "zigbee2mqtt/th1", "", "th1",
-                NumberValue.class);
+        assertChannel(component, Climate.AWAY_MODE_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/away_mode", "th1",
+                OnOffValue.class);
+        assertChannel(component, Climate.CURRENT_TEMPERATURE_CH_ID, "zigbee2mqtt/th1", "", "th1", NumberValue.class);
         assertChannel(component, Climate.HOLD_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/preset", "th1",
                 TextValue.class);
         assertChannel(component, Climate.MODE_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/system_mode", "th1",
@@ -166,14 +165,14 @@ public class ClimateTests extends AbstractComponentTests {
                 "current_heating_setpoint": "24"}\
                 """);
         assertState(component, Climate.ACTION_CH_ID, new StringType("off"));
-        assertState(component, Climate.AWAY_MODE_CH_ID_DEPRECATED, OnOffType.ON);
-        assertState(component, Climate.CURRENT_TEMPERATURE_CH_ID_DEPRECATED, new QuantityType<>(22.2, SIUnits.CELSIUS));
+        assertState(component, Climate.AWAY_MODE_CH_ID, OnOffType.ON);
+        assertState(component, Climate.CURRENT_TEMPERATURE_CH_ID, new QuantityType<>(22.2, SIUnits.CELSIUS));
         assertState(component, Climate.HOLD_CH_ID, new StringType("schedule"));
         assertState(component, Climate.MODE_CH_ID, new StringType("heat"));
         assertState(component, Climate.TEMPERATURE_CH_ID, new QuantityType<>(24, SIUnits.CELSIUS));
 
         // Climate is in OFF state
-        component.getChannel(Climate.AWAY_MODE_CH_ID_DEPRECATED).getState().publishValue(OnOffType.OFF);
+        component.getChannel(Climate.AWAY_MODE_CH_ID).getState().publishValue(OnOffType.OFF);
         assertNotPublished("zigbee2mqtt/th1/set/away_mode", "OFF");
         component.getChannel(Climate.HOLD_CH_ID).getState().publishValue(new StringType("eco"));
         assertNotPublished("zigbee2mqtt/th1/set/preset", "eco");
@@ -192,7 +191,7 @@ public class ClimateTests extends AbstractComponentTests {
                 """);
 
         // Climate is in ON state
-        component.getChannel(Climate.AWAY_MODE_CH_ID_DEPRECATED).getState().publishValue(OnOffType.OFF);
+        component.getChannel(Climate.AWAY_MODE_CH_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/th1/set/away_mode", "OFF");
         component.getChannel(Climate.HOLD_CH_ID).getState().publishValue(new StringType("eco"));
         assertPublished("zigbee2mqtt/th1/set/preset", "eco");
@@ -255,12 +254,12 @@ public class ClimateTests extends AbstractComponentTests {
         assertChannel(component, Climate.ACTION_CH_ID, "zigbee2mqtt/th1", "", "MQTT HVAC", TextValue.class);
         assertChannel(component, Climate.AUX_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/aux", "MQTT HVAC",
                 OnOffValue.class);
-        assertChannel(component, Climate.AWAY_MODE_CH_ID_DEPRECATED, "zigbee2mqtt/th1", "zigbee2mqtt/th1/away_mode",
-                "MQTT HVAC", OnOffValue.class);
-        assertChannel(component, Climate.CURRENT_TEMPERATURE_CH_ID_DEPRECATED, "zigbee2mqtt/th1", "", "MQTT HVAC",
+        assertChannel(component, Climate.AWAY_MODE_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/away_mode", "MQTT HVAC",
+                OnOffValue.class);
+        assertChannel(component, Climate.CURRENT_TEMPERATURE_CH_ID, "zigbee2mqtt/th1", "", "MQTT HVAC",
                 NumberValue.class);
-        assertChannel(component, Climate.FAN_MODE_CH_ID_DEPRECATED, "zigbee2mqtt/th1", "zigbee2mqtt/th1/fan_mode",
-                "MQTT HVAC", TextValue.class);
+        assertChannel(component, Climate.FAN_MODE_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/fan_mode", "MQTT HVAC",
+                TextValue.class);
         assertChannel(component, Climate.HOLD_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/hold", "MQTT HVAC",
                 TextValue.class);
         assertChannel(component, Climate.MODE_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/mode", "MQTT HVAC",
@@ -269,10 +268,10 @@ public class ClimateTests extends AbstractComponentTests {
                 TextValue.class);
         assertChannel(component, Climate.TEMPERATURE_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/temperature",
                 "MQTT HVAC", NumberValue.class);
-        assertChannel(component, Climate.TEMPERATURE_HIGH_CH_ID_DEPRECATED, "zigbee2mqtt/th1",
-                "zigbee2mqtt/th1/temperature_high", "MQTT HVAC", NumberValue.class);
-        assertChannel(component, Climate.TEMPERATURE_LOW_CH_ID_DEPRECATED, "zigbee2mqtt/th1",
-                "zigbee2mqtt/th1/temperature_low", "MQTT HVAC", NumberValue.class);
+        assertChannel(component, Climate.TEMPERATURE_HIGH_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/temperature_high",
+                "MQTT HVAC", NumberValue.class);
+        assertChannel(component, Climate.TEMPERATURE_LOW_CH_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/temperature_low",
+                "MQTT HVAC", NumberValue.class);
         assertChannel(component, Climate.POWER_CH_ID, "", "zigbee2mqtt/th1/power", "MQTT HVAC", OnOffValue.class);
         assertChannel(component, Climate.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
                 TextValue.class);
@@ -286,24 +285,21 @@ public class ClimateTests extends AbstractComponentTests {
 
         assertState(component, Climate.ACTION_CH_ID, new StringType("fan"));
         assertState(component, Climate.AUX_CH_ID, OnOffType.ON);
-        assertState(component, Climate.AWAY_MODE_CH_ID_DEPRECATED, OnOffType.OFF);
-        assertState(component, Climate.CURRENT_TEMPERATURE_CH_ID_DEPRECATED,
-                new QuantityType<>(35.5, ImperialUnits.FAHRENHEIT));
-        assertState(component, Climate.FAN_MODE_CH_ID_DEPRECATED, new StringType("p2"));
+        assertState(component, Climate.AWAY_MODE_CH_ID, OnOffType.OFF);
+        assertState(component, Climate.CURRENT_TEMPERATURE_CH_ID, new QuantityType<>(35.5, ImperialUnits.FAHRENHEIT));
+        assertState(component, Climate.FAN_MODE_CH_ID, new StringType("p2"));
         assertState(component, Climate.HOLD_CH_ID, new StringType("u2"));
         assertState(component, Climate.MODE_CH_ID, new StringType("B1"));
         assertState(component, Climate.SWING_CH_ID, new StringType("G1"));
         assertState(component, Climate.TEMPERATURE_CH_ID, new QuantityType<>(30, ImperialUnits.FAHRENHEIT));
-        assertState(component, Climate.TEMPERATURE_HIGH_CH_ID_DEPRECATED,
-                new QuantityType<>(37, ImperialUnits.FAHRENHEIT));
-        assertState(component, Climate.TEMPERATURE_LOW_CH_ID_DEPRECATED,
-                new QuantityType<>(20, ImperialUnits.FAHRENHEIT));
+        assertState(component, Climate.TEMPERATURE_HIGH_CH_ID, new QuantityType<>(37, ImperialUnits.FAHRENHEIT));
+        assertState(component, Climate.TEMPERATURE_LOW_CH_ID, new QuantityType<>(20, ImperialUnits.FAHRENHEIT));
 
         component.getChannel(Climate.AUX_CH_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/th1/aux", "OFF");
-        component.getChannel(Climate.AWAY_MODE_CH_ID_DEPRECATED).getState().publishValue(OnOffType.ON);
+        component.getChannel(Climate.AWAY_MODE_CH_ID).getState().publishValue(OnOffType.ON);
         assertPublished("zigbee2mqtt/th1/away_mode", "ON");
-        component.getChannel(Climate.FAN_MODE_CH_ID_DEPRECATED).getState().publishValue(new StringType("p1"));
+        component.getChannel(Climate.FAN_MODE_CH_ID).getState().publishValue(new StringType("p1"));
         assertPublished("zigbee2mqtt/th1/fan_mode", "fan_mode=p1");
         component.getChannel(Climate.HOLD_CH_ID).getState().publishValue(new StringType("u3"));
         assertPublished("zigbee2mqtt/th1/hold", "hold=u3");
@@ -313,9 +309,9 @@ public class ClimateTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/th1/swing", "swing=G2");
         component.getChannel(Climate.TEMPERATURE_CH_ID).getState().publishValue(new DecimalType(30.5));
         assertPublished("zigbee2mqtt/th1/temperature", "temperature=30.5");
-        component.getChannel(Climate.TEMPERATURE_HIGH_CH_ID_DEPRECATED).getState().publishValue(new DecimalType(39.5));
+        component.getChannel(Climate.TEMPERATURE_HIGH_CH_ID).getState().publishValue(new DecimalType(39.5));
         assertPublished("zigbee2mqtt/th1/temperature_high", "temperature_high=39.5");
-        component.getChannel(Climate.TEMPERATURE_LOW_CH_ID_DEPRECATED).getState().publishValue(new DecimalType(19.5));
+        component.getChannel(Climate.TEMPERATURE_LOW_CH_ID).getState().publishValue(new DecimalType(19.5));
         assertPublished("zigbee2mqtt/th1/temperature_low", "temperature_low=19.5");
         component.getChannel(Climate.POWER_CH_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/th1/power", "OFF");
@@ -397,8 +393,82 @@ public class ClimateTests extends AbstractComponentTests {
         assertState(component, Climate.TARGET_HUMIDITY_CH_ID, new QuantityType<>(50, Units.PERCENT));
     }
 
+    @SuppressWarnings("null")
+    @Test
+    public void testClimateWithEmptyName() {
+        var component = discoverComponent(configTopicToMqtt(TION_CONFIG_TOPIC), """
+                {
+                  "curr_temp_t": "living-room-tion-3s/climate/living-room-tion-3s/current_temperature/state",
+                  "mode_cmd_t": "living-room-tion-3s/climate/living-room-tion-3s/mode/command",
+                  "mode_stat_t": "living-room-tion-3s/climate/living-room-tion-3s/mode/state",
+                  "modes": [
+                    "off",
+                    "heat",
+                    "fan_only",
+                    "heat_cool"
+                  ],
+                  "temp_cmd_t": "living-room-tion-3s/climate/living-room-tion-3s/target_temperature/command",
+                  "temp_stat_t": "living-room-tion-3s/climate/living-room-tion-3s/target_temperature/state",
+                  "min_temp": 1,
+                  "max_temp": 25,
+                  "temp_step": 1,
+                  "precision": 1,
+                  "temp_unit": "C",
+                  "min_hum": 30,
+                  "max_hum": 99,
+                  "act_t": "living-room-tion-3s/climate/living-room-tion-3s/action/state",
+                  "fan_mode_cmd_t": "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/command",
+                  "fan_mode_stat_t": "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/state",
+                  "fan_modes": [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6"
+                  ],
+                  "name": "",
+                  "ic": "mdi:air-filter",
+                  "avty_t": "living-room-tion-3s/status",
+                  "uniq_id": "ESPclimateliving-room-tion-3s",
+                  "dev": {
+                    "ids": "f09e9e213ab0",
+                    "name": "living-room-tion-3s",
+                    "sw": "2024.8.0 (ESPHome 2024.11.3)",
+                    "mdl": "tion",
+                    "mf": "dentra",
+                    "cns": [
+                      [
+                        "mac",
+                        "f09e9e213ab0"
+                      ]
+                    ]
+                  }
+                }
+                """);
+
+        assertThat(component.channels.size(), is(5));
+        assertThat(component.getName(), is("living-room-tion-3s"));
+
+        assertChannel(component, Climate.ACTION_CH_ID, "living-room-tion-3s/climate/living-room-tion-3s/action/state",
+                "", "living-room-tion-3s", TextValue.class);
+        assertChannel(component, Climate.CURRENT_TEMPERATURE_CH_ID,
+                "living-room-tion-3s/climate/living-room-tion-3s/current_temperature/state", "", "living-room-tion-3s",
+                NumberValue.class);
+        assertChannel(component, Climate.FAN_MODE_CH_ID,
+                "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/state",
+                "living-room-tion-3s/climate/living-room-tion-3s/fan_mode/command", "living-room-tion-3s",
+                TextValue.class);
+        assertChannel(component, Climate.MODE_CH_ID, "living-room-tion-3s/climate/living-room-tion-3s/mode/state",
+                "living-room-tion-3s/climate/living-room-tion-3s/mode/command", "living-room-tion-3s", TextValue.class);
+        assertChannel(component, Climate.TEMPERATURE_CH_ID,
+                "living-room-tion-3s/climate/living-room-tion-3s/target_temperature/state",
+                "living-room-tion-3s/climate/living-room-tion-3s/target_temperature/command", "living-room-tion-3s",
+                NumberValue.class);
+    }
+
     @Override
     protected Set<String> getConfigTopics() {
-        return Set.of(CONFIG_TOPIC);
+        return Set.of(CONFIG_TOPIC, TION_CONFIG_TOPIC);
     }
 }

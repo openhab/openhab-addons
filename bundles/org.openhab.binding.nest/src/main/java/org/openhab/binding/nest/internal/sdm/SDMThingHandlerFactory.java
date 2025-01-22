@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import org.openhab.binding.nest.internal.sdm.handler.SDMAccountHandler;
 import org.openhab.binding.nest.internal.sdm.handler.SDMCameraHandler;
 import org.openhab.binding.nest.internal.sdm.handler.SDMThermostatHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -44,14 +43,12 @@ public class SDMThingHandlerFactory extends BaseThingHandlerFactory {
 
     private HttpClientFactory httpClientFactory;
     private OAuthFactory oAuthFactory;
-    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public SDMThingHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference OAuthFactory oAuthFactory, final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference OAuthFactory oAuthFactory) {
         this.httpClientFactory = httpClientFactory;
         this.oAuthFactory = oAuthFactory;
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -66,13 +63,13 @@ public class SDMThingHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
             return new SDMAccountHandler((Bridge) thing, httpClientFactory, oAuthFactory);
         } else if (thingTypeUID.equals(THING_TYPE_CAMERA)) {
-            return new SDMCameraHandler(thing, timeZoneProvider);
+            return new SDMCameraHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_DISPLAY)) {
-            return new SDMCameraHandler(thing, timeZoneProvider);
+            return new SDMCameraHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_DOORBELL)) {
-            return new SDMCameraHandler(thing, timeZoneProvider);
+            return new SDMCameraHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_THERMOSTAT)) {
-            return new SDMThermostatHandler(thing, timeZoneProvider);
+            return new SDMThermostatHandler(thing);
         }
 
         return null;

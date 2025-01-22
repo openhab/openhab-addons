@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -165,6 +165,7 @@ public class HomieImplementationTest extends MqttOSGiTest {
                 "Connection " + homieConnection.getClientId() + " not retrieving all topics ");
     }
 
+    @Disabled("https://github.com/openhab/openhab-addons/issues/12667")
     @Test
     public void retrieveOneAttribute() throws Exception {
         WaitForTopicValue watcher = new WaitForTopicValue(homieConnection, DEVICE_TOPIC + "/$homie");

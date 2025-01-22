@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,16 +21,17 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.insteon.internal.InsteonLegacyBinding;
 import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.DeviceAddress;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.discovery.InsteonLegacyDiscoveryService;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingManager;
@@ -67,16 +68,18 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> reconnectJob = null;
     private @Nullable ScheduledFuture<?> settleJob = null;
     private long lastInsteonDeviceCreatedTimestamp = 0;
+    private HttpClient httpClient;
     private SerialPortManager serialPortManager;
     private ThingManager thingManager;
     private ThingRegistry thingRegistry;
     private Map<String, String> deviceInfo = new ConcurrentHashMap<>();
     private Map<String, String> channelInfo = new ConcurrentHashMap<>();
-    private Map<ChannelUID, Configuration> channelConfigs = new ConcurrentHashMap<>();
+    private Map<ChannelUID, Channel> channelCache = new ConcurrentHashMap<>();
 
-    public InsteonLegacyNetworkHandler(Bridge bridge, SerialPortManager serialPortManager, ThingManager thingManager,
-            ThingRegistry thingRegistry) {
+    public InsteonLegacyNetworkHandler(Bridge bridge, HttpClient httpClient, SerialPortManager serialPortManager,
+            ThingManager thingManager, ThingRegistry thingRegistry) {
         super(bridge);
+        this.httpClient = httpClient;
         this.serialPortManager = serialPortManager;
         this.thingManager = thingManager;
         this.thingRegistry = thingRegistry;
@@ -105,7 +108,7 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
             return;
         }
 
-        insteonBinding = new InsteonLegacyBinding(this, config, serialPortManager, scheduler);
+        insteonBinding = new InsteonLegacyBinding(this, config, httpClient, scheduler, serialPortManager);
         updateStatus(ThingStatus.UNKNOWN);
 
         // hold off on starting to poll until devices that already are defined as things are added.
@@ -136,7 +139,7 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
                                 this.driverInitializedJob = null;
                             }
                         } else {
-                            logger.debug("driver is not initialized yet");
+                            logger.trace("driver is not initialized yet");
                         }
                     }, 0, DRIVER_INITIALIZED_TIME_IN_SECONDS, TimeUnit.SECONDS);
                 } else {
@@ -315,12 +318,17 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
         channelInfo.remove(uid.getAsString());
     }
 
-    public Configuration getChannelConfig(ChannelUID channelUID) {
-        return channelConfigs.getOrDefault(channelUID, new Configuration());
+    public List<Channel> getCachedChannels(ThingUID thingUID) {
+        return channelCache.values().stream().filter(channel -> channel.getUID().getThingUID().equals(thingUID))
+                .toList();
     }
 
-    public void addChannelConfigs(Map<ChannelUID, Configuration> channelConfigs) {
-        this.channelConfigs.putAll(channelConfigs);
+    public @Nullable Channel pollCachedChannel(ChannelUID channelUID) {
+        return channelCache.remove(channelUID);
+    }
+
+    public void cacheChannel(Channel channel) {
+        channelCache.put(channel.getUID(), channel);
     }
 
     private void display(Console console, Map<String, String> info) {
