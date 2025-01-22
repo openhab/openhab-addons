@@ -25,8 +25,6 @@ import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.OAUTH_END
 import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.OCP_APIM_KEYS;
 import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REFRESH_TOKEN;
 import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_CHINA;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_NORTH_AMERICA;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_ROW;
 import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.USER_AGENT;
 import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.X_USER_AGENT;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.AUTHORIZATION;
@@ -110,7 +108,7 @@ public class MyBMWTokenController {
         this.httpClient = httpClient;
     }
 
-    public void setBridgeConfiguration(MyBMWBridgeConfiguration bridgeConfiguration) {
+    public synchronized void setBridgeConfiguration(MyBMWBridgeConfiguration bridgeConfiguration) {
         this.bridgeConfiguration = bridgeConfiguration;
     }
 
@@ -122,9 +120,22 @@ public class MyBMWTokenController {
      *
      * @return token
      */
-    public Token getToken() {
-        if (!bridgeConfiguration.getHcaptchatoken().isBlank()) {
+    public synchronized Token getToken() {
+
+        logger.trace("getToken, current token {}", token.toString());
+
+        if (REGION_CHINA.equals(bridgeConfiguration.getRegion()) && !token.isValid()) {
+            // in China no hcaptchatoken is required
+            boolean tokenUpdateSuccess = false;
+            tokenUpdateSuccess = getAndUpdateTokenChina();
+            if (!tokenUpdateSuccess) {
+                logger.warn("Authorization failed!");
+            }
+        } else if (!bridgeConfiguration.getHcaptchatoken().isBlank()) {
             // if the hcaptchastring is available, then a new login is triggered
+
+            logger.trace("initial login, using captchatoken {}", bridgeConfiguration.getHcaptchatoken());
+
             boolean tokenCreationSuccess = getInitialToken();
 
             if (!tokenCreationSuccess) {
@@ -138,22 +149,15 @@ public class MyBMWTokenController {
         } else if (!token.isValid() && !Constants.EMPTY.equals(token.getRefreshToken())) {
             // if the token is invalid, try to refresh the token
             boolean tokenUpdateSuccess = false;
-            switch (bridgeConfiguration.getRegion()) {
-                case REGION_CHINA:
-                    tokenUpdateSuccess = getAndUpdateTokenChina();
-                    break;
-                case REGION_NORTH_AMERICA:
-                case REGION_ROW:
-                    tokenUpdateSuccess = getUpdatedToken();
-                    break;
-                default:
-                    logger.warn("Region {} not supported", bridgeConfiguration.getRegion());
-                    break;
-            }
+            tokenUpdateSuccess = getUpdatedToken();
+
             if (!tokenUpdateSuccess) {
                 logger.warn("Authorization failed!");
             }
         }
+
+        logger.trace("getToken, new token {}", token.toString());
+
         return token;
     }
 
@@ -166,6 +170,9 @@ public class MyBMWTokenController {
      * @return true if the token was successfully updated
      */
     private synchronized boolean getInitialToken() {
+
+        logger.trace("get initial token");
+
         try {
             /*
              * Step 1) Get basic values for further queries
@@ -254,6 +261,8 @@ public class MyBMWTokenController {
             AuthResponse ar = JsonStringDeserializer.deserializeString(codeResponse.getContentAsString(),
                     AuthResponse.class);
 
+            logger.trace("Login response: {}", ar.toString());
+
             token.setType(ar.tokenType);
             token.setToken(ar.accessToken);
             token.setExpiration(ar.expiresIn);
@@ -273,6 +282,9 @@ public class MyBMWTokenController {
      * @return true if token has successfully been refreshed
      */
     private synchronized boolean getUpdatedToken() {
+
+        logger.trace("getUpdatedToken");
+
         try {
             /*
              * Step 1) Get basic values for further queries
@@ -303,6 +315,8 @@ public class MyBMWTokenController {
             AuthResponse ar = JsonStringDeserializer.deserializeString(codeResponse.getContentAsString(),
                     AuthResponse.class);
 
+            logger.trace("Refresh response: {}", ar.toString());
+
             token.setToken(ar.accessToken);
             token.setExpiration(ar.expiresIn);
             token.setRefreshToken(ar.refreshToken);
@@ -310,7 +324,7 @@ public class MyBMWTokenController {
 
             return true;
         } catch (Exception e) {
-            logger.warn("Refresh Exception: {}", e.getMessage());
+            logger.warn("Refresh Exception: ", e);
         }
         return false;
     }
