@@ -67,13 +67,20 @@ public class Token {
         this.gcid = gcid;
     }
 
+    /**
+     * check if the token is valid - for enough buffer it is not valid if it expires in <10s
+     * 
+     * @return
+     */
     public boolean isValid() {
         return (!token.equals(Constants.EMPTY) && !tokenType.equals(Constants.EMPTY)
-                && !refreshToken.equals(Constants.EMPTY) && (this.expiration - System.currentTimeMillis() / 1000) > 1);
+                && !refreshToken.equals(Constants.EMPTY) && (this.expiration - System.currentTimeMillis() / 1000) > 10);
     }
 
     @Override
     public String toString() {
-        return tokenType + Constants.COLON + token + Constants.COLON + isValid();
+        return "Token [token=" + token + ", tokenType=" + tokenType + ", refreshToken=" + refreshToken + ", gcid="
+                + gcid + ", expiration=" + expiration + "] - is valid " + isValid() + ", will expire in s "
+                + (this.expiration - System.currentTimeMillis() / 1000);
     }
 }
