@@ -1,7 +1,7 @@
 TODO
 - fix binding reload
 - fix eclipse build
-- extend SimpleRule instead of wrapping in helper class (needs upcoming graalpy 24.2.0 release => register_interop_type) => expected March 18, 2025
+- extend SimpleRule => instead of wrapping in helper class (needs upcoming graalpy 24.2.0 release => register_interop_type) => expected March 18, 2025
   - not high prio. maybe not needed
 
 DONE
