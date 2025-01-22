@@ -41,7 +41,6 @@ import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeI
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeResponse;
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeSite;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
@@ -186,7 +185,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         return false;
     }
 
-    public boolean setBackupReservedBatteryCapacity(PercentType percent) {
+    public boolean setBackupReservedBatteryCapacity(int percent) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             try {

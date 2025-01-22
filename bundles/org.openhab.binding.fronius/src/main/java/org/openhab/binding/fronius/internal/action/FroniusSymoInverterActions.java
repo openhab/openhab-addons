@@ -191,7 +191,7 @@ public class FroniusSymoInverterActions implements ThingActions {
             @ActionInput(name = "percent", label = "@text/actions.soc.label", description = "@text/actions.soc.description", required = true) int percent) {
         FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
-            return handler.setBackupReservedBatteryCapacity(new PercentType(percent));
+            return handler.setBackupReservedBatteryCapacity(percent);
         }
         return false;
     }

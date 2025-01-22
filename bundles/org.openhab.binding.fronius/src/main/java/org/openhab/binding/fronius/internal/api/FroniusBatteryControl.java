@@ -33,7 +33,6 @@ import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.Time
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.TimeOfUseRecords;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.TimeTableRecord;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.WeekdaysRecord;
-import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.slf4j.Logger;
@@ -220,12 +219,12 @@ public class FroniusBatteryControl {
      *
      * @param percent the reserved battery capacity for backup power
      * @throws FroniusCommunicationException when an error occurs during communication with the inverter
-     * @throws IllegalArgumentException if the percent is not in [10,95]
-     * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
+     * @throws IllegalArgumentException when percent is not in [10,95]
+     * @throws FroniusUnauthorizedException when login failed due to invalid credentials
      */
-    public void setBackupReservedCapacity(PercentType percent)
+    public void setBackupReservedCapacity(int percent)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        if (percent.intValue() < 10 || percent.intValue() > 95) {
+        if (percent < 10 || percent > 95) {
             throw new IllegalArgumentException("invalid percent value: " + percent + " (must be in [10,95])");
         }
 
@@ -236,7 +235,7 @@ public class FroniusBatteryControl {
         headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
 
         // Set the setting
-        String json = gson.toJson(Map.of(BACKUP_RESERVED_CAPACITY_PARAMETER, percent.intValue()));
+        String json = gson.toJson(Map.of(BACKUP_RESERVED_CAPACITY_PARAMETER, percent));
         String responseString = FroniusHttpUtil.executeUrl(HttpMethod.POST, batteriesUri.toString(), headers,
                 new ByteArrayInputStream(json.getBytes()), "application/json", API_TIMEOUT);
         PostConfigResponse response = gson.fromJson(responseString, PostConfigResponse.class);
