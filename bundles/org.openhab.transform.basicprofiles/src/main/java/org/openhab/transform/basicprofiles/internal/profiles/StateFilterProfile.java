@@ -190,7 +190,7 @@ public class StateFilterProfile implements StateProfile {
     @SuppressWarnings("rawtypes")
     protected List<QuantityType> referenceUnitQuantityTypes(List<State> states) {
         return states.stream().map(s -> referenceUnitQuantityType(s)).filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .map(s -> (QuantityType) s).toList();
     }
 
     private List<StateCondition> parseConditions(List<String> conditions, String separator) {
