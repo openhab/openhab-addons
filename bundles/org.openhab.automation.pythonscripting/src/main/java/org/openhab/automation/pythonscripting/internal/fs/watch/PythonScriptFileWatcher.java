@@ -48,10 +48,11 @@ public class PythonScriptFileWatcher extends AbstractScriptFileWatcher {
 
     @Override
     protected Optional<String> getScriptType(Path scriptFilePath) {
-        Optional<String> scriptType = super.getScriptType(scriptFilePath);
-        if (scriptType.isPresent() && !scriptFilePath.startsWith(getWatchPath().resolve("lib"))
-                && ("py".equals(scriptType.get()))) {
-            return Optional.of(PythonScriptEngineFactory.SCRIPT_TYPE);
+        if (!scriptFilePath.startsWith(getWatchPath().resolve("lib"))) {
+            Optional<String> scriptFileSuffix = super.getScriptType(scriptFilePath);
+            if (scriptFileSuffix.isPresent() && "py".equals(scriptFileSuffix.get())) {
+                return Optional.of(PythonScriptEngineFactory.SCRIPT_TYPE);
+            }
         }
         return Optional.empty();
     }
