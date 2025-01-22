@@ -15,7 +15,7 @@ More information about the V2 API can be found at `http://LOCAL-SONNENBATTERY-SY
 
 Only the parameter `hostIP` is required; this is the IP address of the sonnen battery in your local network.
 If you want to use the V2 API, which supports more channels, you need to provide the `authToken`.
-
+In case you want to use the functionality to actively charge your battery from the grid, you need to provide the maximum `chargingPower` of your battery.
 ## Channels
 
 The following channels are yet supported:
@@ -40,6 +40,8 @@ The following channels are yet supported:
 | energyExportedStateProduction  | Number:Energy | read   | Indicates the exported kWh Production                                                   |
 | energyImportedStateConsumption | Number:Energy | read   | Indicates the imported kWh Consumption                                                  |
 | energyExportedStateConsumption | Number:Energy | read   | Indicates the exported kWh Consumption                                                  |
+| batteryChargingFromGrid | Switch| read/write   | Starts and stops the active battery charging from Grid. Note: "Write-API" in Software-Integration page of the local web interface from the sonnen battery must be activated and the given token must be entered in authentication token field of the binding|
+| batteryOperationMode | String | read   | Indicates if the Battery is operating in automatic or manual mode. Manual mode is required for active charging the battery. Assure that the battery is in automatic mode if you don't actively charge the battery.Changing the operation mode is happening with the channel "batteryChargingFromGrid"|
 
 ## Full Example
 
