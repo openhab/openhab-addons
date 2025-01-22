@@ -155,14 +155,13 @@ public class SonnenJsonDataDTO {
      */
     public boolean isInAutomaticMode() {
         // 2 for automatic mode
-        if (operatingMode.equals("2")) {
+        if ("2".equals(operatingMode)) {
             return true;
-        } else if (operatingMode.equals("1")) {
+        } else if ("1".equals(operatingMode)) {
             return false;
-        } else {
-            // in case of Serialization problem return true, as automatic is the normal state of the battery on most
-            // cases.
-            return true;
         }
+        // in case of Serialization problem return true, as automatic is the normal state of the battery on most
+        // cases.
+        return true;
     }
 }
