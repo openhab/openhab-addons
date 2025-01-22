@@ -185,6 +185,23 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         return false;
     }
 
+    public boolean setBackupReservedBatteryCapacity(int percent) {
+        FroniusBatteryControl batteryControl = getBatteryControl();
+        if (batteryControl != null) {
+            try {
+                batteryControl.setBackupReservedCapacity(percent);
+                return true;
+            } catch (IllegalArgumentException e) {
+                logger.warn("Failed to set backup reserved battery capacity: {}", e.getMessage());
+            } catch (FroniusCommunicationException e) {
+                logger.warn("Failed to set backup reserved battery capacity", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to set backup reserved battery capacity: Invalid username or password");
+            }
+        }
+        return false;
+    }
+
     /**
      * Update the channel from the last data retrieved
      *
