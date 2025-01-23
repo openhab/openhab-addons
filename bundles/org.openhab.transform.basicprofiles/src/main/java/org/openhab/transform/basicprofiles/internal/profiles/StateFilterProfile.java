@@ -174,7 +174,7 @@ public class StateFilterProfile implements StateProfile {
      * The conversion can be made to both inverted and non-inverted units, so invertible type conversions
      * (e.g. Mirek <=> Kelvin) are supported.
      *
-     * @return a {@link QuantityType} based on 'referenceUnit'
+     * @return a {@link QuantityType} based on 'systemUnit'
      */
     protected @Nullable QuantityType<?> systemUnitQuantityType(State state) {
         return (state instanceof QuantityType<?> quantity) && hasSystemUnit()
@@ -666,11 +666,11 @@ public class StateFilterProfile implements StateProfile {
                 return null;
             }
             if (hasSystemUnit()) {
-                List<QuantityType> referenceUnitQuantities = systemUnitQuantityTypes(states);
-                return referenceUnitQuantities.isEmpty() ? null
-                        : referenceUnitQuantities.stream()
+                List<QuantityType> systemUnitQuantityTypes = systemUnitQuantityTypes(states);
+                return systemUnitQuantityTypes.isEmpty() ? null
+                        : systemUnitQuantityTypes.stream()
                                 .reduce(new QuantityType<>(0, Objects.requireNonNull(systemUnit)), QuantityType::add)
-                                .divide(BigDecimal.valueOf(referenceUnitQuantities.size()));
+                                .divide(BigDecimal.valueOf(systemUnitQuantityTypes.size()));
             }
             BigDecimal sum = states.stream().map(s -> ((DecimalType) s).toBigDecimal()).reduce(BigDecimal.ZERO,
                     BigDecimal::add);
@@ -728,7 +728,7 @@ public class StateFilterProfile implements StateProfile {
                 logger.debug("Not enough states to calculate min");
                 return null;
             }
-            if (newState instanceof QuantityType) {
+            if (hasSystemUnit()) {
                 @SuppressWarnings({ "rawtypes", "unchecked" })
                 Optional<QuantityType> min = systemUnitQuantityTypes(states).stream().min(QuantityType::compareTo);
                 return min.isPresent() ? min.get() : null;
@@ -742,7 +742,7 @@ public class StateFilterProfile implements StateProfile {
                 logger.debug("Not enough states to calculate max");
                 return null;
             }
-            if (newState instanceof QuantityType) {
+            if (hasSystemUnit()) {
                 @SuppressWarnings({ "rawtypes", "unchecked" })
                 Optional<QuantityType> max = systemUnitQuantityTypes(states).stream().max(QuantityType::compareTo);
                 return max.isPresent() ? max.get() : null;
@@ -753,11 +753,11 @@ public class StateFilterProfile implements StateProfile {
 
         @SuppressWarnings({ "rawtypes", "unchecked" })
         private @Nullable State calculateDelta() {
-            if (newState instanceof QuantityType) {
-                QuantityType newStateReferenceQuantity = systemUnitQuantityType(newState);
-                QuantityType acceptedStateReferenceQuantity = systemUnitQuantityType(acceptedState);
-                if (newStateReferenceQuantity != null && acceptedStateReferenceQuantity != null) {
-                    QuantityType result = newStateReferenceQuantity.subtract(acceptedStateReferenceQuantity);
+            if (hasSystemUnit()) {
+                QuantityType systemUnitNewState = systemUnitQuantityType(newState);
+                QuantityType systemUnitAcceptedState = systemUnitQuantityType(acceptedState);
+                if (systemUnitNewState != null && systemUnitAcceptedState != null) {
+                    QuantityType result = systemUnitNewState.subtract(systemUnitAcceptedState);
                     return result.toBigDecimal().compareTo(BigDecimal.ZERO) < 0 ? result.negate() : result;
                 }
                 return null;
@@ -776,7 +776,7 @@ public class StateFilterProfile implements StateProfile {
             }
             BigDecimal bdDelta;
             BigDecimal bdBase;
-            if (newState instanceof QuantityType) {
+            if (hasSystemUnit()) {
                 QuantityType<?> acceptedStateReferenceQuantity = systemUnitQuantityType(acceptedState);
                 if (acceptedStateReferenceQuantity instanceof QuantityType) {
                     bdDelta = ((QuantityType) calculatedDelta).toBigDecimal();

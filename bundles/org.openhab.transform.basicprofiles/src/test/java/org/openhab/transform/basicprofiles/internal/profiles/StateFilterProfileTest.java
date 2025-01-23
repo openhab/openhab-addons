@@ -56,6 +56,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.link.ItemChannelLink;
@@ -802,8 +803,6 @@ public class StateFilterProfileTest {
         verify(mockCallback, times(1)).sendUpdate(DecimalType.valueOf("1"));
     }
 
-    // ========
-
     public static Stream<Arguments> testMixedStates() {
         NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
 
@@ -857,6 +856,50 @@ public class StateFilterProfileTest {
     @MethodSource
     public void testMixedStates(Item item, String condition, List<State> states, State input, boolean expected)
             throws ItemNotFoundException {
+        when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", condition)));
+        when(mockItemRegistry.getItem(item.getName())).thenReturn(item);
+        when(mockItemChannelLink.getItemName()).thenReturn(item.getName());
+
+        StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
+
+        for (State state : states) {
+            profile.onStateUpdateFromHandler(state);
+        }
+
+        reset(mockCallback);
+
+        profile.onStateUpdateFromHandler(input);
+        verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(input);
+    }
+
+    public static Stream<Arguments> testColorTemperatureValues() {
+        NumberItem kelvinItem = new NumberItem("Number:Temperature", "kelvinItem", UNIT_PROVIDER);
+        NumberItem mirekItem = new NumberItem("Number:Temperature", "mirekItem", UNIT_PROVIDER);
+        // TODO (depends on OH Core #4561) => set mirekItem's unit to Units.MIRED
+
+        List<State> states = List.of( //
+                // TODO (depends on OH Core #4561) => QuantityType.valueOf(500, Units.MIRED), //
+                QuantityType.valueOf(2000, Units.KELVIN), //
+                QuantityType.valueOf(1726.85, SIUnits.CELSIUS), //
+                QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT));
+
+        return Stream.of( //
+                // kelvin based item
+                Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf("2000 K"), true),
+                Arguments.of(kelvinItem, "== $MAX", states, QuantityType.valueOf("2000 K"), true),
+
+                // mirek based item
+                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf("2000 K"), true),
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf("2000 K"), true)
+
+        // TODO (depends on OH Core #4561) => add more tests for Mirek, Celsius and Fahrenheit
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testColorTemperatureValues(Item item, String condition, List<State> states, State input,
+            boolean expected) throws ItemNotFoundException {
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", condition)));
         when(mockItemRegistry.getItem(item.getName())).thenReturn(item);
         when(mockItemChannelLink.getItemName()).thenReturn(item.getName());
