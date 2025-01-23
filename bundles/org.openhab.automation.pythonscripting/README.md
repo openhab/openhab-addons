@@ -85,8 +85,8 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 
 - Register the class as a rule
 - If name is not provided, a fallback name in the form "{filename}.{classname}" is created
-- Triggers can be added with argument "triggers", with a function called "buildTriggers" or with an [@when decorator](#decorator-@when)
-- Conditions can be added with argument "conditions", with a function called "buildConditions" or with an [@onlyif decorator](#decorator-@onlyif)
+- Triggers can be added with argument "triggers", with a function called "buildTriggers" or with an [@when decorator](#decorator-when)
+- Conditions can be added with argument "conditions", with a function called "buildConditions" or with an [@onlyif decorator](#decorator-onlyif)
 - The execute function is wrapped within a try / except to provide meaningful error logs
 - A logger object (self.logger) with the prefix "org.automation.pythonscripting.{filename}.{classname}" is available
 - You can enable a profiler to analyze runtime with argument "profile=1"
@@ -157,7 +157,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 
 | Class                    | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| rule                     | @rule( name=None, description=None, tags=None, triggers=None, conditions=None, profile=None) | [Rule decorator](#decorator-@rule) to wrap a custom class into a rule                        |
+| rule                     | @rule( name=None, description=None, tags=None, triggers=None, conditions=None, profile=None) | [Rule decorator](#decorator-rule) to wrap a custom class into a rule                        |
 | logger                   | logger.info, logger.warn ...                                                          | Logger object with prefix 'org.automation.pythonscripting.{filename}'                               |
 | Registry                 | see [Registry class](#class-registry)                                                 | Static Registry class used to get items, things or channels                                         |
 | Timer                    | see [Timer class](#class-timer)                                                       | Static Timer class to create, start and stop timers                                                 |
@@ -184,8 +184,8 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 
 | Class                    | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| when                     | @when(term_as_string)                                                                 | [When trigger decorator](#decorator-@when) to create a trigger by a term                            |
-| onlyif                   | @onlyif(term_as_string)                                                               | [Onlyif condition decorator](#decorator-@onlyif) to create a condition by a term                    |
+| when                     | @when(term_as_string)                                                                 | [When trigger decorator](#decorator-when) to create a trigger by a term                            |
+| onlyif                   | @onlyif(term_as_string)                                                               | [Onlyif condition decorator](#decorator-onlyif) to create a condition by a term                    |
 | ChannelEventTrigger      | ChannelEventTrigger(channel_uid, event=None, trigger_name=None)                       |                                                                                                     |
 | ItemStateUpdateTrigger   | ItemStateUpdateTrigger(item_name, state=None, trigger_name=None)                      |                                                                                                     |
 | ItemStateChangeTrigger   | ItemStateChangeTrigger(item_name, state=None, previous_state=None, trigger_name=None) |                                                                                                     |
