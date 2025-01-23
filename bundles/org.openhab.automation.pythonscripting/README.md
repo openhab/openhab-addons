@@ -6,7 +6,7 @@ Simple rule
 
 ```python
 from openhab import rule, Registry
-from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger, ItemCommandTrigger
+from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger, ItemCommandTrigger, when, onlyif
 
 @rule(
     triggers = [
@@ -35,16 +35,28 @@ class Test2:
 class Test3:
     def execute(self, module, input):
         Registry.getItem("Item1").sendCommand(OFF)
+
+@rule()
+@when("Time cron */5 * * * * ?")
+class Test4:
+    def execute(self, module, input):
+        self.logger.info("rule triggered")
+
+@rule()
+@when("Item Item1 received command")
+class Test5:
+    def execute(self, module, input):
+        Registry.getItem("Item1").sendCommand(OFF)
+
+@rule()
+@when("Item Item1 received update")
+@onlyif("Today is a holiday")
+class Test6:
+    def execute(self, module, input):
+        if Registry.getItem("Item2").postUpdateIfDifferent( input['event'].getItemState() ):
+            self.logger.info("item was updated")
 ```
  
-Sending a notification
-
-```python
-from openhab.actions import NotificationAction
-
-NotificationAction.sendNotification("test@test.org", "Window is open");
-```
-
 Query thing status info
 
 ```python
@@ -60,20 +72,21 @@ Query historic item
 from openhab import logger, Registry
 from datetime import datetime
 
-historicItem = Registry.getItem("Item1").getPersistance().persistedState( datetime.now().astimezone() )
+historicItem = Registry.getItem("Item1").getPersistence().persistedState( datetime.now().astimezone() )
 logger.info( historicItem.getState().toString() );
 
-historicItem = Registry.getItem("Item2").getPersistance("jdbc").persistedState( datetime.now().astimezone() )
+historicItem = Registry.getItem("Item2").getPersistence("jdbc").persistedState( datetime.now().astimezone() )
 logger.info( historicItem.getState().toString() );
 ```
 
-## @decorator 'rule'
+## decorator @rule
 
 the decorator will register the decorated class as a rule. It will wrap and extend the class with the following functionalities
 
 - Register the class as a rule
 - If name is not provided, a fallback name in the form "{filename}.{classname}" is created
-- Triggers can be added with argument "triggers" or with a function called "buildTriggers"
+- Triggers can be added with argument "triggers", with a function called "buildTriggers" or with an [@when decorator](#decorator-@when)
+- Conditions can be added with argument "conditions", with a function called "buildConditions" or with an [@onlyif decorator](#decorator-@onlyif)
 - The execute function is wrapped within a try / except to provide meaningful error logs
 - A logger object (self.logger) with the prefix "org.automation.pythonscripting.{filename}.{classname}" is available
 - You can enable a profiler to analyze runtime with argument "profile=1"
@@ -84,11 +97,67 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 2025-01-09 09:35:15.472 [INFO ] [tomation.pythonscripting.demo1.Test1] - Rule executed in    0.1 ms [Other: TimerEvent]
 ```
 
+## decorator @when
+
+```python
+@when("Item Test_String_1 changed from 'old test string' to 'new test string'")
+@when("Item gTest_Contact_Sensors changed")
+@when("Member of gTest_Contact_Sensors changed from ON to OFF")
+@when("Descendent of gTest_Contact_Sensors changed from OPEN to CLOSED")
+
+@when("Item Test_Switch_2 received update ON")
+@when("Member of gTest_Switches received update")
+
+@when("Item Test_Switch_1 received command")
+@when("Item Test_Switch_2 received command OFF")
+
+@when("Thing hue:device:default:lamp1 received update ONLINE")
+
+@when("Thing hue:device:default:lamp1 changed from ONLINE to OFFLINE")
+
+@when("Channel hue:device:default:lamp1:color triggered START")
+
+@when("System started")
+@when("System reached start level 50")
+
+@when("Time cron 55 55 5 * * ?")
+@when("Time is midnight")
+@when("Time is noon")
+
+@when("Time is 10:50")
+
+@when("Datetime is Test_Datetime_1")
+@when("Datetime is Test_Datetime_2 time only")
+
+@when("Item added")
+@when("Item removed")
+@when("Item updated")
+
+@when("Thing added")
+@when("Thing removed")
+@when("Thing updated")
+```
+## decorator @onlyif
+
+```python
+@onlyif("Item Test_Switch_2 equals ON")
+@onlyif("Today is a holiday")
+@onlyif("It's not a holiday")
+@onlyif("Tomorrow is not a holiday")
+@onlyif("Today plus 1 is weekend")
+@onlyif("Today minus 1 is weekday")
+@onlyif("Today plus 3 is a weekend")
+@onlyif("Today offset -3 is a weekend")
+@onylyf("Today minus 3 is not a holiday")
+@onlyif("Yesterday was in dayset")
+@onlyif("Time 9:00 to 14:00")
+```
+
 ## module openhab
 
 | Class                    | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| rule                     | @rule( name=None, description=None, tags=None, triggers=None, profile=None)            | Rule decorator class to wrap a custom class into a rule                                             |
+| rule                     | @rule( name=None, description=None, tags=None, triggers=None, conditions=None, profile=None) | [Rule decorator](#decorator-@rule) to wrap a custom class into a rule                        |
 | logger                   | logger.info, logger.warn ...                                                          | Logger object with prefix 'org.automation.pythonscripting.{filename}'                               |
 | Registry                 | see [Registry class](#class-registry)                                                 | Static Registry class used to get items, things or channels                                         |
 | Timer                    | see [Timer class](#class-timer)                                                       | Static Timer class to create, start and stop timers                                                 |
@@ -100,7 +169,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | Audio                    | see [openhab Audio api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/audio)      |                                                                          |
 | BusEvent                 | see [openhab BusEvent api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/busevent) |                                                                         |
-| Exec                     | see [openhab Exec api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/exec)        |                                                                          |
+| Exec                     | see [openhab Exec api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/exec)        | e.g. Exec.executeCommandLine(timedelta(seconds=1), "whoami")             |
 | HTTP                     | see [openhab HTTP api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/http)        |                                                                          |
 | Log                      | see [openhab Log api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/log)          |                                                                          |
 | Ping                     | see [openhab Ping api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/ping)        |                                                                          |
@@ -108,13 +177,15 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | Semantic                 | see [openhab Semantic api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/semantic) |                                                                         |
 | ThingAction              | see [openhab ThingAction api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/thingaction) |                                                                   |
 | Transformation           | see [openhab Transformation api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/transformation) |                                                             |
-| Voice                    | see [openhab Voice api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/voice)      |                                                                          |
+| Voice                    | see [openhab Voice api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/voice)      | e.g. NotificationAction.sendNotification("test@test.org", "Window is open") |
 | NotificationAction       |                                                                                       |
 
 ## module openhab.triggers
 
 | Class                    | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| when                     | @when(term_as_string)                                                                 | [When trigger decorator](#decorator-@when) to create a trigger by a term                            |
+| onlyif                   | @onlyif(term_as_string)                                                               | [Onlyif condition decorator](#decorator-@onlyif) to create a condition by a term                    |
 | ChannelEventTrigger      | ChannelEventTrigger(channel_uid, event=None, trigger_name=None)                       |                                                                                                     |
 | ItemStateUpdateTrigger   | ItemStateUpdateTrigger(item_name, state=None, trigger_name=None)                      |                                                                                                     |
 | ItemStateChangeTrigger   | ItemStateChangeTrigger(item_name, state=None, previous_state=None, trigger_name=None) |                                                                                                     |
@@ -142,7 +213,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | getItem                  | getItem(item_name)                                                                    | returns an [Item object](#class-item) or [GroupItem object](#class-groupitem)                       |
 | resolveItem              | resolveItem(item_or_item_name)                                                        | returns an [Item object](#class-item) or [GroupItem object](#class-groupitem)                       |
 | getItemState             | getItemState(item_name, default = None)                                               | returns a State object                                                                              |
-| getItemMetadata          | getItemMetadata(item_or_item_name, namespace)                                         | returns a list of metadata                                                                              |
+| getItemMetadata          | getItemMetadata(item_or_item_name, namespace)                                         | returns a list of metadata                                                                          |
 
 ## class Item 
 
@@ -152,7 +223,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | postUpdateIfDifferent    | postUpdateIfDifferent(state)                                                          |                                                                                                     |
 | sendCommand              | sendCommand(command)                                                                  |                                                                                                     |
 | sendCommandIfDifferent   | sendCommandIfDifferent(command)                                                       |                                                                                                     |
-| getPersistance           | getPersistance(service_id = None)                                                     | returns an [ItemPersistance object](#class-itempersistance)                                         |
+| getPersistence           | getPersistence(service_id = None)                                                     | returns an [ItemPersistence object](#class-itempersistence)                                         |
 | getSemantic              | getSemantic()                                                                         | returns an [ItemSemantic object](#class-itemsemantic)                                               |
 | <...>                    | see [openhab Item api](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) |                                                                                                |
 
@@ -160,7 +231,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 
 GroupItem is an extended [Item object](#class-item) which wraps results from getAllMembers & getMembers into [Item objects](#class-item)
 
-## class ItemPersistance 
+## class ItemPersistence 
 
 The parameters 'item' and 'serviceId', as part of the Wrapped Java API, are not needed, because they are inserted automatically.
 

@@ -73,12 +73,13 @@ METADATA_REGISTRY = get_service("org.openhab.core.items.MetadataRegistry")
 class NotInitialisedException(Exception):
     pass
 
-class rule(object):
-    def __init__(self, name=None, description=None, tags=None, triggers=None, profile=None):
+class rule():
+    def __init__(self, name=None, description=None, tags=None, triggers=None, conditions=None, profile=None):
         self.name = name
         self.description = description
         self.tags = tags
         self.triggers = triggers
+        self.conditions = conditions
         self.profile = profile
 
     def __call__(self, clazz):
@@ -93,6 +94,8 @@ class rule(object):
         _triggers = []
         if proxy.triggers is not None:
             _triggers = proxy.triggers
+        elif hasattr(_rule_obj, "_when_triggers"):
+            _triggers = _rule_obj._when_triggers
         elif hasattr(_rule_obj, "buildTriggers") and callable(_rule_obj.buildTriggers):
             _triggers = _rule_obj.buildTriggers()
 
@@ -107,6 +110,18 @@ class rule(object):
             _raw_triggers.append(trigger.raw_trigger)
 
         clazz.execute = proxy.executeWrapper(clazz.execute, _valid_items)
+
+        _conditions = []
+        if proxy.conditions is not None:
+            _conditions = proxy.conditions
+        elif hasattr(_rule_obj, "_onlyif_conditions"):
+            _conditions = _rule_obj._onlyif_conditions
+        elif hasattr(_rule_obj, "buildConditions") and callable(_rule_obj.buildConditions):
+            _conditions = _rule_obj.buildConditions()
+
+        _raw_conditions = []
+        for condition in _conditions:
+            _raw_conditions.append(condition.raw_condition)
 
         #register_interop_type(Java_SimpleRule, clazz)
         #subclass = type(clazz.__name__, (clazz, BaseSimpleRule,))
@@ -134,6 +149,9 @@ class rule(object):
             clazz.logger.warn("Rule '{}' has no triggers".format(name))
         else:
             _base_obj.setTriggers(_raw_triggers)
+
+            if len(_raw_conditions) > 0:
+                _base_obj.setConditions(_raw_conditions)
 
             automationManager.addRule(_base_obj)
             clazz.logger.info("Rule '{}' initialised".format(name))
@@ -240,7 +258,7 @@ class JavaConversionHelper():
     def convertInstant(instant):
         return datetime.fromisoformat(instant.toString())
 
-class ItemPersistance():
+class ItemPersistence():
     def __init__(self, item, service_id = None):
         self.item = item
         self.service_id = service_id
@@ -383,8 +401,8 @@ class Item():
     def getState(self):
         return JavaConversionHelper.convertState(self.raw_item.getState())
 
-    def getPersistance(self, service_id = None):
-        return ItemPersistance(self, service_id)
+    def getPersistence(self, service_id = None):
+        return ItemPersistence(self, service_id)
 
     def getSemantic(self):
         return ItemSemantic(self)
