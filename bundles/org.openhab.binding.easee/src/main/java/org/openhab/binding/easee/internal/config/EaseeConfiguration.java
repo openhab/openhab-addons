@@ -29,7 +29,7 @@ public class EaseeConfiguration {
     private Integer asyncTimeout = 120;
     private Integer syncTimeout = 120;
     private Integer dataPollingInterval = 60;
-    private Integer sessionDataPollingInterval = 180;
+    private Integer sessionDataPollingInterval = 360;
     private Integer webRequestInitialDelay = 10;
     private Integer webRequestInterval = 2;
 
