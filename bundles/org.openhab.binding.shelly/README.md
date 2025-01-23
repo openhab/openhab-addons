@@ -86,10 +86,11 @@ See section [Discovery](#discovery) for details.
 | shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU |
 | shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU |
 | shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU |
-| shellyplusplug       | Shelly Plus Plug                                         | SNPL-00112EU                 |
-| shellyplusplug       | Shelly Plus Plug-IT                                      | SNPL-00110IT                 |
-| shellyplusplug       | Shelly Plus Plug-UK                                      | SNPL-00112UK                 |
-| shellyplusplugus     | Shelly Plus Plug-US                                      | SNPL-00116US                 |
+| shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU, SNPL-10112EU   |
+| shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                 |
+| shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                 |
+| shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                 |
+| shellyplusplug       | Shelly Plug S Gen 3                                      | S3PL-00112EU                 |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X       |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
 | shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW    |
@@ -104,11 +105,11 @@ See section [Discovery](#discovery) for details.
 
 ### Shelly Plus Mini series (Generation 2+3)
 
- | thing-type           | Model                                                    | Vendor ID                      |
- | -------------------- | -------------------------------------------------------- | ------------------------------ |
- | shelly1mini          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
- | shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
- | shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
+| thing-type           | Model                                                    | Vendor ID                      |
+| -------------------- | -------------------------------------------------------- | ------------------------------ |
+| shelly1mini          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
+| shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
+| shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
 
 ### Shelly Pro Series (Generation 2+3)
 
