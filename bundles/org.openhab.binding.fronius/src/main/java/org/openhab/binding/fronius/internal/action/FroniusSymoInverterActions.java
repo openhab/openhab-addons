@@ -23,6 +23,7 @@ import org.openhab.binding.fronius.internal.handler.FroniusSymoInverterHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -97,6 +98,24 @@ public class FroniusSymoInverterActions implements ThingActions {
         return addForcedBatteryChargingSchedule(actions, from.toLocalTime(), until.toLocalTime(), power);
     }
 
+    public static boolean setBackupReservedBatteryCapacity(ThingActions actions, int percent) {
+        if (actions instanceof FroniusSymoInverterActions froniusSymoInverterActions) {
+            return froniusSymoInverterActions.setBackupReservedBatteryCapacity(percent);
+        } else {
+            throw new IllegalArgumentException(
+                    "The 'actions' argument is not an instance of FroniusSymoInverterActions");
+        }
+    }
+
+    public static boolean setBackupReservedBatteryCapacity(ThingActions actions, PercentType percent) {
+        if (actions instanceof FroniusSymoInverterActions froniusSymoInverterActions) {
+            return froniusSymoInverterActions.setBackupReservedBatteryCapacity(percent);
+        } else {
+            throw new IllegalArgumentException(
+                    "The 'actions' argument is not an instance of FroniusSymoInverterActions");
+        }
+    }
+
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         this.handler = (FroniusSymoInverterHandler) handler;
@@ -165,5 +184,19 @@ public class FroniusSymoInverterActions implements ThingActions {
     public boolean addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until,
             QuantityType<Power> power) {
         return addForcedBatteryChargingSchedule(from.toLocalTime(), until.toLocalTime(), power);
+    }
+
+    @RuleAction(label = "@text/actions.backup-reserved-battery-capacity.label", description = "@text/actions.backup-reserved-battery-capacity.description")
+    public @ActionOutput(type = "boolean", label = "Success") boolean setBackupReservedBatteryCapacity(
+            @ActionInput(name = "percent", label = "@text/actions.soc.label", description = "@text/actions.soc.description", required = true) int percent) {
+        FroniusSymoInverterHandler handler = this.handler;
+        if (handler != null) {
+            return handler.setBackupReservedBatteryCapacity(percent);
+        }
+        return false;
+    }
+
+    public boolean setBackupReservedBatteryCapacity(PercentType percent) {
+        return setBackupReservedBatteryCapacity(percent.intValue());
     }
 }

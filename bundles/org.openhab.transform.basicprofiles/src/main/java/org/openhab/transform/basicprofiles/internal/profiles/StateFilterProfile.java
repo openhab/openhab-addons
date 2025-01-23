@@ -281,6 +281,7 @@ public class StateFilterProfile implements StateProfile {
         }
 
         if (conditions.stream().allMatch(c -> c.check(state))) {
+            acceptedState = state;
             return state;
         } else {
             return configMismatchState;
@@ -402,7 +403,6 @@ public class StateFilterProfile implements StateProfile {
                             && (rhsFunction.getType() == FunctionType.Function.DELTA
                                     || rhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)
                             && (!hasSystemUnit() || systemUnitQuantityType(input) != null)) {
-                        acceptedState = input;
                         return true;
                     }
                     rhsItem = getLinkedItem();
@@ -426,7 +426,6 @@ public class StateFilterProfile implements StateProfile {
                             && (lhsFunction.getType() == FunctionType.Function.DELTA
                                     || lhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)
                             && (!hasSystemUnit() || systemUnitQuantityType(input) != null)) {
-                        acceptedState = input;
                         return true;
                     }
                     lhsItem = getLinkedItem();
@@ -516,10 +515,6 @@ public class StateFilterProfile implements StateProfile {
                     case LT -> ((Comparable) lhs).compareTo(rhs) < 0;
                     case LTE -> ((Comparable) lhs).compareTo(rhs) <= 0;
                 };
-
-                if (result) {
-                    acceptedState = input;
-                }
 
                 return result;
             } catch (IllegalArgumentException | ClassCastException e) {
