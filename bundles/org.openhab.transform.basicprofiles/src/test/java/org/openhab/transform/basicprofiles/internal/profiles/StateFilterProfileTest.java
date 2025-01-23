@@ -690,6 +690,10 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "$DELTA >= 1", decimals, DecimalType.valueOf("10"), true), //
                 Arguments.of(decimalItem, "$DELTA >= 1", decimals, DecimalType.valueOf("5.5"), false), //
 
+                // Multiple delta conditions
+                Arguments.of(decimalItem, "$DELTA >= 1, $DELTA <= 10", decimals, DecimalType.valueOf("15"), true), //
+                Arguments.of(decimalItem, "$DELTA >= 1, $DELTA <= 10", decimals, DecimalType.valueOf("16"), false), //
+
                 Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("4.6"), false), //
                 Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("4.5"), true), //
                 Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("5.4"), false), //
