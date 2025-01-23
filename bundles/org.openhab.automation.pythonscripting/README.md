@@ -1,6 +1,6 @@
 ## Helper Library
 
-The helper library is part of the pythonscripting binding and will be deployed to /conf/automation/python/lib/openhab/ during startup of openhab
+The helper library is part of this binding and will be deployed to /conf/automation/python/lib/openhab/ during openHAB startup.
 
 ### Sources
 
