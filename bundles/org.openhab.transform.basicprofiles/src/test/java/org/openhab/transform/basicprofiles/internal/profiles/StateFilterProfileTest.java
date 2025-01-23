@@ -853,6 +853,8 @@ public class StateFilterProfileTest {
                 // delta percent function
                 Arguments.of(powerItem, "$DELTA_PERCENT > 30", states, QuantityType.valueOf("4 W"), true),
                 Arguments.of(powerItem, "30 < $DELTA_PERCENT", states, QuantityType.valueOf("4 W"), true) //
+
+        // TODO add some unit based tests
         );
     }
 
