@@ -177,8 +177,8 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 | Semantic                 | see [openhab Semantic api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/semantic) |                                                                         |
 | ThingAction              | see [openhab ThingAction api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/thingaction) |                                                                   |
 | Transformation           | see [openhab Transformation api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/transformation) |                                                             |
-| Voice                    | see [openhab Voice api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/voice)      | e.g. NotificationAction.sendNotification("test@test.org", "Window is open") |
-| NotificationAction       |                                                                                       |
+| Voice                    | see [openhab Voice api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/voice)      |                                                                          |
+| NotificationAction       |                                                                                       | e.g. NotificationAction.sendNotification("test@test.org", "Window is open")                         |
 
 ## module openhab.triggers
 
