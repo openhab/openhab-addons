@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.measure.MetricPrefix;
+import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,7 +99,7 @@ public class StateFilterProfileTest {
         reset(mockCallback);
         reset(mockItemChannelLink);
         when(mockCallback.getItemChannelLink()).thenReturn(mockItemChannelLink);
-        when(mockItemRegistry.getItem("")).thenThrow(ItemNotFoundException.class);
+        // when(mockItemRegistry.getItem("")).thenThrow(ItemNotFoundException.class);
     }
 
     @Test
@@ -283,7 +284,7 @@ public class StateFilterProfileTest {
         ContactItem contactItem = new ContactItem("contactItem");
         RollershutterItem rollershutterItem = new RollershutterItem("rollershutterItem");
 
-        QuantityType q_1500W = QuantityType.valueOf("1500 W");
+        QuantityType<?> q_1500W = QuantityType.valueOf("1500 W");
         DecimalType d_1500 = DecimalType.valueOf("1500");
         StringType s_foo = StringType.valueOf("foo");
         StringType s_NULL = StringType.valueOf("NULL");
@@ -489,9 +490,9 @@ public class StateFilterProfileTest {
         ContactItem contactItem = new ContactItem("contactItem");
         ContactItem contactItem2 = new ContactItem("contactItem2");
 
-        QuantityType q_1500W = QuantityType.valueOf("1500 W");
-        QuantityType q_1_5kW = QuantityType.valueOf("1.5 kW");
-        QuantityType q_10kW = QuantityType.valueOf("10 kW");
+        QuantityType<?> q_1500W = QuantityType.valueOf("1500 W");
+        QuantityType<?> q_1_5kW = QuantityType.valueOf("1.5 kW");
+        QuantityType<?> q_10kW = QuantityType.valueOf("10 kW");
 
         DecimalType d_1500 = DecimalType.valueOf("1500");
         DecimalType d_2000 = DecimalType.valueOf("2000");
@@ -567,7 +568,7 @@ public class StateFilterProfileTest {
         StringItem stringItem = new StringItem("ItemName");
         DimmerItem dimmerItem = new DimmerItem("ItemName");
 
-        QuantityType q_1500W = QuantityType.valueOf("1500 W");
+        QuantityType<?> q_1500W = QuantityType.valueOf("1500 W");
         DecimalType d_1500 = DecimalType.valueOf("1500");
         StringType s_foo = StringType.valueOf("foo");
 
@@ -656,7 +657,6 @@ public class StateFilterProfileTest {
 
         profile.onStateUpdateFromHandler(inputState);
         reset(mockCallback);
-        when(mockCallback.getItemChannelLink()).thenReturn(mockItemChannelLink);
 
         item.setState(state);
         profile.onStateUpdateFromHandler(inputState);
@@ -668,7 +668,7 @@ public class StateFilterProfileTest {
         NumberItem decimalItem = new NumberItem("decimalItem");
         List<Number> numbers = List.of(1, 2, 3, 4, 5);
         List<Number> negatives = List.of(-1, -2, -3, -4, -5);
-        List<QuantityType> quantities = numbers.stream().map(n -> new QuantityType(n, Units.WATT)).toList();
+        List<QuantityType<Power>> quantities = numbers.stream().map(n -> new QuantityType<>(n, Units.WATT)).toList();
         List<DecimalType> decimals = numbers.stream().map(DecimalType::new).toList();
         List<DecimalType> negativeDecimals = negatives.stream().map(DecimalType::new).toList();
 
@@ -771,7 +771,6 @@ public class StateFilterProfileTest {
         }
 
         reset(mockCallback);
-        when(mockCallback.getItemChannelLink()).thenReturn(mockItemChannelLink);
 
         profile.onStateUpdateFromHandler(input);
         verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(input);
@@ -803,6 +802,8 @@ public class StateFilterProfileTest {
         verify(mockCallback, times(1)).sendUpdate(DecimalType.valueOf("1"));
     }
 
+    // ========
+
     public static Stream<Arguments> testMixedStates() {
         NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
 
@@ -811,16 +812,17 @@ public class StateFilterProfileTest {
                 QuantityType.valueOf(99, SIUnits.METRE), //
                 QuantityType.valueOf(1, Units.WATT), //
                 DecimalType.valueOf("2"), //
-                QuantityType.valueOf(3000, MetricPrefix.MILLI(Units.WATT))); //
+                QuantityType.valueOf(2000, MetricPrefix.MILLI(Units.WATT)), //
+                QuantityType.valueOf(3, Units.WATT)); //
 
         return Stream.of(
                 // average function
                 Arguments.of(powerItem, "== $AVG", states, QuantityType.valueOf("2 W"), true),
                 Arguments.of(powerItem, "== $AVG", states, QuantityType.valueOf("2000 mW"), true),
                 Arguments.of(powerItem, "== $AVERAGE", states, QuantityType.valueOf("0.002 kW"), true),
-                Arguments.of(powerItem, "> $AVERAGE", states, QuantityType.valueOf("2 W"), false),
                 Arguments.of(powerItem, "> $AVERAGE", states, QuantityType.valueOf("3 W"), true),
 
+                Arguments.of(powerItem, "> $AVERAGE", states, QuantityType.valueOf("2 W"), false),
                 Arguments.of(powerItem, "== $AVERAGE", states, DecimalType.valueOf("2"), false),
 
                 // min function
@@ -836,19 +838,18 @@ public class StateFilterProfileTest {
                 Arguments.of(powerItem, "== $MAX", states, DecimalType.valueOf("1"), false),
 
                 // delta function
-                Arguments.of(powerItem, "$DELTA == 1", states, QuantityType.valueOf("4 W"), true),
-                Arguments.of(powerItem, "$DELTA == 0.001 kW", states, QuantityType.valueOf("4 W"), true),
-                Arguments.of(powerItem, "1 == $DELTA", states, QuantityType.valueOf("4 W"), true),
-                Arguments.of(powerItem, "1000 mW == $DELTA", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "$DELTA <= 1 W", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "$DELTA > 0.5 W", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "$DELTA > 0.0005 kW", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "0.5 W < $DELTA", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "500 mW < $DELTA", states, QuantityType.valueOf("4 W"), true),
+
+                Arguments.of(powerItem, "$DELTA > 0.5 W", states, QuantityType.valueOf("3.4 W"), false),
+                Arguments.of(powerItem, "$DELTA > 0.5", states, QuantityType.valueOf("4 W"), false),
 
                 // delta percent function
-                Arguments.of(powerItem, "$DELTA_PERCENT == 50", states, QuantityType.valueOf("4.5 W"), true),
-                Arguments.of(powerItem, "50 == $DELTA_PERCENT", states, QuantityType.valueOf("4.5 W"), true),
-
-                // last no comma
-                Arguments.of(powerItem, "== $MAX", states, QuantityType.valueOf("0.004 kW"), true),
-                Arguments.of(powerItem, "!= $MAX", states, QuantityType.valueOf("0.004 kW"), true)
-        //
+                Arguments.of(powerItem, "$DELTA_PERCENT > 30", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "30 < $DELTA_PERCENT", states, QuantityType.valueOf("4 W"), true) //
         );
     }
 
@@ -867,7 +868,6 @@ public class StateFilterProfileTest {
         }
 
         reset(mockCallback);
-        when(mockCallback.getItemChannelLink()).thenReturn(mockItemChannelLink);
 
         profile.onStateUpdateFromHandler(input);
         verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(input);
