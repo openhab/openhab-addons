@@ -190,7 +190,7 @@ sitemap roku label="Roku" {
 }
 ```
 
-roku.rules:
+### `roku.rules` Example
 
 ```java
 rule "Start the YouTube app on Roku"
