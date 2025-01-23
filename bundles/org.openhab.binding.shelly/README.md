@@ -122,7 +122,7 @@ See section [Discovery](#discovery) for details.
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
 | shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU                                  |
-| shellyproem50       | Shelly Pro EM50 with 3 integrated power meters           | SPEM-002CEBEU50                                |
+| shellyproem50       | Shelly Pro EM-50 with 2 power meters and 1 relay         | SPEM-002CEBEU50                                |
 | shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU, SPSW-104PE16EU                 |
 
 ### Shelly BLU
@@ -1510,6 +1510,37 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+
+### Shelly Pro EM-50 (thing-type: shellyproem50)
+
+| Group  | Channel       | Type     | read-only | Description                                                                       |
+| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
+| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| relay  | output        | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
+|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input         | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
+
 
 ### Shelly Pro 4PM (thing-type: shelly4pro)
 
