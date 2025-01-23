@@ -242,6 +242,11 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         properties.put("broadcastAddress", transformIpAddress(heatpumpValues[93]));
         properties.put("gateway", transformIpAddress(heatpumpValues[94]));
 
+        if (heatpumpValues.length >= 258 && heatpumpValues[258] > 0) {
+            // Only set property if RBE unit is installed
+            properties.put("RbeVersion", heatpumpValues[258]);
+        }
+
         return properties;
     }
 
