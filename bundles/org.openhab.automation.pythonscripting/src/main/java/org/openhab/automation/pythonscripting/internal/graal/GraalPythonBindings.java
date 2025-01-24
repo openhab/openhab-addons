@@ -29,18 +29,11 @@ import org.graalvm.polyglot.Value;
  * @author Jeff James - Initial contribution
  */
 final class GraalPythonBindings extends AbstractMap<String, Object> implements javax.script.Bindings, AutoCloseable {
-    // private static final String SCRIPT_CONTEXT_GLOBAL_BINDINGS_IMPORT_FUNCTION_NAME =
-    // "importScriptEngineGlobalBindings";
-
     private static final TypeLiteral<Map<String, Object>> STRING_MAP = new TypeLiteral<Map<String, Object>>() {
     };
 
     private Context context;
     private Map<String, Object> global;
-
-    // private Value setProperty;
-    // private Value removeProperty;
-    // private Value clear;
 
     private Context.Builder contextBuilder;
     // ScriptContext of the ScriptEngine where these bindings form ENGINE_SCOPE bindings
@@ -90,49 +83,7 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
     private void updateBinding(String key, Object value) {
         requireContext();
         context.getBindings("python").putMember(key, value);
-        // this.setPropertyFunction().execute(key, value);
     }
-
-    /*
-     * private Value setPropertyFunction() {
-     * if (this.setProperty == null) {
-     * String source = "import polyglot\n" + //
-     * "import sys\n" + //
-     * "@polyglot.export_value\n" + //
-     * "def set_global(key, value):\n" + //
-     * "    sys._getframe(0).f_globals[key] = value\n";
-     * GraalPythonScriptEngine.evalInternal(context, source);
-     * this.setProperty = context.getPolyglotBindings().getMember("set_global");
-     * }
-     * return this.setProperty;
-     * }
-     *
-     * private Value removePropertyFunction() {
-     * if (this.removeProperty == null) {
-     * String source = "import polyglot\n" + //
-     * "@polyglot.export_value\n" + //
-     * "def remove_global(key):\n" + //
-     * "    if key in globals():\n" + //
-     * "        del globals()[key]\n";
-     * GraalPythonScriptEngine.evalInternal(context, source);
-     * this.removeProperty = context.getPolyglotBindings().getMember("remove_global");
-     * }
-     * return this.removeProperty;
-     * }
-     *
-     * private Value clearFunction() {
-     * if (this.clear == null) {
-     * String source = "import polyglot\n" + //
-     * "@polyglot.export_value\n" + //
-     * "def clear_globals(obj):\n" + //
-     * "    for prop in list(obj.keys()):\n" + //
-     * "        del obj[prop]\n";
-     * GraalPythonScriptEngine.evalInternal(context, source);
-     * this.clear = context.getPolyglotBindings().getMember("clear_globals");
-     * }
-     * return this.clear;
-     * }
-     */
 
     @Override
     public Object put(String key, Object v) {
@@ -140,7 +91,6 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
         requireContext();
 
         context.getBindings("python").putMember(key, v);
-        // this.setPropertyFunction().execute(key, v);
         return global.put(key, v);
     }
 
@@ -151,7 +101,6 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
             for (var entry : global.entrySet()) {
                 binding.removeMember(entry.getKey());
             }
-            // clearFunction().execute(global);
         }
     }
 
@@ -159,11 +108,6 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
     public Object get(Object key) {
         checkKey((String) key);
         requireContext();
-        /*
-         * if (engineScriptContext != null) {
-         * importGlobalBindings(engineScriptContext);
-         * }
-         */
         return global.get(key);
     }
 
@@ -179,7 +123,6 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
         requireContext();
         Object prev = get(key);
         context.getBindings("python").removeMember((String) key);
-        // removePropertyFunction().execute(key);
         global.remove(key);
         return prev;
     }
@@ -201,16 +144,6 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
             context.close();
         }
     }
-
-    /*
-     * void importGlobalBindings(ScriptContext scriptContext) {
-     * if (globalBindings != null && !globalBindings.isEmpty() && !this.equals(globalBindings)) {
-     * ProxyObject bindingsProxy = ProxyObject.fromMap(Collections.unmodifiableMap(globalBindings));
-     * getContext().getBindings("python").getMember(SCRIPT_CONTEXT_GLOBAL_BINDINGS_IMPORT_FUNCTION_NAME)
-     * .execute(bindingsProxy);
-     * }
-     * }
-     */
 
     void updateEngineScriptContext(ScriptContext scriptContext) {
         engineScriptContext = scriptContext;

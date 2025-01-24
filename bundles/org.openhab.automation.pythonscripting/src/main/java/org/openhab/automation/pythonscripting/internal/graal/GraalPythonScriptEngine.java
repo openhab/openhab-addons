@@ -48,15 +48,11 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
 
     private static final String ID = "python";
     private static final String POLYGLOT_CONTEXT = "polyglot.context";
-    // private static final String PYTHON_SCRIPT_ENGINE_GLOBAL_SCOPE_IMPORT_OPTION =
-    // "python.script-engine-global-scope-import";
 
     private static final String PYTHON_OPTION_POSIXMODULEBACKEND = "python.PosixModuleBackend";
     private static final String PYTHON_OPTION_DONTWRITEBYTECODEFLAG = "python.DontWriteBytecodeFlag";
     private static final String PYTHON_OPTION_FORCEIMPORTSITE = "python.ForceImportSite";
     private static final String PYTHON_OPTION_CHECKHASHPYCSMODE = "python.CheckHashPycsMode";
-    // private static final String INSECURE_SCRIPTENGINE_ACCESS_SYSTEM_PROPERTY =
-    // "graalpy.insecure-scriptengine-access";
 
     static final String MAGIC_OPTION_PREFIX = "polyglot.py.";
 
@@ -215,7 +211,6 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
         GraalPythonBindings engineBindings = getOrCreateGraalPythonBindings(scriptContext);
         Context polyglotContext = engineBindings.getContext();
         try {
-            // engineBindings.importGlobalBindings(scriptContext);
             return polyglotContext.eval(source).as(Object.class);
         } catch (PolyglotException e) {
             throw toScriptException(e);
@@ -289,7 +284,6 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
             throw new IllegalArgumentException("thiz is not a valid object.");
         }
         GraalPythonBindings engineBindings = getOrCreateGraalPythonBindings(context);
-        // engineBindings.importGlobalBindings(context);
         Value thisValue = engineBindings.getContext().asValue(thiz);
 
         if (!thisValue.canInvokeMember(name)) {
@@ -309,7 +303,6 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
     @Override
     public Object invokeFunction(String name, Object... args) throws ScriptException, NoSuchMethodException {
         GraalPythonBindings engineBindings = getOrCreateGraalPythonBindings(context);
-        // engineBindings.importGlobalBindings(context);
         Value function = engineBindings.getContext().getBindings(ID).getMember(name);
 
         if (function == null) {
