@@ -278,9 +278,7 @@ public class StateFilterProfile implements StateProfile {
         String functionName = matcher.group(1).toUpperCase(Locale.ROOT);
         try {
             FunctionType.Function type = FunctionType.Function.valueOf(functionName);
-
-            Optional<Integer> windowSize = Optional.empty();
-            windowSize = Optional.ofNullable(matcher.group(2)).map(Integer::parseInt);
+            Optional<Integer> windowSize = Optional.ofNullable(matcher.group(2)).map(Integer::parseInt);
             return new FunctionType(type, windowSize);
         } catch (IllegalArgumentException e) {
             logger.warn("Invalid function name: '{}'. Expected one of: {}", functionName,
@@ -306,16 +304,8 @@ public class StateFilterProfile implements StateProfile {
 
         public StateCondition(String lhs, ComparisonType comparisonType, String rhs) {
             this.comparisonType = comparisonType;
-
-            if (lhs.isEmpty() && rhs.endsWith("%")) {
-                // Allow comparing percentages without a left hand side,
-                // e.g. `> 50%` -> translate this to `$DELTA_PERCENT > 50`
-                lhsString = "$DELTA_PERCENT";
-                rhsString = rhs.substring(0, rhs.length() - 1).trim();
-            } else {
-                lhsString = lhs;
-                rhsString = rhs;
-            }
+            lhsString = lhs;
+            rhsString = rhs;
             // Convert quoted strings to StringType, and UnDefTypes to UnDefType
             // UnDefType gets special treatment because we don't want `UNDEF` to be parsed as a string
             // Anything else, defer parsing until we're checking the condition
@@ -357,7 +347,23 @@ public class StateFilterProfile implements StateProfile {
 
                 if (lhsString.isEmpty()) {
                     lhsItem = getLinkedItem();
-                    lhsState = input;
+                    // special handling for `> 50%` condition
+                    // we need to calculate the delta percent between the input and the accepted state
+                    // but if the input is an actual Percent Quantity, perform a direct comparison between input and rhs
+                    if (rhsString.endsWith("%")) {
+                        // late-parsing because now we have the input state and can determine its type
+                        if (input instanceof QuantityType qty && "%".equals(qty.getUnit().getSymbol())) {
+                            lhsState = input;
+                        } else {
+                            lhsString = "$DELTA_PERCENT";
+                            // Override rhsString and this.lhsState to avoid re-parsing them later
+                            rhsString = rhsString.substring(0, rhsString.length() - 1).trim();
+                            this.lhsState = new FunctionType(FunctionType.Function.DELTA_PERCENT, Optional.empty());
+                            lhsState = this.lhsState;
+                        }
+                    } else {
+                        lhsState = input;
+                    }
                 } else if (lhsState == null) {
                     lhsItem = getItemOrNull(lhsString);
                     lhsState = itemStateOrParseState(lhsItem, lhsString, rhsItem);
@@ -368,7 +374,9 @@ public class StateFilterProfile implements StateProfile {
                                 lhsString, rhsString);
                         return false;
                     }
-                } else if (lhsState instanceof FunctionType lhsFunction) {
+                }
+
+                if (lhsState instanceof FunctionType lhsFunction) {
                     if (acceptedState == UnDefType.UNDEF && (lhsFunction.getType() == FunctionType.Function.DELTA
                             || lhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)) {
                         return true;

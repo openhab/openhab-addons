@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Power;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -670,10 +673,13 @@ public class StateFilterProfileTest {
 
     public static Stream<Arguments> testFunctions() {
         NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
+        NumberItem percentItem = new NumberItem("Number:Dimensionless", "percentItem", UNIT_PROVIDER);
         NumberItem decimalItem = new NumberItem("decimalItem");
         List<Number> numbers = List.of(1, 2, 3, 4, 5);
         List<Number> negatives = List.of(-1, -2, -3, -4, -5);
-        List<QuantityType> quantities = numbers.stream().map(n -> new QuantityType(n, Units.WATT)).toList();
+        List<QuantityType<Power>> quantities = numbers.stream().map(n -> new QuantityType<>(n, Units.WATT)).toList();
+        List<QuantityType<Dimensionless>> percentQuantities = numbers.stream()
+                .map(n -> new QuantityType<>(n, Units.PERCENT)).toList();
         List<DecimalType> decimals = numbers.stream().map(DecimalType::new).toList();
         List<DecimalType> negativeDecimals = negatives.stream().map(DecimalType::new).toList();
 
@@ -715,13 +721,31 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.91"), true), //
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.89"), false), //
 
-                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", negativeDecimals, DecimalType.valueOf("0"), false), //
-                Arguments.of(decimalItem, "10 > $DELTA_PERCENT", negativeDecimals, DecimalType.valueOf("0"), false), //
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", negativeDecimals, DecimalType.valueOf("0"), false),
+                //
+                Arguments.of(decimalItem, "10 > $DELTA_PERCENT", negativeDecimals, DecimalType.valueOf("0"), false),
+                //
 
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.09"), true), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.11"), false), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("0.91"), true), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("0.89"), false), //
+
+                // Contrast a simple comparison against a Percent QuantityType vs delta percent check
+                Arguments.of(percentItem, "> 5%", percentQuantities, QuantityType.valueOf("5.1 %"), true), //
+                Arguments.of(percentItem, "$DELTA_PERCENT > 5", percentQuantities, QuantityType.valueOf("5.1 %"),
+                        false), //
+
+                Arguments.of(percentItem, "> 5%", percentQuantities, QuantityType.valueOf("-10 %"), false), //
+                Arguments.of(percentItem, "$DELTA_PERCENT > 5", percentQuantities, QuantityType.valueOf("-10 %"), true), //
+
+                Arguments.of(percentItem, "< 200%", percentQuantities, QuantityType.valueOf("100 %"), true), //
+                Arguments.of(percentItem, "$DELTA_PERCENT < 200", percentQuantities, QuantityType.valueOf("100 %"),
+                        false), //
+
+                Arguments.of(percentItem, "< 200%", percentQuantities, QuantityType.valueOf("-100 %"), true), //
+                Arguments.of(percentItem, "$DELTA_PERCENT < 200", percentQuantities, QuantityType.valueOf("-100 %"),
+                        false), //
 
                 Arguments.of(decimalItem, "1 == $MIN", decimals, DecimalType.valueOf("20"), true), //
                 Arguments.of(decimalItem, "0 < $MIN", decimals, DecimalType.valueOf("20"), true), //
