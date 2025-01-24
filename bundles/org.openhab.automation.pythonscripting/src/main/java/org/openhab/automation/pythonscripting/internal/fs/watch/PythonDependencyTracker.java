@@ -13,7 +13,7 @@
 package org.openhab.automation.pythonscripting.internal.fs.watch;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.automation.pythonscripting.internal.PythonScriptEngine;
+import org.openhab.automation.pythonscripting.internal.PythonScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptDependencyTracker;
 import org.openhab.core.service.WatchService;
@@ -35,7 +35,7 @@ public class PythonDependencyTracker extends AbstractScriptDependencyTracker {
 
     @Activate
     public PythonDependencyTracker(@Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
-        super(watchService, PythonScriptEngine.PYTHON_LIB_PATH.toString());
+        super(watchService, PythonScriptEngineFactory.PYTHON_LIB_PATH.toString());
     }
 
     @Deactivate

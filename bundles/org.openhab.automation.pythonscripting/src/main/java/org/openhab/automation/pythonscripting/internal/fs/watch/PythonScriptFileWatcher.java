@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.automation.pythonscripting.internal.PythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.PythonScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
@@ -42,8 +41,8 @@ public class PythonScriptFileWatcher extends AbstractScriptFileWatcher {
             final @Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService,
             final @Reference ScriptEngineManager manager, final @Reference ReadyService readyService,
             final @Reference StartLevelService startLevelService) {
-        super(watchService, manager, readyService, startLevelService, PythonScriptEngine.PYTHON_DEFAULT_PATH.toString(),
-                true);
+        super(watchService, manager, readyService, startLevelService,
+                PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.toString(), true);
     }
 
     @Override

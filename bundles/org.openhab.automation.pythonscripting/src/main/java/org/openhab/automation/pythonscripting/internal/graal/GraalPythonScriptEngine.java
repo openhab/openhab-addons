@@ -45,6 +45,7 @@ import org.graalvm.polyglot.Value;
  */
 public final class GraalPythonScriptEngine extends AbstractScriptEngine
         implements Compilable, Invocable, AutoCloseable {
+
     private static final String ID = "python";
     private static final String POLYGLOT_CONTEXT = "polyglot.context";
     // private static final String PYTHON_SCRIPT_ENGINE_GLOBAL_SCOPE_IMPORT_OPTION =
@@ -214,7 +215,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
         GraalPythonBindings engineBindings = getOrCreateGraalPythonBindings(scriptContext);
         Context polyglotContext = engineBindings.getContext();
         try {
-            engineBindings.importGlobalBindings(scriptContext);
+            // engineBindings.importGlobalBindings(scriptContext);
             return polyglotContext.eval(source).as(Object.class);
         } catch (PolyglotException e) {
             throw toScriptException(e);
@@ -288,7 +289,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
             throw new IllegalArgumentException("thiz is not a valid object.");
         }
         GraalPythonBindings engineBindings = getOrCreateGraalPythonBindings(context);
-        engineBindings.importGlobalBindings(context);
+        // engineBindings.importGlobalBindings(context);
         Value thisValue = engineBindings.getContext().asValue(thiz);
 
         if (!thisValue.canInvokeMember(name)) {
@@ -308,7 +309,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
     @Override
     public Object invokeFunction(String name, Object... args) throws ScriptException, NoSuchMethodException {
         GraalPythonBindings engineBindings = getOrCreateGraalPythonBindings(context);
-        engineBindings.importGlobalBindings(context);
+        // engineBindings.importGlobalBindings(context);
         Value function = engineBindings.getContext().getBindings(ID).getMember(name);
 
         if (function == null) {
@@ -446,10 +447,5 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
             }
         }
         return true;
-    }
-
-    private static IllegalArgumentException magicOptionValueErrorBool(String name, Object v) {
-        return new IllegalArgumentException(
-                String.format("failed to set graal-py option \"%s\": expected a boolean value, got \"%s\"", name, v));
     }
 }

@@ -11,8 +11,10 @@ from openhab.services import get_service
 # **** REGISTER LOGGING AND EXCEPTION HOOK AS SOON AS POSSIBLE ****
 Java_LogFactory = java.type("org.slf4j.LoggerFactory")
 LOG_PREFIX = "org.openhab.core.automation.pythonscripting"
-file_package = os.path.basename(scope['__file__'])[:-3]
-logger = Java_LogFactory.getLogger( LOG_PREFIX + "." + file_package )
+if '__file__' in scope:
+    file_package = os.path.basename(scope['__file__'])[:-3]
+    LOG_PREFIX = "{}.{}".format(LOG_PREFIX, file_package)
+logger = Java_LogFactory.getLogger( LOG_PREFIX )
 
 #def scriptUnloaded():
 #    logger.info("unload")
@@ -87,7 +89,7 @@ class rule():
 
         class_package = proxy.getClassPackage(clazz.__name__)
 
-        clazz.logger = Java_LogFactory.getLogger( LOG_PREFIX + "." + file_package + "." + class_package )
+        clazz.logger = Java_LogFactory.getLogger( "{}.{}".format(LOG_PREFIX, class_package) )
 
         _rule_obj = clazz()
 

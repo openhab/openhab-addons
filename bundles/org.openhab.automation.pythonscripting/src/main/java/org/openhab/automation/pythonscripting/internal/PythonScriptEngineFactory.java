@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -38,6 +39,7 @@ import javax.script.ScriptEngine;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.pythonscripting.internal.fs.watch.PythonDependencyTracker;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigParser;
@@ -63,6 +65,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PythonScriptEngineFactory implements ScriptEngineFactory {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngineFactory.class);
+
+    public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
+    public static final Path PYTHON_LIB_PATH = PYTHON_DEFAULT_PATH.resolve("lib");
+    public static final Path PYTHON_OPENHAB_LIB_PATH = PYTHON_LIB_PATH.resolve("openhab");
 
     private static final String CFG_HELPER_ENABLED = "helperEnabled";
     private static final String CFG_CACHING_ENABLED = "cachingEnabled";
@@ -131,12 +137,12 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     }
 
     private void initOpenhabLib() {
-        Path versionFilePath = PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
+        Path versionFilePath = PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
 
         List<String> resourceFiles = Arrays.asList("__init__.py", "actions.py", "helper.py", "jsr223.py", "services.py",
                 "triggers.py");
 
-        if (Files.exists(PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH)) {
+        if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
             if (Files.exists(versionFilePath)) {
                 Pattern pattern = Pattern.compile("__version__\\s*=\\s*\"([0-9]+\\.[0-9]+\\.[0-9]+)\"",
                         Pattern.CASE_INSENSITIVE);
@@ -178,11 +184,11 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
             }
         }
 
-        logger.info("Deploy helper libs into {}.", PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH.toString());
+        logger.info("Deploy helper libs into {}.", PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH.toString());
 
         try {
-            if (Files.exists(PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH)) {
-                Files.walkFileTree(PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH, new SimpleFileVisitor<Path>() {
+            if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
+                Files.walkFileTree(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, @Nullable BasicFileAttributes attrs)
                             throws IOException {
@@ -198,13 +204,13 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
                 });
             }
 
-            Files.createDirectories(PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH,
+            Files.createDirectories(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH,
                     PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x")));
 
             for (String resourceFile : resourceFiles) {
                 InputStream is = PythonScriptEngineFactory.class.getClassLoader()
                         .getResourceAsStream("/lib/openhab/" + resourceFile);
-                Path target = PythonScriptEngine.PYTHON_OPENHAB_LIB_PATH.resolve(resourceFile);
+                Path target = PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH.resolve(resourceFile);
                 Files.copy(is, target);
                 Files.setPosixFilePermissions(target, PosixFilePermissions.fromString("rw-r--r--"));
             }

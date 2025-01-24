@@ -67,10 +67,6 @@ public class PythonScriptEngine
         implements Lock {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngine.class);
 
-    public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
-    public static final Path PYTHON_LIB_PATH = PYTHON_DEFAULT_PATH.resolve("lib");
-    public static final Path PYTHON_OPENHAB_LIB_PATH = PYTHON_LIB_PATH.resolve("openhab");
-
     private static final String PYTHON_OPTION_EXECUTABLE = "python.Executable";
     // private static final String PYTHON_OPTION_PYTHONHOME = "python.PythonHome";
     private static final String PYTHON_OPTION_PYTHONPATH = "python.PythonPath";
@@ -247,7 +243,7 @@ public class PythonScriptEngine
                             public void checkAccess(Path path, Set<? extends AccessMode> modes,
                                     LinkOption... linkOptions) throws IOException {
 
-                                if (path.startsWith(PYTHON_LIB_PATH)) {
+                                if (path.startsWith(PythonScriptEngineFactory.PYTHON_LIB_PATH)) {
                                     Consumer<String> localScriptDependencyListener = scriptDependencyListener;
                                     if (localScriptDependencyListener != null) {
                                         localScriptDependencyListener.accept(path.toString());
@@ -260,6 +256,8 @@ public class PythonScriptEngine
                 .allowHostAccess(HOST_ACCESS) //
                 // .allowHostClassLoading(true) //
                 .allowAllAccess(true) //
+                // allow class lookup like "org.slf4j.LoggerFactory" from inline scripts
+                .hostClassLoader(getClass().getClassLoader()) //
                 // allow creating python threads
                 .allowCreateThread(true)
                 // .allowCreateProcess(true) //
@@ -275,13 +273,15 @@ public class PythonScriptEngine
                 .option(PYTHON_OPTION_FORCEIMPORTSITE, Boolean.toString(true)) //
                 // The sys.executable path, a virtual path that is used by the interpreter
                 // to discover packages
-                .option(PYTHON_OPTION_EXECUTABLE, PYTHON_DEFAULT_PATH.resolve("bin").resolve("python").toString())
+                .option(PYTHON_OPTION_EXECUTABLE,
+                        PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.resolve("bin").resolve("python").toString())
                 // Set the python home to be read from the embedded resources
                 // .option(PYTHON_OPTION_PYTHONHOME, PYTHON_DEFAULT_PATH.toString()) //
                 // Set python path to point to sources stored in
-                .option(PYTHON_OPTION_PYTHONPATH, PYTHON_DEFAULT_PATH.resolve("lib").toString())
+                .option(PYTHON_OPTION_PYTHONPATH,
+                        PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.resolve("lib").toString())
                 // pass the path to be executed
-                .option(PYTHON_OPTION_INPUTFILEPATH, PYTHON_DEFAULT_PATH.toString()) //
+                .option(PYTHON_OPTION_INPUTFILEPATH, PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.toString()) //
                 // make sure the TopLevelExceptionHandler calls the excepthook to print Python exceptions
                 .option(PYTHON_OPTION_ALWAYSRUNEXCEPTHOOK, Boolean.toString(true)) //
                 // emulate jython behavior (will slowdown the engine)
