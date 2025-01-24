@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.measure.quantity.Power;
@@ -49,6 +50,8 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class FroniusBatteryControl {
     private static final String TIME_OF_USE_ENDPOINT = "/config/timeofuse";
+    private static final String BATTERIES_ENDPOINT = "/config/batteries";
+    private static final String BACKUP_RESERVED_CAPACITY_PARAMETER = "HYB_BACKUP_RESERVED";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FroniusBatteryControl.class);
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
@@ -64,6 +67,7 @@ public class FroniusBatteryControl {
     private final String username;
     private final String password;
     private final URI timeOfUseUri;
+    private final URI batteriesUri;
 
     public FroniusBatteryControl(HttpClient httpClient, URI baseUri, String username, String password) {
         this.httpClient = httpClient;
@@ -71,6 +75,7 @@ public class FroniusBatteryControl {
         this.username = username;
         this.password = password;
         this.timeOfUseUri = baseUri.resolve(URI.create(TIME_OF_USE_ENDPOINT));
+        this.batteriesUri = baseUri.resolve(URI.create(BATTERIES_ENDPOINT));
     }
 
     /**
@@ -207,5 +212,37 @@ public class FroniusBatteryControl {
                 ALL_WEEKDAYS_RECORD);
         timeOfUse[timeOfUse.length - 1] = holdCharge;
         setTimeOfUse(new TimeOfUseRecords(timeOfUse));
+    }
+
+    /**
+     * Sets the reserved battery capacity for backup power.
+     *
+     * @param percent the reserved battery capacity for backup power
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws IllegalArgumentException when percent is not in [10,95]
+     * @throws FroniusUnauthorizedException when login failed due to invalid credentials
+     */
+    public void setBackupReservedCapacity(int percent)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        if (percent < 10 || percent > 95) {
+            throw new IllegalArgumentException("invalid percent value: " + percent + " (must be in [10,95])");
+        }
+
+        // Login and get the auth header for the next request
+        String authHeader = FroniusConfigAuthUtil.login(httpClient, baseUri, username, password, HttpMethod.POST,
+                batteriesUri.getPath(), API_TIMEOUT);
+        Properties headers = new Properties();
+        headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
+
+        // Set the setting
+        String json = gson.toJson(Map.of(BACKUP_RESERVED_CAPACITY_PARAMETER, percent));
+        String responseString = FroniusHttpUtil.executeUrl(HttpMethod.POST, batteriesUri.toString(), headers,
+                new ByteArrayInputStream(json.getBytes()), "application/json", API_TIMEOUT);
+        PostConfigResponse response = gson.fromJson(responseString, PostConfigResponse.class);
+        if (!response.writeSuccess().contains(BACKUP_RESERVED_CAPACITY_PARAMETER)) {
+            LOGGER.debug("{}", responseString);
+            throw new FroniusCommunicationException("Failed to write configuration to inverter");
+        }
+        LOGGER.trace("Backup Reserved Capacity setting set successfully");
     }
 }

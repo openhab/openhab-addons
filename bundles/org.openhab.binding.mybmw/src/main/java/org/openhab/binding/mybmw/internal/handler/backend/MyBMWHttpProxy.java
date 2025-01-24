@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.mybmw.internal.handler.backend;
 
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.APP_VERSIONS;
-
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -178,7 +176,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      */
     public byte[] requestImage(String vin, String brand, ImageProperties props) throws NetworkException {
         final String localImageUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.getRegion())
-                + "/eadrax-ics/v3/presentation/vehicles/" + vin + "/images?carView=" + props.viewport;
+                + BimmerConstants.IMAGE_URL.replace(BimmerConstants.PARAM_VIN, vin) + props.viewport;
         return get(localImageUrl, brand, vin, HTTPConstants.CONTENT_TYPE_IMAGE);
     }
 
@@ -232,7 +230,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
         String params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
         String chargeStatisticsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.getRegion())
-                + "/eadrax-chs/v1/charging-statistics?" + params;
+                + BimmerConstants.CHARGING_STATISTICS + params;
         byte[] chargeStatisticsResponse = get(chargeStatisticsUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
         String chargeStatisticsResponseString = new String(chargeStatisticsResponse);
         return chargeStatisticsResponseString;
@@ -264,7 +262,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         chargeSessionsParams.put("include_date_picker", "true");
         String params = UrlEncoded.encode(chargeSessionsParams, StandardCharsets.UTF_8, false);
         String chargeSessionsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.getRegion())
-                + "/eadrax-chs/v1/charging-sessions?" + params;
+                + BimmerConstants.CHARGING_SESSIONS + params;
         byte[] chargeSessionsResponse = get(chargeSessionsUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
         String chargeSessionsResponseString = new String(chargeSessionsResponse);
         return chargeSessionsResponseString;
@@ -369,7 +367,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
 
         req.header(HttpHeader.AUTHORIZATION, myBMWTokenController.getToken().getBearerToken());
         req.header(HTTPConstants.HEADER_X_USER_AGENT, String.format(BimmerConstants.X_USER_AGENT, brand.toLowerCase(),
-                APP_VERSIONS.get(bridgeConfiguration.getRegion()), bridgeConfiguration.getRegion()));
+                BimmerConstants.APP_VERSIONS.get(bridgeConfiguration.getRegion()), bridgeConfiguration.getRegion()));
         req.header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfiguration.getLanguage());
         req.header(HttpHeader.ACCEPT, contentType);
         req.header(HTTPConstants.HEADER_BMW_VIN, vin);
