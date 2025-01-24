@@ -179,7 +179,7 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
         getChildChargerHandlers().forEach((name, handler) -> {
-            logger.info("notify {}: config update", name);
+            logger.debug("notify {}: config update", name);
             handler.reInit();
         });
     }
