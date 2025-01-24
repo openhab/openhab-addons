@@ -129,8 +129,8 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
             if (disconnectionCounter < config.reconnectRate) {
                 return true;
             }
-            return false;
         }
+        return false;
     }
 
     @Override
