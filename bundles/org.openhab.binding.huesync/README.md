@@ -169,7 +169,7 @@ String    huesync_mode                     "Mode"                    <switch>   
 Switch    sync_active                      "Sync active"             <switch>                                  {channel="huesync:box:LivingRoom:device-commands#sync-active"}
 Switch    hdmi_active                      "HDMI active"             <switch>                                  {channel="huesync:box:LivingRoom:device-commands#hdmi-active"}
 String    hdmi_source                      "HDMI Source"             <player>                                  {channel="huesync:box:LivingRoom:device-commands#hdmi-source"}
-Dimmer    huesync_brightness               "Brightness"              <slider>                                  {channel="huesync:box:LivingRoom:device-commands#brightness"}
+Number:Dimensionless  huesync_brightness   "Brightness"              <slider>                                  {channel="huesync:box:LivingRoom:device-commands#brightness"}
 
 ```
 
