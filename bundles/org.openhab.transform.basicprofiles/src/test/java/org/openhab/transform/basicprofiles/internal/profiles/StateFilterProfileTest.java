@@ -935,9 +935,9 @@ public class StateFilterProfileTest {
 
     public static Stream<Arguments> testColorTemperatureValues() {
         /*
-         * -----------------------------------------------------------------------------------------------
-         * TODO some of these test cases will fail unless OH Core PR #4561 and #4571 will have been merged
-         * -----------------------------------------------------------------------------------------------
+         * -------------------------------------------------------------------------------------
+         * TODO some of these test cases will fail unless OH Core PR #4561 will have been merged
+         * -------------------------------------------------------------------------------------
          */
         NumberItem kelvinItem = new NumberItem("Number:Temperature", "kelvinItem", UNIT_PROVIDER);
         NumberItem mirekItem = new NumberItem("Number:Temperature", "mirekItem", new MirekUnitProvider());
