@@ -720,10 +720,8 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.91"), true), //
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.89"), false), //
 
-                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", negativeDecimals, DecimalType.valueOf("0"), false),
-                //
-                Arguments.of(decimalItem, "10 > $DELTA_PERCENT", negativeDecimals, DecimalType.valueOf("0"), false),
-                //
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", negativeDecimals, DecimalType.valueOf("0"), false), //
+                Arguments.of(decimalItem, "10 > $DELTA_PERCENT", negativeDecimals, DecimalType.valueOf("0"), false), //
 
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.09"), true), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.11"), false), //
@@ -953,21 +951,27 @@ public class StateFilterProfileTest {
         return Stream.of( //
                 // kelvin based item
                 Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf("2000 K"), true),
-                Arguments.of(kelvinItem, "== $AVG", states, QuantityType.valueOf("2150 K"), true),
                 Arguments.of(kelvinItem, "== $MAX", states, QuantityType.valueOf("2300 K"), true),
                 Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf(500, Units.MIRED), true),
                 Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf(1726.85, SIUnits.CELSIUS), true),
                 Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT),
                         true),
 
-                // mirek based item
-                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf("2000 K"), true),
-                Arguments.of(mirekItem, "== $AVG", states, QuantityType.valueOf("2150 K"), true),
-                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf("2300 K"), true),
-                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf(500, Units.MIRED), true),
-                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf(1726.85, SIUnits.CELSIUS), true),
-                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT),
-                        true) //
+                // kelvin based item average (note: actual is 2150)
+                Arguments.of(kelvinItem, "<= $AVG", states, QuantityType.valueOf("2149 K"), true),
+                Arguments.of(kelvinItem, ">= $AVG", states, QuantityType.valueOf("2151 K"), true),
+
+                // mirek based item (note: min and max are reversed
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf("2000 K"), true),
+                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf("2300 K"), true),
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf(500, Units.MIRED), true),
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf(1726.85, SIUnits.CELSIUS), true),
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT),
+                        true),
+
+                // mirek based item average (note: actual is 466.37)
+                Arguments.of(mirekItem, "<= $AVG", states, QuantityType.valueOf(466, Units.MIRED), true),
+                Arguments.of(mirekItem, ">= $AVG", states, QuantityType.valueOf(468, Units.MIRED), true) //
         );
     }
 

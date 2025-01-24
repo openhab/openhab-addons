@@ -106,7 +106,7 @@ public class StateFilterProfile implements StateProfile {
 
     private State newState = UnDefType.UNDEF;
     private State acceptedState = UnDefType.UNDEF;
-    private LinkedList<State> previousValidNumericStates = new LinkedList<>();
+    private LinkedList<State> previousStates = new LinkedList<>();
 
     private final int windowSize;
 
@@ -282,11 +282,10 @@ public class StateFilterProfile implements StateProfile {
         } else {
             logger.debug("Received allowed state update from handler: {}, not forwarded to item", state);
         }
-        if (windowSize > 0 && ((state instanceof DecimalType) || ((state instanceof QuantityType)
-                && (!hasSystemUnit() || Objects.nonNull(systemUnitQuantityType(state)))))) {
-            previousValidNumericStates.add(state);
-            if (previousValidNumericStates.size() > windowSize) {
-                previousValidNumericStates.removeFirst();
+        if (windowSize > 0 && ((state instanceof DecimalType) || ((state instanceof QuantityType)))) {
+            previousStates.addLast(state);
+            if (previousStates.size() > windowSize) {
+                previousStates.removeFirst();
             }
         }
     }
@@ -622,10 +621,12 @@ public class StateFilterProfile implements StateProfile {
 
         public @Nullable State calculate() {
             logger.debug("Calculating function: {}", this);
-            int size = previousValidNumericStates.size();
+            List<State> states = hasSystemUnit()
+                    ? systemUnitQuantityTypes(previousStates).stream().map(q -> (State) q).toList()
+                    : previousStates;
+            int size = states.size();
             int start = windowSize.map(w -> size - w).orElse(0);
-            List<State> states = start <= 0 ? previousValidNumericStates
-                    : previousValidNumericStates.subList(start, size);
+            states = start <= 0 ? states : states.subList(start, size);
             return switch (type) {
                 case DELTA -> calculateDelta();
                 case DELTA_PERCENT -> calculateDeltaPercent();
