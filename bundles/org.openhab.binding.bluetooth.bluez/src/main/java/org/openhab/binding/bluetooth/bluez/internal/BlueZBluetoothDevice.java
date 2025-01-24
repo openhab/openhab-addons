@@ -219,7 +219,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         }
         for (BluetoothGattService service : dev.getGattServices()) {
             for (BluetoothGattCharacteristic c : service.getGattCharacteristics()) {
-                if (c.getUuid().equalsIgnoreCase(uuid)) {
+                if (uuid.equalsIgnoreCase(c.getUuid())) {
                     return c;
                 }
             }
