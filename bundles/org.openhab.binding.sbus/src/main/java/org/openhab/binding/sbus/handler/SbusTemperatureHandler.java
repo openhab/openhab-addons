@@ -15,6 +15,8 @@ package org.openhab.binding.sbus.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
 import org.openhab.binding.sbus.handler.config.TemperatureChannelConfig;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -24,6 +26,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +42,8 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusTemperatureHandler.class);
 
-    public SbusTemperatureHandler(Thing thing) {
-        super(thing);
+    public SbusTemperatureHandler(Thing thing, TranslationProvider translationProvider, LocaleProvider localeProvider) {
+        super(thing, translationProvider, localeProvider);
     }
 
     @Override
@@ -49,8 +53,10 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
             // Channels are already defined in thing-types.xml, just validate their configuration
             TemperatureChannelConfig channelConfig = channel.getConfiguration().as(TemperatureChannelConfig.class);
             if (!channelConfig.isValid()) {
+                Bundle bundle = FrameworkUtil.getBundle(getClass());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Invalid channel configuration: " + channel.getUID());
+                        translationProvider.getText(bundle, "error.channel.invalid-number", channel.getUID().toString(),
+                                localeProvider.getLocale()));
                 return;
             }
         }
@@ -60,7 +66,9 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
     protected void pollDevice() {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider.getText(bundle,
+                    "error.device.adapter-not-initialized", null, localeProvider.getLocale()));
             return;
         }
 
@@ -68,7 +76,7 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
             SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
 
             // Read temperatures in Celsius from device
-            float[] temperatures = adapter.readTemperatures(config.subnetId, config.id, 1);
+            float[] temperatures = adapter.readTemperatures(config.subnetId, config.id, TemperatureUnit.CELSIUS);
 
             // Iterate over all channels and update their states with corresponding temperatures
             for (Channel channel : getThing().getChannels()) {
@@ -91,13 +99,17 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error reading device state");
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    translationProvider.getText(bundle, "error.device.read-state", null, localeProvider.getLocale()));
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Temperature sensors are read-only
-        logger.debug("Temperature device is read-only, ignoring command");
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        logger.debug(
+                translationProvider.getText(bundle, "info.temperature.readonly", null, localeProvider.getLocale()));
     }
 }

@@ -16,6 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sbus.BindingConstants;
 import org.openhab.binding.sbus.handler.config.SbusChannelConfig;
 import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
@@ -25,6 +27,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.util.ColorUtil;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +43,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusRgbwHandler.class);
 
-    public SbusRgbwHandler(Thing thing) {
-        super(thing);
+    public SbusRgbwHandler(Thing thing, TranslationProvider translationProvider, LocaleProvider localeProvider) {
+        super(thing, translationProvider, localeProvider);
     }
 
     /**
@@ -70,13 +74,17 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
             SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
             var channelTypeUID = channel.getChannelTypeUID();
             if (channelTypeUID == null) {
-                logger.warn("Channel {} has no channel type", channel.getUID());
+                Bundle bundle = FrameworkUtil.getBundle(getClass());
+                logger.warn(translationProvider.getText(bundle, "error.channel.no-type", channel.getUID().toString(),
+                        localeProvider.getLocale()));
                 continue;
             }
             String channelTypeId = channelTypeUID.getId();
             if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)) {
                 if (channelConfig.channelNumber <= 0) {
-                    logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
+                    Bundle bundle = FrameworkUtil.getBundle(getClass());
+                    logger.warn(translationProvider.getText(bundle, "error.channel.invalid-number",
+                            channel.getUID().toString(), localeProvider.getLocale()));
                 }
             }
             if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)) {
@@ -87,8 +95,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
             }
         }
         if (switchChannelCount > 1) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Only one switch channel is allowed for RGBW thing " + getThing().getUID());
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider.getText(bundle,
+                    "error.rgbw.too-many-switches", getThing().getUID().toString(), localeProvider.getLocale()));
             return;
         }
     }
@@ -97,7 +106,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
     protected void pollDevice() {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider.getText(bundle,
+                    "error.device.adapter-not-initialized", null, localeProvider.getLocale()));
             return;
         }
 
@@ -137,7 +148,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error reading device state");
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    translationProvider.getText(bundle, "error.device.read-state", null, localeProvider.getLocale()));
         }
     }
 
@@ -145,7 +158,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider.getText(bundle,
+                    "error.device.adapter-not-initialized", null, localeProvider.getLocale()));
             return;
         }
 
@@ -154,7 +169,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
             if (channel != null) {
                 var channelTypeUID = channel.getChannelTypeUID();
                 if (channelTypeUID == null) {
-                    logger.warn("Channel {} has no channel type", channel.getUID());
+                    Bundle bundle = FrameworkUtil.getBundle(getClass());
+                    logger.warn(translationProvider.getText(bundle, "error.channel.no-type",
+                            channel.getUID().toString(), localeProvider.getLocale()));
                     return;
                 }
                 String channelTypeId = channelTypeUID.getId();
@@ -177,7 +194,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 }
             }
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error sending command to device");
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    translationProvider.getText(bundle, "error.device.send-command", null, localeProvider.getLocale()));
         }
     }
 }

@@ -27,11 +27,11 @@ public interface SbusService {
      *
      * @param subnetId the subnet ID of the device
      * @param id the device ID
-     * @param temperatureUnit The unit of measurement (e.g., 0 for Fahrenheit, 1 for Celsius)
+     * @param temperatureUnit The unit of measurement (FAHRENHEIT or CELSIUS)
      * @return array of temperature values in Celsius
      * @throws Exception if reading fails
      */
-    float[] readTemperatures(int subnetId, int id, int temperatureUnit) throws Exception;
+    float[] readTemperatures(int subnetId, int id, TemperatureUnit temperatureUnit) throws Exception;
 
     /**
      * Reads RGBW values from a device channel.

@@ -72,11 +72,11 @@ The Sbus Bridge has the following configuration parameters:
 
 ### Switch Controller Channels
 
-| Channel | Type   | Read/Write | Description                                               |
-|---------|--------|------------|-----------------------------------------------------------|
-| switch  | Switch | RW         | Basic ON/OFF state control                                |
-| dimmer  | Dimmer | RW         | ON/OFF state with timer transition                        |
-| paired  | Paired | RW         | ON/OFF state for two paired channels (e.g., curtains)     |
+| Channel | Type    | Read/Write | Description                                               |
+|---------|---------|------------|-----------------------------------------------------------|
+| switch  | Switch  | RW         | Basic ON/OFF state control                                |
+| dimmer  | Dimmer  | RW         | ON/OFF state with timer transition                        |
+| paired  | Contact | RW         | OPEN/CLOSED state for two paired channels (e.g., curtains)|
 
 ## Full Example
 
@@ -113,6 +113,9 @@ Number:Temperature Temp_Sensor "Temperature [%.1f °C]" { channel="sbus:temperat
 // Basic Switch
 Switch Light_Switch "Switch" { channel="sbus:switch:mybridge:switch1:switch" }
 
+// Paired Channel (e.g., for curtains)
+Contact Curtain_Switch "Curtain [%s]" { channel="sbus:switch:mybridge:switch1:third_switch" }
+
 // RGBW Controller with Power Control
 Group   gLight      "RGBW Light"    <light>     ["Lighting"]
 Color   rgbwColor    "Color"        <colorwheel> (gLight)   ["Control", "Light"]    { channel="sbus:rgbw:mybridge:colorctrl:color" }
@@ -128,5 +131,6 @@ sitemap sbus label="Sbus Demo"
         Colorpicker item=Light_RGB
         Text item=Temp_Sensor
         Switch item=Light_Switch
+        Text item=Curtain_Switch
     }
 }

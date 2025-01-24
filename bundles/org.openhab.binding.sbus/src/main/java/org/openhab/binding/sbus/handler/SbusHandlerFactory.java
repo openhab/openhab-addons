@@ -18,6 +18,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -40,10 +42,22 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SbusHandlerFactory.class);
     private @Nullable SbusService sbusService;
+    private @Nullable TranslationProvider translationProvider;
+    private @Nullable LocaleProvider localeProvider;
 
     @Reference
     public void setSbusService(final SbusService service) {
         this.sbusService = service;
+    }
+
+    @Reference
+    public void setTranslationProvider(TranslationProvider translationProvider) {
+        this.translationProvider = translationProvider;
+    }
+
+    @Reference
+    public void setLocaleProvider(LocaleProvider localeProvider) {
+        this.localeProvider = localeProvider;
     }
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_UDP_BRIDGE, THING_TYPE_SWITCH,
@@ -58,20 +72,27 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
+        final TranslationProvider tp = translationProvider;
+        final LocaleProvider lp = localeProvider;
+        if (tp == null || lp == null) {
+            logger.error("Required services not available");
+            return null;
+        }
+
         if (thingTypeUID.equals(THING_TYPE_UDP_BRIDGE)) {
             logger.debug("Creating Sbus UDP bridge handler for thing {}", thing.getUID());
-            return new SbusBridgeHandler((Bridge) thing, sbusService);
+            return new SbusBridgeHandler((Bridge) thing, sbusService, tp, lp);
         }
 
         if (thingTypeUID.equals(THING_TYPE_SWITCH)) {
             logger.debug("Creating Sbus switch handler for thing {}", thing.getUID());
-            return new SbusSwitchHandler(thing);
+            return new SbusSwitchHandler(thing, tp, lp);
         } else if (thingTypeUID.equals(THING_TYPE_TEMPERATURE)) {
             logger.debug("Creating Sbus temperature handler for thing {}", thing.getUID());
-            return new SbusTemperatureHandler(thing);
+            return new SbusTemperatureHandler(thing, tp, lp);
         } else if (thingTypeUID.equals(THING_TYPE_RGBW)) {
             logger.debug("Creating Sbus RGBW handler for thing {}", thing.getUID());
-            return new SbusRgbwHandler(thing);
+            return new SbusRgbwHandler(thing, tp, lp);
         }
 
         logger.debug("Unknown thing type: {}", thingTypeUID);

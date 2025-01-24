@@ -15,12 +15,16 @@ package org.openhab.binding.sbus.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sbus.handler.config.SbusBridgeConfig;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +38,8 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusBridgeHandler.class);
     private final @Nullable SbusService sbusService;
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
 
     /**
      * Constructs a new SbusBridgeHandler.
@@ -41,9 +47,12 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
      * @param bridge the bridge
      * @param sbusService the Sbus service
      */
-    public SbusBridgeHandler(Bridge bridge, @Nullable SbusService sbusService) {
+    public SbusBridgeHandler(Bridge bridge, @Nullable SbusService sbusService, TranslationProvider translationProvider,
+            LocaleProvider localeProvider) {
         super(bridge);
         this.sbusService = sbusService;
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
     }
 
     /**
@@ -56,15 +65,18 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
         // Get configuration using the config class
         SbusBridgeConfig config = getConfigAs(SbusBridgeConfig.class);
         if (config.host.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address not configured");
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider.getText(bundle,
+                    "error.bridge.host-not-configured", null, localeProvider.getLocale()));
             return;
         }
         try {
             // Initialize Sbus service with the configuration parameters
             final SbusService service = sbusService;
             if (service == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "Sbus service not available");
+                Bundle bundle = FrameworkUtil.getBundle(getClass());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, translationProvider
+                        .getText(bundle, "error.bridge.service-not-available", null, localeProvider.getLocale()));
                 return;
             }
             service.initialize(config.host, config.port);

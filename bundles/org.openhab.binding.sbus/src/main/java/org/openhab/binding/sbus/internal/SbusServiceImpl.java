@@ -15,6 +15,7 @@ package org.openhab.binding.sbus.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sbus.handler.SbusService;
+import org.openhab.binding.sbus.handler.TemperatureUnit;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -54,12 +55,12 @@ public class SbusServiceImpl implements SbusService {
     }
 
     @Override
-    public float[] readTemperatures(int subnetId, int id, int temperatureUnit) throws Exception {
+    public float[] readTemperatures(int subnetId, int id, TemperatureUnit temperatureUnit) throws Exception {
         final SbusAdapter adapter = this.adapter;
         if (adapter == null) {
             throw new IllegalStateException("SbusAdapter not initialized");
         }
-        return adapter.readTemperatures(subnetId, id, temperatureUnit);
+        return adapter.readTemperatures(subnetId, id, temperatureUnit.getValue());
     }
 
     @Override

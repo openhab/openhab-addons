@@ -16,6 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sbus.BindingConstants;
 import org.openhab.binding.sbus.handler.config.SbusChannelConfig;
 import org.openhab.binding.sbus.handler.config.SbusDeviceConfig;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
@@ -25,6 +27,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +43,8 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusSwitchHandler.class);
 
-    public SbusSwitchHandler(Thing thing) {
-        super(thing);
+    public SbusSwitchHandler(Thing thing, TranslationProvider translationProvider, LocaleProvider localeProvider) {
+        super(thing, translationProvider, localeProvider);
     }
 
     @Override
@@ -50,7 +54,9 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             // Channels are already defined in thing-types.xml, just validate their configuration
             SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
             if (channelConfig.channelNumber <= 0) {
-                logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
+                Bundle bundle = FrameworkUtil.getBundle(getClass());
+                logger.warn(translationProvider.getText(bundle, "error.channel.invalid-number",
+                        channel.getUID().toString(), localeProvider.getLocale()));
             }
         }
     }
@@ -59,7 +65,9 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
     protected void pollDevice() {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider.getText(bundle,
+                    "error.device.adapter-not-initialized", null, localeProvider.getLocale()));
             return;
         }
 
@@ -76,7 +84,9 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                 if (channelConfig.channelNumber > 0 && channelConfig.channelNumber <= statuses.length) {
                     var channelTypeUID = channel.getChannelTypeUID();
                     if (channelTypeUID == null) {
-                        logger.warn("Channel {} has no channel type", channel.getUID());
+                        Bundle bundle = FrameworkUtil.getBundle(getClass());
+                        logger.warn(translationProvider.getText(bundle, "error.channel.no-type",
+                                channel.getUID().toString(), localeProvider.getLocale()));
                         continue;
                     }
                     String channelTypeId = channelTypeUID.getId();
@@ -93,7 +103,9 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                 }
             }
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error reading device state");
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    translationProvider.getText(bundle, "error.device.read-state", null, localeProvider.getLocale()));
         }
     }
 
@@ -101,7 +113,9 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sbus adapter not initialized");
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider.getText(bundle,
+                    "error.device.adapter-not-initialized", null, localeProvider.getLocale()));
             return;
         }
 
@@ -110,7 +124,9 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             if (channel != null) {
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
                 if (channelConfig.channelNumber <= 0) {
-                    logger.warn("Invalid channel number for {}", channelUID);
+                    Bundle bundle = FrameworkUtil.getBundle(getClass());
+                    logger.warn(translationProvider.getText(bundle, "error.channel.invalid-number",
+                            channelUID.toString(), localeProvider.getLocale()));
                     return;
                 }
 
@@ -125,7 +141,10 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                 }
             }
         } catch (Exception e) {
-            logger.warn("Error handling command", e);
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            logger.warn(
+                    translationProvider.getText(bundle, "error.device.send-command", null, localeProvider.getLocale()),
+                    e);
         }
     }
 
