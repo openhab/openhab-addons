@@ -674,14 +674,12 @@ public class StateFilterProfileTest {
     public static Stream<Arguments> testFunctions() {
         NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
         NumberItem percentItem = new NumberItem("Number:Dimensionless", "percentItem", UNIT_PROVIDER);
-        NumberItem temperatureItem = new NumberItem("Number:Temperature", "temperatureItem", UNIT_PROVIDER);
         NumberItem decimalItem = new NumberItem("decimalItem");
         List<Number> numbers = List.of(1, 2, 3, 4, 5);
         List<Number> negatives = List.of(-1, -2, -3, -4, -5);
         List<QuantityType<Power>> quantities = numbers.stream().map(n -> new QuantityType<>(n, Units.WATT)).toList();
         List<QuantityType<Dimensionless>> percentQuantities = numbers.stream()
                 .map(n -> new QuantityType<>(n, Units.PERCENT)).toList();
-        List<QuantityType> celsiusQuantities = numbers.stream().map(n -> new QuantityType(n, SIUnits.CELSIUS)).toList();
         List<DecimalType> decimals = numbers.stream().map(DecimalType::new).toList();
         List<DecimalType> negativeDecimals = negatives.stream().map(DecimalType::new).toList();
 
@@ -701,14 +699,6 @@ public class StateFilterProfileTest {
                 // Multiple delta conditions
                 Arguments.of(decimalItem, "$DELTA >= 1, $DELTA <= 10", decimals, DecimalType.valueOf("15"), true), //
                 Arguments.of(decimalItem, "$DELTA >= 1, $DELTA <= 10", decimals, DecimalType.valueOf("16"), false), //
-
-                // Test for the use of relative unit in DELTA checks
-                Arguments.of(temperatureItem, "$DELTA > 0.2 °F", celsiusQuantities, QuantityType.valueOf("5.1 °C"),
-                        false), //
-                Arguments.of(temperatureItem, "0.2 °F < $DELTA", celsiusQuantities, QuantityType.valueOf("5.1 °C"),
-                        false), //
-                Arguments.of(temperatureItem, "$DELTA < 2 °F", celsiusQuantities, QuantityType.valueOf("6 °C"), true), //
-                Arguments.of(temperatureItem, "2 °F > $DELTA", celsiusQuantities, QuantityType.valueOf("6 °C"), true), //
 
                 Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("4.6"), false), //
                 Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("4.5"), true), //
@@ -802,6 +792,68 @@ public class StateFilterProfileTest {
     @ParameterizedTest
     @MethodSource
     public void testFunctions(Item item, String condition, List<State> states, State input, boolean expected)
+            throws ItemNotFoundException {
+        internalTestFunctions(item, condition, states, input, expected);
+    }
+
+    public static Stream<Arguments> testDeltaWithRelativeUnit() {
+        NumberItem temperatureItem = new NumberItem("Number:Temperature", "temperatureItem", UNIT_PROVIDER);
+
+        State initialC = QuantityType.valueOf("5 °C");
+        State initialF = QuantityType.valueOf("5 °F");
+
+        State qty_7_C = QuantityType.valueOf("7 °C");
+        State qty_7_F = QuantityType.valueOf("7 °F");
+
+        return Stream.of( //
+                // Celsius inputs
+                // same unit
+                Arguments.of(temperatureItem, "$DELTA > 1 °C", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "1 °C < $DELTA", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "$DELTA < 1 °C", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "1 °C > $DELTA", initialC, qty_7_C, false), //
+
+                // Celsius vs Fahrenheit: 2 °C = 35.6 °F (absolute), 2 °C = 3.6 °F (relative)
+                Arguments.of(temperatureItem, "$DELTA > 4 °F", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "4 °F < $DELTA", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "$DELTA < 4 °F", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "4 °F > $DELTA", initialC, qty_7_C, true), //
+
+                // Celsius vs Kelvin: °C = K in relative unit
+                Arguments.of(temperatureItem, "$DELTA > 1 K", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "1 K < $DELTA", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "$DELTA < 1 K", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "1 K > $DELTA", initialC, qty_7_C, false), //
+
+                // Fahrenheit inputs
+                // same unit, in F
+                Arguments.of(temperatureItem, "$DELTA > 1 °F", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "1 °F < $DELTA", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "$DELTA < 2 °F", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "2 °F > $DELTA", initialF, qty_7_F, false), //
+
+                // Fahrenheit vs Celsius: 2 °F = -16.67 °C (absolute), 2 °F = 1.11 °C (relative)
+                Arguments.of(temperatureItem, "$DELTA > 1 °C", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "1 °C < $DELTA", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "$DELTA < 1 °C", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "1 °C > $DELTA", initialF, qty_7_F, false), //
+
+                // Fahreheit vs Kelvin: 2 °F = 256.48 K (absolute), 2 °F = 1.11 K (relative)
+                Arguments.of(temperatureItem, "$DELTA > 2 K", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "2 K < $DELTA", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "$DELTA < 2 K", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "2 K > $DELTA", initialF, qty_7_F, true) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testDeltaWithRelativeUnit(Item item, String condition, State initialState, State input,
+            boolean expected) throws ItemNotFoundException {
+        internalTestFunctions(item, condition, List.of(initialState), input, expected);
+    }
+
+    private void internalTestFunctions(Item item, String condition, List<State> states, State input, boolean expected)
             throws ItemNotFoundException {
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", condition)));
         when(mockItemRegistry.getItem(item.getName())).thenReturn(item);
