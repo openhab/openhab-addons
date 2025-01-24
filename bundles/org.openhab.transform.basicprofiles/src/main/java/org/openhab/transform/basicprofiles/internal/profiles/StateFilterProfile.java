@@ -106,7 +106,7 @@ public class StateFilterProfile implements StateProfile {
 
     private State newState = UnDefType.UNDEF;
     private State acceptedState = UnDefType.UNDEF;
-    private LinkedList<State> previousStates = new LinkedList<>();
+    private LinkedList<State> previousValidNumericStates = new LinkedList<>();
 
     private final int windowSize;
 
@@ -163,6 +163,9 @@ public class StateFilterProfile implements StateProfile {
         return systemUnit;
     }
 
+    /**
+     * Return true if 'systemUnit' is defined.
+     */
     protected boolean hasSystemUnit() {
         return initSystemUnit() != null;
     }
@@ -195,6 +198,18 @@ public class StateFilterProfile implements StateProfile {
         return !hasSystemUnit() ? List.of()
                 : states.stream().map(s -> systemUnitQuantityType(s)).filter(Objects::nonNull)
                         .map(s -> (QuantityType) s).toList();
+    }
+
+    /**
+     * Check if the given {@link State} is allowed. Non allowed means that there is a 'systemUnit', the {@link State}
+     * is a {@link QuantityType}, and the value is not compatible with 'systemUnit'.
+     *
+     * @param state the incoming state
+     * @return true if allowed
+     */
+    protected boolean isStateAllowed(State state) {
+        return !(state instanceof QuantityType<?>) || !hasSystemUnit()
+                || Objects.nonNull(systemUnitQuantityType(state));
     }
 
     private List<StateCondition> parseConditions(List<String> conditions, String separator) {
@@ -254,19 +269,24 @@ public class StateFilterProfile implements StateProfile {
 
     @Override
     public void onStateUpdateFromHandler(State state) {
+        if (!isStateAllowed(state)) {
+            logger.debug("Received non allowed state update from handler: {}, ignored", state);
+            return;
+        }
         newState = state;
         State resultState = checkCondition(state);
         if (resultState != null) {
-            logger.debug("Received state update from handler: {}, forwarded as {}", state, resultState);
+            logger.debug("Received allowed state update from handler: {}, forwarded as {}", state, resultState);
+            acceptedState = resultState;
             callback.sendUpdate(resultState);
         } else {
-            logger.debug("Received state update from handler: {}, not forwarded to item", state);
+            logger.debug("Received allowed state update from handler: {}, not forwarded to item", state);
         }
         if (windowSize > 0 && ((state instanceof DecimalType) || ((state instanceof QuantityType)
-                && (!hasSystemUnit() || (systemUnitQuantityType(state) != null))))) {
-            previousStates.add(state);
-            if (previousStates.size() > windowSize) {
-                previousStates.removeFirst();
+                && (!hasSystemUnit() || Objects.nonNull(systemUnitQuantityType(state)))))) {
+            previousValidNumericStates.add(state);
+            if (previousValidNumericStates.size() > windowSize) {
+                previousValidNumericStates.removeFirst();
             }
         }
     }
@@ -279,13 +299,7 @@ public class StateFilterProfile implements StateProfile {
                     callback.getItemChannelLink());
             return null;
         }
-
-        if (conditions.stream().allMatch(c -> c.check(state))) {
-            acceptedState = state;
-            return state;
-        } else {
-            return configMismatchState;
-        }
+        return conditions.stream().allMatch(c -> c.check(state)) ? state : configMismatchState;
     }
 
     private @Nullable Item getLinkedItem() {
@@ -399,10 +413,8 @@ public class StateFilterProfile implements StateProfile {
                 if (rhsState == null) {
                     rhsItem = getItemOrNull(rhsString);
                 } else if (rhsState instanceof FunctionType rhsFunction) {
-                    if (acceptedState == UnDefType.UNDEF
-                            && (rhsFunction.getType() == FunctionType.Function.DELTA
-                                    || rhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)
-                            && (!hasSystemUnit() || systemUnitQuantityType(input) != null)) {
+                    if (acceptedState == UnDefType.UNDEF && (rhsFunction.getType() == FunctionType.Function.DELTA
+                            || rhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)) {
                         return true;
                     }
                     rhsItem = getLinkedItem();
@@ -422,10 +434,8 @@ public class StateFilterProfile implements StateProfile {
                         return false;
                     }
                 } else if (lhsState instanceof FunctionType lhsFunction) {
-                    if (acceptedState == UnDefType.UNDEF
-                            && (lhsFunction.getType() == FunctionType.Function.DELTA
-                                    || lhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)
-                            && (!hasSystemUnit() || systemUnitQuantityType(input) != null)) {
+                    if (acceptedState == UnDefType.UNDEF && (lhsFunction.getType() == FunctionType.Function.DELTA
+                            || lhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)) {
                         return true;
                     }
                     lhsItem = getLinkedItem();
@@ -604,9 +614,10 @@ public class StateFilterProfile implements StateProfile {
 
         public @Nullable State calculate() {
             logger.debug("Calculating function: {}", this);
-            int size = previousStates.size();
+            int size = previousValidNumericStates.size();
             int start = windowSize.map(w -> size - w).orElse(0);
-            List<State> states = start <= 0 ? previousStates : previousStates.subList(start, size);
+            List<State> states = start <= 0 ? previousValidNumericStates
+                    : previousValidNumericStates.subList(start, size);
             return switch (type) {
                 case DELTA -> calculateDelta();
                 case DELTA_PERCENT -> calculateDeltaPercent();

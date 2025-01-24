@@ -813,6 +813,11 @@ public class StateFilterProfileTest {
     }
 
     public static Stream<Arguments> testMixedStates() {
+        /*
+         * -------------------------------------------------------------------------------------
+         * TODO some of these test cases will fail unless OH Core PR #4561 will have been merged
+         * -------------------------------------------------------------------------------------
+         */
         NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
 
         List<State> states = List.of( //
@@ -886,6 +891,9 @@ public class StateFilterProfileTest {
         verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(input);
     }
 
+    /**
+     * A {@link UnitProvider} that provides Units.MIRED
+     */
     protected static class MirekUnitProvider implements UnitProvider {
 
         @SuppressWarnings("unchecked")
@@ -906,32 +914,37 @@ public class StateFilterProfileTest {
     }
 
     public static Stream<Arguments> testColorTemperatureValues() {
+        /*
+         * -----------------------------------------------------------------------------------------------
+         * TODO some of these test cases will fail unless OH Core PR #4561 and #4571 will have been merged
+         * -----------------------------------------------------------------------------------------------
+         */
         NumberItem kelvinItem = new NumberItem("Number:Temperature", "kelvinItem", UNIT_PROVIDER);
         NumberItem mirekItem = new NumberItem("Number:Temperature", "mirekItem", new MirekUnitProvider());
 
         List<State> states = List.of( //
                 QuantityType.valueOf(500, Units.MIRED), //
-                QuantityType.valueOf(2000, Units.KELVIN), //
-                QuantityType.valueOf(1726.85, SIUnits.CELSIUS), //
-                QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT));
+                QuantityType.valueOf(2000 + (1 * 100), Units.KELVIN), //
+                QuantityType.valueOf(1726.85 + (2 * 100), SIUnits.CELSIUS), //
+                QuantityType.valueOf(3140.33 + (3 * 180), ImperialUnits.FAHRENHEIT));
 
         return Stream.of( //
                 // kelvin based item
                 Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf("2000 K"), true),
-                Arguments.of(kelvinItem, "== $MAX", states, QuantityType.valueOf("2000 K"), true),
-
-                // mirek based item
-                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf("500 mired"), true),
-                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf("500 mired"), true),
-
-                // celsius
+                Arguments.of(kelvinItem, "== $AVG", states, QuantityType.valueOf("2150 K"), true),
+                Arguments.of(kelvinItem, "== $MAX", states, QuantityType.valueOf("2300 K"), true),
+                Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf(500, Units.MIRED), true),
                 Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf(1726.85, SIUnits.CELSIUS), true),
-                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf(1726.85, SIUnits.CELSIUS), true),
-
-                // fahrenheit
                 Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT),
                         true),
-                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT),
+
+                // mirek based item
+                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf("2000 K"), true),
+                Arguments.of(mirekItem, "== $AVG", states, QuantityType.valueOf("2150 K"), true),
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf("2300 K"), true),
+                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf(500, Units.MIRED), true),
+                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf(1726.85, SIUnits.CELSIUS), true),
+                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT),
                         true) //
         );
     }
