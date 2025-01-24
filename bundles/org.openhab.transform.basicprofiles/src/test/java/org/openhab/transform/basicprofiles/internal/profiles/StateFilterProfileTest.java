@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Power;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -674,9 +677,9 @@ public class StateFilterProfileTest {
         NumberItem decimalItem = new NumberItem("decimalItem");
         List<Number> numbers = List.of(1, 2, 3, 4, 5);
         List<Number> negatives = List.of(-1, -2, -3, -4, -5);
-        List<QuantityType> quantities = numbers.stream().map(n -> new QuantityType(n, Units.WATT)).toList();
-        List<QuantityType> percentQuantities = numbers.stream().map(n -> new QuantityType(String.format("%d %%", n)))
-                .toList();
+        List<QuantityType<Power>> quantities = numbers.stream().map(n -> new QuantityType<>(n, Units.WATT)).toList();
+        List<QuantityType<Dimensionless>> percentQuantities = numbers.stream()
+                .map(n -> new QuantityType<>(n, Units.PERCENT)).toList();
         List<DecimalType> decimals = numbers.stream().map(DecimalType::new).toList();
         List<DecimalType> negativeDecimals = negatives.stream().map(DecimalType::new).toList();
 
