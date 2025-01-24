@@ -26,4 +26,5 @@ public class HaasSohnpelletstoveConfiguration {
     public @Nullable String hostIP = null;
     public @Nullable String hostPIN = null;
     public int refreshRate = 30;
+    public int reconnectRate = 100;
 }

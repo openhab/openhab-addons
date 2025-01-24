@@ -12,7 +12,8 @@ WIFI module. More information about the WIFI module can be found here: <https://
 ## Thing Configuration
 
 In general two parameters are required. The IP-Address of the WIFI-Modul of the Stove in the local Network and the Access PIN of the Stove.
-The PIN can be found directly at the stove under the Menue/Network/WLAN-PIN
+The PIN can be found directly at the stove under the Menue/Network/WLAN-PIN.
+In case of discovering weak Wifi signals increasing the reconnetion rate will help, so the thing reconnects automatically and does not go offline that fast anymore.
 
 ```java
 Thing haassohnpelletstove:oven:myOven "Pelletstove"  [ hostIP="192.168.0.23", hostPIN="1234"]

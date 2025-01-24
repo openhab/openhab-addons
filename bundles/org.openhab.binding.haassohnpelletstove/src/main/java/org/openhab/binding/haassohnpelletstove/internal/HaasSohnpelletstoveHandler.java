@@ -61,6 +61,8 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
 
     private boolean automaticRefreshing = false;
 
+    private int disconnectionCounter = 0;
+
     private Map<String, Boolean> linkedChannels = new HashMap<>();
 
     public HaasSohnpelletstoveHandler(Thing thing) {
@@ -115,12 +117,18 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
      */
     private boolean updateOvenData(@Nullable String postdata) {
         Helper message = new Helper();
-        if (serviceCommunication.updateOvenData(postdata, message, this.getThing().getUID().toString())) {
+        boolean error = serviceCommunication.updateOvenData(postdata, message, this.getThing().getUID().toString());
+        if (error) {
             updateStatus(ThingStatus.ONLINE);
+            disconnectionCounter = 0;
             return true;
         } else {
+            disconnectionCounter++;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     message.getStatusDesription());
+            if (disconnectionCounter < config.reconnectRate) {
+                return true;
+            }
             return false;
         }
     }
@@ -145,6 +153,11 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
         if (config.hostPIN == null) {
             errors += " Parameter 'hostPin' must be configured.";
             statusDescr = "PIN must be configured!";
+            validConfig = false;
+        }
+        if (config.reconnectRate < 1 && config.reconnectRate > 1000) {
+            errors += "Parameter 'reconnectRate' must be greater then 0 less then 1000.";
+            statusDescr += "Parameter 'reconnectRate' must be greater then 0 less then 1000.";
             validConfig = false;
         }
         errors = errors.trim();
