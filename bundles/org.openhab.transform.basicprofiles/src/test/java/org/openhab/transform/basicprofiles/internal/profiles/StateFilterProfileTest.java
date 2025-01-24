@@ -16,13 +16,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.measure.MetricPrefix;
+import javax.measure.Quantity;
+import javax.measure.Unit;
 import javax.measure.quantity.Power;
+import javax.measure.spi.SystemOfUnits;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -852,9 +857,12 @@ public class StateFilterProfileTest {
 
                 // delta percent function
                 Arguments.of(powerItem, "$DELTA_PERCENT > 30", states, QuantityType.valueOf("4 W"), true),
-                Arguments.of(powerItem, "30 < $DELTA_PERCENT", states, QuantityType.valueOf("4 W"), true) //
+                Arguments.of(powerItem, "30 < $DELTA_PERCENT", states, QuantityType.valueOf("4 W"), true),
 
-        // TODO add some unit based tests
+                // unit based comparisons
+                Arguments.of(powerItem, "> 0.5 W", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "> 500 mW", states, QuantityType.valueOf("4 W"), true),
+                Arguments.of(powerItem, "> 15 %", states, QuantityType.valueOf("4 W"), true) //
         );
     }
 
@@ -878,13 +886,31 @@ public class StateFilterProfileTest {
         verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(input);
     }
 
+    protected static class MirekUnitProvider implements UnitProvider {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T extends Quantity<T>> Unit<T> getUnit(Class<T> dimension) throws IllegalArgumentException {
+            return (Unit<T>) Units.MIRED;
+        }
+
+        @Override
+        public SystemOfUnits getMeasurementSystem() {
+            return SIUnits.getInstance();
+        }
+
+        @Override
+        public Collection<Class<? extends Quantity<?>>> getAllDimensions() {
+            return Set.of();
+        }
+    }
+
     public static Stream<Arguments> testColorTemperatureValues() {
         NumberItem kelvinItem = new NumberItem("Number:Temperature", "kelvinItem", UNIT_PROVIDER);
-        NumberItem mirekItem = new NumberItem("Number:Temperature", "mirekItem", UNIT_PROVIDER);
-        // TODO (depends on OH Core #4561) => set mirekItem's unit to Units.MIRED
+        NumberItem mirekItem = new NumberItem("Number:Temperature", "mirekItem", new MirekUnitProvider());
 
         List<State> states = List.of( //
-                // TODO (depends on OH Core #4561) => QuantityType.valueOf(500, Units.MIRED), //
+                QuantityType.valueOf(500, Units.MIRED), //
                 QuantityType.valueOf(2000, Units.KELVIN), //
                 QuantityType.valueOf(1726.85, SIUnits.CELSIUS), //
                 QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT));
@@ -895,10 +921,18 @@ public class StateFilterProfileTest {
                 Arguments.of(kelvinItem, "== $MAX", states, QuantityType.valueOf("2000 K"), true),
 
                 // mirek based item
-                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf("2000 K"), true),
-                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf("2000 K"), true)
+                Arguments.of(mirekItem, "== $MIN", states, QuantityType.valueOf("500 mired"), true),
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf("500 mired"), true),
 
-        // TODO (depends on OH Core #4561) => add more tests for Mirek, Celsius and Fahrenheit
+                // celsius
+                Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf(1726.85, SIUnits.CELSIUS), true),
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf(1726.85, SIUnits.CELSIUS), true),
+
+                // fahrenheit
+                Arguments.of(kelvinItem, "== $MIN", states, QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT),
+                        true),
+                Arguments.of(mirekItem, "== $MAX", states, QuantityType.valueOf(3140.33, ImperialUnits.FAHRENHEIT),
+                        true) //
         );
     }
 
