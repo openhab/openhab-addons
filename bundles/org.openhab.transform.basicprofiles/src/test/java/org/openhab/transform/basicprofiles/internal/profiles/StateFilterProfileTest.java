@@ -28,6 +28,7 @@ import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Power;
+import javax.measure.quantity.Time;
 import javax.measure.spi.SystemOfUnits;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -979,6 +980,47 @@ public class StateFilterProfileTest {
     @MethodSource
     public void testColorTemperatureValues(Item item, String condition, List<State> states, State input,
             boolean expected) throws ItemNotFoundException {
+        when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", condition)));
+        when(mockItemRegistry.getItem(item.getName())).thenReturn(item);
+        when(mockItemChannelLink.getItemName()).thenReturn(item.getName());
+
+        StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
+
+        for (State state : states) {
+            profile.onStateUpdateFromHandler(state);
+        }
+
+        reset(mockCallback);
+
+        profile.onStateUpdateFromHandler(input);
+        verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(input);
+    }
+
+    public static Stream<Arguments> testTimeValues() {
+        NumberItem timeItem = new NumberItem("Number:Time", "timeItem", UNIT_PROVIDER);
+
+        QuantityType<Time> microSec = QuantityType.valueOf(1, MetricPrefix.MICRO(Units.SECOND));
+        QuantityType<Time> milliSec = QuantityType.valueOf(1, MetricPrefix.MILLI(Units.SECOND));
+        QuantityType<Time> second = QuantityType.valueOf(1000, MetricPrefix.MILLI(Units.SECOND));
+        QuantityType<Time> minute = QuantityType.valueOf(60000, MetricPrefix.MILLI(Units.SECOND));
+        QuantityType<Time> hour = QuantityType.valueOf(3600000, MetricPrefix.MILLI(Units.SECOND));
+
+        return Stream.of( //
+                Arguments.of(timeItem, "== $MIN", List.of(second, minute), QuantityType.valueOf("1 s"), true),
+                Arguments.of(timeItem, "== $MAX", List.of(second, minute), QuantityType.valueOf("1 min"), true), //
+
+                Arguments.of(timeItem, "== $MIN", List.of(microSec, milliSec), QuantityType.valueOf("1 µs"), true),
+                Arguments.of(timeItem, "== $MAX", List.of(microSec, milliSec), QuantityType.valueOf("1 ms"), true), //
+
+                Arguments.of(timeItem, "== $MIN", List.of(microSec, hour), QuantityType.valueOf("1 µs"), true),
+                Arguments.of(timeItem, "== $MAX", List.of(microSec, hour), QuantityType.valueOf("1 h"), true) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testTimeValues(Item item, String condition, List<State> states, State input, boolean expected)
+            throws ItemNotFoundException {
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", condition)));
         when(mockItemRegistry.getItem(item.getName())).thenReturn(item);
         when(mockItemChannelLink.getItemName()).thenReturn(item.getName());
