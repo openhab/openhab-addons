@@ -229,8 +229,9 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
     For example, with an initial data of `10`, a new data of `12` or `8` would both result in a $DELTA of `2`.
   - `$DELTA_PERCENT` to represent the difference in percentage.
     It is calculated as `($DELTA / current_data) * 100`.
-    Note that this can also be done by omitting the `LHS_OPERAND` and using a number followed with a percent sign `%` as the `RHS_OPERAND`.
-    See the example below.
+    Note in most cases, this check can be written without `$DELTA_PERCENT`, e.g. `> 5%`. It is equivalent to `$DELTA_PERCENT > 5`.
+    However, when the incoming value from the binding is a Percent Quantity Type, for example a Humidity data in %, the `$DELTA_PERCENT` must be explicitly written in order to perform a delta percent check.
+    See the examples below.
   - `$AVERAGE`, or `$AVG` to represent the average of the previous unfiltered incoming values.
   - `$STDDEV` to represent the _population_ standard deviation of the previous unfiltered incoming values.
   - `$MEDIAN` to represent the median value of the previous unfiltered incoming values.
@@ -296,9 +297,24 @@ Number:Temperature BoilerTemperature {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="$DELTA_PERCENT > 10" ]
 }
 
-// Or more succinctly:
+// Or more succinctly, the $DELTA_PERCENT is inferred here
 Number:Temperature BoilerTemperature {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="> 10%" ]
+}
+```
+
+When the incoming value from the binding is a Percent Quantity Type:
+
+```java
+// This performs a value comparison, not a delta percent comparison.
+// Because the incoming value is a Percent Quantity, it isn't inferred as a $DELTA_PERCENT check.
+Number:Dimensionless Humidity {
+  channel="mybinding:mything:humidity" [ profile="basic-profiles:state-filter", conditions="> 0%, <= 100%" ]
+}
+
+// To actually perform a $DELTA_PERCENT check against a Percent Quantity data, specify it explicitly
+Number:Dimensionless Humidity {
+  channel="mybinding:mything:humidity" [ profile="basic-profiles:state-filter", conditions="$DELTA_PERCENT > 5%" ]
 }
 ```
 
