@@ -29,6 +29,7 @@ public class EaseeConfiguration {
     private Integer asyncTimeout = 120;
     private Integer syncTimeout = 120;
     private Integer dataPollingInterval = 60;
+    private Integer sessionDataPollingInterval = 360;
     private Integer webRequestInitialDelay = 10;
     private Integer webRequestInterval = 2;
 
@@ -80,6 +81,14 @@ public class EaseeConfiguration {
         this.dataPollingInterval = dataPollingInterval;
     }
 
+    public Integer getSessionDataPollingInterval() {
+        return sessionDataPollingInterval;
+    }
+
+    public void setSessionDataPollingInterval(Integer sessionDataPollingInterval) {
+        this.sessionDataPollingInterval = sessionDataPollingInterval;
+    }
+
     public Integer getWebRequestInitialDelay() {
         return webRequestInitialDelay;
     }
@@ -102,8 +111,9 @@ public class EaseeConfiguration {
         builder.append("EaseeConfiguration [username=").append(username).append(", password=").append(password)
                 .append(", siteId=").append(siteId).append(", asyncTimeout=").append(asyncTimeout)
                 .append(", syncTimeout=").append(syncTimeout).append(", dataPollingInterval=")
-                .append(dataPollingInterval).append(", webRequestInitialDelay=").append(webRequestInitialDelay)
-                .append(", webRequestInterval=").append(webRequestInterval).append("]");
+                .append(dataPollingInterval).append(", sessionDataPollingInterval=").append(sessionDataPollingInterval)
+                .append(", webRequestInitialDelay=").append(webRequestInitialDelay).append(", webRequestInterval=")
+                .append(webRequestInterval).append("]");
         return builder.toString();
     }
 }
