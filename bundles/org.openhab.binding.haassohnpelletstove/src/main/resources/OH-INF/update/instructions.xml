@@ -20,7 +20,7 @@
 			<add-channel id="channelEcoMode">
 				<type>haassohnpelletstove:channelEcoMode</type>
 			</add-channel>
-			<add-channel id="power">
+			<add-channel id="channelIgnitions">
 				<type>haassohnpelletstove:channelIgnitions</type>
 			</add-channel>
 			<add-channel id="channelMaintenanceIn">
