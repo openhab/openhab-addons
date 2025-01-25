@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
-    xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
-    <thing-type uid="haassohnpelletstove:oven">
-        <instruction-set targetVersion="1">
-            <add-channel id="channelIsTemp">
-                <type>haassohnpelletstove:channelIsTemp</type>
-            </add-channel>
-            <add-channel id="channelMode">
-                <type>haassohnpelletstove:channelMode</type>
-            </add-channel>
-            <add-channel id="channelSpTemp">
-                <type>haassohnpelletstove:channelSpTemp</type>
-            </add-channel>
-            <add-channel id="power">
-                <type>haassohnpelletstove:power</type>
-            </add-channel>
-             <add-channel id="channelEcoMode">
-                <type>haassohnpelletstove:channelEcoMode</type>
-            </add-channel>
-             <add-channel id="power">
-                <type>haassohnpelletstove:channelIgnitions</type>
-            </add-channel>
-             <add-channel id="channelMaintenanceIn">
-                <type>haassohnpelletstove:channelMaintenanceIn</type>
-            </add-channel>
-             <add-channel id="channelCleaningIn">
-                <type>haassohnpelletstove:channelCleaningIn</type>
-            </add-channel>
-            <add-channel id="channelConsumption">
-                <type>haassohnpelletstove:channelConsumption</type>
-            </add-channel>
-            <add-channel id="channelCleaningIn">
-                <type>haassohnpelletstove:channelOnTime</type>
-            </add-channel>
-        </instruction-set>     
-    </thing-type>
+	<thing-type uid="haassohnpelletstove:oven">
+		<instruction-set targetVersion="1">
+			<add-channel id="channelIsTemp">
+				<type>haassohnpelletstove:channelIsTemp</type>
+			</add-channel>
+			<add-channel id="channelMode">
+				<type>haassohnpelletstove:channelMode</type>
+			</add-channel>
+			<add-channel id="channelSpTemp">
+				<type>haassohnpelletstove:channelSpTemp</type>
+			</add-channel>
+			<add-channel id="power">
+				<type>haassohnpelletstove:power</type>
+			</add-channel>
+			<add-channel id="channelEcoMode">
+				<type>haassohnpelletstove:channelEcoMode</type>
+			</add-channel>
+			<add-channel id="power">
+				<type>haassohnpelletstove:channelIgnitions</type>
+			</add-channel>
+			<add-channel id="channelMaintenanceIn">
+				<type>haassohnpelletstove:channelMaintenanceIn</type>
+			</add-channel>
+			<add-channel id="channelCleaningIn">
+				<type>haassohnpelletstove:channelCleaningIn</type>
+			</add-channel>
+			<add-channel id="channelConsumption">
+				<type>haassohnpelletstove:channelConsumption</type>
+			</add-channel>
+			<add-channel id="channelCleaningIn">
+				<type>haassohnpelletstove:channelOnTime</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
 </update:update-descriptions>
