@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This handler is responsible for handling data recieved from a sunspec meter
+ * This handler is responsible for handling data received from a sunspec meter
  *
  * @author Nagy Attila Gabor - Initial contribution
  *

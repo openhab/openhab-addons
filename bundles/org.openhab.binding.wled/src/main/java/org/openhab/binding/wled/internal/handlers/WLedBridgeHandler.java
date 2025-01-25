@@ -184,7 +184,7 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                     localApi.setUdpSend(OnOffType.ON.equals(command));
                     break;
                 case CHANNEL_SYNC_RECEIVE:
-                    localApi.setUdpRecieve(OnOffType.ON.equals(command));
+                    localApi.setUdpReceive(OnOffType.ON.equals(command));
                     break;
                 case CHANNEL_LIVE_OVERRIDE:
                     localApi.setLiveOverride(command.toString());

@@ -432,7 +432,7 @@ public class WledApiV084 implements WledApi {
     }
 
     @Override
-    public void setUdpRecieve(boolean bool) throws ApiException {
+    public void setUdpReceive(boolean bool) throws ApiException {
         postState("{\"udpn\":{\"recv\":" + bool + "}}");
     }
 
