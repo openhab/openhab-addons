@@ -146,72 +146,6 @@ public class StateFilterProfile implements StateProfile {
         configMismatchState = parseState(config.mismatchState, context.getAcceptedDataTypes());
     }
 
-    /**
-     * Initialize the reference zero based system unit of the linked item. If there is no linked item, or it is not a
-     * {@link NumberItem} or if the item does not have a unit, then the systemUnit is null.
-     *
-     * @return the systemUnit or null
-     */
-    protected @Nullable Unit<?> initSystemUnit() {
-        if (systemUnitInitialized) {
-            return systemUnit;
-        }
-        Unit<?> systemUnit = (getLinkedItem() instanceof NumberItem numberItem)
-                && (numberItem.getUnit() instanceof Unit<?> numberItemUnit) ? numberItemUnit.getSystemUnit() : null;
-        this.systemUnit = systemUnit;
-        systemUnitInitialized = true;
-        return systemUnit;
-    }
-
-    /**
-     * Return true if 'systemUnit' is defined.
-     */
-    protected boolean hasSystemUnit() {
-        return initSystemUnit() != null;
-    }
-
-    /**
-     * Convert a {@link State} to a {@link QuantityType} with its value converted to the 'systemUnit'.
-     * Returns null if the state is not a {@link QuantityType} or it does not convert to 'systemUnit'.
-     *
-     * The conversion can be made to both inverted and non-inverted units, so invertible type conversions
-     * (e.g. Mirek <=> Kelvin) are supported.
-     *
-     * @return a {@link QuantityType} based on 'systemUnit'
-     */
-    protected @Nullable QuantityType<?> systemUnitQuantityType(State state) {
-        return (state instanceof QuantityType<?> quantity) && hasSystemUnit()
-                ? quantity.toInvertibleUnit(Objects.requireNonNull(systemUnit))
-                : null;
-    }
-
-    /**
-     * Convert a list of {@link State} to a list of {@link QuantityType} converted to 'systemUnit'. Exclude any
-     * {@link State} that are not a {@link QuantityType}. Convert any remaining {@link QuantityType} to the 'systemUnit'
-     * and exclude any values that did not convert.
-     *
-     * @param states list of {@link State} values
-     * @return list of {@link QuantityType} values
-     */
-    @SuppressWarnings("rawtypes")
-    protected List<QuantityType> systemUnitQuantityTypes(List<State> states) {
-        return !hasSystemUnit() ? List.of()
-                : states.stream().map(s -> systemUnitQuantityType(s)).filter(Objects::nonNull)
-                        .map(s -> (QuantityType) s).toList();
-    }
-
-    /**
-     * Check if the given {@link State} is allowed. Non allowed means that there is a 'systemUnit', the {@link State}
-     * is a {@link QuantityType}, and the value is not compatible with 'systemUnit'.
-     *
-     * @param state the incoming state
-     * @return true if allowed
-     */
-    protected boolean isStateAllowed(State state) {
-        return !(state instanceof QuantityType<?>) || !hasSystemUnit()
-                || Objects.nonNull(systemUnitQuantityType(state));
-    }
-
     private List<StateCondition> parseConditions(List<String> conditions, String separator) {
         List<StateCondition> parsedConditions = new ArrayList<>();
 
@@ -621,20 +555,25 @@ public class StateFilterProfile implements StateProfile {
 
         public @Nullable State calculate() {
             logger.debug("Calculating function: {}", this);
-            List<State> states = hasSystemUnit()
-                    ? systemUnitQuantityTypes(previousStates).stream().map(q -> (State) q).toList()
-                    : previousStates;
-            int size = states.size();
-            int start = windowSize.map(w -> size - w).orElse(0);
-            states = start <= 0 ? states : states.subList(start, size);
             return switch (type) {
                 case DELTA -> calculateDelta();
                 case DELTA_PERCENT -> calculateDeltaPercent();
-                case AVG, AVERAGE -> calculateAverage(states);
-                case MEDIAN -> calculateMedian(states);
-                case STDDEV -> calculateStdDev(states);
-                case MIN -> calculateMin(states);
-                case MAX -> calculateMax(states);
+                default -> {
+                    List<State> states = hasSystemUnit()
+                            ? systemUnitQuantityTypes(previousStates).stream().map(q -> (State) q).toList()
+                            : previousStates;
+                    int size = states.size();
+                    int start = windowSize.map(w -> size - w).orElse(0);
+                    states = start <= 0 ? states : states.subList(start, size);
+                    yield switch (type) {
+                        case AVG, AVERAGE -> calculateAverage(states);
+                        case MEDIAN -> calculateMedian(states);
+                        case STDDEV -> calculateStdDev(states);
+                        case MIN -> calculateMin(states);
+                        case MAX -> calculateMax(states);
+                        default -> null;
+                    };
+                }
             };
         }
 
@@ -807,5 +746,71 @@ public class StateFilterProfile implements StateProfile {
             BigDecimal percent = bdDelta.multiply(BigDecimal.valueOf(100)).divide(bdBase, 2, RoundingMode.HALF_EVEN);
             return new DecimalType(percent);
         }
+    }
+
+    /**
+     * Initialize the reference zero based system unit of the linked item. If there is no linked item, or it is not a
+     * {@link NumberItem} or if the item does not have a unit, then the systemUnit is null.
+     *
+     * @return the systemUnit or null
+     */
+    protected @Nullable Unit<?> initSystemUnit() {
+        if (systemUnitInitialized) {
+            return systemUnit;
+        }
+        Unit<?> systemUnit = (getLinkedItem() instanceof NumberItem numberItem)
+                && (numberItem.getUnit() instanceof Unit<?> numberItemUnit) ? numberItemUnit.getSystemUnit() : null;
+        this.systemUnit = systemUnit;
+        systemUnitInitialized = true;
+        return systemUnit;
+    }
+
+    /**
+     * Return true if 'systemUnit' is defined.
+     */
+    protected boolean hasSystemUnit() {
+        return initSystemUnit() != null;
+    }
+
+    /**
+     * Convert a {@link State} to a {@link QuantityType} with its value converted to the 'systemUnit'.
+     * Returns null if the state is not a {@link QuantityType} or it does not convert to 'systemUnit'.
+     *
+     * The conversion can be made to both inverted and non-inverted units, so invertible type conversions
+     * (e.g. Mirek <=> Kelvin) are supported.
+     *
+     * @return a {@link QuantityType} based on 'systemUnit'
+     */
+    protected @Nullable QuantityType<?> systemUnitQuantityType(State state) {
+        return (state instanceof QuantityType<?> quantity) && hasSystemUnit()
+                ? quantity.toInvertibleUnit(Objects.requireNonNull(systemUnit))
+                : null;
+    }
+
+    /**
+     * Convert a list of {@link State} to a list of {@link QuantityType} converted to 'systemUnit'. Exclude any
+     * {@link State} that are not a {@link QuantityType}. Convert any remaining {@link QuantityType} to the 'systemUnit'
+     * and exclude any values that did not convert.
+     *
+     * @param states list of {@link State} values
+     * @return list of {@link QuantityType} values
+     */
+    @SuppressWarnings("rawtypes")
+    protected List<QuantityType> systemUnitQuantityTypes(List<State> states) {
+        return !hasSystemUnit() ? List.of()
+                : states.stream().map(s -> systemUnitQuantityType(s)).filter(Objects::nonNull)
+                        .map(s -> (QuantityType) s).toList();
+    }
+
+    /**
+     * Check if the given {@link State} is allowed. Non allowed means that there is a 'systemUnit', the {@link State}
+     * is a {@link QuantityType}, and the value is not compatible with 'systemUnit'.
+     *
+     * @param state the incoming state
+     * @return true if allowed
+     */
+    protected boolean isStateAllowed(State state) {
+        return !(state instanceof QuantityType<?>) || !hasSystemUnit()
+                || Objects.nonNull(systemUnitQuantityType(state));
     }
 }
