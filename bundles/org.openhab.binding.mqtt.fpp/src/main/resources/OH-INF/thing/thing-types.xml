@@ -104,7 +104,7 @@
 	<channel-type id="bridging-enabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Bridging</label>
-		<description>FPP Recieving Bridge Data</description>
+		<description>FPP Receiving Bridge Data</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="multisync-enabled" advanced="true">
