@@ -137,7 +137,7 @@ Dimmer Light_LivingroomC {channel="milight:whiteLed:ACCF23A6C0B4:1:ledtemperatur
 Dimmer RGBW_LivingroomB  {channel="milight:rgbwLed:ACCF23A6C0B4:2:ledbrightness"}   //Dimmer changing brightness for RGBW bulb in zone 2
 Color Light_Party           {channel="milight:rgbwLed:ACCF23A6C0B4:1:ledcolor"}        //Colorpicker for rgb bulbs
 
-# You have to link the items to the channels of your prefered group.
+# You have to link the items to the channels of your preferred group.
 
 //The command types nightMode and whiteMode are stateless and should be configured as pushbuttons as they only support a trigger action:
 Switch Light_GroundfloorN {channel="milight:whiteLed:ACCF23A6C0B4:0:lednightmode", autoupdate="false"} //Activate the NightMode for all bulbs
