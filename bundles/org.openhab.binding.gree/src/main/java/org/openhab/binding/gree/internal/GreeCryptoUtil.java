@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -120,7 +120,7 @@ public class GreeCryptoUtil {
             return new String(bytePlainText, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException
                 | IllegalBlockSizeException ex) {
-            throw new GreeException("Decryption of recieved data failed", ex);
+            throw new GreeException("Decryption of received data failed", ex);
         }
     }
 
@@ -145,7 +145,7 @@ public class GreeCryptoUtil {
             return new String(bytePlainText, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | InvalidAlgorithmParameterException ex) {
-            throw new GreeException("GCM decryption of recieved data failed", ex);
+            throw new GreeException("GCM decryption of received data failed", ex);
         }
     }
 

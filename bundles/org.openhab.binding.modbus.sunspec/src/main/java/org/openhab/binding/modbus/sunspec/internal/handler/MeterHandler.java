@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This handler is responsible for handling data recieved from a sunspec meter
+ * This handler is responsible for handling data received from a sunspec meter
  *
  * @author Nagy Attila Gabor - Initial contribution
  *

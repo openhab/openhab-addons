@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -483,7 +483,7 @@ public class WolfSmartsetApi {
     }
 
     private void processQueue() {
-        // No new Requests until blockRequestsUntil, is set when recieved HttpStatus.TOO_MANY_REQUESTS_429
+        // No new Requests until blockRequestsUntil, is set when received HttpStatus.TOO_MANY_REQUESTS_429
         if (blockRequestsUntil.isBefore(Instant.now())) {
             RequestQueueEntry queueEntry = requestQueue.poll();
             if (queueEntry != null) {

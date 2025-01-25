@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -76,8 +76,8 @@ public class AwattarConsecutiveBestPriceResult extends AwattarBestPriceResult {
     }
 
     @Override
-    public boolean isActive() {
-        return contains(Instant.now().toEpochMilli());
+    public boolean isActive(Instant pointInTime) {
+        return contains(pointInTime.toEpochMilli());
     }
 
     public boolean contains(long timestamp) {

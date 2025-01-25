@@ -3,10 +3,54 @@
 
 # JRuby Scripting
 
-This add-on provides [JRuby](https://www.jruby.org/) scripting language for automation rules.
-Also included is [openhab-scripting](https://openhab.github.io/openhab-jruby/), a fairly high-level Ruby gem to support automation in openHAB.
-It provides native Ruby access to common openHAB functionality within rules including items, things, actions, logging and more.
+This add-on provides Ruby scripting language for automation rules.
+It includes the [openhab-scripting](https://openhab.github.io/openhab-jruby/) helper library, a comprehensive Ruby gem designed to enhance automation in openHAB.
+This library offers a streamlined syntax for writing file-based and UI-based rules, making it easier and more intuitive than Rules DSL, while delivering the full features of the Ruby language.
+
 If you're new to Ruby, you may want to check out [Ruby Basics](https://openhab.github.io/openhab-jruby/main/file.ruby-basics.html).
+
+Example file-based rules:
+
+```ruby
+rule "Turn on light when sensor changed to open" do
+  changed Door_Sensor # a Contact item
+  run do |event|
+    if event.open?
+      Cupboard_Light.on for: 3.minutes # Automatically turn it off after 3 minutes
+    else
+      Cupboard_Light.off # This will automatically cancel the timer set above
+    end
+  end
+end
+```
+
+```ruby
+rule "Door open reminder" do
+  changed Doors.members, to: OPEN
+  run do |event|
+    # Create a timer using the triggering item as the timer id
+    # If a timer with the given id already exists, it will be rescheduled
+    after 5.minutes, id: event.item do |timer|
+      next if timer.cancelled? || event.item.closed?
+
+      Voice.say "The #{event.item} is open"
+
+      timer.reschedule # Use the original duration by default
+    end
+  end
+end
+```
+
+Example UI-based rules:
+
+```ruby
+only_every(2.minutes) do # apply rate-limiting
+  Audio.play_sound("doorbell.mp3")
+  Notification.send("Someone pressed the doorbell")
+end
+```
+
+Additional [example rules are available](https://openhab.github.io/openhab-jruby/main/file.examples.html), as well as examples of [conversions from Rules DSL, JavaScript, and Python rules](https://openhab.github.io/openhab-jruby/main/file.conversions.html).
 
 - [Why Ruby?](#why-ruby)
 - [Installation](#installation)
@@ -66,14 +110,12 @@ If you're new to Ruby, you may want to check out [Ruby Basics](https://openhab.g
 - [Calling Java From JRuby](#calling-java-from-jruby)
 - [Full Documentation](#full-documentation)
 
-Additional [example rules are available](https://openhab.github.io/openhab-jruby/main/file.examples.html), as well as examples of [conversions from DSL and Python rules](https://openhab.github.io/openhab-jruby/main/file.conversions.html).
-
 ## Why Ruby?
 
 - Ruby is designed for programmers' productivity with the idea that programming should be fun for programmers.
 - Ruby emphasizes the necessity for software to be understood by humans first and computers second.
-- Ruby makes writing automation enjoyable without having to fight with compilers and interpreters.
-- Rich ecosystem of tools, including things like Rubocop to help developers write clean code and RSpec to test the libraries.
+- Ruby makes writing automation enjoyable with its readable syntax and a rich collection of useful methods in its built-in classes.
+- Rich ecosystem of tools and libraries, including things like Rubocop to help developers write clean code and RSpec to test the libraries.
 - Ruby is really good at letting one express intent and create a DSL to make that expression easier.
 
 ### Design points
@@ -88,35 +130,17 @@ Additional [example rules are available](https://openhab.github.io/openhab-jruby
   - Designed and tested using [Test-Driven Development](https://en.wikipedia.org/wiki/Test-driven_development) with [RSpec](https://rspec.info/)
 - Extensible.
   - Anyone should be able to customize and add/remove core language features
-- Easy access to the Ruby ecosystem in rules through Ruby gems.
+- Easy access to the Ruby ecosystem in rules through [Ruby Gems](https://rubygems.org/).
 
 ## Installation
 
-### Prerequisites
-
-1. openHAB 3.4+
-1. The JRuby Scripting Language Addon
-
 ### From the User Interface
 
-1. Go to `Settings -> Add-ons -> Automation` and install the jrubyscripting automation addon following the [openHAB instructions](https://www.openhab.org/docs/configuration/addons.html).
-   In openHAB 4.0+ the defaults are set so the next step can be skipped.
-1. Go to `Settings -> Add-on Settings -> JRuby Scripting`:
-   - **Ruby Gems**: `openhab-scripting=~>5.0`
-   - **Require Scripts**: `openhab/dsl` (not required, but recommended)
+- Go to `Settings -> Add-ons -> Automation` and install the jrubyscripting automation addon following the [openHAB instructions](https://www.openhab.org/docs/configuration/addons.html).
 
 ### Using Files
 
-1. Edit `<OPENHAB_CONF>/services/addons.cfg` and ensure that `jrubyscripting` is included in an uncommented `automation=` list of automations to install.
-   In openHAB 4.0+ the defaults are set so the next step can be skipped.
-1. Configure JRuby openHAB services
-
-   Create a file called `jruby.cfg` in `<OPENHAB_CONF>/services/` with the following content:
-
-   ```ini
-   org.openhab.automation.jrubyscripting:gems=openhab-scripting=~>5.0
-   org.openhab.automation.jrubyscripting:require=openhab/dsl
-   ```
+- Edit `<OPENHAB_CONF>/services/addons.cfg` and ensure that `jrubyscripting` is included in an uncommented `automation=` list of automations to install.
 
 ## Configuration
 
@@ -128,16 +152,16 @@ This allows the use of [items](https://openhab.github.io/openhab-jruby/main/Open
 This functionality can be disabled for users who prefer to manage their own gems and `require`s via the add-on configuration options.
 Simply change the `gems` and `require` configuration settings.
 
-| Parameter             | Description                                                                                              |
-| --------------------- | -------------------------------------------------------------------------------------------------------- |
-| `gem_home`            | The path to store Ruby Gems. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/.gem/RUBY_ENGINE_VERSION` |
-| `gems`                | A list of gems to install. <br/><br/>Default: `openhab-scripting=~>5.0`                                  |
-| `check_update`        | Check for updated version of `gems` on start up or settings change. <br/><br/>Default: `true`            |
-| `require`             | List of scripts to be required automatically. <br/><br/>Default: `openhab/dsl`                           |
-| `rubylib`             | Search path for user libraries. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/lib`                   |
-| `dependency_tracking` | Enable dependency tracking. <br/><br/>Default: `true`                                                    |
-| `local_context`       | See notes below. <br/><br/>Default: `singlethread`                                                       |
-| `local_variables`     | See notes below. <br/><br/>Default: `transient`                                                          |
+| Parameter             | Description                                                                                                |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `gem_home`            | The path to store Ruby Gems. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/.gem/RUBY_ENGINE_VERSION`   |
+| `gems`                | A list of gems to install. <br/><br/>Default: `openhab-scripting=~>5.0`                                    |
+| `check_update`        | Check for updated version of `gems` on start up or settings change. <br/><br/>Default: `true`              |
+| `require`             | List of scripts to be required automatically. <br/><br/>Default: `openhab/dsl`                             |
+| `rubylib`             | Search path for user libraries. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/lib`                     |
+| `dependency_tracking` | Enable dependency tracking. <br/><br/>Default: `true`                                                      |
+| `local_context`       | See notes below. <br/><br/>Default: `singlethread`                                                         |
+| `local_variables`     | See notes below. <br/><br/>Default: `transient`                                                            |
 
 When using file-based configuration, these parameters must be prefixed with `org.openhab.automation.jrubyscripting:`, for example:
 
@@ -766,8 +790,9 @@ To log a message on `INFO` log level:
 logger.info("The current time is #{Time.now}")
 ```
 
-The default logger name for UI rules is `org.openhab.automation.jrubyscripting.script`.
-For file-based rules, it's based on the rule's ID, such as `org.openhab.automation.jrubyscripting.rule.myrule.rb:15`.
+The main logger prefix is `org.openhab.automation.jrubyscripting`.
+The default logger name for UI rules includes the rule ID: `org.openhab.automation.jrubyscripting.script.<RULE_ID>`.
+The logger name for file-based rules includes the rule's filename and the rule ID: `org.openhab.automation.jrubyscripting.<filename>.rule.<RULE_ID>`.
 
 To use a custom logger name:
 
@@ -776,7 +801,7 @@ logger = OpenHAB::Log.logger("org.openhab.custom")
 ```
 
 Please be aware that messages might not appear in the logs if the logger name does not start with `org.openhab`.
-This behaviour is due to [log4j2](https://logging.apache.org/log4j/2.x/) requiring definition for each logger prefix.
+This behavior is due to [log4j2](https://logging.apache.org/log4j/2.x/) requiring definition for each logger prefix.
 
 The [logger](https://openhab.github.io/openhab-jruby/main/OpenHAB/Logger.html) is similar to a standard [Ruby Logger](https://docs.ruby-lang.org/en/master/Logger.html).
 Supported logging functions include:
@@ -815,7 +840,7 @@ end
 ```
 
 Alternatively a timer can be used in either a file-based rule or in a UI based rule using [after](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#after-class_method).
-After takes a [Duration](#durations), e.g. `10.minutes` instead of using [ZonedDateTime](https://openhab.github.io/openhab-jruby/main/OpenHAB/CoreExt/Java/ZonedDateTime.html).
+After takes a [Duration](#durations) relative to `now`, e.g. `10.minutes`, or an absolute time with [ZonedDateTime](https://openhab.github.io/openhab-jruby/main/OpenHAB/CoreExt/Java/ZonedDateTime.html) or [Time](https://openhab.github.io/openhab-jruby/main/Time.html).
 
 ```ruby
 rule "simple timer" do
@@ -1065,6 +1090,10 @@ end
 start_of_day = ZonedDateTime.now.with(LocalTime::MIDNIGHT)
 # or
 start_of_day = LocalTime::MIDNIGHT.to_zoned_date_time
+# or
+start_of_day = LocalDate.now.to_zoned_date_time
+# or using Ruby Date
+start_of_day = Date.today.to_zoned_date_time
 
 # Comparing ZonedDateTime against LocalTime with `<`
 max = Solar_Power.maximum_since(24.hours.ago)

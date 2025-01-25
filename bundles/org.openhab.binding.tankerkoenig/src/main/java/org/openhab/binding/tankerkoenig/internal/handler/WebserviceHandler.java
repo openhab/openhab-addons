@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -70,7 +70,7 @@ public class WebserviceHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(TankerkoenigBindingConstants.CHANNEL_HOLIDAY)) {
-            logger.debug("HandleCommand recieved: {}", channelUID.getId());
+            logger.debug("HandleCommand received: {}", channelUID.getId());
             isHoliday = (command == OnOffType.ON);
         }
     }

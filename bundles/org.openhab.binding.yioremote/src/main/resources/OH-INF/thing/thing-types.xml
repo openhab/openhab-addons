@@ -46,7 +46,7 @@
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
-		<description>The status of the YIO Dock. If the reciever is on than the recognized IR code will be displayed otherwise
+		<description>The status of the YIO Dock. If the receiver is on than the recognized IR code will be displayed otherwise
 			the IR send status is displayed of the last IR code send.</description>
 	</channel-type>
 </thing:thing-descriptions>

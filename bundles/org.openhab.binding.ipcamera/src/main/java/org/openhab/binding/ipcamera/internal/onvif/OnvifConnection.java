@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -388,7 +388,7 @@ public class OnvifConnection {
                 break;
             case PullMessages:
                 try {
-                    eventRecieved(message);
+                    eventReceived(message);
                 } catch (Exception e) {
                     logger.error("Error processing PullMessages error:\n{}\nmessage: {}", e.toString(), message);
                 }
@@ -813,7 +813,7 @@ public class OnvifConnection {
         }
     }
 
-    public void eventRecieved(String eventMessage) {
+    public void eventReceived(String eventMessage) {
         Document xmlDocument;
         try {
             xmlDocument = Helper.loadXMLFromString(eventMessage);

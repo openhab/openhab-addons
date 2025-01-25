@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -247,7 +247,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
     }
 
     Runnable socketReceiverRunnable = () -> {
-        logger.trace("Start Background Thread for recieving data from adapter");
+        logger.trace("Start Background Thread for receiving data from adapter");
         try {
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
             xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -197,7 +197,7 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
                 String dscAlarmMessageName = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.NAME);
                 String dscAlarmMessageMode = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.MODE);
 
-                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
+                logger.debug("dscAlarmEventReceived(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
 
                 switch (dscAlarmCode) {
                     case PartitionReady: /* 650 */

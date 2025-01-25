@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -132,7 +132,7 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
                 ChannelUID channelUID = null;
                 DSCAlarmCode dscAlarmCode = DSCAlarmCode
                         .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
-                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
+                logger.debug("dscAlarmEventReceived(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
 
                 int state = 0;
                 String status = "";

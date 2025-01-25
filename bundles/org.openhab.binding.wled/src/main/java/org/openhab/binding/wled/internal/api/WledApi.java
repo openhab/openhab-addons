@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -80,7 +80,7 @@ public interface WledApi {
 
     void setUdpSend(boolean bool) throws ApiException;
 
-    void setUdpRecieve(boolean bool) throws ApiException;
+    void setUdpReceive(boolean bool) throws ApiException;
 
     void setTransitionTime(BigDecimal time) throws ApiException;
 

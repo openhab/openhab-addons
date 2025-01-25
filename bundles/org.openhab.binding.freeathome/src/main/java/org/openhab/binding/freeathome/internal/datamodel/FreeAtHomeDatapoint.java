@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -87,7 +87,8 @@ public class FreeAtHomeDatapoint {
                 this.channelId = channelId;
                 this.datapointId = datapointId;
 
-                logger.debug("Datapoint is found - channel {} - datapoint {}", this.channelId, this.datapointId);
+                logger.debug("Datapoint is found - channel {} - datapoint {} - pairngId {}", this.channelId,
+                        this.datapointId, neededPairingIDFunction);
 
                 foundId = true;
             }

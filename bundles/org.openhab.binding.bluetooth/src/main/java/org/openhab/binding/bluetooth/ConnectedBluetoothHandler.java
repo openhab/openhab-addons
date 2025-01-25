@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -322,7 +322,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
         super.onCharacteristicUpdate(characteristic, value);
         if (logger.isDebugEnabled()) {
-            logger.debug("Recieved update {} to characteristic {} of device {}", HexUtils.bytesToHex(value),
+            logger.debug("Received update {} to characteristic {} of device {}", HexUtils.bytesToHex(value),
                     characteristic.getUuid(), address);
         }
     }
