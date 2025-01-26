@@ -84,7 +84,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 throw new IhcExecption("No resource value found");
             }
         } catch (XPathExpressionException | NumberFormatException | IOException e) {
-            throw new IhcExecption("Error occured during XML data parsing", e);
+            throw new IhcExecption("Error occurred during XML data parsing", e);
         }
     }
 
@@ -484,7 +484,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
             }
             return resourceValueList;
         } catch (XPathExpressionException | NumberFormatException | IOException e) {
-            throw new IhcExecption("Error occured during XML data parsing", e);
+            throw new IhcExecption("Error occurred during XML data parsing", e);
         }
     }
 }

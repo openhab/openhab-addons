@@ -415,7 +415,7 @@ public class OwserverConnection {
     }
 
     /**
-     * close the connection to the owserver instance after an error occured.
+     * close the connection to the owserver instance after an error occurred.
      * if {@link #CONNECTION_MAX_RETRY} is exceeded, {@link #owserverConnectionState} is set to FAILED
      * and state is reported to callback.
      */

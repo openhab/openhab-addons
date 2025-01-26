@@ -650,6 +650,6 @@ public class LxWebSocket {
      */
     private void responseTimeout() {
         logger.debug("[{}] Miniserver response timeout", debugId);
-        disconnect(LxErrorCode.COMMUNICATION_ERROR, "Miniserver response timeout occured");
+        disconnect(LxErrorCode.COMMUNICATION_ERROR, "Miniserver response timeout occurred");
     }
 }

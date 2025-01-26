@@ -236,7 +236,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
                     break;
             }
         } catch (ApiException e) {
-            logger.debug("Exception occured:{}", e.getMessage());
+            logger.debug("Exception occurred:{}", e.getMessage());
         }
     }
 

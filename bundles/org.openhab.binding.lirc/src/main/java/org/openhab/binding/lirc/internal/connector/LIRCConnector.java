@@ -166,7 +166,7 @@ public class LIRCConnector {
     public synchronized void sendErrorToListeners(String error) {
         try {
             for (LIRCEventListener listener : listeners) {
-                listener.errorOccured(error);
+                listener.errorOccurred(error);
             }
         } catch (Exception e) {
             logger.error("Error invoking event listener", e);

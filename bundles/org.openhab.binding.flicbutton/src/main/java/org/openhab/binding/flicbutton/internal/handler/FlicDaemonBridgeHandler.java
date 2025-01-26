@@ -102,7 +102,7 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
                 flicClient.close();
                 logger.debug("Listening to flicd ended");
             } catch (IOException e) {
-                logger.debug("Error occured while listening to flicd", e);
+                logger.debug("Error occurred while listening to flicd", e);
             } finally {
                 if (Thread.currentThread().isInterrupted()) {
                     onClientFailure();
