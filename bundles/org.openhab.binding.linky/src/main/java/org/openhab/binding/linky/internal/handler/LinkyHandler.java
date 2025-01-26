@@ -862,8 +862,16 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     private void logData(IntervalReading[] ivArray, int index, String title, DateTimeFormatter dateTimeFormatter) {
-        IntervalReading iv = ivArray[index];
-        logger.debug("{} {} value {}", title, iv.date.format(dateTimeFormatter), iv.value);
+        try {
+            IntervalReading iv = ivArray[index];
+            String date = "";
+            if (iv.date != null) {
+                date = iv.date.format(dateTimeFormatter);
+            }
+            logger.debug("{} {} value {}", title, date, iv.value);
+        } catch (Exception e) {
+            logger.error("error during logData", e);
+        }
     }
 
     public void saveConfiguration(Configuration config) {
