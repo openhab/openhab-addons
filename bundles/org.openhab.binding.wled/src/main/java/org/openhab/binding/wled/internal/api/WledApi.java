@@ -80,7 +80,7 @@ public interface WledApi {
 
     void setUdpSend(boolean bool) throws ApiException;
 
-    void setUdpRecieve(boolean bool) throws ApiException;
+    void setUdpReceive(boolean bool) throws ApiException;
 
     void setTransitionTime(BigDecimal time) throws ApiException;
 

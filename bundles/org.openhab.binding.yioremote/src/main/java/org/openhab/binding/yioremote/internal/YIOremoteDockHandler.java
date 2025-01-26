@@ -72,7 +72,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     private @Nullable Future<?> webSocketPollingJob;
     private @Nullable Future<?> webSocketReconnectionPollingJob;
     public String receivedMessage = "";
-    private JsonObject recievedJson = new JsonObject();
+    private JsonObject receivedJson = new JsonObject();
     private boolean heartBeat = false;
     private boolean authenticationOk = false;
     private String receivedStatus = "";
@@ -114,10 +114,10 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 @Override
                 public void onMessage(String message) {
                     receivedMessage = message;
-                    logger.debug("Message recieved {}", message);
-                    recievedJson = convertStringToJsonObject(receivedMessage);
-                    if (recievedJson.size() > 0) {
-                        if (decodeReceivedMessage(recievedJson)) {
+                    logger.debug("Message received {}", message);
+                    receivedJson = convertStringToJsonObject(receivedMessage);
+                    if (receivedJson.size() > 0) {
+                        if (decodeReceivedMessage(receivedJson)) {
                             switch (yioRemoteDockActualStatus) {
                                 case CONNECTION_ESTABLISHED:
                                 case AUTHENTICATION_PROCESS:
