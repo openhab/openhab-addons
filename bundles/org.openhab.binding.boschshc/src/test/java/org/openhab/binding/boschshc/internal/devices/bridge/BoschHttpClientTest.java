@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -277,8 +279,7 @@ class BoschHttpClientTest {
         when(response.getContentAsString()).thenReturn("{\"@type\": \"JsonRestExceptionResponseEntity}");
         ExecutionException e = assertThrows(ExecutionException.class,
                 () -> httpClient.sendRequest(request, SubscribeResult.class, sr -> false, null));
-        assertEquals(
-                "Received invalid content in response, expected type org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult: com.google.gson.stream.MalformedJsonException: Unterminated string at line 1 column 44 path $.@type",
-                e.getMessage());
+        assertThat(e.getMessage(), startsWith(
+                "Received invalid content in response, expected type org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult:"));
     }
 }

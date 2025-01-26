@@ -23,7 +23,7 @@
     <dep.noembedding>netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler</dep.noembedding>
     <!-- slf4j version matching the version specified in openhab-core/pom.xml -->
     <slf4j.version>1.7.32</slf4j.version>
-    <jetty.version>9.4.54.v20240208</jetty.version>
+    <jetty.version>9.4.57.v20241219</jetty.version>
   </properties>
 
   <!--Custom repository for DynamoDBLocal -->
