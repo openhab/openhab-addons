@@ -17,14 +17,14 @@ from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger, ItemCom
 
 @rule()
 @when("Time cron */5 * * * * ?")
-def Test1(module, input):
-        Test1.logger.info("Rule 1 was triggered")
+def test1(module, input):
+        test1.logger.info("Rule 1 was triggered")
 
 @rule()
 @when("Item Item1 received command")
 @when("Item Item1 received update")
 @onlyif("Today is a holiday")
-def Test2(module, input):
+def test2(module, input):
     Registry.getItem("Item2").sendCommand(ON)
 
 @rule( 
