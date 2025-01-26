@@ -5,7 +5,6 @@ import java
 import uuid
 import re
 
-
 Java_ConditionBuilder = java.type("org.openhab.core.automation.util.ConditionBuilder")
 Java_TriggerBuilder = java.type("org.openhab.core.automation.util.TriggerBuilder")
 Java_Configuration = java.type("org.openhab.core.config.core.Configuration")
@@ -24,7 +23,17 @@ def validate_uid(uid):
     uid = re.sub(r"__+", "_", uid)
     return uid
 
-class ItemStateChangeTrigger():
+class BaseTrigger():
+    first_word = ""
+    regex = ""
+
+    @classmethod
+    def parse(cls, target):
+        match = re.match(cls.regex, target, re.IGNORECASE)
+        if match is not None:
+            return cls(**match.groupdict())
+
+class ItemStateChangeTrigger(BaseTrigger):
     def __init__(self, item_name, state=None, previous_state=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {"itemName": item_name}
@@ -34,53 +43,24 @@ class ItemStateChangeTrigger():
             configuration["previousState"] = str(previous_state) if java.instanceof(previous_state, Java_State) else previous_state
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ItemStateChangeTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
-    first_word = ["item", "member", "descendent"]
-    @staticmethod
-    def parse(target):
-        # @when("Item Test_String_1 changed from 'old test string' to 'new test string'")
-        # @when("Item gTest_Contact_Sensors changed")
-        # @when("Member of gTest_Contact_Sensors changed from ON to OFF")
-        # @when("Member of gTest_Contact_Sensors changed from ON")
-        # @when("Member of gTest_Contact_Sensors changed to OFF")
-        # @when("Descendent of gTest_Contact_Sensors changed from OPEN to CLOSED")
-        match = re.match(r"^(?:(?P<subItems>Member|Descendent)\s+of|Item)\s+(?P<itemName>\w+)\s+changed(?:\s+from\s+(?P<previousState>'[^']+'|\S+))*(?:\s+to\s+(?P<state>'[^']+'|\S+))*$", target, re.IGNORECASE)
-        if match is not None:
-            item = Registry.getItem(match.group('itemName'))
-            if item is None:
-                raise ValueError(u"Invalid item name: {}".format(match.group('itemName')))
+    first_word = ["item"]
+    # @when("Item Test_String_1 changed from 'old test string' to 'new test string'")
+    # @when("Item gTest_Contact_Sensors changed")
+    regex = r"^Item\s+(?P<item_name>\D\w*)\s+received\s+update(?:\s+(?P<state>'[^']+'|\S+))*$"
 
-            if match.group('subItems') is None:
-                return ItemStateChangeTrigger(match.group('itemName'), match.group('previousState'), match.group('state'))
-
-            groupMembers = item.getMembers() if match.group('subItems') == "Member" else item.getAllMembers()
-            return list(map(lambda item: ItemStateChangeTrigger(item.name, match.group('previousState'), match.group('state')), groupMembers))
-
-class ItemStateUpdateTrigger():
-    def __init__(self, item_name, state=None, trigger_name=None):
+class ItemStateUpdateTrigger(BaseTrigger):
+    def __init__(self, item_name, state=None, previous_state=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {"itemName": item_name}
         if state is not None:
             configuration["state"] = str(state) if java.instanceof(state, Java_State) else state
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ItemStateUpdateTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
-    first_word = ["item", "member", "descendent"]
-    @staticmethod
-    def parse(target):
-        # @when("Item Test_Switch_2 received update ON")
-        # @when("Member of gTest_Switches received update")
-        match = re.match(r"^(?:(?P<subItems>Member|Descendent)\s+of|Item)\s+(?P<itemName>\w+)\s+received\s+update(?:\s+(?P<state>'[^']+'|\S+))*$", target, re.IGNORECASE)
-        if match is not None:
-            item = Registry.getItem(match.group('itemName'))
-            if item is None:
-                raise ValueError(u"Invalid item name: {}".format(match.group('itemName')))
+    first_word = ["item"]
+    # @when("Item Test_Switch_2 received update ON")
+    regex = r"^Item\s+(?P<item_name>\D\w*)\s+changed(?:\s+from\s+(?P<previous_state>'[^']+'|\S+))*(?:\s+to\s+(?P<state>'[^']+'|\S+))*$"
 
-            if match.group('subItems') is None:
-                return ItemStateUpdateTrigger(match.group('itemName'), match.group('state'))
-
-            groupMembers = item.getMembers() if match.group('subItems') == "Member" else item.getAllMembers()
-            return list(map(lambda item: ItemStateUpdateTrigger(item.name, match.group('state')), groupMembers))
-
-class ItemCommandTrigger():
+class ItemCommandTrigger(BaseTrigger):
     def __init__(self, item_name, command=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {"itemName": item_name}
@@ -88,34 +68,28 @@ class ItemCommandTrigger():
             configuration["command"] = str(command) if java.instanceof(command, Java_Command) else command
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ItemCommandTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
-    first_word = [ "item", "member", "descendent" ]
-    @staticmethod
-    def parse(target):
-        # @when("Item Test_Switch_1 received command")
-        # @when("Item Test_Switch_2 received command OFF")
-        match = re.match(r"^(?:(?P<subItems>Member|Descendent)\s+of|Item)\s+(?P<itemName>\w+)\s+received\s+command(?:\s+(?P<command>\w+))*$", target, re.IGNORECASE)
-        if match is not None:
-            item = Registry.getItem(match.group('itemName'))
-            if item is None:
-                raise ValueError(u"Invalid item name: {}".format(match.group('itemName')))
+    first_word = [ "item" ]
+    # @when("Item Test_Switch_1 received command")
+    # @when("Item Test_Switch_2 received command OFF")
+    regex = r"^Item\s+(?P<item_name>\D\w*)\s+received\s+command(?:\s+(?P<command>\w+))*$"
 
-            if match.group('subItems') is None:
-                return ItemCommandTrigger(match.group('itemName'), match.group('command'))
-
-            groupMembers = item.getMembers() if match.group('subItems') == "Member" else item.getAllMembers()
-            return list(map(lambda item: ItemCommandTrigger(item.name, match.group('command')), groupMembers))
-
-class GroupStateChangeTrigger():
+class GroupStateChangeTrigger(BaseTrigger):
     def __init__(self, group_name, state=None, previous_state=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {"groupName": group_name}
         if state is not None:
             configuration["state"] = str(state) if java.instanceof(state, Java_State) else state
         if previous_state is not None:
-            configuration["previousState"] = previous_state
+            configuration["previousState"] = str(previous_state) if java.instanceof(previous_state, Java_State) else previous_state
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GroupStateChangeTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
-class GroupStateUpdateTrigger():
+    first_word = [ "member" ]
+    # @when("Member of gTest_Contact_Sensors changed from ON to OFF")
+    # @when("Member of gTest_Contact_Sensors changed from ON")
+    # @when("Member of gTest_Contact_Sensors changed to OFF")
+    regex = r"^Member\s+of\s+(?P<group_name>\D\w*)\s+changed(?:\s+from\s+(?P<previous_state>'[^']+'|\S+))*(?:\s+to\s+(?P<state>'[^']+'|\S+))*$"
+
+class GroupStateUpdateTrigger(BaseTrigger):
     def __init__(self, group_name, state=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {"groupName": group_name}
@@ -123,7 +97,11 @@ class GroupStateUpdateTrigger():
             configuration["state"] = str(state) if java.instanceof(state, Java_State) else state
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GroupStateUpdateTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
-class GroupCommandTrigger():
+    first_word = [ "member" ]
+    # @when("Member of gTest_Switches received update")
+    regex = r"^Member\s+of\s+(?P<group_name>\D\w*)\s+received\s+update(?:\s+(?P<state>'[^']+'|\S+))*$"
+
+class GroupCommandTrigger(BaseTrigger):
     def __init__(self, group_name, command=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {"groupName": group_name}
@@ -131,7 +109,10 @@ class GroupCommandTrigger():
             configuration["command"] = command
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GroupCommandTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
-class ThingStatusUpdateTrigger():
+    first_word = [ "member" ]
+    regex = r"^Member\s+of\s+(?P<group_name>\D\w*)\s+received\s+command(?:\s+(?P<command>\w+))*$"
+
+class ThingStatusUpdateTrigger(BaseTrigger):
     def __init__(self, thing_uid, status=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {"thingUID": thing_uid}
@@ -140,16 +121,10 @@ class ThingStatusUpdateTrigger():
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ThingStatusUpdateTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
     first_word = ["thing"]
-    @staticmethod
-    def parse(target):
-        # @when("Thing hue:device:default:lamp1 received update ONLINE")
-        match = re.match(r"^Thing\s+(?P<thingUID>\S+)\s+received\s+update(?:\s+(?P<status>\w+))*$", target, re.IGNORECASE)
-        if match is not None:
-            if Registry.getThing(match.group('thingUID')) is None:
-                raise ValueError(u"Invalid thing UID: {}".format(match.group('thingUID')))
-            return ThingStatusUpdateTrigger(match.group('thingUID'), match.group('status'))
+    # @when("Thing hue:device:default:lamp1 received update ONLINE")
+    regex = r"^Thing\s+(?P<thing_uid>\D\S*)\s+received\s+update(?:\s+(?P<status>\w+))*$"
 
-class ThingStatusChangeTrigger():
+class ThingStatusChangeTrigger(BaseTrigger):
     def __init__(self, thing_uid, status=None, previous_status=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {"thingUID": thing_uid}
@@ -160,16 +135,10 @@ class ThingStatusChangeTrigger():
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ThingStatusChangeTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
     first_word = ["thing"]
-    @staticmethod
-    def parse(target):
-        # @when("Thing hue:device:default:lamp1 changed from ONLINE to OFFLINE")
-        match = re.match(r"^Thing\s+(?P<thingUID>\S+)\s+changed(?:\s+from\s+(?P<previousState>\w+))*(?:\s+to\s+(?P<state>\w+))*$", target, re.IGNORECASE)
-        if match is not None:
-            if Registry.getThing(match.group('thingUID')) is None:
-                raise ValueError(u"Invalid thing UID: {}".format(match.group('thingUID')))
-            return ThingStatusChangeTrigger(match.group('thingUID'), match.group('previousState'), match.group('state'))
+    # @when("Thing hue:device:default:lamp1 changed from ONLINE to OFFLINE")
+    regex = r"^Thing\s+(?P<thing_uid>\D\S*)\s+changed(?:\s+from\s+(?P<previous_status>\w+))*(?:\s+to\s+(?P<status>\w+))*$"
 
-class ChannelEventTrigger():
+class ChannelEventTrigger(BaseTrigger):
     def __init__(self, channel_uid, event=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {"channelUID": channel_uid}
@@ -179,88 +148,82 @@ class ChannelEventTrigger():
         return self
 
     first_word = ["channel"]
-    @staticmethod
-    def parse(target):
-        # @when("Channel hue:device:default:lamp1:color triggered START")
-        match = re.match(r'^Channel\s+\"*(?P<channelUID>\S+)\"*\s+triggered(?:\s+(?P<event>\w+))*$', target, re.IGNORECASE)
-        if match is not None:
-            if Registry.getChannel(match.group('channelUID')) is None:
-                raise ValueError(u"Invalid channel UID: {}".format(match.group('channelUID')))
-            return ChannelEventTrigger(match.group('channelUID'), match.group('event'))
+    # @when("Channel hue:device:default:lamp1:color triggered START")
+    regex = r"^Channel\s+\"*(?P<channel_uid>\D\S*)\"*\s+triggered(?:\s+(?P<event>\w+))*$"
 
-class SystemStartlevelTrigger():
+class SystemStartlevelTrigger(BaseTrigger):
     def __init__(self, startlevel, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {"startlevel": startlevel}
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.SystemStartlevelTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
     first_word = ["system"]
-    @staticmethod
-    def parse(target):
-        # @when("System started")
-        # @when("System reached start level 50")
-        match = re.match(r"^System\s+(?:started|reached\s+start\s+level\s+(?P<startLevel>\d+))$", target, re.IGNORECASE)
+    # @when("System started")
+    # @when("System reached start level 50")
+    regex = r"^System\s+(?:started|reached\s+start\s+level\s+(?P<startlevel>\d+))$"
+    @classmethod
+    def parse(cls, target):
+        match = re.match(cls.regex, target, re.IGNORECASE)
         if match is not None:
-            return SystemStartlevelTrigger(match.group('startLevel'))
+            startlevel = 40 if match.group('startlevel') is None else match.group('startlevel')
+            return SystemStartlevelTrigger(startlevel=startlevel)
 
-class GenericCronTrigger():
+class GenericCronTrigger(BaseTrigger):
     def __init__(self, cron_expression, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {'cronExpression': cron_expression}
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("timer.GenericCronTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
     first_word = ["time"]
-    @staticmethod
-    def parse(target):
-        # @when("Time cron 55 55 5 * * ?")
-        # @when("Time is midnight")
-        # @when("Time is noon")
-        match = re.match(r"^Time\s+(?:cron\s+(?P<cronExpression>.*)|is\s+(?P<namedInstant>midnight|noon))$", target, re.IGNORECASE)
+    # @when("Time cron 55 55 5 * * ?")
+    # @when("Time is midnight")
+    # @when("Time is noon")
+    regex = r"^Time\s+(?:cron\s+(?P<cronExpression>.*)|is\s+(?P<namedInstant>midnight|noon))$"
+    @classmethod
+    def parse(cls, target):
+        match = re.match(cls.regex, target, re.IGNORECASE)
         if match is not None:
             if match.group('namedInstant') is None:
-                cron_expression = match.group('cronExpression')
-            elif match.group(2) == "midnight":
-                cron_expression = "0 0 0 * * ?"
-            else:   # noon
-                cron_expression = "0 0 12 * * ?"
-        else:
-            cron_expression = target
+                cronExpression = match.group('cronExpression')
+            elif match.group('namedInstant') == "midnight":
+                cronExpression = "0 0 0 * * ?"
+            elif match.group('namedInstant') == "noon":
+                cronExpression = "0 0 12 * * ?"
+                
+            if cronExpression is None:
+                raise ValueError("invalid cron expression")
 
-        return None
+            return GenericCronTrigger(cron_expression=cronExpression)
 
-class TimeOfDayTrigger():
-    def __init__(self, time_as_string, trigger_name=None):
+class TimeOfDayTrigger(BaseTrigger):
+    def __init__(self, time, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
-        configuration = {"time": time_as_string}
+        configuration = {"time": time}
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("timer.TimeOfDayTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
     first_word = ["time"]
-    @staticmethod
-    def parse(target):
-        # @when("Time is 10:50")
-        match = re.match(r"^Time\s+is\s+(?P<time>[0-9]{1,2}:[0-9]{1,2})$", target, re.IGNORECASE)
-        if match is not None:
-            return TimeOfDayTrigger(match.group('time'))
+    # @when("Time is 10:50")
+    regex = r"^Time\s+is\s+(?P<time>([01]\d|2[0-3]):[0-5]\d)$"
 
-class DateTimeTrigger():
+class DateTimeTrigger(BaseTrigger):
     def __init__(self, item_name, time_only = False, offset = 0, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {"itemName": item_name, "timeOnly": time_only, "offset": offset}
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("timer.DateTimeTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
     first_word = ["datetime"]
-    @staticmethod
-    def parse(target):
-        # @when("Datetime is Test_Datetime_1")
-        # @when("Datetime is Test_Datetime_2 time only")
-        match = re.match(r"^Datetime\s+is\s+(?P<itemName>\S*)(?:\s+\[(?P<timeOnly>time only)\])*$", target, re.IGNORECASE)
+    # @when("Datetime is Test_Datetime_1")
+    # @when("Datetime is Test_Datetime_2 time only")
+    regex = r"^Datetime\s+is\s+(?P<item_name>\D\w*)(?:\s+\[(?P<time_only>timeOnly)\])*$"
+    @classmethod
+    def parse(cls, target):
+        match = re.match(cls.regex, target, re.IGNORECASE)
         if match is not None:
-            item = Registry.getItem(match.group('itemName'))
-            if item is None:
-                raise ValueError(u"Invalid item name: {}".format(match.group('itemName')))
-            return DateTimeTrigger(match.group('itemName'), match.group('timeOnly') == "timeOnly")
+            params = match.groupdict()
+            params['time_only'] = params['time_only'] == "timeOnly"
+            return DateTimeTrigger(**params)
 
-class PWMTrigger():
+class PWMTrigger(BaseTrigger):
     def __init__(self, dutycycle_item, interval, min_duty_cycle, max_duty_cycle, dead_man_switch, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {
@@ -272,7 +235,7 @@ class PWMTrigger():
         }
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("pwm.PWMTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
-class GenericEventTrigger():
+class GenericEventTrigger(BaseTrigger):
     def __init__(self, event_source, event_types, event_topic="*/*", trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GenericEventTrigger").withConfiguration(Java_Configuration({
@@ -281,7 +244,7 @@ class GenericEventTrigger():
             "eventTypes": event_types
         })).build()
 
-class ItemEventTrigger():
+class ItemEventTrigger(BaseTrigger):
     def __init__(self, event_types, item_name=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GenericEventTrigger").withConfiguration(Java_Configuration({
@@ -291,21 +254,17 @@ class ItemEventTrigger():
         })).build()
 
     first_word = ["item"]
-    @staticmethod
-    def parse(target):
-        # @when("Item added")
-        # @when("Item removed")
-        # @when("Item updated")
-        match = re.match(r"^Item\s+(?P<action>added|removed|updated)$", target, re.IGNORECASE)
+    # @when("Item added")
+    # @when("Item removed")
+    # @when("Item updated")
+    regex = r"^Item\s+(?P<action>added|removed|updated)$"
+    @classmethod
+    def parse(cls, target):
+        match = re.match(cls.regex, target, re.IGNORECASE)
         if match is not None:
-            event_names = {
-                "added": "ItemAddedEvent",
-                "removed": "ItemRemovedEvent",
-                "updated": "ItemUpdatedEvent"
-            }
-            return ItemEventTrigger(event_names.get(match.group('action')))
+            return ItemEventTrigger(event_types="Item" + match.group('action').capitalize() + "Event")
 
-class ThingEventTrigger():
+class ThingEventTrigger(BaseTrigger):
     def __init__(self, event_types, thing_uid=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GenericEventTrigger").withConfiguration(Java_Configuration({
@@ -315,28 +274,24 @@ class ThingEventTrigger():
         })).build()
 
     first_word = ["thing"]
-    @staticmethod
-    def parse(target):
-        # @when("Thing added")
-        # @when("Thing removed")
-        # @when("Thing updated")
-        match = re.match(r"^Thing\s+(?P<action>added|removed|updated)$", target, re.IGNORECASE)
+    # @when("Thing added")
+    # @when("Thing removed")
+    # @when("Thing updated")
+    regex = r"^Thing\s+(?P<action>added|removed|updated)$"
+    @classmethod
+    def parse(cls, target):
+        match = re.match(cls.regex, target, re.IGNORECASE)
         if match is not None:
-            event_names = {
-                "added": "ThingAddedEvent",
-                "removed": "ThingRemovedEvent",
-                "updated": "ThingUpdatedEvent"
-            }
-            return ThingEventTrigger(event_names.get(match.group('action')))
+            return ThingEventTrigger(event_types="Thing" + match.group('action').capitalize() + "Event")
 
 class when():
     trigger_classes = [
         ItemStateChangeTrigger,
         ItemStateUpdateTrigger,
         ItemCommandTrigger,
-#        GroupStateChangeTrigger,
-#        GroupStateUpdateTrigger,
-#        GroupCommandTrigger,
+        GroupStateChangeTrigger,
+        GroupStateUpdateTrigger,
+        GroupCommandTrigger,
         ThingStatusUpdateTrigger,
         ThingStatusChangeTrigger,
         ChannelEventTrigger,
@@ -354,14 +309,15 @@ class when():
         self.target = term_as_string
 
     def __call__(self, clazz):
-        trigger = self.parse()
+        trigger = when.parse(self.target)
         if not hasattr(clazz, '_when_triggers'):
             clazz._when_triggers = []
         clazz._when_triggers.append(trigger)
         return clazz
 
-    def parse(self):
-        _target = self.target.strip()
+    @staticmethod
+    def parse(target):
+        _target = target.strip()
         first_word = _target.split()[0]
 
         for trigger_class in when.trigger_classes:
@@ -369,15 +325,23 @@ class when():
             if first_word.lower() not in trigger_class.first_word:
                 continue
 
-            trigger = trigger_class.parse(_target)
+            trigger = trigger_class.parse(target)
             if trigger is not None:
                 return trigger
-            if trigger_class == None:
-                raise ValueError(u"Invalid trigger: '{}'".format(self.target))
 
-        raise ValueError(u"Could not parse {} trigger: '{}'".format(first_word, self.target))
+        raise ValueError(u"Could not parse {} trigger: '{}'".format(first_word, target))
 
-class ItemStateCondition():
+class BaseCondition():
+    first_word = ""
+    regex = ""
+
+    @classmethod
+    def parse(cls, target):
+        match = re.match(cls.regex, target, re.IGNORECASE)
+        if match is not None:
+            return cls(**match.groupdict())
+
+class ItemStateCondition(BaseCondition):
     def __init__(self, item_name, operator, state, condition_name=None):
         condition_name = validate_uid(condition_name)
         configuration = {
@@ -391,21 +355,18 @@ class ItemStateCondition():
         self.raw_condition = Java_ConditionBuilder.create().withId(condition_name).withTypeUID("core.ItemStateCondition").withConfiguration(Java_Configuration(configuration)).build()
 
     first_word = "item"
-    @staticmethod
-    def parse(target):
-        # @onlyif("Item Test_Switch_2 equals ON")
-        match = re.match(r"^Item\s+(?P<itemName>\w+)\s+((?P<eq>=|==|eq|equals|is)|(?P<neq>!=|not\s+equals|is\s+not)|(?P<lt><|lt|is\s+less\s+than)|(?P<lte><=|lte|is\s+less\s+than\s+or\s+equal)|(?P<gt>>|gt|is\s+greater\s+than)|(?P<gte>>=|gte|is\s+greater\s+than\s+or\s+equal))\s+(?P<state>'[^']+'|\S+)*$", target, re.IGNORECASE)
+    # @onlyif("Item Test_Switch_2 equals ON")
+    regex = r"^Item\s+(?P<item_name>\w+)\s+((?P<eq>=|==|eq|equals|is)|(?P<neq>!=|not\s+equals|is\s+not)|(?P<lt><|lt|is\s+less\s+than)|(?P<lte><=|lte|is\s+less\s+than\s+or\s+equal)|(?P<gt>>|gt|is\s+greater\s+than)|(?P<gte>>=|gte|is\s+greater\s+than\s+or\s+equal))\s+(?P<state>'[^']+'|\S+)*$"
+    @classmethod
+    def parse(cls, target):
+        match = re.match(cls.regex, target, re.IGNORECASE)
         if match is not None:
-            item = Registry.getItem(match.group('itemName'))
-            if item is None:
-                raise ValueError(u"Invalid item name: {}".format(match.group('itemName')))
-
             operators = [("eq", "="), ("neq", "!="), ("lt", "<"), ("lte", "<="), ("gt", ">"), ("gte", ">=")]
-            condition = next((op[1] for op in operators if match.group(op[0]) is not None), None)
+            operator = next((op[1] for op in operators if match.group(op[0]) is not None), None)
 
-            return ItemStateCondition(match.group('itemName'), condition, match.group('state'))
+            return ItemStateCondition(item_name=match.group('item_name'), operator=operator, state=match.group('state'))
 
-class EphemerisCondition():
+class EphemerisCondition(BaseCondition):
     def __init__(self, dayset, offset=0, condition_name=None):
         condition_name = validate_uid(condition_name)
         configuration = {
@@ -419,31 +380,31 @@ class EphemerisCondition():
         }.get(dayset)
 
         if typeuid is None:
-            typeuid = "epemeris.DaysetCondition"
+            typeuid = "ephemeris.DaysetCondition"
             configuration['dayset'] = dayset
 
         self.raw_condition = Java_ConditionBuilder.create().withId(condition_name).withTypeUID(typeuid).withConfiguration(Java_Configuration(configuration)).build()
 
     first_word = [ "today", "tomorrow", "yesterday", "it's" ]
-    @staticmethod
-    def parse(target):
-        # @onlyif("Today is a holiday")
-        # @onlyif("It's not a holiday")
-        # @onlyif("Tomorrow is not a holiday")
-        # @onlyif("Today plus 1 is weekend")
-        # @onlyif("Today minus 1 is weekday")
-        # @onlyif("Today plus 3 is a weekend")
-        # @onlyif("Today offset -3 is a weekend")
-        # @onylyf("Today minus 3 is not a holiday")
-        # @onlyif("Yesterday was in dayset")
-        match = re.match(r"""^((?P<today>Today\s+is|it'*s)|(?P<plus1>Tomorrow\s+is|Today\s+plus\s+1)|(?P<minus1>Yesterday\s+was|Today\s+minus\s+1)|(Today\s+(?P<plusminus>plus|minus|offset)\s+(?P<offset>-?\d+)\s+is))\s+  # what day
-                         (?P<not>not\s+)?(in\s+)?(a\s+)?                        # predicate
-                         (?P<daytype>holiday|weekday|weekend|\S+)$""",          # daytype
-                         target, re.IGNORECASE | re.X)
+    # @onlyif("Today is a holiday")
+    # @onlyif("It's not a holiday")
+    # @onlyif("Tomorrow is not a holiday")
+    # @onlyif("Today plus 1 is weekend")
+    # @onlyif("Today minus 1 is weekday")
+    # @onlyif("Today plus 3 is a weekend")
+    # @onlyif("Today offset -3 is a weekend")
+    # @onylyf("Today minus 3 is not a holiday")
+    # @onlyif("Yesterday was in dayset")
+    regex = r"""^((?P<today>Today\s+is|it'*s)|(?P<plus1>Tomorrow\s+is|Today\s+plus\s+1)|(?P<minus1>Yesterday\s+was|Today\s+minus\s+1)|(Today\s+(?P<plusminus>plus|minus|offset)\s+(?P<offset>-?\d+)\s+is))\s+  # what day
+                (?P<not>not\s+)?(in\s+)?(a\s+)?                        # predicate
+                (?P<dayset>holiday|weekday|weekend|\S+)$"""          # dayset
+    @classmethod
+    def parse(cls, target):
+        match = re.match(cls.regex, target, re.IGNORECASE | re.X)
         if match is not None:
-            daytype = match.group('daytype')
-            if daytype is None:
-                raise ValueError(u"Invalid ephemeris type: {}".format(match.group('daytype')))
+            dayset = match.group('dayset')
+            if dayset is None:
+                raise ValueError(u"Invalid ephemeris type: {}".format(match.group('dayset')))
 
             if match.group('today') is not None:
                 offset = 0
@@ -457,20 +418,20 @@ class EphemerisCondition():
                 raise ValueError(u"Offset is not specified")
 
             if match.group('not') is not None:
-                if match.group('daytype') == "holiday":
-                    daytype = "notholiday"
-                elif match.group('daytype') == "weekday":
-                    daytype = "weekend"
-                elif match.group('daytype') == "weekend":
-                    daytype = "weekday"
+                if match.group('dayset') == "holiday":
+                    dayset = "notholiday"
+                elif match.group('dayset') == "weekday":
+                    dayset = "weekend"
+                elif match.group('dayset') == "weekend":
+                    dayset = "weekday"
                 else:
-                    raise ValueError(u"Unable to negate custom daytype: {}", match.group('daytype'))
+                    raise ValueError(u"Unable to negate custom dayset: {}", match.group('dayset'))
             else:
-                daytype = match.group('daytype')
+                dayset = match.group('dayset')
 
-            return EphemerisCondition(daytype, offset)
+            return EphemerisCondition(dayset=dayset, offset=offset)
 
-class TimeOfDayCondition():
+class TimeOfDayCondition(BaseCondition):
     def __init__(self, start_time, end_time, condition_name=None):
         condition_name = validate_uid(condition_name)
         configuration = {
@@ -483,14 +444,11 @@ class TimeOfDayCondition():
         self.raw_condition = Java_ConditionBuilder.create().withId(condition_name).withTypeUID("core.TimeOfDayCondition").withConfiguration(Java_Configuration(configuration)).build()
 
     first_word = "time"
-    @staticmethod
-    def parse(target):
-        # @onlyif("Time 9:00 to 14:00")
-        timeOfDayRegEx = r"(([01]?\d|2[0-3]):[0-5]\d)|((0?[1-9]|1[0-2]):[0-5]\d(:[0-5]\d)?\s?(AM|PM))"
-        reFull = r"^Time\s+(?P<startTime>" + timeOfDayRegEx + r")(?:\s*-\s*|\s+to\s+)(?<endTime>" + timeOfDayRegEx + r")$"
-        match = re.match(r"^Time\s+(?P<startTime>" + timeOfDayRegEx + r")(?:\s*-\s*|\s+to\s+)(?P<endTime>" + timeOfDayRegEx + r")$", target, re.IGNORECASE)
-        if match is not None:
-            return TimeOfDayCondition(match.group('startTime'), match.group('endTime'))
+    timeOfDayRegEx = r"([01]\d|2[0-3]):[0-5]\d"
+    #@onlyif("Time 09:00 to 14:00")
+    #@onlyif("Time 03:30 to 14:00")
+    #@onlyif("Time 06:00-13:00")
+    regex = r"^Time\s+(?P<start_time>" + timeOfDayRegEx + r")(?:\s*-\s*|\s+to\s+)(?P<end_time>" + timeOfDayRegEx + r")$"
 
 class onlyif():
     condition_classes = [
@@ -503,14 +461,15 @@ class onlyif():
         self.target = term_as_string
 
     def __call__(self, clazz):
-        condition = self.parse()
+        condition = onlyif.parse(self.target)
         if not hasattr(clazz, '_onlyif_conditions'):
             clazz._onlyif_conditions = []
         clazz._onlyif_conditions.append(condition)
         return clazz
 
-    def parse(self):
-        _target = self.target.strip()
+    @staticmethod
+    def parse(target):
+        _target = target.strip()
         first_word = _target.split()[0]
 
         for condition_classe in onlyif.condition_classes:
@@ -521,8 +480,6 @@ class onlyif():
             condition = condition_classe.parse(_target)
             if condition is not None:
                 return condition
-            if condition_classe == None:
-                raise ValueError(u"Invalid condition: '{}'".format(self.target))
 
-        raise ValueError(u"Could not parse {} condition: '{}'".format(first_word, self.target))
+        raise ValueError(u"Could not parse {} condition: '{}'".format(first_word, target))
 
