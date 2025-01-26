@@ -75,12 +75,12 @@ logger.info( historicItem.getState().toString() );
 
 the decorator will register the decorated class as a rule. It will wrap and extend the class with the following functionalities
 
-- Register the class as a rule
-- If name is not provided, a fallback name in the form "{filename}.{classname}" is created
-- Triggers can be added with argument "triggers", with a function called "buildTriggers" or with an [@when decorator](#decorator-when)
-- Conditions can be added with argument "conditions", with a function called "buildConditions" or with an [@onlyif decorator](#decorator-onlyif)
+- Register the class or function as a rule
+- If name is not provided, a fallback name in the form "{filename}.{function_or_classname}" is created
+- Triggers can be added with argument "triggers", with a function called "buildTriggers" (only classes) or with an [@when decorator](#decorator-when)
+- Conditions can be added with argument "conditions", with a function called "buildConditions" (only classes) or with an [@onlyif decorator](#decorator-onlyif)
 - The execute function is wrapped within a try / except to provide meaningful error logs
-- A logger object (self.logger) with the prefix "org.automation.pythonscripting.{filename}.{classname}" is available
+- A logger object (self.logger or {functionname}.logger) with the prefix "org.automation.pythonscripting.{filename}.{function_or_classname}" is available
 - You can enable a profiler to analyze runtime with argument "profile=1"
 - Every run is logging total runtime and trigger reasons
 
