@@ -12,44 +12,42 @@ Simple rule
 
 ```python
 from openhab import rule, Registry
-from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger, ItemCommandTrigger, when, onlyif
+from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger, ItemCommandTrigger, EphemerisCondition, when, onlyif
 
-# class based rule
-@rule(
-    triggers = [
-        GenericCronTrigger("*/5 * * * * ?"),
-        ItemCommandTrigger("Item1", command=ON)
-    ]
-)
-class Test1:
-    def execute(self, module, input):
-        self.logger.info("rule triggered")
-       
-# function based rule
-@rule(
-    triggers = [
-        ItemStateUpdateTrigger("Item1")
-    ]
-)
-def Test2(module, input):
-    if Registry.getItem("Item2").postUpdateIfDifferent( input['event'].getItemState() ):
-        Test2.logger.info("item was updated")
 
-# @when decorator
 @rule()
 @when("Time cron */5 * * * * ?")
-class Test3:
-    def execute(self, module, input):
-        self.logger.info("rule triggered")
+def Test1(module, input):
+        Test1.logger.info("Rule 1 was triggered")
 
-# @when and @onlyif decorator
 @rule()
 @when("Item Item1 received command")
 @when("Item Item1 received update")
 @onlyif("Today is a holiday")
+def Test2(module, input):
+    Registry.getItem("Item2").sendCommand(ON)
+        
+
+@rule( 
+    triggers = [ GenericCronTrigger("*/5 * * * * ?") ]
+)
+class Test3:
+    def execute(self, module, input):
+        self.logger.info("Rule 3 was triggered")
+        
+@rule(
+    triggers = [
+        ItemStateUpdateTrigger("Item1"),
+        ItemCommandTrigger("Item1", ON)
+    ],
+    conditions = [
+        EphemerisCondition("notholiday")
+    ]
+)
 class Test4:
     def execute(self, module, input):
-        Registry.getItem("Item1").sendCommand(OFF)
+        if Registry.getItem("Item2").postUpdateIfDifferent(OFF):
+            self.logger.info("Item2 was updated")
 ```
  
 Query thing status info
@@ -73,6 +71,12 @@ logger.info( historicItem.getState().toString() );
 historicItem = Registry.getItem("Item2").getPersistence("jdbc").persistedState( datetime.now().astimezone() )
 logger.info( historicItem.getState().toString() );
 ```
+
+## 'execute' callback 'input' parameter
+
+Depending on which trigger type is used, corresponding [event objects](https://www.openhab.org/javadoc/latest/org/openhab/core/items/events/itemevent) are passed via the parameter "input"
+
+The type of the event can also be queried via [AbstractEvent.getTopic](https://www.openhab.org/javadoc/latest/org/openhab/core/events/abstractevent)
 
 ## decorator @rule
 
