@@ -84,7 +84,6 @@ public class EnedisHttpApi {
         cookie.setDomain(EnedisWebBridgeHandler.ENEDIS_DOMAIN);
         cookie.setPath("/");
         httpClient.getCookieStore().add(EnedisWebBridgeHandler.COOKIE_URI, cookie);
-
     }
 
     public void removeAllCookie() {
