@@ -91,15 +91,13 @@ class rule():
         proxy = self
 
         if isfunction(clazz_or_function):
-            _rule_name = clazz_or_function.__name__
             _rule_obj = clazz_or_function
             _rule_isfunction = True
         else:
-            _rule_name = proxy.getClassPackage(clazz_or_function.__name__)
             _rule_obj = clazz_or_function()
             _rule_isfunction = False
 
-        clazz_or_function.logger = Java_LogFactory.getLogger( "{}{}".format(LOG_PREFIX, _rule_name) )
+        clazz_or_function.logger = Java_LogFactory.getLogger( "{}{}".format(LOG_PREFIX, clazz_or_function.__name__) )
 
         _triggers = []
         if proxy.triggers is not None:
@@ -144,7 +142,7 @@ class rule():
 
         _base_obj = BaseSimpleRule()
 
-        name = "{}{}".format(NAME_PREFIX, _rule_name) if proxy.name is None else proxy.name
+        name = "{}{}".format(NAME_PREFIX, clazz_or_function.__name__) if proxy.name is None else proxy.name
         _base_obj.setName(name)
 
         if proxy.description is not None:
@@ -165,16 +163,6 @@ class rule():
             clazz_or_function.logger.info("Rule '{}' initialised".format(name))
 
         return _rule_obj
-
-    def getFilePackage(self,file_name):
-        if file_name.endswith(".py"):
-            return file_name[:-3]
-        return file_name
-
-    def getClassPackage(self,class_name):
-        if class_name.endswith("Rule"):
-            return class_name[:-4]
-        return class_name
 
     def appendEventDetailInfo(self, event):
         if event is not None:
