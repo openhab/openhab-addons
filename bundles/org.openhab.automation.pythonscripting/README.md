@@ -35,12 +35,14 @@ def Test2(module, input):
     if Registry.getItem("Item2").postUpdateIfDifferent( input['event'].getItemState() ):
         Test2.logger.info("item was updated")
 
+# @when decorator
 @rule()
 @when("Time cron */5 * * * * ?")
 class Test3:
     def execute(self, module, input):
         self.logger.info("rule triggered")
 
+# @when and @onlyif decorator
 @rule()
 @when("Item Item1 received command")
 @when("Item Item1 received update")
