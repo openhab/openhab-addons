@@ -90,10 +90,16 @@ public class EnedisHttpApi {
         this.config = config;
     }
 
+    public void removeAllCookie() {
+        httpClient.getCookieStore().removeAll();
+    }
+
     public void initialize() throws LinkyException {
         logger.debug("Starting login process for user: {}", config.username);
 
         try {
+            removeAllCookie();
+
             addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
             logger.debug("Step 1: getting authentification");
             String data = getContent(URL_ENEDIS_AUTHENTICATE);

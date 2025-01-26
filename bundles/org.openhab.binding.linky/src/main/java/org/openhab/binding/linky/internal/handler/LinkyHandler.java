@@ -180,19 +180,6 @@ public class LinkyHandler extends BaseThingHandler {
                     api.initialize();
                     updateStatus(ThingStatus.ONLINE);
 
-                    if (thing.getProperties().isEmpty()) {
-                        UserInfo userInfo = api.getUserInfo();
-                        PrmInfo prmInfo = api.getPrmInfo(userInfo.userProperties.internId);
-                        PrmDetail details = api.getPrmDetails(userInfo.userProperties.internId, prmInfo.idPrm);
-                        updateProperties(Map.of(USER_ID, userInfo.userProperties.internId, PUISSANCE,
-                                details.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite().valeur()
-                                        + " kVA",
-                                PRM_ID, prmInfo.idPrm));
-                    }
-
-                    prmId = thing.getProperties().get(PRM_ID);
-                    userId = thing.getProperties().get(USER_ID);
-
                     updateData();
 
                     disconnect();
@@ -214,17 +201,41 @@ public class LinkyHandler extends BaseThingHandler {
         }
     }
 
+    private synchronized void updateMetaData() throws LinkyException {
+        EnedisHttpApi api = this.enedisApi;
+        if (api != null) {
+            if (thing.getProperties().isEmpty()) {
+                UserInfo userInfo = api.getUserInfo();
+                PrmInfo prmInfo = api.getPrmInfo(userInfo.userProperties.internId);
+                PrmDetail details = api.getPrmDetails(userInfo.userProperties.internId, prmInfo.idPrm);
+                updateProperties(Map.of(USER_ID, userInfo.userProperties.internId, PUISSANCE,
+                        details.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite().valeur()
+                                + " kVA",
+                        PRM_ID, prmInfo.idPrm));
+            }
+
+            prmId = thing.getProperties().get(PRM_ID);
+            userId = thing.getProperties().get(USER_ID);
+        }
+    }
+
     /**
      * Request new data and updates channels
      */
     private synchronized void updateData() {
         boolean connectedBefore = isConnected();
-        updatePowerData();
-        updateDailyWeeklyData();
-        updateMonthlyData();
-        updateYearlyData();
-        if (!connectedBefore && isConnected()) {
-            disconnect();
+        try {
+            updateMetaData();
+            updatePowerData();
+            updateDailyWeeklyData();
+            updateMonthlyData();
+            updateYearlyData();
+            if (!connectedBefore && isConnected()) {
+                disconnect();
+            }
+        } catch (LinkyException e) {
+            logger.error("Exception occurs during data update", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
