@@ -71,12 +71,6 @@ historicItem = Registry.getItem("Item2").getPersistence("jdbc").persistedState( 
 logger.info( historicItem.getState().toString() );
 ```
 
-## 'execute' callback 'input' parameter
-
-Depending on which trigger type is used, corresponding [event objects](https://www.openhab.org/javadoc/latest/org/openhab/core/items/events/itemevent) are passed via the parameter "input"
-
-The type of the event can also be queried via [AbstractEvent.getTopic](https://www.openhab.org/javadoc/latest/org/openhab/core/events/abstractevent)
-
 ## decorator @rule
 
 the decorator will register the decorated class as a rule. It will wrap and extend the class with the following functionalities
@@ -150,6 +144,12 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 @onlyif("Yesterday was in dayset")
 @onlyif("Time 9:00 to 14:00")
 ```
+
+## 'execute' callback 'input' parameter
+
+Depending on which trigger type is used, corresponding [event objects](https://www.openhab.org/javadoc/latest/org/openhab/core/items/events/itemevent) are passed via the parameter "input"
+
+The type of the event can also be queried via [AbstractEvent.getTopic](https://www.openhab.org/javadoc/latest/org/openhab/core/events/abstractevent)
 
 ## module openhab
 
