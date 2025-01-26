@@ -90,44 +90,40 @@ class rule():
     def __call__(self, clazz_or_function):
         proxy = self
 
-        if isfunction(clazz_or_function):
-            _rule_obj = clazz_or_function
-            _rule_isfunction = True
-        else:
-            _rule_obj = clazz_or_function()
-            _rule_isfunction = False
+        rule_isfunction = isfunction(clazz_or_function)
+        rule_obj = clazz_or_function if rule_isfunction else clazz_or_function()
 
         clazz_or_function.logger = Java_LogFactory.getLogger( "{}{}".format(LOG_PREFIX, clazz_or_function.__name__) )
 
-        _triggers = []
+        triggers = []
         if proxy.triggers is not None:
-            _triggers = proxy.triggers
-        elif hasattr(_rule_obj, "_when_triggers"):
-            _triggers = _rule_obj._when_triggers
-        elif hasattr(_rule_obj, "buildTriggers") and callable(_rule_obj.buildTriggers):
-            _triggers = _rule_obj.buildTriggers()
+            triggers = proxy.triggers
+        elif hasattr(rule_obj, "_when_triggers"):
+            triggers = rule_obj._when_triggers
+        elif hasattr(rule_obj, "buildTriggers") and callable(rule_obj.buildTriggers):
+            triggers = rule_obj.buildTriggers()
 
-        _valid_items = {}
-        _raw_triggers = []
-        for trigger in _triggers:
+        valid_items = {}
+        raw_triggers = []
+        for trigger in triggers:
             cfg = trigger.raw_trigger.getConfiguration()
             if cfg.containsKey("itemName"):
-                _valid_items[cfg.get("itemName") ] = True
+                valid_items[cfg.get("itemName") ] = True
             elif cfg.containsKey("groupName"):
-                _valid_items[cfg.get("groupName") ] = True
-            _raw_triggers.append(trigger.raw_trigger)
+                valid_items[cfg.get("groupName") ] = True
+            raw_triggers.append(trigger.raw_trigger)
 
-        _conditions = []
+        conditions = []
         if proxy.conditions is not None:
-            _conditions = proxy.conditions
-        elif hasattr(_rule_obj, "_onlyif_conditions"):
-            _conditions = _rule_obj._onlyif_conditions
-        elif hasattr(_rule_obj, "buildConditions") and callable(_rule_obj.buildConditions):
-            _conditions = _rule_obj.buildConditions()
+            conditions = proxy.conditions
+        elif hasattr(rule_obj, "_onlyif_conditions"):
+            conditions = rule_obj._onlyif_conditions
+        elif hasattr(rule_obj, "buildConditions") and callable(rule_obj.buildConditions):
+            conditions = rule_obj.buildConditions()
 
-        _raw_conditions = []
-        for condition in _conditions:
-            _raw_conditions.append(condition.raw_condition)
+        raw_conditions = []
+        for condition in conditions:
+            raw_conditions.append(condition.raw_condition)
 
         #register_interop_type(Java_SimpleRule, clazz)
         #subclass = type(clazz.__name__, (clazz, BaseSimpleRule,))
@@ -138,31 +134,31 @@ class rule():
                 Java_SimpleRule.__init__(self)
 
             def execute(self, module, input):
-                proxy.executeWrapper(_rule_obj, _rule_isfunction, _valid_items, module, input)
+                proxy.executeWrapper(rule_obj, rule_isfunction, valid_items, module, input)
 
-        _base_obj = BaseSimpleRule()
+        base_rule_obj = BaseSimpleRule()
 
         name = "{}{}".format(NAME_PREFIX, clazz_or_function.__name__) if proxy.name is None else proxy.name
-        _base_obj.setName(name)
+        base_rule_obj.setName(name)
 
         if proxy.description is not None:
-            _base_obj.setDescription(proxy.description)
+            base_rule_obj.setDescription(proxy.description)
 
         if proxy.tags is not None:
-            _base_obj.setTags(Set(proxy.tags))
+            base_rule_obj.setTags(Set(proxy.tags))
 
-        if len(_raw_triggers) == 0:
+        if len(raw_triggers) == 0:
             clazz_or_function.logger.warn("Rule '{}' has no triggers".format(name))
         else:
-            _base_obj.setTriggers(_raw_triggers)
+            base_rule_obj.setTriggers(raw_triggers)
 
-            if len(_raw_conditions) > 0:
-                _base_obj.setConditions(_raw_conditions)
+            if len(raw_conditions) > 0:
+                base_rule_obj.setConditions(raw_conditions)
 
-            automationManager.addRule(_base_obj)
+            automationManager.addRule(base_rule_obj)
             clazz_or_function.logger.info("Rule '{}' initialised".format(name))
 
-        return _rule_obj
+        return rule_obj
 
     def appendEventDetailInfo(self, event):
         if event is not None:
