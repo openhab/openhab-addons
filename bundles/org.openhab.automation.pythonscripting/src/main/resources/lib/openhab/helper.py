@@ -1,5 +1,6 @@
 import java
 #from polyglot import register_interop_type
+from inspect import isfunction
 
 import os
 import sys
@@ -11,9 +12,11 @@ from openhab.services import get_service
 # **** REGISTER LOGGING AND EXCEPTION HOOK AS SOON AS POSSIBLE ****
 Java_LogFactory = java.type("org.slf4j.LoggerFactory")
 LOG_PREFIX = "org.openhab.core.automation.pythonscripting"
+NAME_PREFIX = ""
 if '__file__' in scope:
     file_package = os.path.basename(scope['__file__'])[:-3]
-    LOG_PREFIX = "{}.{}".format(LOG_PREFIX, file_package)
+    LOG_PREFIX = "{}.{}.".format(LOG_PREFIX, file_package)
+    NAME_PREFIX = "{}.".format(file_package)
 logger = Java_LogFactory.getLogger( LOG_PREFIX )
 
 #def scriptUnloaded():
@@ -84,14 +87,19 @@ class rule():
         self.conditions = conditions
         self.profile = profile
 
-    def __call__(self, clazz):
+    def __call__(self, clazz_or_function):
         proxy = self
 
-        class_package = proxy.getClassPackage(clazz.__name__)
+        if isfunction(clazz_or_function):
+            _rule_name = clazz_or_function.__name__
+            _rule_obj = clazz_or_function
+            _rule_execute = clazz_or_function
+        else:
+            _rule_name = proxy.getClassPackage(clazz_or_function.__name__)
+            _rule_obj = clazz_or_function()
+            _rule_execute = clazz_or_function.execute
 
-        clazz.logger = Java_LogFactory.getLogger( "{}.{}".format(LOG_PREFIX, class_package) )
-
-        _rule_obj = clazz()
+        clazz_or_function.logger = Java_LogFactory.getLogger( "{}{}".format(LOG_PREFIX, _rule_name) )
 
         _triggers = []
         if proxy.triggers is not None:
@@ -110,8 +118,6 @@ class rule():
             elif cfg.containsKey("groupName"):
                 _valid_items[cfg.get("groupName") ] = True
             _raw_triggers.append(trigger.raw_trigger)
-
-        clazz.execute = proxy.executeWrapper(clazz.execute, _valid_items)
 
         _conditions = []
         if proxy.conditions is not None:
@@ -134,11 +140,11 @@ class rule():
                 Java_SimpleRule.__init__(self)
 
             def execute(self, module, input):
-                _rule_obj.execute(module, input)
+                proxy.executeWrapper(_rule_obj, _rule_execute, _valid_items, module, input)
 
         _base_obj = BaseSimpleRule()
 
-        name = file_package + "." + class_package if proxy.name is None else proxy.name
+        name = "{}{}".format(NAME_PREFIX, _rule_name) if proxy.name is None else proxy.name
         _base_obj.setName(name)
 
         if proxy.description is not None:
@@ -148,7 +154,7 @@ class rule():
             _base_obj.setTags(Set(proxy.tags))
 
         if len(_raw_triggers) == 0:
-            clazz.logger.warn("Rule '{}' has no triggers".format(name))
+            clazz_or_function.logger.warn("Rule '{}' has no triggers".format(name))
         else:
             _base_obj.setTriggers(_raw_triggers)
 
@@ -156,7 +162,7 @@ class rule():
                 _base_obj.setConditions(_raw_conditions)
 
             automationManager.addRule(_base_obj)
-            clazz.logger.info("Rule '{}' initialised".format(name))
+            clazz_or_function.logger.info("Rule '{}' initialised".format(name))
 
         return _rule_obj
 
@@ -170,68 +176,68 @@ class rule():
             return class_name[:-4]
         return class_name
 
-    def executeWrapper(self,func, valid_items):
-        proxy = self
+    def appendEventDetailInfo(self, event):
+        if event is not None:
+            if event.getType().startswith("Item"):
+                return " [Item: {}]".format(event.getItemName())
+            elif event.getType().startswith("Group"):
+                return " [Group: {}]".format(event.getItemName())
+            elif event.getType().startswith("Thing"):
+                return " [Thing: {}]".format(event.getThingUID())
+            else:
+                return " [Other: {}]".format(event.getType())
+        return ""
 
-        def appendDetailInfo(self,event):
-            if event is not None:
-                if event.getType().startswith("Item"):
-                    return " [Item: {}]".format(event.getItemName())
-                elif event.getType().startswith("Group"):
-                    return " [Group: {}]".format(event.getItemName())
-                elif event.getType().startswith("Thing"):
-                    return " [Thing: {}]".format(event.getThingUID())
+    def executeWrapper(self, rule_obj, rule_execute, valid_items, module, input):
+        try:
+            event = input['event']
+            # *** Filter indirect events out (like for groups related to the configured item)
+            if getattr(event,"getItemName",None) is not None and event.getItemName() not in valid_items:
+                rule_obj.logger.info("Rule skipped. Event is not related" + self.appendEventDetailInfo(event) )
+                return
+        except KeyError:
+            event = None
+
+        try:
+            start_time = time.perf_counter()
+
+            # *** execute
+            if self.profile:
+                pr = profile.Profile()
+
+                #self.logger.debug(str(getItem("Lights")))
+                #pr.enable()
+                if isfunction(rule_obj):
+                    pr.runctx('func(module, input)', {'module': module, 'input': input, 'func': rule_execute }, {})
                 else:
-                    return " [Other: {}]".format(event.getType())
-            return ""
-
-        def func_wrapper(self, module, input):
-
-            try:
-                event = input['event']
-                # *** Filter indirect events out (like for groups related to the configured item)
-                if getattr(event,"getItemName",None) is not None and event.getItemName() not in valid_items:
-                    self.logger.info("Rule skipped. Event is not related" + appendDetailInfo(self,event) )
-                    return
-            except KeyError:
-                event = None
-
-            try:
-                start_time = time.perf_counter()
-
-                # *** execute
-                if proxy.profile:
-                    pr = profile.Profile()
-
-                    #self.logger.debug(str(getItem("Lights")))
-                    #pr.enable()
-                    pr.runctx('func(self, module, input)', {'self': self, 'module': module, 'input': input, 'func': func }, {})
-                    status = None
+                    pr.runctx('func(self, module, input)', {'self': self, 'module': module, 'input': input, 'func': rule_execute }, {})
+                status = None
+            else:
+                if isfunction(rule_obj):
+                    status = rule_execute(module, input)
                 else:
-                    status = func(self, module, input)
+                    status = rule_execute(rule_obj, module, input)
 
-                if proxy.profile:
-                    #pr.disable()
-                    s = io.StringIO()
-                    #http://www.jython.org/docs/library/profile.html#the-stats-class
-                    ps = pstats.Stats(pr, stream=s).sort_stats('cumulative')
-                    ps.print_stats()
+            if self.profile:
+                #pr.disable()
+                s = io.StringIO()
+                #http://www.jython.org/docs/library/profile.html#the-stats-class
+                ps = pstats.Stats(pr, stream=s).sort_stats('cumulative')
+                ps.print_stats()
 
-                    self.logger.info(s.getvalue())
+                rule_obj.logger.info(s.getvalue())
 
-                if status is None or status is True:
-                    elapsed_time = round( ( time.perf_counter() - start_time ) * 1000, 1 )
+            if status is None or status is True:
+                elapsed_time = round( ( time.perf_counter() - start_time ) * 1000, 1 )
 
-                    msg = "Rule executed in " + "{:6.1f}".format(elapsed_time) + " ms" + appendDetailInfo(self,event)
+                msg = "Rule executed in " + "{:6.1f}".format(elapsed_time) + " ms" + self.appendEventDetailInfo(event)
 
-                    self.logger.info(msg)
+                rule_obj.logger.info(msg)
 
-            except NotInitialisedException as e:
-                self.logger.warn("Rule skipped: " + str(e) + " \n" + traceback.format_exc())
-            except:
-                self.logger.error("Rule execution failed:\n" + traceback.format_exc())
-
-        return func_wrapper
+        except NotInitialisedException as e:
+            rule_obj.logger.warn("Rule skipped: " + str(e) + " \n" + traceback.format_exc())
+        except:
+            rule_obj.logger.error("Rule execution failed:\n" + traceback.format_exc())
 
 class JavaConversionHelper():
     @staticmethod
