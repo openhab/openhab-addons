@@ -202,7 +202,7 @@ public class LinkyHandler extends BaseThingHandler {
 
         if (config.seemsValid()) {
             bridgeHandler.registerNewPrmId(config.prmId);
-            pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 5, TimeUnit.SECONDS);
+            pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-mandatory-settings");
@@ -249,36 +249,6 @@ public class LinkyHandler extends BaseThingHandler {
                     bridgeHandler.connectionInit();
                 }
 
-                if (supportNewApiFormat()) {
-                    Identity identity = api.getIdentity(this, config.prmId);
-                    Contact contact = api.getContact(this, config.prmId);
-                    Contract contract = api.getContract(this, config.prmId);
-                    UsagePoint usagePoint = api.getUsagePoint(this, config.prmId);
-
-                    updateMetaData(identity, contact, contract, usagePoint);
-
-                    updateProperties(
-                            Map.of(USER_ID, "", PUISSANCE, contract.subscribedPower, PRM_ID, usagePoint.usagePointId));
-                } else {
-                    UserInfo userInfo = api.getUserInfo(this);
-                    PrmInfo prmInfo = api.getPrmInfo(this, userInfo.userProperties.internId, config.prmId);
-                    PrmDetail details = api.getPrmDetails(this, userInfo.userProperties.internId, prmInfo.idPrm);
-
-                    Identity identity = Identity.convertFromUserInfo(userInfo);
-                    Contact contact = Contact.convertFromUserInfo(userInfo);
-                    Contract contract = Contract.convertFromPrmDetail(details);
-                    UsagePoint usagePoint = UsagePoint.convertFromPrmDetail(prmInfo, details);
-
-                    this.userId = userInfo.userProperties.internId;
-
-                    updateMetaData(identity, contact, contract, usagePoint);
-
-                    updateProperties(Map.of(USER_ID, userInfo.userProperties.internId, PUISSANCE,
-                            details.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite().valeur()
-                                    + " kVA",
-                            PRM_ID, prmInfo.idPrm));
-                }
-
                 updateData();
 
                 final LocalDateTime now = LocalDateTime.now();
@@ -291,6 +261,7 @@ public class LinkyHandler extends BaseThingHandler {
 
                 if (lcPollingJob != null) {
                     lcPollingJob.cancel(false);
+                    pollingJob = null;
                 }
 
                 refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
@@ -344,14 +315,56 @@ public class LinkyHandler extends BaseThingHandler {
         updateState(MAIN_GROUP, MAIN_CONTACT_PHONE, new StringType(contact.phone));
     }
 
+    private synchronized void updateMetaData() throws LinkyException {
+        EnedisHttpApi api = this.enedisApi;
+        if (api != null) {
+
+            if (supportNewApiFormat()) {
+                Identity identity = api.getIdentity(this, config.prmId);
+                Contact contact = api.getContact(this, config.prmId);
+                Contract contract = api.getContract(this, config.prmId);
+                UsagePoint usagePoint = api.getUsagePoint(this, config.prmId);
+
+                updateMetaData(identity, contact, contract, usagePoint);
+
+                updateProperties(
+                        Map.of(USER_ID, "", PUISSANCE, contract.subscribedPower, PRM_ID, usagePoint.usagePointId));
+            } else {
+                UserInfo userInfo = api.getUserInfo(this);
+                PrmInfo prmInfo = api.getPrmInfo(this, userInfo.userProperties.internId, config.prmId);
+                PrmDetail details = api.getPrmDetails(this, userInfo.userProperties.internId, prmInfo.idPrm);
+
+                Identity identity = Identity.convertFromUserInfo(userInfo);
+                Contact contact = Contact.convertFromUserInfo(userInfo);
+                Contract contract = Contract.convertFromPrmDetail(details);
+                UsagePoint usagePoint = UsagePoint.convertFromPrmDetail(prmInfo, details);
+
+                this.userId = userInfo.userProperties.internId;
+
+                updateMetaData(identity, contact, contract, usagePoint);
+
+                updateProperties(Map.of(USER_ID, userInfo.userProperties.internId, PUISSANCE,
+                        details.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite().valeur()
+                                + " kVA",
+                        PRM_ID, prmInfo.idPrm));
+            }
+        }
+    }
+
     /**
      * Request new data and updates channels
      */
     private synchronized void updateData() {
-        updateEnergyData();
-        updatePowerData();
-        updateTempoTimeSeries();
-        updateLoadCurveData();
+        try {
+            updateMetaData();
+            updateEnergyData();
+            updatePowerData();
+            updateTempoTimeSeries();
+            updateLoadCurveData();
+        } catch (LinkyException e) {
+            logger.error("Exception occurs during data update", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     private synchronized void updateTempoTimeSeries() {

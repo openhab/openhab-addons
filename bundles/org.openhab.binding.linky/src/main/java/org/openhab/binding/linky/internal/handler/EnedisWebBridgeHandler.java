@@ -174,6 +174,9 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
         logger.debug("Starting login process for user: {}", lcConfig.username);
 
         try {
+            // has we reconnect, remove all previous cookie to start from fresh session
+            enedisApi.removeAllCookie();
+
             enedisApi.addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, lcConfig.internalAuthId);
             logger.debug("Step 1: getting authentification");
             String data = enedisApi.getContent(URL_ENEDIS_AUTHENTICATE);

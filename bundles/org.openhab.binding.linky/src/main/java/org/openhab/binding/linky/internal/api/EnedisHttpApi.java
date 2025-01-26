@@ -84,6 +84,11 @@ public class EnedisHttpApi {
         cookie.setDomain(EnedisWebBridgeHandler.ENEDIS_DOMAIN);
         cookie.setPath("/");
         httpClient.getCookieStore().add(EnedisWebBridgeHandler.COOKIE_URI, cookie);
+
+    }
+
+    public void removeAllCookie() {
+        httpClient.getCookieStore().removeAll();
     }
 
     public String getLocation(ContentResponse response) {
@@ -114,7 +119,14 @@ public class EnedisHttpApi {
             if (result.getStatus() == HttpStatus.TEMPORARY_REDIRECT_307
                     || result.getStatus() == HttpStatus.MOVED_TEMPORARILY_302) {
                 String loc = result.getHeaders().get("Location");
-                String newUrl = linkyBridgeHandler.getBaseUrl() + loc.substring(1);
+                String newUrl = "";
+
+                if (loc.startsWith("http://") || loc.startsWith("https://")) {
+                    newUrl = loc;
+                } else {
+                    newUrl = linkyBridgeHandler.getBaseUrl() + loc.substring(1);
+                }
+
                 request = httpClient.newRequest(newUrl);
                 request = request.method(HttpMethod.GET);
                 result = request.send();
