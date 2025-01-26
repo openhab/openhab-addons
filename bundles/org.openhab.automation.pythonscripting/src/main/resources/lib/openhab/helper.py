@@ -93,11 +93,11 @@ class rule():
         if isfunction(clazz_or_function):
             _rule_name = clazz_or_function.__name__
             _rule_obj = clazz_or_function
-            _rule_execute = clazz_or_function
+            _rule_isfunction = True
         else:
             _rule_name = proxy.getClassPackage(clazz_or_function.__name__)
             _rule_obj = clazz_or_function()
-            _rule_execute = clazz_or_function.execute
+            _rule_isfunction = False
 
         clazz_or_function.logger = Java_LogFactory.getLogger( "{}{}".format(LOG_PREFIX, _rule_name) )
 
@@ -140,7 +140,7 @@ class rule():
                 Java_SimpleRule.__init__(self)
 
             def execute(self, module, input):
-                proxy.executeWrapper(_rule_obj, _rule_execute, _valid_items, module, input)
+                proxy.executeWrapper(_rule_obj, _rule_isfunction, _valid_items, module, input)
 
         _base_obj = BaseSimpleRule()
 
@@ -188,7 +188,7 @@ class rule():
                 return " [Other: {}]".format(event.getType())
         return ""
 
-    def executeWrapper(self, rule_obj, rule_execute, valid_items, module, input):
+    def executeWrapper(self, rule_obj, rule_isfunction, valid_items, module, input):
         try:
             event = input['event']
             # *** Filter indirect events out (like for groups related to the configured item)
@@ -207,16 +207,16 @@ class rule():
 
                 #self.logger.debug(str(getItem("Lights")))
                 #pr.enable()
-                if isfunction(rule_obj):
-                    pr.runctx('func(module, input)', {'module': module, 'input': input, 'func': rule_execute }, {})
+                if rule_isfunction:
+                    pr.runctx('func(module, input)', {'module': module, 'input': input, 'func': rule_obj }, {})
                 else:
-                    pr.runctx('func(self, module, input)', {'self': self, 'module': module, 'input': input, 'func': rule_execute }, {})
+                    pr.runctx('func(self, module, input)', {'self': rule_obj, 'module': module, 'input': input, 'func': rule_obj.execute }, {})
                 status = None
             else:
-                if isfunction(rule_obj):
-                    status = rule_execute(module, input)
+                if rule_isfunction:
+                    status = rule_obj(module, input)
                 else:
-                    status = rule_execute(rule_obj, module, input)
+                    status = rule_obj.execute(module, input)
 
             if self.profile:
                 #pr.disable()
