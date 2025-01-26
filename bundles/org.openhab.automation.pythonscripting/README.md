@@ -26,7 +26,6 @@ def Test1(module, input):
 @onlyif("Today is a holiday")
 def Test2(module, input):
     Registry.getItem("Item2").sendCommand(ON)
-        
 
 @rule( 
     triggers = [ GenericCronTrigger("*/5 * * * * ?") ]
@@ -34,7 +33,7 @@ def Test2(module, input):
 class Test3:
     def execute(self, module, input):
         self.logger.info("Rule 3 was triggered")
-        
+
 @rule(
     triggers = [
         ItemStateUpdateTrigger("Item1"),
