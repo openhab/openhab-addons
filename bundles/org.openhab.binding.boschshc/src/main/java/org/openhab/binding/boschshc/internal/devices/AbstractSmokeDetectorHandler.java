@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_ALARM;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_SMOKE_CHECK;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.alarm.AlarmService;
+import org.openhab.binding.boschshc.internal.services.alarm.dto.AlarmServiceState;
 import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.SmokeDetectorCheckService;
 import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.dto.SmokeDetectorCheckServiceState;
 import org.openhab.core.library.types.StringType;
@@ -34,10 +37,12 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public abstract class AbstractSmokeDetectorHandler extends AbstractBatteryPoweredDeviceHandler {
 
+    private AlarmService alarmService;
     private SmokeDetectorCheckService smokeDetectorCheckService;
 
     protected AbstractSmokeDetectorHandler(Thing thing) {
         super(thing);
+        this.alarmService = new AlarmService();
         this.smokeDetectorCheckService = new SmokeDetectorCheckService();
     }
 
@@ -45,6 +50,7 @@ public abstract class AbstractSmokeDetectorHandler extends AbstractBatteryPowere
     protected void initializeServices() throws BoschSHCException {
         super.initializeServices();
 
+        this.registerService(alarmService, this::updateChannels, List.of(CHANNEL_ALARM));
         this.registerService(smokeDetectorCheckService, this::updateChannels, List.of(CHANNEL_SMOKE_CHECK));
     }
 
@@ -53,10 +59,17 @@ public abstract class AbstractSmokeDetectorHandler extends AbstractBatteryPowere
         super.handleCommand(channelUID, command);
 
         switch (channelUID.getId()) {
+            case CHANNEL_ALARM:
+                this.handleServiceCommand(this.alarmService, command);
+                break;
             case CHANNEL_SMOKE_CHECK:
                 this.handleServiceCommand(this.smokeDetectorCheckService, command);
                 break;
         }
+    }
+
+    private void updateChannels(AlarmServiceState state) {
+        updateState(CHANNEL_ALARM, new StringType(state.value.toString()));
     }
 
     private void updateChannels(SmokeDetectorCheckServiceState state) {

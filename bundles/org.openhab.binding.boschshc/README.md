@@ -296,9 +296,12 @@ The smoke detector warns you in case of fire.
 
 **Thing Type ID**: `smoke-detector`
 
-| Channel Type ID    | Item Type            | Writable | Description                                                                                       |
-| ------------------ | -------------------- | :------: | ------------------------------------------------------------------------------------------------- |
-| smoke-check        | String               | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                 |
+| Channel Type ID | Item Type | Writable | Description                                                                                                                                                                                                                 |
+| ----------------| ----------| :------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| alarm           | String    | &#9745;  | Alarm state of the smoke detector. Possible values are: `IDLE_OFF`, `PRIMARY_ALARM`, `SECONDARY_ALARM` and `INTRUSION_ALARM`.                                                                                               |
+| smoke-check     | String    | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                                                                                                                                           |
+| battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
 
 ### Smoke Detector II
 
@@ -306,12 +309,13 @@ The smoke detector warns you in case of fire.
 
 **Thing Type ID**: `smoke-detector`
 
-| Channel Type ID   | Item Type   | Writable | Description                                                                                                                                                                                                                 |
-|-------------------|-------------| :------: |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| smoke-check       | String      | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                                                                                                                                           |
-| battery-level     | Number      | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
-| low-battery       | Switch      | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
-| signal-strength   | Number      | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
+| Channel Type ID | Item Type | Writable | Description                                                                                                                                                                                                                 |
+|-----------------|-----------| :------: |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| alarm           | String    | &#9745;  | Alarm state of the smoke detector. Possible values are: `IDLE_OFF`, `PRIMARY_ALARM`, `SECONDARY_ALARM` and `INTRUSION_ALARM`.                                                                                               |
+| smoke-check     | String    | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                                                                                                                                           |
+| battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| signal-strength | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
 
 ### User-defined States
 
