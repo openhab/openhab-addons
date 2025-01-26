@@ -146,7 +146,6 @@ class ChannelEventTrigger(BaseTrigger):
         if event is not None:
             configuration["event"] = event
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ChannelEventTrigger").withConfiguration(Java_Configuration(configuration)).build()
-        return self
 
     first_word = ["channel"]
     # @when("Channel hue:device:default:lamp1:color triggered START")
