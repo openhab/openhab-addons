@@ -355,7 +355,7 @@ class ItemStateCondition(BaseCondition):
 
         self.raw_condition = Java_ConditionBuilder.create().withId(condition_name).withTypeUID("core.ItemStateCondition").withConfiguration(Java_Configuration(configuration)).build()
 
-    first_word = "item"
+    first_word = ["item"]
     # @onlyif("Item Test_Switch_2 equals ON")
     regex = r"^Item\s+(?P<item_name>\w+)\s+((?P<eq>=|==|eq|equals|is)|(?P<neq>!=|not\s+equals|is\s+not)|(?P<lt><|lt|is\s+less\s+than)|(?P<lte><=|lte|is\s+less\s+than\s+or\s+equal)|(?P<gt>>|gt|is\s+greater\s+than)|(?P<gte>>=|gte|is\s+greater\s+than\s+or\s+equal))\s+(?P<state>'[^']+'|\S+)*$"
     @classmethod
@@ -386,7 +386,7 @@ class EphemerisCondition(BaseCondition):
 
         self.raw_condition = Java_ConditionBuilder.create().withId(condition_name).withTypeUID(typeuid).withConfiguration(Java_Configuration(configuration)).build()
 
-    first_word = [ "today", "tomorrow", "yesterday", "it's" ]
+    first_word = ["today", "tomorrow", "yesterday", "it's"]
     # @onlyif("Today is a holiday")
     # @onlyif("It's not a holiday")
     # @onlyif("Tomorrow is not a holiday")
@@ -444,7 +444,7 @@ class TimeOfDayCondition(BaseCondition):
 
         self.raw_condition = Java_ConditionBuilder.create().withId(condition_name).withTypeUID("core.TimeOfDayCondition").withConfiguration(Java_Configuration(configuration)).build()
 
-    first_word = "time"
+    first_word = ["time"]
     timeOfDayRegEx = r"([01]\d|2[0-3]):[0-5]\d"
     #@onlyif("Time 09:00 to 14:00")
     #@onlyif("Time 03:30 to 14:00")
@@ -473,12 +473,12 @@ class onlyif():
         _target = target.strip()
         first_word = _target.split()[0]
 
-        for condition_classe in onlyif.condition_classes:
+        for condition_class in onlyif.condition_classes:
             # check if condition is related to avoid regex
-            if first_word.lower() not in condition_classe.first_word:
+            if first_word.lower() not in condition_class.first_word:
                 continue
 
-            condition = condition_classe.parse(_target)
+            condition = condition_class.parse(_target)
             if condition is not None:
                 return condition
 
