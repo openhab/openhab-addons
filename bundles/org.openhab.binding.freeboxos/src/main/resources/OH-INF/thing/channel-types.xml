@@ -126,8 +126,8 @@
 
 	<channel-type id="transfer-bytes" advanced="true">
 		<item-type unitHint="GB">Number:DataAmount</item-type>
-		<label>Transfered Bytes</label>
-		<description>Total data transfered since last connection</description>
+		<label>Transferred Bytes</label>
+		<description>Total data transferred since last connection</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
