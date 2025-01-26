@@ -46,10 +46,10 @@ class ItemStateChangeTrigger(BaseTrigger):
     first_word = ["item"]
     # @when("Item Test_String_1 changed from 'old test string' to 'new test string'")
     # @when("Item gTest_Contact_Sensors changed")
-    regex = r"^Item\s+(?P<item_name>\D\w*)\s+received\s+update(?:\s+(?P<state>'[^']+'|\S+))*$"
+    regex = r"^Item\s+(?P<item_name>\D\w*)\s+changed(?:\s+from\s+(?P<previous_state>'[^']+'|\S+))*(?:\s+to\s+(?P<state>'[^']+'|\S+))*$"
 
 class ItemStateUpdateTrigger(BaseTrigger):
-    def __init__(self, item_name, state=None, previous_state=None, trigger_name=None):
+    def __init__(self, item_name, state=None, trigger_name=None):
         trigger_name = validate_uid(trigger_name)
         configuration = {"itemName": item_name}
         if state is not None:
@@ -58,7 +58,7 @@ class ItemStateUpdateTrigger(BaseTrigger):
 
     first_word = ["item"]
     # @when("Item Test_Switch_2 received update ON")
-    regex = r"^Item\s+(?P<item_name>\D\w*)\s+changed(?:\s+from\s+(?P<previous_state>'[^']+'|\S+))*(?:\s+to\s+(?P<state>'[^']+'|\S+))*$"
+    regex = r"^Item\s+(?P<item_name>\D\w*)\s+received\s+update(?:\s+(?P<state>'[^']+'|\S+))*$"
 
 class ItemCommandTrigger(BaseTrigger):
     def __init__(self, item_name, command=None, trigger_name=None):
@@ -68,7 +68,7 @@ class ItemCommandTrigger(BaseTrigger):
             configuration["command"] = str(command) if java.instanceof(command, Java_Command) else command
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.ItemCommandTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
-    first_word = [ "item" ]
+    first_word = ["item"]
     # @when("Item Test_Switch_1 received command")
     # @when("Item Test_Switch_2 received command OFF")
     regex = r"^Item\s+(?P<item_name>\D\w*)\s+received\s+command(?:\s+(?P<command>\w+))*$"
@@ -83,7 +83,7 @@ class GroupStateChangeTrigger(BaseTrigger):
             configuration["previousState"] = str(previous_state) if java.instanceof(previous_state, Java_State) else previous_state
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GroupStateChangeTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
-    first_word = [ "member" ]
+    first_word = ["member"]
     # @when("Member of gTest_Contact_Sensors changed from ON to OFF")
     # @when("Member of gTest_Contact_Sensors changed from ON")
     # @when("Member of gTest_Contact_Sensors changed to OFF")
@@ -97,7 +97,7 @@ class GroupStateUpdateTrigger(BaseTrigger):
             configuration["state"] = str(state) if java.instanceof(state, Java_State) else state
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GroupStateUpdateTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
-    first_word = [ "member" ]
+    first_word = ["member"]
     # @when("Member of gTest_Switches received update")
     regex = r"^Member\s+of\s+(?P<group_name>\D\w*)\s+received\s+update(?:\s+(?P<state>'[^']+'|\S+))*$"
 
@@ -109,7 +109,8 @@ class GroupCommandTrigger(BaseTrigger):
             configuration["command"] = command
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GroupCommandTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
-    first_word = [ "member" ]
+    first_word = ["member"]
+    # @when("Member of gTest_Switches received command")
     regex = r"^Member\s+of\s+(?P<group_name>\D\w*)\s+received\s+command(?:\s+(?P<command>\w+))*$"
 
 class ThingStatusUpdateTrigger(BaseTrigger):
@@ -213,7 +214,7 @@ class DateTimeTrigger(BaseTrigger):
 
     first_word = ["datetime"]
     # @when("Datetime is Test_Datetime_1")
-    # @when("Datetime is Test_Datetime_2 time only")
+    # @when("Datetime is Test_Datetime_2 timeOnly")
     regex = r"^Datetime\s+is\s+(?P<item_name>\D\w*)(?:\s+\[(?P<time_only>timeOnly)\])*$"
     @classmethod
     def parse(cls, target):
