@@ -14,53 +14,40 @@ Simple rule
 from openhab import rule, Registry
 from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger, ItemCommandTrigger, when, onlyif
 
+# class based rule
 @rule(
     triggers = [
-        GenericCronTrigger("*/5 * * * * ?")
+        GenericCronTrigger("*/5 * * * * ?"),
+        ItemCommandTrigger("Item1", command=ON)
     ]
 )
 class Test1:
     def execute(self, module, input):
         self.logger.info("rule triggered")
        
+# function based rule
 @rule(
     triggers = [
         ItemStateUpdateTrigger("Item1")
     ]
 )
-class Test2:
-    def execute(self, module, input):
-        if Registry.getItem("Item2").postUpdateIfDifferent( input['event'].getItemState() ):
-            self.logger.info("item was updated")
-
-@rule(
-    triggers = [
-        ItemCommandTrigger("Item1", command=ON)
-    ]
-)
-class Test3:
-    def execute(self, module, input):
-        Registry.getItem("Item1").sendCommand(OFF)
+def Test2(module, input):
+    if Registry.getItem("Item2").postUpdateIfDifferent( input['event'].getItemState() ):
+        Test2.logger.info("item was updated")
 
 @rule()
 @when("Time cron */5 * * * * ?")
-class Test4:
+class Test3:
     def execute(self, module, input):
         self.logger.info("rule triggered")
 
 @rule()
 @when("Item Item1 received command")
-class Test5:
-    def execute(self, module, input):
-        Registry.getItem("Item1").sendCommand(OFF)
-
-@rule()
 @when("Item Item1 received update")
 @onlyif("Today is a holiday")
-class Test6:
+class Test4:
     def execute(self, module, input):
-        if Registry.getItem("Item2").postUpdateIfDifferent( input['event'].getItemState() ):
-            self.logger.info("item was updated")
+        Registry.getItem("Item1").sendCommand(OFF)
 ```
  
 Query thing status info
