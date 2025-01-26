@@ -147,7 +147,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 
 ## 'execute' callback 'input' parameter
 
-Depending on which trigger type is used, corresponding [event objects](https://www.openhab.org/javadoc/latest/org/openhab/core/items/events/itemevent) are passed via the parameter "input"
+Depending on which trigger type is used, corresponding [event objects](https://www.openhab.org/javadoc/latest/org/openhab/core/items/events/itemevent) are passed via the "input" parameter
 
 The type of the event can also be queried via [AbstractEvent.getTopic](https://www.openhab.org/javadoc/latest/org/openhab/core/events/abstractevent)
 
