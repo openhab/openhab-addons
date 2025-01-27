@@ -332,13 +332,16 @@ public class StateFilterProfile implements StateProfile {
                 State rhsState = this.rhsState;
                 Item lhsItem = null;
                 Item rhsItem = null;
+                boolean isDeltaCheck = false;
 
                 if (rhsState == null) {
                     rhsItem = getItemOrNull(rhsString);
                 } else if (rhsState instanceof FunctionType rhsFunction) {
-                    if (acceptedState == UnDefType.UNDEF && (rhsFunction.getType() == FunctionType.Function.DELTA
-                            || rhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)) {
+                    if (rhsFunction.alwaysAccept()) {
                         return true;
+                    }
+                    if (rhsFunction.getType() == FunctionType.Function.DELTA) {
+                        isDeltaCheck = true;
                     }
                     rhsItem = getLinkedItem();
                 }
@@ -375,8 +378,7 @@ public class StateFilterProfile implements StateProfile {
                 }
 
                 if (lhsState instanceof FunctionType lhsFunction) {
-                    if (acceptedState == UnDefType.UNDEF && (lhsFunction.getType() == FunctionType.Function.DELTA
-                            || lhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)) {
+                    if (lhsFunction.alwaysAccept()) {
                         return true;
                     }
                     lhsItem = getLinkedItem();
@@ -384,6 +386,9 @@ public class StateFilterProfile implements StateProfile {
                     if (lhsState == null) {
                         logger.debug("Couldn't calculate the left hand side function '{}'", lhsString);
                         return false;
+                    }
+                    if (lhsFunction.getType() == FunctionType.Function.DELTA) {
+                        isDeltaCheck = true;
                     }
                 }
 
@@ -430,6 +435,17 @@ public class StateFilterProfile implements StateProfile {
 
                 rhs = Objects.requireNonNull(rhsState instanceof StringType ? rhsState.toString() : rhsState);
 
+                if ((rhs instanceof QuantityType rhsQty) && (lhs instanceof QuantityType lhsQty)) {
+                    if (isDeltaCheck) {
+                        if (rhsQty.toUnitRelative(lhsQty.getUnit()) instanceof QuantityType relativeRhs) {
+                            rhs = relativeRhs;
+                        }
+                    } else if (hasSystemUnit()) {
+                        lhs = systemUnitQuantityType(lhsQty) instanceof QuantityType lhsSU ? lhsSU : lhs;
+                        rhs = systemUnitQuantityType(rhsQty) instanceof QuantityType rhsSU ? rhsSU : rhs;
+                    }
+                }
+
                 if (logger.isDebugEnabled()) {
                     if (lhsString.isEmpty()) {
                         logger.debug("Performing a comparison between input '{}' ({}) and value '{}' ({})", lhs,
@@ -437,23 +453,6 @@ public class StateFilterProfile implements StateProfile {
                     } else {
                         logger.debug("Performing a comparison between '{}' state '{}' ({}) and value '{}' ({})",
                                 lhsString, lhs, lhs.getClass().getSimpleName(), rhs, rhs.getClass().getSimpleName());
-                    }
-                }
-
-                if ((lhs instanceof QuantityType qty) && hasSystemUnit()) {
-                    qty = systemUnitQuantityType(qty);
-                    if (qty != null) {
-                        lhs = qty;
-                    } else {
-                        logger.debug("Error normalizing LHS QuantityType:{} to Unit:{}", lhs, systemUnit);
-                    }
-                }
-                if ((rhs instanceof QuantityType qty) && hasSystemUnit()) {
-                    qty = systemUnitQuantityType(qty);
-                    if (qty != null) {
-                        rhs = qty;
-                    } else {
-                        logger.debug("Error normalizing RHS QuantityType:{} to Unit:{}", rhs, systemUnit);
                     }
                 }
 
@@ -575,6 +574,22 @@ public class StateFilterProfile implements StateProfile {
                     };
                 }
             };
+        }
+
+        public boolean alwaysAccept() {
+            if ((type == Function.DELTA || type == Function.DELTA_PERCENT) && acceptedState == UnDefType.UNDEF) {
+                return true;
+            }
+            if (type == Function.DELTA_PERCENT) {
+                // avoid division by zero
+                if (acceptedState instanceof QuantityType base) {
+                    return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
+                }
+                if (acceptedState instanceof DecimalType base) {
+                    return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
+                }
+            }
+            return false;
         }
 
         @Override
