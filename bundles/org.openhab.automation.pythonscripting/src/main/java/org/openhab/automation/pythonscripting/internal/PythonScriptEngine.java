@@ -15,6 +15,7 @@ package org.openhab.automation.pythonscripting.internal;
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.AccessMode;
@@ -279,7 +280,8 @@ public class PythonScriptEngine
                 // .option(PYTHON_OPTION_PYTHONHOME, PYTHON_DEFAULT_PATH.toString()) //
                 // Set python path to point to sources stored in
                 .option(PYTHON_OPTION_PYTHONPATH,
-                        PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.resolve("lib").toString())
+                        PythonScriptEngineFactory.PYTHON_LIB_PATH.toString() + File.pathSeparator
+                                + PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.toString())
                 // pass the path to be executed
                 .option(PYTHON_OPTION_INPUTFILEPATH, PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.toString()) //
                 // make sure the TopLevelExceptionHandler calls the excepthook to print Python exceptions
