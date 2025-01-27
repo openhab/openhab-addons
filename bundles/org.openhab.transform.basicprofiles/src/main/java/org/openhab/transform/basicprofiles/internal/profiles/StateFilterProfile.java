@@ -210,11 +210,11 @@ public class StateFilterProfile implements StateProfile {
         newState = state;
         State resultState = checkCondition(state);
         if (resultState != null) {
-            logger.debug("Received allowed state update from handler: {}, forwarded as {}", state, resultState);
+            logger.debug("Received state update from handler: {}, forwarded as {}", state, resultState);
             acceptedState = resultState;
             callback.sendUpdate(resultState);
         } else {
-            logger.debug("Received allowed state update from handler: {}, not forwarded to item", state);
+            logger.debug("Received state update from handler: {}, not forwarded to item", state);
         }
         if (windowSize > 0 && ((state instanceof DecimalType) || ((state instanceof QuantityType)))) {
             previousStates.addLast(state);
