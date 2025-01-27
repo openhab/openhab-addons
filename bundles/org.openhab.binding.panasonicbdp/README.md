@@ -43,7 +43,7 @@ Multiple Things can be added if more than one player is to be controlled.
 ## Discovery
 
 Auto-discovery is supported if the player can be located on the local network using UPnP.
-Otherwise the thing must be manually added.
+Otherwise the Thing must be manually added.
 
 ## Binding Configuration
 
@@ -84,14 +84,14 @@ The following channels are available:
 
 ## Full Example
 
-panasonicbdp.things:
+### `panasonicbdp.things` Example
 
 ```java
 panasonicbdp:bd-player:mybdplayer "My Blu-ray player" [ hostName="192.168.10.1", refresh=5 ]
 panasonicbdp:uhd-player:myuhdplayer "My UHD Blu-ray player" [ hostName="192.168.10.1", refresh=5, playerKey="ABCDEF1234567890abcdef0123456789" ]
 ```
 
-panasonicbdp.items:
+### `panasonicbdp.items` Example
 
 ```java
 // BD Player
@@ -112,7 +112,7 @@ String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicb
 Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:uhd-player:myuhdplayer:time-elapsed" }
 ```
 
-panasonicbdp.sitemap:
+### `panasonicbdp.sitemap` Example
 
 ```perl
 sitemap panasonicbdp label="Panasonic Blu-ray" {
