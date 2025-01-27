@@ -17,7 +17,7 @@ Multiple Things can be added if more than one Roku is to be controlled.
 ## Discovery
 
 Auto-discovery is supported if the Roku can be located on the local network using SSDP.
-Otherwise the thing must be manually added.
+Otherwise the Thing must be manually added.
 
 ## Binding Configuration
 
