@@ -17,7 +17,7 @@ Multiple Things can be added if more than one thermostat is to be controlled.
 ## Discovery
 
 Auto-discovery is supported if the thermostat can be located on the local network using SSDP.
-Otherwise the thing must be manually added.
+Otherwise the Thing must be manually added.
 
 ## Thing Configuration
 
@@ -101,7 +101,7 @@ The thermostat information that is retrieved is available as these channels:
 
 ## Full Example
 
-radiotherm.map:
+### `radiotherm.map` Example
 
 ```text
 UNDEF_stus=-
@@ -144,14 +144,14 @@ NULL_over=-
 
 ```
 
-radiotherm.things:
+### `radiotherm.things` Example
 
 ```java
 radiothermostat:rtherm:mytherm1 "My 1st floor thermostat" [ hostName="192.168.10.1", refresh=2, logRefresh=10, isCT80=false, disableLogs=false, setpointMode="temporary" ]
 radiothermostat:rtherm:mytherm2 "My 2nd floor thermostat" [ hostName="mythermhost2", refresh=1, logRefresh=20, isCT80=true, disableLogs=false, setpointMode="absolute" ]
 ```
 
-radiotherm.items:
+### `radiotherm.items` Example
 
 ```java
 Number:Temperature Therm_Temp     "Current Temperature [%.1f °F]" <temperature>   { channel="radiothermostat:rtherm:mytherm1:temperature" }
@@ -188,7 +188,7 @@ Number:Temperature Therm_Rtemp    "Remote Temperature [%d]" <temperature>       
 Switch Therm_mysetting   "Send my preferred setting"
 ```
 
-radiotherm.sitemap:
+### `radiotherm.sitemap` Example
 
 ```perl
 sitemap radiotherm label="My Thermostat" {
@@ -228,7 +228,7 @@ sitemap radiotherm label="My Thermostat" {
 }
 ```
 
-radiotherm.rules:
+### `radiotherm.rules` Example
 
 ```java
 rule "Send my thermostat command"

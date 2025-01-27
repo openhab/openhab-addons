@@ -11,7 +11,7 @@ This binding supports two thing types based on the connection used: `projector-s
 
 ## Discovery
 
-If the projector has a built-in Ethernet port connected to the same network as the openHAB server and either the 'AMX Device Discovery' or 'Control4' options are present and enabled in the projector's network menu, the thing will be discovered automatically.
+If the projector has a built-in Ethernet port connected to the same network as the openHAB server and either the 'AMX Device Discovery' or 'Control4' options are present and enabled in the projector's network menu, the Thing will be discovered automatically.
 Serial port or serial over IP connections must be configured manually.
 
 ## Binding Configuration
@@ -68,7 +68,7 @@ Some notes:
 
 ## Full Example
 
-things/benq.things:
+### `benq.things` Example
 
 ```java
 // serial port connection
@@ -79,7 +79,7 @@ benqprojector:projector-tcp:hometheater "Projector" [ host="192.168.0.10", port=
 
 ```
 
-items/benq.items
+### `benq.items` Example
 
 ```java
 Switch benqPower                                      { channel="benqprojector:projector-serial:hometheater:power" }
@@ -92,7 +92,7 @@ String benqDirect                                     { channel="benqprojector:p
 Number benqLampTime     "Lamp Time [%d h]"    <light> { channel="benqprojector:projector-serial:hometheater:lamptime" }
 ```
 
-sitemaps/benq.sitemap
+### `benq.sitemap` Example
 
 ```perl
 sitemap benq label="BenQ Projector" {
