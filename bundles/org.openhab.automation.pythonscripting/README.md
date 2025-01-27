@@ -18,7 +18,7 @@ from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger, ItemCom
 @rule()
 @when("Time cron */5 * * * * ?")
 def test1(module, input):
-        test1.logger.info("Rule 1 was triggered")
+    test1.logger.info("Rule 1 was triggered")
 
 @rule()
 @when("Item Item1 received command")
