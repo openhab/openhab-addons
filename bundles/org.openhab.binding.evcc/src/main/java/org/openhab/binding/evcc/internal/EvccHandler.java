@@ -420,7 +420,7 @@ public class EvccHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             Battery[] batteries = result.getBattery();
             batteryConfigured = ((batteries != null) && (batteries.length > 0));
-            gridConfigured = (result.getGridPower() != null);
+            gridConfigured = result.getGridConfigured();
             PV[] pvs = result.getPV();
             pvConfigured = ((pvs != null) && (pvs.length > 0));
             createChannelsGeneral();
@@ -712,7 +712,7 @@ public class EvccHandler extends BaseThingHandler {
         }
         boolean gridConfigured = this.gridConfigured;
         if (gridConfigured) {
-            float gridPower = ((result.getGridPower() == null) ? 0.0f : result.getGridPower());
+            float gridPower = ((result.getGrid().getPower() == null) ? 0.0f : result.getGrid().getPower());
             channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_GRID_POWER);
             updateState(channel, new QuantityType<>(gridPower, Units.WATT));
         }
