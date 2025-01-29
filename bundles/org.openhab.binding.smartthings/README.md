@@ -15,6 +15,11 @@ Discovery is supported by the Smartthings binding and is run automatically on st
 
 ## Smartthings Configuration
 
+**The binding will not work until this part has been completed, do not skip this part of the setup.**
+
+You will need an external callback public uri to access your openhab.
+This is because Smartthings will push device events directly to openhab.
+
 You will need to get a token before setup the binding.
 
 - For this, go to the following ULR : https://account.smartthings.com/tokens/new
@@ -40,7 +45,166 @@ You will need to get a token before setup the binding.
 - After this, go to the following URL :
     http[s]://myopenhab.domain.com/smartthings/ 
 
-**The binding will not work until this part has been completed, do not skip this part of the setup.**
+    Verify that the callback uri is ok, and then click Next.
+
+  ![](doc/Link_01_Connection.png)    
+
+- On the next page, select your location, and then click on Setup Smartthings.
+  A new window will popup.
+  ![](doc/Link_02_Location.png)    
+
+- In this popup, the name of the application will be display.
+  Just confirm by clicking the "Done" button.
+
+  ![](doc/Link_03_AppName.png)    
+
+- Next page is about giving authorization to openhab to access your device.
+  Just click the "Authorize" button.
+
+  ![](doc/Link_04_Authorize.png)    
+
+- After a few second, the popup will be closed, and you should see this confirmation page.
+
+  ![](doc/Link_05_Confirmation.png)    
+    
+- You can now go back to openhab, to the things page. 
+  Click the "+" to add new things.
+  Select the Smartthings Binding.
+  And then click the "Scan" buttons
+  After a few seconds, you should see your device on the page.
+  You can add them as usual clicking the "Add All", or adding device individually.
+  ![](doc/AddDevice.png)    
+
+
+
+## initialization Lifecycle 
+
+- User go to /smartthings page
+
+
+- User click Next to go to /location page
+
+    - Openhab ask Smarthings to create the app
+    - Smartapp is installed, status pending
+    - Smartthings call cb URL with lifecycle CONFIRMATION
+    - Openhab confirm back to Smartthings that it's ok
+    - Smartapp go to status CONFIRMED
+    
+    
+- User select location, and click Setup Smartthings
+    - Smartthings create an installedapps, status = PENDING
+    - Smartthings call cb URL with lifecycle CONFIGURATION / INITIALIZE
+    - Smartthings call cb URL with lifecycle CONFIGURATION / PAGE
+    
+    
+- User confirm application name, and click DONE
+
+
+- User confirm authorization by clicking Authorize Button
+    - Smartthings set the installedapps to status = AUTHORIZED
+    - Smartthings call cb URL with lifecycle INSTALL
+    - Openhab register subscriptions to smartthings
+    - Confirmation message is displayed to user with the new appId
+    
+    
+- User go to openhab to scan things
+
+
+- Smartthings start to send event to openhab : lifecycle EVENT
+
+
+## check status of smartapp
+
+Smartapp and Smartapp installation can be handled using the smartthings cli.
+You can also do some operations from the smartthings portal : https://my.smartthings.com/advanced
+
+
+- smartthings apps command
+
+  Display the current existing apps.
+   
+   ```
+   ────────────────────────────────────────────────────────────────────────────
+   [root@xxxx] # smartthings apps 
+   ────────────────────────────────────────────────────────────────────────────
+   #  Display Name    App Type           App Id
+   ────────────────────────────────────────────────────────────────────────────
+   4  openhabnew0129  WEBHOOK_SMART_APP  xxxxxx-8d4c-41c4-b976-xxxxxxxxx
+   ```
+
+- smartthings apps xxxxxx-8d4c-41c4-b976-xxxxxxxxx command
+
+  Display the detailled of an existing apps.
+  Note the "Target Status" field : can take value PENDING during configuration, and have to be CONFIRMED after       
+  installation.
+  
+   
+   ```
+   ────────────────────────────────────────────────────────────────────────────
+   [root@xxxx] # smartthings apps xxxxxx-8d4c-41c4-b976-xxxxxxxxx
+   ────────────────────────────────────────────────────────
+   Display Name     openhabnew0129
+   App Id           xxxxxx-8d4c-41c4-b976-xxxxxxxxx
+   App Name         openhabnew0129
+   Description      Desc openhabnew0129
+   Single Instance  false
+   Classifications  AUTOMATION
+   App Type         WEBHOOK_SMART_APP
+   Signature Type   ST_PADLOCK
+   Target URL       https://ohdev.xxx.com/smartthings/cb
+   Target Status    PENDING
+   ────────────────────────────────────────────────────────
+   ```
+
+- smartthings apps:delete xxxxxx-8d4c-41c4-b976-xxxxxxxxx command 
+
+  Enable to delete an existing apps.
+
+- smartthings installedapps command
+
+  Display the current existing installedapps.
+   
+   ```
+   ────────────────────────────────────────────────────────────────────────────
+   [root@xxxx] # smartthings installedapps 
+   ────────────────────────────────────────────────────────────────────────────
+   #  Display Name    Installed App Type  Installed App Status  Installed App Id
+   ──────────────────────────────────────────────────────────────────────────────────────
+   2  openhabnew0131  WEBHOOK_SMART_APP   AUTHORIZED            xxxx-6c45-41d3-9bd8-xxxxx
+   ```
+
+- smartthings installedapps xxxx-6c45-41d3-9bd8-xxxxx command
+
+  Display the detailled of an existing installedapps.
+  Note the "Installed App Status" field : can take value PENDING during configuration, and have to be CONFIRMED after       
+  installation.
+  
+   
+   ```
+   ────────────────────────────────────────────────────────────────────────────
+   [root@xxxx] # smartthings installedapps xxxx-6c45-41d3-9bd8-xxxxx
+   ────────────────────────────────────────────────────────────
+   Display Name          openhabnew0131
+   Installed App Id      xxxx-6c45-41d3-9bd8-xxxxx
+   Installed App Type    WEBHOOK_SMART_APP
+   Installed App Status  AUTHORIZED
+   Single Instance       false
+   App Id                xxxxxx-8d4c-41c4-b976-xxxxxxxxx
+   Location Id           yyyyy411-15b4-40e8-b6cd-f9zzzzzz
+   Single Instance       false
+   Classifications       AUTOMATION
+  ────────────────────────────────────────────────────────────
+   ```
+
+- smartthings installedapps:delete xxxx-6c45-41d3-9bd8-xxxxx
+
+  Enable to delete an existing installedapps.
+  
+  
+- smartthings devices
+
+
+- smartthings locations
 
 ## openHAB Configuration
 
@@ -170,6 +334,7 @@ Frame label="Sengled RGBW Bulb" {
 ## References
 
 1. [openHAB configuration documentation](https://openhab.org/docs/configuration/index.html)
-1. [Smartthings Capabilities Reference](https://docs.smartthings.com/en/latest/capabilities-reference.html)
-1. [Smartthings Developers Documentation](https://docs.smartthings.com/en/latest/index.html)
-1. [Smartthings Development Environment](https://graph.api.smartthings.com/)
+2. [Smartthings Api Documentation](https://developer.smartthings.com/docs/api/public)
+3. [Smartthings Capabilities Reference]()
+4. [Smartthings Developers Documentation](https://developer.smartthings.com/docs/getting-started/architecture-of-smartthings)
+5. [Python implementation](https://github.com/andrewsayre/pysmartthings)
