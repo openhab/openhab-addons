@@ -49,6 +49,9 @@ public class Result {
     @SerializedName("batteryMode")
     private String batteryMode;
 
+    @SerializedName("gridPower")
+    private Float gridPower;
+
     @SerializedName("grid")
     private Grid grid;
 
@@ -159,6 +162,13 @@ public class Result {
      */
     public String getBatteryMode() {
         return batteryMode;
+    }
+
+    /**
+     * @return gridPower (before evcc version 0.133.0)
+     */
+    public Float getGridPower() {
+        return gridPower;
     }
 
     /**
