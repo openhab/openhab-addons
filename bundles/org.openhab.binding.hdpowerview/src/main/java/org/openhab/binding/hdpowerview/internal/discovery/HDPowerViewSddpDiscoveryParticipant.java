@@ -23,9 +23,12 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.sddp.SddpDevice;
 import org.openhab.core.config.discovery.sddp.SddpDiscoveryParticipant;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +48,12 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
     private static final String POWERVIEW_GEN3_ID = "powerview:gen3:gateway";
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewSddpDiscoveryParticipant.class);
+    private final SerialNumberHelper serialNumberHelper;
+
+    @Activate
+    public HDPowerViewSddpDiscoveryParticipant(@Reference SerialNumberHelper serialNumberHelper) {
+        this.serialNumberHelper = serialNumberHelper;
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -61,10 +70,12 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
                         ? String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress)
                         : String.format("@text/%s [\"%s\", \"%s\"]",
                                 HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, device.ipAddress, generation);
-
+                String serialNumber = serialNumberHelper.getSerialNumber(device.ipAddress, generation);
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
-                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST).withLabel(label).build();
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber)
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
+                        .withLabel(label).build();
                 logger.debug("SDDP discovered Gen {} hub/gateway '{}' on host '{}'", generation, thingUID,
                         device.ipAddress);
                 return hub;

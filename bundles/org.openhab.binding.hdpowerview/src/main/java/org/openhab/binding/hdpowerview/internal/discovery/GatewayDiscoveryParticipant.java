@@ -24,9 +24,12 @@ import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfigurati
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +46,23 @@ public class GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(GatewayDiscoveryParticipant.class);
 
+    private final SerialNumberHelper serialNumberHelper;
+
+    @Activate
+    public GatewayDiscoveryParticipant(@Reference SerialNumberHelper serialNumberHelper) {
+        this.serialNumberHelper = serialNumberHelper;
+    }
+
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         for (String host : service.getHostAddresses()) {
             if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
                 ThingUID thingUID = new ThingUID(THING_TYPE_GATEWAY, host.replace('.', '_'));
+                String serialNumber = serialNumberHelper.getSerialNumber(host, 3);
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber)
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                         .withLabel(String.format("@text/%s [\"%s\"]", LABEL_KEY, host)).build();
                 logger.debug("mDNS discovered Gen 3 gateway on host '{}'", host);
                 return hub;

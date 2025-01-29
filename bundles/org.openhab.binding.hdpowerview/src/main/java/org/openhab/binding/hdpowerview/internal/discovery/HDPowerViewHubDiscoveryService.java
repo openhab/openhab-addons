@@ -26,8 +26,11 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,10 +49,13 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
 
     private final Runnable scanner;
     private @Nullable ScheduledFuture<?> backgroundFuture;
+    private final SerialNumberHelper serialNumberHelper;
 
-    public HDPowerViewHubDiscoveryService() {
+    @Activate
+    public HDPowerViewHubDiscoveryService(@Reference SerialNumberHelper serialNumberHelper) {
         super(Set.of(THING_TYPE_HUB), 60, true);
         scanner = createScanner();
+        this.serialNumberHelper = serialNumberHelper;
     }
 
     @Override
@@ -84,9 +90,11 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
                     if (address != null) {
                         String host = address.getInetAddress().getHostAddress();
                         ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+                        String serialNumber = serialNumberHelper.getSerialNumber(host, 2);
                         DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                                 .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                                .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
+                                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber)
+                                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                                 .withLabel("PowerView Hub (" + host + ")").build();
                         logger.debug("NetBios discovered hub on host '{}'", host);
                         thingDiscovered(hub);

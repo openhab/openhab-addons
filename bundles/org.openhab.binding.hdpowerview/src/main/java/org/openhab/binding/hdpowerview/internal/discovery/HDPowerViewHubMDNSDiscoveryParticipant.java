@@ -30,6 +30,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
@@ -51,10 +52,13 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubMDNSDiscoveryParticipant.class);
     private final HttpClient httpClient;
+    private final SerialNumberHelper serialNumberHelper;
 
     @Activate
-    public HDPowerViewHubMDNSDiscoveryParticipant(@Reference HttpClientFactory httpClientFactory) {
+    public HDPowerViewHubMDNSDiscoveryParticipant(@Reference HttpClientFactory httpClientFactory,
+            @Reference SerialNumberHelper serialNumberHelper) {
         httpClient = httpClientFactory.getCommonHttpClient();
+        this.serialNumberHelper = serialNumberHelper;
     }
 
     @Override
@@ -73,9 +77,12 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
             if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
                 ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
                 String generation = this.getGeneration(host);
+                int generationNumber = "1/2".equals(generation) ? 2 : 3;
+                String serialNumber = serialNumberHelper.getSerialNumber(host, generationNumber);
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber)
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                         .withLabel(String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, generation, host)).build();
                 logger.debug("mDNS discovered Gen {} hub on host '{}'", generation, host);
                 return hub;
