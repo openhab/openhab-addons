@@ -35,7 +35,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-@Component
+@Component(service = SerialNumberHelper.class)
 public class SerialNumberHelper {
 
     private static final String GEN12_URL_FORMAT = "http://%s/api/userdata";
