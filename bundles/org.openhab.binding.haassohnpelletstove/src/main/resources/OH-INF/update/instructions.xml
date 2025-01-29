@@ -37,9 +37,9 @@
 			</add-channel>
 		</instruction-set>
 		<instruction-set targetVersion="2">
-            <update-channel id="channelMode">
-                <type>haassohnpelletstove:channelMode</type>
-            </update-channel>            
-        </instruction-set>
+			<update-channel id="channelMode">
+				<type>haassohnpelletstove:channelMode</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 </update:update-descriptions>
