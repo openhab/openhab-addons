@@ -57,5 +57,6 @@ public interface HTTPConstants {
     static final String HEADER_X_IDENTITY_PROVIDER = "x-identity-provider";
     static final String HEADER_X_CORRELATION_ID = "x-correlation-id";
     static final String HEADER_BMW_CORRELATION_ID = "bmw-correlation-id";
+    static final String HEADER_BMW_SESSION_ID = "bmw-session-id";
     static final String HEADER_BMW_VIN = "bmw-vin";
 }
