@@ -85,31 +85,40 @@ public class RadoneyeDiscoveryParticipant implements BluetoothDiscoveryParticipa
 
     private String getSerial(BluetoothDiscoveryDevice device) {
         String name = device.getName();
+        if (name == null) {
+            return "N/A";
+        }
         String[] parts = name.split(":");
         if (parts.length == 3) {
             return parts[2];
         } else {
-            return "";
+            return "N/A";
         }
     }
 
     private String getManufacturer(BluetoothDiscoveryDevice device) {
         String name = device.getName();
+        if (name == null) {
+            return "N/A";
+        }
         String[] parts = name.split(":");
         if (parts.length == 3) {
             return parts[0];
         } else {
-            return "";
+            return "N/A";
         }
     }
 
     private String getModel(BluetoothDiscoveryDevice device) {
         String name = device.getName();
+        if (name == null) {
+            return "N/A";
+        }
         String[] parts = name.split(":");
         if (parts.length == 3) {
             return parts[1];
         } else {
-            return "";
+            return "N/A";
         }
     }
 
