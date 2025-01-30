@@ -80,6 +80,14 @@ class SolcastTest {
             mock(Storage.class));
     public static ZonedDateTime now = ZonedDateTime.now(TEST_ZONE);
 
+    static JSONArray getForecast() {
+        String actuals = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
+        JSONArray actualsJson = (new JSONObject(actuals)).getJSONArray(KEY_ACTUALS);
+        String forecasString = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
+        JSONArray forecastJson = (new JSONObject(forecasString)).getJSONArray(KEY_FORECAST);
+        return SolcastPlaneMock.merge(actualsJson, forecastJson);
+    }
+
     @BeforeAll
     static void setFixedTimeJul17() {
         // Instant matching the date of test resources
@@ -87,11 +95,7 @@ class SolcastTest {
         Clock fixedClock = Clock.fixed(fixedInstant, TEST_ZONE);
         Utils.setClock(fixedClock);
 
-        String forecasString = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
-        JSONObject forecastJson = new JSONObject(forecasString);
-        String actuals = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
-        JSONObject actualsJson = new JSONObject(actuals);
-        forecastJson.put(KEY_ACTUALS, actualsJson.getJSONArray(KEY_ACTUALS));
+        JSONArray forecastJson = getForecast();
         now = LocalDateTime.of(2022, 7, 18, 0, 0).atZone(TEST_ZONE);
         scfo = new SolcastObject("sc-test", forecastJson, now.toInstant(), TIMEZONEPROVIDER, mock(Storage.class));
     }
@@ -102,11 +106,7 @@ class SolcastTest {
         Clock fixedClock = Clock.fixed(fixedInstant, TEST_ZONE);
         Utils.setClock(fixedClock);
 
-        String forecasString = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
-        JSONObject forecastJson = new JSONObject(forecasString);
-        String actuals = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
-        JSONObject actualsJson = new JSONObject(actuals);
-        forecastJson.put(KEY_ACTUALS, actualsJson.getJSONArray(KEY_ACTUALS));
+        JSONArray forecastJson = getForecast();
         now = LocalDateTime.of(2022, 7, 18, 0, 0).atZone(TEST_ZONE);
         scfo = new SolcastObject("sc-test", forecastJson, now.toInstant(), TIMEZONEPROVIDER, mock(Storage.class));
     }
@@ -169,7 +169,7 @@ class SolcastTest {
      * "2022-07-18T13:00+02:00[Europe/Berlin]": 2.526,
      * "2022-07-18T13:30+02:00[Europe/Berlin]": 2.4879,
      * "2022-07-18T14:00+02:00[Europe/Berlin]": 2.4092,
-     * "2022-07-18T14:30+02:00[Europe/Berlin]": 2.3309,
+     * "2022-07-18T14:30+02:00[Europe/Berlin]": 2.t09,
      * "2022-07-18T15:00+02:00[Europe/Berlin]": 2.1984,
      * "2022-07-18T15:30+02:00[Europe/Berlin]": 2.0416,
      * "2022-07-18T16:00+02:00[Europe/Berlin]": 1.9076,
@@ -464,13 +464,6 @@ class SolcastTest {
     }
 
     @Test
-    void testRawChannel() {
-        JSONObject joined = new JSONObject(scfo.getRaw());
-        assertTrue(joined.has("forecasts"), "Forecasts available");
-        assertTrue(joined.has("estimated_actuals"), "Actual data available");
-    }
-
-    @Test
     void testUnitDetection() {
         assertEquals("kW", SolcastConstants.KILOWATT_UNIT.toString(), "Kilowatt");
         assertEquals("W", Units.WATT.toString(), "Watt");
@@ -591,6 +584,7 @@ class SolcastTest {
 
     @Test
     void testCombinedPowerTimeSeries() {
+        setFixedTimeJul17();
         BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE, "bridge");
         SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
         bi.setHandler(scbh);
@@ -855,11 +849,7 @@ class SolcastTest {
 
     @Test
     void testStorageRead() {
-        String forecasString = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
-        JSONObject forecastJson = new JSONObject(forecasString);
-        String actuals = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
-        JSONObject actualsJson = new JSONObject(actuals);
-        forecastJson.put(KEY_ACTUALS, actualsJson.getJSONArray(KEY_ACTUALS));
+        JSONArray forecastJson = getForecast();
 
         Storage<String> store = new VolatileStorage<>();
         scfo = new SolcastObject("sc-test", null, Instant.MIN, TIMEZONEPROVIDER, store);
@@ -879,11 +869,7 @@ class SolcastTest {
 
     @Test
     void testStorageWrite() {
-        String forecasString = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
-        JSONObject forecastJson = new JSONObject(forecasString);
-        String actuals = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
-        JSONObject actualsJson = new JSONObject(actuals);
-        forecastJson.put(KEY_ACTUALS, actualsJson.getJSONArray(KEY_ACTUALS));
+        JSONArray forecastJson = getForecast();
 
         Storage<String> store = new VolatileStorage<>();
         scfo = new SolcastObject("sc-test", forecastJson, Instant.now().plus(1, ChronoUnit.HOURS), TIMEZONEPROVIDER,
@@ -898,16 +884,78 @@ class SolcastTest {
     }
 
     @Test
-    void testTodayValues() {
-        String forecasString = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
-        JSONObject forecastJson = new JSONObject(forecasString);
+    void testMergeArrays() {
         String actuals = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
-        JSONObject actualsJson = new JSONObject(actuals);
-        JSONObject forecast = new JSONObject();
-        forecast.put(KEY_FORECAST, forecastJson.getJSONArray(KEY_FORECAST));
-        forecast.put(KEY_ACTUALS, actualsJson.getJSONArray(KEY_ACTUALS));
-        JSONObject todayJson = SolcastPlaneMock.getTodaysJson(forecast);
-        JSONArray todayArray = todayJson.getJSONArray(KEY_ACTUALS);
+        JSONArray actualsJson = (new JSONObject(actuals)).getJSONArray(KEY_ACTUALS);
+        String forecasString = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
+        JSONArray forecastJson = (new JSONObject(forecasString)).getJSONArray(KEY_FORECAST);
+        assertEquals(336, actualsJson.length());
+        assertEquals(336, forecastJson.length());
+        JSONArray wholeForecast = SolcastPlaneMock.merge(actualsJson, forecastJson);
+        assertEquals(336 + 336, wholeForecast.length());
+    }
+
+    @Test
+    void testMergeWithOverride() {
+        // Simulation of plane update
+        setFixedTimeJul18();
+
+        // Get todays values of present forecast
+        String before = FileReader.readFileInString("src/test/resources/solcast/forecast-before.json");
+        JSONArray beforeJson = new JSONArray(before);
+        JSONArray todayJson = SolcastPlaneMock.getTodaysJson(beforeJson);
+        assertEquals(48, todayJson.length());
+        todayJson.forEach(entry -> {
+            int estimateValue = ((JSONObject) entry).getInt(KEY_ESTIMATE);
+            assertTrue(estimateValue == 0 || estimateValue == 1);
+        });
+
+        // New forecast with partly data of today - all estimates = 1
+        String after = FileReader.readFileInString("src/test/resources/solcast/forecast-after.json");
+        JSONArray afterJson = new JSONArray(after);
+        JSONArray todayJsonCheck = SolcastPlaneMock.getTodaysJson(afterJson);
+        assertEquals(20, todayJsonCheck.length());
+        // 20 values today, 10 tomorrow
+        assertEquals(20 + 10, afterJson.length());
+
+        // get forecast earliest daretime
+        Instant forecastBegin = Instant.MAX;
+        for (int i = 0; i < todayJsonCheck.length(); i++) {
+            String dateTime = todayJsonCheck.getJSONObject(i).getString(KEY_PERIOD_END);
+            Instant entryDatetime = Instant.parse(dateTime);
+            if (entryDatetime.isBefore(forecastBegin)) {
+                forecastBegin = entryDatetime;
+            }
+        }
+
+        // merge them and check parts of todays values are overridden with new forecast - estimates = 2
+        JSONArray wholeForecast = SolcastPlaneMock.merge(todayJson, afterJson);
+        // 48 values today plus 10 from forecast tomorrow
+        assertEquals(48 + 10, wholeForecast.length());
+
+        // Check for 28 values from "before" and 20 "after"
+        int countBefore = 0;
+        int countAfter = 0;
+        for (int i = 0; i < wholeForecast.length(); i++) {
+            JSONObject entry = wholeForecast.getJSONObject(i);
+            int estimateValue = entry.getInt(KEY_ESTIMATE);
+            Instant entryDatetime = Instant.parse(entry.getString(KEY_PERIOD_END));
+            if (entryDatetime.isBefore(forecastBegin)) {
+                assertTrue(estimateValue == 0 || estimateValue == 1, "Value fail for " + entry);
+                countBefore++;
+            } else {
+                assertTrue(estimateValue == 0 || estimateValue == 2, "Value fail for " + entry);
+                countAfter++;
+            }
+        }
+        assertEquals(28, countBefore, "Persisted value count");
+        assertEquals(30, countAfter, "Forecast value count");
+    }
+
+    @Test
+    void testTodayValues() {
+        JSONArray forecastJson = getForecast();
+        JSONArray todayArray = SolcastPlaneMock.getTodaysJson(forecastJson);
         assertEquals(48, todayArray.length());
         // 30 minutes interval gives 48 values for each day
 

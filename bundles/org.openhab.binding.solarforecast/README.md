@@ -315,6 +315,35 @@ Number:Power            ForecastSolarHome_Power_Estimate_SW     "SW Power estima
 Number:Energy           ForecastSolarHome_Energy_Estimate_SW    "SW Energy estimations"                     (influxdb)  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
 ```
 
+```java
+// channel items
+Number:Power            ForecastSolarHome_Actual_Power      "Power prediction for this moment"              { channel="solarforecast:fs-site:homeSite:power-actual", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }
+Number:Energy           ForecastSolarHome_Actual            "Today's forecast till now"                     { channel="solarforecast:fs-site:homeSite:energy-actual", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Energy           ForecastSolarHome_Remaining         "Today's remaining forecast till sunset"        { channel="solarforecast:fs-site:homeSite:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Energy           ForecastSolarHome_Today             "Today's total energy forecast"                 { channel="solarforecast:fs-site:homeSite:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }
+// calculated by rule
+Number:Energy           ForecastSolarHome_Tomorrow          "Tomorrow's total energy forecast"              { stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }
+
+Number:Power            ForecastSolarHome_Actual_Power_NE   "NE Power prediction for this moment"           { channel="solarforecast:fs-plane:homeSite:homeNorthEast:power-actual", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }
+Number:Energy           ForecastSolarHome_Actual_NE         "NE Today's forecast till now"                  { channel="solarforecast:fs-plane:homeSite:homeNorthEast:energy-actual", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Energy           ForecastSolarHome_Remaining_NE      "NE Today's remaining forecast till sunset"     { channel="solarforecast:fs-plane:homeSite:homeNorthEast:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Energy           ForecastSolarHome_Today_NE          "NE Today's total energy forecast"              { channel="solarforecast:fs-plane:homeSite:homeNorthEast:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }
+
+Number:Power            ForecastSolarHome_Actual_Power_SW   "SW Power prediction for this moment"           { channel="solarforecast:fs-plane:homeSite:homeSouthWest:power-actual", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }
+Number:Energy           ForecastSolarHome_Actual_SW         "SW Today's forecast till now"                  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-actual", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Energy           ForecastSolarHome_Remaining_SW      "SW Today's remaining forecast till sunset"     { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Energy           ForecastSolarHome_Today_SW          "SW Today's total energy forecast"              { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }
+
+Number           Solcast_API_Counter      {channel="solarforecast:sc-site:8aec652c99:update#api-count" [ profile="transform:JSONPATH", function="$.200"]}
+
+// estimation items
+Group influxdb
+Number:Power            ForecastSolarHome_Power_Estimate        "Power estimations"                         (influxdb)  { channel="solarforecast:fs-site:homeSite:power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }
+Number:Energy           ForecastSolarHome_Energy_Estimate       "Energy estimations"                        (influxdb)  { channel="solarforecast:fs-site:homeSite:energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Power            ForecastSolarHome_Power_Estimate_SW     "SW Power estimations"                      (influxdb)  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }
+Number:Energy           ForecastSolarHome_Energy_Estimate_SW    "SW Energy estimations"                     (influxdb)  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+```
+
 ### Persistence file
 
 ```java
@@ -357,7 +386,7 @@ rule "Exception Handling"
     when
         System started
     then
-        val solcastActions = getActions("solarforecast","solarforecast:sc-site:3cadcde4dc")
+        val solcastActions = getActions("solarforecast","solarforecast:sc-site:homeSite")
         try {
             val forecast = solcastActions.getPower(solcastActions.getForecastEnd.plus(30,ChronoUnit.MINUTES))
         } catch(RuntimeException e) {
@@ -386,10 +415,10 @@ rule "Solcast Actions"
         val sixDayPessimistic = solarforecastActions.getEnergy(startTimestamp,endTimestamp, "pessimistic")
         logInfo("SF Tests","Forecast Pessimist 6 days "+ sixDayPessimistic)
 
-        // Query forecast TimesSeries Items via historicStata
-        val energyAverage =  (Solcast_Site_Average_Energyestimate.historicState(now.plusDays(1)).state as Number)
+        // Query forecast TimesSeries Items via persistedState
+        val energyAverage =  (Solcast_Site_Average_Energyestimate.persistedState(now.plusDays(1)).state as Number)
         logInfo("SF Tests","Average energy {}",energyAverage)
-        val energyOptimistic =  (Solcast_Site_Optimistic_Energyestimate.historicState(now.plusDays(1)).state as Number)
+        val energyOptimistic =  (Solcast_Site_Optimistic_Energyestimate.persistedState(now.plusDays(1)).state as Number)
         logInfo("SF Tests","Optimist energy {}",energyOptimistic)
 end
 ```
@@ -413,13 +442,12 @@ end
 
 rule "Solacast Updates"
     when
-        Thing "solarforecast:sc-plane:homeSouthWest" changed to INITIALIZING or // Thing status changed to INITIALIZING
+        Thing "solarforecast:sc-plane:homeSite:homeSouthWest" changed to INITIALIZING or // Thing status changed to INITIALIZING
         Time cron "0 30 0/2 ? * * *" // every 2 hours at minute 30
     then
         if(PV_Daytime.state == ON) {
-            val solarforecastActions = getActions("solarforecast","solarforecast:sc-plane:homeSouthWest")
+            val solarforecastActions = getActions("solarforecast","solarforecast:sc-plane:homeSite:homeSouthWest")
             solarforecastActions.triggerUpdate
         } // reject updates during night
 end
 ```
-

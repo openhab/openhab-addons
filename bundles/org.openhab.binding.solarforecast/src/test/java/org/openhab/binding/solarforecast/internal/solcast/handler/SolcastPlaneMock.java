@@ -14,7 +14,7 @@ package org.openhab.binding.solarforecast.internal.solcast.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.json.JSONObject;
+import org.json.JSONArray;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Thing;
@@ -35,7 +35,11 @@ public class SolcastPlaneMock extends SolcastPlaneHandler {
         super.updateConfiguration(config);
     }
 
-    public static JSONObject getTodaysJson(JSONObject forecast) {
-        return getTodaysValues(forecast.toString());
+    public static JSONArray getTodaysJson(JSONArray forecast) {
+        return getTodaysValues(forecast);
+    }
+
+    public static JSONArray merge(JSONArray actuals, JSONArray forecast) {
+        return mergeArrays(actuals, forecast);
     }
 }
