@@ -69,13 +69,12 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
                 String label = generation == 3 //
                         ? String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress)
                         : String.format("@text/%s [\"%s\", \"%s\"]",
-                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, device.ipAddress, generation);
-                String serialNumber = serialNumberHelper.getSerialNumber(device.ipAddress, generation);
+                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, generation, device.ipAddress);
+                String serial = serialNumberHelper.getSerialNumber(device.ipAddress, generation);
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
-                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber)
-                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
-                        .withLabel(label).build();
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
                 logger.debug("SDDP discovered Gen {} hub/gateway '{}' on host '{}'", generation, thingUID,
                         device.ipAddress);
                 return hub;

@@ -58,12 +58,12 @@ public class GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
         for (String host : service.getHostAddresses()) {
             if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
                 ThingUID thingUID = new ThingUID(THING_TYPE_GATEWAY, host.replace('.', '_'));
-                String serialNumber = serialNumberHelper.getSerialNumber(host, 3);
+                String label = String.format("@text/%s [\"%s\"]", LABEL_KEY, host);
+                String serial = serialNumberHelper.getSerialNumber(host, 3);
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber)
-                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
-                        .withLabel(String.format("@text/%s [\"%s\"]", LABEL_KEY, host)).build();
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
                 logger.debug("mDNS discovered Gen 3 gateway on host '{}'", host);
                 return hub;
             }

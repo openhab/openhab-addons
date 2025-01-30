@@ -90,12 +90,13 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
                     if (address != null) {
                         String host = address.getInetAddress().getHostAddress();
                         ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
-                        String serialNumber = serialNumberHelper.getSerialNumber(host, 2);
+                        String label = String.format("@text/%s [\"%s\", \"%s\"]",
+                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, 2, host);
+                        String serial = serialNumberHelper.getSerialNumber(host, 2);
                         DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                                 .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber)
-                                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
-                                .withLabel("PowerView Hub (" + host + ")").build();
+                                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
                         logger.debug("NetBios discovered hub on host '{}'", host);
                         thingDiscovered(hub);
                     }

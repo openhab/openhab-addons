@@ -78,12 +78,12 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
                 ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
                 String generation = this.getGeneration(host);
                 int generationNumber = "1/2".equals(generation) ? 2 : 3;
-                String serialNumber = serialNumberHelper.getSerialNumber(host, generationNumber);
+                String label = String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, generation, host);
+                String serial = serialNumberHelper.getSerialNumber(host, generationNumber);
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber)
-                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
-                        .withLabel(String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, generation, host)).build();
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
                 logger.debug("mDNS discovered Gen {} hub on host '{}'", generation, host);
                 return hub;
             }
