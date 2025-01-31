@@ -521,7 +521,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             // store in cache
             capabilitiesMap.put(vin, featureMap);
             return featureMap;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
             logger.trace("Error retrieving capabilities: {}", e.getMessage());
             featureMap.clear();
         }
