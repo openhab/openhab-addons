@@ -33,6 +33,7 @@ import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmi;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequest;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
+import org.openhab.binding.huesync.internal.exceptions.HueSyncConnectionException;
 import org.openhab.binding.huesync.internal.types.HueSyncExceptionHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -114,7 +115,7 @@ public class HueSyncDeviceConnection {
 
         try {
             this.connection.executeRequest(HttpMethod.PUT, ENDPOINTS.EXECUTION, json, null);
-        } catch (Exception exception) {
+        } catch (HueSyncConnectionException exception) {
             exceptionHandler.handle(exception);
         }
     }
@@ -188,7 +189,11 @@ public class HueSyncDeviceConnection {
     }
 
     public void unregisterDevice() {
-        this.connection.unregisterDevice();
+        try {
+            this.connection.unregisterDevice();
+        } catch (HueSyncConnectionException e) {
+            this.logger.warn("{}", e.getMessage());
+        }
     }
 
     public void dispose() {

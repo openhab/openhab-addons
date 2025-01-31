@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,8 +27,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -55,8 +54,10 @@ public class HueSyncConnection {
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     /**
-     * Request format: The Sync Box API can be accessed locally via HTTPS on root level (port 443,
-     * /api/v1), resource level /api/v1/<resource> and in some cases sub-resource level
+     * Request format: The Sync Box API can be accessed locally via HTTPS on root
+     * level (port 443,
+     * /api/v1), resource level /api/v1/<resource> and in some cases sub-resource
+     * level
      * /api/v1/<resource>/<sub-resource>.
      */
     private static final String REQUEST_FORMAT = "https://%s:%s/%s/%s";
@@ -71,6 +72,41 @@ public class HueSyncConnection {
     private final URI deviceUri;
 
     private Optional<HueSyncAuthenticationResult> authentication = Optional.empty();
+
+    private class Request {
+
+        private final String endpoint;
+
+        private HttpMethod method = HttpMethod.GET;
+        private String payload = "";
+
+        private Request(HttpMethod httpMethod, String endpoint, String payload) {
+            this.method = httpMethod;
+            this.endpoint = endpoint;
+            this.payload = payload;
+        }
+
+        protected Request(String endpoint) {
+            this.endpoint = endpoint;
+        }
+
+        private Request(HttpMethod httpMethod, String endpoint) {
+            this.method = httpMethod;
+            this.endpoint = endpoint;
+        }
+
+        protected ContentResponse execute() throws InterruptedException, ExecutionException, TimeoutException {
+            String uri = String.format(REQUEST_FORMAT, host, port, API, endpoint);
+
+            var request = httpClient.newRequest(uri).method(method).timeout(1, TimeUnit.SECONDS);
+            if (!payload.isBlank()) {
+                request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON_UTF_8.toString())
+                        .content(new StringContentProvider(payload));
+            }
+
+            return request.send();
+        }
+    }
 
     protected String registrationId = "";
 
@@ -102,42 +138,30 @@ public class HueSyncConnection {
 
     // #region protected
     protected @Nullable <T> T executeRequest(HttpMethod method, String endpoint, String payload,
-            @Nullable Class<T> type) throws Exception {
-        try {
-            return this.processedResponse(this.executeRequest(method, endpoint, payload), type);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            this.handleException(e);
-        }
+            @Nullable Class<T> type) throws HueSyncConnectionException {
 
-        return null;
+        return this.executeRequest(new Request(method, endpoint, payload), type);
     }
 
-    protected @Nullable <T> T executeGetRequest(String endpoint, Class<T> type) throws Exception {
-        try {
-            return this.processedResponse(this.executeGetRequest(endpoint), type);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            this.handleException(e);
-        }
+    protected @Nullable <T> T executeRequest(HttpMethod httpMethod, String endpoint, @Nullable Class<T> type)
+            throws HueSyncConnectionException {
+        return this.executeRequest(new Request(httpMethod, endpoint), type);
+    }
 
-        return null;
+    protected @Nullable <T> T executeGetRequest(String endpoint, Class<T> type) throws HueSyncConnectionException {
+        return this.executeRequest(new Request(endpoint), type);
     }
 
     protected boolean isRegistered() {
         return this.authentication.isPresent();
     }
 
-    protected void unregisterDevice() {
+    protected void unregisterDevice() throws HueSyncConnectionException {
         if (this.isRegistered()) {
-            try {
-                String endpoint = ENDPOINTS.REGISTRATIONS + "/" + this.registrationId;
-                ContentResponse response = this.executeRequest(HttpMethod.DELETE, endpoint);
+            String endpoint = ENDPOINTS.REGISTRATIONS + "/" + this.registrationId;
 
-                if (response.getStatus() == HttpStatus.OK_200) {
-                    this.removeAuthentication();
-                }
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                this.logger.warn("{}", e.getMessage());
-            }
+            this.executeRequest(HttpMethod.DELETE, endpoint, null);
+            this.removeAuthentication();
         }
     }
 
@@ -147,96 +171,51 @@ public class HueSyncConnection {
     // #endregion
 
     // #region private
-    private @Nullable <T> T processedResponse(Response response, @Nullable Class<T> type)
-            throws HueSyncConnectionException {
-        int status = response.getStatus();
-        String exceptionMessage;
-        /*
-         * 400 Invalid State: Registration in progress
-         * 
-         * 401 Authentication failed: If credentials are missing or invalid, errors out. If
-         * credentials are missing, continues on to GET only the Configuration state when
-         * unauthenticated, to allow for device identification.
-         * 
-         * 404 Invalid URI Path: Accessing URI path which is not supported
-         * 
-         * 500 Internal: Internal errors like out of memory
-         */
-        switch (status) {
-            case HttpStatus.OK_200 -> {
-                return (type != null && (response instanceof ContentResponse))
-                        ? this.deserialize(((ContentResponse) response).getContentAsString(), type)
-                        : null;
-            }
-            case HttpStatus.BAD_REQUEST_400 -> {
-                this.logger.debug("registration in progress: no token received yet");
-                return null;
-            }
-            case HttpStatus.UNAUTHORIZED_401 -> exceptionMessage = "@text/connection.invalid-login";
-            case HttpStatus.NOT_FOUND_404 -> exceptionMessage = "@text/connection.generic-error";
-            default -> exceptionMessage = "@text/connection.generic-error";
-        }
 
-        var exception = new HueSyncConnectionException(exceptionMessage);
+    private @Nullable <T> T executeRequest(Request request, @Nullable Class<T> type) throws HueSyncConnectionException {
+        String message = "@text/connection.generic-error";
 
-        this.logger.warn("{}", exception.getMessage());
-        throw (exception);
-    }
-
-    private @Nullable <T> T deserialize(String json, Class<T> type) {
         try {
-            return OBJECT_MAPPER.readValue(json, type);
-        } catch (JsonProcessingException | NoClassDefFoundError e) {
-            this.logger.error("{}", e.getMessage());
+            ContentResponse response = request.execute();
 
-            return null;
+            /*
+             * 400 Invalid State: Registration in progress
+             * 
+             * 401 Authentication failed: If credentials are missing or invalid, errors out.
+             * If
+             * credentials are missing, continues on to GET only the Configuration state
+             * when
+             * unauthenticated, to allow for device identification.
+             * 
+             * 404 Invalid URI Path: Accessing URI path which is not supported
+             * 
+             * 500 Internal: Internal errors like out of memory
+             */
+            switch (response.getStatus()) {
+                case HttpStatus.OK_200 -> {
+                    return this.deserialize(response.getContentAsString(), type);
+                }
+                case HttpStatus.BAD_REQUEST_400 -> {
+                    logger.debug("registration in progress: no token received yet");
+                    return null;
+                }
+                case HttpStatus.UNAUTHORIZED_401 -> message = "@text/connection.invalid-login";
+                case HttpStatus.NOT_FOUND_404 -> message = "@text/connection.generic-error";
+            }
+            throw new HueSyncConnectionException(message, new HttpResponseException(message, response));
+        } catch (JsonProcessingException | InterruptedException | ExecutionException | TimeoutException e) {
+            throw new HueSyncConnectionException(message, e);
         }
     }
 
-    private ContentResponse executeRequest(HttpMethod method, String endpoint)
-            throws InterruptedException, TimeoutException, ExecutionException {
-        return this.executeRequest(method, endpoint, "");
-    }
-
-    private ContentResponse executeGetRequest(String endpoint)
-            throws InterruptedException, ExecutionException, TimeoutException {
-        String uri = String.format(REQUEST_FORMAT, this.host, this.port, API, endpoint);
-
-        return httpClient.GET(uri);
-    }
-
-    private ContentResponse executeRequest(HttpMethod method, String endpoint, String payload)
-            throws InterruptedException, TimeoutException, ExecutionException {
-        String uri = String.format(REQUEST_FORMAT, this.host, this.port, API, endpoint);
-
-        Request request = this.httpClient.newRequest(uri).method(method);
-
-        this.logger.trace("uri: {}", uri);
-        this.logger.trace("method: {}", method);
-        this.logger.trace("payload: {}", payload);
-
-        if (!payload.isBlank()) {
-            request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON_UTF_8.toString())
-                    .content(new StringContentProvider(payload));
-        }
-
-        return request.send();
-    }
-
-    private void handleException(Exception e) throws Exception {
-        this.logger.warn("Exception: {}, Client State: {}", e.getMessage(), this.httpClient.getState());
-
-        Throwable cause = e.getCause();
-        if (cause != null && cause instanceof HttpResponseException) {
-            this.processedResponse(((HttpResponseException) cause).getResponse(), null);
-        } else {
-            throw e;
-        }
+    private @Nullable <T> T deserialize(String json, @Nullable Class<T> type) throws JsonProcessingException {
+        return type == null ? null : OBJECT_MAPPER.readValue(json, type);
     }
 
     private void removeAuthentication() {
         AuthenticationStore store = this.httpClient.getAuthenticationStore();
         store.clearAuthenticationResults();
+
         this.httpClient.setAuthenticationStore(store);
 
         this.registrationId = "";
