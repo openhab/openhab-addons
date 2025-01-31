@@ -64,4 +64,13 @@ public class SystemInformationBlockAllWpm extends SystemInformationBlock {
     public short temperatureHotgas;
     public short pressureHigh;
     public short pressureLow;
+
+    // heat pump 1 to ... information - only first one for now
+    public short hp1TemperatureReturn;
+    public short hp1TemperatureFlow;
+    public short hp1TemperatureHotgas;
+    public short hp1PressureLow;
+    public short hp1PressureMean;
+    public short hp1PressureHigh;
+    public short hp1FlowRate;
 }

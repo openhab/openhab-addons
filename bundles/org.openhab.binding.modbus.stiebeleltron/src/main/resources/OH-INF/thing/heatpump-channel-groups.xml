@@ -56,6 +56,13 @@
 			<channel id="source-temperature" typeId="source-temperature-type"/>
 			<channel id="min-source-temperature" typeId="min-source-temperature-type"/>
 			<channel id="source-pressure" typeId="source-pressure-type"/>
+			<channel id="hp1-return-temperature" typeId="hp1-return-temperature-type"/>
+			<channel id="hp1-flow-temperature" typeId="hp1-flow-temperature-type"/>
+			<channel id="hp1-hotgas-temperature" typeId="hp1-hotgas-temperature-type"/>
+			<channel id="hp1-low-pressure" typeId="hp1-low-pressure-type"/>
+			<channel id="hp1-mean-pressure" typeId="hp1-mean-pressure-type"/>
+			<channel id="hp1-high-pressure" typeId="hp1-high-pressure-type"/>
+			<channel id="hp1-flow-rate" typeId="hp1-flow-rate-type"/>
 		</channels>
 	</channel-group-type>
 
@@ -100,6 +107,13 @@
 			<channel id="source-temperature" typeId="source-temperature-type"/>
 			<channel id="min-source-temperature" typeId="min-source-temperature-type"/>
 			<channel id="source-pressure" typeId="source-pressure-type"/>
+			<channel id="hp1-return-temperature" typeId="hp1-return-temperature-type"/>
+			<channel id="hp1-flow-temperature" typeId="hp1-flow-temperature-type"/>
+			<channel id="hp1-hotgas-temperature" typeId="hp1-hotgas-temperature-type"/>
+			<channel id="hp1-low-pressure" typeId="hp1-low-pressure-type"/>
+			<channel id="hp1-mean-pressure" typeId="hp1-mean-pressure-type"/>
+			<channel id="hp1-high-pressure" typeId="hp1-high-pressure-type"/>
+			<channel id="hp1-flow-rate" typeId="hp1-flow-rate-type"/>
 		</channels>
 	</channel-group-type>
 
