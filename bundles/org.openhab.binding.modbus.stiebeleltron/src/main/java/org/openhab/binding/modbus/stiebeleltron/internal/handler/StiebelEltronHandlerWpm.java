@@ -136,7 +136,8 @@ public class StiebelEltronHandlerWpm extends BaseThingHandler {
     /**
      * Parser used to convert incoming raw messages into system blocks
      */
-    private final SystemInformationBlockAllWpmParser systemInformationBlockParser = new SystemInformationBlockAllWpmParser();
+    private final SystemInformationBlockAllWpmParser systemInformationBlockParser = new SystemInformationBlockAllWpmParser(
+            true);
     /**
      * Parser used to convert incoming raw messages into system parameter blocks
      */
@@ -425,7 +426,7 @@ public class StiebelEltronHandlerWpm extends BaseThingHandler {
                     handlePolledSystemInformationData(registers);
                 }
             };
-            poller.registerPollTask(500, 41, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
+            poller.registerPollTask(500, 48, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
             systemInformationPoller = poller;
         }
         if (systemParameterPoller == null) {
@@ -608,8 +609,11 @@ public class StiebelEltronHandlerWpm extends BaseThingHandler {
                 getScaled(block.temperatureFlow, 10, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_RETURN_TEMPERATURE),
                 getScaled(block.temperatureReturn, 10, CELSIUS));
+
+        // Check for OFF value (0x9000)-> use -1 as 0 is in valid range 0..90
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_FIXED_TEMPERATURE_SETPOINT), getScaled(
-                (block.temperatureFixedSetPoint == -28672) ? 0 : block.temperatureFixedSetPoint, 10, CELSIUS));
+                (block.temperatureFixedSetPoint == -28672) ? -1 : block.temperatureFixedSetPoint, 10, CELSIUS));
+
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_BUFFER_TEMPERATURE),
                 getScaled(block.temperatureBuffer, 10, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_BUFFER_TEMPERATURE_SETPOINT),
@@ -622,6 +626,7 @@ public class StiebelEltronHandlerWpm extends BaseThingHandler {
         // 10 to high compared to value reported in ISG web interface; therefore using factor 100 (data type 7)
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_FLOW_RATE),
                 getScaled(block.flowRate, 100, LITRE_PER_MINUTE));
+
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_HOTWATER_TEMPERATURE),
                 getScaled(block.temperatureWater, 10, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_HOTWATER_TEMPERATURE_SETPOINT),
@@ -643,6 +648,7 @@ public class StiebelEltronHandlerWpm extends BaseThingHandler {
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_EXT_HEAT_SOURCE_RUNTIME),
                 new QuantityType<>(block.runtimeExtHeatSource, HOUR));
 
+        // Check for OFF value (0x9000)-> use -410, which returns -41; valid range is -40..40
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_LOWER_APPLICATION_LIMIT_HEATING),
                 getScaled((block.lowerHeatingLimit == -28672) ? -410 : block.lowerHeatingLimit, 10, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_LOWER_APPLICATION_LIMIT_HOTWATER),
@@ -654,6 +660,21 @@ public class StiebelEltronHandlerWpm extends BaseThingHandler {
                 getScaled(block.temperatureSourceMin, 10, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_SOURCE_PRESSURE),
                 getScaled(block.pressureSource, 100, BAR));
+
+        updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_HP1_RETRURN_TEMPERATURE),
+                getScaled(block.hp1TemperatureReturn, 10, CELSIUS));
+        updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_HP1_FLOW_TEMPERATURE),
+                getScaled(block.hp1TemperatureFlow, 10, CELSIUS));
+        updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_HP1_HOTGAS_TEMPERATURE),
+                getScaled(block.hp1TemperatureHotgas, 10, CELSIUS));
+        updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_HP1_LOW_PRESSURE),
+                getScaled(block.hp1PressureLow, 100, BAR));
+        updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_HP1_MEAN_PRESSURE),
+                getScaled(block.hp1PressureMean, 100, BAR));
+        updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_HP1_HGH_PRESSURE),
+                getScaled(block.hp1PressureHigh, 100, BAR));
+        updateState(channelUID(GROUP_SYSTEM_INFORMATION_WPM, CHANNEL_HP1_FLOW_RATE),
+                getScaled(block.hp1FlowRate, 10, LITRE_PER_MINUTE));
 
         resetCommunicationError();
     }

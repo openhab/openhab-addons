@@ -279,6 +279,49 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
+	<channel-type id="hp1-return-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Pump 1 Return Temperature</label>
+		<category>temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-flow-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Pump 1 Flow Temperature</label>
+		<category>temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-hotgas-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Pump 1 Hotgas Temperature</label>
+		<category>temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-low-pressure-type">
+		<item-type>Number:Pressure</item-type>
+		<label>Heat Pump 1 Low Pressure</label>
+		<category>pressure</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-mean-pressure-type">
+		<item-type>Number:Pressure</item-type>
+		<label>Heat Pump 1 Mean Pressure</label>
+		<category>pressure</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-high-pressure-type">
+		<item-type>Number:Pressure</item-type>
+		<label>Heat Pump 1 High Pressure</label>
+		<category>pressure</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-flow-rate-type">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Heat Pump 1 Flow Rate</label>
+		<category>flow</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
 
 	<!-- system parameters block -->
 	<!-- heatpump channels -->

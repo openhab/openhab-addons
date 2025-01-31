@@ -138,7 +138,8 @@ public class StiebelEltronHandlerWpm3i extends BaseThingHandler {
     /**
      * Parser used to convert incoming raw messages into system blocks
      */
-    private final SystemInformationBlockAllWpmParser systemInformationBlockParser = new SystemInformationBlockAllWpmParser();
+    private final SystemInformationBlockAllWpmParser systemInformationBlockParser = new SystemInformationBlockAllWpmParser(
+            false);
     /**
      * Parser used to convert incoming raw messages into system parameter blocks
      */

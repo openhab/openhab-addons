@@ -121,6 +121,14 @@ public class StiebelEltronBindingConstants {
     public static final String CHANNEL_HIGH_PRESSURE = "high-pressure";
     public static final String CHANNEL_LOW_PRESSURE = "low-pressure";
 
+    public static final String CHANNEL_HP1_RETRURN_TEMPERATURE = "hp1-return-temperature";
+    public static final String CHANNEL_HP1_FLOW_TEMPERATURE = "hp1-flow-temperature";
+    public static final String CHANNEL_HP1_HOTGAS_TEMPERATURE = "hp1-hotgas-temperature";
+    public static final String CHANNEL_HP1_LOW_PRESSURE = "hp1-low-pressure";
+    public static final String CHANNEL_HP1_MEAN_PRESSURE = "hp1-mean-pressure";
+    public static final String CHANNEL_HP1_HGH_PRESSURE = "hp1-high-pressure";
+    public static final String CHANNEL_HP1_FLOW_RATE = "hp1-flow-rate";
+
     // Block 2 System Parameters (Read/write holding register)
     public static final String CHANNEL_OPERATION_MODE = "operation-mode";
     public static final String CHANNEL_COMFORT_TEMPERATURE_HEATING = "comfort-temperature-heating";
