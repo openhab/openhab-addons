@@ -235,7 +235,13 @@ Note: The column WPM is for WPMsystem.
 | hotgas-temperature                        | Number:Temperature        | true      | The current hot gas temperature                                      |     |      |   x   |
 | high-pressure                             | Number:Pressure           | true      | The current high pressure                                            |     |      |   x   |
 | low-pressure                              | Number:Pressure           | true      | The current low pressure                                             |     |      |   x   |
-
+| hp1-return-temperature                    | Number:Temperature        | true      | Heat Pump 1 current return temperature                               |  x  |  x   |       |
+| hp1-flow-temperature                      | Number:Temperature        | true      | Heat Pump 1 current flow temperature                                 |  x  |  x   |       |
+| hp1-hotgas-temperature                    | Number:Temperature        | true      | Heat Pump 1 current hot gas temperature                              |  x  |  x   |       |
+| hp1-low-pressure                          | Number:Pressure           | true      | Heat Pump 1 current low pressure                                     |  x  |  x   |       |
+| hp1-mean-pressure                         | Number:Pressure           | true      | Heat Pump 1 current mean pressure                                    |  x  |  x   |       |
+| hp1-high-pressure                         | Number:Pressure           | true      | Heat Pump 1 current high pressure                                    |  x  |  x   |       |
+| hp1-flow-rate                             | Number:VolumetricFlowRate | true      | Heat Pump 1 current flow rate                                        |  x  |  x   |       |
 
 ### Energy Information Group
 
@@ -491,6 +497,13 @@ Number:Temperature        stiebel_eltron_heat_pump_wpm_lower_application_limit_h
 Number:Temperature        stiebel_eltron_heat_pump_wpm_source_temperature                         "Source Temperature"                             <temperature> { channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:systemInformationWpm3#source-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm_minimal_source_temperature                 "Minimal Source Temperature"                     <temperature> { channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:systemInformationWpm3#min-source-temperature" }
 Number:Pressure           stiebel_eltron_heat_pump_wpm_source_pressure                            "Source Pressure"                                <pressure>    { unit="bar", channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:systemInformationWpm3#source-pressure" }
+Number:Temperature        stiebel_eltron_heat_pump_wpm_hp1_return_temperature                     "HP1 Return Temperature"                         <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPMsytem:systemInformationWpm3#hp1-return-temperature" }
+Number:Temperature        stiebel_eltron_heat_pump_wpm_hp1_flow_temperature                       "HP1 Flow Temperature"                           <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPMsytem:systemInformationWpm3#hp1-flow-temperature" }
+Number:Temperature        stiebel_eltron_heat_pump_wpm_hp1_flow_temperature                       "HP1 Hot Gas Temperature"                        <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPMsytem:systemInformationWpm3#hp1-hotgas-temperature" }
+Number:Pressure           stiebel_eltron_heat_pump_wpm_hp1_logw_pressure                          "HP1 Low Pressure"                               <temperature> { unit="bar", channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPMsytem:systemInformationWpm3#hp1-low-pressure" }
+Number:Pressure           stiebel_eltron_heat_pump_wpm_hp1_mean_pressure                          "HP1 Mean Pressure"                              <temperature> { unit="bar", channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPMsytem:systemInformationWpm3#hp1-mean-pressure" }
+Number:Pressure           stiebel_eltron_heat_pump_wpm_hp1_high_pressure                          "HP1 High Pressure"                              <temperature> { unit="bar", channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPMsytem:systemInformationWpm3#hp1-high-pressure" }
+Number:VolumetricFlowRate stiebel_eltron_heat_pump_wpm_hp1_flow_rate                              "HP1 Flow Rate"                                  <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPMsytem:systemInformationWpm3#hp1-flow-rate" }
 
 Number:Energy             stiebel_eltron_heat_pump_wpm_heat_quantity_today                        "Heat Quantity Today [%.0f kWh]"                 <energy>      { channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:energyInformationWpm3#production-heat-today" }
 Number:Energy             stiebel_eltron_heat_pump_wpm_heat_quantity_total                        "Heat Quantity Total [%.3f MWh]"                 <energy>      { channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:energyInformationWpm3#production-heat-total" }
@@ -599,6 +612,13 @@ Number:Temperature        stiebel_eltron_heat_pump_wpm3_lower_application_limit_
 Number:Temperature        stiebel_eltron_heat_pump_wpm3_source_temperature                         "Source Temperature"                             <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#source-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm3_minimal_source_temperature                 "Minimal Source Temperature"                     <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#min-source-temperature" }
 Number:Pressure           stiebel_eltron_heat_pump_wpm3_source_pressure                            "Source Pressure"                                <pressure>    { unit="bar", channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#source-pressure" }
+Number:Temperature        stiebel_eltron_heat_pump_wpm3_hp1_return_temperature                     "HP1 Return Temperature"                         <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#hp1-return-temperature" }
+Number:Temperature        stiebel_eltron_heat_pump_wpm3_hp1_flow_temperature                       "HP1 Flow Temperature"                           <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#hp1-flow-temperature" }
+Number:Temperature        stiebel_eltron_heat_pump_wpm3_hp1_flow_temperature                       "HP1 Hot Gas Temperature"                        <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#hp1-hotgas-temperature" }
+Number:Pressure           stiebel_eltron_heat_pump_wpm3_hp1_logw_pressure                          "HP1 Low Pressure"                               <temperature> { unit="bar", channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#hp1-low-pressure" }
+Number:Pressure           stiebel_eltron_heat_pump_wpm3_hp1_mean_pressure                          "HP1 Mean Pressure"                              <temperature> { unit="bar", channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#hp1-mean-pressure" }
+Number:Pressure           stiebel_eltron_heat_pump_wpm3_hp1_high_pressure                          "HP1 High Pressure"                              <temperature> { unit="bar", channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#hp1-high-pressure" }
+Number:VolumetricFlowRate stiebel_eltron_heat_pump_wpm3_hp1_flow_rate                              "HP1 Flow Rate"                                  <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#hp1-flow-rate" }
 
 Number:Energy             stiebel_eltron_heat_pump_wpm3_heat_quantity_today                        "Heat Quantity Today [%.0f kWh]"                 <energy>      { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:energyInformationWpm3#production-heat-today" }
 Number:Energy             stiebel_eltron_heat_pump_wpm3_heat_quantity_total                        "Heat Quantity Total [%.3f MWh]"                 <energy>      { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:energyInformationWpm3#production-heat-total" }
@@ -709,7 +729,7 @@ Number:Time               stiebel_eltron_heat_pump_wpm3i_emergency_heating_stage
 ```
 
 
-### Item Configuration *Stiebel Eltron Heat Pump (WPM3i)*
+### Item Configuration *Stiebel Eltron ISG SG Ready Energy Management*
 
 ```java
 Number                    stiebel_eltron_sg_ready_on_off_switch                                   "SG Ready Energy Management Operating State"     <settings>    { channel="modbus:stiebeleltron-isg-sg-ready-em:se-isg-sg-ready-em:sgReadyEnergyManagementSettings#sg-ready-on-off-switch" }
