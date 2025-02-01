@@ -81,10 +81,10 @@ public class CameraServlet extends IpCameraServlet {
             case "/OnvifEvent":
                 ServletInputStream inputStream = req.getInputStream();
                 String xmlData = new String(inputStream.readAllBytes(), "UTF-8");
-                handler.onvifCamera.eventRecieved(xmlData);
+                handler.onvifCamera.eventReceived(xmlData);
                 break;
             default:
-                logger.debug("Recieved unknown request \tPOST:{}", pathInfo);
+                logger.debug("Received unknown request \tPOST:{}", pathInfo);
                 break;
         }
     }

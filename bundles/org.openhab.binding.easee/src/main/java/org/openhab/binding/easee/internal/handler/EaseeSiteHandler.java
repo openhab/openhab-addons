@@ -35,6 +35,7 @@ import org.openhab.binding.easee.internal.config.EaseeConfiguration;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.binding.easee.internal.connector.WebInterface;
 import org.openhab.binding.easee.internal.discovery.EaseeSiteDiscoveryService;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -172,6 +173,15 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
         logger.debug("Handler disposed.");
         cancelJobReference(dataPollingJobReference);
         webInterface.dispose();
+    }
+
+    @Override
+    protected void updateConfiguration(Configuration configuration) {
+        super.updateConfiguration(configuration);
+        getChildChargerHandlers().forEach((name, handler) -> {
+            logger.debug("notify {}: config update", name);
+            handler.reInit();
+        });
     }
 
     @Override
