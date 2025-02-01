@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_ALARM;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_SMOKE_CHECK;
 
 import java.util.concurrent.ExecutionException;
@@ -27,8 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetectorHandler;
-import org.openhab.binding.boschshc.internal.services.alarm.dto.AlarmServiceState;
-import org.openhab.binding.boschshc.internal.services.alarm.dto.AlarmState;
 import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.SmokeDetectorCheckState;
 import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.dto.SmokeDetectorCheckServiceState;
 import org.openhab.core.library.types.OnOffType;
@@ -55,9 +52,6 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
 
     @Captor
     private @NonNullByDefault({}) ArgumentCaptor<SmokeDetectorCheckServiceState> smokeDetectorCheckStateCaptor;
-
-    @Captor
-    private @NonNullByDefault({}) ArgumentCaptor<AlarmServiceState> alarmStateCaptor;
 
     @Test
     public void testHandleCommandSmokeTest() throws InterruptedException, TimeoutException, ExecutionException {
@@ -126,36 +120,5 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
         getFixture().processUpdate("SmokeDetectorCheck", jsonObject);
         verify(getCallback()).stateUpdated(new ChannelUID(getThing().getUID(), CHANNEL_SMOKE_CHECK),
                 new StringType("SMOKE_TEST_REQUESTED"));
-    }
-
-    @Test
-    public void testUpdateChannelsAlarm() {
-        String json = """
-                {
-                    "@type": "alarmState",
-                    "value": IDLE_OFF
-                }
-                """;
-        JsonElement jsonObject = JsonParser.parseString(json);
-        getFixture().processUpdate("Alarm", jsonObject);
-        verify(getCallback()).stateUpdated(new ChannelUID(getThing().getUID(), CHANNEL_ALARM),
-                new StringType("IDLE_OFF"));
-    }
-
-    @Test
-    public void testHandleCommandAlarm() throws InterruptedException, TimeoutException, ExecutionException {
-        getFixture().handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_ALARM), new StringType("PRIMARY_ALARM"));
-        verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("Alarm"), alarmStateCaptor.capture());
-        AlarmServiceState state = alarmStateCaptor.getValue();
-        assertSame(AlarmState.PRIMARY_ALARM, state.value);
-    }
-
-    @Test
-    public void testHandleCommandAlarmUnknownAlarmState()
-            throws InterruptedException, TimeoutException, ExecutionException {
-        getFixture().handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_ALARM), new StringType("INVALID"));
-        verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("Alarm"), alarmStateCaptor.capture());
-        AlarmServiceState state = alarmStateCaptor.getValue();
-        assertSame(AlarmState.IDLE_OFF, state.value);
     }
 }

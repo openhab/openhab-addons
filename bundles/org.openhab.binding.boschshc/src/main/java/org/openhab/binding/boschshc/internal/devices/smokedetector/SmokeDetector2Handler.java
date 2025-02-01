@@ -17,7 +17,6 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.AbstractSmokeDetectorHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.communicationquality.CommunicationQualityService;
 import org.openhab.binding.boschshc.internal.services.communicationquality.dto.CommunicationQualityServiceState;
@@ -29,7 +28,7 @@ import org.openhab.core.thing.Thing;
  * @author Patrick Gell - Initial contribution
  */
 @NonNullByDefault
-public class SmokeDetector2Handler extends AbstractSmokeDetectorHandler {
+public class SmokeDetector2Handler extends AbstractSmokeDetectorHandlerWithAlarmService {
 
     public SmokeDetector2Handler(Thing thing) {
         super(thing);
