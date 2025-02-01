@@ -210,7 +210,7 @@ If you do not specify any of these, the binding will use the default which shoul
 | `ipWhitelist`| Enter any IPs inside brackets that you wish to allow to access the video stream. `DISABLE` the default value will turn this feature off.  Example: `ipWhitelist="(127.0.0.1)(192.168.0.99)"` |
 | `ptzContinuous`| If set to false (default) the camera will move using Relative commands, If set to true the camera will instead use continuous movements and will require an `OFF` command to stop the movement. |
 | `onvifEventServiceType`| ONVIF event method to use. If camera does not report event capabilities, the event method can be forced here. |
-| | `0` - Auto detect event capabilities. (Default) ONVIF event capabilities are detected automatically. PullMessages is prefered over WSBaseNotification because there is no way to determine if an WSBaseNotification subscription exists on startup. |
+| | `0` - Auto detect event capabilities. (Default) ONVIF event capabilities are detected automatically. PullMessages is preferred over WSBaseNotification because there is no way to determine if an WSBaseNotification subscription exists on startup. |
 | | `1` - ONVIF events disabled. |
 | | `2` - Force ONVIF PullMessages event method even if the camera does not claim to support this. |
 | | `3` - Force ONVIF WSBaseSubscription event method even if the camera does not claim to support this. |
