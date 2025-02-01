@@ -198,11 +198,11 @@ public class HueSyncHandler extends BaseThingHandler {
             case POLL -> {
                 this.updateStatus(ThingStatus.ONLINE);
 
-                initialDelay = 5;
+                initialDelay = HueSyncConstants.POLL_INITIAL_DELAY;
+
                 interval = this.getConfigAs(HueSyncConfiguration.class).statusUpdateInterval;
                 task = new HueSyncUpdateTask(connection, this.deviceInfo.get(),
                         deviceStatus -> this.handleUpdate(deviceStatus), this.exceptionHandler);
-
             }
             case REGISTER -> {
                 initialDelay = HueSyncConstants.REGISTRATION_INITIAL_DELAY;
@@ -245,7 +245,7 @@ public class HueSyncHandler extends BaseThingHandler {
             ThingStatus status = this.thing.getStatus();
 
             switch (status) {
-                case ONLINE -> {
+                case ONLINE:
                     Optional.ofNullable(dto).ifPresent(taskResult -> {
                         Optional.ofNullable(taskResult.deviceStatus)
                                 .ifPresent(payload -> this.updateFirmwareInformation(payload));
@@ -254,8 +254,18 @@ public class HueSyncHandler extends BaseThingHandler {
                         Optional.ofNullable(taskResult.execution)
                                 .ifPresent(payload -> this.updateExecutionInformation(payload));
                     });
-                }
-                default -> this.logger.debug("Unable to execute update - Status: [{}]", status);
+                    break;
+                case OFFLINE:
+                    this.stopTasks();
+
+                    this.connection.ifPresent(connectionInstance -> {
+                        this.deviceInfo.ifPresent(deviceInfoInstance -> {
+                            this.connect(connectionInstance, deviceInfoInstance);
+                        });
+                    });
+                    break;
+                default:
+                    this.logger.debug("Unable to execute update - Status: [{}]", status);
             }
         }
     }
