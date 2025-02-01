@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
+import org.openhab.binding.hdpowerview.internal.discovery.SerialNumberHelper.ApiVersion;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.sddp.SddpDevice;
@@ -65,12 +66,17 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
         final ThingUID thingUID = getThingUID(device);
         if (thingUID != null) {
             try {
+                String label;
+                String serial;
                 int generation = getGeneration(device);
-                String label = generation == 3 //
-                        ? String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress)
-                        : String.format("@text/%s [\"%s\", \"%s\"]",
-                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, generation, device.ipAddress);
-                String serial = serialNumberHelper.getSerialNumber(device.ipAddress, generation);
+                if (generation < 3) {
+                    label = String.format("@text/%s [\"%s\", \"%s\"]",
+                            HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, generation, device.ipAddress);
+                    serial = serialNumberHelper.getSerialNumber(device.ipAddress, ApiVersion.V1);
+                } else {
+                    label = String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress);
+                    serial = serialNumberHelper.getSerialNumber(device.ipAddress, ApiVersion.V3);
+                }
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
                         .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)

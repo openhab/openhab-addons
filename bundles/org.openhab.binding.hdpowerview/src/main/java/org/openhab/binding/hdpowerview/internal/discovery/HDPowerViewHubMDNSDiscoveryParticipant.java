@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
+import org.openhab.binding.hdpowerview.internal.discovery.SerialNumberHelper.ApiVersion;
 import org.openhab.binding.hdpowerview.internal.dto.Firmware;
 import org.openhab.binding.hdpowerview.internal.dto.HubFirmware;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
@@ -77,9 +78,8 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
             if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
                 ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
                 String generation = this.getGeneration(host);
-                int generationNumber = "1/2".equals(generation) ? 2 : 3;
                 String label = String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, generation, host);
-                String serial = serialNumberHelper.getSerialNumber(host, generationNumber);
+                String serial = serialNumberHelper.getSerialNumber(host, ApiVersion.V1);
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, host)
                         .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)

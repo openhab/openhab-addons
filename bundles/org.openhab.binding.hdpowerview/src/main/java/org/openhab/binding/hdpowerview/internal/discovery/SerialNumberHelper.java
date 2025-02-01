@@ -38,8 +38,13 @@ import com.google.gson.JsonSyntaxException;
 @Component(service = SerialNumberHelper.class)
 public class SerialNumberHelper {
 
-    private static final String GEN12_URL_FORMAT = "http://%s/api/userdata";
-    private static final String GEN3_URL_FORMAT = "http://%s/gateway/info";
+    public enum ApiVersion {
+        V1,
+        V3;
+    }
+
+    private static final String API_V1_URL_FORMAT = "http://%s/api/userdata";
+    private static final String API_V3_URL_FORMAT = "http://%s/gateway/info";
 
     private final Gson gsonParser = new Gson();
     private final HttpClientFactory httpClientFactory;
@@ -53,25 +58,25 @@ public class SerialNumberHelper {
      * Get the serial number of the hub / gateway on the given IPv4 address
      *
      * @param ipAddress a dotted ipv4 address
-     * @param generation the hub / gateway generation
+     * @param apiVersion the hub / gateway api version used
      * @return the serial number
      */
-    public String getSerialNumber(String ipAddress, int generation) {
+    public String getSerialNumber(String ipAddress, ApiVersion apiVersion) {
         try {
             HttpClient httpClient = httpClientFactory.getCommonHttpClient();
-            String uri = String.format(generation < 3 ? GEN12_URL_FORMAT : GEN3_URL_FORMAT, ipAddress);
+            String uri = String.format(ApiVersion.V1 == apiVersion ? API_V1_URL_FORMAT : API_V3_URL_FORMAT, ipAddress);
             ContentResponse content = httpClient.GET(uri);
             if (HttpStatus.OK_200 == content.getStatus()) {
                 String json = content.getContentAsString();
-                switch (generation) {
-                    case 1, 2:
+                switch (apiVersion) {
+                    case V1:
                         UserData userData = gsonParser.fromJson(json, UserData.class);
                         if (userData != null && userData.serialNumber instanceof String serialNumber) {
                             return serialNumber;
                         }
                         break;
 
-                    case 3:
+                    case V3:
                         Info info = gsonParser.fromJson(json, Info.class);
                         if (info != null && info.getSerialNumber() instanceof String serialNumber) {
                             return serialNumber;

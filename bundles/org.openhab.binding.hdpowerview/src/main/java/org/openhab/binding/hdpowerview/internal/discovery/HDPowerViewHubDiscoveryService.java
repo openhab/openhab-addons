@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
+import org.openhab.binding.hdpowerview.internal.discovery.SerialNumberHelper.ApiVersion;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -92,7 +93,7 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
                         ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
                         String label = String.format("@text/%s [\"%s\", \"%s\"]",
                                 HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, 2, host);
-                        String serial = serialNumberHelper.getSerialNumber(host, 2);
+                        String serial = serialNumberHelper.getSerialNumber(host, ApiVersion.V1);
                         DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                                 .withProperty(HDPowerViewHubConfiguration.HOST, host)
                                 .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
