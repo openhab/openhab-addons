@@ -75,7 +75,7 @@ public class SonnenHandler extends BaseThingHandler {
         config = getConfigAs(SonnenConfiguration.class);
         if (config.refreshInterval < 0 || config.refreshInterval > 1000) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Parameter 'refresh Rate' must be in the range 0-1000!");
+                    "Parameter 'refresh Rate' must be in the range 0-1000.");
             return;
         }
         if (config.hostIP.isBlank()) {
