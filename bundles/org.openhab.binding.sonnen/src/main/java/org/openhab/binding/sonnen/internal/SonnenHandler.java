@@ -62,8 +62,6 @@ public class SonnenHandler extends BaseThingHandler {
 
     private boolean sonnenAPIV2 = false;
 
-    private int disconnectionCounter = 0;
-
     private Map<String, Boolean> linkedChannels = new HashMap<>();
 
     public SonnenHandler(Thing thing) {
@@ -115,16 +113,15 @@ public class SonnenHandler extends BaseThingHandler {
             error = serviceCommunication.refreshBatteryConnectionAPICALLV1();
         }
         if (error.isEmpty()) {
+            if (ThingStatus.OFFLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
             if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
                 updateStatus(ThingStatus.ONLINE);
-                disconnectionCounter = 0;
             }
         } else {
-            disconnectionCounter++;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
-            if (disconnectionCounter < 60) {
-                return true;
-            }
+            return false;
         }
         return error.isEmpty();
     }
@@ -162,9 +159,10 @@ public class SonnenHandler extends BaseThingHandler {
     }
 
     private void refreshChannels() {
-        updateBatteryData();
-        for (Channel channel : getThing().getChannels()) {
-            updateChannel(channel.getUID().getId(), null);
+        if (updateBatteryData()) {
+            for (Channel channel : getThing().getChannels()) {
+                updateChannel(channel.getUID().getId(), null);
+            }
         }
     }
 
@@ -337,8 +335,9 @@ public class SonnenHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
-            updateBatteryData();
-            updateChannel(channelUID.getId(), null);
+            if (updateBatteryData()) {
+                updateChannel(channelUID.getId(), null);
+            }
         }
         if (channelUID.getId().equals(CHANNELBATTERYCHARGINGGRID)) {
             String putData = null;
