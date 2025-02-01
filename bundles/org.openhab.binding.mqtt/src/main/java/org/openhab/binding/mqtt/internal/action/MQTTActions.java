@@ -55,7 +55,7 @@ public class MQTTActions implements ThingActions {
         publishMQTT(topic, value, null);
     }
 
-    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
+    @RuleAction(label = "@text/actionRetainLabel", description = "@text/actionRetainDesc")
     public void publishMQTT(
             @ActionInput(name = "topic", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable final String topic,
             @ActionInput(name = "value", label = "@text/actionInputValueLabel", description = "@text/actionInputValueDesc") @Nullable final String value,
@@ -74,7 +74,7 @@ public class MQTTActions implements ThingActions {
         publishMQTT(topic, value, null);
     }
 
-    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
+    @RuleAction(label = "@text/actionRetainLabel", description = "@text/actionRetainDesc")
     public void publishMQTT(
             @ActionInput(name = "topic", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable final String topic,
             @ActionInput(name = "value", label = "@text/actionInputValueLabel", description = "@text/actionInputValueDesc") final byte[] value,
