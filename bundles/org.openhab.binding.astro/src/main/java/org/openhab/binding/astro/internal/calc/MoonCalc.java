@@ -118,9 +118,9 @@ public class MoonCalc {
      */
     private void setMoonPhase(Calendar calendar, Moon moon) {
         MoonPhase phase = moon.getPhase();
-        double julianDateEndOfDay = DateTimeUtils.endOfDayDateToJulianDate(calendar);
-        double parentNewMoon = getPreviousPhase(calendar, julianDateEndOfDay, NEW_MOON);
-        double age = Math.abs(parentNewMoon - julianDateEndOfDay);
+        double julianDate = DateTimeUtils.dateToJulianDate(calendar);
+        double parentNewMoon = getPreviousPhase(calendar, julianDate, NEW_MOON);
+        double age = Math.abs(parentNewMoon - julianDate);
         phase.setAge(age);
 
         long parentNewMoonMillis = DateTimeUtils.toCalendar(parentNewMoon).getTimeInMillis();
@@ -129,7 +129,7 @@ public class MoonCalc {
         double agePercent = ageRangeTimeMillis != 0 ? ageCurrentMillis * 100.0 / ageRangeTimeMillis : 0;
         phase.setAgePercent(agePercent);
         phase.setAgeDegree(3.6 * agePercent);
-        double illumination = getIllumination(DateTimeUtils.dateToJulianDate(calendar));
+        double illumination = getIllumination(julianDate);
         phase.setIllumination(illumination);
         boolean isWaxing = age < (29.530588853 / 2);
         if (DateTimeUtils.isSameDay(calendar, phase.getNew())) {
