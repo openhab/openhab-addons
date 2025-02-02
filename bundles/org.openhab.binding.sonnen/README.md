@@ -40,6 +40,8 @@ The following channels are yet supported:
 | energyExportedStateProduction  | Number:Energy | read   | Indicates the exported kWh Production                                                   |
 | energyImportedStateConsumption | Number:Energy | read   | Indicates the imported kWh Consumption                                                  |
 | energyExportedStateConsumption | Number:Energy | read   | Indicates the exported kWh Consumption                                                  |
+| batteryChargingFromGrid | Switch| read/write   | Starts and stops the active battery charging from Grid. Note: "Write-API" in Software-Integration page of the local web interface from the sonnen battery must be activated and the given token must be entered in authentication token field of the binding|
+| batteryOperationMode | String | read   | Indicates if the Battery is operating in automatic or manual mode. Manual mode is required for active charging the battery. Assure that the battery is in automatic mode if you don't actively charge the battery.Changing the operation mode is happening with the channel "batteryChargingFromGrid"|
 
 ## Full Example
 
