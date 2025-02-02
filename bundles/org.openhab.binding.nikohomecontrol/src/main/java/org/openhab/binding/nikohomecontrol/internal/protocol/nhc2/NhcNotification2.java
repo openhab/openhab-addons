@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 class NhcNotification2 {
     String status = "";
     String type = "";
-    String timeOccured = "";
+    String timeOccurred = "";
     String uuid = "";
     String text = "";
 }

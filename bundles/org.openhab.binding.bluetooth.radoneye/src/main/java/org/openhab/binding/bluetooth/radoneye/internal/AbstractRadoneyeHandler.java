@@ -15,18 +15,15 @@ package org.openhab.binding.bluetooth.radoneye.internal;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
-import org.openhab.binding.bluetooth.BluetoothUtils;
+import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,38 +32,16 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Peter Obel - Initial contribution
+ * @author Jörg Sautter - Use the ConnectedBluetoothHandler the handle the connection state
  */
 @NonNullByDefault
-public abstract class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
-
-    private static final int CHECK_PERIOD_SEC = 10;
+public abstract class AbstractRadoneyeHandler extends ConnectedBluetoothHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractRadoneyeHandler.class);
+    private final AtomicLong isNotifying = new AtomicLong(-1);
 
-    private AtomicInteger sinceLastReadSec = new AtomicInteger();
     private RadoneyeConfiguration configuration = new RadoneyeConfiguration();
     private @Nullable ScheduledFuture<?> scheduledTask;
-
-    private volatile int errorConnectCounter;
-    private volatile int errorReadCounter;
-    private volatile int errorWriteCounter;
-    private volatile int errorDisconnectCounter;
-    private volatile int errorResolvingCounter;
-
-    private volatile ServiceState serviceState = ServiceState.NOT_RESOLVED;
-    private volatile ReadState readState = ReadState.IDLE;
-
-    private enum ServiceState {
-        NOT_RESOLVED,
-        RESOLVING,
-        RESOLVED
-    }
-
-    private enum ReadState {
-        IDLE,
-        READING,
-        WRITING
-    }
 
     public AbstractRadoneyeHandler(Thing thing) {
         super(thing);
@@ -80,216 +55,81 @@ public abstract class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
         logger.debug("Using configuration: {}", configuration);
         cancelScheduledTask();
         logger.debug("Start scheduled task to read device in every {} seconds", configuration.refreshInterval);
-        scheduledTask = scheduler.scheduleWithFixedDelay(this::executePeridioc, CHECK_PERIOD_SEC, CHECK_PERIOD_SEC,
-                TimeUnit.SECONDS);
-
-        sinceLastReadSec.set(configuration.refreshInterval); // update immediately
+        scheduledTask = scheduler.scheduleWithFixedDelay(this::execute, configuration.refreshInterval,
+                configuration.refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         logger.debug("Dispose");
         cancelScheduledTask();
-        serviceState = ServiceState.NOT_RESOLVED;
-        readState = ReadState.IDLE;
         super.dispose();
     }
 
     private void cancelScheduledTask() {
-        if (scheduledTask != null) {
-            scheduledTask.cancel(true);
+        ScheduledFuture<?> task = scheduledTask;
+        if (task != null) {
+            task.cancel(false);
             scheduledTask = null;
         }
     }
 
-    private void executePeridioc() {
-        sinceLastReadSec.addAndGet(CHECK_PERIOD_SEC);
-        execute();
-    }
+    private void execute() {
+        try {
+            long since = isNotifying.get();
 
-    private synchronized void execute() {
-        ConnectionState connectionState = device.getConnectionState();
-        logger.debug("Device {} state is {}, serviceState {}, readState {}", address, connectionState, serviceState,
-                readState);
-
-        switch (connectionState) {
-            case DISCOVERING:
-            case DISCOVERED:
-            case DISCONNECTED:
-                if (isTimeToRead()) {
-                    connect();
-                }
-                break;
-            case CONNECTED:
-                read();
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void connect() {
-        logger.debug("Connect to device {}...", address);
-        if (!device.connect()) {
-            errorConnectCounter++;
-            if (errorConnectCounter < 6) {
-                logger.debug("Connecting to device {} failed {} times", address, errorConnectCounter);
-            } else {
-                logger.debug("ERROR:  Controller reset needed.  Connecting to device {} failed {} times", address,
-                        errorConnectCounter);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connecting to device failed");
-            }
-        } else {
-            logger.debug("Connected to device {}", address);
-            errorConnectCounter = 0;
-        }
-    }
-
-    private void disconnect() {
-        logger.debug("Disconnect from device {}...", address);
-        if (!device.disconnect()) {
-            errorDisconnectCounter++;
-            if (errorDisconnectCounter < 6) {
-                logger.debug("Disconnect from device {} failed {} times", address, errorDisconnectCounter);
-            } else {
-                logger.debug("ERROR:  Controller reset needed.  Disconnect from device {} failed {} times", address,
-                        errorDisconnectCounter);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Disconnect from device failed");
-            }
-        } else {
-            logger.debug("Disconnected from device {}", address);
-            errorDisconnectCounter = 0;
-        }
-    }
-
-    private void read() {
-        switch (serviceState) {
-            case NOT_RESOLVED:
-                logger.debug("Discover services on device {}", address);
-                discoverServices();
-                break;
-            case RESOLVED:
-                switch (readState) {
-                    case IDLE:
-                        if (getTriggerUUID() != null) {
-                            logger.debug("Send trigger data to device {}...", address);
-                            BluetoothCharacteristic characteristic = device.getCharacteristic(getTriggerUUID());
-                            if (characteristic != null) {
-                                readState = ReadState.WRITING;
-                                errorWriteCounter = 0;
-                                device.writeCharacteristic(characteristic, getTriggerData()).whenComplete((v, ex) -> {
-                                    readSensorData();
-                                });
-                            } else {
-                                errorWriteCounter++;
-                                if (errorWriteCounter < 6) {
-                                    logger.debug("Read/write data from device {} failed {} times", address,
-                                            errorWriteCounter);
-                                } else {
-                                    logger.debug(
-                                            "ERROR:  Controller reset needed.  Read/write data from device {} failed {} times",
-                                            address, errorWriteCounter);
-                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                            "Read/write data from device failed");
-                                }
-                                disconnect();
-                            }
-                        } else {
-                            readSensorData();
-                        }
-
-                        break;
-                    default:
-                        logger.debug("Unhandled Resolved readState {} on device {}", readState, address);
-                        break;
-                }
-                break;
-            default: // serviceState RESOLVING
-                errorResolvingCounter++;
-                if (errorResolvingCounter < 6) {
-                    logger.debug("Unhandled serviceState {} on device {}", serviceState, address);
-                } else {
-                    logger.debug("ERROR:  Controller reset needed.  Unhandled serviceState {} on device {}",
-                            serviceState, address);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Service discovery for device failed");
-                }
-                break;
-        }
-    }
-
-    private void readSensorData() {
-        logger.debug("Read data from device {}...", address);
-        BluetoothCharacteristic characteristic = device.getCharacteristic(getDataUUID());
-        if (characteristic != null) {
-            readState = ReadState.READING;
-            errorReadCounter = 0;
-            errorResolvingCounter = 0;
-            device.readCharacteristic(characteristic).whenComplete((data, ex) -> {
-                try {
-                    logger.debug("Characteristic {} from device {}: {}", characteristic.getUuid(), address, data);
-                    updateStatus(ThingStatus.ONLINE);
-                    sinceLastReadSec.set(0);
-                    updateChannels(BluetoothUtils.toIntArray(data));
-                } finally {
-                    readState = ReadState.IDLE;
+            if (since != -1) {
+                logger.debug("Send trigger data to device {}", address);
+                writeCharacteristic(getServiceUUID(), getTriggerUUID(), getTriggerData(), false).exceptionally((t) -> {
+                    String message = "Failed to send trigger data to device " + address + ", disconnect";
+                    logger.warn(message, t);
                     disconnect();
-                }
-            });
-        } else {
-            errorReadCounter++;
-            if (errorReadCounter < 6) {
-                logger.debug("Read data from device {} failed {} times", address, errorReadCounter);
+                    return null;
+                });
+            } else if (device.getConnectionState() == ConnectionState.CONNECTED && device.isServicesDiscovered()) {
+                // we can enable the notifications multiple times, this is handled internally
+                enableNotifications(getServiceUUID(), getDataUUID()).thenAccept((v) -> {
+                    isNotifying.set(System.currentTimeMillis());
+                }).exceptionally((t) -> {
+                    String message = "Failed to enable notifications on device " + address + ", disconnect";
+                    logger.warn(message, t);
+                    disconnect();
+                    return null;
+                });
             } else {
-                logger.debug("ERROR:  Controller reset needed.  Read data from device {} failed {} times", address,
-                        errorReadCounter);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Read data from device failed");
+                logger.debug("Device {} state is {}, discovered {}", address, device.getConnectionState(),
+                        device.isServicesDiscovered());
             }
-            disconnect();
+        } catch (Exception e) {
+            String message = "Failed to execute for device " + address;
+            logger.warn(message, e);
         }
-    }
-
-    private void discoverServices() {
-        logger.debug("Discover services for device {}", address);
-        serviceState = ServiceState.RESOLVING;
-        device.discoverServices();
     }
 
     @Override
-    public void onServicesDiscovered() {
-        serviceState = ServiceState.RESOLVED;
-        logger.debug("Service discovery completed for device {}", address);
-        printServices();
-        execute();
-    }
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
+        super.onCharacteristicUpdate(characteristic, value);
 
-    private void printServices() {
-        device.getServices().forEach(service -> logger.debug("Device {} Service '{}'", address, service));
+        if (!getDataUUID().equals(characteristic.getUuid())) {
+            return;
+        }
+
+        logger.debug("Characteristic {} from device {}: {}", characteristic.getUuid(), address, value);
+        updateChannels(value);
     }
 
     @Override
     public void onConnectionStateChange(BluetoothConnectionStatusNotification connectionNotification) {
-        logger.debug("Connection State Change Event is {}", connectionNotification.getConnectionState());
-        switch (connectionNotification.getConnectionState()) {
-            case DISCONNECTED:
-                if (serviceState == ServiceState.RESOLVING) {
-                    serviceState = ServiceState.NOT_RESOLVED;
-                }
-                readState = ReadState.IDLE;
-                break;
-            default:
-                break;
+        super.onConnectionStateChange(connectionNotification);
+        // stop sending triggers to a probably broken connection
+        isNotifying.set(-1);
 
+        if (connectionNotification.getConnectionState() == ConnectionState.CONNECTED) {
+            // start discovering when super.onConnectionStateChange does not
+            if (device.isServicesDiscovered() && !device.discoverServices()) {
+                logger.debug("Error while discovering services");
+            }
         }
-        execute();
-    }
-
-    private boolean isTimeToRead() {
-        int sinceLastRead = sinceLastReadSec.get();
-        logger.debug("Time since last update: {} sec", sinceLastRead);
-        return sinceLastRead >= configuration.refreshInterval;
     }
 
     /**
@@ -300,6 +140,13 @@ public abstract class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
     protected int getFwVersion() {
         return configuration.fwVersion;
     }
+
+    /**
+     * Provides the UUID of the service, which holds the characteristics
+     *
+     * @return the UUID of the data characteristic
+     */
+    protected abstract UUID getServiceUUID();
 
     /**
      * Provides the UUID of the characteristic, which holds the sensor data
@@ -327,5 +174,5 @@ public abstract class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
      *
      * @param is the content of the bluetooth characteristic
      */
-    protected abstract void updateChannels(int[] is);
+    protected abstract void updateChannels(byte[] is);
 }
