@@ -350,6 +350,10 @@
 			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
 
@@ -419,6 +423,10 @@
 			<channel id="low-battery" typeId="system.low-battery"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
