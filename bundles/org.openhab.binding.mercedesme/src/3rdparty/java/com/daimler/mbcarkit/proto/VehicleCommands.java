@@ -895,6 +895,132 @@ public final class VehicleCommands {
     // @@protoc_insertion_point(enum_scope:proto.DriveType)
   }
 
+  /**
+   * Protobuf enum {@code proto.ChargingBreakClockTimerEntryStatus}
+   */
+  public enum ChargingBreakClockTimerEntryStatus
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>DELETE = 0;</code>
+     */
+    DELETE(0),
+    /**
+     * <code>INACTIVE = 1;</code>
+     */
+    INACTIVE(1),
+    /**
+     * <code>ACTIVE = 2;</code>
+     */
+    ACTIVE(2),
+    UNRECOGNIZED(-1),
+    ;
+
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargingBreakClockTimerEntryStatus.class.getName());
+    }
+    /**
+     * <code>DELETE = 0;</code>
+     */
+    public static final int DELETE_VALUE = 0;
+    /**
+     * <code>INACTIVE = 1;</code>
+     */
+    public static final int INACTIVE_VALUE = 1;
+    /**
+     * <code>ACTIVE = 2;</code>
+     */
+    public static final int ACTIVE_VALUE = 2;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static ChargingBreakClockTimerEntryStatus valueOf(int value) {
+      return forNumber(value);
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
+    public static ChargingBreakClockTimerEntryStatus forNumber(int value) {
+      switch (value) {
+        case 0: return DELETE;
+        case 1: return INACTIVE;
+        case 2: return ACTIVE;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<ChargingBreakClockTimerEntryStatus>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        ChargingBreakClockTimerEntryStatus> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<ChargingBreakClockTimerEntryStatus>() {
+            public ChargingBreakClockTimerEntryStatus findValueByNumber(int number) {
+              return ChargingBreakClockTimerEntryStatus.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleCommands.getDescriptor().getEnumTypes().get(4);
+    }
+
+    private static final ChargingBreakClockTimerEntryStatus[] VALUES = values();
+
+    public static ChargingBreakClockTimerEntryStatus valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private ChargingBreakClockTimerEntryStatus(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:proto.ChargingBreakClockTimerEntryStatus)
+  }
+
   public interface AcknowledgeCommandRequestOrBuilder extends
       // @@protoc_insertion_point(interface_extends:proto.AcknowledgeCommandRequest)
       com.google.protobuf.MessageOrBuilder {
@@ -2154,6 +2280,36 @@ public final class VehicleCommands {
      */
     com.daimler.mbcarkit.proto.VehicleCommands.ActivateVehicleKeysOrBuilder getActivateVehicleKeysOrBuilder();
 
+    /**
+     * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+     * @return Whether the chargingbreakClocktimerConfigure field is set.
+     */
+    boolean hasChargingbreakClocktimerConfigure();
+    /**
+     * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+     * @return The chargingbreakClocktimerConfigure.
+     */
+    com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure getChargingbreakClocktimerConfigure();
+    /**
+     * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigureOrBuilder getChargingbreakClocktimerConfigureOrBuilder();
+
+    /**
+     * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+     * @return Whether the wiperHealthReset field is set.
+     */
+    boolean hasWiperHealthReset();
+    /**
+     * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+     * @return The wiperHealthReset.
+     */
+    com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset getWiperHealthReset();
+    /**
+     * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthResetOrBuilder getWiperHealthResetOrBuilder();
+
     com.daimler.mbcarkit.proto.VehicleCommands.CommandRequest.CommandCase getCommandCase();
   }
   /**
@@ -2387,6 +2543,8 @@ public final class VehicleCommands {
       CHARGE_COUPLER_UNLOCK(46),
       DEACTIVATE_VEHICLE_KEYS(48),
       ACTIVATE_VEHICLE_KEYS(49),
+      CHARGINGBREAK_CLOCKTIMER_CONFIGURE(50),
+      WIPER_HEALTH_RESET(64),
       COMMAND_NOT_SET(0);
       private final int value;
       private CommandCase(int value) {
@@ -2450,6 +2608,8 @@ public final class VehicleCommands {
           case 46: return CHARGE_COUPLER_UNLOCK;
           case 48: return DEACTIVATE_VEHICLE_KEYS;
           case 49: return ACTIVATE_VEHICLE_KEYS;
+          case 50: return CHARGINGBREAK_CLOCKTIMER_CONFIGURE;
+          case 64: return WIPER_HEALTH_RESET;
           case 0: return COMMAND_NOT_SET;
           default: return null;
         }
@@ -3997,6 +4157,68 @@ public final class VehicleCommands {
       return com.daimler.mbcarkit.proto.VehicleCommands.ActivateVehicleKeys.getDefaultInstance();
     }
 
+    public static final int CHARGINGBREAK_CLOCKTIMER_CONFIGURE_FIELD_NUMBER = 50;
+    /**
+     * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+     * @return Whether the chargingbreakClocktimerConfigure field is set.
+     */
+    @java.lang.Override
+    public boolean hasChargingbreakClocktimerConfigure() {
+      return commandCase_ == 50;
+    }
+    /**
+     * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+     * @return The chargingbreakClocktimerConfigure.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure getChargingbreakClocktimerConfigure() {
+      if (commandCase_ == 50) {
+         return (com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure) command_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.getDefaultInstance();
+    }
+    /**
+     * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigureOrBuilder getChargingbreakClocktimerConfigureOrBuilder() {
+      if (commandCase_ == 50) {
+         return (com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure) command_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.getDefaultInstance();
+    }
+
+    public static final int WIPER_HEALTH_RESET_FIELD_NUMBER = 64;
+    /**
+     * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+     * @return Whether the wiperHealthReset field is set.
+     */
+    @java.lang.Override
+    public boolean hasWiperHealthReset() {
+      return commandCase_ == 64;
+    }
+    /**
+     * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+     * @return The wiperHealthReset.
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset getWiperHealthReset() {
+      if (commandCase_ == 64) {
+         return (com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset) command_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.getDefaultInstance();
+    }
+    /**
+     * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthResetOrBuilder getWiperHealthResetOrBuilder() {
+      if (commandCase_ == 64) {
+         return (com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset) command_;
+      }
+      return com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.getDefaultInstance();
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -4157,6 +4379,12 @@ public final class VehicleCommands {
       }
       if (commandCase_ == 49) {
         output.writeMessage(49, (com.daimler.mbcarkit.proto.VehicleCommands.ActivateVehicleKeys) command_);
+      }
+      if (commandCase_ == 50) {
+        output.writeMessage(50, (com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure) command_);
+      }
+      if (commandCase_ == 64) {
+        output.writeMessage(64, (com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset) command_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -4360,6 +4588,14 @@ public final class VehicleCommands {
       if (commandCase_ == 49) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(49, (com.daimler.mbcarkit.proto.VehicleCommands.ActivateVehicleKeys) command_);
+      }
+      if (commandCase_ == 50) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(50, (com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure) command_);
+      }
+      if (commandCase_ == 64) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(64, (com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset) command_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -4567,6 +4803,14 @@ public final class VehicleCommands {
           if (!getActivateVehicleKeys()
               .equals(other.getActivateVehicleKeys())) return false;
           break;
+        case 50:
+          if (!getChargingbreakClocktimerConfigure()
+              .equals(other.getChargingbreakClocktimerConfigure())) return false;
+          break;
+        case 64:
+          if (!getWiperHealthReset()
+              .equals(other.getWiperHealthReset())) return false;
+          break;
         case 0:
         default:
       }
@@ -4771,6 +5015,14 @@ public final class VehicleCommands {
         case 49:
           hash = (37 * hash) + ACTIVATE_VEHICLE_KEYS_FIELD_NUMBER;
           hash = (53 * hash) + getActivateVehicleKeys().hashCode();
+          break;
+        case 50:
+          hash = (37 * hash) + CHARGINGBREAK_CLOCKTIMER_CONFIGURE_FIELD_NUMBER;
+          hash = (53 * hash) + getChargingbreakClocktimerConfigure().hashCode();
+          break;
+        case 64:
+          hash = (37 * hash) + WIPER_HEALTH_RESET_FIELD_NUMBER;
+          hash = (53 * hash) + getWiperHealthReset().hashCode();
           break;
         case 0:
         default:
@@ -5056,6 +5308,12 @@ public final class VehicleCommands {
         if (activateVehicleKeysBuilder_ != null) {
           activateVehicleKeysBuilder_.clear();
         }
+        if (chargingbreakClocktimerConfigureBuilder_ != null) {
+          chargingbreakClocktimerConfigureBuilder_.clear();
+        }
+        if (wiperHealthResetBuilder_ != null) {
+          wiperHealthResetBuilder_.clear();
+        }
         commandCase_ = 0;
         command_ = null;
         return this;
@@ -5295,6 +5553,14 @@ public final class VehicleCommands {
             activateVehicleKeysBuilder_ != null) {
           result.command_ = activateVehicleKeysBuilder_.build();
         }
+        if (commandCase_ == 50 &&
+            chargingbreakClocktimerConfigureBuilder_ != null) {
+          result.command_ = chargingbreakClocktimerConfigureBuilder_.build();
+        }
+        if (commandCase_ == 64 &&
+            wiperHealthResetBuilder_ != null) {
+          result.command_ = wiperHealthResetBuilder_.build();
+        }
       }
 
       @java.lang.Override
@@ -5505,6 +5771,14 @@ public final class VehicleCommands {
           }
           case ACTIVATE_VEHICLE_KEYS: {
             mergeActivateVehicleKeys(other.getActivateVehicleKeys());
+            break;
+          }
+          case CHARGINGBREAK_CLOCKTIMER_CONFIGURE: {
+            mergeChargingbreakClocktimerConfigure(other.getChargingbreakClocktimerConfigure());
+            break;
+          }
+          case WIPER_HEALTH_RESET: {
+            mergeWiperHealthReset(other.getWiperHealthReset());
             break;
           }
           case COMMAND_NOT_SET: {
@@ -5874,6 +6148,20 @@ public final class VehicleCommands {
                 commandCase_ = 49;
                 break;
               } // case 394
+              case 402: {
+                input.readMessage(
+                    getChargingbreakClocktimerConfigureFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                commandCase_ = 50;
+                break;
+              } // case 402
+              case 514: {
+                input.readMessage(
+                    getWiperHealthResetFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                commandCase_ = 64;
+                break;
+              } // case 514
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -12659,6 +12947,290 @@ public final class VehicleCommands {
         commandCase_ = 49;
         onChanged();
         return activateVehicleKeysBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.Builder, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigureOrBuilder> chargingbreakClocktimerConfigureBuilder_;
+      /**
+       * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+       * @return Whether the chargingbreakClocktimerConfigure field is set.
+       */
+      @java.lang.Override
+      public boolean hasChargingbreakClocktimerConfigure() {
+        return commandCase_ == 50;
+      }
+      /**
+       * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+       * @return The chargingbreakClocktimerConfigure.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure getChargingbreakClocktimerConfigure() {
+        if (chargingbreakClocktimerConfigureBuilder_ == null) {
+          if (commandCase_ == 50) {
+            return (com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure) command_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.getDefaultInstance();
+        } else {
+          if (commandCase_ == 50) {
+            return chargingbreakClocktimerConfigureBuilder_.getMessage();
+          }
+          return com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+       */
+      public Builder setChargingbreakClocktimerConfigure(com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure value) {
+        if (chargingbreakClocktimerConfigureBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          command_ = value;
+          onChanged();
+        } else {
+          chargingbreakClocktimerConfigureBuilder_.setMessage(value);
+        }
+        commandCase_ = 50;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+       */
+      public Builder setChargingbreakClocktimerConfigure(
+          com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.Builder builderForValue) {
+        if (chargingbreakClocktimerConfigureBuilder_ == null) {
+          command_ = builderForValue.build();
+          onChanged();
+        } else {
+          chargingbreakClocktimerConfigureBuilder_.setMessage(builderForValue.build());
+        }
+        commandCase_ = 50;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+       */
+      public Builder mergeChargingbreakClocktimerConfigure(com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure value) {
+        if (chargingbreakClocktimerConfigureBuilder_ == null) {
+          if (commandCase_ == 50 &&
+              command_ != com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.getDefaultInstance()) {
+            command_ = com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.newBuilder((com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure) command_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            command_ = value;
+          }
+          onChanged();
+        } else {
+          if (commandCase_ == 50) {
+            chargingbreakClocktimerConfigureBuilder_.mergeFrom(value);
+          } else {
+            chargingbreakClocktimerConfigureBuilder_.setMessage(value);
+          }
+        }
+        commandCase_ = 50;
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+       */
+      public Builder clearChargingbreakClocktimerConfigure() {
+        if (chargingbreakClocktimerConfigureBuilder_ == null) {
+          if (commandCase_ == 50) {
+            commandCase_ = 0;
+            command_ = null;
+            onChanged();
+          }
+        } else {
+          if (commandCase_ == 50) {
+            commandCase_ = 0;
+            command_ = null;
+          }
+          chargingbreakClocktimerConfigureBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.Builder getChargingbreakClocktimerConfigureBuilder() {
+        return getChargingbreakClocktimerConfigureFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigureOrBuilder getChargingbreakClocktimerConfigureOrBuilder() {
+        if ((commandCase_ == 50) && (chargingbreakClocktimerConfigureBuilder_ != null)) {
+          return chargingbreakClocktimerConfigureBuilder_.getMessageOrBuilder();
+        } else {
+          if (commandCase_ == 50) {
+            return (com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure) command_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.Builder, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigureOrBuilder> 
+          getChargingbreakClocktimerConfigureFieldBuilder() {
+        if (chargingbreakClocktimerConfigureBuilder_ == null) {
+          if (!(commandCase_ == 50)) {
+            command_ = com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.getDefaultInstance();
+          }
+          chargingbreakClocktimerConfigureBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.Builder, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigureOrBuilder>(
+                  (com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure) command_,
+                  getParentForChildren(),
+                  isClean());
+          command_ = null;
+        }
+        commandCase_ = 50;
+        onChanged();
+        return chargingbreakClocktimerConfigureBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset, com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.Builder, com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthResetOrBuilder> wiperHealthResetBuilder_;
+      /**
+       * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+       * @return Whether the wiperHealthReset field is set.
+       */
+      @java.lang.Override
+      public boolean hasWiperHealthReset() {
+        return commandCase_ == 64;
+      }
+      /**
+       * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+       * @return The wiperHealthReset.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset getWiperHealthReset() {
+        if (wiperHealthResetBuilder_ == null) {
+          if (commandCase_ == 64) {
+            return (com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset) command_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.getDefaultInstance();
+        } else {
+          if (commandCase_ == 64) {
+            return wiperHealthResetBuilder_.getMessage();
+          }
+          return com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+       */
+      public Builder setWiperHealthReset(com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset value) {
+        if (wiperHealthResetBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          command_ = value;
+          onChanged();
+        } else {
+          wiperHealthResetBuilder_.setMessage(value);
+        }
+        commandCase_ = 64;
+        return this;
+      }
+      /**
+       * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+       */
+      public Builder setWiperHealthReset(
+          com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.Builder builderForValue) {
+        if (wiperHealthResetBuilder_ == null) {
+          command_ = builderForValue.build();
+          onChanged();
+        } else {
+          wiperHealthResetBuilder_.setMessage(builderForValue.build());
+        }
+        commandCase_ = 64;
+        return this;
+      }
+      /**
+       * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+       */
+      public Builder mergeWiperHealthReset(com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset value) {
+        if (wiperHealthResetBuilder_ == null) {
+          if (commandCase_ == 64 &&
+              command_ != com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.getDefaultInstance()) {
+            command_ = com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.newBuilder((com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset) command_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            command_ = value;
+          }
+          onChanged();
+        } else {
+          if (commandCase_ == 64) {
+            wiperHealthResetBuilder_.mergeFrom(value);
+          } else {
+            wiperHealthResetBuilder_.setMessage(value);
+          }
+        }
+        commandCase_ = 64;
+        return this;
+      }
+      /**
+       * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+       */
+      public Builder clearWiperHealthReset() {
+        if (wiperHealthResetBuilder_ == null) {
+          if (commandCase_ == 64) {
+            commandCase_ = 0;
+            command_ = null;
+            onChanged();
+          }
+        } else {
+          if (commandCase_ == 64) {
+            commandCase_ = 0;
+            command_ = null;
+          }
+          wiperHealthResetBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.Builder getWiperHealthResetBuilder() {
+        return getWiperHealthResetFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthResetOrBuilder getWiperHealthResetOrBuilder() {
+        if ((commandCase_ == 64) && (wiperHealthResetBuilder_ != null)) {
+          return wiperHealthResetBuilder_.getMessageOrBuilder();
+        } else {
+          if (commandCase_ == 64) {
+            return (com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset) command_;
+          }
+          return com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.proto.WiperHealthReset wiper_health_reset = 64;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset, com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.Builder, com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthResetOrBuilder> 
+          getWiperHealthResetFieldBuilder() {
+        if (wiperHealthResetBuilder_ == null) {
+          if (!(commandCase_ == 64)) {
+            command_ = com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.getDefaultInstance();
+          }
+          wiperHealthResetBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset, com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.Builder, com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthResetOrBuilder>(
+                  (com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset) command_,
+                  getParentForChildren(),
+                  isClean());
+          command_ = null;
+        }
+        commandCase_ = 64;
+        onChanged();
+        return wiperHealthResetBuilder_;
       }
 
       // @@protoc_insertion_point(builder_scope:proto.CommandRequest)
@@ -46225,6 +46797,1928 @@ public final class VehicleCommands {
 
   }
 
+  public interface ChargingBreakClocktimerConfigureOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.ChargingBreakClocktimerConfigure)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+     */
+    java.util.List<com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry> 
+        getChargingbreakClocktimerConfigureEntryList();
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry getChargingbreakClocktimerConfigureEntry(int index);
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+     */
+    int getChargingbreakClocktimerConfigureEntryCount();
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+     */
+    java.util.List<? extends com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntryOrBuilder> 
+        getChargingbreakClocktimerConfigureEntryOrBuilderList();
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+     */
+    com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntryOrBuilder getChargingbreakClocktimerConfigureEntryOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code proto.ChargingBreakClocktimerConfigure}
+   */
+  public static final class ChargingBreakClocktimerConfigure extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.ChargingBreakClocktimerConfigure)
+      ChargingBreakClocktimerConfigureOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargingBreakClocktimerConfigure.class.getName());
+    }
+    // Use ChargingBreakClocktimerConfigure.newBuilder() to construct.
+    private ChargingBreakClocktimerConfigure(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ChargingBreakClocktimerConfigure() {
+      chargingbreakClocktimerConfigureEntry_ = java.util.Collections.emptyList();
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_ChargingBreakClocktimerConfigure_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_ChargingBreakClocktimerConfigure_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.class, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.Builder.class);
+    }
+
+    public static final int CHARGINGBREAK_CLOCKTIMER_CONFIGURE_ENTRY_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
+    private java.util.List<com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry> chargingbreakClocktimerConfigureEntry_;
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry> getChargingbreakClocktimerConfigureEntryList() {
+      return chargingbreakClocktimerConfigureEntry_;
+    }
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntryOrBuilder> 
+        getChargingbreakClocktimerConfigureEntryOrBuilderList() {
+      return chargingbreakClocktimerConfigureEntry_;
+    }
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+     */
+    @java.lang.Override
+    public int getChargingbreakClocktimerConfigureEntryCount() {
+      return chargingbreakClocktimerConfigureEntry_.size();
+    }
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry getChargingbreakClocktimerConfigureEntry(int index) {
+      return chargingbreakClocktimerConfigureEntry_.get(index);
+    }
+    /**
+     * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+     */
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntryOrBuilder getChargingbreakClocktimerConfigureEntryOrBuilder(
+        int index) {
+      return chargingbreakClocktimerConfigureEntry_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < chargingbreakClocktimerConfigureEntry_.size(); i++) {
+        output.writeMessage(1, chargingbreakClocktimerConfigureEntry_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < chargingbreakClocktimerConfigureEntry_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, chargingbreakClocktimerConfigureEntry_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure other = (com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure) obj;
+
+      if (!getChargingbreakClocktimerConfigureEntryList()
+          .equals(other.getChargingbreakClocktimerConfigureEntryList())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getChargingbreakClocktimerConfigureEntryCount() > 0) {
+        hash = (37 * hash) + CHARGINGBREAK_CLOCKTIMER_CONFIGURE_ENTRY_FIELD_NUMBER;
+        hash = (53 * hash) + getChargingbreakClocktimerConfigureEntryList().hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.ChargingBreakClocktimerConfigure}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.ChargingBreakClocktimerConfigure)
+        com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigureOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_ChargingBreakClocktimerConfigure_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_ChargingBreakClocktimerConfigure_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.class, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          chargingbreakClocktimerConfigureEntry_ = java.util.Collections.emptyList();
+        } else {
+          chargingbreakClocktimerConfigureEntry_ = null;
+          chargingbreakClocktimerConfigureEntryBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_ChargingBreakClocktimerConfigure_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure build() {
+        com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure result = new com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure(this);
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure result) {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            chargingbreakClocktimerConfigureEntry_ = java.util.Collections.unmodifiableList(chargingbreakClocktimerConfigureEntry_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.chargingbreakClocktimerConfigureEntry_ = chargingbreakClocktimerConfigureEntry_;
+        } else {
+          result.chargingbreakClocktimerConfigureEntry_ = chargingbreakClocktimerConfigureEntryBuilder_.build();
+        }
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure result) {
+        int from_bitField0_ = bitField0_;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure.getDefaultInstance()) return this;
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          if (!other.chargingbreakClocktimerConfigureEntry_.isEmpty()) {
+            if (chargingbreakClocktimerConfigureEntry_.isEmpty()) {
+              chargingbreakClocktimerConfigureEntry_ = other.chargingbreakClocktimerConfigureEntry_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureChargingbreakClocktimerConfigureEntryIsMutable();
+              chargingbreakClocktimerConfigureEntry_.addAll(other.chargingbreakClocktimerConfigureEntry_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.chargingbreakClocktimerConfigureEntry_.isEmpty()) {
+            if (chargingbreakClocktimerConfigureEntryBuilder_.isEmpty()) {
+              chargingbreakClocktimerConfigureEntryBuilder_.dispose();
+              chargingbreakClocktimerConfigureEntryBuilder_ = null;
+              chargingbreakClocktimerConfigureEntry_ = other.chargingbreakClocktimerConfigureEntry_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              chargingbreakClocktimerConfigureEntryBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getChargingbreakClocktimerConfigureEntryFieldBuilder() : null;
+            } else {
+              chargingbreakClocktimerConfigureEntryBuilder_.addAllMessages(other.chargingbreakClocktimerConfigureEntry_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry m =
+                    input.readMessage(
+                        com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.parser(),
+                        extensionRegistry);
+                if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+                  ensureChargingbreakClocktimerConfigureEntryIsMutable();
+                  chargingbreakClocktimerConfigureEntry_.add(m);
+                } else {
+                  chargingbreakClocktimerConfigureEntryBuilder_.addMessage(m);
+                }
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry> chargingbreakClocktimerConfigureEntry_ =
+        java.util.Collections.emptyList();
+      private void ensureChargingbreakClocktimerConfigureEntryIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          chargingbreakClocktimerConfigureEntry_ = new java.util.ArrayList<com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry>(chargingbreakClocktimerConfigureEntry_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.Builder, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntryOrBuilder> chargingbreakClocktimerConfigureEntryBuilder_;
+
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public java.util.List<com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry> getChargingbreakClocktimerConfigureEntryList() {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(chargingbreakClocktimerConfigureEntry_);
+        } else {
+          return chargingbreakClocktimerConfigureEntryBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public int getChargingbreakClocktimerConfigureEntryCount() {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          return chargingbreakClocktimerConfigureEntry_.size();
+        } else {
+          return chargingbreakClocktimerConfigureEntryBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry getChargingbreakClocktimerConfigureEntry(int index) {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          return chargingbreakClocktimerConfigureEntry_.get(index);
+        } else {
+          return chargingbreakClocktimerConfigureEntryBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public Builder setChargingbreakClocktimerConfigureEntry(
+          int index, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry value) {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChargingbreakClocktimerConfigureEntryIsMutable();
+          chargingbreakClocktimerConfigureEntry_.set(index, value);
+          onChanged();
+        } else {
+          chargingbreakClocktimerConfigureEntryBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public Builder setChargingbreakClocktimerConfigureEntry(
+          int index, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.Builder builderForValue) {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          ensureChargingbreakClocktimerConfigureEntryIsMutable();
+          chargingbreakClocktimerConfigureEntry_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          chargingbreakClocktimerConfigureEntryBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public Builder addChargingbreakClocktimerConfigureEntry(com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry value) {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChargingbreakClocktimerConfigureEntryIsMutable();
+          chargingbreakClocktimerConfigureEntry_.add(value);
+          onChanged();
+        } else {
+          chargingbreakClocktimerConfigureEntryBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public Builder addChargingbreakClocktimerConfigureEntry(
+          int index, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry value) {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChargingbreakClocktimerConfigureEntryIsMutable();
+          chargingbreakClocktimerConfigureEntry_.add(index, value);
+          onChanged();
+        } else {
+          chargingbreakClocktimerConfigureEntryBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public Builder addChargingbreakClocktimerConfigureEntry(
+          com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.Builder builderForValue) {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          ensureChargingbreakClocktimerConfigureEntryIsMutable();
+          chargingbreakClocktimerConfigureEntry_.add(builderForValue.build());
+          onChanged();
+        } else {
+          chargingbreakClocktimerConfigureEntryBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public Builder addChargingbreakClocktimerConfigureEntry(
+          int index, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.Builder builderForValue) {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          ensureChargingbreakClocktimerConfigureEntryIsMutable();
+          chargingbreakClocktimerConfigureEntry_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          chargingbreakClocktimerConfigureEntryBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public Builder addAllChargingbreakClocktimerConfigureEntry(
+          java.lang.Iterable<? extends com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry> values) {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          ensureChargingbreakClocktimerConfigureEntryIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, chargingbreakClocktimerConfigureEntry_);
+          onChanged();
+        } else {
+          chargingbreakClocktimerConfigureEntryBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public Builder clearChargingbreakClocktimerConfigureEntry() {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          chargingbreakClocktimerConfigureEntry_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          chargingbreakClocktimerConfigureEntryBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public Builder removeChargingbreakClocktimerConfigureEntry(int index) {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          ensureChargingbreakClocktimerConfigureEntryIsMutable();
+          chargingbreakClocktimerConfigureEntry_.remove(index);
+          onChanged();
+        } else {
+          chargingbreakClocktimerConfigureEntryBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.Builder getChargingbreakClocktimerConfigureEntryBuilder(
+          int index) {
+        return getChargingbreakClocktimerConfigureEntryFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntryOrBuilder getChargingbreakClocktimerConfigureEntryOrBuilder(
+          int index) {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          return chargingbreakClocktimerConfigureEntry_.get(index);  } else {
+          return chargingbreakClocktimerConfigureEntryBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public java.util.List<? extends com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntryOrBuilder> 
+           getChargingbreakClocktimerConfigureEntryOrBuilderList() {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ != null) {
+          return chargingbreakClocktimerConfigureEntryBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(chargingbreakClocktimerConfigureEntry_);
+        }
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.Builder addChargingbreakClocktimerConfigureEntryBuilder() {
+        return getChargingbreakClocktimerConfigureEntryFieldBuilder().addBuilder(
+            com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.Builder addChargingbreakClocktimerConfigureEntryBuilder(
+          int index) {
+        return getChargingbreakClocktimerConfigureEntryFieldBuilder().addBuilder(
+            index, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .proto.ChargingBreakClockTimerConfigureEntry chargingbreak_clocktimer_configure_entry = 1;</code>
+       */
+      public java.util.List<com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.Builder> 
+           getChargingbreakClocktimerConfigureEntryBuilderList() {
+        return getChargingbreakClocktimerConfigureEntryFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.Builder, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntryOrBuilder> 
+          getChargingbreakClocktimerConfigureEntryFieldBuilder() {
+        if (chargingbreakClocktimerConfigureEntryBuilder_ == null) {
+          chargingbreakClocktimerConfigureEntryBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.Builder, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntryOrBuilder>(
+                  chargingbreakClocktimerConfigureEntry_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          chargingbreakClocktimerConfigureEntry_ = null;
+        }
+        return chargingbreakClocktimerConfigureEntryBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.ChargingBreakClocktimerConfigure)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.ChargingBreakClocktimerConfigure)
+    private static final com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ChargingBreakClocktimerConfigure>
+        PARSER = new com.google.protobuf.AbstractParser<ChargingBreakClocktimerConfigure>() {
+      @java.lang.Override
+      public ChargingBreakClocktimerConfigure parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ChargingBreakClocktimerConfigure> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChargingBreakClocktimerConfigure> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClocktimerConfigure getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ChargingBreakClockTimerConfigureEntryOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.ChargingBreakClockTimerConfigureEntry)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.proto.ChargingBreakClockTimerEntryStatus action = 1;</code>
+     * @return The enum numeric value on the wire for action.
+     */
+    int getActionValue();
+    /**
+     * <code>.proto.ChargingBreakClockTimerEntryStatus action = 1;</code>
+     * @return The action.
+     */
+    com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus getAction();
+
+    /**
+     * <code>int32 endTimeHour = 2;</code>
+     * @return The endTimeHour.
+     */
+    int getEndTimeHour();
+
+    /**
+     * <code>int32 endTimeMinute = 3;</code>
+     * @return The endTimeMinute.
+     */
+    int getEndTimeMinute();
+
+    /**
+     * <code>int32 startTimeHour = 4;</code>
+     * @return The startTimeHour.
+     */
+    int getStartTimeHour();
+
+    /**
+     * <code>int32 startTimeMinute = 5;</code>
+     * @return The startTimeMinute.
+     */
+    int getStartTimeMinute();
+
+    /**
+     * <code>int32 timerId = 6;</code>
+     * @return The timerId.
+     */
+    int getTimerId();
+  }
+  /**
+   * Protobuf type {@code proto.ChargingBreakClockTimerConfigureEntry}
+   */
+  public static final class ChargingBreakClockTimerConfigureEntry extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.ChargingBreakClockTimerConfigureEntry)
+      ChargingBreakClockTimerConfigureEntryOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        ChargingBreakClockTimerConfigureEntry.class.getName());
+    }
+    // Use ChargingBreakClockTimerConfigureEntry.newBuilder() to construct.
+    private ChargingBreakClockTimerConfigureEntry(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private ChargingBreakClockTimerConfigureEntry() {
+      action_ = 0;
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_ChargingBreakClockTimerConfigureEntry_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_ChargingBreakClockTimerConfigureEntry_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.class, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.Builder.class);
+    }
+
+    public static final int ACTION_FIELD_NUMBER = 1;
+    private int action_ = 0;
+    /**
+     * <code>.proto.ChargingBreakClockTimerEntryStatus action = 1;</code>
+     * @return The enum numeric value on the wire for action.
+     */
+    @java.lang.Override public int getActionValue() {
+      return action_;
+    }
+    /**
+     * <code>.proto.ChargingBreakClockTimerEntryStatus action = 1;</code>
+     * @return The action.
+     */
+    @java.lang.Override public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus getAction() {
+      com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus result = com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus.forNumber(action_);
+      return result == null ? com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus.UNRECOGNIZED : result;
+    }
+
+    public static final int ENDTIMEHOUR_FIELD_NUMBER = 2;
+    private int endTimeHour_ = 0;
+    /**
+     * <code>int32 endTimeHour = 2;</code>
+     * @return The endTimeHour.
+     */
+    @java.lang.Override
+    public int getEndTimeHour() {
+      return endTimeHour_;
+    }
+
+    public static final int ENDTIMEMINUTE_FIELD_NUMBER = 3;
+    private int endTimeMinute_ = 0;
+    /**
+     * <code>int32 endTimeMinute = 3;</code>
+     * @return The endTimeMinute.
+     */
+    @java.lang.Override
+    public int getEndTimeMinute() {
+      return endTimeMinute_;
+    }
+
+    public static final int STARTTIMEHOUR_FIELD_NUMBER = 4;
+    private int startTimeHour_ = 0;
+    /**
+     * <code>int32 startTimeHour = 4;</code>
+     * @return The startTimeHour.
+     */
+    @java.lang.Override
+    public int getStartTimeHour() {
+      return startTimeHour_;
+    }
+
+    public static final int STARTTIMEMINUTE_FIELD_NUMBER = 5;
+    private int startTimeMinute_ = 0;
+    /**
+     * <code>int32 startTimeMinute = 5;</code>
+     * @return The startTimeMinute.
+     */
+    @java.lang.Override
+    public int getStartTimeMinute() {
+      return startTimeMinute_;
+    }
+
+    public static final int TIMERID_FIELD_NUMBER = 6;
+    private int timerId_ = 0;
+    /**
+     * <code>int32 timerId = 6;</code>
+     * @return The timerId.
+     */
+    @java.lang.Override
+    public int getTimerId() {
+      return timerId_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (action_ != com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus.DELETE.getNumber()) {
+        output.writeEnum(1, action_);
+      }
+      if (endTimeHour_ != 0) {
+        output.writeInt32(2, endTimeHour_);
+      }
+      if (endTimeMinute_ != 0) {
+        output.writeInt32(3, endTimeMinute_);
+      }
+      if (startTimeHour_ != 0) {
+        output.writeInt32(4, startTimeHour_);
+      }
+      if (startTimeMinute_ != 0) {
+        output.writeInt32(5, startTimeMinute_);
+      }
+      if (timerId_ != 0) {
+        output.writeInt32(6, timerId_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (action_ != com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus.DELETE.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, action_);
+      }
+      if (endTimeHour_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, endTimeHour_);
+      }
+      if (endTimeMinute_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, endTimeMinute_);
+      }
+      if (startTimeHour_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, startTimeHour_);
+      }
+      if (startTimeMinute_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(5, startTimeMinute_);
+      }
+      if (timerId_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(6, timerId_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry other = (com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry) obj;
+
+      if (action_ != other.action_) return false;
+      if (getEndTimeHour()
+          != other.getEndTimeHour()) return false;
+      if (getEndTimeMinute()
+          != other.getEndTimeMinute()) return false;
+      if (getStartTimeHour()
+          != other.getStartTimeHour()) return false;
+      if (getStartTimeMinute()
+          != other.getStartTimeMinute()) return false;
+      if (getTimerId()
+          != other.getTimerId()) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + ACTION_FIELD_NUMBER;
+      hash = (53 * hash) + action_;
+      hash = (37 * hash) + ENDTIMEHOUR_FIELD_NUMBER;
+      hash = (53 * hash) + getEndTimeHour();
+      hash = (37 * hash) + ENDTIMEMINUTE_FIELD_NUMBER;
+      hash = (53 * hash) + getEndTimeMinute();
+      hash = (37 * hash) + STARTTIMEHOUR_FIELD_NUMBER;
+      hash = (53 * hash) + getStartTimeHour();
+      hash = (37 * hash) + STARTTIMEMINUTE_FIELD_NUMBER;
+      hash = (53 * hash) + getStartTimeMinute();
+      hash = (37 * hash) + TIMERID_FIELD_NUMBER;
+      hash = (53 * hash) + getTimerId();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.ChargingBreakClockTimerConfigureEntry}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.ChargingBreakClockTimerConfigureEntry)
+        com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntryOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_ChargingBreakClockTimerConfigureEntry_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_ChargingBreakClockTimerConfigureEntry_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.class, com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        action_ = 0;
+        endTimeHour_ = 0;
+        endTimeMinute_ = 0;
+        startTimeHour_ = 0;
+        startTimeMinute_ = 0;
+        timerId_ = 0;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_ChargingBreakClockTimerConfigureEntry_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry build() {
+        com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry result = new com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.action_ = action_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.endTimeHour_ = endTimeHour_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.endTimeMinute_ = endTimeMinute_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.startTimeHour_ = startTimeHour_;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.startTimeMinute_ = startTimeMinute_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.timerId_ = timerId_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry.getDefaultInstance()) return this;
+        if (other.action_ != 0) {
+          setActionValue(other.getActionValue());
+        }
+        if (other.getEndTimeHour() != 0) {
+          setEndTimeHour(other.getEndTimeHour());
+        }
+        if (other.getEndTimeMinute() != 0) {
+          setEndTimeMinute(other.getEndTimeMinute());
+        }
+        if (other.getStartTimeHour() != 0) {
+          setStartTimeHour(other.getStartTimeHour());
+        }
+        if (other.getStartTimeMinute() != 0) {
+          setStartTimeMinute(other.getStartTimeMinute());
+        }
+        if (other.getTimerId() != 0) {
+          setTimerId(other.getTimerId());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                action_ = input.readEnum();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 16: {
+                endTimeHour_ = input.readInt32();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              case 24: {
+                endTimeMinute_ = input.readInt32();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              case 32: {
+                startTimeHour_ = input.readInt32();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 32
+              case 40: {
+                startTimeMinute_ = input.readInt32();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 40
+              case 48: {
+                timerId_ = input.readInt32();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 48
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private int action_ = 0;
+      /**
+       * <code>.proto.ChargingBreakClockTimerEntryStatus action = 1;</code>
+       * @return The enum numeric value on the wire for action.
+       */
+      @java.lang.Override public int getActionValue() {
+        return action_;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerEntryStatus action = 1;</code>
+       * @param value The enum numeric value on the wire for action to set.
+       * @return This builder for chaining.
+       */
+      public Builder setActionValue(int value) {
+        action_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerEntryStatus action = 1;</code>
+       * @return The action.
+       */
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus getAction() {
+        com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus result = com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus.forNumber(action_);
+        return result == null ? com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerEntryStatus action = 1;</code>
+       * @param value The action to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAction(com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerEntryStatus value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
+        action_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.proto.ChargingBreakClockTimerEntryStatus action = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearAction() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        action_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int endTimeHour_ ;
+      /**
+       * <code>int32 endTimeHour = 2;</code>
+       * @return The endTimeHour.
+       */
+      @java.lang.Override
+      public int getEndTimeHour() {
+        return endTimeHour_;
+      }
+      /**
+       * <code>int32 endTimeHour = 2;</code>
+       * @param value The endTimeHour to set.
+       * @return This builder for chaining.
+       */
+      public Builder setEndTimeHour(int value) {
+
+        endTimeHour_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 endTimeHour = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearEndTimeHour() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        endTimeHour_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int endTimeMinute_ ;
+      /**
+       * <code>int32 endTimeMinute = 3;</code>
+       * @return The endTimeMinute.
+       */
+      @java.lang.Override
+      public int getEndTimeMinute() {
+        return endTimeMinute_;
+      }
+      /**
+       * <code>int32 endTimeMinute = 3;</code>
+       * @param value The endTimeMinute to set.
+       * @return This builder for chaining.
+       */
+      public Builder setEndTimeMinute(int value) {
+
+        endTimeMinute_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 endTimeMinute = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearEndTimeMinute() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        endTimeMinute_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int startTimeHour_ ;
+      /**
+       * <code>int32 startTimeHour = 4;</code>
+       * @return The startTimeHour.
+       */
+      @java.lang.Override
+      public int getStartTimeHour() {
+        return startTimeHour_;
+      }
+      /**
+       * <code>int32 startTimeHour = 4;</code>
+       * @param value The startTimeHour to set.
+       * @return This builder for chaining.
+       */
+      public Builder setStartTimeHour(int value) {
+
+        startTimeHour_ = value;
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 startTimeHour = 4;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearStartTimeHour() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        startTimeHour_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int startTimeMinute_ ;
+      /**
+       * <code>int32 startTimeMinute = 5;</code>
+       * @return The startTimeMinute.
+       */
+      @java.lang.Override
+      public int getStartTimeMinute() {
+        return startTimeMinute_;
+      }
+      /**
+       * <code>int32 startTimeMinute = 5;</code>
+       * @param value The startTimeMinute to set.
+       * @return This builder for chaining.
+       */
+      public Builder setStartTimeMinute(int value) {
+
+        startTimeMinute_ = value;
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 startTimeMinute = 5;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearStartTimeMinute() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        startTimeMinute_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int timerId_ ;
+      /**
+       * <code>int32 timerId = 6;</code>
+       * @return The timerId.
+       */
+      @java.lang.Override
+      public int getTimerId() {
+        return timerId_;
+      }
+      /**
+       * <code>int32 timerId = 6;</code>
+       * @param value The timerId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTimerId(int value) {
+
+        timerId_ = value;
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 timerId = 6;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTimerId() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        timerId_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.ChargingBreakClockTimerConfigureEntry)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.ChargingBreakClockTimerConfigureEntry)
+    private static final com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ChargingBreakClockTimerConfigureEntry>
+        PARSER = new com.google.protobuf.AbstractParser<ChargingBreakClockTimerConfigureEntry>() {
+      @java.lang.Override
+      public ChargingBreakClockTimerConfigureEntry parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<ChargingBreakClockTimerConfigureEntry> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChargingBreakClockTimerConfigureEntry> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleCommands.ChargingBreakClockTimerConfigureEntry getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface WiperHealthResetOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:proto.WiperHealthReset)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code proto.WiperHealthReset}
+   */
+  public static final class WiperHealthReset extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:proto.WiperHealthReset)
+      WiperHealthResetOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 27,
+        /* patch= */ 5,
+        /* suffix= */ "",
+        WiperHealthReset.class.getName());
+    }
+    // Use WiperHealthReset.newBuilder() to construct.
+    private WiperHealthReset(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private WiperHealthReset() {
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_WiperHealthReset_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_WiperHealthReset_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.class, com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset)) {
+        return super.equals(obj);
+      }
+      com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset other = (com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset) obj;
+
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code proto.WiperHealthReset}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:proto.WiperHealthReset)
+        com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthResetOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_WiperHealthReset_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_WiperHealthReset_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.class, com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.Builder.class);
+      }
+
+      // Construct using com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.daimler.mbcarkit.proto.VehicleCommands.internal_static_proto_WiperHealthReset_descriptor;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset getDefaultInstanceForType() {
+        return com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset build() {
+        com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset buildPartial() {
+        com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset result = new com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset) {
+          return mergeFrom((com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset other) {
+        if (other == com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:proto.WiperHealthReset)
+    }
+
+    // @@protoc_insertion_point(class_scope:proto.WiperHealthReset)
+    private static final com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset();
+    }
+
+    public static com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<WiperHealthReset>
+        PARSER = new com.google.protobuf.AbstractParser<WiperHealthReset>() {
+      @java.lang.Override
+      public WiperHealthReset parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<WiperHealthReset> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<WiperHealthReset> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.daimler.mbcarkit.proto.VehicleCommands.WiperHealthReset getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_AcknowledgeCommandRequest_descriptor;
   private static final 
@@ -46485,6 +48979,21 @@ public final class VehicleCommands {
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_proto_ChargeCouplerUnlock_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_ChargingBreakClocktimerConfigure_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_ChargingBreakClocktimerConfigure_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_ChargingBreakClockTimerConfigureEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_ChargingBreakClockTimerConfigureEntry_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_WiperHealthReset_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_proto_WiperHealthReset_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -46497,7 +49006,7 @@ public final class VehicleCommands {
       "\n\026vehicle-commands.proto\022\005proto\032\ngogo.pr" +
       "oto\032\036google/protobuf/wrappers.proto\"/\n\031A" +
       "cknowledgeCommandRequest\022\022\n\nrequest_id\030\001" +
-      " \001(\t\"\230\026\n\016CommandRequest\022\013\n\003vin\030\001 \001(\t\022\022\n\n" +
+      " \001(\t\"\246\027\n\016CommandRequest\022\013\n\003vin\030\001 \001(\t\022\022\n\n" +
       "request_id\030\007 \001(\t\022.\n\007backend\030$ \001(\0162\035.prot" +
       "o.CommandRequest.Backend\022,\n\rauxheat_star" +
       "t\030\002 \001(\0132\023.proto.AuxheatStartH\000\022*\n\014auxhea" +
@@ -46567,178 +49076,193 @@ public final class VehicleCommands {
       "activate_vehicle_keys\0300 \001(\0132\034.proto.Deac" +
       "tivateVehicleKeysH\000\022;\n\025activate_vehicle_" +
       "keys\0301 \001(\0132\032.proto.ActivateVehicleKeysH\000" +
-      "\"\"\n\007Backend\022\007\n\003VVA\020\000\022\016\n\nVehicleAPI\020\001B\t\n\007" +
-      "command\"\245\001\n\025DeactivateVehicleKeys\022\013\n\003pin" +
-      "\030\001 \001(\t\022\027\n\017expiration_unix\030\002 \001(\003\022-\n\022expir" +
-      "ation_seconds\030\003 \001(\tR\021expirationSeconds\0227" +
-      "\n\027expiration_milliseconds\030\004 \001(\tR\026expirat" +
-      "ionMilliseconds\"\243\001\n\023ActivateVehicleKeys\022" +
-      "\013\n\003pin\030\001 \001(\t\022\027\n\017expiration_unix\030\002 \001(\003\022-\n" +
-      "\022expiration_seconds\030\003 \001(\tR\021expirationSec" +
-      "onds\0227\n\027expiration_milliseconds\030\004 \001(\tR\026e" +
-      "xpirationMilliseconds\"\016\n\014AuxheatStart\"\r\n" +
-      "\013AuxheatStop\"\200\002\n\020AuxheatConfigure\022O\n\016tim" +
-      "e_selection\030\001 \001(\0162!.proto.AuxheatConfigu" +
-      "re.SelectionR\024auxheattimeselection\022\034\n\006ti" +
-      "me_1\030\002 \001(\005R\014auxheattime1\022\034\n\006time_2\030\003 \001(\005" +
-      "R\014auxheattime2\022\034\n\006time_3\030\004 \001(\005R\014auxheatt" +
-      "ime3\"A\n\tSelection\022\020\n\014NO_SELECTION\020\000\022\n\n\006T" +
-      "IME_1\020\001\022\n\n\006TIME_2\020\002\022\n\n\006TIME_3\020\003\"\'\n\tDoors" +
-      "Lock\022\032\n\005doors\030\001 \003(\0162\013.proto.Door\"6\n\013Door" +
-      "sUnlock\022\013\n\003pin\030\001 \001(\t\022\032\n\005doors\030\002 \003(\0162\013.pr" +
-      "oto.Door\"\032\n\013EngineStart\022\013\n\003pin\030\001 \001(\t\"\014\n\n" +
-      "EngineStop\"\032\n\013SunroofOpen\022\013\n\003pin\030\001 \001(\t\"\016" +
-      "\n\014SunroofClose\"\032\n\013SunroofLift\022\013\n\003pin\030\001 \001" +
-      "(\t\"\351\001\n\013SunroofMove\022\013\n\003pin\030\001 \001(\t\0225\n\007sunro" +
-      "of\030\002 \001(\0132\033.google.protobuf.Int32ValueR\007s" +
-      "unroof\022K\n\023sunroof_blind_front\030\003 \001(\0132\033.go" +
-      "ogle.protobuf.Int32ValueR\021sunroofblindfr" +
-      "ont\022I\n\022sunroof_blind_rear\030\004 \001(\0132\033.google" +
-      ".protobuf.Int32ValueR\020sunroofblindrear\"\032" +
-      "\n\013WindowsOpen\022\013\n\003pin\030\001 \001(\t\"\016\n\014WindowsClo" +
-      "se\"\037\n\020WindowsVentilate\022\013\n\003pin\030\001 \001(\t\"\374\003\n\013" +
-      "WindowsMove\022\013\n\003pin\030\001 \001(\t\022@\n\nfront_left\030\002" +
-      " \001(\0132\033.google.protobuf.Int32ValueR\017windo" +
-      "wfrontleft\022B\n\013front_right\030\003 \001(\0132\033.google" +
-      ".protobuf.Int32ValueR\020windowfrontright\022@" +
-      "\n\nrear_blind\030\004 \001(\0132\033.google.protobuf.Int" +
-      "32ValueR\017windowrearblind\022>\n\trear_left\030\005 " +
-      "\001(\0132\033.google.protobuf.Int32ValueR\016window" +
-      "rearleft\022I\n\017rear_left_blind\030\006 \001(\0132\033.goog" +
-      "le.protobuf.Int32ValueR\023windowrearleftbl" +
-      "ind\022@\n\nrear_right\030\007 \001(\0132\033.google.protobu" +
-      "f.Int32ValueR\017windowrearright\022K\n\020rear_ri" +
-      "ght_blind\030\010 \001(\0132\033.google.protobuf.Int32V" +
-      "alueR\024windowrearrightblind\"d\n\017Speedalert" +
-      "Start\022&\n\tthreshold\030\001 \001(\005R\023speedAlertThre" +
-      "shold\022)\n\016alert_end_time\030\002 \001(\003R\021speedAler" +
-      "tEndTime\"\020\n\016SpeedalertStop\"s\n\027ZEVPrecond" +
-      "itioningStart\022%\n\016departure_time\030\001 \001(\005R\rd" +
-      "eparturetime\0221\n\004type\030\002 \001(\0162\035.proto.ZEVPr" +
-      "econditioningTypeR\004type\"K\n\026ZEVPreconditi" +
-      "oningStop\0221\n\004type\030\002 \001(\0162\035.proto.ZEVPreco" +
-      "nditioningTypeR\004type\"\371\001\n\033ZEVPrecondition" +
-      "ingConfigure\022d\n\023departure_time_mode\030\001 \001(" +
-      "\01624.proto.ZEVPreconditioningConfigure.De" +
-      "partureTimeModeR\021departureTimeMode\022%\n\016de" +
-      "parture_time\030\003 \001(\005R\rdeparturetime\"M\n\021Dep" +
-      "artureTimeMode\022\014\n\010DISABLED\020\000\022\024\n\020SINGLE_D" +
-      "EPARTURE\020\001\022\024\n\020WEEKLY_DEPARTURE\020\002\"\312\001\n ZEV" +
-      "PreconditioningConfigureSeats\022(\n\nfront_l" +
-      "eft\030\001 \001(\010R\024precondSeatFrontLeft\022*\n\013front" +
-      "_right\030\002 \001(\010R\025precondSeatFrontRight\022&\n\tr" +
-      "ear_left\030\003 \001(\010R\023precondSeatRearLeft\022(\n\nr" +
-      "ear_right\030\004 \001(\010R\024precondSeatRearRight\"\245\001" +
-      "\n\035BatteryChargeProgramConfigure\022Y\n\016charg" +
-      "e_program\030\001 \001(\01622.proto.BatteryChargePro" +
-      "gramConfigure.ChargeProgramR\rchargeprogr" +
-      "am\")\n\rChargeProgram\022\013\n\007DEFAULT\020\000\022\013\n\007INST" +
-      "ANT\020\001\"1\n\026BatteryMaxSocConfigure\022\027\n\007max_s" +
-      "oc\030\001 \001(\005R\006maxsoc\"\216\004\n\026ChargeProgramConfig" +
-      "ure\022R\n\016charge_program\030\001 \001(\0162+.proto.Char" +
-      "geProgramConfigure.ChargeProgramR\rcharge" +
-      "program\0224\n\007max_soc\030\002 \001(\0132\033.google.protob" +
-      "uf.Int32ValueR\006maxsoc\022;\n\013auto_unlock\030\003 \001" +
-      "(\0132\032.google.protobuf.BoolValueR\nautounlo" +
-      "ck\022R\n\027location_based_charging\030\004 \001(\0132\032.go" +
-      "ogle.protobuf.BoolValueR\025locationbasedch" +
-      "arging\022;\n\013clock_timer\030\006 \001(\0132\032.google.pro" +
-      "tobuf.BoolValueR\nclocktimer\022=\n\014eco_charg" +
-      "ing\030\007 \001(\0132\032.google.protobuf.BoolValueR\013e" +
-      "cocharging\"]\n\rChargeProgram\022\032\n\026DEFAULT_C" +
-      "HARGE_PROGRAM\020\000\022\027\n\023HOME_CHARGE_PROGRAM\020\002" +
-      "\022\027\n\023WORK_CHARGE_PROGRAM\020\003\"\340\001\n\026ChargeCont" +
-      "rolConfigure\022L\n\023bi_charging_enabled\030\001 \001(" +
-      "\0132\032.google.protobuf.BoolValueR\023bidicharg" +
-      "ingenabled\022B\n\016charging_power\030\002 \001(\0132\033.goo" +
-      "gle.protobuf.FloatValueR\rchargingpower\0224" +
-      "\n\007min_soc\030\003 \001(\0132\033.google.protobuf.Int32V" +
-      "alueR\006minsoc\"\314\002\n\022ChargeOptConfigure\022G\n\016w" +
-      "eekday_tariff\030\001 \003(\0132 .proto.ChargeOptCon" +
-      "figure.TariffR\rweekdaytariff\022G\n\016weekend_" +
-      "tariff\030\002 \003(\0132 .proto.ChargeOptConfigure." +
-      "TariffR\rweekendtariff\032\243\001\n\006Tariff\0229\n\004rate" +
-      "\030\001 \001(\0162%.proto.ChargeOptConfigure.Tariff" +
-      ".RateR\004rate\022\022\n\004time\030\002 \001(\005R\004time\"J\n\004Rate\022" +
-      "\021\n\rINVALID_PRICE\020\000\022\r\n\tLOW_PRICE\020!\022\020\n\014NOR" +
-      "MAL_PRICE\020,\022\016\n\nHIGH_PRICE\020B\"\020\n\016ChargeOpt" +
-      "Start\"\017\n\rChargeOptStop\"\315\004\n\024TemperatureCo" +
-      "nfigure\022[\n\022temperature_points\030\001 \003(\0132,.pr" +
-      "oto.TemperatureConfigure.TemperaturePoin" +
-      "tR\021temperaturePoints\032\327\003\n\020TemperaturePoin" +
-      "t\022E\n\004zone\030\001 \001(\01621.proto.TemperatureConfi" +
-      "gure.TemperaturePoint.ZoneR\004zone\022$\n\026temp" +
-      "erature_in_celsius\030\003 \001(\001R\004temp\"\317\002\n\004Zone\022" +
-      "\013\n\007unknown\020\000\022\r\n\tfrontLeft\020\001\022\016\n\nfrontRigh" +
-      "t\020\002\022\017\n\013frontCenter\020\003\022\014\n\010rearLeft\020\004\022\r\n\tre" +
-      "arRight\020\005\022\016\n\nrearCenter\020\006\022\r\n\trear2Left\020\007" +
-      "\022\016\n\nrear2Right\020\010\022\017\n\013rear2Center\020\t\022\020\n\014UNK" +
-      "NOWN_ZONE\020\000\022\016\n\nFRONT_LEFT\020\001\022\017\n\013FRONT_RIG" +
-      "HT\020\002\022\020\n\014FRONT_CENTER\020\003\022\r\n\tREAR_LEFT\020\004\022\016\n" +
-      "\nREAR_RIGHT\020\005\022\017\n\013REAR_CENTER\020\006\022\017\n\013REAR_2" +
-      "_LEFT\020\007\022\020\n\014REAR_2_RIGHT\020\010\022\021\n\rREAR_2_CENT" +
-      "ER\020\t\032\002\020\001J\004\010\002\020\003\"\251\002\n\024WeekProfileConfigure\022" +
-      "K\n\rweekly_set_hu\030\001 \003(\0132\'.proto.WeekProfi" +
-      "leConfigure.WeeklySetHUR\013weeklySetHU\032\303\001\n" +
-      "\013WeeklySetHU\022=\n\003day\030\001 \001(\0162+.proto.WeekPr" +
-      "ofileConfigure.WeeklySetHU.DayR\003day\022\022\n\004t" +
-      "ime\030\002 \001(\005R\004time\"a\n\003Day\022\n\n\006MONDAY\020\000\022\013\n\007TU" +
-      "ESDAY\020\001\022\r\n\tWEDNESDAY\020\002\022\014\n\010THURSDAY\020\003\022\n\n\006" +
-      "FRIDAY\020\004\022\014\n\010SATURDAY\020\005\022\n\n\006SUNDAY\020\006\"Q\n\026We" +
-      "ekProfileConfigureV2\0227\n\rtime_profiles\030\001 " +
-      "\003(\0132\022.proto.TimeProfileR\014timeprofiles\"\262\002" +
-      "\n\013TimeProfile\0223\n\nidentifier\030\001 \001(\0132\033.goog" +
-      "le.protobuf.Int32ValueR\002id\022/\n\004hour\030\002 \001(\013" +
-      "2\033.google.protobuf.Int32ValueR\004hour\0220\n\006m" +
-      "inute\030\003 \001(\0132\033.google.protobuf.Int32Value" +
-      "R\003min\022(\n\004days\030\004 \003(\0162\025.proto.TimeProfileD" +
-      "ayR\003day\0222\n\006active\030\005 \001(\0132\032.google.protobu" +
-      "f.BoolValueR\006active\022-\n\026application_ident" +
-      "ifier\030\006 \001(\005R\rapplicationId\"\353\003\n\013SigPosSta" +
-      "rt\022\037\n\013horn_repeat\030\001 \001(\005R\nhornRepeat\0228\n\th" +
-      "orn_type\030\002 \001(\0162\033.proto.SigPosStart.HornT" +
-      "ypeR\010hornType\022;\n\nlight_type\030\003 \001(\0162\034.prot" +
-      "o.SigPosStart.LightTypeR\tlightType\022\'\n\017si" +
-      "gpos_duration\030\004 \001(\005R\016sigposDuration\022>\n\013s" +
-      "igpos_type\030\005 \001(\0162\035.proto.SigPosStart.Sig" +
-      "posTypeR\nsigposType\"C\n\010HornType\022\014\n\010HORN_" +
-      "OFF\020\000\022\023\n\017HORN_LOW_VOLUME\020\001\022\024\n\020HORN_HIGH_" +
-      "VOLUME\020\002\"D\n\tLightType\022\r\n\tLIGHT_OFF\020\000\022\025\n\021" +
-      "DIPPED_HEAD_LIGHT\020\001\022\021\n\rWARNING_LIGHT\020\002\"P" +
-      "\n\nSigposType\022\016\n\nLIGHT_ONLY\020\000\022\r\n\tHORN_ONL" +
-      "Y\020\001\022\022\n\016LIGHT_AND_HORN\020\002\022\017\n\013PANIC_ALARM\020\003" +
-      "\"\"\n TheftalarmConfirmDamagedetection\"#\n!" +
-      "TheftalarmDeselectDamagedetection\"\034\n\032The" +
-      "ftalarmDeselectInterior\"\027\n\025TheftalarmDes" +
-      "electTow\"!\n\037TheftalarmSelectDamagedetect" +
-      "ion\"\032\n\030TheftalarmSelectInterior\"\025\n\023Theft" +
-      "alarmSelectTow\"C\n\017TheftalarmStart\0220\n\031ala" +
-      "rm_duration_in_seconds\030\001 \001(\005R\ralarmdurat" +
-      "ion\"\020\n\016TheftalarmStop\"o\n\035AutomaticValetP" +
-      "arkingActivate\022\035\n\nbooking_id\030\001 \001(\tR\tbook" +
-      "ingId\022/\n\ndrive_type\030\002 \001(\0162\020.proto.DriveT" +
-      "ypeR\tdriveType\"\022\n\020ChargeFlapUnlock\"\025\n\023Ch" +
-      "argeCouplerUnlock*\245\002\n\004Door\022\020\n\014unknown_do" +
-      "or\020\000\022\r\n\tfrontleft\020\001\022\016\n\nfrontright\020\002\022\014\n\010r" +
-      "earleft\020\003\022\r\n\trearright\020\004\022\t\n\005trunk\020\005\022\014\n\010f" +
-      "uelflap\020\006\022\016\n\nchargeflap\020\007\022\021\n\rchargecoupl" +
-      "er\020\010\022\020\n\014UNKNOWN_DOOR\020\000\022\016\n\nFRONT_LEFT\020\001\022\017" +
-      "\n\013FRONT_RIGHT\020\002\022\r\n\tREAR_LEFT\020\003\022\016\n\nREAR_R" +
-      "IGHT\020\004\022\t\n\005TRUNK\020\005\022\r\n\tFUEL_FLAP\020\006\022\017\n\013CHAR" +
-      "GE_FLAP\020\007\022\022\n\016CHARGE_COUPLER\020\010\032\002\020\001*\361\001\n\026ZE" +
-      "VPreconditioningType\022,\n(unknown_zev_prec" +
-      "onditioning_command_type\020\000\022\r\n\timmediate\020" +
-      "\001\022\r\n\tdeparture\020\002\022\007\n\003now\020\003\022\023\n\017departureWe" +
-      "ekly\020\004\022,\n(UNKNOWN_ZEV_PRECONDITIONING_CO" +
-      "MMAND_TYPE\020\000\022\r\n\tIMMEDIATE\020\001\022\r\n\tDEPARTURE" +
-      "\020\002\022\007\n\003NOW\020\003\022\024\n\020DEPARTURE_WEEKLY\020\004\032\002\020\001*\250\001" +
-      "\n\016TimeProfileDay\022\006\n\002Mo\020\000\022\006\n\002Tu\020\001\022\006\n\002We\020\002" +
-      "\022\006\n\002Th\020\003\022\006\n\002Fr\020\004\022\006\n\002Sa\020\005\022\006\n\002Su\020\006\022\n\n\006MOND" +
-      "AY\020\000\022\013\n\007TUESDAY\020\001\022\r\n\tWEDNESDAY\020\002\022\014\n\010THUR" +
-      "SDAY\020\003\022\n\n\006FRIDAY\020\004\022\014\n\010SATURDAY\020\005\022\n\n\006SUND" +
-      "AY\020\006\032\002\020\001*>\n\tDriveType\022\026\n\022UNKNOWN_DRIVE_T" +
-      "YPE\020\000\022\013\n\007PICK_UP\020\001\022\014\n\010DROP_OFF\020\002B \n\032com." +
-      "daimler.mbcarkit.proto\320\341\036\001b\006proto3"
+      "\022U\n\"chargingbreak_clocktimer_configure\0302" +
+      " \001(\0132\'.proto.ChargingBreakClocktimerConf" +
+      "igureH\000\0225\n\022wiper_health_reset\030@ \001(\0132\027.pr" +
+      "oto.WiperHealthResetH\000\"\"\n\007Backend\022\007\n\003VVA" +
+      "\020\000\022\016\n\nVehicleAPI\020\001B\t\n\007command\"\245\001\n\025Deacti" +
+      "vateVehicleKeys\022\013\n\003pin\030\001 \001(\t\022\027\n\017expirati" +
+      "on_unix\030\002 \001(\003\022-\n\022expiration_seconds\030\003 \001(" +
+      "\tR\021expirationSeconds\0227\n\027expiration_milli" +
+      "seconds\030\004 \001(\tR\026expirationMilliseconds\"\243\001" +
+      "\n\023ActivateVehicleKeys\022\013\n\003pin\030\001 \001(\t\022\027\n\017ex" +
+      "piration_unix\030\002 \001(\003\022-\n\022expiration_second" +
+      "s\030\003 \001(\tR\021expirationSeconds\0227\n\027expiration" +
+      "_milliseconds\030\004 \001(\tR\026expirationMilliseco" +
+      "nds\"\016\n\014AuxheatStart\"\r\n\013AuxheatStop\"\200\002\n\020A" +
+      "uxheatConfigure\022O\n\016time_selection\030\001 \001(\0162" +
+      "!.proto.AuxheatConfigure.SelectionR\024auxh" +
+      "eattimeselection\022\034\n\006time_1\030\002 \001(\005R\014auxhea" +
+      "ttime1\022\034\n\006time_2\030\003 \001(\005R\014auxheattime2\022\034\n\006" +
+      "time_3\030\004 \001(\005R\014auxheattime3\"A\n\tSelection\022" +
+      "\020\n\014NO_SELECTION\020\000\022\n\n\006TIME_1\020\001\022\n\n\006TIME_2\020" +
+      "\002\022\n\n\006TIME_3\020\003\"\'\n\tDoorsLock\022\032\n\005doors\030\001 \003(" +
+      "\0162\013.proto.Door\"6\n\013DoorsUnlock\022\013\n\003pin\030\001 \001" +
+      "(\t\022\032\n\005doors\030\002 \003(\0162\013.proto.Door\"\032\n\013Engine" +
+      "Start\022\013\n\003pin\030\001 \001(\t\"\014\n\nEngineStop\"\032\n\013Sunr" +
+      "oofOpen\022\013\n\003pin\030\001 \001(\t\"\016\n\014SunroofClose\"\032\n\013" +
+      "SunroofLift\022\013\n\003pin\030\001 \001(\t\"\351\001\n\013SunroofMove" +
+      "\022\013\n\003pin\030\001 \001(\t\0225\n\007sunroof\030\002 \001(\0132\033.google." +
+      "protobuf.Int32ValueR\007sunroof\022K\n\023sunroof_" +
+      "blind_front\030\003 \001(\0132\033.google.protobuf.Int3" +
+      "2ValueR\021sunroofblindfront\022I\n\022sunroof_bli" +
+      "nd_rear\030\004 \001(\0132\033.google.protobuf.Int32Val" +
+      "ueR\020sunroofblindrear\"\032\n\013WindowsOpen\022\013\n\003p" +
+      "in\030\001 \001(\t\"\016\n\014WindowsClose\"\037\n\020WindowsVenti" +
+      "late\022\013\n\003pin\030\001 \001(\t\"\374\003\n\013WindowsMove\022\013\n\003pin" +
+      "\030\001 \001(\t\022@\n\nfront_left\030\002 \001(\0132\033.google.prot" +
+      "obuf.Int32ValueR\017windowfrontleft\022B\n\013fron" +
+      "t_right\030\003 \001(\0132\033.google.protobuf.Int32Val" +
+      "ueR\020windowfrontright\022@\n\nrear_blind\030\004 \001(\013" +
+      "2\033.google.protobuf.Int32ValueR\017windowrea" +
+      "rblind\022>\n\trear_left\030\005 \001(\0132\033.google.proto" +
+      "buf.Int32ValueR\016windowrearleft\022I\n\017rear_l" +
+      "eft_blind\030\006 \001(\0132\033.google.protobuf.Int32V" +
+      "alueR\023windowrearleftblind\022@\n\nrear_right\030" +
+      "\007 \001(\0132\033.google.protobuf.Int32ValueR\017wind" +
+      "owrearright\022K\n\020rear_right_blind\030\010 \001(\0132\033." +
+      "google.protobuf.Int32ValueR\024windowrearri" +
+      "ghtblind\"d\n\017SpeedalertStart\022&\n\tthreshold" +
+      "\030\001 \001(\005R\023speedAlertThreshold\022)\n\016alert_end" +
+      "_time\030\002 \001(\003R\021speedAlertEndTime\"\020\n\016Speeda" +
+      "lertStop\"s\n\027ZEVPreconditioningStart\022%\n\016d" +
+      "eparture_time\030\001 \001(\005R\rdeparturetime\0221\n\004ty" +
+      "pe\030\002 \001(\0162\035.proto.ZEVPreconditioningTypeR" +
+      "\004type\"K\n\026ZEVPreconditioningStop\0221\n\004type\030" +
+      "\002 \001(\0162\035.proto.ZEVPreconditioningTypeR\004ty" +
+      "pe\"\371\001\n\033ZEVPreconditioningConfigure\022d\n\023de" +
+      "parture_time_mode\030\001 \001(\01624.proto.ZEVPreco" +
+      "nditioningConfigure.DepartureTimeModeR\021d" +
+      "epartureTimeMode\022%\n\016departure_time\030\003 \001(\005" +
+      "R\rdeparturetime\"M\n\021DepartureTimeMode\022\014\n\010" +
+      "DISABLED\020\000\022\024\n\020SINGLE_DEPARTURE\020\001\022\024\n\020WEEK" +
+      "LY_DEPARTURE\020\002\"\312\001\n ZEVPreconditioningCon" +
+      "figureSeats\022(\n\nfront_left\030\001 \001(\010R\024precond" +
+      "SeatFrontLeft\022*\n\013front_right\030\002 \001(\010R\025prec" +
+      "ondSeatFrontRight\022&\n\trear_left\030\003 \001(\010R\023pr" +
+      "econdSeatRearLeft\022(\n\nrear_right\030\004 \001(\010R\024p" +
+      "recondSeatRearRight\"\245\001\n\035BatteryChargePro" +
+      "gramConfigure\022Y\n\016charge_program\030\001 \001(\01622." +
+      "proto.BatteryChargeProgramConfigure.Char" +
+      "geProgramR\rchargeprogram\")\n\rChargeProgra" +
+      "m\022\013\n\007DEFAULT\020\000\022\013\n\007INSTANT\020\001\"1\n\026BatteryMa" +
+      "xSocConfigure\022\027\n\007max_soc\030\001 \001(\005R\006maxsoc\"\216" +
+      "\004\n\026ChargeProgramConfigure\022R\n\016charge_prog" +
+      "ram\030\001 \001(\0162+.proto.ChargeProgramConfigure" +
+      ".ChargeProgramR\rchargeprogram\0224\n\007max_soc" +
+      "\030\002 \001(\0132\033.google.protobuf.Int32ValueR\006max" +
+      "soc\022;\n\013auto_unlock\030\003 \001(\0132\032.google.protob" +
+      "uf.BoolValueR\nautounlock\022R\n\027location_bas" +
+      "ed_charging\030\004 \001(\0132\032.google.protobuf.Bool" +
+      "ValueR\025locationbasedcharging\022;\n\013clock_ti" +
+      "mer\030\006 \001(\0132\032.google.protobuf.BoolValueR\nc" +
+      "locktimer\022=\n\014eco_charging\030\007 \001(\0132\032.google" +
+      ".protobuf.BoolValueR\013ecocharging\"]\n\rChar" +
+      "geProgram\022\032\n\026DEFAULT_CHARGE_PROGRAM\020\000\022\027\n" +
+      "\023HOME_CHARGE_PROGRAM\020\002\022\027\n\023WORK_CHARGE_PR" +
+      "OGRAM\020\003\"\340\001\n\026ChargeControlConfigure\022L\n\023bi" +
+      "_charging_enabled\030\001 \001(\0132\032.google.protobu" +
+      "f.BoolValueR\023bidichargingenabled\022B\n\016char" +
+      "ging_power\030\002 \001(\0132\033.google.protobuf.Float" +
+      "ValueR\rchargingpower\0224\n\007min_soc\030\003 \001(\0132\033." +
+      "google.protobuf.Int32ValueR\006minsoc\"\314\002\n\022C" +
+      "hargeOptConfigure\022G\n\016weekday_tariff\030\001 \003(" +
+      "\0132 .proto.ChargeOptConfigure.TariffR\rwee" +
+      "kdaytariff\022G\n\016weekend_tariff\030\002 \003(\0132 .pro" +
+      "to.ChargeOptConfigure.TariffR\rweekendtar" +
+      "iff\032\243\001\n\006Tariff\0229\n\004rate\030\001 \001(\0162%.proto.Cha" +
+      "rgeOptConfigure.Tariff.RateR\004rate\022\022\n\004tim" +
+      "e\030\002 \001(\005R\004time\"J\n\004Rate\022\021\n\rINVALID_PRICE\020\000" +
+      "\022\r\n\tLOW_PRICE\020!\022\020\n\014NORMAL_PRICE\020,\022\016\n\nHIG" +
+      "H_PRICE\020B\"\020\n\016ChargeOptStart\"\017\n\rChargeOpt" +
+      "Stop\"\315\004\n\024TemperatureConfigure\022[\n\022tempera" +
+      "ture_points\030\001 \003(\0132,.proto.TemperatureCon" +
+      "figure.TemperaturePointR\021temperaturePoin" +
+      "ts\032\327\003\n\020TemperaturePoint\022E\n\004zone\030\001 \001(\01621." +
+      "proto.TemperatureConfigure.TemperaturePo" +
+      "int.ZoneR\004zone\022$\n\026temperature_in_celsius" +
+      "\030\003 \001(\001R\004temp\"\317\002\n\004Zone\022\013\n\007unknown\020\000\022\r\n\tfr" +
+      "ontLeft\020\001\022\016\n\nfrontRight\020\002\022\017\n\013frontCenter" +
+      "\020\003\022\014\n\010rearLeft\020\004\022\r\n\trearRight\020\005\022\016\n\nrearC" +
+      "enter\020\006\022\r\n\trear2Left\020\007\022\016\n\nrear2Right\020\010\022\017" +
+      "\n\013rear2Center\020\t\022\020\n\014UNKNOWN_ZONE\020\000\022\016\n\nFRO" +
+      "NT_LEFT\020\001\022\017\n\013FRONT_RIGHT\020\002\022\020\n\014FRONT_CENT" +
+      "ER\020\003\022\r\n\tREAR_LEFT\020\004\022\016\n\nREAR_RIGHT\020\005\022\017\n\013R" +
+      "EAR_CENTER\020\006\022\017\n\013REAR_2_LEFT\020\007\022\020\n\014REAR_2_" +
+      "RIGHT\020\010\022\021\n\rREAR_2_CENTER\020\t\032\002\020\001J\004\010\002\020\003\"\251\002\n" +
+      "\024WeekProfileConfigure\022K\n\rweekly_set_hu\030\001" +
+      " \003(\0132\'.proto.WeekProfileConfigure.Weekly" +
+      "SetHUR\013weeklySetHU\032\303\001\n\013WeeklySetHU\022=\n\003da" +
+      "y\030\001 \001(\0162+.proto.WeekProfileConfigure.Wee" +
+      "klySetHU.DayR\003day\022\022\n\004time\030\002 \001(\005R\004time\"a\n" +
+      "\003Day\022\n\n\006MONDAY\020\000\022\013\n\007TUESDAY\020\001\022\r\n\tWEDNESD" +
+      "AY\020\002\022\014\n\010THURSDAY\020\003\022\n\n\006FRIDAY\020\004\022\014\n\010SATURD" +
+      "AY\020\005\022\n\n\006SUNDAY\020\006\"Q\n\026WeekProfileConfigure" +
+      "V2\0227\n\rtime_profiles\030\001 \003(\0132\022.proto.TimePr" +
+      "ofileR\014timeprofiles\"\262\002\n\013TimeProfile\0223\n\ni" +
+      "dentifier\030\001 \001(\0132\033.google.protobuf.Int32V" +
+      "alueR\002id\022/\n\004hour\030\002 \001(\0132\033.google.protobuf" +
+      ".Int32ValueR\004hour\0220\n\006minute\030\003 \001(\0132\033.goog" +
+      "le.protobuf.Int32ValueR\003min\022(\n\004days\030\004 \003(" +
+      "\0162\025.proto.TimeProfileDayR\003day\0222\n\006active\030" +
+      "\005 \001(\0132\032.google.protobuf.BoolValueR\006activ" +
+      "e\022-\n\026application_identifier\030\006 \001(\005R\rappli" +
+      "cationId\"\353\003\n\013SigPosStart\022\037\n\013horn_repeat\030" +
+      "\001 \001(\005R\nhornRepeat\0228\n\thorn_type\030\002 \001(\0162\033.p" +
+      "roto.SigPosStart.HornTypeR\010hornType\022;\n\nl" +
+      "ight_type\030\003 \001(\0162\034.proto.SigPosStart.Ligh" +
+      "tTypeR\tlightType\022\'\n\017sigpos_duration\030\004 \001(" +
+      "\005R\016sigposDuration\022>\n\013sigpos_type\030\005 \001(\0162\035" +
+      ".proto.SigPosStart.SigposTypeR\nsigposTyp" +
+      "e\"C\n\010HornType\022\014\n\010HORN_OFF\020\000\022\023\n\017HORN_LOW_" +
+      "VOLUME\020\001\022\024\n\020HORN_HIGH_VOLUME\020\002\"D\n\tLightT" +
+      "ype\022\r\n\tLIGHT_OFF\020\000\022\025\n\021DIPPED_HEAD_LIGHT\020" +
+      "\001\022\021\n\rWARNING_LIGHT\020\002\"P\n\nSigposType\022\016\n\nLI" +
+      "GHT_ONLY\020\000\022\r\n\tHORN_ONLY\020\001\022\022\n\016LIGHT_AND_H" +
+      "ORN\020\002\022\017\n\013PANIC_ALARM\020\003\"\"\n TheftalarmConf" +
+      "irmDamagedetection\"#\n!TheftalarmDeselect" +
+      "Damagedetection\"\034\n\032TheftalarmDeselectInt" +
+      "erior\"\027\n\025TheftalarmDeselectTow\"!\n\037Thefta" +
+      "larmSelectDamagedetection\"\032\n\030TheftalarmS" +
+      "electInterior\"\025\n\023TheftalarmSelectTow\"C\n\017" +
+      "TheftalarmStart\0220\n\031alarm_duration_in_sec" +
+      "onds\030\001 \001(\005R\ralarmduration\"\020\n\016TheftalarmS" +
+      "top\"o\n\035AutomaticValetParkingActivate\022\035\n\n" +
+      "booking_id\030\001 \001(\tR\tbookingId\022/\n\ndrive_typ" +
+      "e\030\002 \001(\0162\020.proto.DriveTypeR\tdriveType\"\022\n\020" +
+      "ChargeFlapUnlock\"\025\n\023ChargeCouplerUnlock\"" +
+      "\202\001\n ChargingBreakClocktimerConfigure\022^\n(" +
+      "chargingbreak_clocktimer_configure_entry" +
+      "\030\001 \003(\0132,.proto.ChargingBreakClockTimerCo" +
+      "nfigureEntry\"\317\001\n%ChargingBreakClockTimer" +
+      "ConfigureEntry\0229\n\006action\030\001 \001(\0162).proto.C" +
+      "hargingBreakClockTimerEntryStatus\022\023\n\013end" +
+      "TimeHour\030\002 \001(\005\022\025\n\rendTimeMinute\030\003 \001(\005\022\025\n" +
+      "\rstartTimeHour\030\004 \001(\005\022\027\n\017startTimeMinute\030" +
+      "\005 \001(\005\022\017\n\007timerId\030\006 \001(\005\"\022\n\020WiperHealthRes" +
+      "et*\245\002\n\004Door\022\020\n\014unknown_door\020\000\022\r\n\tfrontle" +
+      "ft\020\001\022\016\n\nfrontright\020\002\022\014\n\010rearleft\020\003\022\r\n\tre" +
+      "arright\020\004\022\t\n\005trunk\020\005\022\014\n\010fuelflap\020\006\022\016\n\nch" +
+      "argeflap\020\007\022\021\n\rchargecoupler\020\010\022\020\n\014UNKNOWN" +
+      "_DOOR\020\000\022\016\n\nFRONT_LEFT\020\001\022\017\n\013FRONT_RIGHT\020\002" +
+      "\022\r\n\tREAR_LEFT\020\003\022\016\n\nREAR_RIGHT\020\004\022\t\n\005TRUNK" +
+      "\020\005\022\r\n\tFUEL_FLAP\020\006\022\017\n\013CHARGE_FLAP\020\007\022\022\n\016CH" +
+      "ARGE_COUPLER\020\010\032\002\020\001*\361\001\n\026ZEVPreconditionin" +
+      "gType\022,\n(unknown_zev_preconditioning_com" +
+      "mand_type\020\000\022\r\n\timmediate\020\001\022\r\n\tdeparture\020" +
+      "\002\022\007\n\003now\020\003\022\023\n\017departureWeekly\020\004\022,\n(UNKNO" +
+      "WN_ZEV_PRECONDITIONING_COMMAND_TYPE\020\000\022\r\n" +
+      "\tIMMEDIATE\020\001\022\r\n\tDEPARTURE\020\002\022\007\n\003NOW\020\003\022\024\n\020" +
+      "DEPARTURE_WEEKLY\020\004\032\002\020\001*\250\001\n\016TimeProfileDa" +
+      "y\022\006\n\002Mo\020\000\022\006\n\002Tu\020\001\022\006\n\002We\020\002\022\006\n\002Th\020\003\022\006\n\002Fr\020" +
+      "\004\022\006\n\002Sa\020\005\022\006\n\002Su\020\006\022\n\n\006MONDAY\020\000\022\013\n\007TUESDAY" +
+      "\020\001\022\r\n\tWEDNESDAY\020\002\022\014\n\010THURSDAY\020\003\022\n\n\006FRIDA" +
+      "Y\020\004\022\014\n\010SATURDAY\020\005\022\n\n\006SUNDAY\020\006\032\002\020\001*>\n\tDri" +
+      "veType\022\026\n\022UNKNOWN_DRIVE_TYPE\020\000\022\013\n\007PICK_U" +
+      "P\020\001\022\014\n\010DROP_OFF\020\002*J\n\"ChargingBreakClockT" +
+      "imerEntryStatus\022\n\n\006DELETE\020\000\022\014\n\010INACTIVE\020" +
+      "\001\022\n\n\006ACTIVE\020\002B \n\032com.daimler.mbcarkit.pr" +
+      "oto\320\341\036\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -46757,7 +49281,7 @@ public final class VehicleCommands {
     internal_static_proto_CommandRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_CommandRequest_descriptor,
-        new java.lang.String[] { "Vin", "RequestId", "Backend", "AuxheatStart", "AuxheatStop", "AuxheatConfigure", "DoorsLock", "DoorsUnlock", "SunroofOpen", "SunroofClose", "SunroofLift", "SunroofMove", "WindowsOpen", "WindowsClose", "WindowsVentilate", "WindowsMove", "EngineStart", "EngineStop", "ZevPreconditioningStart", "ZevPreconditioningStop", "ZevPreconditionConfigure", "ZevPreconditionConfigureSeats", "SpeedalertStart", "SpeedalertStop", "BatteryChargeProgram", "BatteryMaxSoc", "ChargeProgramConfigure", "ChargeControlConfigure", "ChargeOptConfigure", "ChargeOptStart", "ChargeOptStop", "TemperatureConfigure", "WeekProfileConfigure", "WeekProfileConfigureV2", "SigposStart", "TheftalarmConfirmDamagedetection", "TheftalarmDeselectDamagedetection", "TheftalarmDeselectInterior", "TheftalarmDeselectTow", "TheftalarmSelectDamagedetection", "TheftalarmSelectInterior", "TheftalarmSelectTow", "TheftalarmStart", "TheftalarmStop", "AutomaticValetParkingActivate", "ChargeFlapUnlock", "ChargeCouplerUnlock", "DeactivateVehicleKeys", "ActivateVehicleKeys", "Command", });
+        new java.lang.String[] { "Vin", "RequestId", "Backend", "AuxheatStart", "AuxheatStop", "AuxheatConfigure", "DoorsLock", "DoorsUnlock", "SunroofOpen", "SunroofClose", "SunroofLift", "SunroofMove", "WindowsOpen", "WindowsClose", "WindowsVentilate", "WindowsMove", "EngineStart", "EngineStop", "ZevPreconditioningStart", "ZevPreconditioningStop", "ZevPreconditionConfigure", "ZevPreconditionConfigureSeats", "SpeedalertStart", "SpeedalertStop", "BatteryChargeProgram", "BatteryMaxSoc", "ChargeProgramConfigure", "ChargeControlConfigure", "ChargeOptConfigure", "ChargeOptStart", "ChargeOptStop", "TemperatureConfigure", "WeekProfileConfigure", "WeekProfileConfigureV2", "SigposStart", "TheftalarmConfirmDamagedetection", "TheftalarmDeselectDamagedetection", "TheftalarmDeselectInterior", "TheftalarmDeselectTow", "TheftalarmSelectDamagedetection", "TheftalarmSelectInterior", "TheftalarmSelectTow", "TheftalarmStart", "TheftalarmStop", "AutomaticValetParkingActivate", "ChargeFlapUnlock", "ChargeCouplerUnlock", "DeactivateVehicleKeys", "ActivateVehicleKeys", "ChargingbreakClocktimerConfigure", "WiperHealthReset", "Command", });
     internal_static_proto_DeactivateVehicleKeys_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_proto_DeactivateVehicleKeys_fieldAccessorTable = new
@@ -47057,6 +49581,24 @@ public final class VehicleCommands {
     internal_static_proto_ChargeCouplerUnlock_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_proto_ChargeCouplerUnlock_descriptor,
+        new java.lang.String[] { });
+    internal_static_proto_ChargingBreakClocktimerConfigure_descriptor =
+      getDescriptor().getMessageTypes().get(49);
+    internal_static_proto_ChargingBreakClocktimerConfigure_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_ChargingBreakClocktimerConfigure_descriptor,
+        new java.lang.String[] { "ChargingbreakClocktimerConfigureEntry", });
+    internal_static_proto_ChargingBreakClockTimerConfigureEntry_descriptor =
+      getDescriptor().getMessageTypes().get(50);
+    internal_static_proto_ChargingBreakClockTimerConfigureEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_ChargingBreakClockTimerConfigureEntry_descriptor,
+        new java.lang.String[] { "Action", "EndTimeHour", "EndTimeMinute", "StartTimeHour", "StartTimeMinute", "TimerId", });
+    internal_static_proto_WiperHealthReset_descriptor =
+      getDescriptor().getMessageTypes().get(51);
+    internal_static_proto_WiperHealthReset_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_proto_WiperHealthReset_descriptor,
         new java.lang.String[] { });
     descriptor.resolveAllFeaturesImmutable();
     com.google.protobuf.GoGoProtos.getDescriptor();
