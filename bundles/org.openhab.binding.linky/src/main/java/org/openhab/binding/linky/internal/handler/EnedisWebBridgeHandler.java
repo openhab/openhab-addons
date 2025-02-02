@@ -213,7 +213,7 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             }
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
-            if (authData == null || authData.callbacks.size() < 2 || authData.callbacks.get(0).input.isEmpty()
+            if (authData.callbacks.size() < 2 || authData.callbacks.get(0).input.isEmpty()
                     || authData.callbacks.get(1).input.isEmpty() || !lcConfig.username
                             .equals(Objects.requireNonNull(authData.callbacks.get(0).input.get(0)).valueAsString())) {
                 logger.debug("auth1 - invalid template for auth data: {}", result.getContentAsString());
@@ -231,9 +231,6 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             }
 
             AuthResult authResult = gson.fromJson(result.getContentAsString(), AuthResult.class);
-            if (authResult == null) {
-                throw new LinkyException("Invalid authentication result data");
-            }
 
             logger.debug("Add the tokenId cookie");
             enedisApi.addCookie("enedisExt", authResult.tokenId);
@@ -258,7 +255,7 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             HashMap<String, String> hashRes = gson.fromJson(result.getContentAsString(), HashMap.class);
 
             String cookieKey;
-            if (hashRes != null && hashRes.containsKey("cnAlex")) {
+            if (hashRes.containsKey("cnAlex")) {
                 cookieKey = "personne_for_" + hashRes.get("cnAlex");
             } else {
                 throw new LinkyException("Connection failed step 7, missing cookieKey");

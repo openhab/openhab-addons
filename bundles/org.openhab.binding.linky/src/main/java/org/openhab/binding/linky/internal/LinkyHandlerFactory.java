@@ -27,6 +27,7 @@ import org.openhab.binding.linky.internal.handler.EnedisBridgeHandler;
 import org.openhab.binding.linky.internal.handler.EnedisWebBridgeHandler;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.openhab.binding.linky.internal.handler.MyElectricalDataBridgeHandler;
+import org.openhab.binding.linky.internal.utils.DoubleTypeAdapter;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -100,7 +101,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
                                     .atStartOfDay();
                         }
                     })
-            .create();
+            .registerTypeAdapter(Double.class, new DoubleTypeAdapter()).serializeNulls().create();
 
     private final LocaleProvider localeProvider;
 

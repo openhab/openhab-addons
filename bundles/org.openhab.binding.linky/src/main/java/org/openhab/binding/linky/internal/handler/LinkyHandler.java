@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -83,11 +84,14 @@ import org.threeten.extra.Years;
  */
 
 @NonNullByDefault
+@SuppressWarnings("null")
 public class LinkyHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private ZoneId zoneId = ZoneId.systemDefault();
 
-    private static final int REFRESH_FIRST_HOUR_OF_DAY = 1;
+    private static final Random randomNumbers = new Random();
+    private static final int REFRESH_HOUR_OF_DAY = 1;
+    private static final int REFRESH_MINUTE_OF_DAY = randomNumbers.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
@@ -118,9 +122,19 @@ public class LinkyHandler extends BaseThingHandler {
         config = getConfigAs(LinkyConfiguration.class);
         this.timeZoneProvider = timeZoneProvider;
 
-        this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_FIRST_HOUR_OF_DAY, () -> {
+        this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
+                REFRESH_INTERVAL_IN_MIN);
+
+        this.dailyConsumption.setAction(() -> {
             LocalDate today = LocalDate.now();
             MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
+            boolean missingData = checkMissingData(meterReading);
+            if (missingData) {
+                logger.debug("({}) API have returned incomplete data, we will recheck in {} mn", config.prmId,
+                        REFRESH_INTERVAL_IN_MIN);
+                this.dailyConsumption.setMissingData(true);
+            }
+
             meterReading = getMeterReadingAfterChecks(meterReading);
             if (meterReading != null) {
                 logData(meterReading.baseValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
@@ -135,8 +149,8 @@ public class LinkyHandler extends BaseThingHandler {
         // available.
         // By requesting two days, the API is not failing and you get the expected NaN value for yesterday when the data
         // is not yet available.
-        this.dailyConsumptionMaxPower = new ExpiringDayCache<>("dailyConsumptionMaxPower", REFRESH_FIRST_HOUR_OF_DAY,
-                () -> {
+        this.dailyConsumptionMaxPower = new ExpiringDayCache<>("dailyConsumptionMaxPower", REFRESH_HOUR_OF_DAY,
+                REFRESH_MINUTE_OF_DAY, REFRESH_INTERVAL_IN_MIN, () -> {
                     LocalDate today = LocalDate.now();
                     MeterReading meterReading = getPowerData(today.minusDays(1095), today);
                     meterReading = getMeterReadingAfterChecks(meterReading);
@@ -147,28 +161,30 @@ public class LinkyHandler extends BaseThingHandler {
                 });
 
         // Read Tempo Information
-        this.tempoInformation = new ExpiringDayCache<>("tempoInformation", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            LocalDate today = LocalDate.now();
+        this.tempoInformation = new ExpiringDayCache<>("tempoInformation", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
+                REFRESH_INTERVAL_IN_MIN, () -> {
+                    LocalDate today = LocalDate.now();
 
-            ResponseTempo tempoData = getTempoData(today.minusDays(1095), today.plusDays(1));
-            return tempoData;
-        });
+                    ResponseTempo tempoData = getTempoData(today.minusDays(1095), today.plusDays(1));
+                    return tempoData;
+                });
 
         // Comsuption Load Curve
-        this.loadCurveConsumption = new ExpiringDayCache<>("loadCurveConsumption", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            LocalDate today = LocalDate.now();
-            MeterReading meterReading = getLoadCurveConsumption(today.minusDays(6), today);
-            meterReading = getMeterReadingAfterChecks(meterReading);
-            if (meterReading != null) {
-                logData(meterReading.baseValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
-            }
-            return meterReading;
-        });
+        this.loadCurveConsumption = new ExpiringDayCache<>("loadCurveConsumption", REFRESH_HOUR_OF_DAY,
+                REFRESH_MINUTE_OF_DAY, REFRESH_INTERVAL_IN_MIN, () -> {
+                    LocalDate today = LocalDate.now();
+                    MeterReading meterReading = getLoadCurveConsumption(today.minusDays(6), today);
+                    meterReading = getMeterReadingAfterChecks(meterReading);
+                    if (meterReading != null) {
+                        logData(meterReading.baseValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
+                    }
+                    return meterReading;
+                });
     }
 
     @Override
     public synchronized void initialize() {
-        logger.debug("Initializing Linky handler.");
+        logger.debug("Initializing Linky handler for {}", config.prmId);
 
         // update the timezone if not set to default to openhab default timezone
         Configuration thingConfig = getConfig();
@@ -252,8 +268,8 @@ public class LinkyHandler extends BaseThingHandler {
                 updateData();
 
                 final LocalDateTime now = LocalDateTime.now();
-                final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
-                        .truncatedTo(ChronoUnit.HOURS);
+                final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
+                        .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
 
                 if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
                     updateStatus(ThingStatus.ONLINE);
@@ -362,7 +378,7 @@ public class LinkyHandler extends BaseThingHandler {
             updateTempoTimeSeries();
             updateLoadCurveData();
         } catch (LinkyException e) {
-            logger.error("Exception occurs during data update", e);
+            logger.error("Exception occurs during data update for {} : {}", config.prmId, e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -463,15 +479,21 @@ public class LinkyHandler extends BaseThingHandler {
 
             updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_0, values.weekValue[idxCurrentWeek].value);
             updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_1, values.weekValue[idxCurrentWeek - 1].value);
-            updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_2, values.weekValue[idxCurrentWeek - 2].value);
+            if (idxCurrentWeek - 2 >= 0) {
+                updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_2, values.weekValue[idxCurrentWeek - 2].value);
+            }
 
             updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_0, values.monthValue[idxCurrentMonth].value);
             updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_1, values.monthValue[idxCurrentMonth - 1].value);
-            updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_2, values.monthValue[idxCurrentMonth - 2].value);
+            if (idxCurrentMonth - 2 >= 0) {
+                updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_2, values.monthValue[idxCurrentMonth - 2].value);
+            }
 
             updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_0, values.yearValue[idxCurrentYear].value);
             updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_1, values.yearValue[idxCurrentYear - 1].value);
-            updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_2, values.yearValue[idxCurrentYear - 2].value);
+            if (idxCurrentYear - 2 >= 0) {
+                updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_2, values.yearValue[idxCurrentYear - 2].value);
+            }
 
             updateConsumptionTimeSeries(DAILY_GROUP, CONSUMPTION_CHANNEL, values.baseValue);
             updateConsumptionTimeSeries(WEEKLY_GROUP, CONSUMPTION_CHANNEL, values.weekValue);
@@ -522,7 +544,9 @@ public class LinkyHandler extends BaseThingHandler {
                 }
                 timeSeries.add(timestamp, new DecimalType(iv[i].value));
             } catch (Exception ex) {
-                logger.debug("aa");
+                logger.error("error occurs durring updatePowerTimeSeries for {} : {}", config.prmId, ex.getMessage(),
+                        ex);
+                ;
             }
         }
 
@@ -549,19 +573,19 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     private void updateKwhChannel(String groupId, String channelId, double consumption) {
-        logger.debug("Update channel {} with {}", channelId, consumption);
+        logger.debug("Update channel ({}) {} with {}", config.prmId, channelId, consumption);
         updateState(groupId, channelId,
                 Double.isNaN(consumption) ? UnDefType.UNDEF : new QuantityType<>(consumption, Units.KILOWATT_HOUR));
     }
 
     private void updatekVAChannel(String groupId, String channelId, double power) {
-        logger.debug("Update channel {} with {}", channelId, power);
+        logger.debug("Update channel ({}) {} with {}", config.prmId, channelId, power);
         updateState(groupId, channelId, Double.isNaN(power) ? UnDefType.UNDEF
                 : new QuantityType<>(power, MetricPrefix.KILO(Units.VOLT_AMPERE)));
     }
 
     private void updateTempoChannel(String groupId, String channelId, int tempoValue) {
-        logger.debug("Update channel {} with {}", channelId, tempoValue);
+        logger.debug("Update channel ({}) {} with {}", config.prmId, channelId, tempoValue);
         updateState(groupId + "#" + channelId, new DecimalType(tempoValue));
     }
 
@@ -634,8 +658,8 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     private @Nullable MeterReading getConsumptionData(LocalDate from, LocalDate to) {
-        logger.debug("getConsumptionData from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                to.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        logger.debug("getConsumptionData for {} from {} to {}", config.prmId,
+                from.format(DateTimeFormatter.ISO_LOCAL_DATE), to.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
@@ -643,7 +667,7 @@ public class LinkyHandler extends BaseThingHandler {
                 MeterReading meterReading = api.getEnergyData(this, this.userId, config.prmId, from, to);
                 return meterReading;
             } catch (LinkyException e) {
-                logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
+                logger.debug("Exception when getting consumption data for {} : {}", config.prmId, e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -652,8 +676,8 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     private @Nullable MeterReading getLoadCurveConsumption(LocalDate from, LocalDate to) {
-        logger.debug("getLoadCurveConsumption from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                to.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        logger.debug("getLoadCurveConsumption for {} from {} to {}", config.prmId,
+                from.format(DateTimeFormatter.ISO_LOCAL_DATE), to.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
@@ -670,7 +694,7 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     private @Nullable MeterReading getPowerData(LocalDate from, LocalDate to) {
-        logger.debug("getPowerData from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
+        logger.debug("getPowerData for {} from {} to {}", config.prmId, from.format(DateTimeFormatter.ISO_LOCAL_DATE),
                 to.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         EnedisHttpApi api = this.enedisApi;
@@ -703,20 +727,9 @@ public class LinkyHandler extends BaseThingHandler {
         return null;
     }
 
-    private boolean isConnected() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
-            if (bridgeHandler != null) {
-                return bridgeHandler.isConnected();
-            }
-        }
-        return false;
-    }
-
     @Override
     public void dispose() {
-        logger.debug("Disposing the Linky handler.");
+        logger.debug("Disposing the Linky handler {}", config.prmId);
         ScheduledFuture<?> job = this.refreshJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
@@ -734,7 +747,7 @@ public class LinkyHandler extends BaseThingHandler {
     @Override
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            logger.debug("Refreshing channel {}", channelUID.getId());
+            logger.debug("Refreshing channel {} {}", config.prmId, channelUID.getId());
             updateData();
         } else {
             logger.debug("The Linky binding is read-only and can not handle command {}", command);
@@ -745,7 +758,7 @@ public class LinkyHandler extends BaseThingHandler {
         try {
             checkData(meterReading);
         } catch (LinkyException e) {
-            logger.debug("Consumption data: {}", e.getMessage());
+            logger.debug("Consumption data: {} {}", config.prmId, e.getMessage());
             return null;
         }
 
@@ -818,6 +831,18 @@ public class LinkyHandler extends BaseThingHandler {
         return meterReading;
     }
 
+    private boolean checkMissingData(@Nullable MeterReading meterReading) {
+        if (meterReading != null) {
+            for (int idx = 0; idx < meterReading.baseValue.length; idx++) {
+                IntervalReading ir = meterReading.baseValue[idx];
+                if (Double.isNaN(ir.value)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void checkData(@Nullable MeterReading meterReading) throws LinkyException {
         if (meterReading != null) {
             if (meterReading.baseValue.length == 0) {
@@ -854,7 +879,7 @@ public class LinkyHandler extends BaseThingHandler {
                     logData(ivArray, size - 1, title, dateTimeFormatter);
                 }
             } else {
-                for (int i = 0; i < size; i++) {
+                for (int i = size - 3; i < size; i++) {
                     logData(ivArray, i, title, dateTimeFormatter);
                 }
             }
@@ -868,7 +893,7 @@ public class LinkyHandler extends BaseThingHandler {
             if (iv.date != null) {
                 date = iv.date.format(dateTimeFormatter);
             }
-            logger.debug("{} {} value {}", title, date, iv.value);
+            logger.debug("({}) {} {} value {}", config.prmId, title, date, iv.value);
         } catch (Exception e) {
             logger.error("error during logData", e);
         }
