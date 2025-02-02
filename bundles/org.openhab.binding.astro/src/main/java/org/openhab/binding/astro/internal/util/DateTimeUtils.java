@@ -130,13 +130,6 @@ public class DateTimeUtils {
     }
 
     /**
-     * Returns the end of day julian date from the calendar object.
-     */
-    public static double endOfDayDateToJulianDate(Calendar calendar) {
-        return dateToJulianDate(endOfDayDate(calendar));
-    }
-
-    /**
      * Returns the year of the calendar object as a decimal value.
      */
     public static double getDecimalYear(Calendar calendar) {
