@@ -161,8 +161,6 @@ class rule():
             actionConfiguration.put('type', 'application/x-python3')
             actionConfiguration.put('script', f"# text based rule in file: {scope['__file__']}")
 
-
-
             clazz_or_function.logger.info("Rule '{}' initialised".format(name))
 
         return rule_obj
