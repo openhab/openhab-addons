@@ -155,7 +155,14 @@ class rule():
             if len(raw_conditions) > 0:
                 base_rule_obj.setConditions(raw_conditions)
 
-            automationManager.addRule(base_rule_obj)
+            rule = automationManager.addRule(base_rule_obj)
+
+            actionConfiguration = rule.getActions().get(0).getConfiguration()
+            actionConfiguration.put('type', 'application/x-python3')
+            actionConfiguration.put('script', f"# text based rule in file: {scope['__file__']}")
+
+
+
             clazz_or_function.logger.info("Rule '{}' initialised".format(name))
 
         return rule_obj
