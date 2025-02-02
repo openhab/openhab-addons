@@ -514,7 +514,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
         try {
             return sendCommand(command, BlueGigaConnectDirectResponse.class, true).getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
-            logger.debug("Error occured when sending connect command to device {}, reason: {}.", address,
+            logger.debug("Error occurred when sending connect command to device {}, reason: {}.", address,
                     e.getMessage());
             return false;
         }
@@ -534,7 +534,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
         try {
             return sendCommand(command, BlueGigaDisconnectResponse.class, true).getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
-            logger.debug("Error occured when sending disconnect command to device {}, reason: {}.", address,
+            logger.debug("Error occurred when sending disconnect command to device {}, reason: {}.", address,
                     e.getMessage());
             return false;
         }
@@ -560,7 +560,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
             return sendCommand(command, BlueGigaReadByGroupTypeResponse.class, true)
                     .getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
-            logger.debug("Error occured when sending read primary services command to device {}, reason: {}.", address,
+            logger.debug("Error occurred when sending read primary services command to device {}, reason: {}.", address,
                     e.getMessage());
             return false;
         }
@@ -585,7 +585,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
             return sendCommand(command, BlueGigaFindInformationResponse.class, true)
                     .getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
-            logger.debug("Error occured when sending read characteristics command to device {}, reason: {}.", address,
+            logger.debug("Error occurred when sending read characteristics command to device {}, reason: {}.", address,
                     e.getMessage());
             return false;
         }
@@ -604,7 +604,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
         try {
             return sendCommand(command, BlueGigaReadByTypeResponse.class, true).getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
-            logger.debug("Error occured when sending read characteristics command to device {}, reason: {}.", address,
+            logger.debug("Error occurred when sending read characteristics command to device {}, reason: {}.", address,
                     e.getMessage());
             return false;
         }
@@ -628,7 +628,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
         try {
             return sendCommand(command, BlueGigaReadByHandleResponse.class, true).getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
-            logger.debug("Error occured when sending read characteristics command to device {}, reason: {}.", address,
+            logger.debug("Error occurred when sending read characteristics command to device {}, reason: {}.", address,
                     e.getMessage());
             return false;
         }
@@ -655,7 +655,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
             return sendCommand(command, BlueGigaAttributeWriteResponse.class, true)
                     .getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
-            logger.debug("Error occured when sending write characteristics command to device {}, reason: {}.", address,
+            logger.debug("Error occurred when sending write characteristics command to device {}, reason: {}.", address,
                     e.getMessage());
             return false;
         }
@@ -669,7 +669,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
             return sendCommandWithoutChecks(new BlueGigaEndProcedureCommand(), BlueGigaEndProcedureResponse.class)
                     .getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
-            logger.debug("Error occured when sending end procedure command.");
+            logger.debug("Error occurred when sending end procedure command.");
             return false;
         }
     }
@@ -685,7 +685,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
             return sendCommandWithoutChecks(command, BlueGigaSetModeResponse.class)
                     .getResult() == BgApiResponse.SUCCESS;
         } catch (BlueGigaException e) {
-            logger.debug("Error occured when sending set mode command, reason: {}", e.getMessage());
+            logger.debug("Error occurred when sending set mode command, reason: {}", e.getMessage());
             return false;
         }
     }
@@ -715,7 +715,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
                 }
             }
         } catch (BlueGigaException e) {
-            logger.debug("Error occured when sending start scan command, reason: {}", e.getMessage());
+            logger.debug("Error occurred when sending start scan command, reason: {}", e.getMessage());
         }
         logger.debug("Scan start failed.");
         return false;

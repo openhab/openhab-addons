@@ -42,7 +42,7 @@ public interface LIRCEventListener {
      * Procedure for receiving information about fatal errors.
      *
      * @param error
-     *            Error occured.
+     *            Error occurred.
      */
-    void errorOccured(String error);
+    void errorOccurred(String error);
 }

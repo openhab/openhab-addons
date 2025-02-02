@@ -302,13 +302,13 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                         initPairingCodeRetrieval(target);
                     } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "offline.error-occured-while-presenting-pairing-code");
+                                "offline.error-occurred-while-presenting-pairing-code");
                     }
                 } else {
                     boolean hasFailed = initCredentialsRetrieval(target, command.toString());
                     if (hasFailed) {
                         postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "offline.error-occured-during-retrieval-of-credentials");
+                                "offline.error-occurred-during-retrieval-of-credentials");
                         return;
                     }
                     readConfigs();
