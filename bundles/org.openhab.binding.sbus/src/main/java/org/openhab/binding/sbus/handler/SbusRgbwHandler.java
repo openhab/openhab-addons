@@ -75,15 +75,15 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
             var channelTypeUID = channel.getChannelTypeUID();
             if (channelTypeUID == null) {
                 Bundle bundle = FrameworkUtil.getBundle(getClass());
-                logger.warn(translationProvider.getText(bundle, "error.channel.no-type", channel.getUID().toString(),
-                        localeProvider.getLocale()));
+                logger.warn("{}", translationProvider.getText(bundle, "error.channel.no-type",
+                        channel.getUID().toString(), localeProvider.getLocale()));
                 continue;
             }
             String channelTypeId = channelTypeUID.getId();
             if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)) {
                 if (channelConfig.channelNumber <= 0) {
                     Bundle bundle = FrameworkUtil.getBundle(getClass());
-                    logger.warn(translationProvider.getText(bundle, "error.channel.invalid-number",
+                    logger.warn("{}", translationProvider.getText(bundle, "error.channel.invalid-number",
                             channel.getUID().toString(), localeProvider.getLocale()));
                 }
             }
@@ -122,7 +122,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 }
                 var channelTypeUID = channel.getChannelTypeUID();
                 if (channelTypeUID == null) {
-                    logger.warn("Channel {} has no channel type", channel.getUID());
+                    logger.warn("Channel {} has no channel type", channel.getUID().toString());
                     continue;
                 }
                 String channelTypeId = channelTypeUID.getId();
@@ -170,7 +170,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 var channelTypeUID = channel.getChannelTypeUID();
                 if (channelTypeUID == null) {
                     Bundle bundle = FrameworkUtil.getBundle(getClass());
-                    logger.warn(translationProvider.getText(bundle, "error.channel.no-type",
+                    logger.warn("{}", translationProvider.getText(bundle, "error.channel.no-type",
                             channel.getUID().toString(), localeProvider.getLocale()));
                     return;
                 }

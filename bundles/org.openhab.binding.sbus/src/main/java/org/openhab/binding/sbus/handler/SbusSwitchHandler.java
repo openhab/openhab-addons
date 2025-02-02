@@ -55,7 +55,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
             if (channelConfig.channelNumber <= 0) {
                 Bundle bundle = FrameworkUtil.getBundle(getClass());
-                logger.warn(translationProvider.getText(bundle, "error.channel.invalid-number",
+                logger.warn("{}", translationProvider.getText(bundle, "error.channel.invalid-number",
                         channel.getUID().toString(), localeProvider.getLocale()));
             }
         }
@@ -85,7 +85,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                     var channelTypeUID = channel.getChannelTypeUID();
                     if (channelTypeUID == null) {
                         Bundle bundle = FrameworkUtil.getBundle(getClass());
-                        logger.warn(translationProvider.getText(bundle, "error.channel.no-type",
+                        logger.warn("{}", translationProvider.getText(bundle, "error.channel.no-type",
                                 channel.getUID().toString(), localeProvider.getLocale()));
                         continue;
                     }
@@ -125,7 +125,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
                 if (channelConfig.channelNumber <= 0) {
                     Bundle bundle = FrameworkUtil.getBundle(getClass());
-                    logger.warn(translationProvider.getText(bundle, "error.channel.invalid-number",
+                    logger.warn("{}", translationProvider.getText(bundle, "error.channel.invalid-number",
                             channelUID.toString(), localeProvider.getLocale()));
                     return;
                 }
@@ -142,7 +142,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             }
         } catch (Exception e) {
             Bundle bundle = FrameworkUtil.getBundle(getClass());
-            logger.warn(
+            logger.warn("{}",
                     translationProvider.getText(bundle, "error.device.send-command", null, localeProvider.getLocale()),
                     e);
         }

@@ -109,7 +109,7 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Temperature sensors are read-only
         Bundle bundle = FrameworkUtil.getBundle(getClass());
-        logger.debug(
+        logger.debug("{}",
                 translationProvider.getText(bundle, "info.temperature.readonly", null, localeProvider.getLocale()));
     }
 }

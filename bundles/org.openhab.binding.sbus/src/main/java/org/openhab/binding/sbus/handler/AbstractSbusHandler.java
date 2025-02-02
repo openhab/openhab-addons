@@ -134,7 +134,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler {
                     pollDevice();
                 } catch (Exception e) {
                     Bundle bundle = FrameworkUtil.getBundle(getClass());
-                    logger.warn(translationProvider.getText(bundle, "error.device.polling", null,
+                    logger.warn("{}", translationProvider.getText(bundle, "error.device.polling", null,
                             localeProvider.getLocale()), e);
                 }
             }, 0, config.refresh, TimeUnit.SECONDS);
