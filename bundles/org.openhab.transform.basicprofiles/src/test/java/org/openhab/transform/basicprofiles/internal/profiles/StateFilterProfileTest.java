@@ -793,6 +793,68 @@ public class StateFilterProfileTest {
     @MethodSource
     public void testFunctions(Item item, String condition, List<State> states, State input, boolean expected)
             throws ItemNotFoundException {
+        internalTestFunctions(item, condition, states, input, expected);
+    }
+
+    public static Stream<Arguments> testDeltaWithRelativeUnit() {
+        NumberItem temperatureItem = new NumberItem("Number:Temperature", "temperatureItem", UNIT_PROVIDER);
+
+        State initialC = QuantityType.valueOf("5 °C");
+        State initialF = QuantityType.valueOf("5 °F");
+
+        State qty_7_C = QuantityType.valueOf("7 °C");
+        State qty_7_F = QuantityType.valueOf("7 °F");
+
+        return Stream.of( //
+                // Celsius inputs
+                // same unit
+                Arguments.of(temperatureItem, "$DELTA > 1 °C", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "1 °C < $DELTA", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "$DELTA < 1 °C", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "1 °C > $DELTA", initialC, qty_7_C, false), //
+
+                // Celsius vs Fahrenheit: 2 °C = 35.6 °F (absolute), 2 °C = 3.6 °F (relative)
+                Arguments.of(temperatureItem, "$DELTA > 4 °F", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "4 °F < $DELTA", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "$DELTA < 4 °F", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "4 °F > $DELTA", initialC, qty_7_C, true), //
+
+                // Celsius vs Kelvin: °C = K in relative unit
+                Arguments.of(temperatureItem, "$DELTA > 1 K", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "1 K < $DELTA", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "$DELTA < 1 K", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "1 K > $DELTA", initialC, qty_7_C, false), //
+
+                // Fahrenheit inputs
+                // same unit, in F
+                Arguments.of(temperatureItem, "$DELTA > 1 °F", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "1 °F < $DELTA", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "$DELTA < 2 °F", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "2 °F > $DELTA", initialF, qty_7_F, false), //
+
+                // Fahrenheit vs Celsius: 2 °F = -16.67 °C (absolute), 2 °F = 1.11 °C (relative)
+                Arguments.of(temperatureItem, "$DELTA > 1 °C", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "1 °C < $DELTA", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "$DELTA < 1 °C", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "1 °C > $DELTA", initialF, qty_7_F, false), //
+
+                // Fahreheit vs Kelvin: 2 °F = 256.48 K (absolute), 2 °F = 1.11 K (relative)
+                Arguments.of(temperatureItem, "$DELTA > 2 K", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "2 K < $DELTA", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "$DELTA < 2 K", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "2 K > $DELTA", initialF, qty_7_F, true) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testDeltaWithRelativeUnit(Item item, String condition, State initialState, State input,
+            boolean expected) throws ItemNotFoundException {
+        internalTestFunctions(item, condition, List.of(initialState), input, expected);
+    }
+
+    private void internalTestFunctions(Item item, String condition, List<State> states, State input, boolean expected)
+            throws ItemNotFoundException {
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", condition)));
         when(mockItemRegistry.getItem(item.getName())).thenReturn(item);
         when(mockItemChannelLink.getItemName()).thenReturn(item.getName());
