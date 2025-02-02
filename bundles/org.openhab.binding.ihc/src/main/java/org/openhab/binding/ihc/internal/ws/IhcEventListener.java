@@ -42,5 +42,5 @@ public interface IhcEventListener {
      *
      * @param e IhcException occurred.
      */
-    void errorOccured(IhcExecption e);
+    void errorOccurred(IhcExecption e);
 }

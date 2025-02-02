@@ -178,7 +178,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     // Catch "software caused connection abort"
                     return false;
                 } catch (Exception e) {
-                    logger.warn("error occured while trying to connect", e);
+                    logger.warn("error occurred while trying to connect", e);
                 }
             } else {
                 logger.debug("Device was already connected");

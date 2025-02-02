@@ -80,7 +80,7 @@ public class WSFile {
                     .getBytes();
             return this;
         } catch (IOException | XPathExpressionException e) {
-            throw new IhcExecption("Error occured during XML data parsing", e);
+            throw new IhcExecption("Error occurred during XML data parsing", e);
         }
     }
 }

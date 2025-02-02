@@ -325,7 +325,7 @@ public class WSSystemInfo {
 
             return this;
         } catch (IOException | XPathExpressionException | NumberFormatException | DateTimeParseException e) {
-            throw new IhcExecption("Error occured during XML data parsing", e);
+            throw new IhcExecption("Error occurred during XML data parsing", e);
         }
     }
 

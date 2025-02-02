@@ -497,7 +497,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     }
 
     @Override
-    public void errorOccured(Throwable exception) {
+    public void errorOccurred(Throwable exception) {
         EnOceanTransceiver localTransceiver = transceiver;
         if (localTransceiver != null) {
             localTransceiver.shutDown();

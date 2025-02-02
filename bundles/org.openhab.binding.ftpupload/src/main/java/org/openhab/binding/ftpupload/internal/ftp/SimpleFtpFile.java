@@ -184,7 +184,7 @@ public class SimpleFtpFile implements FtpFile {
                 logger.debug("File len: {}", d.length);
                 return d;
             } catch (IllegalArgumentException e) {
-                logger.debug("Exception occured during data conversion: {}", e.getMessage());
+                logger.debug("Exception occurred during data conversion: {}", e.getMessage());
             }
             return null;
         }

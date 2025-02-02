@@ -91,7 +91,7 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                 localAPI.savePreset(position, presetName);
             }
         } catch (ApiException e) {
-            logger.debug("Error occured when trying to save a preset:{}", e.getMessage());
+            logger.debug("Error occurred when trying to save a preset:{}", e.getMessage());
         }
     }
 
@@ -221,7 +221,7 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                     break;
             }
         } catch (ApiException e) {
-            logger.debug("Exception occured when Channel:{}, Command:{}, Error:{}", channelUID.getId(), command,
+            logger.debug("Exception occurred when Channel:{}, Command:{}, Error:{}", channelUID.getId(), command,
                     e.getMessage());
         }
     }

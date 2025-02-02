@@ -232,7 +232,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
                 try {
                     entry.getValue().execute(entry.getKey(), communicator, null);
                 } catch (IOException e) {
-                    logger.warn("An error occured while sending an update command for {}: {}", entry.getKey(),
+                    logger.warn("An error occurred while sending an update command for {}: {}", entry.getKey(),
                             e.getMessage());
                 }
             }

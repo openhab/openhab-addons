@@ -193,7 +193,7 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
             logger.trace("Unable to process message", ioexception);
             TransceiverErrorListener localListener = errorListener;
             if (localListener != null) {
-                localListener.errorOccured(ioexception);
+                localListener.errorOccurred(ioexception);
             }
             return;
         }

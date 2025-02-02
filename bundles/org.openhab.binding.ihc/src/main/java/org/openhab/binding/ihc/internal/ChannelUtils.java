@@ -101,7 +101,7 @@ public class ChannelUtils {
                     }
                 }
             } catch (RuntimeException e) {
-                LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
+                LOGGER.warn("Error occurred when adding channels, reason: {}", e.getMessage(), e);
             }
 
             try {
@@ -122,7 +122,7 @@ public class ChannelUtils {
                     }
                 }
             } catch (RuntimeException e) {
-                LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
+                LOGGER.warn("Error occurred when adding channels, reason: {}", e.getMessage(), e);
             }
         } else {
             LOGGER.warn("Project file data doesn't exist, can't automatically create channels!");
