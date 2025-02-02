@@ -167,10 +167,14 @@ public class EnedisHttpApi {
 
                 if (!data.isEmpty()) {
                     try {
+                        T result = Objects.requireNonNull(gson.fromJson(data, clazz));
                         logger.debug("getData success {}: {}", clazz.getName(), url);
-                        return Objects.requireNonNull(gson.fromJson(data, clazz));
+                        return result;
                     } catch (JsonSyntaxException e) {
                         logger.debug("Invalid JSON response not matching {}: {}", clazz.getName(), data);
+                        throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
+                    } catch (Exception e) {
+                        logger.error("Error {}: {}", clazz.getName(), data, e);
                         throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
                     }
                 }
@@ -188,6 +192,7 @@ public class EnedisHttpApi {
         logger.debug("getData error {}: {} , maxRetry", clazz.getName(), url);
 
         throw Objects.requireNonNull(lastException);
+
     }
 
     public PrmInfo getPrmInfo(LinkyHandler handler, String internId, String prmId) throws LinkyException {

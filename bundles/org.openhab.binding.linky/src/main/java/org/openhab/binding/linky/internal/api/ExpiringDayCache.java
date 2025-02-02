@@ -43,10 +43,14 @@ public class ExpiringDayCache<V> {
 
     private final String name;
     private final int beginningHour;
-    private final Supplier<@Nullable V> action;
+    private final int beginningMinute;
+    private final int refreshInterval;
+    @Nullable
+    private Supplier<@Nullable V> action;
 
     private @Nullable V value;
     private LocalDateTime expiresAt;
+    public boolean missingData = false;
 
     /**
      * Create a new instance.
@@ -55,10 +59,32 @@ public class ExpiringDayCache<V> {
      * @param beginningHour the hour in the day at which the validity period is starting
      * @param action the action to retrieve/calculate the value
      */
-    public ExpiringDayCache(String name, int beginningHour, Supplier<@Nullable V> action) {
+    public ExpiringDayCache(String name, int beginningHour, int beginningMinute, int refreshInterval,
+            Supplier<@Nullable V> action) {
         this.name = name;
         this.beginningHour = beginningHour;
+        this.beginningMinute = beginningMinute;
+        this.refreshInterval = refreshInterval;
         this.expiresAt = calcAlreadyExpired();
+        this.action = action;
+    }
+
+    /**
+     * Create a new instance.
+     *
+     * @param name the name of this cache
+     * @param beginningHour the hour in the day at which the validity period is starting
+     * @param action the action to retrieve/calculate the value
+     */
+    public ExpiringDayCache(String name, int beginningHour, int beginningMinute, int refreshInterval) {
+        this.name = name;
+        this.beginningHour = beginningHour;
+        this.beginningMinute = beginningMinute;
+        this.refreshInterval = refreshInterval;
+        this.expiresAt = calcAlreadyExpired();
+    }
+
+    public void setAction(Supplier<@Nullable V> action) {
         this.action = action;
     }
 
@@ -83,9 +109,12 @@ public class ExpiringDayCache<V> {
      * @return the new value
      */
     public synchronized @Nullable V refreshValue() {
-        value = action.get();
-        expiresAt = calcNextExpiresAt();
-        return value;
+        if (action != null) {
+            value = action.get();
+            expiresAt = calcNextExpiresAt();
+            return value;
+        }
+        return null;
     }
 
     /**
@@ -97,12 +126,24 @@ public class ExpiringDayCache<V> {
         return !LocalDateTime.now().isBefore(expiresAt);
     }
 
+    public void setMissingData(boolean missingData) {
+        this.missingData = missingData;
+    }
+
     private LocalDateTime calcNextExpiresAt() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime limit = now.withHour(beginningHour).truncatedTo(ChronoUnit.HOURS);
-        LocalDateTime result = now.isBefore(limit) ? limit : limit.plusDays(1);
-        logger.debug("calcNextExpiresAt result = {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-        return result;
+        if (missingData) {
+            LocalDateTime result = now.plusMinutes(refreshInterval);
+            logger.debug("calcNextExpiresAt result = {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            return result;
+
+        } else {
+            LocalDateTime limit = now.withHour(beginningHour).withMinute(beginningMinute)
+                    .truncatedTo(ChronoUnit.MINUTES);
+            LocalDateTime result = now.isBefore(limit) ? limit : limit.plusDays(1);
+            logger.debug("calcNextExpiresAt result = {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            return result;
+        }
     }
 
     private LocalDateTime calcAlreadyExpired() {
