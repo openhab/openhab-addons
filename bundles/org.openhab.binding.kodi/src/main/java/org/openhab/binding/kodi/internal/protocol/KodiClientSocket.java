@@ -169,7 +169,7 @@ public class KodiClientSocket {
 
         @OnWebSocketError
         public void onError(Throwable error) {
-            logger.trace("Error occured: {}", error.getMessage());
+            logger.trace("Error occurred: {}", error.getMessage());
             onClose(0, error.getMessage());
         }
     }

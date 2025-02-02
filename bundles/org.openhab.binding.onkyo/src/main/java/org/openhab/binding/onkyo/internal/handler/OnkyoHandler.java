@@ -551,7 +551,7 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
                 populateInputs(selectableInputs);
             }
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            logger.debug("Error occured during Info XML parsing.", e);
+            logger.debug("Error occurred during Info XML parsing.", e);
         }
     }
 
