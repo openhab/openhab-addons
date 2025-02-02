@@ -339,6 +339,7 @@ public class StateFilterProfile implements StateProfile {
                 State rhsState = this.rhsState;
                 Item lhsItem = null;
                 Item rhsItem = null;
+                boolean isDeltaCheck = false;
 
                 if (rhsState == null) {
                     rhsItem = getItemOrNull(rhsString);
@@ -374,6 +375,9 @@ public class StateFilterProfile implements StateProfile {
                         logger.debug("Couldn't calculate the left hand side function '{}'", lhsString);
                         return false;
                     }
+                    if (lhsFunction.getType() == FunctionType.Function.DELTA) {
+                        isDeltaCheck = true;
+                    }
                 }
 
                 if (rhsState == null) {
@@ -382,6 +386,10 @@ public class StateFilterProfile implements StateProfile {
 
                 // Don't convert QuantityType to other types, so that 1500 != 1500 W
                 if (rhsState != null && !(rhsState instanceof QuantityType)) {
+                    if (rhsState instanceof FunctionType rhsFunction
+                            && rhsFunction.getType() == FunctionType.Function.DELTA) {
+                        isDeltaCheck = true;
+                    }
                     // Try to convert it to the same type as the lhs
                     // This allows comparing compatible types, e.g. PercentType vs OnOffType
                     rhsState = rhsState.as(lhsState.getClass());
@@ -418,6 +426,12 @@ public class StateFilterProfile implements StateProfile {
                 }
 
                 rhs = Objects.requireNonNull(rhsState instanceof StringType ? rhsState.toString() : rhsState);
+
+                if (isDeltaCheck && rhs instanceof QuantityType rhsQty && lhs instanceof QuantityType lhsQty) {
+                    if (rhsQty.toUnitRelative(lhsQty.getUnit()) instanceof QuantityType relativeRhs) {
+                        rhs = relativeRhs;
+                    }
+                }
 
                 if (logger.isDebugEnabled()) {
                     if (lhsString.isEmpty()) {
