@@ -1,0 +1,770 @@
+[
+ {
+   "id": "01",
+   "name": "Ain",
+   "northest_lat": 46.517199374492,
+   "southest_lat": 45.611235124481,
+   "eastest_lon": 6.1697363568789,
+   "westest_lon": 4.729097034294
+ },
+ {
+   "id": "02",
+   "name": "Aisne",
+   "northest_lat": 50.069271974234,
+   "southest_lat": 48.837795469902,
+   "eastest_lon": 4.2540638814402,
+   "westest_lon": 2.9624508927558
+ },
+ {
+   "id": "03",
+   "name": "Allier",
+   "northest_lat": 46.803872076205,
+   "southest_lat": 45.930727869968,
+   "eastest_lon": 4.0055701432229,
+   "westest_lon": 2.2804029533754
+ },
+ {
+   "id": "04",
+   "name": "Alpes-de-Haute-Provence",
+   "northest_lat": 44.659501345682,
+   "southest_lat": 43.668282105491,
+   "eastest_lon": 6.9668199032047,
+   "westest_lon": 5.4980104773442
+ },
+ {
+   "id": "05",
+   "name": "Hautes-Alpes",
+   "northest_lat": 45.12684420383,
+   "southest_lat": 44.186478874057,
+   "eastest_lon": 7.0771048243018,
+   "westest_lon": 5.4185330627929
+ },
+ {
+   "id": "06",
+   "name": "Alpes-Maritimes",
+   "northest_lat": 44.361051257141,
+   "southest_lat": 43.480065494401,
+   "eastest_lon": 7.7169378581589,
+   "westest_lon": 6.6363906079569
+ },
+ {
+   "id": "07",
+   "name": "Ardèche",
+   "northest_lat": 45.365674921417,
+   "southest_lat": 44.264783733394,
+   "eastest_lon": 4.8865943991285,
+   "westest_lon": 3.8615128126047
+ },
+ {
+   "id": "08",
+   "name": "Ardennes",
+   "northest_lat": 50.168317417174,
+   "southest_lat": 49.228510768771,
+   "eastest_lon": 5.3935393812988,
+   "westest_lon": 4.0252899216328
+ },
+ {
+   "id": "09",
+   "name": "Ariège",
+   "northest_lat": 43.315601482419,
+   "southest_lat": 42.572397819345,
+   "eastest_lon": 2.1758766074869,
+   "westest_lon": 0.82612266137771
+ },
+ {
+   "id": "10",
+   "name": "Aube",
+   "northest_lat": 48.716672523486,
+   "southest_lat": 47.924112631788,
+   "eastest_lon": 4.863174195777,
+   "westest_lon": 3.3883584814447
+ },
+ {
+   "id": "11",
+   "name": "Aude",
+   "northest_lat": 43.459927734352,
+   "southest_lat": 42.64890098195,
+   "eastest_lon": 3.2405623482295,
+   "westest_lon": 1.6884233932357
+ },
+ {
+   "id": "12",
+   "name": "Aveyron",
+   "northest_lat": 44.941219492647,
+   "southest_lat": 43.692056102371,
+   "eastest_lon": 3.4507554815828,
+   "westest_lon": 1.8396044963184
+ },
+ {
+   "id": "13",
+   "name": "Bouches-du-Rhône",
+   "northest_lat": 43.92406219253,
+   "southest_lat": 43.162545513212,
+   "eastest_lon": 5.8132476569219,
+   "westest_lon": 4.2302808850321
+ },
+ {
+   "id": "14",
+   "name": "Calvados",
+   "northest_lat": 49.429859840723,
+   "southest_lat": 48.752223582274,
+   "eastest_lon": 0.44627431224134,
+   "westest_lon": -1.1595014604014
+ },
+ {
+   "id": "15",
+   "name": "Cantal",
+   "northest_lat": 45.480702895801,
+   "southest_lat": 44.61552895784,
+   "eastest_lon": 3.3699091459722,
+   "westest_lon": 2.0629079799591
+ },
+ {
+   "id": "16",
+   "name": "Charente",
+   "northest_lat": 46.139591492141,
+   "southest_lat": 45.191628193392,
+   "eastest_lon": 0.9456207917489,
+   "westest_lon": -0.46177341555077
+ },
+ {
+   "id": "17",
+   "name": "Charente-Maritime",
+   "northest_lat": 46.371051399922,
+   "southest_lat": 45.088810634907,
+   "eastest_lon": 0.005823224821197,
+   "westest_lon": -1.5614800452621
+ },
+ {
+   "id": "18",
+   "name": "Cher",
+   "northest_lat": 47.628965936616,
+   "southest_lat": 46.420403547753,
+   "eastest_lon": 3.0793324170792,
+   "westest_lon": 1.7745852665449
+ },
+ {
+   "id": "19",
+   "name": "Corrèze",
+   "northest_lat": 45.763895555756,
+   "southest_lat": 44.923721627249,
+   "eastest_lon": 2.5283596411119,
+   "westest_lon": 1.2271245972559
+ },
+ {
+   "id": "21",
+   "name": "Côte-d'Or",
+   "northest_lat": 48.030241950581,
+   "southest_lat": 46.900857518168,
+   "eastest_lon": 5.5185372800929,
+   "westest_lon": 4.0660574486622
+ },
+ {
+   "id": "22",
+   "name": "Côtes-d'Armor",
+   "northest_lat": 48.867411825697,
+   "southest_lat": 48.035478415172,
+   "eastest_lon": -1.9089921410274,
+   "westest_lon": -3.663669588163
+ },
+ {
+   "id": "23",
+   "name": "Creuse",
+   "northest_lat": 46.45481310551,
+   "southest_lat": 45.664008285608,
+   "eastest_lon": 2.6107853057918,
+   "westest_lon": 1.3748978470741
+ },
+ {
+   "id": "24",
+   "name": "Dordogne",
+   "northest_lat": 45.714569962764,
+   "southest_lat": 44.57129825478,
+   "eastest_lon": 1.4482602497483,
+   "westest_lon": -0.041998525054412
+ },
+ {
+   "id": "25",
+   "name": "Doubs",
+   "northest_lat": 47.579897594928,
+   "southest_lat": 46.553996454277,
+   "eastest_lon": 7.0622006908671,
+   "westest_lon": 5.6987272452696
+ },
+ {
+   "id": "26",
+   "name": "Drôme",
+   "northest_lat": 45.344042230781,
+   "southest_lat": 44.115716677493,
+   "eastest_lon": 5.8294720463131,
+   "westest_lon": 4.6477668446587
+ },
+ {
+   "id": "27",
+   "name": "Eure",
+   "northest_lat": 49.485111873749,
+   "southest_lat": 48.666521479531,
+   "eastest_lon": 1.8026740663848,
+   "westest_lon": 0.29722451460974
+ },
+ {
+   "id": "28",
+   "name": "Eure-et-Loir",
+   "northest_lat": 48.941051842112,
+   "southest_lat": 47.953852019595,
+   "eastest_lon": 1.9940901445311,
+   "westest_lon": 0.76023175104941
+ },
+ {
+   "id": "29",
+   "name": "Finistère",
+   "northest_lat": 48.75230874743,
+   "southest_lat": 47.762638930067,
+   "eastest_lon": -3.3880788564101,
+   "westest_lon": -5.138001239929
+ },
+ {
+   "id": "30",
+   "name": "Gard",
+   "northest_lat": 44.459798467391,
+   "southest_lat": 43.460183661653,
+   "eastest_lon": 4.8455501032842,
+   "westest_lon": 3.2628340569911
+ },
+ {
+   "id": "31",
+   "name": "Haute-Garonne",
+   "northest_lat": 43.920240096152,
+   "southest_lat": 42.68989270234,
+   "eastest_lon": 2.0478554672695,
+   "westest_lon": 0.44199364903152
+ },
+ {
+   "id": "32",
+   "name": "Gers",
+   "northest_lat": 44.078224550392,
+   "southest_lat": 43.310884111508,
+   "eastest_lon": 1.2013345895525,
+   "westest_lon": -0.28211623210758
+ },
+ {
+   "id": "33",
+   "name": "Gironde",
+   "northest_lat": 45.574691325999,
+   "southest_lat": 44.193811119459,
+   "eastest_lon": 0.31506020240148,
+   "westest_lon": -1.2617334302552
+ },
+ {
+   "id": "34",
+   "name": "Hérault",
+   "northest_lat": 43.969527164685,
+   "southest_lat": 43.212804132866,
+   "eastest_lon": 4.1944474773799,
+   "westest_lon": 2.5399656073586
+ },
+ {
+   "id": "35",
+   "name": "Ille-et-Vilaine",
+   "northest_lat": 48.704854504824,
+   "southest_lat": 47.631356309182,
+   "eastest_lon": -1.0168893967587,
+   "westest_lon": -2.289084836122
+ },
+ {
+   "id": "36",
+   "name": "Indre",
+   "northest_lat": 47.276819032313,
+   "southest_lat": 46.347214822447,
+   "eastest_lon": 2.2043920861378,
+   "westest_lon": 0.86746898682573
+ },
+ {
+   "id": "37",
+   "name": "Indre-et-Loire",
+   "northest_lat": 47.709346222795,
+   "southest_lat": 46.737086924375,
+   "eastest_lon": 1.3653663291974,
+   "westest_lon": 0.053277684947378
+ },
+ {
+   "id": "38",
+   "name": "Isère",
+   "northest_lat": 45.883269928025,
+   "southest_lat": 44.696067584965,
+   "eastest_lon": 6.3588423781754,
+   "westest_lon": 4.7441167394752
+ },
+ {
+   "id": "39",
+   "name": "Jura",
+   "northest_lat": 47.305475313171,
+   "southest_lat": 46.260731935709,
+   "eastest_lon": 6.2033299339615,
+   "westest_lon": 5.2548827302617
+ },
+ {
+   "id": "40",
+   "name": "Landes",
+   "northest_lat": 44.532195517275,
+   "southest_lat": 43.487949116697,
+   "eastest_lon": 0.13672631290526,
+   "westest_lon": -1.524870110434
+ },
+ {
+   "id": "41",
+   "name": "Loir-et-Cher",
+   "northest_lat": 48.132548568904,
+   "southest_lat": 47.18622172903,
+   "eastest_lon": 2.2478931361182,
+   "westest_lon": 0.58052041667909
+ },
+ {
+   "id": "42",
+   "name": "Loire",
+   "northest_lat": 46.275936357353,
+   "southest_lat": 45.232177394436,
+   "eastest_lon": 4.7604638818845,
+   "westest_lon": 3.6906909501902
+ },
+ {
+   "id": "43",
+   "name": "Haute-Loire",
+   "northest_lat": 45.427582294546,
+   "southest_lat": 44.743866105932,
+   "eastest_lon": 4.489606977621,
+   "westest_lon": 3.0822533822787
+ },
+ {
+   "id": "44",
+   "name": "Loire-Atlantique",
+   "northest_lat": 47.833557723029,
+   "southest_lat": 46.860078088448,
+   "eastest_lon": -0.94643916329696,
+   "westest_lon": -2.5589448655806
+ },
+ {
+   "id": "45",
+   "name": "Loiret",
+   "northest_lat": 48.344598562828,
+   "southest_lat": 47.482968445146,
+   "eastest_lon": 3.1284487900515,
+   "westest_lon": 1.5129691249084
+ },
+ {
+   "id": "46",
+   "name": "Lot",
+   "northest_lat": 45.046275852749,
+   "southest_lat": 44.204018679795,
+   "eastest_lon": 2.2108934010391,
+   "westest_lon": 0.98177646477517
+ },
+ {
+   "id": "47",
+   "name": "Lot-et-Garonne",
+   "northest_lat": 44.764390535693,
+   "southest_lat": 43.973860568873,
+   "eastest_lon": 1.0779367166615,
+   "westest_lon": -0.14068987994571
+ },
+ {
+   "id": "48",
+   "name": "Lozère",
+   "northest_lat": 44.971408091786,
+   "southest_lat": 44.113818175271,
+   "eastest_lon": 3.9981617468281,
+   "westest_lon": 2.981675726654
+ },
+ {
+   "id": "49",
+   "name": "Maine-et-Loire",
+   "northest_lat": 47.809992506553,
+   "southest_lat": 46.969397597368,
+   "eastest_lon": 0.23453049018557,
+   "westest_lon": -1.3541992398083
+ },
+ {
+   "id": "50",
+   "name": "Manche",
+   "northest_lat": 49.725557927402,
+   "southest_lat": 48.458282754255,
+   "eastest_lon": -0.73732101904671,
+   "westest_lon": -1.9472733176655
+ },
+ {
+   "id": "51",
+   "name": "Marne",
+   "northest_lat": 49.406179032892,
+   "southest_lat": 48.516108006569,
+   "eastest_lon": 5.0379027924329,
+   "westest_lon": 3.398657955437
+ },
+ {
+   "id": "52",
+   "name": "Haute-Marne",
+   "northest_lat": 48.688711618117,
+   "southest_lat": 47.576950536437,
+   "eastest_lon": 5.8908642780035,
+   "westest_lon": 4.6268310932286
+ },
+ {
+   "id": "53",
+   "name": "Mayenne",
+   "northest_lat": 48.567994064435,
+   "southest_lat": 47.733379704738,
+   "eastest_lon": -0.049909790963035,
+   "westest_lon": -1.238247803597
+ },
+ {
+   "id": "54",
+   "name": "Meurthe-et-Moselle",
+   "northest_lat": 49.562644003065,
+   "southest_lat": 48.349889737943,
+   "eastest_lon": 7.1231636635608,
+   "westest_lon": 5.429907860027
+ },
+ {
+   "id": "55",
+   "name": "Meuse",
+   "northest_lat": 49.617086785829,
+   "southest_lat": 48.410687855212,
+   "eastest_lon": 5.8541770017029,
+   "westest_lon": 4.8885820531146
+ },
+ {
+   "id": "56",
+   "name": "Morbihan",
+   "northest_lat": 48.210884763611,
+   "southest_lat": 47.283069445657,
+   "eastest_lon": -2.0357552590146,
+   "westest_lon": -3.7321436369252
+ },
+ {
+   "id": "57",
+   "name": "Moselle",
+   "northest_lat": 49.510019040716,
+   "southest_lat": 48.52694525177,
+   "eastest_lon": 7.6352815933424,
+   "westest_lon": 5.8934039932125
+ },
+ {
+   "id": "58",
+   "name": "Nièvre",
+   "northest_lat": 47.587958865747,
+   "southest_lat": 46.651760006926,
+   "eastest_lon": 4.2306617272065,
+   "westest_lon": 2.8451871650071
+ },
+ {
+   "id": "59",
+   "name": "Nord",
+   "northest_lat": 51.08854370897,
+   "southest_lat": 49.969186662527,
+   "eastest_lon": 4.2279959931456,
+   "westest_lon": 2.0677049871716
+ },
+ {
+   "id": "60",
+   "name": "Oise",
+   "northest_lat": 49.758309270134,
+   "southest_lat": 49.060452516659,
+   "eastest_lon": 3.162641421643,
+   "westest_lon": 1.6895744511517
+ },
+ {
+   "id": "61",
+   "name": "Orne",
+   "northest_lat": 48.972557592954,
+   "southest_lat": 48.181599665308,
+   "eastest_lon": 0.9762713097259,
+   "westest_lon": -0.86036021134895
+ },
+ {
+   "id": "62",
+   "name": "Pas-de-Calais",
+   "northest_lat": 51.006501514321,
+   "southest_lat": 50.020975633738,
+   "eastest_lon": 3.1883563131291,
+   "westest_lon": 1.5577948179294
+ },
+ {
+   "id": "63",
+   "name": "Puy-de-Dôme",
+   "northest_lat": 46.255486133208,
+   "southest_lat": 45.287121578381,
+   "eastest_lon": 3.9844000097893,
+   "westest_lon": 2.388014020679
+ },
+ {
+   "id": "64",
+   "name": "Pyrénées-Atlantiques",
+   "northest_lat": 43.596401195938,
+   "southest_lat": 42.777515930774,
+   "eastest_lon": 0.02629551293813,
+   "westest_lon": -1.7908870919282
+ },
+ {
+   "id": "65",
+   "name": "Hautes-Pyrénées",
+   "northest_lat": 43.609311711216,
+   "southest_lat": 42.674921018438,
+   "eastest_lon": 0.64553925526757,
+   "westest_lon": -0.3270823405503
+ },
+ {
+   "id": "66",
+   "name": "Pyrénées-Orientales",
+   "northest_lat": 42.918339638726,
+   "southest_lat": 42.33364688988,
+   "eastest_lon": 3.1747892794105,
+   "westest_lon": 1.7256472450279
+ },
+ {
+   "id": "67",
+   "name": "Bas-Rhin",
+   "northest_lat": 49.077884925649,
+   "southest_lat": 48.120371112534,
+   "eastest_lon": 8.2303986615424,
+   "westest_lon": 6.9403717864006
+ },
+ {
+   "id": "68",
+   "name": "Haut-Rhin",
+   "northest_lat": 48.310471263573,
+   "southest_lat": 47.422198455938,
+   "eastest_lon": 7.6220859200517,
+   "westest_lon": 6.8428287756472
+ },
+ {
+   "id": "69",
+   "name": "Rhône",
+   "northest_lat": 46.303994122044,
+   "southest_lat": 45.45503324486,
+   "eastest_lon": 5.1592030475156,
+   "westest_lon": 4.243469905983
+ },
+ {
+   "id": "70",
+   "name": "Haute-Saône",
+   "northest_lat": 48.023714993889,
+   "southest_lat": 47.253139353829,
+   "eastest_lon": 6.8235333222471,
+   "westest_lon": 5.3727580571009
+ },
+ {
+   "id": "71",
+   "name": "Saône-et-Loire",
+   "northest_lat": 47.155410810959,
+   "southest_lat": 46.156946471815,
+   "eastest_lon": 5.4622983197648,
+   "westest_lon": 3.6225898833129
+ },
+ {
+   "id": "72",
+   "name": "Sarthe",
+   "northest_lat": 48.482954540393,
+   "southest_lat": 47.569104805534,
+   "eastest_lon": 0.91379809767445,
+   "westest_lon": -0.44786007819229
+ },
+ {
+   "id": "73",
+   "name": "Savoie",
+   "northest_lat": 45.93845768164,
+   "southest_lat": 45.051837207667,
+   "eastest_lon": 7.1842712160815,
+   "westest_lon": 5.6230208703548
+ },
+ {
+   "id": "74",
+   "name": "Haute-Savoie",
+   "northest_lat": 46.408081546332,
+   "southest_lat": 45.682198985672,
+   "eastest_lon": 7.0438913499404,
+   "westest_lon": 5.8074048290847
+ },
+ {
+   "id": "75",
+   "name": "Paris",
+   "northest_lat": 48.902007785215,
+   "southest_lat": 48.816314210034,
+   "eastest_lon": 2.4675819883673,
+   "westest_lon": 2.2242191058804
+ },
+ {
+   "id": "76",
+   "name": "Seine-Maritime",
+   "northest_lat": 50.070851596042,
+   "southest_lat": 49.252262168305,
+   "eastest_lon": 1.79022549105,
+   "westest_lon": 0.065609431053556
+ },
+ {
+   "id": "77",
+   "name": "Seine-et-Marne",
+   "northest_lat": 49.11755332218,
+   "southest_lat": 48.122204261229,
+   "eastest_lon": 3.555613758785,
+   "westest_lon": 2.3931765378081
+ },
+ {
+   "id": "78",
+   "name": "Yvelines",
+   "northest_lat": 49.08303659502,
+   "southest_lat": 48.440146719021,
+   "eastest_lon": 2.2265538842831,
+   "westest_lon": 1.4472851104304
+ },
+ {
+   "id": "79",
+   "name": "Deux-Sèvres",
+   "northest_lat": 47.108333434925,
+   "southest_lat": 45.969661749473,
+   "eastest_lon": 0.22035828616308,
+   "westest_lon": -0.89196408624284
+ },
+ {
+   "id": "80",
+   "name": "Somme",
+   "northest_lat": 50.366290636763,
+   "southest_lat": 49.571762327,
+   "eastest_lon": 3.2030417908111,
+   "westest_lon": 1.3796981484469
+ },
+ {
+   "id": "81",
+   "name": "Tarn",
+   "northest_lat": 44.200834436147,
+   "southest_lat": 43.383508824887,
+   "eastest_lon": 2.93545676901,
+   "westest_lon": 1.5439759556659
+ },
+ {
+   "id": "82",
+   "name": "Tarn-et-Garonne",
+   "northest_lat": 44.393331095059,
+   "southest_lat": 43.770780304363,
+   "eastest_lon": 1.9963637896774,
+   "westest_lon": 0.73810974125492
+ },
+ {
+   "id": "83",
+   "name": "Var",
+   "northest_lat": 43.806770970879,
+   "southest_lat": 42.982043008785,
+   "eastest_lon": 6.9337211159516,
+   "westest_lon": 5.6559638228901
+ },
+ {
+   "id": "84",
+   "name": "Vaucluse",
+   "northest_lat": 44.431367227183,
+   "southest_lat": 43.658685905188,
+   "eastest_lon": 5.7573377215236,
+   "westest_lon": 4.649227423465
+ },
+ {
+   "id": "85",
+   "name": "Vendée",
+   "northest_lat": 47.083893903306,
+   "southest_lat": 46.266566974958,
+   "eastest_lon": -0.53779518169029,
+   "westest_lon": -2.3987614706025
+ },
+ {
+   "id": "86",
+   "name": "Vienne",
+   "northest_lat": 47.175754285742,
+   "southest_lat": 46.049008552161,
+   "eastest_lon": 1.2126877519811,
+   "westest_lon": -0.1021158452812
+ },
+ {
+   "id": "87",
+   "name": "Haute-Vienne",
+   "northest_lat": 46.401546863371,
+   "southest_lat": 45.437356928582,
+   "eastest_lon": 1.9094484810021,
+   "westest_lon": 0.62974117909144
+ },
+ {
+   "id": "88",
+   "name": "Vosges",
+   "northest_lat": 48.513587820739,
+   "southest_lat": 47.813051201983,
+   "eastest_lon": 7.1982872111206,
+   "westest_lon": 5.3944755711529
+ },
+ {
+   "id": "89",
+   "name": "Yonne",
+   "northest_lat": 48.39970411104,
+   "southest_lat": 47.312769315752,
+   "eastest_lon": 4.3403007872795,
+   "westest_lon": 2.8487899744432
+ },
+ {
+   "id": "90",
+   "name": "Territoire de Belfort",
+   "northest_lat": 47.824784354742,
+   "southest_lat": 47.433371743667,
+   "eastest_lon": 7.1398015507652,
+   "westest_lon": 6.7576409592057
+ },
+ {
+   "id": "91",
+   "name": "Essonne",
+   "northest_lat": 48.776101996393,
+   "southest_lat": 48.284688606385,
+   "eastest_lon": 2.5853737107586,
+   "westest_lon": 1.9149199821626
+ },
+ {
+   "id": "92",
+   "name": "Hauts-de-Seine",
+   "northest_lat": 48.950965864655,
+   "southest_lat": 48.72948996497,
+   "eastest_lon": 2.3363529889891,
+   "westest_lon": 2.1458760215967
+ },
+ {
+   "id": "93",
+   "name": "Seine-Saint-Denis",
+   "northest_lat": 49.012397786393,
+   "southest_lat": 48.807437551952,
+   "eastest_lon": 2.6025997962059,
+   "westest_lon": 2.2882536989787
+ },
+ {
+   "id": "94",
+   "name": "Val-de-Marne",
+   "northest_lat": 48.861405371284,
+   "southest_lat": 48.688326690701,
+   "eastest_lon": 2.6136517425679,
+   "westest_lon": 2.3102224901101
+ },
+ {
+   "id": "95",
+   "name": "Val-d'Oise",
+   "northest_lat": 49.232197221792,
+   "southest_lat": 48.908679329899,
+   "eastest_lon": 2.5905283926735,
+   "westest_lon": 1.608798807603
+ },
+ {
+   "id": "2A",
+   "name": "Corse-du-Sud",
+   "northest_lat": 42.381404942274,
+   "southest_lat": 41.362164776515,
+   "eastest_lon": 9.4073217319481,
+   "westest_lon": 8.5401025407511
+ },
+ {
+   "id": "2B",
+   "name": "Haute-Corse",
+   "northest_lat": 43.011724041684,
+   "southest_lat": 41.832143660252,
+   "eastest_lon": 9.5592262719626,
+   "westest_lon": 8.5734085639674
+ }
+]
