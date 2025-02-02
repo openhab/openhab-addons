@@ -192,7 +192,6 @@ public class EnedisHttpApi {
         logger.debug("getData error {}: {} , maxRetry", clazz.getName(), url);
 
         throw Objects.requireNonNull(lastException);
-
     }
 
     public PrmInfo getPrmInfo(LinkyHandler handler, String internId, String prmId) throws LinkyException {
