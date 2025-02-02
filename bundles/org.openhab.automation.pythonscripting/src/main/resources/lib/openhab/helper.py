@@ -39,6 +39,7 @@ import profile, pstats, io
 from datetime import datetime, timedelta
 
 Java_MetadataKey = java.type("org.openhab.core.items.MetadataKey")
+Java_Metadata = java.type("org.openhab.core.items.Metadata")
 
 Java_UnDefType = java.type("org.openhab.core.types.UnDefType")
 
@@ -498,6 +499,22 @@ class Registry():
     def getItemMetadata(item_or_item_name, namespace):
         item_name = Registry._getItemName(item_or_item_name)
         return METADATA_REGISTRY.get(Java_MetadataKey(namespace, item_name))
+
+    @staticmethod
+    def setItemMetadata(item_or_item_name, namespace, configuration, value=None, overwrite=False):
+        item_name = Registry._getItemName(item_or_item_name)
+
+        if overwrite:
+            METADATA_REGISTRY.removeItemMetadata(item_name)
+        metadata = Registry.getItemMetadata(item_name, namespace)
+        if metadata is None or overwrite:
+            METADATA_REGISTRY.add(Java_Metadata(Java_MetadataKey(namespace, item_name), value, configuration))
+        else:
+            if value is None:
+                value = metadata.value
+            new_configuration = dict(metadata.configuration).copy()
+            new_configuration.update(configuration)
+            METADATA_REGISTRY.update(Java_Metadata(Java_MetadataKey(namespace, item_name), value, new_configuration))
 
     @staticmethod
     def _getItemName(item_or_item_name):
