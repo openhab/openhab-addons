@@ -445,6 +445,12 @@ public class LinkTapHandler extends PollingDeviceHandler {
     @Override
     public void handleBridgeDataUpdated() {
         switch (getThing().getStatus()) {
+            case ONLINE:
+                if (!initPending) {
+                    logger.trace("Handling new bridge data for {} not required already online and processed",
+                            getThing().getLabel());
+                    return;
+                }
             case OFFLINE:
             case UNKNOWN:
                 logger.trace("Handling new bridge data for {}", getThing().getLabel());
