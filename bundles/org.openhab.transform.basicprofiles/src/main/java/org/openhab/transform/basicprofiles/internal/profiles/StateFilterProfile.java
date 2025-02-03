@@ -706,6 +706,9 @@ public class StateFilterProfile implements StateProfile {
         }
 
         private @Nullable State calculateDelta() {
+            if (acceptedState.isEmpty()) {
+                return null;
+            }
             if (newState instanceof QuantityType newStateQuantity) {
                 QuantityType result = newStateQuantity.subtract((QuantityType) acceptedState.get());
                 return result.toBigDecimal().compareTo(BigDecimal.ZERO) < 0 ? result.negate() : result;
@@ -717,6 +720,9 @@ public class StateFilterProfile implements StateProfile {
         }
 
         private @Nullable State calculateDeltaPercent() {
+            if (acceptedState.isEmpty()) {
+                return null;
+            }
             State calculatedDelta = calculateDelta();
             BigDecimal bdDelta;
             BigDecimal bdBase;
