@@ -218,6 +218,8 @@ The type of the event can also be queried via [AbstractEvent.getTopic](https://w
 
 ## class Item 
 
+Item is an extended [openHAB Item](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item)
+
 | Function                 | Usage                                                                                 | Return Value                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | postUpdate               | postUpdate(state)                                                                     |                                                                                                     |
