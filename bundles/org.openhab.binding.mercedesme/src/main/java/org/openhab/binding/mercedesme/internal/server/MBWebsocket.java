@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -39,6 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
+import com.daimler.mbcarkit.proto.VehicleEvents;
+import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
 
 /**
  * {@link MBWebsocket} as socket endpoint to communicate with Mercedes
@@ -61,6 +64,7 @@ public class MBWebsocket {
 
     private final Logger logger = LoggerFactory.getLogger(MBWebsocket.class);
     private AccountHandler accountHandler;
+    private HttpClient httpClient;
     private boolean running = false;
     private Instant runTill = Instant.now();
     private @Nullable Session session;
@@ -68,8 +72,9 @@ public class MBWebsocket {
 
     private boolean keepAlive = false;
 
-    public MBWebsocket(AccountHandler ah) {
+    public MBWebsocket(AccountHandler ah, HttpClient hc) {
         accountHandler = ah;
+        httpClient = hc;
     }
 
     /**
@@ -88,16 +93,16 @@ public class MBWebsocket {
             }
         }
         try {
-            WebSocketClient client = new WebSocketClient();
+            WebSocketClient client = new WebSocketClient(httpClient);
             client.setMaxIdleTimeout(CONNECT_TIMEOUT_MS);
             client.setStopTimeout(CONNECT_TIMEOUT_MS);
             ClientUpgradeRequest request = accountHandler.getClientUpgradeRequest();
             String websocketURL = accountHandler.getWSUri();
             if (Constants.JUNIT_TOKEN.equals(request.getHeader("Authorization"))) {
-                // avoid unit test requesting real websocket - simply return
+                // avoid unit test requesting real web socket - simply return
                 return;
             }
-            logger.trace("Websocket start {}", websocketURL);
+            logger.trace("Websocket start {} max message size{}", websocketURL, client.getMaxBinaryMessageSize());
             client.start();
             client.connect(this, new URI(websocketURL), request);
             while (keepAlive || Instant.now().isBefore(runTill)) {
@@ -191,11 +196,18 @@ public class MBWebsocket {
      */
 
     @OnWebSocketMessage
-    public void onBytes(InputStream is) {
+    public void onByteStream(InputStream is) {
+        /**
+         * receiving byte array
+         * public void onByteArray(byte buf[], int offset, int length) {
+         * int dataSize = buf.length - offset;
+         * byte[] dataArray = new byte[dataSize];
+         * System.arraycopy(buf, offset, dataArray, 0, dataSize);
+         **/
         try {
-            byte[] array = is.readAllBytes();
-            is.close();
-            accountHandler.enqueueMessage(array);
+            PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
+            logger.trace("WebSocket - Message {}", pm.getMsgCase());
+            accountHandler.enqueueMessage(pm);
             /**
              * https://community.openhab.org/t/mercedes-me/136866/12
              * Release Websocket thread as early as possible to avoid execeptions
@@ -208,7 +220,9 @@ public class MBWebsocket {
              * 3. VehicleHandler responsible to update channels
              */
         } catch (IOException e) {
-            logger.debug("IOException reading input stream {}", e.getMessage());
+            logger.warn("IOException decoding message {}", e.getMessage());
+        } catch (Error err) {
+            logger.warn("Error decoding message {}", err.getMessage());
         }
     }
 
