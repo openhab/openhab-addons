@@ -41,7 +41,7 @@ import com.google.gson.JsonParser;
  * @param <T> type of the smoke detector
  */
 @NonNullByDefault
-public abstract class AbstractSmokeDetectorWithAlarmServiceTest<T extends AbstractSmokeDetectorHandlerWithAlarmService>
+public abstract class AbstractSmokeDetectorHandlerWithAlarmServiceTest<T extends AbstractSmokeDetectorHandlerWithAlarmService>
         extends AbstractSmokeDetectorHandlerTest<T> {
 
     @Captor
@@ -63,10 +63,11 @@ public abstract class AbstractSmokeDetectorWithAlarmServiceTest<T extends Abstra
 
     @Test
     public void testHandleCommandAlarm() throws InterruptedException, TimeoutException, ExecutionException {
-        getFixture().handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_ALARM), new StringType("PRIMARY_ALARM"));
+        getFixture().handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_ALARM),
+                new StringType("INTRUSION_ALARM_ON_REQUESTED"));
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("Alarm"), alarmStateCaptor.capture());
         AlarmServiceState state = alarmStateCaptor.getValue();
-        assertSame(AlarmState.PRIMARY_ALARM, state.value);
+        assertSame(AlarmState.INTRUSION_ALARM_ON_REQUESTED, state.value);
     }
 
     @Test

@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  */
 @NonNullByDefault
-public class SmokeDetectorHandlerTest extends AbstractSmokeDetectorWithAlarmServiceTest<SmokeDetectorHandler> {
+public class SmokeDetectorHandlerTest extends AbstractSmokeDetectorHandlerWithAlarmServiceTest<SmokeDetectorHandler> {
 
     @Override
     protected SmokeDetectorHandler createFixture() {

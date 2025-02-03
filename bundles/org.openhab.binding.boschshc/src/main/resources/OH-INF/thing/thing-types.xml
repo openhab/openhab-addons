@@ -908,6 +908,8 @@
 				<option value="PRIMARY_ALARM">Primary alarm</option>
 				<option value="SECONDARY_ALARM">Secondary alarm</option>
 				<option value="INTRUSION_ALARM">Intrusion alarm</option>
+				<option value="INTRUSION_ALARM_ON_REQUESTED">Intrusion alarm on requested</option>
+				<option value="INTRUSION_ALARM_OFF_REQUESTED">Intrusion alarm off requested</option>
 			</options>
 		</state>
 	</channel-type>

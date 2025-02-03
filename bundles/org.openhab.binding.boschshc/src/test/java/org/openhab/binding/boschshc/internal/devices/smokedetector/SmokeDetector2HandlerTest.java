@@ -31,7 +31,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
-class SmokeDetector2HandlerTest extends AbstractSmokeDetectorWithAlarmServiceTest<SmokeDetector2Handler> {
+class SmokeDetector2HandlerTest extends AbstractSmokeDetectorHandlerWithAlarmServiceTest<SmokeDetector2Handler> {
 
     @Override
     protected SmokeDetector2Handler createFixture() {
