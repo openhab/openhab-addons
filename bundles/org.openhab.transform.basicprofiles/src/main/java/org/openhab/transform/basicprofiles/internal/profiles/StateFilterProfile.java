@@ -103,7 +103,7 @@ public class StateFilterProfile implements StateProfile {
     private @Nullable Item linkedItem = null;
 
     private State newState = UnDefType.UNDEF;
-    private State acceptedState = UnDefType.UNDEF;
+    private Optional<State> acceptedState = Optional.empty();
     private LinkedList<State> previousStates = new LinkedList<>();
 
     private final int windowSize;
@@ -230,7 +230,7 @@ public class StateFilterProfile implements StateProfile {
         }
 
         if (conditions.stream().allMatch(c -> c.check(state))) {
-            acceptedState = state;
+            acceptedState = Optional.of(state);
             return state;
         } else {
             return configMismatchState;
@@ -566,15 +566,15 @@ public class StateFilterProfile implements StateProfile {
         }
 
         public boolean alwaysAccept() {
-            if ((type == Function.DELTA || type == Function.DELTA_PERCENT) && acceptedState == UnDefType.UNDEF) {
+            if ((type == Function.DELTA || type == Function.DELTA_PERCENT) && acceptedState.isEmpty()) {
                 return true;
             }
             if (type == Function.DELTA_PERCENT) {
                 // avoid division by zero
-                if (acceptedState instanceof QuantityType base) {
+                if (acceptedState.get() instanceof QuantityType base) {
                     return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
                 }
-                if (acceptedState instanceof DecimalType base) {
+                if (acceptedState.get() instanceof DecimalType base) {
                     return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
                 }
             }
@@ -707,11 +707,11 @@ public class StateFilterProfile implements StateProfile {
 
         private @Nullable State calculateDelta() {
             if (newState instanceof QuantityType newStateQuantity) {
-                QuantityType result = newStateQuantity.subtract((QuantityType) acceptedState);
+                QuantityType result = newStateQuantity.subtract((QuantityType) acceptedState.get());
                 return result.toBigDecimal().compareTo(BigDecimal.ZERO) < 0 ? result.negate() : result;
             }
             BigDecimal result = ((DecimalType) newState).toBigDecimal()
-                    .subtract(((DecimalType) acceptedState).toBigDecimal()) //
+                    .subtract(((DecimalType) acceptedState.get()).toBigDecimal()) //
                     .abs();
             return new DecimalType(result);
         }
@@ -720,13 +720,13 @@ public class StateFilterProfile implements StateProfile {
             State calculatedDelta = calculateDelta();
             BigDecimal bdDelta;
             BigDecimal bdBase;
-            if (acceptedState instanceof QuantityType acceptedStateQuantity) {
+            if (acceptedState.get() instanceof QuantityType acceptedStateQuantity) {
                 // Assume that delta and base are in the same unit
                 bdDelta = ((QuantityType) calculatedDelta).toBigDecimal();
                 bdBase = acceptedStateQuantity.toBigDecimal();
             } else {
                 bdDelta = ((DecimalType) calculatedDelta).toBigDecimal();
-                bdBase = ((DecimalType) acceptedState).toBigDecimal();
+                bdBase = ((DecimalType) acceptedState.get()).toBigDecimal();
             }
             bdBase = bdBase.abs();
             BigDecimal percent = bdDelta.multiply(BigDecimal.valueOf(100)).divide(bdBase, 2, RoundingMode.HALF_EVEN);
