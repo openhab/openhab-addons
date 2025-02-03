@@ -206,14 +206,14 @@ The type of the event can also be queried via [AbstractEvent.getTopic](https://w
 
 | Function                 | Usage                                                                                 | Return Value                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| getThing                 | getThing(uid)                                                                         | [Thing object](#class-thing)                                                             |
-| getChannel               | getChannel(uid)                                                                       | [Channel object](#class-channel)                                                         |
-| getItem                  | getItem(item_name)                                                                    | [Item object](#class-item) or [GroupItem object](#class-groupitem)                       |
-| resolveItem              | resolveItem(item_or_item_name)                                                        | [Item object](#class-item) or [GroupItem object](#class-groupitem)                       |
-| getItemState             | getItemState(item_name, default = None)                                               | [openHAB State object](https://www.openhab.org/javadoc/latest/org/openhab/core/types/state)       |
-| getItemMetadata          | getItemMetadata(item_or_item_name, namespace)                                         | [openHAB Metadata object](https://www.openhab.org/javadoc/latest/org/openhab/core/items/metadata) |
-| setItemMetadata          | setItemMetadata(item_or_item_name, namespace, value, configuration=None)              | [openHAB Metadata object](https://www.openhab.org/javadoc/latest/org/openhab/core/items/metadata) |
-| removeItemMetadata       | removeItemMetadata(item_or_item_name, namespace = None)                               | [openHAB Metadata object](https://www.openhab.org/javadoc/latest/org/openhab/core/items/metadata) |
+| getThing                 | getThing(uid)                                                                         | [Thing](#class-thing)                                                             |
+| getChannel               | getChannel(uid)                                                                       | [Channel](#class-channel)                                                         |
+| getItem                  | getItem(item_name)                                                                    | [Item](#class-item) or [GroupItem](#class-groupitem)                       |
+| resolveItem              | resolveItem(item_or_item_name)                                                        | [Item](#class-item) or [GroupItem](#class-groupitem)                       |
+| getItemState             | getItemState(item_name, default = None)                                               | [openHAB State](https://www.openhab.org/javadoc/latest/org/openhab/core/types/state)       |
+| getItemMetadata          | getItemMetadata(item_or_item_name, namespace)                                         | [openHAB Metadata](https://www.openhab.org/javadoc/latest/org/openhab/core/items/metadata) |
+| setItemMetadata          | setItemMetadata(item_or_item_name, namespace, value, configuration=None)              | [openHAB Metadata](https://www.openhab.org/javadoc/latest/org/openhab/core/items/metadata) |
+| removeItemMetadata       | removeItemMetadata(item_or_item_name, namespace = None)                               | [openHAB Metadata](https://www.openhab.org/javadoc/latest/org/openhab/core/items/metadata) |
 
 
 ## class Item 
@@ -224,13 +224,13 @@ The type of the event can also be queried via [AbstractEvent.getTopic](https://w
 | postUpdateIfDifferent    | postUpdateIfDifferent(state)                                                          |                                                                                                     |
 | sendCommand              | sendCommand(command)                                                                  |                                                                                                     |
 | sendCommandIfDifferent   | sendCommandIfDifferent(command)                                                       |                                                                                                     |
-| getPersistence           | getPersistence(service_id = None)                                                     | [ItemPersistence object](#class-itempersistence)                                         |
-| getSemantic              | getSemantic()                                                                         | [ItemSemantic object](#class-itemsemantic)                                               |
+| getPersistence           | getPersistence(service_id = None)                                                     | [ItemPersistence](#class-itempersistence)                                         |
+| getSemantic              | getSemantic()                                                                         | [ItemSemantic](#class-itemsemantic)                                               |
 | <...>                    | see [openHAB Item api](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) |                                                                                                |
 
 ## class GroupItem 
 
-GroupItem is an extended [Item object](#class-item) which wraps results from getAllMembers & getMembers into [Item objects](#class-item)
+GroupItem is an extended [Item](#class-item) which wraps results from getAllMembers & getMembers into [Items](#class-item)
 
 ## class ItemPersistence 
 
