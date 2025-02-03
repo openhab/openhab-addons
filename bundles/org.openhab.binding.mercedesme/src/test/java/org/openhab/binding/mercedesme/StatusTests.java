@@ -54,8 +54,7 @@ class StatusTests {
     void testInvalidConfig() {
         BridgeImpl bi = new BridgeImpl(new ThingTypeUID("test", "account"), "MB");
         Map<String, Object> config = new HashMap<>();
-        config.put("callbackIP", "999.999.999.999");
-        config.put("callbackPort", "99999");
+        config.put("refreshToken", "abc");
         bi.setConfiguration(new Configuration(config));
         AccountHandlerMock ahm = new AccountHandlerMock(bi, null);
         ThingCallbackListener tcl = new ThingCallbackListener();
@@ -107,8 +106,7 @@ class StatusTests {
         config.put("refreshInterval", Integer.MAX_VALUE);
         config.put("region", "row");
         config.put("email", "a@b.c");
-        config.put("callbackIP", "999.999.999.999");
-        config.put("callbackPort", "99999");
+        config.put("refreshToken", "abc");
         bi.setConfiguration(new Configuration(config));
         AccountHandlerMock ahm = new AccountHandlerMock(bi, null);
         ThingCallbackListener tcl = new ThingCallbackListener();
@@ -140,8 +138,7 @@ class StatusTests {
         config.put("refreshInterval", Integer.MAX_VALUE);
         config.put("region", "row");
         config.put("email", "a@b.c");
-        config.put("callbackIP", "999.999.999.999");
-        config.put("callbackPort", "99999");
+        config.put("refreshToken", "abc");
         bi.setConfiguration(new Configuration(config));
         AccessTokenResponse token = new AccessTokenResponse();
         token.setExpiresIn(3000);

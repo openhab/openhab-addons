@@ -37,7 +37,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.MercedesMeHandlerFactory;
-import org.openhab.binding.mercedesme.internal.server.AuthService;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -94,10 +93,13 @@ public class Utils {
     public static final Gson GSON = new Gson();
     public static final Map<String, Integer> ZONE_HASHMAP = new HashMap<>();
     public static final Map<String, Integer> PROGRAM_HASHMAP = new HashMap<>();
+    public static final AccessTokenResponse INVALID_TOKEN = new AccessTokenResponse();
 
     public static void initialize(TimeZoneProvider tzp, LocaleProvider lp) {
         timeZoneProvider = tzp;
         localeProvider = lp;
+        INVALID_TOKEN.setAccessToken(Constants.NOT_SET);
+        INVALID_TOKEN.setRefreshToken(Constants.NOT_SET);
     }
 
     /**
@@ -136,27 +138,6 @@ public class Utils {
         }
         PORTS.add(port);
         return port;
-    }
-
-    /**
-     * Register port for an AccountHandler
-     */
-    public static synchronized void addPort(int portNr) {
-        if (PORTS.contains(portNr) && portNr != 99999) {
-            LOGGER.warn("Port {} already occupied", portNr);
-        }
-        PORTS.add(portNr);
-    }
-
-    /**
-     * Unregister port for an AccountHandler
-     */
-    public static synchronized void removePort(int portNr) {
-        PORTS.remove(Integer.valueOf(portNr));
-    }
-
-    public static String getCallbackAddress(String callbackIP, int callbackPort) {
-        return "http://" + callbackIP + Constants.COLON + callbackPort + Constants.CALLBACK_ENDPOINT;
     }
 
     /**
@@ -347,7 +328,7 @@ public class Utils {
         } catch (IOException | ClassNotFoundException e) {
             LOGGER.warn("Error converting string to token {}", e.getMessage());
         }
-        return AuthService.INVALID_TOKEN;
+        return INVALID_TOKEN;
     }
 
     /**

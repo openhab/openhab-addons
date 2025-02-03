@@ -16,16 +16,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -49,23 +46,19 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AuthService {
-    public static final AccessTokenResponse INVALID_TOKEN = new AccessTokenResponse();
     private static final int EXPIRATION_BUFFER = 5;
-    private static final Map<Integer, AuthService> AUTH_MAP = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
-    AccessTokenRefreshListener listener;
+    private AccessTokenRefreshListener listener;
+    private AccountConfiguration config;
+    private AccessTokenResponse token;
+    private Storage<String> storage;
     private HttpClient httpClient;
     private String identifier;
-    private AccountConfiguration config;
     private Locale locale;
-    private Storage<String> storage;
-    private AccessTokenResponse token;
 
     public AuthService(AccessTokenRefreshListener atrl, HttpClient hc, AccountConfiguration ac, Locale l,
-            Storage<String> store) {
-        INVALID_TOKEN.setAccessToken(Constants.NOT_SET);
-        INVALID_TOKEN.setRefreshToken(Constants.NOT_SET);
+            Storage<String> store, String refreshToken) {
         listener = atrl;
         httpClient = hc;
         config = ac;
@@ -73,10 +66,15 @@ public class AuthService {
         locale = l;
         storage = store;
 
+        // init token with refreshToken from config
+        token = new AccessTokenResponse();
+        token.setAccessToken(Constants.NOT_SET);
+        token.setRefreshToken(refreshToken);
+        token.setExpiresIn(0);
+
         // restore token
         String storedObject = storage.get(identifier);
         if (storedObject == null) {
-            token = INVALID_TOKEN;
             listener.onAccessTokenResponse(token);
         } else {
             token = Utils.fromString(storedObject);
@@ -85,19 +83,12 @@ public class AuthService {
                     refreshToken();
                     listener.onAccessTokenResponse(token);
                 } else {
-                    token = INVALID_TOKEN;
                     listener.onAccessTokenResponse(token);
                 }
             } else {
                 listener.onAccessTokenResponse(token);
             }
         }
-        AUTH_MAP.put(config.callbackPort, this);
-    }
-
-    @Nullable
-    public static AuthService getAuthService(Integer key) {
-        return AUTH_MAP.get(key);
     }
 
     /**
@@ -222,12 +213,12 @@ public class AuthService {
                 refreshToken();
                 // token shall be updated now - retry expired check
                 if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-                    token = INVALID_TOKEN;
+                    token = Utils.INVALID_TOKEN;
                     listener.onAccessTokenResponse(token);
                     return Constants.NOT_SET;
                 }
             } else {
-                token = INVALID_TOKEN;
+                token = Utils.INVALID_TOKEN;
                 logger.trace("{} Refresh token empty", prefix());
             }
         }

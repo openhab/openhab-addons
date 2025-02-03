@@ -38,15 +38,12 @@ import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
-import org.openhab.binding.mercedesme.internal.server.AuthServer;
 import org.openhab.binding.mercedesme.internal.server.AuthService;
 import org.openhab.binding.mercedesme.internal.server.MBWebsocket;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
@@ -80,7 +77,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private static final String COMMAND_APPENDIX = "-commands";
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
-    private final NetworkAddressService networkService;
     private final MercedesMeDiscoveryService discoveryService;
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
@@ -89,7 +85,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Map<String, VEPUpdate> vepUpdateMap = new HashMap<>();
     private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<>();
 
-    private Optional<AuthServer> server = Optional.empty();
     private Optional<AuthService> authService = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshScheduler = Optional.empty();
     private List<byte[]> eventQueue = new ArrayList<>();
@@ -105,10 +100,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     ClientMessage message;
 
     public AccountHandler(Bridge bridge, MercedesMeDiscoveryService mmds, HttpClient hc, LocaleProvider lp,
-            StorageService store, NetworkAddressService nas) {
+            StorageService store) {
         super(bridge);
         discoveryService = mmds;
-        networkService = nas;
         ws = new MBWebsocket(this);
         httpClient = hc;
         localeProvider = lp;
@@ -123,77 +117,33 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         config = Optional.of(getConfigAs(AccountConfiguration.class));
-        autodetectCallback();
         String configValidReason = configValid();
         if (!configValidReason.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configValidReason);
         } else {
-            String callbackUrl = Utils.getCallbackAddress(config.get().callbackIP, config.get().callbackPort);
-            thing.setProperty("callbackUrl", callbackUrl);
-            server = Optional.of(new AuthServer(httpClient, config.get(), callbackUrl));
-            authService = Optional
-                    .of(new AuthService(this, httpClient, config.get(), localeProvider.getLocale(), storage));
-            if (!server.get().start()) {
-                String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
-                        + Constants.STATUS_SERVER_RESTART;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
-            } else {
-                refreshScheduler = Optional.of(scheduler.scheduleWithFixedDelay(this::refresh, 0,
-                        config.get().refreshInterval, TimeUnit.MINUTES));
-            }
+            authService = Optional.of(new AuthService(this, httpClient, config.get(), localeProvider.getLocale(),
+                    storage, config.get().refreshToken));
+            refreshScheduler = Optional.of(
+                    scheduler.scheduleWithFixedDelay(this::refresh, 0, config.get().refreshInterval, TimeUnit.MINUTES));
         }
     }
 
     public void refresh() {
-        if (server.isPresent()) {
-            if (!Constants.NOT_SET.equals(authService.get().getToken())) {
-                ws.run();
-            } else {
-                // all failed - start manual authorization
-                String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
-                        + Constants.STATUS_AUTH_NEEDED;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
-            }
+        if (!Constants.NOT_SET.equals(authService.get().getToken())) {
+            ws.run();
         } else {
-            // server not running - fix first
+            // all failed - start manual authorization
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
-                    + Constants.STATUS_SERVER_RESTART;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, textKey);
+                    + Constants.STATUS_AUTH_NEEDED;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, textKey);
         }
-    }
-
-    private void autodetectCallback() {
-        // if Callback IP and Callback Port are not set => autodetect these values
-        config = Optional.of(getConfigAs(AccountConfiguration.class));
-        Configuration updateConfig = super.editConfiguration();
-        if (!updateConfig.containsKey("callbackPort")) {
-            updateConfig.put("callbackPort", Utils.getFreePort());
-        } else {
-            Utils.addPort(config.get().callbackPort);
-        }
-        if (!updateConfig.containsKey("callbackIP")) {
-            String ip = networkService.getPrimaryIpv4HostAddress();
-            if (ip != null) {
-                updateConfig.put("callbackIP", ip);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        "@text/mercedesme.account.status.ip-autodetect-failure");
-            }
-        }
-        super.updateConfiguration(updateConfig);
-        // get new config after update
-        config = Optional.of(getConfigAs(AccountConfiguration.class));
     }
 
     private String configValid() {
         config = Optional.of(getConfigAs(AccountConfiguration.class));
         String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId();
-        if (Constants.NOT_SET.equals(config.get().callbackIP)) {
-            return textKey + Constants.STATUS_IP_MISSING;
-        } else if (config.get().callbackPort == -1) {
-            return textKey + Constants.STATUS_PORT_MISSING;
+        if (Constants.NOT_SET.equals(config.get().refreshToken)) {
+            return textKey + Constants.STATUS_REFRESH_TOKEN_MISSING;
         } else if (Constants.NOT_SET.equals(config.get().email)) {
             return textKey + Constants.STATUS_EMAIL_MISSING;
         } else if (Constants.NOT_SET.equals(config.get().region)) {
@@ -207,13 +157,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @Override
     public void dispose() {
-        if (server.isPresent()) {
-            AuthServer authServer = server.get();
-            authServer.stop();
-            authServer.dispose();
-            server = Optional.empty();
-            Utils.removePort(config.get().callbackPort);
-        }
         refreshScheduler.ifPresent(schedule -> {
             if (!schedule.isCancelled()) {
                 schedule.cancel(true);
@@ -230,23 +173,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
         if (!Constants.NOT_SET.equals(tokenResponse.getAccessToken())) {
             scheduler.schedule(this::refresh, 2, TimeUnit.SECONDS);
-        } else if (server.isEmpty()) {
-            // server not running - fix first
-            String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
-                    + Constants.STATUS_SERVER_RESTART;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
         } else {
             // all failed - start manual authorization
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
                     + Constants.STATUS_AUTH_NEEDED;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, textKey);
         }
-    }
-
-    @Override
-    public String toString() {
-        return Integer.toString(config.get().callbackPort);
     }
 
     public String getWSUri() {

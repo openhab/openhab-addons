@@ -268,7 +268,6 @@ public class Constants {
     public static final String OH_CHANNEL_CONSTANT = "constant";
     public static final String OH_CHANNEL_BONUS_RANGE = "bonus";
 
-    public static final String CALLBACK_ENDPOINT = "/mb-auth";
     // https://developer.mercedes-benz.com/content-page/api_migration_guide
     public static final String IMAGE_BASE_URL = "https://api.mercedes-benz.com/vehicle_images/v2";
     public static final String IMAGE_EXTERIOR_RESOURCE_URL = IMAGE_BASE_URL + "/vehicles/%s";
@@ -278,9 +277,7 @@ public class Constants {
     public static final String STATUS_EMAIL_MISSING = ".status.email-missing";
     public static final String STATUS_REGION_MISSING = ".status.region-missing";
     public static final String STATUS_REFRESH_INVALID = ".status.refresh-invalid";
-    public static final String STATUS_IP_MISSING = ".status.ip-missing";
-    public static final String STATUS_PORT_MISSING = ".status.port-missing";
-    public static final String STATUS_SERVER_RESTART = ".status.server-restart";
+    public static final String STATUS_REFRESH_TOKEN_MISSING = ".status.refresh-token-missing";
     public static final String STATUS_BRIDGE_MISSING = ".status.bridge-missing";
 
     public static final String SPACE = " ";
@@ -346,7 +343,6 @@ public class Constants {
     public static final String MAX_SOC_KEY = "maxsoc";
     public static final String AUTO_UNLOCK_KEY = "autolock";
 
-    public static final String JUNIT_SERVER_ADDR = "http://999.999.999.999:99999/mb-auth";
     public static final String JUNIT_TOKEN = "junitTestToken";
     public static final String JUNIT_REFRESH_TOKEN = "junitRefreshToken";
 }
