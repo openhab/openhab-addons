@@ -41,8 +41,6 @@ from datetime import datetime, timedelta
 Java_MetadataKey = java.type("org.openhab.core.items.MetadataKey")
 Java_Metadata = java.type("org.openhab.core.items.Metadata")
 
-Java_UnDefType = java.type("org.openhab.core.types.UnDefType")
-
 Java_ChannelUID = java.type("org.openhab.core.thing.ChannelUID")
 Java_ThingUID = java.type("org.openhab.core.thing.ThingUID")
 Java_SimpleRule = java.type("org.openhab.core.automation.module.script.rulesupport.shared.simple.SimpleRule")
@@ -59,6 +57,12 @@ Java_ZonedDateTime = java.type("java.time.ZonedDateTime")
 Java_Iterable = java.type("java.lang.Iterable")
 
 Java_DecimalType = java.type("org.openhab.core.library.types.DecimalType")
+Java_UpDownType = java.type("org.openhab.core.library.types.UpDownType")
+Java_PercentType = java.type("org.openhab.core.library.types.PercentType")
+Java_PrimitiveType = java.type("org.openhab.core.types.PrimitiveType")
+Java_UnDefType = java.type("org.openhab.core.types.UnDefType")
+
+
 
 METADATA_REGISTRY = get_service("org.openhab.core.items.MetadataRegistry")
 
@@ -364,7 +368,7 @@ class Item():
     def postUpdate(self, state):
         if isinstance(state, datetime):
             state = state.isoformat()
-        EVENT_BUS.postUpdate(self.raw_item, state)
+        EVENT_BUS.postUpdate(self.raw_item, Item._toOpenhabPrimitiveType(state))
 
     def postUpdateIfDifferent(self, state):
         if not Item._checkIfDifferent(self.getState(), state):
@@ -374,7 +378,7 @@ class Item():
         return True
 
     def sendCommand(self, command):
-        EVENT_BUS.sendCommand(self.raw_item, command)
+        EVENT_BUS.sendCommand(self.raw_item, Item._toOpenhabPrimitiveType(command))
 
     def sendCommandIfDifferent(self, command):
         if not Item._checkIfDifferent(self.getState(), command):
@@ -397,22 +401,48 @@ class Item():
         return getattr(self.raw_item, name)
 
     @staticmethod
+    # Insight came from openhab-js. Helper function to convert a JS type to a primitive type accepted by openHAB Core, which often is a string representation of the type.
+    #
+    # Converting any complex type to a primitive type is required to avoid multi-threading issues (as GraalJS does not allow multithreaded access to a script's context),
+    # e.g. when passing objects to persistence, which then persists asynchronously.
+    def _toOpenhabPrimitiveType(value):
+        if value is None:
+            return 'NULL'
+        if java.instanceof(value, Java_UnDefType):
+            return 'UNDEF'
+        if isinstance(value, str) or isinstance(value, int) or isinstance(value, float):
+            return value
+        if isinstance(value, datetime):
+            return value
+        return value.toFullString()
+
+    @staticmethod
     def _checkIfDifferent(current_state, new_state):
         if not java.instanceof(current_state, Java_UnDefType):
-            if isinstance(new_state, str):
-                if isinstance(current_state, datetime):
-                    if current_state.isoformat() == new_state:
-                        return False
-                elif current_state.toString() == new_state:
-                    return False
-            elif isinstance(new_state, int):
-                if current_state.intValue() == new_state:
-                    return False
-            elif isinstance(new_state, float):
-                if current_state.doubleValue() == new_state:
-                    return False
-            elif current_state == new_state:
-                return False
+            if java.instanceof(current_state, Java_PercentType):
+                if isinstance(new_state, str):
+                    if new_state == "UP":
+                        new_state = 0
+                    if new_state == "DOWN":
+                        new_state = 100
+                elif java.instanceof(new_state, Java_UpDownType):
+                    new_state = (0 if new_state.toFullString() == "UP" else 100)
+
+            if java.instanceof(new_state, Java_PrimitiveType):
+                new_state = new_state.toFullString()
+            elif isinstance(new_state, datetime):
+                new_state = new_state.isoformat()
+            else:
+                new_state = str(new_state)
+
+            if java.instanceof(current_state, Java_PrimitiveType):
+                current_state = current_state.toFullString()
+            elif isinstance(current_state, datetime):
+                current_state = current_state.isoformat()
+            else:
+                current_state = str(current_state)
+
+            return current_state != new_state
         return True
 
     @staticmethod
