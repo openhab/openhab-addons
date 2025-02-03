@@ -22,7 +22,7 @@ Fragment-Host: org.openhab.automation.groovyscripting
 	org.apache.servicemix.specs.activation-api-1.2.1;version='[1.2.1,1.2.2)',\
 	org.glassfish.hk2.external.javax.inject;version='[2.4.0,2.4.1)',\
 	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)',\
-	org.hamcrest;version='[2.2.0,2.2.1)',\
+	org.hamcrest;version='[3.0.0,3.0.1)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
 	si-units;version='[2.1.0,2.1.1)',\
 	si.uom.si-quantity;version='[2.1.0,2.1.1)',\

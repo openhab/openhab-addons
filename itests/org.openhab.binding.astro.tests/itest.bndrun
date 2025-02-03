@@ -67,7 +67,7 @@ Fragment-Host: org.openhab.binding.astro
 	org.eclipse.jetty.servlet;version='[9.4.57,9.4.58)',\
 	org.eclipse.jetty.util;version='[9.4.57,9.4.58)',\
 	org.eclipse.jetty.util.ajax;version='[9.4.57,9.4.58)',\
-	org.hamcrest;version='[2.2.0,2.2.1)',\
+	org.hamcrest;version='[3.0.0,3.0.1)',\
 	org.objectweb.asm;version='[9.7.1,9.7.2)',\
 	org.objectweb.asm.commons;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.tree;version='[9.6.0,9.6.1)',\

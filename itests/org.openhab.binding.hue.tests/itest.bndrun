@@ -15,7 +15,7 @@ Fragment-Host: org.openhab.binding.hue
 # done
 #
 -runbundles: \
-	org.hamcrest;version='[2.2.0,2.2.1)',\
+	org.hamcrest;version='[3.0.0,3.0.1)',\
 	jakarta.xml.bind-api;version='[2.3.3,2.3.4)',\
 	org.apache.servicemix.specs.activation-api-1.2.1;version='[1.2.1,1.2.2)',\
 	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)',\
