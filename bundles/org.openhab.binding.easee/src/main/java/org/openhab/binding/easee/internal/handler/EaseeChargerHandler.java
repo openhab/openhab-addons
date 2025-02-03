@@ -62,10 +62,19 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
      * Schedule for polling live data
      */
     private final AtomicReference<@Nullable Future<?>> dataPollingJobReference;
+    private final AtomicReference<@Nullable Future<?>> sessionDataPollingJobReference;
 
     public EaseeChargerHandler(Thing thing) {
         super(thing);
         this.dataPollingJobReference = new AtomicReference<>(null);
+        this.sessionDataPollingJobReference = new AtomicReference<>(null);
+    }
+
+    void reInit() {
+        if (isInitialized()) {
+            dispose();
+            initialize();
+        }
     }
 
     @Override
@@ -117,6 +126,9 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
     private void startPolling() {
         updateJobReference(dataPollingJobReference, scheduler.scheduleWithFixedDelay(this::pollingRun,
                 POLLING_INITIAL_DELAY, getBridgeConfiguration().getDataPollingInterval(), TimeUnit.SECONDS));
+
+        updateJobReference(sessionDataPollingJobReference, scheduler.scheduleWithFixedDelay(this::sessionDataPollingRun,
+                POLLING_INITIAL_DELAY, getBridgeConfiguration().getSessionDataPollingInterval(), TimeUnit.SECONDS));
     }
 
     /**
@@ -129,6 +141,18 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
         // proceed if charger is online
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             enqueueCommand(new GetConfiguration(this, chargerId, this::updateOnlineStatus));
+        }
+    }
+
+    /**
+     * Poll the Easee Cloud API session data endpoint one time.
+     */
+    void sessionDataPollingRun() {
+        String chargerId = getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
+        logger.debug("polling session data for {}", chargerId);
+
+        // proceed if charger is online
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
             enqueueCommand(new LatestChargingSession(this, chargerId, this::updateOnlineStatus));
         }
     }
@@ -175,6 +199,7 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
     public void dispose() {
         logger.debug("Handler disposed.");
         cancelJobReference(dataPollingJobReference);
+        cancelJobReference(sessionDataPollingJobReference);
     }
 
     /**
