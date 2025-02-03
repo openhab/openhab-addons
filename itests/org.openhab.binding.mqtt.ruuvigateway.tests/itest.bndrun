@@ -40,7 +40,7 @@ Import-Package: \
 	org.apache.servicemix.specs.activation-api-1.2.1;version='[1.2.1,1.2.2)',\
 	org.glassfish.hk2.external.javax.inject;version='[2.4.0,2.4.1)',\
 	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)',\
-	org.hamcrest;version='[2.2.0,2.2.1)',\
+	org.hamcrest;version='[3.0.0,3.0.1)',\
 	org.jctools.core;version='[2.1.2,2.1.3)',\
 	org.jsr-305;version='[3.0.2,3.0.3)',\
 	org.osgi.service.component;version='[1.5.1,1.5.2)',\
