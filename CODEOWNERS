@@ -237,6 +237,7 @@
 /bundles/org.openhab.binding.modbus.kermi/ @KaaNee
 /bundles/org.openhab.binding.modbus.sbc/ @fwolter
 /bundles/org.openhab.binding.modbus.stiebeleltron/ @pail23
+/bundles/org.openhab.binding.modbus.lambda/ @chilobo
 /bundles/org.openhab.binding.modbus.studer/ @giovannimirulla
 /bundles/org.openhab.binding.modbus.sungrow/ @soenkekueper
 /bundles/org.openhab.binding.modbus.sunspec/ @mrbig
