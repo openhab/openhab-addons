@@ -560,7 +560,7 @@ public class StateFilterProfile implements StateProfile {
                 default -> {
                     List<State> states = hasSystemUnit()
                             ? systemUnitQuantityTypes(previousStates).stream().map(q -> (State) q).toList()
-                            : previousStates;
+                            : previousStates.stream().filter(s -> (s instanceof DecimalType)).toList();
                     int size = states.size();
                     int start = windowSize.map(w -> size - w).orElse(0);
                     states = start <= 0 ? states : states.subList(start, size);
