@@ -722,18 +722,12 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.89"), false), //
 
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", negativeDecimals, DecimalType.valueOf("0"), false),
-                //
                 Arguments.of(decimalItem, "10 > $DELTA_PERCENT", negativeDecimals, DecimalType.valueOf("0"), false),
-                //
 
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.09"), true), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.11"), false), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("0.91"), true), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("0.89"), false), //
-
-                // Check against possible division-by-zero errors in $DELTA_PERCENT
-                Arguments.of(decimalItem, "> 10%", List.of(DecimalType.ZERO), DecimalType.valueOf("1"), true), //
-                Arguments.of(decimalItem, "< 10%", List.of(DecimalType.ZERO), DecimalType.valueOf("1"), true), //
 
                 // Check against possible division-by-zero errors in $DELTA_PERCENT
                 Arguments.of(decimalItem, "> 10%", List.of(DecimalType.ZERO), DecimalType.valueOf("1"), true), //
