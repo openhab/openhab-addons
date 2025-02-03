@@ -60,21 +60,21 @@ Java_Iterable = java.type("java.lang.Iterable")
 
 Java_DecimalType = java.type("org.openhab.core.library.types.DecimalType")
 
-itemRegistry      = scope.get("itemRegistry")
-items             = scope.get("items")
-things            = scope.get("things")
+METADATA_REGISTRY = get_service("org.openhab.core.items.MetadataRegistry")
 
-events            = scope.get("events")
+ITEM_REGISTRY     = scope.get("itemRegistry")
+STATE_REGISTRY    = scope.get("items")
+THING_REGISTRY    = scope.get("things")
+
+EVENT_BUS         = scope.get("events")
 
 scriptExtension   = scope.get("scriptExtension")
 
 scriptExtension.importPreset("RuleSupport")
 scriptExtension.importPreset("RuleSimple")
 
-automationManager = scope.get("automationManager")
-lifecycleTracker = scope.get("lifecycleTracker")
-
-METADATA_REGISTRY = get_service("org.openhab.core.items.MetadataRegistry")
+AUTOMATION_MANAGER = scope.get("automationManager")
+LIFECYCLE_TRACKER = scope.get("lifecycleTracker")
 
 class NotInitialisedException(Exception):
     pass
@@ -104,14 +104,8 @@ class rule():
         elif hasattr(rule_obj, "buildTriggers") and callable(rule_obj.buildTriggers):
             triggers = rule_obj.buildTriggers()
 
-        valid_items = {}
         raw_triggers = []
         for trigger in triggers:
-            cfg = trigger.raw_trigger.getConfiguration()
-            if cfg.containsKey("itemName"):
-                valid_items[cfg.get("itemName") ] = True
-            elif cfg.containsKey("groupName"):
-                valid_items[cfg.get("groupName") ] = True
             raw_triggers.append(trigger.raw_trigger)
 
         conditions = []
@@ -135,7 +129,7 @@ class rule():
                 Java_SimpleRule.__init__(self)
 
             def execute(self, module, input):
-                proxy.executeWrapper(rule_obj, rule_isfunction, valid_items, module, input)
+                proxy.executeWrapper(rule_obj, rule_isfunction, module, input)
 
         base_rule_obj = BaseSimpleRule()
 
@@ -156,7 +150,7 @@ class rule():
             if len(raw_conditions) > 0:
                 base_rule_obj.setConditions(raw_conditions)
 
-            rule = automationManager.addRule(base_rule_obj)
+            rule = AUTOMATION_MANAGER.addRule(base_rule_obj)
 
             actionConfiguration = rule.getActions().get(0).getConfiguration()
             actionConfiguration.put('type', 'application/x-python3')
@@ -167,27 +161,16 @@ class rule():
         return rule_obj
 
     def appendEventDetailInfo(self, event):
-        if event is not None:
-            if event.getType().startswith("Item"):
-                return " [Item: {}]".format(event.getItemName())
-            elif event.getType().startswith("Group"):
-                return " [Group: {}]".format(event.getItemName())
-            elif event.getType().startswith("Thing"):
-                return " [Thing: {}]".format(event.getThingUID())
-            else:
-                return " [Other: {}]".format(event.getType())
-        return ""
+        if event.getType().startswith("Item"):
+            return " [Item: {}]".format(event.getItemName())
+        elif event.getType().startswith("Group"):
+            return " [Group: {}]".format(event.getItemName())
+        elif event.getType().startswith("Thing"):
+            return " [Thing: {}]".format(event.getThingUID())
+        else:
+            return " [Other: {}]".format(event.getType())
 
-    def executeWrapper(self, rule_obj, rule_isfunction, valid_items, module, input):
-        try:
-            event = input['event']
-            # *** Filter indirect events out (like for groups related to the configured item)
-            if getattr(event,"getItemName",None) is not None and event.getItemName() not in valid_items:
-                rule_obj.logger.info("Rule skipped. Event is not related" + self.appendEventDetailInfo(event) )
-                return
-        except KeyError:
-            event = None
-
+    def executeWrapper(self, rule_obj, rule_isfunction, module, input):
         try:
             start_time = time.perf_counter()
 
@@ -220,7 +203,12 @@ class rule():
             if status is None or status is True:
                 elapsed_time = round( ( time.perf_counter() - start_time ) * 1000, 1 )
 
-                msg = "Rule executed in " + "{:6.1f}".format(elapsed_time) + " ms" + self.appendEventDetailInfo(event)
+                try:
+                    msg_details = self.appendEventDetailInfo(input['event'])
+                except KeyError:
+                    msg_details = ""
+
+                msg = "Rule executed in " + "{:6.1f}".format(elapsed_time) + " ms" + msg_details
 
                 rule_obj.logger.info(msg)
 
@@ -376,7 +364,7 @@ class Item():
     def postUpdate(self, state):
         if isinstance(state, datetime):
             state = state.isoformat()
-        events.postUpdate(self.raw_item, state)
+        EVENT_BUS.postUpdate(self.raw_item, state)
 
     def postUpdateIfDifferent(self, state):
         if not Item._checkIfDifferent(self.getState(), state):
@@ -386,7 +374,7 @@ class Item():
         return True
 
     def sendCommand(self, command):
-        events.sendCommand(self.raw_item, command)
+        EVENT_BUS.sendCommand(self.raw_item, command)
 
     def sendCommandIfDifferent(self, command):
         if not Item._checkIfDifferent(self.getState(), command):
@@ -457,14 +445,14 @@ class Channel():
 class Registry():
     @staticmethod
     def getThing(uid):
-        thing = things.get(Java_ThingUID(uid))
+        thing = THING_REGISTRY.get(Java_ThingUID(uid))
         if thing is None:
             raise NotInitialisedException("Thing {} not found".format(uid))
         return Thing(thing)
 
     @staticmethod
     def getChannel(uid):
-        channel = things.getChannel(Java_ChannelUID(uid))
+        channel = THING_REGISTRY.getChannel(Java_ChannelUID(uid))
         if channel is None:
             raise NotInitialisedException("Channel {} not found".format(uid))
         return Channel(channel)
@@ -472,7 +460,7 @@ class Registry():
     @staticmethod
     def getItem(item_name):
         if isinstance(item_name, str):
-            item = itemRegistry.getItem(item_name)
+            item = ITEM_REGISTRY.getItem(item_name)
             if item is None:
                 raise NotInitialisedException("Item {} not found".format(item_name))
             return JavaConversionHelper.convertItem(item)
@@ -487,7 +475,7 @@ class Registry():
     @staticmethod
     def getItemState(item_name, default = None):
         if isinstance(item_name, str):
-            state = items.get(item_name)
+            state = STATE_REGISTRY.get(item_name)
             if state is None:
                 raise NotInitialisedException("Item state for {} not found".format(item_name))
             if default is not None and java.instanceof(state, Java_UnDefType):
@@ -501,20 +489,21 @@ class Registry():
         return METADATA_REGISTRY.get(Java_MetadataKey(namespace, item_name))
 
     @staticmethod
-    def setItemMetadata(item_or_item_name, namespace, configuration, value=None, overwrite=False):
+    def setItemMetadata(item_or_item_name, namespace, value, configuration=None):
         item_name = Registry._getItemName(item_or_item_name)
-
-        if overwrite:
-            METADATA_REGISTRY.removeItemMetadata(item_name)
-        metadata = Registry.getItemMetadata(item_name, namespace)
-        if metadata is None or overwrite:
-            METADATA_REGISTRY.add(Java_Metadata(Java_MetadataKey(namespace, item_name), value, configuration))
+        if Registry.getItemMetadata(item_or_item_name, namespace) == None:
+            return METADATA_REGISTRY.add(Java_Metadata(Java_MetadataKey(namespace, item_name), value, configuration))
         else:
-            if value is None:
-                value = metadata.value
-            new_configuration = dict(metadata.configuration).copy()
-            new_configuration.update(configuration)
-            METADATA_REGISTRY.update(Java_Metadata(Java_MetadataKey(namespace, item_name), value, new_configuration))
+            return METADATA_REGISTRY.update(Java_Metadata(Java_MetadataKey(namespace, item_name), value, configuration))
+
+    @staticmethod
+    def removeItemMetadata(item_or_item_name, namespace = None):
+        item_name = Registry._getItemName(item_or_item_name)
+        if namespace == None:
+            METADATA_REGISTRY.removeItemMetadata(item_name)
+            return None
+        else:
+            return METADATA_REGISTRY.remove(Java_MetadataKey(namespace, item_name))
 
     @staticmethod
     def _getItemName(item_or_item_name):
@@ -598,4 +587,4 @@ class Timer():
         else:
             pass
 
-lifecycleTracker.addDisposeHook(Timer._clean)
+LIFECYCLE_TRACKER.addDisposeHook(Timer._clean)

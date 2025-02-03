@@ -210,8 +210,11 @@ The type of the event can also be queried via [AbstractEvent.getTopic](https://w
 | getChannel               | getChannel(uid)                                                                       | returns an [Channel object](#class-channel)                                                         |
 | getItem                  | getItem(item_name)                                                                    | returns an [Item object](#class-item) or [GroupItem object](#class-groupitem)                       |
 | resolveItem              | resolveItem(item_or_item_name)                                                        | returns an [Item object](#class-item) or [GroupItem object](#class-groupitem)                       |
-| getItemState             | getItemState(item_name, default = None)                                               | returns a State object                                                                              |
-| getItemMetadata          | getItemMetadata(item_or_item_name, namespace)                                         | returns a list of metadata                                                                          |
+| getItemState             | getItemState(item_name, default = None)                                               | returns a [openHAB State object](https://www.openhab.org/javadoc/latest/org/openhab/core/types/state)       |
+| getItemMetadata          | getItemMetadata(item_or_item_name, namespace)                                         | returns a [openHAB Metadata object](https://www.openhab.org/javadoc/latest/org/openhab/core/items/metadata) |
+| setItemMetadata          | setItemMetadata(item_or_item_name, namespace, value, configuration=None)              | returns a [openHAB Metadata object](https://www.openhab.org/javadoc/latest/org/openhab/core/items/metadata) |
+| removeItemMetadata       | removeItemMetadata(item_or_item_name, namespace = None)                               | returns the removed [openHAB Metadata object](https://www.openhab.org/javadoc/latest/org/openhab/core/items/metadata) |
+
 
 ## class Item 
 
@@ -223,7 +226,7 @@ The type of the event can also be queried via [AbstractEvent.getTopic](https://w
 | sendCommandIfDifferent   | sendCommandIfDifferent(command)                                                       |                                                                                                     |
 | getPersistence           | getPersistence(service_id = None)                                                     | returns an [ItemPersistence object](#class-itempersistence)                                         |
 | getSemantic              | getSemantic()                                                                         | returns an [ItemSemantic object](#class-itemsemantic)                                               |
-| <...>                    | see [openhab Item api](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) |                                                                                                |
+| <...>                    | see [openHAB Item api](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) |                                                                                                |
 
 ## class GroupItem 
 
@@ -237,7 +240,7 @@ The parameters 'item' and 'serviceId', as part of the Wrapped Java API, are not 
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | getStableMinMaxState     | getStableMinMaxState(time_slot, end_time = None)                                      | Average calculation which takes into account the values ​​depending on their duration                 |
 | getStableState           | getStableState(time_slot, end_time = None)                                            | Average calculation which takes into account the values ​​depending on their duration                 |
-| <...>                    | see [openhab PersistenceExtensions api](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions) |                                             |
+| <...>                    | see [openHAB PersistenceExtensions api](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions) |                                             |
 
 ## class ItemSemantic 
 
@@ -245,19 +248,19 @@ The parameters 'item', as part of the Wrapped Java API, is not needed because it
 
 | Function                 | Usage                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------- |
-| <...>                    | see [openhab Semantics api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/semantics) |
+| <...>                    | see [openHAB Semantics api](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/semantics) |
 
 ## class Thing 
 
 | Function                 | Usage                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------- |
-| <...>                    | see [openhab Thing api](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/thing) |
+| <...>                    | see [openHAB Thing api](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/thing) |
 
 ## class Channel 
 
 | Function                 | Usage                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------- |
-| <...>                    | see [openhab Channel api](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/type/channelgrouptype) |
+| <...>                    | see [openHAB Channel api](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/type/channelgrouptype) |
 
 ## class Timer 
 
