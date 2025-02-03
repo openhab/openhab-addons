@@ -135,6 +135,7 @@ public class ExpiringDayCache<V> {
         if (missingData) {
             LocalDateTime result = now.plusMinutes(refreshInterval);
             logger.debug("calcNextExpiresAt result = {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            missingData = false;
             return result;
 
         } else {
