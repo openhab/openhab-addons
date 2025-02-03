@@ -218,7 +218,7 @@ The type of the event can also be queried via [AbstractEvent.getTopic](https://w
 
 ## class Item 
 
-Item is an extended [openHAB Item](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item)
+Item is a wrapper around [openHAB Item](https://www.openhab.org/javadoc/latest/org/openhab/core/items/item) with additional functionality.
 
 | Function                 | Usage                                                                                 | Return Value                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
