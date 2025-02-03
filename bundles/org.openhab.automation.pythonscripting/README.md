@@ -236,7 +236,7 @@ GroupItem is an extended [Item](#class-item) which wraps results from getAllMemb
 
 ## class ItemPersistence 
 
-The parameters 'item' and 'serviceId', as part of the Wrapped Java API, are not needed, because they are inserted automatically.
+ItemPersistence is a wrapper around [openHAB PersistenceExtensions](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions). The parameters 'item' and 'serviceId', as part of the Wrapped Java API, are not needed, because they are inserted automatically.
 
 | Function                 | Usage                                                                                 | Description                                                                                         |
 | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -246,7 +246,7 @@ The parameters 'item' and 'serviceId', as part of the Wrapped Java API, are not 
 
 ## class ItemSemantic 
 
-The parameters 'item', as part of the Wrapped Java API, is not needed because it is inserted automatically.
+ItemSemantic is a wrapper around [openHAB Semantics](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/semantics). The parameters 'item', as part of the Wrapped Java API, is not needed because it is inserted automatically.
 
 | Function                 | Usage                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------- |
@@ -254,11 +254,15 @@ The parameters 'item', as part of the Wrapped Java API, is not needed because it
 
 ## class Thing 
 
+Thing is a wrapper around [openHAB Thing](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/thing). 
+
 | Function                 | Usage                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------- |
 | <...>                    | see [openHAB Thing api](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/thing) |
 
 ## class Channel 
+
+Channel is a wrapper around [openHAB Channel](https://www.openhab.org/javadoc/latest/org/openhab/core/thing/type/channelgrouptype). 
 
 | Function                 | Usage                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------- |
