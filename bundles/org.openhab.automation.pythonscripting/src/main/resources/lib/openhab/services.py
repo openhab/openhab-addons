@@ -1,9 +1,13 @@
+import java
+
 from openhab.jsr223 import scope
 
 
-scriptBundle   = scope.get("scriptBundle")
+Java_FrameworkUtil = java.type("org.osgi.framework.FrameworkUtil")
 
-_BUNDLE = scriptBundle
+scriptExtension   = scope.get("scriptExtension")
+
+_BUNDLE = Java_FrameworkUtil.getBundle(scriptExtension.getClass())
 BUNDLE_CONTEXT = _BUNDLE.getBundleContext() if _BUNDLE else None
 
 def get_service(class_or_name):

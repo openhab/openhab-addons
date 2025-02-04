@@ -94,15 +94,6 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
         checkKey(key);
         requireContext();
 
-        // Ugly hack to avoid overwriting the custom PythonScriptEngine.LifecycleTracker.
-        // The openhab LifecycleTracker is running too late, when the script context is already closed
-        // The custom LifecycleTracker is called as part of PythonScriptEngine.close()
-        if (key.equals("lifecycleTracker")) {
-            if (global.containsKey(key)) {
-                return global.get("lifecycleTracker");
-            }
-        }
-
         context.getBindings("python").putMember(key, v);
         return global.put(key, v);
     }
