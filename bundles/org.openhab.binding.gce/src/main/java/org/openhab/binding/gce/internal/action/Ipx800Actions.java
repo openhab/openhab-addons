@@ -58,8 +58,7 @@ public class Ipx800Actions implements ThingActions {
     public void resetCounter(
             @ActionInput(name = "counter", label = "Counter", required = true, description = "Id of the counter", type = "java.lang.Integer") Integer counter) {
         logger.debug("IPX800 action 'resetCounter' called");
-        Ipx800v3Handler theHandler = this.handler;
-        if (theHandler != null) {
+        if (handler instanceof Ipx800v3Handler theHandler) {
             theHandler.resetCounter(counter);
         } else {
             logger.warn("Method call resetCounter failed because IPX800 action service ThingHandler is null!");
@@ -70,8 +69,7 @@ public class Ipx800Actions implements ThingActions {
     public void reset(
             @ActionInput(name = "placeholder", label = "Placeholder", required = false, description = "This parameter is not used", type = "java.lang.Integer") @Nullable Integer placeholder) {
         logger.debug("IPX800 action 'reset' called");
-        Ipx800v3Handler theHandler = this.handler;
-        if (theHandler != null) {
+        if (handler instanceof Ipx800v3Handler theHandler) {
             theHandler.reset();
         } else {
             logger.warn("Method call reset failed because IPX800 action service ThingHandler is null!");
