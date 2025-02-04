@@ -565,6 +565,14 @@ public class StateFilterProfile implements StateProfile {
             };
         }
 
+        /**
+         * If the profile uses the DELTA or DELTA_PERCENT functions, the new state value will always be accepted if the
+         * 'acceptedState' (prior state) has not yet been initialised, or -- in the case of the DELTA_PERCENT function
+         * only -- if 'acceptedState' has a zero value. This ensures that 'acceptedState' is always initialised. And it
+         * also ensures that the DELTA_PERCENT function cannot cause a divide by zero error.
+         *
+         * @return true if the new state value shall be accepted
+         */
         public boolean alwaysAccept() {
             if ((type == Function.DELTA || type == Function.DELTA_PERCENT) && acceptedState.isEmpty()) {
                 return true;
