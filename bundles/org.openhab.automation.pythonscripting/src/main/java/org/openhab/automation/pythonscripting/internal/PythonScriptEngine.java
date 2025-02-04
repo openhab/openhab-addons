@@ -38,6 +38,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
@@ -54,6 +55,8 @@ import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEn
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.items.Item;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
@@ -316,7 +319,13 @@ public class PythonScriptEngine
         }
 
         delegate = GraalPythonScriptEngine.create(ENGINE, contextConfig);
-        delegate.getContext().getBindings(ScriptContext.ENGINE_SCOPE).put("lifecycleTracker", lifecycleTracker);
+
+        Bindings bindings = delegate.getContext().getBindings(ScriptContext.ENGINE_SCOPE);
+
+        Bundle script_bundle = FrameworkUtil
+                .getBundle(org.openhab.core.automation.module.script.ScriptEngineManager.class);
+        bindings.put("scriptBundle", script_bundle);
+        bindings.put("lifecycleTracker", lifecycleTracker);
     }
 
     @Override
