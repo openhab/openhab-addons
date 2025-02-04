@@ -10,7 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluetooth.grundfosalpha.internal;
+package org.openhab.binding.bluetooth.grundfosalpha.internal.discovery;
+
+import static org.openhab.binding.bluetooth.BluetoothBindingConstants.*;
+import static org.openhab.binding.bluetooth.grundfosalpha.internal.GrundfosAlphaBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +21,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -34,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * This discovery participant is able to recognize Grundfos Alpha devices and create discovery results for them.
  *
  * @author Markus Heberling - Initial contribution
- *
+ * @author Jacob Laursen - Added support for Alpha3
  */
 @NonNullByDefault
 @Component
@@ -43,7 +45,7 @@ public class GrundfosAlphaDiscoveryParticipant implements BluetoothDiscoveryPart
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(GrundfosAlphaBindingConstants.THING_TYPE_MI401);
+        return SUPPORTED_THING_TYPES_UIDS;
     }
 
     @Override
@@ -54,15 +56,26 @@ public class GrundfosAlphaDiscoveryParticipant implements BluetoothDiscoveryPart
     @Override
     public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device) {
         Integer manufacturerId = device.getManufacturerId();
-        @Nullable
         String name = device.getName();
         logger.debug("Discovered device {} with manufacturerId {} and name {}", device.getAddress(), manufacturerId,
                 name);
-        if ("MI401".equals(name)) {
-            return new ThingUID(GrundfosAlphaBindingConstants.THING_TYPE_MI401, device.getAdapter().getUID(),
-                    device.getAddress().toString().toLowerCase().replace(":", ""));
+
+        if (name == null) {
+            return null;
         }
-        return null;
+
+        ThingTypeUID thingTypeUID = switch (name) {
+            case "Alpha3" -> THING_TYPE_ALPHA3;
+            case "MI401" -> THING_TYPE_MI401;
+            default -> null;
+        };
+
+        if (thingTypeUID == null) {
+            return null;
+        }
+
+        return new ThingUID(thingTypeUID, device.getAdapter().getUID(),
+                device.getAddress().toString().toLowerCase().replace(":", ""));
     }
 
     @Override
@@ -71,18 +84,27 @@ public class GrundfosAlphaDiscoveryParticipant implements BluetoothDiscoveryPart
         if (thingUID == null) {
             return null;
         }
-        String label = "Grundfos Alpha Reader MI401";
+
+        String label;
+        if ("MI401".equals(device.getName())) {
+            label = "Grundfos Alpha Reader MI401";
+        } else {
+            label = "Grundfos Alpha3";
+        }
         Map<String, Object> properties = new HashMap<>();
-        properties.put(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString());
-        properties.put(Thing.PROPERTY_VENDOR, "Grundfos");
+        properties.put(CONFIGURATION_ADDRESS, device.getAddress().toString());
+        String deviceName = device.getName();
+        if (deviceName != null) {
+            properties.put(Thing.PROPERTY_MODEL_ID, deviceName);
+        }
         Integer txPower = device.getTxPower();
         if (txPower != null) {
-            properties.put(BluetoothBindingConstants.PROPERTY_TXPOWER, Integer.toString(txPower));
+            properties.put(PROPERTY_TXPOWER, Integer.toString(txPower));
         }
 
         // Create the discovery result and add to the inbox
         return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS)
-                .withBridge(device.getAdapter().getUID()).withLabel(label).build();
+                .withRepresentationProperty(CONFIGURATION_ADDRESS).withBridge(device.getAdapter().getUID())
+                .withLabel(label).build();
     }
 }
