@@ -64,6 +64,7 @@ See [DateTime](#date-time) section for more information.
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
 `refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
+
 With parameter `guessActuals=true` a plane needs 1 API call per update. 
 If not 2 API calls per update are placed.
 A refresh interval of 150 minutes will result in approx 10 calls per day.
