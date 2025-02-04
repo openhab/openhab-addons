@@ -94,6 +94,12 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
         checkKey(key);
         requireContext();
 
+        if (key.equals("lifecycleTracker")) {
+            if (global.containsKey(key)) {
+                return global.get("lifecycleTracker");
+            }
+        }
+
         context.getBindings("python").putMember(key, v);
         return global.put(key, v);
     }
@@ -144,9 +150,7 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
 
     @Override
     public void close() {
-        logger.info("GraalPythonBinding closed");
         if (context != null) {
-            logger.info("GraalPythonBinding context closed");
             context.close();
         }
     }

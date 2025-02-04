@@ -26,14 +26,17 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -51,8 +54,6 @@ import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEn
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.items.Item;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
@@ -210,6 +211,20 @@ public class PythonScriptEngine
         }
     }
 
+    public static class LifecycleTracker {
+        List<Function<Object[], Object>> disposables = new ArrayList<>();
+
+        public void addDisposeHook(Function<Object[], Object> disposable) {
+            disposables.add(disposable);
+        }
+
+        void dispose() {
+            for (Function<Object[], Object> disposable : disposables) {
+                disposable.apply(null);
+            }
+        }
+    }
+
     /** {@link Lock} synchronization of multi-thread access */
     private final Lock lock = new ReentrantLock();
 
@@ -218,6 +233,8 @@ public class PythonScriptEngine
     private String engineIdentifier; // this field is very helpful for debugging, please do not remove it
 
     private boolean initialized = false;
+
+    private final LifecycleTracker lifecycleTracker = new LifecycleTracker();
 
     private LogOutputStream scriptOutputStream = new LogOutputStream(logger, Level.INFO);
     private LogOutputStream scriptErrorStream = new LogOutputStream(logger, Level.ERROR);
@@ -299,10 +316,7 @@ public class PythonScriptEngine
         }
 
         delegate = GraalPythonScriptEngine.create(ENGINE, contextConfig);
-
-        Bundle script_bundle = FrameworkUtil
-                .getBundle(org.openhab.core.automation.module.script.ScriptEngineManager.class);
-        delegate.getPolyglotContext().getBindings("python").putMember("scriptBundle", script_bundle);
+        delegate.getContext().getBindings(ScriptContext.ENGINE_SCOPE).put("lifecycleTracker", lifecycleTracker);
     }
 
     @Override
@@ -383,6 +397,12 @@ public class PythonScriptEngine
     public void unlock() {
         lock.unlock();
         logger.debug("Lock released.");
+    }
+
+    @Override
+    public void close() throws Exception {
+        this.lifecycleTracker.dispose();
+        super.close();
     }
 
     @Override

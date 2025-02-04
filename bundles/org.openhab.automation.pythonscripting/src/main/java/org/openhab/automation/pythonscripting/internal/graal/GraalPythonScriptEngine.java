@@ -116,6 +116,14 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
     @Override
     public void close() {
         logger.info("GraalPythonScriptEngine closed");
+
+        // Break circular reference. Not sure if this is really needed.
+        Bindings bindings = this.getBindings(ScriptContext.ENGINE_SCOPE);
+        if (bindings instanceof GraalPythonBindings) {
+            ((GraalPythonBindings) bindings).updateEngineScriptContext(null);
+            // ((GraalPythonBindings) bindings).close();
+        }
+
         getPolyglotContext().close();
     }
 
