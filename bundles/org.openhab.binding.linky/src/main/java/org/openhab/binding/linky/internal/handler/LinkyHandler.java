@@ -42,6 +42,7 @@ import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
 import org.openhab.binding.linky.internal.dto.Identity;
 import org.openhab.binding.linky.internal.dto.IntervalReading;
+import org.openhab.binding.linky.internal.dto.MetaData;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
@@ -96,6 +97,7 @@ public class LinkyHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
 
+    private final ExpiringDayCache<MetaData> metaData;
     private final ExpiringDayCache<MeterReading> dailyConsumption;
     private final ExpiringDayCache<MeterReading> dailyConsumptionMaxPower;
     private final ExpiringDayCache<MeterReading> loadCurveConsumption;
@@ -121,6 +123,13 @@ public class LinkyHandler extends BaseThingHandler {
 
         config = getConfigAs(LinkyConfiguration.class);
         this.timeZoneProvider = timeZoneProvider;
+
+        this.metaData = new ExpiringDayCache<>("metaData", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
+                REFRESH_INTERVAL_IN_MIN);
+        this.metaData.setAction(() -> {
+            MetaData metaData = getMetaData();
+            return metaData;
+        });
 
         this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
                 REFRESH_INTERVAL_IN_MIN);
@@ -293,94 +302,118 @@ public class LinkyHandler extends BaseThingHandler {
         return config;
     }
 
-    private synchronized void updateMetaData(Identity identity, Contact contact, Contract contract,
-            UsagePoint usagePoint) {
-        String title = identity.title;
-        String firstName = identity.firstname;
-        String lastName = identity.lastname;
+    private synchronized void updateMetaData() {
+        metaData.getValue().ifPresentOrElse(values -> {
+            String title = values.identity.title;
+            String firstName = values.identity.firstname;
+            String lastName = values.identity.lastname;
 
-        updateState(MAIN_GROUP, MAIN_IDENTITY, new StringType(title + " " + firstName + " " + lastName));
+            updateState(MAIN_GROUP, MAIN_IDENTITY, new StringType(title + " " + firstName + " " + lastName));
 
-        updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, new StringType(contract.segment));
-        updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_STATUS, new StringType(contract.contractStatus));
-        updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_TYPE, new StringType(contract.contractType));
-        updateState(MAIN_GROUP, MAIN_CONTRACT_DISTRIBUTION_TARIFF, new StringType(contract.distributionTariff));
-        updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_ACTIVATION_DATE, new StringType(contract.lastActivationDate));
-        updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
-                new StringType(contract.lastDistributionTariffChangeDate));
-        updateState(MAIN_GROUP, MAIN_CONTRACT_OFF_PEAK_HOURS, new StringType(contract.offpeakHours));
-        updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, new StringType(contract.segment));
-        updateState(MAIN_GROUP, MAIN_CONTRACT_SUBSCRIBED_POWER, new StringType(contract.subscribedPower));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, new StringType(values.contract.segment));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_STATUS, new StringType(values.contract.contractStatus));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_TYPE, new StringType(values.contract.contractType));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_DISTRIBUTION_TARIFF,
+                    new StringType(values.contract.distributionTariff));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_ACTIVATION_DATE,
+                    new StringType(values.contract.lastActivationDate));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
+                    new StringType(values.contract.lastDistributionTariffChangeDate));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_OFF_PEAK_HOURS, new StringType(values.contract.offpeakHours));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, new StringType(values.contract.segment));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_SUBSCRIBED_POWER, new StringType(values.contract.subscribedPower));
 
-        updateState(MAIN_GROUP, MAIN_USAGEPOINT_ID, new StringType(usagePoint.usagePointId));
-        updateState(MAIN_GROUP, MAIN_USAGEPOINT_STATUS, new StringType(usagePoint.usagePointStatus));
-        updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_TYPE, new StringType(usagePoint.meterType));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_ID, new StringType(values.usagePoint.usagePointId));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_STATUS, new StringType(values.usagePoint.usagePointStatus));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_TYPE, new StringType(values.usagePoint.meterType));
 
-        updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_CITY,
-                new StringType(usagePoint.usagePointAddresses.city));
-        updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_COUNTRY,
-                new StringType(usagePoint.usagePointAddresses.country));
-        updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_POSTAL_CODE,
-                new StringType(usagePoint.usagePointAddresses.postalCode));
-        updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_INSEE_CODE,
-                new StringType(usagePoint.usagePointAddresses.inseeCode));
-        updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_STREET,
-                new StringType(usagePoint.usagePointAddresses.street));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_CITY,
+                    new StringType(values.usagePoint.usagePointAddresses.city));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_COUNTRY,
+                    new StringType(values.usagePoint.usagePointAddresses.country));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_POSTAL_CODE,
+                    new StringType(values.usagePoint.usagePointAddresses.postalCode));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_INSEE_CODE,
+                    new StringType(values.usagePoint.usagePointAddresses.inseeCode));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_STREET,
+                    new StringType(values.usagePoint.usagePointAddresses.street));
 
-        updateState(MAIN_GROUP, MAIN_CONTACT_MAIL, new StringType(contact.email));
-        updateState(MAIN_GROUP, MAIN_CONTACT_PHONE, new StringType(contact.phone));
+            updateState(MAIN_GROUP, MAIN_CONTACT_MAIL, new StringType(values.contact.email));
+            updateState(MAIN_GROUP, MAIN_CONTACT_PHONE, new StringType(values.contact.phone));
+
+            userId = values.identity.internId;
+            updateProperties(Map.of(USER_ID, userId, PUISSANCE, values.contract.subscribedPower + " kVA", PRM_ID,
+                    values.usagePoint.usagePointId));
+        }, () -> {
+
+            updateState(MAIN_GROUP, MAIN_IDENTITY, UnDefType.UNDEF);
+
+            updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_STATUS, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_TYPE, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_DISTRIBUTION_TARIFF, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_ACTIVATION_DATE, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_OFF_PEAK_HOURS, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_SUBSCRIBED_POWER, UnDefType.UNDEF);
+
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_ID, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_STATUS, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_TYPE, UnDefType.UNDEF);
+
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_CITY, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_COUNTRY, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_POSTAL_CODE, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_INSEE_CODE, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_STREET, UnDefType.UNDEF);
+
+            updateState(MAIN_GROUP, MAIN_CONTACT_MAIL, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTACT_PHONE, UnDefType.UNDEF);
+
+        });
+
     }
 
-    private synchronized void updateMetaData() throws LinkyException {
-        EnedisHttpApi api = this.enedisApi;
-        if (api != null) {
+    private synchronized @Nullable MetaData getMetaData() {
+        try {
+            EnedisHttpApi api = this.enedisApi;
+            MetaData result = new MetaData();
+            if (api != null) {
+                if (supportNewApiFormat()) {
+                    result.identity = api.getIdentity(this, config.prmId);
+                    result.contact = api.getContact(this, config.prmId);
+                    result.contract = api.getContract(this, config.prmId);
+                    result.usagePoint = api.getUsagePoint(this, config.prmId);
+                } else {
+                    UserInfo userInfo = api.getUserInfo(this);
+                    PrmInfo prmInfo = api.getPrmInfo(this, userInfo.userProperties.internId, config.prmId);
+                    PrmDetail details = api.getPrmDetails(this, userInfo.userProperties.internId, prmInfo.idPrm);
 
-            if (supportNewApiFormat()) {
-                Identity identity = api.getIdentity(this, config.prmId);
-                Contact contact = api.getContact(this, config.prmId);
-                Contract contract = api.getContract(this, config.prmId);
-                UsagePoint usagePoint = api.getUsagePoint(this, config.prmId);
-
-                updateMetaData(identity, contact, contract, usagePoint);
-
-                updateProperties(
-                        Map.of(USER_ID, "", PUISSANCE, contract.subscribedPower, PRM_ID, usagePoint.usagePointId));
-            } else {
-                UserInfo userInfo = api.getUserInfo(this);
-                PrmInfo prmInfo = api.getPrmInfo(this, userInfo.userProperties.internId, config.prmId);
-                PrmDetail details = api.getPrmDetails(this, userInfo.userProperties.internId, prmInfo.idPrm);
-
-                Identity identity = Identity.convertFromUserInfo(userInfo);
-                Contact contact = Contact.convertFromUserInfo(userInfo);
-                Contract contract = Contract.convertFromPrmDetail(details);
-                UsagePoint usagePoint = UsagePoint.convertFromPrmDetail(prmInfo, details);
-
-                this.userId = userInfo.userProperties.internId;
-
-                updateMetaData(identity, contact, contract, usagePoint);
-
-                updateProperties(Map.of(USER_ID, userInfo.userProperties.internId, PUISSANCE,
-                        details.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite().valeur()
-                                + " kVA",
-                        PRM_ID, prmInfo.idPrm));
+                    result.identity = Identity.convertFromUserInfo(userInfo);
+                    result.contact = Contact.convertFromUserInfo(userInfo);
+                    result.contract = Contract.convertFromPrmDetail(details);
+                    result.usagePoint = UsagePoint.convertFromPrmDetail(prmInfo, details);
+                }
             }
+            return result;
+        } catch (LinkyException e) {
+            logger.error("Exception occurs during data update for {} : {}", config.prmId, e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+
+        return null;
     }
 
     /**
      * Request new data and updates channels
      */
     private synchronized void updateData() {
-        try {
-            updateMetaData();
-            updateEnergyData();
-            updatePowerData();
-            updateTempoTimeSeries();
-            updateLoadCurveData();
-        } catch (LinkyException e) {
-            logger.error("Exception occurs during data update for {} : {}", config.prmId, e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
+        updateMetaData();
+        updateEnergyData();
+        updatePowerData();
+        updateTempoTimeSeries();
+        updateLoadCurveData();
     }
 
     private synchronized void updateTempoTimeSeries() {

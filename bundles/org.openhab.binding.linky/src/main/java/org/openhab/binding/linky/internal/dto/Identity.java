@@ -24,12 +24,15 @@ public class Identity {
     public String firstname;
     public String lastname;
 
+    public String internId;
+
     public static Identity convertFromUserInfo(UserInfo userInfo) {
         Identity result = new Identity();
 
         result.firstname = userInfo.userProperties.firstName;
         result.lastname = userInfo.userProperties.name;
         result.title = "";
+        result.internId = userInfo.userProperties.internId;
 
         return result;
     }
