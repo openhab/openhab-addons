@@ -34,10 +34,13 @@ public class LinkyBindingConstants {
     public static final ThingTypeUID THING_TYPE_API_WEB_ENEDIS_BRIDGE = new ThingTypeUID(BINDING_ID, "enedis-web");
     public static final ThingTypeUID THING_TYPE_API_MYELECTRICALDATA_BRIDGE = new ThingTypeUID(BINDING_ID,
             "my-electrical-data");
+    public static final ThingTypeUID THING_TYPE_D2L__BRIDGE = new ThingTypeUID(BINDING_ID, "d2l");
     public static final ThingTypeUID THING_TYPE_LINKY = new ThingTypeUID(BINDING_ID, "linky");
+    public static final ThingTypeUID THING_TYPE_LINKY_DIRECT = new ThingTypeUID(BINDING_ID, "linky-direct");
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_API_ENEDIS_BRIDGE,
-            THING_TYPE_API_WEB_ENEDIS_BRIDGE, THING_TYPE_API_MYELECTRICALDATA_BRIDGE, THING_TYPE_LINKY);
+            THING_TYPE_API_WEB_ENEDIS_BRIDGE, THING_TYPE_API_MYELECTRICALDATA_BRIDGE, THING_TYPE_LINKY,
+            THING_TYPE_D2L__BRIDGE, THING_TYPE_LINKY_DIRECT);
 
     // Thing properties
     // List of all Channel groups id's
@@ -52,6 +55,7 @@ public class LinkyBindingConstants {
     public static final String YEARLY_GROUP = "yearly";
 
     public static final String MAIN_GROUP = "main";
+    public static final String MAIN2_GROUP = "main2";
     public static final String TEMPO_GROUP = "tempo";
     public static final String LOAD_CURVE_GROUP = "loadCurve";
 

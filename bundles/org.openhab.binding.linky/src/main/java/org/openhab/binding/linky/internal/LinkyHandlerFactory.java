@@ -23,9 +23,11 @@ import java.time.format.DateTimeFormatterBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.linky.internal.handler.D2LBridgeHandler;
 import org.openhab.binding.linky.internal.handler.EnedisBridgeHandler;
 import org.openhab.binding.linky.internal.handler.EnedisWebBridgeHandler;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
+import org.openhab.binding.linky.internal.handler.LinkyHandlerDirect;
 import org.openhab.binding.linky.internal.handler.MyElectricalDataBridgeHandler;
 import org.openhab.binding.linky.internal.utils.DoubleTypeAdapter;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -143,8 +145,15 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
             MyElectricalDataBridgeHandler handler = new MyElectricalDataBridgeHandler((Bridge) thing,
                     this.httpClientFactory, this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
+        } else if (THING_TYPE_D2L__BRIDGE.equals(thing.getThingTypeUID())) {
+            D2LBridgeHandler handler = new D2LBridgeHandler((Bridge) thing, this.httpClientFactory, this.oAuthFactory,
+                    this.httpService, thingRegistry, componentContext, gson);
+            return handler;
         } else if (THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
             LinkyHandler handler = new LinkyHandler(thing, localeProvider, timeZoneProvider);
+            return handler;
+        } else if (THING_TYPE_LINKY_DIRECT.equals(thing.getThingTypeUID())) {
+            LinkyHandlerDirect handler = new LinkyHandlerDirect(thing, localeProvider, timeZoneProvider);
             return handler;
         }
 

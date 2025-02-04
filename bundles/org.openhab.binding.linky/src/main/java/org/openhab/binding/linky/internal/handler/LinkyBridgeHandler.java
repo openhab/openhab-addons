@@ -195,4 +195,8 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
     public abstract DateTimeFormatter getApiDateFormatYearsFirst();
 
     public abstract boolean supportNewApiFormat();
+
+    public Gson getGson() {
+        return gson;
+    }
 }
