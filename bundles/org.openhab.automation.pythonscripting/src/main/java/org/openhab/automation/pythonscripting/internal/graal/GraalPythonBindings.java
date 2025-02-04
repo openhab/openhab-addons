@@ -144,9 +144,9 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
 
     @Override
     public void close() {
-        logger.error("CLOSE GraalPythonBinding1");
+        logger.info("GraalPythonBinding closed");
         if (context != null) {
-            logger.error("CLOSE GraalPythonBinding2");
+            logger.info("GraalPythonBinding context closed");
             context.close();
         }
     }

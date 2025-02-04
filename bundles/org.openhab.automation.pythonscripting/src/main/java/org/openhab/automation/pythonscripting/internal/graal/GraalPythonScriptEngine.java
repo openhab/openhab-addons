@@ -115,7 +115,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
      */
     @Override
     public void close() {
-        logger.error("CLOSE GraalPythonScriptEngine");
+        logger.info("GraalPythonScriptEngine closed");
         getPolyglotContext().close();
     }
 
