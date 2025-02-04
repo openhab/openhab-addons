@@ -51,6 +51,7 @@
                   <exclude>org.graalvm.sdk:jniutils</exclude>
                   <exclude>org.graalvm.sdk:nativeimage</exclude>
                   <exclude>org.graalvm.sdk:word</exclude>
+                  <exclude>org.graalvm.shadowed:icu4j</exclude>
                   <exclude>org.graalvm.truffle:truffle-compiler</exclude>
                 </excludes>
               </artifactSet>
@@ -173,6 +174,12 @@
       <groupId>org.graalvm.regex</groupId>
       <artifactId>regex</artifactId>
       <version>${graaljs.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.graalvm.shadowed</groupId>
+          <artifactId>icu4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- Graal JavaScript engine (depends on Graal TRegex engine, must be added after it) -->
     <dependency>

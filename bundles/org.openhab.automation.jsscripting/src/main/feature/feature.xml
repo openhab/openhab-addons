@@ -9,6 +9,7 @@
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.jniutils/24.1.1</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.nativeimage/24.1.1</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.word/24.1.1</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.icu4j/24.1.1</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-compiler/24.1.1</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.automation.jsscripting/${project.version}</bundle>
 	</feature>
