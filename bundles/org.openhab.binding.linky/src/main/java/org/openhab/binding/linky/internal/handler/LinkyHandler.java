@@ -372,7 +372,6 @@ public class LinkyHandler extends BaseThingHandler {
             updateState(MAIN_GROUP, MAIN_CONTACT_PHONE, UnDefType.UNDEF);
 
         });
-
     }
 
     private synchronized @Nullable MetaData getMetaData() {
