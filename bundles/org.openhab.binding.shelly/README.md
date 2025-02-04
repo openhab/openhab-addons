@@ -1609,7 +1609,6 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
 
-
 ## Shelly BLU Gateway (thing-type: shellyblugw)
 
 There are no additional channels beside the device group.
