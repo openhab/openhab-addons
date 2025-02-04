@@ -93,7 +93,6 @@ public class LinkyHandlerDirect extends BaseThingHandler {
 
         config = getConfigAs(LinkyConfiguration.class);
         this.timeZoneProvider = timeZoneProvider;
-
     }
 
     @Override
@@ -135,7 +134,6 @@ public class LinkyHandlerDirect extends BaseThingHandler {
         bridgeHandler.registerNewPrmId(config.prmId);
 
         pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
-
     }
 
     @Override
@@ -215,7 +213,6 @@ public class LinkyHandlerDirect extends BaseThingHandler {
 
             System.out.print(ex.toString());
         }
-
     }
 
     protected void updateState(String groupId, String channelID, State state) {

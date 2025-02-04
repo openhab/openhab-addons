@@ -65,7 +65,6 @@ public class D2LBridgeHandler extends LinkyBridgeHandler {
         super.initialize();
 
         pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
-
     }
 
     private void pollingCode() {
@@ -148,7 +147,6 @@ public class D2LBridgeHandler extends LinkyBridgeHandler {
         } catch (Exception ex) {
             System.out.println(ex.toString());
         }
-
     }
 
     public void handleRead(ByteBuffer byteBuffer) {
@@ -162,7 +160,6 @@ public class D2LBridgeHandler extends LinkyBridgeHandler {
             handler.handleRead(byteBuffer);
             System.out.print("");
         }
-
     }
 
     public String getAccountUrl() {
@@ -249,5 +246,4 @@ public class D2LBridgeHandler extends LinkyBridgeHandler {
     @Override
     public void connectionInit() {
     }
-
 }
