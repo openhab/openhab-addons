@@ -733,10 +733,6 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "> 10%", List.of(DecimalType.ZERO), DecimalType.valueOf("1"), true), //
                 Arguments.of(decimalItem, "< 10%", List.of(DecimalType.ZERO), DecimalType.valueOf("1"), true), //
 
-                // Check against possible division-by-zero errors in $DELTA_PERCENT
-                Arguments.of(decimalItem, "> 10%", List.of(DecimalType.ZERO), DecimalType.valueOf("1"), true), //
-                Arguments.of(decimalItem, "< 10%", List.of(DecimalType.ZERO), DecimalType.valueOf("1"), true), //
-
                 // Contrast a simple comparison against a Percent QuantityType vs delta percent check
                 Arguments.of(percentItem, "> 5%", percentQuantities, QuantityType.valueOf("5.1 %"), true), //
                 Arguments.of(percentItem, "$DELTA_PERCENT > 5", percentQuantities, QuantityType.valueOf("5.1 %"),
