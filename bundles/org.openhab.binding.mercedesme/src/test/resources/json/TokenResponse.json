@@ -1,5 +1,5 @@
 {
-	"accessToken": "Tkn",
+	"accessToken": "junitTestToken",
 	"tokenType": "Bearer",
 	"expiresIn": 7199,
 	"refreshToken": "RfrshTkn",

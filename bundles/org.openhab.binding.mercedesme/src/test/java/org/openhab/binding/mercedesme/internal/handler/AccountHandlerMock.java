@@ -57,8 +57,8 @@ public class AccountHandlerMock extends AccountHandler {
         config = Optional.of(new AccountConfiguration());
     }
 
-    public AccountHandlerMock(Bridge b, @Nullable String storedObject) {
-        super(b, mock(MercedesMeDiscoveryService.class), mock(HttpClient.class), localeProvider, storageService);
+    public AccountHandlerMock(Bridge b, @Nullable String storedObject, HttpClient httpClient) {
+        super(b, mock(MercedesMeDiscoveryService.class), httpClient, localeProvider, storageService);
         if (storedObject != null) {
             Storage<String> storage = storageService.getStorage(Constants.BINDING_ID);
             storage.put("a@b.c", storedObject);

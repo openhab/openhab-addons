@@ -164,6 +164,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         });
         ws.interrupt();
         eventQueue.clear();
+        authService = Optional.empty();
     }
 
     /**

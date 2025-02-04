@@ -30,7 +30,6 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
-import org.openhab.binding.mercedesme.internal.dto.PINRequest;
 import org.openhab.binding.mercedesme.internal.dto.TokenResponse;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
@@ -66,120 +65,47 @@ public class AuthService {
         locale = l;
         storage = store;
 
-        // init token with refreshToken from config
-        token = new AccessTokenResponse();
-        token.setAccessToken(Constants.NOT_SET);
-        token.setRefreshToken(refreshToken);
-        token.setExpiresIn(0);
-
-        // restore token
+        // restore token from persistence if available
         String storedObject = storage.get(identifier);
-        if (storedObject == null) {
-            listener.onAccessTokenResponse(token);
-        } else {
+        if (storedObject != null) {
+            // returns INVALID_TOKEN in case of an error
+            logger.trace("MB-Auth {} Restore token from persistence", prefix());
             token = Utils.fromString(storedObject);
-            if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-                if (!Constants.NOT_SET.equals(token.getRefreshToken())) {
-                    refreshToken();
-                    listener.onAccessTokenResponse(token);
-                } else {
-                    listener.onAccessTokenResponse(token);
-                }
+        } else {
+            // initialize token with refresh token from configuration with expiration 0 - triggers refreshToken
+            logger.trace("MB-Auth {} Create token from config", prefix());
+            token = new AccessTokenResponse();
+            token.setAccessToken(Constants.NOT_SET);
+            token.setRefreshToken(refreshToken);
+            token.setExpiresIn(0);
+        }
+
+        if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
+            if (!Constants.NOT_SET.equals(token.getRefreshToken())) {
+                // expired but refresh token available
+                refreshToken();
             } else {
+                // token expired and no refresh token available will put bridge into OFFLINE mode
                 listener.onAccessTokenResponse(token);
             }
+        } else {
+            // valid token
+            listener.onAccessTokenResponse(token);
         }
+        logger.trace("MB-Auth {} Token after init {}", prefix(), token.toString());
     }
 
-    /**
-     *
-     * @return guid from request to create token in next step
-     */
-    public String requestPin() {
-        String configUrl = Utils.getAuthConfigURL(config.region);
-        String sessionId = UUID.randomUUID().toString();
-        Request configRequest = httpClient.newRequest(configUrl);
-        addBasicHeaders(configRequest);
-        configRequest.header("X-Trackingid", UUID.randomUUID().toString());
-        configRequest.header("X-Sessionid", sessionId);
-        try {
-            ContentResponse cr = configRequest.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
-            if (cr.getStatus() == 200) {
-                logger.trace("{} Config Request PIN fine {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
-            } else {
-                logger.trace("{} Failed to request config for pin {} {}", prefix(), cr.getStatus(),
-                        cr.getContentAsString());
-                return Constants.NOT_SET;
+    public String getToken() {
+        if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
+            if (!Constants.NOT_SET.equals(token.getRefreshToken())) {
+                refreshToken();
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.trace("{} Failed to request config for pin {}", prefix(), e.getMessage());
-            return Constants.NOT_SET;
         }
-
-        String url = Utils.getAuthURL(config.region);
-        Request req = httpClient.POST(url);
-        addBasicHeaders(req);
-        req.header("X-Trackingid", UUID.randomUUID().toString());
-        req.header("X-Sessionid", sessionId);
-
-        PINRequest pr = new PINRequest(config.email, locale.getCountry());
-        req.header(HttpHeader.CONTENT_TYPE, "application/json");
-        logger.trace("{} payload {}", url, Utils.GSON.toJson(pr));
-        req.content(new StringContentProvider(Utils.GSON.toJson(pr), "utf-8"));
-
-        try {
-            ContentResponse cr = req.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
-            if (cr.getStatus() == 200) {
-                logger.trace("{} Request PIN fine {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
-                return pr.nonce;
-            } else {
-                logger.trace("{} Failed to request pin {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
-            }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.trace("{} Failed to request pin {}", prefix(), e.getMessage());
-        }
-        return Constants.NOT_SET;
+        return token.getAccessToken();
     }
 
-    public boolean requestToken(String password) {
-        try {
-            // Request + headers
-            String url = Utils.getTokenUrl(config.region);
-            Request req = httpClient.POST(url);
-            addBasicHeaders(req);
-            req.header("Stage", "prod");
-            req.header("X-Device-Id", UUID.randomUUID().toString());
-            req.header("X-Request-Id", UUID.randomUUID().toString());
-
-            // Content URL form
-            String clientId = "client_id="
-                    + URLEncoder.encode(Utils.getLoginAppId(config.region), StandardCharsets.UTF_8.toString());
-            String grantAttribute = "grant_type=password";
-            String userAttribute = "username=" + URLEncoder.encode(config.email, StandardCharsets.UTF_8.toString());
-            String passwordAttribute = "password=" + URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
-            String scopeAttribute = "scope=" + URLEncoder.encode(Constants.SCOPE, StandardCharsets.UTF_8.toString());
-            String content = clientId + "&" + grantAttribute + "&" + userAttribute + "&" + passwordAttribute + "&"
-                    + scopeAttribute;
-            req.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
-            req.content(new StringContentProvider(content));
-
-            // Send
-            ContentResponse cr = req.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
-            if (cr.getStatus() == 200) {
-                String responseString = cr.getContentAsString();
-                saveTokenResponse(responseString);
-                listener.onAccessTokenResponse(token);
-                return true;
-            } else {
-                logger.trace("{} Failed to get token {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
-            }
-        } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
-            logger.trace("{} Failed to get token {}", prefix(), e.getMessage());
-        }
-        return false;
-    }
-
-    public void refreshToken() {
+    private void refreshToken() {
+        logger.trace("MB-Auth {} refresh token", prefix());
         try {
             String url = Utils.getTokenUrl(config.region);
             Request req = httpClient.POST(url);
@@ -197,45 +123,25 @@ public class AuthService {
             // Send
             ContentResponse cr = req.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
             if (cr.getStatus() == 200) {
-                saveTokenResponse(cr.getContentAsString());
-                listener.onAccessTokenResponse(token);
+                token = saveTokenResponse(cr.getContentAsString());
             } else {
+                token = Utils.INVALID_TOKEN;
+                /**
+                 * 1) remove token from storage
+                 * 2) listener will be informed about INVALID_TOKEN and bridge will go OFFLINE
+                 * 3) user needs to update refreshToken configuration parameter
+                 */
+                storage.remove(identifier);
                 logger.trace("{} Failed to refresh token {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
             }
+            listener.onAccessTokenResponse(token);
         } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
             logger.trace("{} Failed to refresh token {}", prefix(), e.getMessage());
         }
+        logger.trace("MB-Auth {} Token after refresh {}", prefix(), token.toString());
     }
 
-    public String getToken() {
-        if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-            if (!Constants.NOT_SET.equals(token.getRefreshToken())) {
-                refreshToken();
-                // token shall be updated now - retry expired check
-                if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-                    token = Utils.INVALID_TOKEN;
-                    listener.onAccessTokenResponse(token);
-                    return Constants.NOT_SET;
-                }
-            } else {
-                token = Utils.INVALID_TOKEN;
-                logger.trace("{} Refresh token empty", prefix());
-            }
-        }
-        return token.getAccessToken();
-    }
-
-    public void addBasicHeaders(Request req) {
-        req.header("Ris-Os-Name", Constants.RIS_OS_NAME);
-        req.header("Ris-Os-Version", Constants.RIS_OS_VERSION);
-        req.header("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
-        req.header("X-Locale", locale.getLanguage() + "-" + locale.getCountry()); // de-DE
-        req.header("User-Agent", Utils.getApplication(config.region));
-        req.header("X-Applicationname", Utils.getUserAgent(config.region));
-        req.header("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
-    }
-
-    private void saveTokenResponse(String response) {
+    private AccessTokenResponse saveTokenResponse(String response) {
         TokenResponse tr = Utils.GSON.fromJson(response, TokenResponse.class);
         AccessTokenResponse atr = new AccessTokenResponse();
         if (tr != null) {
@@ -253,10 +159,21 @@ public class AuthService {
             atr.setTokenType("Bearer");
             atr.setScope(Constants.SCOPE);
             storage.put(identifier, Utils.toString(atr));
-            token = atr;
+            return atr;
         } else {
             logger.trace("{} Token Response is null", prefix());
+            return Utils.INVALID_TOKEN;
         }
+    }
+
+    public void addBasicHeaders(Request req) {
+        req.header("Ris-Os-Name", Constants.RIS_OS_NAME);
+        req.header("Ris-Os-Version", Constants.RIS_OS_VERSION);
+        req.header("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
+        req.header("X-Locale", locale.getLanguage() + "-" + locale.getCountry()); // de-DE
+        req.header("User-Agent", Utils.getApplication(config.region));
+        req.header("X-Applicationname", Utils.getUserAgent(config.region));
+        req.header("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
     }
 
     private String prefix() {

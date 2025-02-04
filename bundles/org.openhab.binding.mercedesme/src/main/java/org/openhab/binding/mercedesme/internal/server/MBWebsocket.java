@@ -93,11 +93,11 @@ public class MBWebsocket {
             client.setStopTimeout(CONNECT_TIMEOUT_MS);
             ClientUpgradeRequest request = accountHandler.getClientUpgradeRequest();
             String websocketURL = accountHandler.getWSUri();
-            logger.trace("Websocket start {}", websocketURL);
             if (Constants.JUNIT_TOKEN.equals(request.getHeader("Authorization"))) {
                 // avoid unit test requesting real websocket - simply return
                 return;
             }
+            logger.trace("Websocket start {}", websocketURL);
             client.start();
             client.connect(this, new URI(websocketURL), request);
             while (keepAlive || Instant.now().isBefore(runTill)) {
