@@ -345,8 +345,10 @@ public class OpenhabGraalJSScriptEngine
     }
 
     @Override
-    public void close() {
+    public void close() throws Exception {
         jsRuntimeFeatures.close();
+        // we must not close the engine before closing the runtime features, otherwise the runtime features cannot be closed properly
+        super.close();
     }
 
     /**
