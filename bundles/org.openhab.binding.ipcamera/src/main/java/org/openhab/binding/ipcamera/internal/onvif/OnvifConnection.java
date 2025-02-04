@@ -306,10 +306,10 @@ public class OnvifConnection {
             }
         } catch (IndexOutOfBoundsException e) {
             if (!isConnected) {
-                logger.debug("IndexOutOfBoundsException occured, camera is not connected via ONVIF: {}",
+                logger.debug("IndexOutOfBoundsException occurred, camera is not connected via ONVIF: {}",
                         e.getMessage());
             } else {
-                logger.debug("IndexOutOfBoundsException occured, {}", e.getMessage());
+                logger.debug("IndexOutOfBoundsException occurred, {}", e.getMessage());
             }
         }
         return "notfound";

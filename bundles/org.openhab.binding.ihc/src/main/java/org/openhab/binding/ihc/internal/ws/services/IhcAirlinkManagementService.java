@@ -67,7 +67,7 @@ public class IhcAirlinkManagementService extends IhcBaseService {
             }
             return resourceValueList;
         } catch (IOException | XPathExpressionException | NumberFormatException e) {
-            throw new IhcExecption("Error occured during XML data parsing", e);
+            throw new IhcExecption("Error occurred during XML data parsing", e);
         }
     }
 

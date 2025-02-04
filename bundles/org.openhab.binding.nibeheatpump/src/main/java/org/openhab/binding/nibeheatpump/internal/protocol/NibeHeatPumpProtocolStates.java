@@ -72,7 +72,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
                                 break;
                         }
                     } catch (NibeHeatPumpException e) {
-                        LOGGER.trace("Error occured during parsing message: {}", e.getMessage());
+                        LOGGER.trace("Error occurred during parsing message: {}", e.getMessage());
                         context.state(CHECKSUM_FAILURE);
                     }
                 }

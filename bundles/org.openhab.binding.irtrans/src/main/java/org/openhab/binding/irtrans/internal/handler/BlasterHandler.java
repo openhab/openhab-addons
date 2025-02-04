@@ -85,7 +85,7 @@ public class BlasterHandler extends BaseThingHandler implements TransceiverStatu
 
                     if (ircommand.matches(thingCompatibleCommand)) {
                         if (!ethernetBridge.sendIRcommand(ircommand, Led.get((String) getConfig().get(LED)))) {
-                            logger.warn("An error occured whilst sending the infrared command '{}' for Channel '{}'",
+                            logger.warn("An error occurred whilst sending the infrared command '{}' for Channel '{}'",
                                     ircommand, channelUID);
                         }
                     }

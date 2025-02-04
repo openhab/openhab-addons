@@ -398,6 +398,10 @@ public class StateFilterProfile implements StateProfile {
 
                 // Don't convert QuantityType to other types, so that 1500 != 1500 W
                 if (rhsState != null && !(rhsState instanceof QuantityType)) {
+                    if (rhsState instanceof FunctionType rhsFunction
+                            && rhsFunction.getType() == FunctionType.Function.DELTA) {
+                        isDeltaCheck = true;
+                    }
                     // Try to convert it to the same type as the lhs
                     // This allows comparing compatible types, e.g. PercentType vs OnOffType
                     rhsState = rhsState.as(lhsState.getClass());
