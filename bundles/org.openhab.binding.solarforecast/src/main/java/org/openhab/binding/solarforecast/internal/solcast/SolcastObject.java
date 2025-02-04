@@ -218,10 +218,10 @@ public class SolcastObject implements SolarForecast {
     public TimeSeries getEnergyTimeSeries(QueryMode mode) {
         TreeMap<ZonedDateTime, Double> dtm = getDataMap(mode);
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
-        Instant now = Utils.now();
+        Instant startTime = Utils.now().minus(30, ChronoUnit.MINUTES);
         dtm.forEach((timestamp, energy) -> {
             Instant entryTimestamp = timestamp.toInstant();
-            if (Utils.isAfterOrEqual(entryTimestamp, now)) {
+            if (Utils.isAfterOrEqual(entryTimestamp, startTime)) {
                 ts.add(entryTimestamp, Utils.getEnergyState(getActualEnergyValue(timestamp, mode)));
             }
         });
@@ -272,10 +272,10 @@ public class SolcastObject implements SolarForecast {
     public TimeSeries getPowerTimeSeries(QueryMode mode) {
         TreeMap<ZonedDateTime, Double> dtm = getDataMap(mode);
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
-        Instant now = Utils.now();
+        Instant startTime = Utils.now().minus(30, ChronoUnit.MINUTES);
         dtm.forEach((timestamp, power) -> {
             Instant entryTimestamp = timestamp.toInstant();
-            if (Utils.isAfterOrEqual(entryTimestamp, now)) {
+            if (Utils.isAfterOrEqual(entryTimestamp, startTime)) {
                 ts.add(entryTimestamp, Utils.getPowerState(power));
             }
         });

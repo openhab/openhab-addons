@@ -126,6 +126,12 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                             storage);
                     currentForecastOptional = Optional.of(forecast);
                     sbh.addPlane(this);
+                    // in case of successful forecast restore from persistence update time series and get ONLINE
+                    // immediately
+                    if (!forecast.isExpired()) {
+                        setForecast(forecast);
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.plane.status.wrong-handler [\"" + handler + "\"]");
@@ -150,12 +156,12 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
 
     @Override
     public void handleRemoval() {
-        super.handleRemoval();
         storage.remove(thing.getUID() + CALL_COUNT_APPENDIX);
         storage.remove(thing.getUID() + CALL_COUNT_DATE_APPENDIX);
         storage.remove(thing.getUID() + SolcastObject.FORECAST_APPENDIX);
         storage.remove(thing.getUID() + SolcastObject.CREATION_APPENDIX);
         storage.remove(thing.getUID() + SolcastObject.EXPIRATION_APPENDIX);
+        super.handleRemoval();
     }
 
     @Override
@@ -190,10 +196,12 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     }
                     switch (channel) {
                         case CHANNEL_ENERGY_ESTIMATE:
-                            sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecastObject.getEnergyTimeSeries(mode));
+                            sendTimeSeries(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ESTIMATE,
+                                    forecastObject.getEnergyTimeSeries(mode));
                             break;
                         case CHANNEL_POWER_ESTIMATE:
-                            sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecastObject.getPowerTimeSeries(mode));
+                            sendTimeSeries(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ESTIMATE,
+                                    forecastObject.getPowerTimeSeries(mode));
                             break;
                         default:
                             updateChannels(forecastObject);
@@ -375,6 +383,11 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 "@text/solarforecast.plane.status.http-status [\"" + status + "\"]");
     }
 
+    /**
+     * Update channels frequently with new data
+     *
+     * @param Forecast object
+     */
     protected void updateChannels(SolcastObject f) {
         if (bridgeHandler.isEmpty()) {
             return;
@@ -405,6 +418,11 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 new DateTimeType(creation));
     }
 
+    /**
+     * Update time series only if new forecast object is created
+     *
+     * @param Forecast object
+     */
     protected synchronized void setForecast(SolcastObject f) {
         currentForecastOptional = Optional.of(f);
         sendTimeSeries(GROUP_AVERAGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ESTIMATE,

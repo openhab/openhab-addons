@@ -271,6 +271,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
 
     public synchronized void addPlane(SolcastPlaneHandler sph) {
         planes.add(sph);
+        scheduler.schedule(this::getData, 5, TimeUnit.SECONDS);
     }
 
     public synchronized void removePlane(SolcastPlaneHandler sph) {

@@ -474,9 +474,9 @@ class SolcastTest {
         setFixedTimeJul18();
         TimeSeries powerSeries = scfo.getPowerTimeSeries(QueryMode.Average);
         List<QuantityType<?>> estimateL = new ArrayList<>();
-        assertEquals(302, powerSeries.size());
+        assertEquals(303, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
-            assertTrue(entry.timestamp().isAfter(Utils.now()));
+            assertTrue(entry.timestamp().isAfter(Utils.now().minus(30, ChronoUnit.MINUTES)));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
@@ -489,9 +489,9 @@ class SolcastTest {
 
         TimeSeries powerSeries10 = scfo.getPowerTimeSeries(QueryMode.Pessimistic);
         List<QuantityType<?>> estimate10 = new ArrayList<>();
-        assertEquals(302, powerSeries10.size());
+        assertEquals(303, powerSeries10.size());
         powerSeries10.getStates().forEachOrdered(entry -> {
-            assertTrue(entry.timestamp().isAfter(Utils.now()));
+            assertTrue(entry.timestamp().isAfter(Utils.now().minus(30, ChronoUnit.MINUTES)));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
@@ -504,9 +504,9 @@ class SolcastTest {
 
         TimeSeries powerSeries90 = scfo.getPowerTimeSeries(QueryMode.Optimistic);
         List<QuantityType<?>> estimate90 = new ArrayList<>();
-        assertEquals(302, powerSeries90.size());
+        assertEquals(303, powerSeries90.size());
         powerSeries90.getStates().forEachOrdered(entry -> {
-            assertTrue(entry.timestamp().isAfter(Utils.now()));
+            assertTrue(entry.timestamp().isAfter(Utils.now().minus(30, ChronoUnit.MINUTES)));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
@@ -531,7 +531,7 @@ class SolcastTest {
 
         TimeSeries energySeries = scfo.getEnergyTimeSeries(QueryMode.Average);
         List<QuantityType<?>> estimateL = new ArrayList<>();
-        assertEquals(302, energySeries.size()); // 48 values each day for next 7 days
+        assertEquals(303, energySeries.size()); // 48 values each day for next 7 days
         energySeries.getStates().forEachOrdered(entry -> {
             assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now.toInstant()));
             State s = entry.state();
@@ -546,7 +546,7 @@ class SolcastTest {
 
         TimeSeries energySeries10 = scfo.getEnergyTimeSeries(QueryMode.Pessimistic);
         List<QuantityType<?>> estimate10 = new ArrayList<>();
-        assertEquals(302, energySeries10.size()); // 48 values each day for next 7 days
+        assertEquals(303, energySeries10.size()); // 48 values each day for next 7 days
         energySeries10.getStates().forEachOrdered(entry -> {
             assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now.toInstant()));
             State s = entry.state();
@@ -561,7 +561,7 @@ class SolcastTest {
 
         TimeSeries energySeries90 = scfo.getEnergyTimeSeries(QueryMode.Optimistic);
         List<QuantityType<?>> estimate90 = new ArrayList<>();
-        assertEquals(302, energySeries90.size()); // 48 values each day for next 7 days
+        assertEquals(303, energySeries90.size()); // 48 values each day for next 7 days
         energySeries90.getStates().forEachOrdered(entry -> {
             assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now.toInstant()));
             State s = entry.state();
@@ -630,8 +630,8 @@ class SolcastTest {
 
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#power-estimate");
         TimeSeries ts2 = cm2.getTimeSeries("solarforecast:sc-plane:sc-plane-2-test:average#power-estimate");
-        assertEquals(337, ts1.size(), "TimeSeries size");
-        assertEquals(337, ts2.size(), "TimeSeries size");
+        assertEquals(338, ts1.size(), "TimeSeries size");
+        assertEquals(338, ts2.size(), "TimeSeries size");
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
         while (iter1.hasNext()) {
@@ -710,25 +710,25 @@ class SolcastTest {
         scph2.handleConfigurationUpdate(planeConfigMap2);
         scph2.initialize();
         scbh.getData();
-        assertEquals(Instant.parse("2022-07-17T21:00:00Z"),
+        assertEquals(Instant.parse("2022-07-17T20:30:00Z"),
                 scbh.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.Average).getBegin(),
                 "Bridge forecast begin");
         assertEquals(Instant.parse("2022-07-24T21:00:00Z"),
                 scbh.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.Average).getEnd(),
                 "Bridge forecast begin");
-        assertEquals(Instant.parse("2022-07-17T21:00:00Z"),
+        assertEquals(Instant.parse("2022-07-17T20:30:00Z"),
                 scbh.getSolarForecasts().get(1).getPowerTimeSeries(QueryMode.Average).getBegin(),
                 "Bridge forecast begin");
         assertEquals(Instant.parse("2022-07-24T21:00:00Z"),
                 scbh.getSolarForecasts().get(1).getPowerTimeSeries(QueryMode.Average).getEnd(),
                 "Bridge forecast begin");
-        assertEquals(Instant.parse("2022-07-17T21:00:00Z"),
+        assertEquals(Instant.parse("2022-07-17T20:30:00Z"),
                 scph1.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.Average).getBegin(),
                 "Plane 1 forecast begin");
         assertEquals(Instant.parse("2022-07-24T21:00:00Z"),
                 scph1.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.Average).getEnd(),
                 "Plane 1 forecast begin");
-        assertEquals(Instant.parse("2022-07-17T21:00:00Z"),
+        assertEquals(Instant.parse("2022-07-17T20:30:00Z"),
                 scph2.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.Average).getBegin(),
                 "Plane 2 forecast begin");
         assertEquals(Instant.parse("2022-07-24T21:00:00Z"),
@@ -787,8 +787,8 @@ class SolcastTest {
 
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#energy-estimate");
         TimeSeries ts2 = cm2.getTimeSeries("solarforecast:sc-plane:sc-plane-2-test:average#energy-estimate");
-        assertEquals(302, ts1.size(), "TimeSeries size");
-        assertEquals(302, ts2.size(), "TimeSeries size");
+        assertEquals(303, ts1.size(), "TimeSeries size");
+        assertEquals(303, ts2.size(), "TimeSeries size");
 
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
@@ -839,7 +839,7 @@ class SolcastTest {
         scbh.getData();
 
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#energy-estimate");
-        assertEquals(302, ts1.size(), "TimeSeries size");
+        assertEquals(303, ts1.size(), "TimeSeries size");
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         while (iter1.hasNext()) {
             TimeSeries.Entry e1 = iter1.next();
