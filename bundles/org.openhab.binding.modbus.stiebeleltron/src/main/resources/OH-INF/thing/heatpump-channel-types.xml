@@ -124,7 +124,7 @@
 	</channel-type>
 	<channel-type id="nhz-flow-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Emergency Heating Flow Temperature</label>
+		<label>Electric Reheating Flow Temperature</label>
 		<category>temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -570,7 +570,7 @@
 	</channel-type>
 	<channel-type id="nhz-stages-running-type">
 		<item-type>Contact</item-type>
-		<label>NHZ Stages Active</label>
+		<label>Electric Reheating Stages Active</label>
 		<category>status</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -704,13 +704,13 @@
 	</channel-type>
 	<channel-type id="nhz1-active-type">
 		<item-type>Contact</item-type>
-		<label>NHZ1 Active</label>
+		<label>Electric Reheating Stage 1 Active</label>
 		<category>status</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nhz2-active-type">
 		<item-type>Contact</item-type>
-		<label>NHZ2 Active</label>
+		<label>Electric Reheating Stage 2 Active</label>
 		<category>status</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -813,13 +813,13 @@
 	<!-- new channels -->
 	<channel-type id="production-nhz-heat-total-type">
 		<item-type>Number:Energy</item-type>
-		<label>NHZ Heating Quantity Total</label>
+		<label>Electric Reheating Heat Quantity Total</label>
 		<category>energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="production-nhz-water-total-type">
 		<item-type>Number:Energy</item-type>
-		<label>NHZ Hot Water Quantity Total</label>
+		<label>Electric Reheating Hot Water Quantity Total</label>
 		<category>energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -857,6 +857,110 @@
 	<channel-type id="nhz12-runtime-type">
 		<item-type>Number:Time</item-type>
 		<label>Emergency Heating Stages 1+2 Runtime</label>
+		<category>time</category>
+		<state readOnly="true" pattern="%u %unit%"/>
+	</channel-type>
+
+	<channel-type id="hp1-production-heat-today-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Pump 1 Heating Quantity Today</label>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-production-heat-total-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Pump 1 Heating Quantity Total</label>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-production-water-today-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Pump 1 Hot Water Quantity Today</label>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-production-water-total-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Pump 1 Hot Water Quantity Total</label>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-production-nhz-heat-total-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Pump 1 Electric Reheating Heat Quantity Total</label>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-production-nhz-water-total-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Pump 1 Electric Reheating Hot Water Quantity Total</label>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-consumption-heat-today-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Pump 1 Power Consumption for Heating Today</label>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-consumption-heat-total-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Pump 1 Power Consumption for Heating Total</label>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-consumption-water-today-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Pump 1 Power Consumption for Hot Water Today</label>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-consumption-water-total-type">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Pump 1 Power Consumption for Hot Water Total</label>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="hp1-cp1-heating-runtime-type">
+		<item-type>Number:Time</item-type>
+		<label>Heat Pump 1 Heating Compressor 1 Runtime</label>
+		<category>time</category>
+		<state readOnly="true" pattern="%u %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-cp2-heating-runtime-type">
+		<item-type>Number:Time</item-type>
+		<label>Heat Pump 1 Heating Compressor 2 Runtime</label>
+		<category>time</category>
+		<state readOnly="true" pattern="%u %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-cp12-heating-runtime-type">
+		<item-type>Number:Time</item-type>
+		<label>Heat Pump 1 Heating Compressor 1/2 Runtime</label>
+		<category>time</category>
+		<state readOnly="true" pattern="%u %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-cp1-hotwater-runtime-type">
+		<item-type>Number:Time</item-type>
+		<label>Heat Pump 1 Hot Water Compressor 1 Runtime</label>
+		<category>time</category>
+		<state readOnly="true" pattern="%u %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-cp2-hotwater-runtime-type">
+		<item-type>Number:Time</item-type>
+		<label>Heat Pump 1 Hot Water Compressor 2 Runtime</label>
+		<category>time</category>
+		<state readOnly="true" pattern="%u %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-cp12-hotwater-runtime-type">
+		<item-type>Number:Time</item-type>
+		<label>Heat Pump 1 Hot Water Compressor 1/2 Runtime</label>
+		<category>time</category>
+		<state readOnly="true" pattern="%u %unit%"/>
+	</channel-type>
+	<channel-type id="hp1-cooling-runtime-type">
+		<item-type>Number:Time</item-type>
+		<label>Heat Pump 1 Cooling Compressor Runtime</label>
 		<category>time</category>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>

@@ -327,8 +327,8 @@
 			<channel id="consumption-water-total" typeId="consumption-water-total-type"/>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="energy-information-wpm-wpm3">
-		<label>Energy Information</label>
+	<channel-group-type id="energy-runtime-information-wpm-wpm3">
+		<label>Energy and Runtime Information</label>
 		<channels>
 			<channel id="production-heat-today" typeId="production-heat-today-type"/>
 			<channel id="production-heat-total" typeId="production-heat-total-type"/>
@@ -340,6 +340,26 @@
 			<channel id="consumption-heat-total" typeId="consumption-heat-total-type"/>
 			<channel id="consumption-water-today" typeId="consumption-water-today-type"/>
 			<channel id="consumption-water-total" typeId="consumption-water-total-type"/>
+			<channel id="nhz1-runtime" typeId="nhz1-runtime-type"/>
+			<channel id="nhz2-runtime" typeId="nhz2-runtime-type"/>
+			<channel id="nhz12-runtime" typeId="nhz12-runtime-type"/>
+			<channel id="hp1-production-heat-today" typeId="hp1-production-heat-today-type"/>
+			<channel id="hp1-production-heat-total" typeId="hp1-production-heat-total-type"/>
+			<channel id="hp1-production-water-today" typeId="hp1-production-water-today-type"/>
+			<channel id="hp1-production-water-total" typeId="hp1-production-water-total-type"/>
+			<channel id="hp1-production-nhz-heat-total" typeId="hp1-production-nhz-heat-total-type"/>
+			<channel id="hp1-production-nhz-water-total" typeId="hp1-production-nhz-water-total-type"/>
+			<channel id="hp1-consumption-heat-today" typeId="hp1-consumption-heat-today-type"/>
+			<channel id="hp1-consumption-heat-total" typeId="hp1-consumption-heat-total-type"/>
+			<channel id="hp1-consumption-water-today" typeId="hp1-consumption-water-today-type"/>
+			<channel id="hp1-consumption-water-total" typeId="hp1-consumption-water-total-type"/>
+			<channel id="hp1-cp1-heating-runtime" typeId="hp1-cp1-heating-runtime-type"/>
+			<channel id="hp1-cp2-heating-runtime" typeId="hp1-cp2-heating-runtime-type"/>
+			<channel id="hp1-cp12-heating-runtime" typeId="hp1-cp12-heating-runtime-type"/>
+			<channel id="hp1-cp1-hotwater-runtime" typeId="hp1-cp1-hotwater-runtime-type"/>
+			<channel id="hp1-cp2-hotwater-runtime" typeId="hp1-cp2-hotwater-runtime-type"/>
+			<channel id="hp1-cp12-hotwater-runtime" typeId="hp1-cp12-hotwater-runtime-type"/>
+			<channel id="hp1-cooling-runtime" typeId="hp1-cooling-runtime-type"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="energy-runtime-information-wpm3i">

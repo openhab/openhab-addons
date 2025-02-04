@@ -78,6 +78,8 @@ This groups contain general state information about the heat pump.
 | is-pumping       | Contact   | true      | OPEN in case the heat pump is currently in pumping mode       |
 | is-summer        | Contact   | true      | OPEN in case the heat pump is currently in summer mode        |
 
+
+
 #### Channels supported by things *Stiebel Eltron Heat Pump (WPMsystem)*, *Stiebel Eltron Heat Pump (WPM3)* and *Stiebel Eltron Heat Pump (WPM3i)*
 
 Note: The column WPM is for WPMsystem.
@@ -87,7 +89,7 @@ Note: The column WPM is for WPMsystem.
 | hc1-pump-active                | Contact   | true      | OPEN in case the heat circuit 1 pump is currently running              |  x  |  x   |   x   |
 | hc2-pump-active                | Contact   | true      | OPEN in case the heat circuit 2 pump is currently running              |  x  |  x   |   x   |
 | heat-up-program-active         | Contact   | true      | OPEN in case the heat-up program is currently running                  |  x  |  x   |   x   |
-| nhz-stages-running             | Contact   | true      | OPEN in case if any emergency heat stage is currently running          |  x  |  x   |   x   |
+| nhz-stages-running             | Contact   | true      | OPEN in case if any electric reheating stages are currently running    |  x  |  x   |   x   |
 | hp-in-heating-mode             | Contact   | true      | OPEN in case the heat pump is currently in heating mode                |  x  |  x   |   x   |
 | hp-in-hotwater-mode            | Contact   | true      | OPEN in case the heat pump is currently in heating water mode          |  x  |  x   |   x   |
 | compressor-running             | Contact   | true      | OPEN in case the compressor is currently running                       |  x  |  x   |   x   |
@@ -109,8 +111,8 @@ Note: The column WPM is for WPMsystem.
 | buffer-charging-pump4-active   | Contact   | true      | OPEN in case the buffer charing pump 4 is currently running            |  x  |  x   |       |
 | buffer-charging-pump5-active   | Contact   | true      | OPEN in case the buffer charing pump 5 is currently running            |  x  |  x   |       |
 | buffer-charging-pump6-active   | Contact   | true      | OPEN in case the buffer charing pump 6 is currently running            |  x  |  x   |       |
-| nhz1-active                    | Contact   | true      | OPEN in case the emergency heat stage 1 is currently running           |  x  |  x   |       |
-| nhz2-active                    | Contact   | true      | OPEN in case the emergency heat stage 2 is currently running           |  x  |  x   |       |
+| nhz1-active                    | Contact   | true      | OPEN in case the electric reheating stage 1 is currently running       |  x  |  x   |       |
+| nhz2-active                    | Contact   | true      | OPEN in case the electric reheating stage 2 is currently running       |  x  |  x   |       |
 | fault-status                   | Number    | true      | Fault Status: 0=No Fault, 1=Fault                                      |  x  |  x   |   x   |
 | bus-status                     | Number    | true      | Bus Status: 0=OK, 1=ERROR, 2=Error-Passive,3=Bus-Off, 4=Physical Error |  x  |  x   |   x   |
 | defrost-initiated              | Number    | true      | Defrost Initiated: 0=OFF, 1=INITIATED                                  |  x  |  x   |       |
@@ -207,7 +209,7 @@ Note: The column WPM is for WPMsystem.
 | hc2-temperature                           | Number:Temperature        | true      | The current heat circuit 2 temperature                               |  x  |  x   |   x   |
 | hc2-temperature-setpoint                  | Number:Temperature        | true      | The current heat circuit 2 temperature set point                     |  x  |  x   |   x   |
 | hp-flow-temperature                       | Number:Temperature        | true      | The current heat pump flow temperature                               |  x  |  x   |   x   |
-| nhz-flow-temperature                      | Number:Temperature        | true      | The current emergency heating flow temperature                       |  x  |  x   |   x   |
+| nhz-flow-temperature                      | Number:Temperature        | true      | The current electric reheating flow temperature                      |  x  |  x   |   x   |
 | flow-temperature                          | Number:Temperature        | true      | The current flow temperature                                         |  x  |  x   |   x   |
 | return-temperature                        | Number:Temperature        | true      | The current return temperature                                       |  x  |  x   |   x   |
 | fixed-temperature-setpoint                | Number:Temperature        | true      | The current fixed temperature set point                              |  x  |  x   |   x   |
@@ -247,49 +249,65 @@ Note: The column WPM is for WPMsystem.
 
 This group contains information about the energy consumption and delivery of the heat pump.
 
-#### Channels supported by things *Stiebel Eltron Heat Pump*, *Stiebel Eltron Heat Pump (WPMsystem)* and *Stiebel Eltron Heat Pump (WPM3)*
+#### Channels supported by things *Stiebel Eltron Heat Pump*
 
-Note: The column WPM is for WPMsystem.
 
-| Channel ID                 | Item Type     | Read only | Description                                           | heatpump | WPM | WPM3 |
-| -------------------------- | ------------- | --------- | ----------------------------------------------------- | -------- | --- | ---- |
-| production-heat-today      | Number:Energy | true      | The compressor heat quantity delivered today          |    x     |  x  |   x  |
-| production-heat-total      | Number:Energy | true      | The compressor heat quantity delivered in total       |    x     |  x  |   x  |
-| production-water-today     | Number:Energy | true      | The compressor water heat quantity delivered today    |    x     |  x  |   x  |
-| production-water-total     | Number:Energy | true      | The compressor water heat quantity delivered in total |    x     |  x  |   x  |
-| production-nhz-heat-total  | Number:Energy | true      | The emergency heat quantity delivered in total        |          |  x  |   x  |
-| production-nhz-water-total | Number:Energy | true      | The emergency water heat quantity delivered in total  |          |  x  |   x  |
-| consumption-heat-today     | Number:Energy | true      | The power consumption for heating today               |    x     |  x  |   x  |
-| consumption-heat-total     | Number:Energy | true      | The power consumption for heating in total            |    x     |  x  |   x  |
-| consumption-water-today    | Number:Energy | true      | The power consumption for water heating today         |    x     |  x  |   x  |
-| consumption-water-total    | Number:Energy | true      | The power consumption for water heating in total      |    x     |  x  |   x  |
+| Channel ID                         | Item Type     | Read only | Description                                            |
+| -----------------------------------| ------------- | --------- | -------------------------------------------------------|
+| production-heat-today              | Number:Energy | true      | The compressor heat quantity delivered today           |
+| production-heat-total              | Number:Energy | true      | The compressor heat quantity delivered in total        |
+| production-water-today             | Number:Energy | true      | The compressor water heat quantity delivered today     |
+| production-water-total             | Number:Energy | true      | The compressor water heat quantity delivered in total  |
+| consumption-heat-today             | Number:Energy | true      | The power consumption for heating today                |
+| consumption-heat-total             | Number:Energy | true      | The power consumption for heating in total             |
+| consumption-water-today            | Number:Energy | true      | The power consumption for water heating today          |
+| consumption-water-total            | Number:Energy | true      | The power consumption for water heating in total       |
 
 
 ### Energy und Runtime Information Group
 
 This group contains information about the energy consumption and delivery of the heat pump as well as the runtime
-of compressor and emergency heating for heating, cooling and hot water production.
+of compressor and electric reheating stages for heating, cooling and hot water production.
 
-#### Channels supported by thing *Stiebel Eltron Heat Pump (WPM3i)*
+#### Channels supported by things *Stiebel Eltron Heat Pump (WPMsystem)*, *Stiebel Eltron Heat Pump (WPM3)* and *Stiebel Eltron Heat Pump (WPM3i)*
 
-| Channel ID                 | Item Type     | Read only | Description                                           |
-| -------------------------- | ------------- | --------- | ----------------------------------------------------- |
-| production-heat-today      | Number:Energy | true      | The compressor heat quantity delivered today          |
-| production-heat-total      | Number:Energy | true      | The compressor heat quantity delivered in total       |
-| production-water-today     | Number:Energy | true      | The compressor water heat quantity delivered today    |
-| production-water-total     | Number:Energy | true      | The compressor water heat quantity delivered in total |
-| production-nhz-heat-total  | Number:Energy | true      | The emergency heat quantity delivered in total        |
-| production-nhz-water-total | Number:Energy | true      | The emergency water heat quantity delivered in total  |
-| consumption-heat-today     | Number:Energy | true      | The power consumption for heating today               |
-| consumption-heat-total     | Number:Energy | true      | The power consumption for heating in total            |
-| consumption-water-today    | Number:Energy | true      | The power consumption for water heating today         |
-| consumption-water-total    | Number:Energy | true      | The power consumption for water heating in total      |
-| heating-runtime            | Number:Time   | true      | The compressor runtime for heating in total           |
-| hotwater-runtime           | Number:Time   | true      | The compressor runtime for heating in total           |
-| cooling-runtime            | Number:Time   | true      | The compressor runtime for heating in total           |
-| nhz1-runtime               | Number:Time   | true      | The emergency heat stage 1 runtime in total           |
-| nhz2-runtime               | Number:Time   | true      | The emergency heat stage 2 runtime in total           |
-| nhz12-runtime              | Number:Time   | true      | The emergency heat stages 1+2 runtime in total        |
+Note: The column WPM is for WPMsystem.
+
+| Channel ID                         | Item Type     | Read only | Description                                                          | WPM | WPM3 | WPM3i |
+| ---------------------------------- | ------------- | --------- | -------------------------------------------------------------------- | --- | ---- | ----- |
+| production-heat-today              | Number:Energy | true      | The compressor heat quantity delivered today                         |  x  |  x   |   x   |
+| production-heat-total              | Number:Energy | true      | The compressor heat quantity delivered in total                      |  x  |  x   |   x   |
+| production-water-today             | Number:Energy | true      | The compressor water heat quantity delivered today                   |  X  |  x   |   x   |
+| production-water-total             | Number:Energy | true      | The compressor water heat quantity delivered in total                |  X  |  x   |   x   |
+| production-nhz-heat-total          | Number:Energy | true      | The electric reheating heat quantity delivered in total              |  X  |  X   |   x   |
+| production-nhz-water-total         | Number:Energy | true      | The electric reheating hot water quantity delivered in total         |  X  |  X   |   x   |
+| consumption-heat-today             | Number:Energy | true      | The power consumption for heating today                              |  x  |  x   |   x   |
+| consumption-heat-total             | Number:Energy | true      | The power consumption for heating in total                           |  x  |  x   |   x   |
+| consumption-water-today            | Number:Energy | true      | The power consumption for water heating today                        |  x  |  x   |   x   |
+| consumption-water-total            | Number:Energy | true      | The power consumption for water heating in total                     |  x  |  x   |   x   |
+| heating-runtime                    | Number:Time   | true      | The compressor runtime for heating in total                          |     |      |   x   |
+| hotwater-runtime                   | Number:Time   | true      | The compressor runtime for heating in total                          |     |      |   x   |
+| cooling-runtime                    | Number:Time   | true      | The compressor runtime for cooling in total                          |     |      |   x   |
+| nhz1-runtime                       | Number:Time   | true      | The electric reheating stage 1 runtime in total                      |  x  |  x   |   x   |
+| nhz2-runtime                       | Number:Time   | true      | The electric reheating stage 2 runtime in total                      |  x  |  x   |   x   |
+| nhz12-runtime                      | Number:Time   | true      | The electric reheating stages 1+2 runtime in total                   |  x  |  x   |   x   |
+| hp1-production-heat-today          | Number:Energy | true      | Heat Pump 1 compressor heat quantity delivered today                 |  x  |  x   |       |
+| hp1-production-heat-total          | Number:Energy | true      | Heat Pump 1 compressor heat quantity delivered in total              |  x  |  x   |       |
+| hp1-production-water-today         | Number:Energy | true      | Heat Pump 1 compressor water heat quantity delivered today           |  x  |  x   |       |
+| hp1-production-water-total         | Number:Energy | true      | Heat Pump 1 compressor water heat quantity delivered in total        |  x  |  x   |       |
+| hp1-production-nhz-heat-total      | Number:Energy | true      | Heat Pump 1 electric reheating heat quantity delivered in total      |  x  |  x   |       |
+| hp1-production-nhz-water-total     | Number:Energy | true      | Heat Pump 1 electric reheating hot water quantity delivered in total |  x  |  x   |       |
+| hp1-consumption-heat-today         | Number:Energy | true      | Heat Pump 1 power consumption for heating today                      |  x  |  x   |       |
+| hp1-consumption-heat-total         | Number:Energy | true      | Heat Pump 1 power consumption for heating in total                   |  x  |  x   |       |
+| hp1-consumption-water-today        | Number:Energy | true      | Heat Pump 1 power consumption for water heating today                |  x  |  x   |       |
+| hp1-consumption-water-total        | Number:Energy | true      | Heat Pump 1 power consumption for water heating in total             |  x  |  x   |       |
+| hp1-cp1-heating-runtime            | Number:Time   | true      | Heat Pump 1 compressor 1 runtime for heating in total                |  X  |  x   |       |
+| hp1-cp2-heating-runtime            | Number:Time   | true      | Heat Pump 1 compressor 2 runtime for heating in total                |  X  |  x   |       |
+| hp1-cp12-heating-runtime           | Number:Time   | true      | Heat Pump 1 compressor 1/2 runtime for heating in total              |  x  |  x   |       |
+| hp1-cp1-hotwater-runtime           | Number:Time   | true      | Heat Pump 1 compressor 1 runtime for heating in total                |  x  |  x   |       |
+| hp1-cp2-hotwater-runtime           | Number:Time   | true      | Heat Pump 1 compressor 2 runtime for heating in total                |  x  |  x   |       |
+| hp1-cp12-hotwater-runtime          | Number:Time   | true      | Heat Pump 1 compressor 1/2 runtime for heating in total              |  x  |  x   |       |
+| hp1-cooling-runtime                | Number:Time   | true      | Heat Pump 1 compressor runtime for cooling in total                  |  x  |  x   |       |
 
 
 ### SG Ready - Energy Management Settings
@@ -475,7 +493,7 @@ Number:Temperature        stiebel_eltron_heat_pump_wpm_hc1_temperature_set_point
 Number:Temperature        stiebel_eltron_heat_pump_wpm_hc2_temperature                            "HC2 Temperature"                                <temperature> { channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:systemInformationWpm3#hc2-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm_hc2_temperature_set_point                  "HC2 Temperature Set Point"                      <temperature> { channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:systemInformationWpm3#hc2-temperature-setpoint" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm_heat_pump_flow_temperature                 "Heat Pump Flow Temperature"                     <temperature> { channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:systemInformationWpm3#hp-flow-temperature" }
-Number:Temperature        stiebel_eltron_heat_pump_wpm_emergency_heating_flow_temperature         "Emergency Heating Flow Temperature"             <temperature> { channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:systemInformationWpm3#nhz-flow-temperature" }
+Number:Temperature        stiebel_eltron_heat_pump_wpm_electric_reheating_flow_temperature        "Electric Rehating Flow Temperature"             <temperature> { channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:systemInformationWpm3#nhz-flow-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm_flow_temperature                           "Flow Temperature"                               <temperature> { channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:systemInformationWpm3#flow-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm_return_temperature                         "Return Temperature"                             <temperature> { channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:systemInformationWpm3#return-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm_fixed_temperature_set_point                "Fixed Temperature Set Point"                    <temperature> { channel="modubs:stiebeleltron-heatpump-wpmsystem:stiebelEltronWPMsytem:systemInformationWpm3#fixed-temperature-setpoint" }
@@ -587,7 +605,7 @@ Number:Temperature        stiebel_eltron_heat_pump_wpm3_hc1_temperature_set_poin
 Number:Temperature        stiebel_eltron_heat_pump_wpm3_hc2_temperature                            "HC2 Temperature"                                <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#hc2-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm3_hc2_temperature_set_point                  "HC2 Temperature Set Point"                      <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#hc2-temperature-setpoint" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm3_heat_pump_flow_temperature                 "Heat Pump Flow Temperature"                     <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#hp-flow-temperature" }
-Number:Temperature        stiebel_eltron_heat_pump_wpm3_emergency_heating_flow_temperature         "Emergency Heating Flow Temperature"             <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#nhz-flow-temperature" }
+Number:Temperature        stiebel_eltron_heat_pump_wpm3_electric_reheating_flow_temperature        "Electric Rehating Flow Temperature"             <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#nhz-flow-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm3_flow_temperature                           "Flow Temperature"                               <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#flow-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm3_return_temperature                         "Return Temperature"                             <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#return-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm3_fixed_temperature_set_point                "Fixed Temperature Set Point"                    <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3:stiebelEltronWPM3:systemInformationWpm3#fixed-temperature-setpoint" }
@@ -687,7 +705,7 @@ Number:Temperature        stiebel_eltron_heat_pump_wpm3i_hc1_temperature_set_poi
 Number:Temperature        stiebel_eltron_heat_pump_wpm3i_hc2_temperature                          "HC2 Temperature"                                <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:systemInformationWpm3i#hc2-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm3i_hc2_temperature_set_point                "HC2 Temperature Set Point"                      <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:systemInformationWpm3i#hc2-temperature-setpoint" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm3i_heat_pump_flow_temperature               "Heat Pump Flow Temperature"                     <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:systemInformationWpm3i#hp-flow-temperature" }
-Number:Temperature        stiebel_eltron_heat_pump_wpm3i_emergency_heating_flow_temperature       "Emergency Heating Flow Temperature"             <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:systemInformationWpm3i#nhz-flow-temperature" }
+Number:Temperature        stiebel_eltron_heat_pump_wpm3i_electric_reheating_flow_temperature      "Electric Rehating Flow Temperature"             <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:systemInformationWpm3i#nhz-flow-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm3i_flow_temperature                         "Flow Temperature"                               <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:systemInformationWpm3i#flow-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm3i_return_temperature                       "Return Temperature"                             <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:systemInformationWpm3i#return-temperature" }
 Number:Temperature        stiebel_eltron_heat_pump_wpm3i_fixed_temperature_set_point              "Fixed Temperature Set Point"                    <temperature> { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:systemInformationWpm3i#fixed-temperature-setpoint" }
@@ -723,9 +741,9 @@ Number:Energy             stiebel_eltron_heat_pump_wpm3i_power_consumption_for_w
 Number:Time               stiebel_eltron_heat_pump_wpm3i_heating_compressor_runtime               "Heating Compressor Runtime"                     <time>        { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:energyRuntimeInformationWpm3i#heating-runtime" }
 Number:Time               stiebel_eltron_heat_pump_wpm3i_hot_water_runtime                        "Hot Water Compressor Runtime"                   <time>        { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:energyRuntimeInformationWpm3i#hotwater-runtime" }
 Number:Time               stiebel_eltron_heat_pump_wpm3i_cooling_runtime                          "Cooling Compressor Runtime"                     <time>        { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:energyRuntimeInformationWpm3i#cooling-runtime" }
-Number:Time               stiebel_eltron_heat_pump_wpm3i_emergency_heating_stage_1_runtime        "Emergency Heating Stage 1 Runtime"              <time>        { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:energyRuntimeInformationWpm3i#nhz1-runtime" }
-Number:Time               stiebel_eltron_heat_pump_wpm3i_emergency_heating_stage_2_runtime        "Emergency Heating Stage 2 Runtime"              <time>        { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:energyRuntimeInformationWpm3i#nhz2-runtime" }
-Number:Time               stiebel_eltron_heat_pump_wpm3i_emergency_heating_stages_12_runtime      "Emergency Heating Stages 1+2 Runtime"           <time>        { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:energyRuntimeInformationWpm3i#nhz12-runtime" }
+Number:Time               stiebel_eltron_heat_pump_wpm3i_electric_reheating_stage_1_runtime       "Electric Rehating Stage 1 Runtime"              <time>        { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:energyRuntimeInformationWpm3i#nhz1-runtime" }
+Number:Time               stiebel_eltron_heat_pump_wpm3i_electric_reheating_stage_2_runtime       "Electric Rehating Stage 2 Runtime"              <time>        { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:energyRuntimeInformationWpm3i#nhz2-runtime" }
+Number:Time               stiebel_eltron_heat_pump_wpm3i_electric_reheating_stages_12_runtime     "Electric Rehating Stages 1+2 Runtime"           <time>        { channel="modbus:stiebeleltron-heatpump-wpm3i:stiebelEltronWPM3i:energyRuntimeInformationWpm3i#nhz12-runtime" }
 ```
 
 
