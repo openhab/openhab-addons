@@ -57,7 +57,7 @@ public class StiebelEltronBindingConstants {
     public static final String GROUP_SYSTEM_STATE_WPM3 = "systemStateWpm3";
     public static final String GROUP_SYSTEM_STATE_WPM3I = "systemStateWpm3i";
 
-    public static final String GROUP_ENERGY_INFO_WPMWPM3 = "energyInformationWpmWpm3";
+    public static final String GROUP_ENERGY_RUNTIME_INFO_WPMWPM3 = "energyRuntimeInformationWpmWpm3";
     public static final String GROUP_ENERGY_RUNTIME_INFO_WPM3I = "energyRuntimeInformationWpm3i";
 
     public static final String GROUP_SG_READY_ENERGY_MANAGEMENT_SETTINGS = "sgReadyEnergyManagementSettings";
@@ -223,6 +223,26 @@ public class StiebelEltronBindingConstants {
 
     public static final String CHANNEL_PRODUCTION_NHZ_HEAT_TOTAL = "production-nhz-heat-total";
     public static final String CHANNEL_PRODUCTION_NHZ_WATER_TOTAL = "production-nhz-water-total";
+
+    public static final String CHANNEL_HP1_PRODUCTION_HEAT_TODAY = "hp1-production-heat-today";
+    public static final String CHANNEL_HP1_PRODUCTION_HEAT_TOTAL = "hp1-production-heat-total";
+    public static final String CHANNEL_HP1_PRODUCTION_WATER_TODAY = "hp1-production-water-today";
+    public static final String CHANNEL_HP1_PRODUCTION_WATER_TOTAL = "hp1-production-water-total";
+    public static final String CHANNEL_HP1_CONSUMPTION_HEAT_TODAY = "hp1-consumption-heat-today";
+    public static final String CHANNEL_HP1_CONSUMPTION_HEAT_TOTAL = "hp1-consumption-heat-total";
+    public static final String CHANNEL_HP1_CONSUMPTION_WATER_TODAY = "hp1-consumption-water-today";
+    public static final String CHANNEL_HP1_CONSUMPTION_WATER_TOTAL = "hp1-consumption-water-total";
+
+    public static final String CHANNEL_HP1_PRODUCTION_NHZ_HEAT_TOTAL = "hp1-production-nhz-heat-total";
+    public static final String CHANNEL_HP1_PRODUCTION_NHZ_WATER_TOTAL = "hp1-production-nhz-water-total";
+
+    public static final String CHANNEL_HP1_CP1_HEATING_RUNTIME = "hp1-cp1-heating-runtime";
+    public static final String CHANNEL_HP1_CP2_HEATING_RUNTIME = "hp1-cp2-heating-runtime";
+    public static final String CHANNEL_HP1_CP12_HEATING_RUNTIME = "hp1-cp12-heating-runtime";
+    public static final String CHANNEL_HP1_CP1_HOTWATER_RUNTIME = "hp1-cp1-hotwater-runtime";
+    public static final String CHANNEL_HP1_CP2_HOTWATER_RUNTIME = "hp1-cp2-hotwater-runtime";
+    public static final String CHANNEL_HP1_CP12_HOTWATER_RUNTIME = "hp1-cp-12-hotwater-runtime";
+    public static final String CHANNEL_HP1_COOLING_RUNTIME = "hp1-cooling-runtime";
 
     // WPM3i only - Runtime values
     public static final String CHANNEL_HEATING_RUNTIME = "heating-runtime";

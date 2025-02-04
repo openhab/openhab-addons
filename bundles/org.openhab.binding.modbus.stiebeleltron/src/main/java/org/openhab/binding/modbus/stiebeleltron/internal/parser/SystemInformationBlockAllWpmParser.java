@@ -25,16 +25,16 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 @NonNullByDefault
 public class SystemInformationBlockAllWpmParser extends AbstractBaseParser {
 
-    private boolean mWpmHeatPump = false;
+    private boolean mWpmWpm3HeatPump = false;
 
     /**
      * Instances of this parser shall know if they handle a WPM heat pump with additional
      * information about heat pumps and circuits.
      *
-     * @param boolean flag telling if the parse shall work on a WPM heat pump with additional data
+     * @param boolean flag telling if the parse shall work on a WPMsystem/WPM3 heat pump with additional data
      */
     public SystemInformationBlockAllWpmParser(boolean isWpmHeatPump) {
-        mWpmHeatPump = isWpmHeatPump;
+        mWpmWpm3HeatPump = isWpmHeatPump;
     }
 
     public SystemInformationBlockAllWpm parse(ModbusRegisterArray raw) {
@@ -95,7 +95,7 @@ public class SystemInformationBlockAllWpmParser extends AbstractBaseParser {
         block.pressureHigh = extractInt16(raw, 39, (short) 0);
         block.pressureLow = extractInt16(raw, 40, (short) 0);
 
-        if (mWpmHeatPump) {
+        if (mWpmWpm3HeatPump) {
             block.hp1TemperatureReturn = extractInt16(raw, 41, (short) 0);
             block.hp1TemperatureFlow = extractInt16(raw, 42, (short) 0);
             block.hp1TemperatureHotgas = extractInt16(raw, 43, (short) 0);

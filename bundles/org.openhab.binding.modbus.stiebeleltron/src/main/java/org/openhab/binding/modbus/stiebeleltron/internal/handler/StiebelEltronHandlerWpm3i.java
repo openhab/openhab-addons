@@ -25,13 +25,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronConfiguration;
-import org.openhab.binding.modbus.stiebeleltron.internal.dto.EnergyBlock;
-import org.openhab.binding.modbus.stiebeleltron.internal.dto.RuntimeBlockWpm3i;
+import org.openhab.binding.modbus.stiebeleltron.internal.dto.EnergyRuntimeBlockAllWpm;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemInformationBlockAllWpm;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemParameterBlockAllWpm;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateBlockAllWpm;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.EnergyBlockParser;
-import org.openhab.binding.modbus.stiebeleltron.internal.parser.RuntimeBlockParser;
+import org.openhab.binding.modbus.stiebeleltron.internal.parser.EnergyRuntimeBlockAllWpmParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInformationBlockAllWpmParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemParameterBlockAllWpmParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemStateBlockParserAllWpm;
@@ -153,9 +152,9 @@ public class StiebelEltronHandlerWpm3i extends BaseThingHandler {
      */
     private final EnergyBlockParser energyBlockParser = new EnergyBlockParser();
     /**
-     * Parser used to convert incoming raw messages into runtime blocks
+     * Parser used to convert incoming raw messages into energy and runtime blocks
      */
-    private final RuntimeBlockParser runtimeBlockParser = new RuntimeBlockParser();
+    private final EnergyRuntimeBlockAllWpmParser energyRuntimeBlockParser = new EnergyRuntimeBlockAllWpmParser(false);
     /**
      * This is the task used to poll the device
      */
@@ -474,7 +473,7 @@ public class StiebelEltronHandlerWpm3i extends BaseThingHandler {
                     handlePolledEnergyRuntimeData(registers);
                 }
             };
-            poller.registerPollTask(3500, 22, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
+            poller.registerPollTask(3500, 48, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
             energyRuntimePoller = poller;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -890,65 +889,64 @@ public class StiebelEltronHandlerWpm3i extends BaseThingHandler {
     protected void handlePolledEnergyRuntimeData(ModbusRegisterArray registers) {
         logger.trace("Energy block received, size: {}", registers.size());
 
-        EnergyBlock energyBlock = energyBlockParser.parse(registers);
+        EnergyRuntimeBlockAllWpm energyRuntimeBlock = energyRuntimeBlockParser.parse(registers);
 
         // Energy information group
-        logger.trace("productionHeatToday = {}", energyBlock.productionHeatToday);
+        logger.trace("productionHeatToday = {}", energyRuntimeBlock.productionHeatToday);
         updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_PRODUCTION_HEAT_TODAY),
-                new QuantityType<>(energyBlock.productionHeatToday, KILOWATT_HOUR));
+                new QuantityType<>(energyRuntimeBlock.productionHeatToday, KILOWATT_HOUR));
 
-        logger.trace("productionHeatTotalHigh = {}, productionHeatTotalLow = {}", energyBlock.productionHeatTotalHigh,
-                energyBlock.productionHeatTotalLow);
-        updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_PRODUCTION_HEAT_TOTAL),
-                getEnergyQuantity(energyBlock.productionHeatTotalHigh, energyBlock.productionHeatTotalLow));
+        logger.trace("productionHeatTotalHigh = {}, productionHeatTotalLow = {}",
+                energyRuntimeBlock.productionHeatTotalHigh, energyRuntimeBlock.productionHeatTotalLow);
+        updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_PRODUCTION_HEAT_TOTAL), getEnergyQuantity(
+                energyRuntimeBlock.productionHeatTotalHigh, energyRuntimeBlock.productionHeatTotalLow));
 
-        logger.trace("productionWaterToday = {}", energyBlock.productionWaterToday);
+        logger.trace("productionWaterToday = {}", energyRuntimeBlock.productionWaterToday);
         updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_PRODUCTION_WATER_TODAY),
-                new QuantityType<>(energyBlock.productionWaterToday, KILOWATT_HOUR));
+                new QuantityType<>(energyRuntimeBlock.productionWaterToday, KILOWATT_HOUR));
 
         logger.trace("productionWaterTotalHigh = {}, productionWaterTotalLow = {}",
-                energyBlock.productionWaterTotalHigh, energyBlock.productionWaterTotalLow);
-        updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_PRODUCTION_WATER_TOTAL),
-                getEnergyQuantity(energyBlock.productionWaterTotalHigh, energyBlock.productionWaterTotalLow));
+                energyRuntimeBlock.productionWaterTotalHigh, energyRuntimeBlock.productionWaterTotalLow);
+        updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_PRODUCTION_WATER_TOTAL), getEnergyQuantity(
+                energyRuntimeBlock.productionWaterTotalHigh, energyRuntimeBlock.productionWaterTotalLow));
 
         logger.trace("productionNhzHeatingTotalHigh = {}, productionNhzHeatingTotalLow = {}",
-                energyBlock.productionNhzHeatingTotalHigh, energyBlock.productionNhzHeatingTotalLow);
-        updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_PRODUCTION_NHZ_HEAT_TOTAL),
-                getEnergyQuantity(energyBlock.productionNhzHeatingTotalHigh, energyBlock.productionNhzHeatingTotalLow));
+                energyRuntimeBlock.productionNhzHeatingTotalHigh, energyRuntimeBlock.productionNhzHeatingTotalLow);
+        updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_PRODUCTION_NHZ_HEAT_TOTAL), getEnergyQuantity(
+                energyRuntimeBlock.productionNhzHeatingTotalHigh, energyRuntimeBlock.productionNhzHeatingTotalLow));
 
         logger.trace("productionNhzHotwaterTotalHigh = {}, productionNhzHotwaterTotalLow = {}",
-                energyBlock.productionNhzHotwaterTotalHigh, energyBlock.productionNhzHotwaterTotalLow);
+                energyRuntimeBlock.productionNhzHotwaterTotalHigh, energyRuntimeBlock.productionNhzHotwaterTotalLow);
         updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_PRODUCTION_NHZ_WATER_TOTAL), getEnergyQuantity(
-                energyBlock.productionNhzHotwaterTotalHigh, energyBlock.productionNhzHotwaterTotalLow));
+                energyRuntimeBlock.productionNhzHotwaterTotalHigh, energyRuntimeBlock.productionNhzHotwaterTotalLow));
 
-        logger.trace("consumptionHeatToday = {}", energyBlock.consumptionHeatToday);
+        logger.trace("consumptionHeatToday = {}", energyRuntimeBlock.consumptionHeatToday);
         updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_CONSUMPTION_HEAT_TODAY),
-                new QuantityType<>(energyBlock.consumptionHeatToday, KILOWATT_HOUR));
+                new QuantityType<>(energyRuntimeBlock.consumptionHeatToday, KILOWATT_HOUR));
 
         logger.trace("productionNhzHotwaterTotalHigh = {}, productionNhzHotwaterTotalLow = {}",
-                energyBlock.productionNhzHotwaterTotalHigh, energyBlock.productionNhzHotwaterTotalLow);
-        updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_CONSUMPTION_HEAT_TOTAL),
-                getEnergyQuantity(energyBlock.consumptionHeatTotalHigh, energyBlock.consumptionHeatTotalLow));
+                energyRuntimeBlock.productionNhzHotwaterTotalHigh, energyRuntimeBlock.productionNhzHotwaterTotalLow);
+        updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_CONSUMPTION_HEAT_TOTAL), getEnergyQuantity(
+                energyRuntimeBlock.consumptionHeatTotalHigh, energyRuntimeBlock.consumptionHeatTotalLow));
         updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_CONSUMPTION_WATER_TODAY),
-                new QuantityType<>(energyBlock.consumptionWaterToday, KILOWATT_HOUR));
+                new QuantityType<>(energyRuntimeBlock.consumptionWaterToday, KILOWATT_HOUR));
 
         logger.trace("consumptionWaterTotalHigh = {}, consumptionWaterTotalLow = {}",
-                energyBlock.consumptionWaterTotalHigh, energyBlock.consumptionWaterTotalLow);
-        updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_CONSUMPTION_WATER_TOTAL),
-                getEnergyQuantity(energyBlock.consumptionWaterTotalHigh, energyBlock.consumptionWaterTotalLow));
+                energyRuntimeBlock.consumptionWaterTotalHigh, energyRuntimeBlock.consumptionWaterTotalLow);
+        updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_CONSUMPTION_WATER_TOTAL), getEnergyQuantity(
+                energyRuntimeBlock.consumptionWaterTotalHigh, energyRuntimeBlock.consumptionWaterTotalLow));
 
-        RuntimeBlockWpm3i runtimeBlock = runtimeBlockParser.parse(registers);
-        logger.trace("runtimeCompressorHeating = {}", runtimeBlock.runtimeCompressorHeating);
+        logger.trace("runtimeCompressorHeating = {}", energyRuntimeBlock.runtimeCompressorHeating);
         updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_HEATING_RUNTIME),
-                new QuantityType<>(runtimeBlock.runtimeCompressorHeating, HOUR));
-        logger.trace("runtimeCompressorHotwater = {}", runtimeBlock.runtimeCompressorHotwater);
+                new QuantityType<>(energyRuntimeBlock.runtimeCompressorHeating, HOUR));
+        logger.trace("runtimeCompressorHotwater = {}", energyRuntimeBlock.runtimeCompressorHotwater);
         updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_HOTWATER_RUNTIME),
-                new QuantityType<>(runtimeBlock.runtimeCompressorHotwater, HOUR));
-        logger.trace("runtimeCompressorCooling = {}", runtimeBlock.runtimeCompressorCooling);
+                new QuantityType<>(energyRuntimeBlock.runtimeCompressorHotwater, HOUR));
+        logger.trace("runtimeCompressorCooling = {}", energyRuntimeBlock.runtimeCompressorCooling);
 
-        if (runtimeBlock.runtimeCompressorCooling != 32768) {
+        if (energyRuntimeBlock.runtimeCompressorCooling != 32768) {
             updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_COOLING_RUNTIME),
-                    new QuantityType<>(runtimeBlock.runtimeCompressorCooling, HOUR));
+                    new QuantityType<>(energyRuntimeBlock.runtimeCompressorCooling, HOUR));
         } else {
             updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_COOLING_RUNTIME),
                     new QuantityType<>(0, HOUR));
@@ -958,15 +956,15 @@ public class StiebelEltronHandlerWpm3i extends BaseThingHandler {
             }
         }
 
-        logger.trace("runtimeNhz1 = {}", runtimeBlock.runtimeNhz1);
+        logger.trace("runtimeNhz1 = {}", energyRuntimeBlock.runtimeNhz1);
         updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_NHZ1_RUNTIME),
-                new QuantityType<>(runtimeBlock.runtimeNhz1, HOUR));
-        logger.trace("runtimeNhz2 = {}", runtimeBlock.runtimeNhz2);
+                new QuantityType<>(energyRuntimeBlock.runtimeNhz1, HOUR));
+        logger.trace("runtimeNhz2 = {}", energyRuntimeBlock.runtimeNhz2);
         updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_NHZ2_RUNTIME),
-                new QuantityType<>(runtimeBlock.runtimeNhz2, HOUR));
-        logger.trace("runtimeNhz12 = {}", runtimeBlock.runtimeNhz12);
+                new QuantityType<>(energyRuntimeBlock.runtimeNhz2, HOUR));
+        logger.trace("runtimeNhz12 = {}", energyRuntimeBlock.runtimeNhz12);
         updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_WPM3I, CHANNEL_NHZ12_RUNTIME),
-                new QuantityType<>(runtimeBlock.runtimeNhz12, HOUR));
+                new QuantityType<>(energyRuntimeBlock.runtimeNhz12, HOUR));
 
         resetCommunicationError();
     }

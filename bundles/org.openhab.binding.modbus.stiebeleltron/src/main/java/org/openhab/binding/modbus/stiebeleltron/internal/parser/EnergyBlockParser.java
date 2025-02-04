@@ -20,7 +20,6 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
  * Parses inverter modbus data into an Energy Block
  *
  * @author Paul Frank - Initial contribution
- * @author Thomas Burri - Extending by values for NHZ of a WPM3/WPM3i compatible heat pump
  *
  */
 @NonNullByDefault
@@ -35,11 +34,6 @@ public class EnergyBlockParser extends AbstractBaseParser {
         block.productionWaterToday = extractUInt16(raw, 3, (short) 0);
         block.productionWaterTotalLow = extractUInt16(raw, 4, (short) 0);
         block.productionWaterTotalHigh = extractUInt16(raw, 5, (short) 0);
-
-        block.productionNhzHeatingTotalLow = extractUInt16(raw, 6, (short) 0);
-        block.productionNhzHeatingTotalHigh = extractUInt16(raw, 7, (short) 0);
-        block.productionNhzHotwaterTotalLow = extractUInt16(raw, 8, (short) 0);
-        block.productionNhzHotwaterTotalHigh = extractUInt16(raw, 9, (short) 0);
 
         block.consumptionHeatToday = extractUInt16(raw, 10, (short) 0);
         block.consumptionHeatTotalLow = extractUInt16(raw, 11, (short) 0);
