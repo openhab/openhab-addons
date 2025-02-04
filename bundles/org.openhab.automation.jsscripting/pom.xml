@@ -53,6 +53,7 @@
                   <exclude>org.graalvm.sdk:word</exclude>
                   <exclude>org.graalvm.shadowed:icu4j</exclude>
                   <exclude>org.graalvm.truffle:truffle-compiler</exclude>
+                  <exclude>org.graalvm.truffle:truffle-runtime</exclude>
                 </excludes>
               </artifactSet>
               <createDependencyReducedPom>false</createDependencyReducedPom>
@@ -116,6 +117,7 @@
           </execution>
         </executions>
       </plugin>
+      <!-- embed the JS resources into the bundle -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -148,20 +150,11 @@
   </build>
 
   <dependencies>
+    <!-- Graal Polyglot Framework -->
     <dependency>
       <groupId>org.graalvm.polyglot</groupId>
       <artifactId>polyglot</artifactId>
       <version>${graaljs.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.graalvm.sdk</groupId>
-          <artifactId>collections</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.graalvm.sdk</groupId>
-          <artifactId>nativeimage</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <!-- Graal JavaScript ScriptEngine JSR 223 support -->
     <dependency>
@@ -174,12 +167,6 @@
       <groupId>org.graalvm.regex</groupId>
       <artifactId>regex</artifactId>
       <version>${graaljs.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.graalvm.shadowed</groupId>
-          <artifactId>icu4j</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <!-- Graal JavaScript engine (depends on Graal TRegex engine, must be added after it) -->
     <dependency>
