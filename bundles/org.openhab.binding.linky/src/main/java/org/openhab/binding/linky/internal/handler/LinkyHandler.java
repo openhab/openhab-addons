@@ -14,35 +14,51 @@ package org.openhab.binding.linky.internal.handler;
 
 import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
-import org.openhab.binding.linky.internal.dto.ConsumptionReport.Aggregate;
-import org.openhab.binding.linky.internal.dto.ConsumptionReport.Consumption;
+import org.openhab.binding.linky.internal.dto.Contact;
+import org.openhab.binding.linky.internal.dto.Contract;
+import org.openhab.binding.linky.internal.dto.Identity;
+import org.openhab.binding.linky.internal.dto.IntervalReading;
+import org.openhab.binding.linky.internal.dto.MetaData;
+import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
+import org.openhab.binding.linky.internal.dto.ResponseTempo;
+import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -50,39 +66,51 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.TimeSeries.Policy;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
+import org.threeten.extra.Months;
+import org.threeten.extra.Weeks;
+import org.threeten.extra.Years;
 
 /**
  * The {@link LinkyHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
 @NonNullByDefault
+@SuppressWarnings("null")
 public class LinkyHandler extends BaseThingHandler {
-    private static final int REFRESH_FIRST_HOUR_OF_DAY = 1;
+    private final TimeZoneProvider timeZoneProvider;
+    private ZoneId zoneId = ZoneId.systemDefault();
+
+    private static final Random randomNumbers = new Random();
+    private static final int REFRESH_HOUR_OF_DAY = 1;
+    private static final int REFRESH_MINUTE_OF_DAY = randomNumbers.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
-    private final HttpClient httpClient;
-    private final Gson gson;
-    private final WeekFields weekFields;
 
-    private final ExpiringDayCache<Consumption> cachedDailyData;
-    private final ExpiringDayCache<Consumption> cachedPowerData;
-    private final ExpiringDayCache<Consumption> cachedMonthlyData;
-    private final ExpiringDayCache<Consumption> cachedYearlyData;
+    private final ExpiringDayCache<MetaData> metaData;
+    private final ExpiringDayCache<MeterReading> dailyConsumption;
+    private final ExpiringDayCache<MeterReading> dailyConsumptionMaxPower;
+    private final ExpiringDayCache<MeterReading> loadCurveConsumption;
+    private final ExpiringDayCache<ResponseTempo> tempoInformation;
 
     private @Nullable ScheduledFuture<?> refreshJob;
+    private LinkyConfiguration config;
     private @Nullable EnedisHttpApi enedisApi;
+    private double divider = 1.00;
 
-    private @NonNullByDefault({}) String prmId;
-    private @NonNullByDefault({}) String userId;
+    public String userId = "";
+
+    private @Nullable ScheduledFuture<?> pollingJob = null;
 
     private enum Target {
         FIRST,
@@ -90,214 +118,515 @@ public class LinkyHandler extends BaseThingHandler {
         ALL
     }
 
-    public LinkyHandler(Thing thing, LocaleProvider localeProvider, Gson gson, HttpClient httpClient) {
+    public LinkyHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
-        this.gson = gson;
-        this.httpClient = httpClient;
-        this.weekFields = WeekFields.of(localeProvider.getLocale());
 
-        this.cachedDailyData = new ExpiringDayCache<>("daily cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            LocalDate today = LocalDate.now();
-            Consumption consumption = getConsumptionData(today.minusDays(15), today);
-            if (consumption != null) {
-                logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
-                logData(consumption.aggregats.weeks, "Week", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
-                consumption = getConsumptionAfterChecks(consumption, Target.LAST);
-            }
-            return consumption;
+        config = getConfigAs(LinkyConfiguration.class);
+        this.timeZoneProvider = timeZoneProvider;
+
+        this.metaData = new ExpiringDayCache<>("metaData", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
+                REFRESH_INTERVAL_IN_MIN);
+        this.metaData.setAction(() -> {
+            MetaData metaData = getMetaData();
+            return metaData;
         });
 
-        this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            // We request data for yesterday and the day before yesterday, even if the data for the day before yesterday
-            // is not needed by the binding. This is only a workaround to an API bug that will return
-            // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday is not
-            // yet available.
-            // By requesting two days, the API is not failing and you get the expected NaN value for yesterday when the
-            // data is not yet available.
+        this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
+                REFRESH_INTERVAL_IN_MIN);
+
+        this.dailyConsumption.setAction(() -> {
             LocalDate today = LocalDate.now();
-            Consumption consumption = getPowerData(today.minusDays(2), today);
-            if (consumption != null) {
-                logData(consumption.aggregats.days, "Day (peak)", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME,
-                        Target.ALL);
-                consumption = getConsumptionAfterChecks(consumption, Target.LAST);
+            MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
+            boolean missingData = checkMissingData(meterReading);
+            if (missingData) {
+                logger.debug("({}) API have returned incomplete data, we will recheck in {} mn", config.prmId,
+                        REFRESH_INTERVAL_IN_MIN);
+                this.dailyConsumption.setMissingData(true);
             }
-            return consumption;
+
+            meterReading = getMeterReadingAfterChecks(meterReading);
+            if (meterReading != null) {
+                logData(meterReading.baseValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
+                logData(meterReading.weekValue, "Week", DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
+            }
+            return meterReading;
         });
 
-        this.cachedMonthlyData = new ExpiringDayCache<>("monthly cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            LocalDate today = LocalDate.now();
-            Consumption consumption = getConsumptionData(today.withDayOfMonth(1).minusMonths(1), today);
-            if (consumption != null) {
-                logData(consumption.aggregats.months, "Month", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
-                consumption = getConsumptionAfterChecks(consumption, Target.LAST);
-            }
-            return consumption;
-        });
+        // We request data for yesterday and the day before yesterday, even if the data for the day before yesterday
+        // is not needed by the binding. This is only a workaround to an API bug that will return
+        // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday is not yet
+        // available.
+        // By requesting two days, the API is not failing and you get the expected NaN value for yesterday when the data
+        // is not yet available.
+        this.dailyConsumptionMaxPower = new ExpiringDayCache<>("dailyConsumptionMaxPower", REFRESH_HOUR_OF_DAY,
+                REFRESH_MINUTE_OF_DAY, REFRESH_INTERVAL_IN_MIN, () -> {
+                    LocalDate today = LocalDate.now();
+                    MeterReading meterReading = getPowerData(today.minusDays(1095), today);
+                    meterReading = getMeterReadingAfterChecks(meterReading);
+                    if (meterReading != null) {
+                        logData(meterReading.baseValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
+                    }
+                    return meterReading;
+                });
 
-        this.cachedYearlyData = new ExpiringDayCache<>("yearly cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            LocalDate today = LocalDate.now();
-            Consumption consumption = getConsumptionData(LocalDate.of(today.getYear() - 1, 1, 1), today);
-            if (consumption != null) {
-                logData(consumption.aggregats.years, "Year", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
-                consumption = getConsumptionAfterChecks(consumption, Target.LAST);
-            }
-            return consumption;
-        });
+        // Read Tempo Information
+        this.tempoInformation = new ExpiringDayCache<>("tempoInformation", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
+                REFRESH_INTERVAL_IN_MIN, () -> {
+                    LocalDate today = LocalDate.now();
+
+                    ResponseTempo tempoData = getTempoData(today.minusDays(1095), today.plusDays(1));
+                    return tempoData;
+                });
+
+        // Comsuption Load Curve
+        this.loadCurveConsumption = new ExpiringDayCache<>("loadCurveConsumption", REFRESH_HOUR_OF_DAY,
+                REFRESH_MINUTE_OF_DAY, REFRESH_INTERVAL_IN_MIN, () -> {
+                    LocalDate today = LocalDate.now();
+                    MeterReading meterReading = getLoadCurveConsumption(today.minusDays(6), today);
+                    meterReading = getMeterReadingAfterChecks(meterReading);
+                    if (meterReading != null) {
+                        logData(meterReading.baseValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
+                    }
+                    return meterReading;
+                });
     }
 
     @Override
-    public void initialize() {
-        logger.debug("Initializing Linky handler.");
+    public synchronized void initialize() {
+        logger.debug("Initializing Linky handler for {}", config.prmId);
+
+        // update the timezone if not set to default to openhab default timezone
+        Configuration thingConfig = getConfig();
+
+        Object val = thingConfig.get("timezone");
+        if (val == null || "".equals(val)) {
+            zoneId = this.timeZoneProvider.getTimeZone();
+            thingConfig.put("timezone", zoneId.getId());
+        } else {
+            zoneId = ZoneId.of((String) val);
+        }
+
+        saveConfiguration(thingConfig);
+
+        // reread config to update timezone field
+        config = getConfigAs(LinkyConfiguration.class);
+
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            return;
+        }
+
+        LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+        enedisApi = bridgeHandler.getEnedisApi();
+        divider = bridgeHandler.getDivider();
+
         updateStatus(ThingStatus.UNKNOWN);
 
-        LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
         if (config.seemsValid()) {
-            enedisApi = new EnedisHttpApi(config, gson, httpClient);
-            scheduler.submit(() -> {
-                try {
-                    EnedisHttpApi api = this.enedisApi;
-                    api.initialize();
-                    updateStatus(ThingStatus.ONLINE);
-
-                    if (thing.getProperties().isEmpty()) {
-                        UserInfo userInfo = api.getUserInfo();
-                        PrmInfo prmInfo = api.getPrmInfo(userInfo.userProperties.internId);
-                        PrmDetail details = api.getPrmDetails(userInfo.userProperties.internId, prmInfo.idPrm);
-                        updateProperties(Map.of(USER_ID, userInfo.userProperties.internId, PUISSANCE,
-                                details.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite().valeur()
-                                        + " kVA",
-                                PRM_ID, prmInfo.idPrm));
-                    }
-
-                    prmId = thing.getProperties().get(PRM_ID);
-                    userId = thing.getProperties().get(USER_ID);
-
-                    updateData();
-
-                    disconnect();
-
-                    final LocalDateTime now = LocalDateTime.now();
-                    final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
-                            .truncatedTo(ChronoUnit.HOURS);
-
-                    refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
-                            ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
-                            REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
-                } catch (LinkyException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                }
-            });
+            bridgeHandler.registerNewPrmId(config.prmId);
+            pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-mandatory-settings");
         }
     }
 
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+    }
+
+    public boolean supportNewApiFormat() throws LinkyException {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            throw new LinkyException("Unable to get bridge in supportNewApiFormat()");
+        }
+
+        LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
+            throw new LinkyException("Unable to get bridgeHandler in supportNewApiFormat()");
+        }
+
+        return bridgeHandler.supportNewApiFormat();
+    }
+
+    private void pollingCode() {
+        try {
+            EnedisHttpApi api = this.enedisApi;
+
+            if (api != null) {
+                Bridge lcBridge = getBridge();
+                ScheduledFuture<?> lcPollingJob = pollingJob;
+
+                if (lcBridge == null || lcBridge.getStatus() != ThingStatus.ONLINE) {
+                    return;
+                }
+
+                LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) lcBridge.getHandler();
+                if (bridgeHandler == null) {
+                    return;
+                }
+
+                if (!bridgeHandler.isConnected()) {
+                    bridgeHandler.connectionInit();
+                }
+
+                updateData();
+
+                final LocalDateTime now = LocalDateTime.now();
+                final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
+                        .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
+
+                if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+
+                if (lcPollingJob != null) {
+                    lcPollingJob.cancel(false);
+                    pollingJob = null;
+                }
+
+                refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
+                        ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
+                        REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
+            }
+        } catch (LinkyException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    public @Nullable LinkyConfiguration getLinkyConfig() {
+        return config;
+    }
+
+    private synchronized void updateMetaData() {
+        metaData.getValue().ifPresentOrElse(values -> {
+            String title = values.identity.title;
+            String firstName = values.identity.firstname;
+            String lastName = values.identity.lastname;
+
+            updateState(MAIN_GROUP, MAIN_IDENTITY, new StringType(title + " " + firstName + " " + lastName));
+
+            updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, new StringType(values.contract.segment));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_STATUS, new StringType(values.contract.contractStatus));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_TYPE, new StringType(values.contract.contractType));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_DISTRIBUTION_TARIFF,
+                    new StringType(values.contract.distributionTariff));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_ACTIVATION_DATE,
+                    new StringType(values.contract.lastActivationDate));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
+                    new StringType(values.contract.lastDistributionTariffChangeDate));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_OFF_PEAK_HOURS, new StringType(values.contract.offpeakHours));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, new StringType(values.contract.segment));
+            updateState(MAIN_GROUP, MAIN_CONTRACT_SUBSCRIBED_POWER, new StringType(values.contract.subscribedPower));
+
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_ID, new StringType(values.usagePoint.usagePointId));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_STATUS, new StringType(values.usagePoint.usagePointStatus));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_TYPE, new StringType(values.usagePoint.meterType));
+
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_CITY,
+                    new StringType(values.usagePoint.usagePointAddresses.city));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_COUNTRY,
+                    new StringType(values.usagePoint.usagePointAddresses.country));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_POSTAL_CODE,
+                    new StringType(values.usagePoint.usagePointAddresses.postalCode));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_INSEE_CODE,
+                    new StringType(values.usagePoint.usagePointAddresses.inseeCode));
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_STREET,
+                    new StringType(values.usagePoint.usagePointAddresses.street));
+
+            updateState(MAIN_GROUP, MAIN_CONTACT_MAIL, new StringType(values.contact.email));
+            updateState(MAIN_GROUP, MAIN_CONTACT_PHONE, new StringType(values.contact.phone));
+
+            userId = values.identity.internId;
+            updateProperties(Map.of(USER_ID, userId, PUISSANCE, values.contract.subscribedPower + " kVA", PRM_ID,
+                    values.usagePoint.usagePointId));
+        }, () -> {
+
+            updateState(MAIN_GROUP, MAIN_IDENTITY, UnDefType.UNDEF);
+
+            updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_STATUS, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_TYPE, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_DISTRIBUTION_TARIFF, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_ACTIVATION_DATE, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_OFF_PEAK_HOURS, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTRACT_SUBSCRIBED_POWER, UnDefType.UNDEF);
+
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_ID, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_STATUS, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_TYPE, UnDefType.UNDEF);
+
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_CITY, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_COUNTRY, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_POSTAL_CODE, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_INSEE_CODE, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_STREET, UnDefType.UNDEF);
+
+            updateState(MAIN_GROUP, MAIN_CONTACT_MAIL, UnDefType.UNDEF);
+            updateState(MAIN_GROUP, MAIN_CONTACT_PHONE, UnDefType.UNDEF);
+
+        });
+    }
+
+    private synchronized @Nullable MetaData getMetaData() {
+        try {
+            EnedisHttpApi api = this.enedisApi;
+            MetaData result = new MetaData();
+            if (api != null) {
+                if (supportNewApiFormat()) {
+                    result.identity = api.getIdentity(this, config.prmId);
+                    result.contact = api.getContact(this, config.prmId);
+                    result.contract = api.getContract(this, config.prmId);
+                    result.usagePoint = api.getUsagePoint(this, config.prmId);
+                } else {
+                    UserInfo userInfo = api.getUserInfo(this);
+                    PrmInfo prmInfo = api.getPrmInfo(this, userInfo.userProperties.internId, config.prmId);
+                    PrmDetail details = api.getPrmDetails(this, userInfo.userProperties.internId, prmInfo.idPrm);
+
+                    result.identity = Identity.convertFromUserInfo(userInfo);
+                    result.contact = Contact.convertFromUserInfo(userInfo);
+                    result.contract = Contract.convertFromPrmDetail(details);
+                    result.usagePoint = UsagePoint.convertFromPrmDetail(prmInfo, details);
+                }
+            }
+            return result;
+        } catch (LinkyException e) {
+            logger.error("Exception occurs during data update for {} : {}", config.prmId, e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+
+        return null;
+    }
+
     /**
      * Request new data and updates channels
      */
     private synchronized void updateData() {
-        boolean connectedBefore = isConnected();
+        updateMetaData();
+        updateEnergyData();
         updatePowerData();
-        updateDailyWeeklyData();
-        updateMonthlyData();
-        updateYearlyData();
-        if (!connectedBefore && isConnected()) {
-            disconnect();
+        updateTempoTimeSeries();
+        updateLoadCurveData();
+    }
+
+    private synchronized void updateTempoTimeSeries() {
+        tempoInformation.getValue().ifPresentOrElse(values -> {
+            TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
+
+            values.forEach((k, v) -> {
+                try {
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = df.parse(k);
+                    long epoch = date.getTime();
+                    Instant timestamp = Instant.ofEpochMilli(epoch);
+
+                    timeSeries.add(timestamp, new DecimalType(getTempoIdx(v)));
+                } catch (ParseException ex) {
+                }
+            });
+
+            int size = values.size();
+            Object[] tempoValues = values.values().toArray();
+
+            updateTempoChannel(TEMPO_GROUP, TEMPO_TODAY_INFO, getTempoIdx((String) tempoValues[size - 2]));
+            updateTempoChannel(TEMPO_GROUP, TEMPO_TOMORROW_INFO, getTempoIdx((String) tempoValues[size - 1]));
+
+            sendTimeSeries(TEMPO_GROUP, TEMPO_TEMPO_INFO_TIME_SERIES, timeSeries);
+            updateState(TEMPO_GROUP, TEMPO_TEMPO_INFO_TIME_SERIES,
+                    new DecimalType(getTempoIdx((String) tempoValues[size - 2])));
+        }, () -> {
+            updateTempoChannel(TEMPO_GROUP, TEMPO_TODAY_INFO, -1);
+            updateTempoChannel(TEMPO_GROUP, TEMPO_TOMORROW_INFO, -1);
+        });
+    }
+
+    private int getTempoIdx(String color) {
+        int val = 0;
+        if ("BLUE".equals(color)) {
+            val = 0;
         }
+        if ("WHITE".equals(color)) {
+            val = 1;
+        }
+        if ("RED".equals(color)) {
+            val = 2;
+        }
+
+        return val;
     }
 
     private synchronized void updatePowerData() {
-        if (isLinked(PEAK_POWER) || isLinked(PEAK_TIMESTAMP)) {
-            cachedPowerData.getValue().ifPresentOrElse(values -> {
-                Aggregate days = values.aggregats.days;
-                updatekVAChannel(PEAK_POWER, days.datas.get(days.datas.size() - 1));
-                updateState(PEAK_TIMESTAMP, new DateTimeType(days.periodes.get(days.datas.size() - 1).dateDebut));
-            }, () -> {
-                updateKwhChannel(PEAK_POWER, Double.NaN);
-                updateState(PEAK_TIMESTAMP, UnDefType.UNDEF);
-            });
-        }
+        dailyConsumptionMaxPower.getValue().ifPresentOrElse(values -> {
+            int dSize = values.baseValue.length;
+
+            updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_1, values.baseValue[dSize - 1].value);
+            updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_1,
+                    new DateTimeType(values.baseValue[dSize - 1].date.atZone(zoneId)));
+
+            updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_2, values.baseValue[dSize - 2].value);
+            updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_2,
+                    new DateTimeType(values.baseValue[dSize - 2].date.atZone(zoneId)));
+
+            updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_3, values.baseValue[dSize - 3].value);
+            updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_3,
+                    new DateTimeType(values.baseValue[dSize - 3].date.atZone(zoneId)));
+
+            updatePowerTimeSeries(DAILY_GROUP, MAX_POWER_CHANNEL, values.baseValue);
+            updatePowerTimeSeries(WEEKLY_GROUP, MAX_POWER_CHANNEL, values.weekValue);
+            updatePowerTimeSeries(MONTHLY_GROUP, MAX_POWER_CHANNEL, values.monthValue);
+            updatePowerTimeSeries(YEARLY_GROUP, MAX_POWER_CHANNEL, values.yearValue);
+
+        }, () -> {
+            updateKwhChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_1, Double.NaN);
+            updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_1, UnDefType.UNDEF);
+
+            updateKwhChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_2, Double.NaN);
+            updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_2, UnDefType.UNDEF);
+
+            updateKwhChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_3, Double.NaN);
+            updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_3, UnDefType.UNDEF);
+        });
     }
 
-    private void setCurrentAndPrevious(Aggregate periods, String currentChannel, String previousChannel) {
-        double currentValue = 0.0;
-        double previousValue = 0.0;
-        if (!periods.datas.isEmpty()) {
-            currentValue = periods.datas.get(periods.datas.size() - 1);
-            if (periods.datas.size() > 1) {
-                previousValue = periods.datas.get(periods.datas.size() - 2);
+    /**
+     * Request new daily/weekly data and updates channels
+     */
+    private synchronized void updateEnergyData() {
+        dailyConsumption.getValue().ifPresentOrElse(values -> {
+            int dSize = values.baseValue.length;
+
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_1, values.baseValue[dSize - 1].value);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_2, values.baseValue[dSize - 2].value);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_3, values.baseValue[dSize - 3].value);
+
+            int idxCurrentYear = values.yearValue.length - 1;
+            int idxCurrentWeek = values.weekValue.length - 1;
+            int idxCurrentMonth = values.monthValue.length - 1;
+
+            updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_0, values.weekValue[idxCurrentWeek].value);
+            updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_1, values.weekValue[idxCurrentWeek - 1].value);
+            if (idxCurrentWeek - 2 >= 0) {
+                updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_2, values.weekValue[idxCurrentWeek - 2].value);
+            }
+
+            updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_0, values.monthValue[idxCurrentMonth].value);
+            updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_1, values.monthValue[idxCurrentMonth - 1].value);
+            if (idxCurrentMonth - 2 >= 0) {
+                updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_2, values.monthValue[idxCurrentMonth - 2].value);
+            }
+
+            updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_0, values.yearValue[idxCurrentYear].value);
+            updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_1, values.yearValue[idxCurrentYear - 1].value);
+            if (idxCurrentYear - 2 >= 0) {
+                updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_2, values.yearValue[idxCurrentYear - 2].value);
+            }
+
+            updateConsumptionTimeSeries(DAILY_GROUP, CONSUMPTION_CHANNEL, values.baseValue);
+            updateConsumptionTimeSeries(WEEKLY_GROUP, CONSUMPTION_CHANNEL, values.weekValue);
+            updateConsumptionTimeSeries(MONTHLY_GROUP, CONSUMPTION_CHANNEL, values.monthValue);
+            updateConsumptionTimeSeries(YEARLY_GROUP, CONSUMPTION_CHANNEL, values.yearValue);
+        }, () -> {
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_1, Double.NaN);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_2, Double.NaN);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_3, Double.NaN);
+
+            updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_0, Double.NaN);
+            updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_1, Double.NaN);
+            updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_2, Double.NaN);
+
+            updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_0, Double.NaN);
+            updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_1, Double.NaN);
+            updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_2, Double.NaN);
+
+            updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_0, Double.NaN);
+            updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_1, Double.NaN);
+            updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_2, Double.NaN);
+        });
+    }
+
+    /**
+     * Request new loadCurve data and updates channels
+     */
+    private synchronized void updateLoadCurveData() {
+        loadCurveConsumption.getValue().ifPresentOrElse(values -> {
+            updatePowerTimeSeries(LOAD_CURVE_GROUP, POWER_CHANNEL, values.baseValue);
+        }, () -> {
+        });
+    }
+
+    private synchronized void updatePowerTimeSeries(String groupId, String channelId, IntervalReading[] iv) {
+        TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
+
+        for (int i = 0; i < iv.length; i++) {
+            try {
+                if (iv[i].date == null) {
+                    continue;
+                }
+
+                Instant timestamp = iv[i].date.atZone(zoneId).toInstant();
+
+                if (Double.isNaN(iv[i].value)) {
+                    continue;
+                }
+                timeSeries.add(timestamp, new DecimalType(iv[i].value));
+            } catch (Exception ex) {
+                logger.error("error occurs durring updatePowerTimeSeries for {} : {}", config.prmId, ex.getMessage(),
+                        ex);
+                ;
             }
         }
-        updateKwhChannel(currentChannel, currentValue);
-        updateKwhChannel(previousChannel, previousValue);
+
+        sendTimeSeries(groupId, channelId, timeSeries);
     }
 
-    /**
-     * Request new dayly/weekly data and updates channels
-     */
-    private synchronized void updateDailyWeeklyData() {
-        if (isLinked(YESTERDAY) || isLinked(LAST_WEEK) || isLinked(THIS_WEEK)) {
-            cachedDailyData.getValue().ifPresentOrElse(values -> {
-                Aggregate days = values.aggregats.days;
-                updateKwhChannel(YESTERDAY, days.datas.get(days.datas.size() - 1));
-                setCurrentAndPrevious(values.aggregats.weeks, THIS_WEEK, LAST_WEEK);
-            }, () -> {
-                updateKwhChannel(YESTERDAY, Double.NaN);
-                if (ZonedDateTime.now().get(weekFields.dayOfWeek()) == 1) {
-                    updateKwhChannel(THIS_WEEK, 0.0);
-                    updateKwhChannel(LAST_WEEK, Double.NaN);
-                } else {
-                    updateKwhChannel(THIS_WEEK, Double.NaN);
-                }
-            });
+    private synchronized void updateConsumptionTimeSeries(String groupId, String channelId, IntervalReading[] iv) {
+        TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
+
+        for (int i = 0; i < iv.length; i++) {
+            if (iv[i].date == null) {
+                continue;
+            }
+
+            Instant timestamp = iv[i].date.atZone(zoneId).toInstant();
+
+            if (Double.isNaN(iv[i].value)) {
+                continue;
+            }
+            timeSeries.add(timestamp, new DecimalType(iv[i].value));
         }
+
+        sendTimeSeries(groupId, channelId, timeSeries);
     }
 
-    /**
-     * Request new monthly data and updates channels
-     */
-    private synchronized void updateMonthlyData() {
-        if (isLinked(LAST_MONTH) || isLinked(THIS_MONTH)) {
-            cachedMonthlyData.getValue().ifPresentOrElse(
-                    values -> setCurrentAndPrevious(values.aggregats.months, THIS_MONTH, LAST_MONTH), () -> {
-                        if (ZonedDateTime.now().getDayOfMonth() == 1) {
-                            updateKwhChannel(THIS_MONTH, 0.0);
-                            updateKwhChannel(LAST_MONTH, Double.NaN);
-                        } else {
-                            updateKwhChannel(THIS_MONTH, Double.NaN);
-                        }
-                    });
-        }
-    }
-
-    /**
-     * Request new yearly data and updates channels
-     */
-    private synchronized void updateYearlyData() {
-        if (isLinked(LAST_YEAR) || isLinked(THIS_YEAR)) {
-            cachedYearlyData.getValue().ifPresentOrElse(
-                    values -> setCurrentAndPrevious(values.aggregats.years, THIS_YEAR, LAST_YEAR), () -> {
-                        if (ZonedDateTime.now().getDayOfYear() == 1) {
-                            updateKwhChannel(THIS_YEAR, 0.0);
-                            updateKwhChannel(LAST_YEAR, Double.NaN);
-                        } else {
-                            updateKwhChannel(THIS_YEAR, Double.NaN);
-                        }
-                    });
-        }
-    }
-
-    private void updateKwhChannel(String channelId, double consumption) {
-        logger.debug("Update channel {} with {}", channelId, consumption);
-        updateState(channelId,
+    private void updateKwhChannel(String groupId, String channelId, double consumption) {
+        logger.debug("Update channel ({}) {} with {}", config.prmId, channelId, consumption);
+        updateState(groupId, channelId,
                 Double.isNaN(consumption) ? UnDefType.UNDEF : new QuantityType<>(consumption, Units.KILOWATT_HOUR));
     }
 
-    private void updatekVAChannel(String channelId, double power) {
-        logger.debug("Update channel {} with {}", channelId, power);
-        updateState(channelId, Double.isNaN(power) ? UnDefType.UNDEF
+    private void updatekVAChannel(String groupId, String channelId, double power) {
+        logger.debug("Update channel ({}) {} with {}", config.prmId, channelId, power);
+        updateState(groupId, channelId, Double.isNaN(power) ? UnDefType.UNDEF
                 : new QuantityType<>(power, MetricPrefix.KILO(Units.VOLT_AMPERE)));
+    }
+
+    private void updateTempoChannel(String groupId, String channelId, int tempoValue) {
+        logger.debug("Update channel ({}) {} with {}", config.prmId, channelId, tempoValue);
+        updateState(groupId + "#" + channelId, new DecimalType(tempoValue));
+    }
+
+    protected void updateState(String groupId, String channelID, State state) {
+        super.updateState(groupId + "#" + channelID, state);
+    }
+
+    protected void sendTimeSeries(String groupId, String channelID, TimeSeries timeSeries) {
+        super.sendTimeSeries(groupId + "#" + channelID, timeSeries);
     }
 
     /**
@@ -309,9 +638,9 @@ public class LinkyHandler extends BaseThingHandler {
      *
      * @return the report as a list of string
      */
+
     public synchronized List<String> reportValues(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
         List<String> report = buildReport(startDay, endDay, separator);
-        disconnect();
         return report;
     }
 
@@ -319,19 +648,20 @@ public class LinkyHandler extends BaseThingHandler {
         List<String> report = new ArrayList<>();
         if (startDay.getYear() == endDay.getYear() && startDay.getMonthValue() == endDay.getMonthValue()) {
             // All values in the same month
-            Consumption result = getConsumptionData(startDay, endDay.plusDays(1));
-            if (result != null) {
-                Aggregate days = result.aggregats.days;
-                int size = (days.datas == null || days.periodes == null) ? 0
-                        : (days.datas.size() <= days.periodes.size() ? days.datas.size() : days.periodes.size());
+            MeterReading meterReading = getConsumptionData(startDay, endDay.plusDays(1));
+            if (meterReading != null) {
+                IntervalReading[] days = meterReading.baseValue;
+
+                int size = days.length;
+
                 for (int i = 0; i < size; i++) {
-                    double consumption = days.datas.get(i);
-                    LocalDate day = days.periodes.get(i).dateDebut.toLocalDate();
+                    double consumption = days[i].value;
+                    LocalDate day = days[i].date.toLocalDate();
                     // Filter data in case it contains data from dates outside the requested period
                     if (day.isBefore(startDay) || day.isAfter(endDay)) {
                         continue;
                     }
-                    String line = days.periodes.get(i).dateDebut.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator;
+                    String line = days[i].date.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator;
                     if (consumption >= 0) {
                         line += String.valueOf(consumption);
                     }
@@ -359,189 +689,249 @@ public class LinkyHandler extends BaseThingHandler {
         return report;
     }
 
-    private @Nullable Consumption getConsumptionData(LocalDate from, LocalDate to) {
-        logger.debug("getConsumptionData from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                to.format(DateTimeFormatter.ISO_LOCAL_DATE));
+    private @Nullable MeterReading getConsumptionData(LocalDate from, LocalDate to) {
+        logger.debug("getConsumptionData for {} from {} to {}", config.prmId,
+                from.format(DateTimeFormatter.ISO_LOCAL_DATE), to.format(DateTimeFormatter.ISO_LOCAL_DATE));
+
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                Consumption consumption = api.getEnergyData(userId, prmId, from, to);
-                updateStatus(ThingStatus.ONLINE);
-                return consumption;
+                MeterReading meterReading = api.getEnergyData(this, this.userId, config.prmId, from, to);
+                return meterReading;
+            } catch (LinkyException e) {
+                logger.debug("Exception when getting consumption data for {} : {}", config.prmId, e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+
+        return null;
+    }
+
+    private @Nullable MeterReading getLoadCurveConsumption(LocalDate from, LocalDate to) {
+        logger.debug("getLoadCurveConsumption for {} from {} to {}", config.prmId,
+                from.format(DateTimeFormatter.ISO_LOCAL_DATE), to.format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+        EnedisHttpApi api = this.enedisApi;
+        if (api != null) {
+            try {
+                MeterReading meterReading = api.getLoadCurveData(this, this.userId, config.prmId, from, to);
+                return meterReading;
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
+
         return null;
     }
 
-    private @Nullable Consumption getPowerData(LocalDate from, LocalDate to) {
-        logger.debug("getPowerData from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
+    private @Nullable MeterReading getPowerData(LocalDate from, LocalDate to) {
+        logger.debug("getPowerData for {} from {} to {}", config.prmId, from.format(DateTimeFormatter.ISO_LOCAL_DATE),
                 to.format(DateTimeFormatter.ISO_LOCAL_DATE));
+
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                Consumption consumption = api.getPowerData(userId, prmId, from, to);
-                updateStatus(ThingStatus.ONLINE);
-                return consumption;
+                MeterReading meterReading = api.getPowerData(this, this.userId, config.prmId, from, to);
+                return meterReading;
             } catch (LinkyException e) {
                 logger.debug("Exception when getting power data: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+
+        return null;
+    }
+
+    private @Nullable ResponseTempo getTempoData(LocalDate from, LocalDate to) {
+        logger.debug("getTempoData from");
+
+        EnedisHttpApi api = this.enedisApi;
+        if (api != null) {
+            try {
+                ResponseTempo result = api.getTempoData(this, from, to);
+                return result;
+            } catch (LinkyException e) {
+                logger.debug("Exception when getting tempo data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
         return null;
     }
 
-    private boolean isConnected() {
-        EnedisHttpApi api = this.enedisApi;
-        return api == null ? false : api.isConnected();
-    }
-
-    private void disconnect() {
-        EnedisHttpApi api = this.enedisApi;
-        if (api != null) {
-            try {
-                api.dispose();
-            } catch (LinkyException e) {
-                logger.debug("disconnect: {}", e.getMessage());
-            }
-        }
-    }
-
     @Override
     public void dispose() {
-        logger.debug("Disposing the Linky handler.");
+        logger.debug("Disposing the Linky handler {}", config.prmId);
         ScheduledFuture<?> job = this.refreshJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
             refreshJob = null;
         }
-        disconnect();
+
+        ScheduledFuture<?> lcPollingJob = pollingJob;
+        if (lcPollingJob != null) {
+            lcPollingJob.cancel(true);
+            pollingJob = null;
+        }
         enedisApi = null;
     }
 
     @Override
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            logger.debug("Refreshing channel {}", channelUID.getId());
-            boolean connectedBefore = isConnected();
-            switch (channelUID.getId()) {
-                case YESTERDAY:
-                case LAST_WEEK:
-                case THIS_WEEK:
-                    updateDailyWeeklyData();
-                    break;
-                case LAST_MONTH:
-                case THIS_MONTH:
-                    updateMonthlyData();
-                    break;
-                case LAST_YEAR:
-                case THIS_YEAR:
-                    updateYearlyData();
-                    break;
-                case PEAK_POWER:
-                case PEAK_TIMESTAMP:
-                    updatePowerData();
-                    break;
-                default:
-                    break;
-            }
-            if (!connectedBefore && isConnected()) {
-                disconnect();
-            }
+            logger.debug("Refreshing channel {} {}", config.prmId, channelUID.getId());
+            updateData();
         } else {
             logger.debug("The Linky binding is read-only and can not handle command {}", command);
         }
     }
 
-    private @Nullable Consumption getConsumptionAfterChecks(Consumption consumption, Target target) {
+    private @Nullable MeterReading getMeterReadingAfterChecks(@Nullable MeterReading meterReading) {
         try {
-            checkData(consumption);
+            checkData(meterReading);
         } catch (LinkyException e) {
-            logger.debug("Consumption data: {}", e.getMessage());
+            logger.debug("Consumption data: {} {}", config.prmId, e.getMessage());
             return null;
         }
-        if (target == Target.FIRST && !isDataFirstDayAvailable(consumption)) {
-            logger.debug("Data including yesterday are not yet available");
-            return null;
+
+        if (meterReading != null) {
+            if (meterReading.weekValue == null) {
+                LocalDate startDate = meterReading.baseValue[0].date.toLocalDate();
+                LocalDate endDate = meterReading.baseValue[meterReading.baseValue.length - 1].date.toLocalDate();
+
+                int weeksNum = Weeks.between(startDate, endDate).getAmount() + 2;
+                int monthsNum = Months.between(startDate, endDate).getAmount() + 2;
+                int yearsNum = Years.between(startDate, endDate).getAmount() + 2;
+
+                meterReading.weekValue = new IntervalReading[weeksNum];
+                meterReading.monthValue = new IntervalReading[monthsNum];
+                meterReading.yearValue = new IntervalReading[yearsNum];
+
+                for (int idx = 0; idx < weeksNum; idx++) {
+                    meterReading.weekValue[idx] = new IntervalReading();
+                }
+                for (int idx = 0; idx < monthsNum; idx++) {
+                    meterReading.monthValue[idx] = new IntervalReading();
+                }
+                for (int idx = 0; idx < yearsNum; idx++) {
+                    meterReading.yearValue[idx] = new IntervalReading();
+                }
+
+                int size = meterReading.baseValue.length;
+                int baseYear = meterReading.baseValue[0].date.getYear();
+                int baseMonth = meterReading.baseValue[0].date.getMonthValue();
+                int baseWeek = meterReading.baseValue[0].date.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+
+                for (int idx = 0; idx < size; idx++) {
+                    IntervalReading ir = meterReading.baseValue[idx];
+                    LocalDateTime dt = ir.date;
+                    double value = ir.value;
+                    value = value / divider;
+                    ir.value = value;
+
+                    int idxYear = dt.getYear() - baseYear;
+                    int month = dt.getMonthValue();
+                    int weekOfYear = dt.get(WeekFields.of(Locale.FRANCE).weekOfYear());
+
+                    int idxMonth = (idxYear * 12) + month - baseMonth;
+                    int idxWeek = (idxYear * 52) + weekOfYear - baseWeek;
+
+                    if (idxWeek < weeksNum) {
+                        meterReading.weekValue[idxWeek].value += value;
+                        if (meterReading.weekValue[idxWeek].date == null) {
+                            meterReading.weekValue[idxWeek].date = dt;
+                        }
+                    }
+                    if (idxMonth < monthsNum) {
+                        meterReading.monthValue[idxMonth].value += value;
+                        if (meterReading.monthValue[idxMonth].date == null) {
+                            meterReading.monthValue[idxMonth].date = LocalDateTime.of(dt.getYear(), month, 1, 0, 0);
+                        }
+                    }
+
+                    if (idxYear < yearsNum) {
+                        meterReading.yearValue[idxYear].value += value;
+
+                        if (meterReading.yearValue[idxYear].date == null) {
+                            meterReading.yearValue[idxYear].date = LocalDateTime.of(dt.getYear(), 1, 1, 0, 0);
+                        }
+                    }
+                }
+            }
         }
-        if (target == Target.LAST && !isDataLastDayAvailable(consumption)) {
-            logger.debug("Data including yesterday are not yet available");
-            return null;
-        }
-        return consumption;
+
+        return meterReading;
     }
 
-    private void checkData(Consumption consumption) throws LinkyException {
-        if (consumption.aggregats.days.periodes.isEmpty()) {
-            throw new LinkyException("Invalid consumptions data: no day period");
+    private boolean checkMissingData(@Nullable MeterReading meterReading) {
+        if (meterReading != null) {
+            for (int idx = 0; idx < meterReading.baseValue.length; idx++) {
+                IntervalReading ir = meterReading.baseValue[idx];
+                if (Double.isNaN(ir.value)) {
+                    return true;
+                }
+            }
         }
-        if (consumption.aggregats.days.periodes.size() != consumption.aggregats.days.datas.size()) {
-            throw new LinkyException("Invalid consumptions data: not any data for each day period");
-        }
-        if (consumption.aggregats.weeks.periodes.isEmpty()) {
-            throw new LinkyException("Invalid consumptions data: no week period");
-        }
-        if (consumption.aggregats.weeks.periodes.size() != consumption.aggregats.weeks.datas.size()) {
-            throw new LinkyException("Invalid consumptions data: not any data for each week period");
-        }
-        if (consumption.aggregats.months.periodes.isEmpty()) {
-            throw new LinkyException("Invalid consumptions data: no month period");
-        }
-        if (consumption.aggregats.months.periodes.size() != consumption.aggregats.months.datas.size()) {
-            throw new LinkyException("Invalid consumptions data: not any data for each month period");
-        }
-        if (consumption.aggregats.years.periodes.isEmpty()) {
-            throw new LinkyException("Invalid consumptions data: no year period");
-        }
-        if (consumption.aggregats.years.periodes.size() != consumption.aggregats.years.datas.size()) {
-            throw new LinkyException("Invalid consumptions data: not any data for each year period");
+        return false;
+    }
+
+    private void checkData(@Nullable MeterReading meterReading) throws LinkyException {
+        if (meterReading != null) {
+            if (meterReading.baseValue.length == 0) {
+                throw new LinkyException("Invalid meterReading data: no day period");
+            }
         }
     }
 
-    private boolean isDataFirstDayAvailable(Consumption consumption) {
-        Aggregate days = consumption.aggregats.days;
-        logData(days, "First day", false, DateTimeFormatter.ISO_LOCAL_DATE, Target.FIRST);
-        return days.datas != null && !days.datas.isEmpty() && !days.datas.get(0).isNaN();
-    }
+    /*
+     *
+     * private boolean isDataFirstDayAvailable(Consumption consumption) {
+     * Aggregate days = consumption.aggregats.days;
+     * logData(days, "First day", false, DateTimeFormatter.ISO_LOCAL_DATE, Target.FIRST);
+     * return days.datas != null && !days.datas.isEmpty() && !days.datas.get(0).isNaN();
+     * }
+     *
+     * private boolean isDataLastDayAvailable(Consumption consumption) {
+     * Aggregate days = consumption.aggregats.days;
+     * logData(days, "Last day", false, DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
+     * return days.datas != null && !days.datas.isEmpty() && !days.datas.get(days.datas.size() - 1).isNaN();
+     * }
+     */
 
-    private boolean isDataLastDayAvailable(Consumption consumption) {
-        Aggregate days = consumption.aggregats.days;
-        logData(days, "Last day", false, DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
-        return days.datas != null && !days.datas.isEmpty() && !days.datas.get(days.datas.size() - 1).isNaN();
-    }
-
-    private void logData(Aggregate aggregate, String title, boolean withDateFin, DateTimeFormatter dateTimeFormatter,
-            Target target) {
+    private void logData(IntervalReading[] ivArray, String title, DateTimeFormatter dateTimeFormatter, Target target) {
         if (logger.isDebugEnabled()) {
-            int size = (aggregate.datas == null || aggregate.periodes == null) ? 0
-                    : (aggregate.datas.size() <= aggregate.periodes.size() ? aggregate.datas.size()
-                            : aggregate.periodes.size());
+            int size = ivArray.length;
+
             if (target == Target.FIRST) {
                 if (size > 0) {
-                    logData(aggregate, 0, title, withDateFin, dateTimeFormatter);
+                    logData(ivArray, 0, title, dateTimeFormatter);
                 }
             } else if (target == Target.LAST) {
                 if (size > 0) {
-                    logData(aggregate, size - 1, title, withDateFin, dateTimeFormatter);
+                    logData(ivArray, size - 1, title, dateTimeFormatter);
                 }
             } else {
-                for (int i = 0; i < size; i++) {
-                    logData(aggregate, i, title, withDateFin, dateTimeFormatter);
+                for (int i = size - 3; i < size; i++) {
+                    logData(ivArray, i, title, dateTimeFormatter);
                 }
             }
         }
     }
 
-    private void logData(Aggregate aggregate, int index, String title, boolean withDateFin,
-            DateTimeFormatter dateTimeFormatter) {
-        if (withDateFin) {
-            logger.debug("{} {} {} value {}", title, aggregate.periodes.get(index).dateDebut.format(dateTimeFormatter),
-                    aggregate.periodes.get(index).dateFin.format(dateTimeFormatter), aggregate.datas.get(index));
-        } else {
-            logger.debug("{} {} value {}", title, aggregate.periodes.get(index).dateDebut.format(dateTimeFormatter),
-                    aggregate.datas.get(index));
+    private void logData(IntervalReading[] ivArray, int index, String title, DateTimeFormatter dateTimeFormatter) {
+        try {
+            IntervalReading iv = ivArray[index];
+            String date = "";
+            if (iv.date != null) {
+                date = iv.date.format(dateTimeFormatter);
+            }
+            logger.debug("({}) {} {} value {}", config.prmId, title, date, iv.value);
+        } catch (Exception e) {
+            logger.error("error during logData", e);
         }
+    }
+
+    public void saveConfiguration(Configuration config) {
+        updateConfiguration(config);
     }
 }

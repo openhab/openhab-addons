@@ -13,12 +13,14 @@
 package org.openhab.binding.linky.internal.dto;
 
 /**
- * The {@link UserInfo} holds ids of existing Prms
+ * The {@link MetaData} holds authentication information
  *
  * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class PrmInfo {
-    public String idPrm;
+public class MetaData {
+    public Identity identity;
+    public Contact contact;
+    public Contract contract;
+    public UsagePoint usagePoint;
 }

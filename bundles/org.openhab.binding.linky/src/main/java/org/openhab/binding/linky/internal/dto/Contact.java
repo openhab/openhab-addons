@@ -13,12 +13,20 @@
 package org.openhab.binding.linky.internal.dto;
 
 /**
- * The {@link UserInfo} holds ids of existing Prms
+ * The {@link UserInfo} holds informations about energy delivery point
  *
- * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API
+ * @author Laurent Arnal - Initial contribution
  */
 
-public class PrmInfo {
-    public String idPrm;
+public class Contact {
+    public String phone;
+    public String email;
+
+    public static Contact convertFromUserInfo(UserInfo userInfo) {
+        Contact result = new Contact();
+
+        result.email = userInfo.userProperties.mail;
+
+        return result;
+    }
 }

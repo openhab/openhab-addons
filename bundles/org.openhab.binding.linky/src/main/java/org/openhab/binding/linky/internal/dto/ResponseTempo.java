@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import java.util.LinkedHashMap;
+
 /**
- * The {@link UserInfo} holds ids of existing Prms
+ * The {@link UserInfo} holds informations about energy delivery point
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class PrmInfo {
-    public String idPrm;
+public class ResponseTempo extends LinkedHashMap<String, String> {
+    private static final long serialVersionUID = 362498820763181264L;
 }
