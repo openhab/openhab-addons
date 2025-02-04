@@ -23,6 +23,8 @@ import javax.script.ScriptEngine;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.TypeLiteral;
 import org.graalvm.polyglot.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /***
  * @author Holger Hees - Initial contribution
@@ -31,6 +33,8 @@ import org.graalvm.polyglot.Value;
 final class GraalPythonBindings extends AbstractMap<String, Object> implements javax.script.Bindings, AutoCloseable {
     private static final TypeLiteral<Map<String, Object>> STRING_MAP = new TypeLiteral<Map<String, Object>>() {
     };
+
+    private final Logger logger = LoggerFactory.getLogger(GraalPythonBindings.class);
 
     private Context context;
     private Map<String, Object> global;
@@ -140,7 +144,9 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
 
     @Override
     public void close() {
+        logger.error("CLOSE GraalPythonBinding1");
         if (context != null) {
+            logger.error("CLOSE GraalPythonBinding2");
             context.close();
         }
     }

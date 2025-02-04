@@ -359,10 +359,6 @@ public class PythonScriptEngine
     }
 
     @Override
-    public void close() {
-    }
-
-    @Override
     public void lock() {
         lock.lock();
         logger.debug("Lock acquired.");

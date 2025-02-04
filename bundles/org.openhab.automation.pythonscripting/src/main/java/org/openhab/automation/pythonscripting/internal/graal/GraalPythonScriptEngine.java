@@ -35,6 +35,8 @@ import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.SourceSection;
 import org.graalvm.polyglot.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Graal.Python implementation of the script engine. It provides access to the polyglot context using
@@ -55,6 +57,8 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
     private static final String PYTHON_OPTION_CHECKHASHPYCSMODE = "python.CheckHashPycsMode";
 
     static final String MAGIC_OPTION_PREFIX = "polyglot.py.";
+
+    private final Logger logger = LoggerFactory.getLogger(GraalPythonScriptEngine.class);
 
     interface MagicBindingsOptionSetter {
 
@@ -111,6 +115,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
      */
     @Override
     public void close() {
+        logger.error("CLOSE GraalPythonScriptEngine");
         getPolyglotContext().close(true);
     }
 

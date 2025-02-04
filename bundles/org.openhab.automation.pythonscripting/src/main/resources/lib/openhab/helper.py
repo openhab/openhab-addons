@@ -617,4 +617,4 @@ class Timer():
         else:
             pass
 
-LIFECYCLE_TRACKER.addDisposeHook(Timer._clean)
+#LIFECYCLE_TRACKER.addDisposeHook(Timer._clean)
