@@ -51,6 +51,7 @@
                   <exclude>org.graalvm.sdk:jniutils</exclude>
                   <exclude>org.graalvm.sdk:nativeimage</exclude>
                   <exclude>org.graalvm.sdk:word</exclude>
+                  <exclude>org.graalvm.truffle:truffle-compiler</exclude>
                 </excludes>
               </artifactSet>
               <createDependencyReducedPom>false</createDependencyReducedPom>
