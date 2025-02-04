@@ -64,15 +64,58 @@
 			https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
 		</description>
 
-		<config-description>
-		</config-description>
+        <config-description>
+        </config-description>
 	</bridge-type>
+	
+	<bridge-type id="d2l">
+        <label>D2L Bridge</label>
+        <description>
+        </description>
+
+        <config-description>
+        </config-description>
+    </bridge-type>
+    
+    <thing-type id="linky-direct">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="d2l"/>
+        </supported-bridge-type-refs>
+
+        <label>Linky Direct</label>
+        <description>
+            Provides your energy consumption data.
+            In order to receive the data, you must activate your account at
+            https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
+        </description>
+
+        <channel-groups>
+            <channel-group typeId="main2" id="main2"/>
+        </channel-groups>
+
+        <config-description>
+            <parameter name="id" type="text" required="true">
+                <label>Id</label>
+                <description>Your D2L id</description>
+            </parameter>
+            <parameter name="appKey" type="text" required="true">
+                <label>AppKey</label>
+                <description>Your applicative encryption key</description>
+            </parameter>
+            <parameter name="ivKey" type="text" required="true">
+                <label>IvKey</label>
+                <description>Your IV encryption key</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
 
 	<thing-type id="linky">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="enedis"/>
 			<bridge-type-ref id="enedis-web"/>
 			<bridge-type-ref id="my-electrical-data"/>
+            <bridge-type-ref id="d2l-bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Linky</label>
@@ -253,6 +296,24 @@
 			</channel>
 		</channels>
 	</channel-group-type>
+
+    <channel-group-type id="main2">
+        <label>Main</label>
+        <channels>
+              <channel id="_ID_D2L" typeId="info">
+                  <label>_ID_D2L</label>
+              </channel>
+              <channel id="SINSTS" typeId="info">
+                  <label>SINSTS</label>
+              </channel>
+              <channel id="DATE" typeId="info">
+                  <label>SINSTS</label>
+              </channel>
+              <channel id="IRMS1" typeId="info">
+                  <label>IRMS1</label>
+              </channel>
+          </channels>
+    </channel-group-type>
 
 	<channel-group-type id="main">
 		<label>Main</label>
