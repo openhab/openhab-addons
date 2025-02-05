@@ -15,8 +15,8 @@ LOG_PREFIX = "org.openhab.core.automation.pythonscripting"
 NAME_PREFIX = ""
 if '__file__' in scope:
     file_package = os.path.basename(scope['__file__'])[:-3]
-    LOG_PREFIX = "{}.{}.".format(LOG_PREFIX, file_package)
-    NAME_PREFIX = "{}.".format(file_package)
+    LOG_PREFIX = "{}.{}".format(LOG_PREFIX, file_package)
+    NAME_PREFIX = "{}".format(file_package)
 logger = Java_LogFactory.getLogger( LOG_PREFIX )
 
 #def scriptUnloaded():
@@ -98,7 +98,7 @@ class rule():
         rule_isfunction = isfunction(clazz_or_function)
         rule_obj = clazz_or_function if rule_isfunction else clazz_or_function()
 
-        clazz_or_function.logger = Java_LogFactory.getLogger( "{}{}".format(LOG_PREFIX, clazz_or_function.__name__) )
+        clazz_or_function.logger = Java_LogFactory.getLogger( "{}.{}".format(LOG_PREFIX, clazz_or_function.__name__) )
 
         triggers = []
         if proxy.triggers is not None:
@@ -137,7 +137,7 @@ class rule():
 
         base_rule_obj = BaseSimpleRule()
 
-        name = "{}{}".format(NAME_PREFIX, clazz_or_function.__name__) if proxy.name is None else proxy.name
+        name = "{}.{}".format(NAME_PREFIX, clazz_or_function.__name__) if proxy.name is None else proxy.name
         base_rule_obj.setName(name)
 
         if proxy.description is not None:
