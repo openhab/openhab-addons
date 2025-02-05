@@ -1140,7 +1140,7 @@ See [openhab-js : utils](https://openhab.github.io/openhab-js/utils.html) for fu
 
 ## File Based Rules
 
-The JS Scripting binding will load scripts from `automation/js` in the user configuration directory.
+The JS Scripting binding will load scripts with a .js extension from `automation/js` in the user configuration directory.
 The system will automatically reload scripts when changes are detected to files.
 Local variable state is not persisted among reloads, see using the [cache](#cache) for a convenient way to persist objects.
 
