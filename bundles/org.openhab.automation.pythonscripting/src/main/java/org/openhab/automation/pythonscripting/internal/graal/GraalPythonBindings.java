@@ -13,6 +13,7 @@
 package org.openhab.automation.pythonscripting.internal.graal;
 
 import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -41,52 +42,41 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
 
     private Context.Builder contextBuilder;
     // ScriptContext of the ScriptEngine where these bindings form ENGINE_SCOPE bindings
-    private ScriptContext engineScriptContext;
-    private ScriptEngine engineBinding;
+    private ScriptContext scriptContext;
+    private ScriptEngine scriptEngine;
 
-    GraalPythonBindings(Context.Builder contextBuilder, ScriptContext scriptContext, ScriptEngine engine) {
+    GraalPythonBindings(Context.Builder contextBuilder, ScriptContext scriptContext, ScriptEngine scriptEngine) {
         this.contextBuilder = contextBuilder;
-        this.engineScriptContext = scriptContext;
-        this.engineBinding = engine;
+        this.scriptContext = scriptContext;
+        this.scriptEngine = scriptEngine;
     }
 
-    GraalPythonBindings(Context context, ScriptContext scriptContext, ScriptEngine engine) {
+    GraalPythonBindings(Context context, ScriptContext scriptContext, ScriptEngine scriptEngine) {
         this.context = context;
-        this.engineScriptContext = scriptContext;
-        this.engineBinding = engine;
+        this.scriptContext = scriptContext;
+        this.scriptEngine = scriptEngine;
+
         initGlobal();
     }
 
     private void requireContext() {
         if (context == null) {
-            initContext();
-        }
-    }
+            context = GraalPythonScriptEngine.createDefaultContext(contextBuilder, scriptContext);
 
-    private void initContext() {
-        context = GraalPythonScriptEngine.createDefaultContext(contextBuilder, engineScriptContext);
-        initGlobal();
+            initGlobal();
+        }
     }
 
     private void initGlobal() {
-        this.global = GraalPythonScriptEngine.evalInternal(context, "globals()").as(STRING_MAP);
-        updateEngineBinding();
-        updateContextBinding();
-    }
+        // GraalPythonScriptEngine.evalInternal(context, "globals()").as(STRING_MAP);
+        this.global = new HashMap<String, Object>();
 
-    private void updateEngineBinding() {
-        updateBinding("engine", engineBinding);
-    }
-
-    private void updateContextBinding() {
-        if (engineScriptContext != null) {
-            updateBinding("context", engineScriptContext);
-        }
-    }
-
-    private void updateBinding(String key, Object value) {
         requireContext();
-        context.getBindings("python").putMember(key, value);
+
+        context.getBindings("python").putMember("engine", scriptEngine);
+        if (scriptContext != null) {
+            context.getBindings("python").putMember("context", scriptContext);
+        }
     }
 
     @Override
@@ -150,6 +140,6 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
     }
 
     void updateEngineScriptContext(ScriptContext scriptContext) {
-        engineScriptContext = scriptContext;
+        this.scriptContext = scriptContext;
     }
 }
