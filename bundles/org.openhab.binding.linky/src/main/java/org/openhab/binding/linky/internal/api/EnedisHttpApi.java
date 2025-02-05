@@ -243,10 +243,37 @@ public class EnedisHttpApi {
 
     private String getContent(String url) throws LinkyException {
         try {
-            Request request = httpClient.newRequest(url)
-                    .agent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0");
+            Request request = httpClient.newRequest(url);
+
+            request = request.agent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0");
             request = request.method(HttpMethod.GET);
             ContentResponse result = request.send();
+            if (result.getStatus() == HttpStatus.TEMPORARY_REDIRECT_307
+                    || result.getStatus() == HttpStatus.MOVED_TEMPORARILY_302) {
+                String loc = result.getHeaders().get("Location");
+                String newUrl = "";
+
+                if (loc.startsWith("http://") || loc.startsWith("https://")) {
+                    newUrl = loc;
+                } else {
+                    newUrl = URL_APPS_LINCS + loc;
+                }
+
+                request = httpClient.newRequest(newUrl);
+                request = request.method(HttpMethod.GET);
+                result = request.send();
+
+                if (result.getStatus() == HttpStatus.TEMPORARY_REDIRECT_307
+                        || result.getStatus() == HttpStatus.MOVED_TEMPORARILY_302) {
+                    loc = result.getHeaders().get("Location");
+                    String[] urlParts = loc.split("/");
+                    if (urlParts.length < 4) {
+                        throw new LinkyException("malformed url : %s", loc);
+                    }
+                    return urlParts[3];
+                }
+            }
+
             if (result.getStatus() != HttpStatus.OK_200) {
                 throw new LinkyException("Error requesting '%s': %s", url, result.getContentAsString());
             }
@@ -267,9 +294,14 @@ public class EnedisHttpApi {
             throw new LinkyException("Requesting '%s' returned an empty response", url);
         }
         try {
-            return Objects.requireNonNull(gson.fromJson(data, clazz));
+            T result = Objects.requireNonNull(gson.fromJson(data, clazz));
+            logger.debug("getData success {}: {}", clazz.getName(), url);
+            return result;
         } catch (JsonSyntaxException e) {
             logger.debug("Invalid JSON response not matching {}: {}", clazz.getName(), data);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
+        } catch (Exception e) {
+            logger.error("Error {}: {}", clazz.getName(), data, e);
             throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
         }
     }

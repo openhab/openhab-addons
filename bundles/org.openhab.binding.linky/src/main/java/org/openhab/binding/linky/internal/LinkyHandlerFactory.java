@@ -31,6 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
+import org.openhab.binding.linky.internal.utils.DoubleTypeAdapter;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -86,8 +87,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
                                     .atStartOfDay();
                         }
                     })
-
-            .create();
+            .registerTypeAdapter(Double.class, new DoubleTypeAdapter()).serializeNulls().create();
     private final LocaleProvider localeProvider;
     private final HttpClient httpClient;
     private final TimeZoneProvider timeZoneProvider;

@@ -24,6 +24,7 @@ import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +37,7 @@ import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Aggregate;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Consumption;
+import org.openhab.binding.linky.internal.dto.ConsumptionReport.Data;
 import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.UserInfo;
@@ -71,7 +73,9 @@ public class LinkyHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private ZoneId zoneId = ZoneId.systemDefault();
 
-    private static final int REFRESH_FIRST_HOUR_OF_DAY = 1;
+    private static final Random randomNumbers = new Random();
+    private static final int REFRESH_HOUR_OF_DAY = 1;
+    private static final int REFRESH_MINUTE_OF_DAY = randomNumbers.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
@@ -104,10 +108,21 @@ public class LinkyHandler extends BaseThingHandler {
         this.weekFields = WeekFields.of(localeProvider.getLocale());
         this.timeZoneProvider = timeZoneProvider;
 
-        this.cachedDailyData = new ExpiringDayCache<>("daily cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
+        this.cachedDailyData = new ExpiringDayCache<>("daily cache", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
+                REFRESH_INTERVAL_IN_MIN);
+
+        this.cachedDailyData.setAction(() -> {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(today.minusDays(15), today);
+
             if (consumption != null) {
+                boolean missingData = checkMissingData(consumption);
+                if (missingData) {
+                    logger.debug("API have returned incomplete data, we will recheck in {} mn",
+                            REFRESH_INTERVAL_IN_MIN);
+                    this.cachedDailyData.setMissingData(true);
+                }
+
                 logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
                 logData(consumption.aggregats.weeks, "Week", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
                 consumption = getConsumptionAfterChecks(consumption, Target.LAST);
@@ -115,42 +130,50 @@ public class LinkyHandler extends BaseThingHandler {
             return consumption;
         });
 
-        this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            // We request data for yesterday and the day before yesterday, even if the data for the day before yesterday
-            // is not needed by the binding. This is only a workaround to an API bug that will return
-            // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday is not
-            // yet available.
-            // By requesting two days, the API is not failing and you get the expected NaN value for yesterday when the
-            // data is not yet available.
-            LocalDate today = LocalDate.now();
-            Consumption consumption = getPowerData(today.minusDays(2), today);
-            if (consumption != null) {
-                logData(consumption.aggregats.days, "Day (peak)", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME,
-                        Target.ALL);
-                consumption = getConsumptionAfterChecks(consumption, Target.LAST);
-            }
-            return consumption;
-        });
+        this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
+                REFRESH_INTERVAL_IN_MIN, () -> {
+                    // We request data for yesterday and the day before yesterday, even if the data for the day before
+                    // yesterday
+                    // is not needed by the binding. This is only a workaround to an API bug that will return
+                    // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday
+                    // is not
+                    // yet available.
+                    // By requesting two days, the API is not failing and you get the expected NaN value for yesterday
+                    // when the
+                    // data is not yet available.
+                    LocalDate today = LocalDate.now();
+                    Consumption consumption = getPowerData(today.minusDays(2), today);
+                    if (consumption != null) {
+                        logData(consumption.aggregats.days, "Day (peak)", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+                                Target.ALL);
+                        consumption = getConsumptionAfterChecks(consumption, Target.LAST);
+                    }
+                    return consumption;
+                });
 
-        this.cachedMonthlyData = new ExpiringDayCache<>("monthly cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            LocalDate today = LocalDate.now();
-            Consumption consumption = getConsumptionData(today.withDayOfMonth(1).minusMonths(1), today);
-            if (consumption != null) {
-                logData(consumption.aggregats.months, "Month", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
-                consumption = getConsumptionAfterChecks(consumption, Target.LAST);
-            }
-            return consumption;
-        });
+        this.cachedMonthlyData = new ExpiringDayCache<>("monthly cache", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
+                REFRESH_INTERVAL_IN_MIN, () -> {
+                    LocalDate today = LocalDate.now();
+                    Consumption consumption = getConsumptionData(today.withDayOfMonth(1).minusMonths(1), today);
+                    if (consumption != null) {
+                        logData(consumption.aggregats.months, "Month", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+                                Target.ALL);
+                        consumption = getConsumptionAfterChecks(consumption, Target.LAST);
+                    }
+                    return consumption;
+                });
 
-        this.cachedYearlyData = new ExpiringDayCache<>("yearly cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            LocalDate today = LocalDate.now();
-            Consumption consumption = getConsumptionData(LocalDate.of(today.getYear() - 1, 1, 1), today);
-            if (consumption != null) {
-                logData(consumption.aggregats.years, "Year", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
-                consumption = getConsumptionAfterChecks(consumption, Target.LAST);
-            }
-            return consumption;
-        });
+        this.cachedYearlyData = new ExpiringDayCache<>("yearly cache", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
+                REFRESH_INTERVAL_IN_MIN, () -> {
+                    LocalDate today = LocalDate.now();
+                    Consumption consumption = getConsumptionData(LocalDate.of(today.getYear() - 1, 1, 1), today);
+                    if (consumption != null) {
+                        logData(consumption.aggregats.years, "Year", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+                                Target.ALL);
+                        consumption = getConsumptionAfterChecks(consumption, Target.LAST);
+                    }
+                    return consumption;
+                });
     }
 
     @Override
@@ -185,8 +208,8 @@ public class LinkyHandler extends BaseThingHandler {
                     disconnect();
 
                     final LocalDateTime now = LocalDateTime.now();
-                    final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
-                            .truncatedTo(ChronoUnit.HOURS);
+                    final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
+                            .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
 
                     refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
                             ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
@@ -234,7 +257,7 @@ public class LinkyHandler extends BaseThingHandler {
                 disconnect();
             }
         } catch (LinkyException e) {
-            logger.error("Exception occurs during data update", e);
+            logger.error("Exception occurs during data update {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -505,6 +528,19 @@ public class LinkyHandler extends BaseThingHandler {
         return consumption;
     }
 
+    private boolean checkMissingData(@Nullable Consumption consumption) {
+        if (consumption != null) {
+
+            for (int idx = 0; idx < consumption.aggregats.days.datas.size(); idx++) {
+                Data data = consumption.aggregats.days.datas.get(idx);
+                if (Double.isNaN(data.valeur)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void checkData(Consumption consumption) throws LinkyException {
         if (consumption.aggregats.days.datas.isEmpty()) {
             throw new LinkyException("Invalid consumptions data: no day period");
@@ -554,12 +590,17 @@ public class LinkyHandler extends BaseThingHandler {
 
     private void logData(Aggregate aggregate, int index, String title, boolean withDateFin,
             DateTimeFormatter dateTimeFormatter) {
-        if (withDateFin) {
-            logger.debug("{} {} {} value {}", title, aggregate.datas.get(index).dateDebut.format(dateTimeFormatter),
-                    aggregate.datas.get(index).dateFin.format(dateTimeFormatter), aggregate.datas.get(index).valeur);
-        } else {
-            logger.debug("{} {} value {}", title, aggregate.datas.get(index).dateDebut.format(dateTimeFormatter),
-                    aggregate.datas.get(index).valeur);
+        try {
+            if (withDateFin) {
+                logger.debug("{} {} {} value {}", title, aggregate.datas.get(index).dateDebut.format(dateTimeFormatter),
+                        aggregate.datas.get(index).dateFin.format(dateTimeFormatter),
+                        aggregate.datas.get(index).valeur);
+            } else {
+                logger.debug("{} {} value {}", title, aggregate.datas.get(index).dateDebut.format(dateTimeFormatter),
+                        aggregate.datas.get(index).valeur);
+            }
+        } catch (Exception e) {
+            logger.error("error during logData", e);
         }
     }
 }
