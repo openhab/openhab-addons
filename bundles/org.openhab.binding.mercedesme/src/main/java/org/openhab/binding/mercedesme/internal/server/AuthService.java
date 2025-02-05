@@ -38,6 +38,8 @@ import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * {@link AuthService} helpers for token management
  *
@@ -50,7 +52,7 @@ public class AuthService {
 
     private AccessTokenRefreshListener listener;
     private AccountConfiguration config;
-    private AccessTokenResponse token;
+    private AccessTokenResponse token = Utils.INVALID_TOKEN;
     private Storage<String> storage;
     private HttpClient httpClient;
     private String identifier;
@@ -66,22 +68,22 @@ public class AuthService {
         storage = store;
 
         // restore token from persistence if available
-        String storedObject = storage.get(identifier);
-        if (storedObject != null) {
+        String storedToken = storage.get(identifier);
+        if (storedToken != null) {
             // returns INVALID_TOKEN in case of an error
             logger.trace("MB-Auth {} Restore token from persistence", prefix());
-            token = Utils.fromString(storedObject);
+            token = decodeToken(storedToken);
         } else {
             // initialize token with refresh token from configuration with expiration 0 - triggers refreshToken
             logger.trace("MB-Auth {} Create token from config", prefix());
             token = new AccessTokenResponse();
-            token.setAccessToken(Constants.NOT_SET);
+            token.setAccessToken(refreshToken);
             token.setRefreshToken(refreshToken);
             token.setExpiresIn(0);
         }
 
         if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-            if (!Constants.NOT_SET.equals(token.getRefreshToken())) {
+            if (tokenIsValid()) {
                 // expired but refresh token available
                 refreshToken();
             } else {
@@ -97,7 +99,7 @@ public class AuthService {
 
     public String getToken() {
         if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-            if (!Constants.NOT_SET.equals(token.getRefreshToken())) {
+            if (tokenIsValid()) {
                 refreshToken();
             }
         }
@@ -105,14 +107,12 @@ public class AuthService {
     }
 
     private void refreshToken() {
-        logger.trace("MB-Auth {} refresh token", prefix());
         try {
             String url = Utils.getTokenUrl(config.region);
             Request req = httpClient.POST(url);
             req.header("X-Device-Id", UUID.randomUUID().toString());
             req.header("X-Request-Id", UUID.randomUUID().toString());
 
-            // Content URL form
             String grantAttribute = "grant_type=refresh_token";
             String refreshTokenAttribute = "refresh_token="
                     + URLEncoder.encode(token.getRefreshToken(), StandardCharsets.UTF_8.toString());
@@ -120,10 +120,19 @@ public class AuthService {
             req.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
             req.content(new StringContentProvider(content));
 
-            // Send
             ContentResponse cr = req.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
-            if (cr.getStatus() == 200) {
-                token = saveTokenResponse(cr.getContentAsString());
+            int tokenReaponseStatus = cr.getStatus();
+            String tokenResponse = cr.getContentAsString();
+            if (tokenReaponseStatus == 200) {
+                token = decodeToken(tokenResponse);
+                if (tokenIsValid()) {
+                    storage.put(identifier, tokenResponse);
+                } else {
+                    token = Utils.INVALID_TOKEN;
+                    storage.remove(identifier);
+                    logger.warn("MB-Auth {} Refresh token delivered invalid result {} {}", prefix(),
+                            tokenReaponseStatus, tokenResponse);
+                }
             } else {
                 token = Utils.INVALID_TOKEN;
                 /**
@@ -132,38 +141,46 @@ public class AuthService {
                  * 3) user needs to update refreshToken configuration parameter
                  */
                 storage.remove(identifier);
-                logger.trace("{} Failed to refresh token {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
+                logger.warn("MB-Auth {} Failed to refresh token {} {}", prefix(), tokenReaponseStatus, tokenResponse);
             }
             listener.onAccessTokenResponse(token);
         } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
-            logger.trace("{} Failed to refresh token {}", prefix(), e.getMessage());
+            logger.info("{} Failed to refresh token {}", prefix(), e.getMessage());
         }
-        logger.trace("MB-Auth {} Token after refresh {}", prefix(), token.toString());
     }
 
-    private AccessTokenResponse saveTokenResponse(String response) {
-        TokenResponse tr = Utils.GSON.fromJson(response, TokenResponse.class);
-        AccessTokenResponse atr = new AccessTokenResponse();
-        if (tr != null) {
-            atr.setAccessToken(tr.accessToken);
-            atr.setCreatedOn(Instant.now());
-            atr.setExpiresIn(tr.expiresIn);
-            // Preserve refresh token if available
-            if (Constants.NOT_SET.equals(tr.refreshToken) && !Constants.NOT_SET.equals(token.getRefreshToken())) {
-                atr.setRefreshToken(token.getRefreshToken());
-            } else if (!Constants.NOT_SET.equals(tr.refreshToken)) {
-                atr.setRefreshToken(tr.refreshToken);
+    private AccessTokenResponse decodeToken(String storedToken) {
+        try {
+            TokenResponse tr = Utils.GSON.fromJson(storedToken, TokenResponse.class);
+            AccessTokenResponse atr = new AccessTokenResponse();
+            if (tr != null) {
+                atr.setAccessToken(tr.accessToken);
+                atr.setCreatedOn(Instant.now());
+                atr.setExpiresIn(tr.expiresIn);
+                // Preserve refresh token if available
+                if (Constants.NOT_SET.equals(tr.refreshToken) && !Constants.NOT_SET.equals(token.getRefreshToken())) {
+                    atr.setRefreshToken(token.getRefreshToken());
+                } else if (!Constants.NOT_SET.equals(tr.refreshToken)) {
+                    atr.setRefreshToken(tr.refreshToken);
+                } else {
+                    logger.debug("MB-Auth {} Neither new nor old refresh token available", prefix());
+                }
+                atr.setTokenType("Bearer");
+                atr.setScope(Constants.SCOPE);
+                return atr;
             } else {
-                logger.trace("{} Neither new nor old refresh token available", prefix());
+                logger.debug("MB-Auth {} Neither Token Response is null", prefix());
+                return Utils.INVALID_TOKEN;
             }
-            atr.setTokenType("Bearer");
-            atr.setScope(Constants.SCOPE);
-            storage.put(identifier, Utils.toString(atr));
-            return atr;
-        } else {
-            logger.trace("{} Token Response is null", prefix());
-            return Utils.INVALID_TOKEN;
+        } catch (JsonSyntaxException jse) {
+            // fallback of non human readable base64 token persistence
+            logger.debug("MB-Auth {} Fallback token decoding", prefix());
+            return Utils.fromString(storedToken);
         }
+    }
+
+    private boolean tokenIsValid() {
+        return !Constants.NOT_SET.equals(token.getAccessToken()) && !Constants.NOT_SET.equals(token.getRefreshToken());
     }
 
     public void addBasicHeaders(Request req) {

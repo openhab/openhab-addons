@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -33,6 +32,8 @@ import org.openhab.binding.mercedesme.internal.handler.ThingCallbackListener;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
@@ -56,7 +57,8 @@ class StatusTests {
         ahm.dispose();
     }
 
-    public static HttpClient getHttpClient() {
+    public static HttpClient getHttpClient(int tokenResponseCode) {
+        Utils.initialize(mock(TimeZoneProvider.class), mock(LocaleProvider.class));
         HttpClient httpClient = mock(HttpClient.class);
         try {
             Request clientRequest = mock(Request.class);
@@ -65,7 +67,7 @@ class StatusTests {
             when(clientRequest.content(any())).thenReturn(clientRequest);
             when(clientRequest.timeout(anyLong(), any())).thenReturn(clientRequest);
             ContentResponse response = mock(ContentResponse.class);
-            when(response.getStatus()).thenReturn(200);
+            when(response.getStatus()).thenReturn(tokenResponseCode);
             String tokenResponse = FileReader.readFileInString("src/test/resources/json/TokenResponse.json");
             when(response.getContentAsString()).thenReturn(tokenResponse);
             when(clientRequest.send()).thenReturn(response);
@@ -79,9 +81,9 @@ class StatusTests {
     void testInvalidConfig() {
         BridgeImpl bi = new BridgeImpl(new ThingTypeUID("test", "account"), "MB");
         Map<String, Object> config = new HashMap<>();
-        config.put("refreshToken", "abc");
+        config.put("refreshToken", Constants.JUNIT_REFRESH_TOKEN);
         bi.setConfiguration(new Configuration(config));
-        AccountHandlerMock ahm = new AccountHandlerMock(bi, null, getHttpClient());
+        AccountHandlerMock ahm = new AccountHandlerMock(bi, null, getHttpClient(404));
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
@@ -133,7 +135,7 @@ class StatusTests {
         config.put("email", "a@b.c");
         config.put("refreshToken", "abc");
         bi.setConfiguration(new Configuration(config));
-        AccountHandlerMock ahm = new AccountHandlerMock(bi, null, getHttpClient());
+        AccountHandlerMock ahm = new AccountHandlerMock(bi, null, getHttpClient(404));
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
@@ -165,14 +167,8 @@ class StatusTests {
         config.put("email", "a@b.c");
         config.put("refreshToken", "abc");
         bi.setConfiguration(new Configuration(config));
-        AccessTokenResponse token = new AccessTokenResponse();
-        token.setExpiresIn(3000);
-        token.setAccessToken(Constants.JUNIT_TOKEN);
-        token.setRefreshToken(Constants.JUNIT_REFRESH_TOKEN);
-        token.setCreatedOn(Instant.now());
-        token.setTokenType("Bearer");
-        token.setScope(Constants.SCOPE);
-        AccountHandlerMock ahm = new AccountHandlerMock(bi, Utils.toString(token), getHttpClient());
+        String tokenResponse = FileReader.readFileInString("src/test/resources/json/TokenResponse.json");
+        AccountHandlerMock ahm = new AccountHandlerMock(bi, tokenResponse, getHttpClient(200));
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();

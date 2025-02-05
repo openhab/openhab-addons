@@ -148,7 +148,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             return textKey + Constants.STATUS_EMAIL_MISSING;
         } else if (Constants.NOT_SET.equals(config.get().region)) {
             return textKey + Constants.STATUS_REGION_MISSING;
-        } else if (config.get().refreshInterval <= 01) {
+        } else if (config.get().refreshInterval < 5) {
             return textKey + Constants.STATUS_REFRESH_INVALID;
         } else {
             return Constants.EMPTY;

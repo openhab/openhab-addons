@@ -13,10 +13,8 @@
 package org.openhab.binding.mercedesme.internal.utils;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -268,41 +266,6 @@ public class Utils {
     }
 
     /**
-     * Calculate authorization config URL as pre-configuration prior to authorization call
-     *
-     * @param region - configured region
-     * @return authorization config URL as String
-     */
-    public static String getAuthConfigURL(String region) {
-        return getRestAPIServer(region) + "/v1/config";
-    }
-
-    /**
-     * Calculate login app id according to region
-     *
-     * @param region - configured region
-     * @return login app id as String
-     */
-    public static String getLoginAppId(String region) {
-        switch (region) {
-            case Constants.REGION_CHINA:
-                return Constants.LOGIN_APP_ID_CN;
-            default:
-                return Constants.LOGIN_APP_ID;
-        }
-    }
-
-    /**
-     * Calculate authorization URL for authorization call
-     *
-     * @param region - configured region
-     * @return authorization URL as String
-     */
-    public static String getAuthURL(String region) {
-        return getRestAPIServer(region) + "/v1/login";
-    }
-
-    /**
      * Calculate token URL for getting token
      *
      * @param region - configured region
@@ -318,6 +281,7 @@ public class Utils {
      * @param token - Base64 String from storage
      * @return AccessTokenResponse decoded from String, invalid token otherwise
      */
+    @Deprecated
     public static AccessTokenResponse fromString(String token) {
         try {
             byte[] data = Base64.getDecoder().decode(token);
@@ -329,24 +293,6 @@ public class Utils {
             LOGGER.warn("Error converting string to token {}", e.getMessage());
         }
         return INVALID_TOKEN;
-    }
-
-    /**
-     * Encode AccessTokenResponse as Base64 String for storage
-     *
-     * @param token - AccessTokenResponse to convert
-     */
-    public static String toString(AccessTokenResponse token) {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(token);
-            oos.close();
-            return Base64.getEncoder().encodeToString(baos.toByteArray());
-        } catch (IOException e) {
-            LOGGER.warn("Error converting token to string {}", e.getMessage());
-        }
-        return Constants.NOT_SET;
     }
 
     /**
