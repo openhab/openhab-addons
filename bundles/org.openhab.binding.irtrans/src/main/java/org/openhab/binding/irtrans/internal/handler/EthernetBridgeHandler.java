@@ -296,7 +296,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                                         channelUID);
                             } else {
                                 logger.warn(
-                                        "An error occured whilst sending the infrared command '{}' for Channel '{}'",
+                                        "An error occurred whilst sending the infrared command '{}' for Channel '{}'",
                                         command, channelUID);
                             }
                         }
@@ -687,7 +687,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                             }
                         } catch (IOException e) {
                             // If some other I/O error occurs
-                            logger.warn("An IO exception occured on channel '{}': {}", aSocketChannel, e.getMessage());
+                            logger.warn("An IO exception occurred on channel '{}': {}", aSocketChannel, e.getMessage());
                             error = true;
                         }
 
@@ -754,7 +754,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                             error = true;
                         } catch (IOException e) {
                             // If some other I/O error occurs
-                            logger.warn("An IO exception occured on channel '{}': {}", aSocketChannel, e.getMessage());
+                            logger.warn("An IO exception occurred on channel '{}': {}", aSocketChannel, e.getMessage());
                             error = true;
                         }
 
