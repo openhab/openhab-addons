@@ -22,4 +22,20 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="boschshc:smoke-detector">
+		<instruction-set targetVersion="1">
+			<add-channel id="alarm">
+				<type>boschshc:alarm</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="boschshc:smoke-detector-2">
+		<instruction-set targetVersion="1">
+			<add-channel id="alarm">
+				<type>boschshc:alarm</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 </update:update-descriptions>
