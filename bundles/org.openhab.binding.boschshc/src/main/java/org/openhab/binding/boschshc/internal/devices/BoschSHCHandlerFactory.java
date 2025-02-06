@@ -37,6 +37,7 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WATER_DETECTOR;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2_PLUS;
 
 import java.util.Collection;
 import java.util.List;
@@ -107,6 +108,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_TWINGUARD, TwinguardHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT, WindowContactHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT_2, WindowContact2Handler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT_2_PLUS, WindowContact2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_MOTION_DETECTOR, MotionDetectorHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL, ShutterControlHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL_2, ShutterControl2Handler::new),
@@ -120,8 +122,8 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_SMART_BULB, SmartBulbHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR, SmokeDetectorHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_USER_DEFINED_STATE, UserStateHandler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH, thing -> new UniversalSwitchHandler(thing)),
-            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH_2, thing -> new UniversalSwitch2Handler(thing)),
+            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH, UniversalSwitchHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH_2, UniversalSwitch2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR_2, SmokeDetector2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_LIGHT_CONTROL_2, LightControl2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_DIMMER, DimmerHandler::new),
