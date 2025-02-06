@@ -20,16 +20,12 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
-import org.openhab.binding.hdpowerview.internal.dto.Firmware;
-import org.openhab.binding.hdpowerview.internal.dto.HubFirmware;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
-import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
@@ -50,11 +46,11 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
     public static final String LABEL_KEY_HUB = "discovery.hub.label";
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubMDNSDiscoveryParticipant.class);
-    private final HttpClient httpClient;
+    private final HDPowerviewPropertyGetter propertyGetter;
 
     @Activate
-    public HDPowerViewHubMDNSDiscoveryParticipant(@Reference HttpClientFactory httpClientFactory) {
-        httpClient = httpClientFactory.getCommonHttpClient();
+    public HDPowerViewHubMDNSDiscoveryParticipant(@Reference HDPowerviewPropertyGetter propertyGetter) {
+        this.propertyGetter = propertyGetter;
     }
 
     @Override
@@ -71,14 +67,25 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         for (String host : service.getHostAddresses()) {
             if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
-                ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
-                String generation = this.getGeneration(host);
-                DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                        .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
-                        .withLabel(String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, generation, host)).build();
-                logger.debug("mDNS discovered Gen {} hub on host '{}'", generation, host);
-                return hub;
+                String generation;
+                try {
+                    generation = propertyGetter.getGenerationApiV1(host);
+                } catch (HubException e) {
+                    generation = "1/2";
+                }
+                try {
+                    String serial = propertyGetter.getSerialNumberApiV1(host);
+                    ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+                    String label = String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, generation, host);
+                    DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
+                            .withProperty(HDPowerViewHubConfiguration.HOST, host)
+                            .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                            .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
+                    logger.debug("mDNS discovered Gen {} hub on host '{}'", generation, host);
+                    return hub;
+                } catch (HubException e) {
+                    logger.debug("Error discovering hub", e);
+                }
             }
         }
         return null;
@@ -92,19 +99,5 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
             }
         }
         return null;
-    }
-
-    private String getGeneration(String host) {
-        var webTargets = new HDPowerViewWebTargets(httpClient, host);
-        try {
-            HubFirmware firmware = webTargets.getFirmwareVersions();
-            Firmware mainProcessor = firmware.mainProcessor;
-            if (mainProcessor != null) {
-                return String.valueOf(mainProcessor.revision);
-            }
-        } catch (HubException e) {
-            logger.debug("Failed to discover hub firmware versions", e);
-        }
-        return "1/2";
     }
 }

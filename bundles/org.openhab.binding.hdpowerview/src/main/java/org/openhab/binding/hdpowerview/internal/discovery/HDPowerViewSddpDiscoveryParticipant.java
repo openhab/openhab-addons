@@ -19,13 +19,17 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.sddp.SddpDevice;
 import org.openhab.core.config.discovery.sddp.SddpDiscoveryParticipant;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +49,12 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
     private static final String POWERVIEW_GEN3_ID = "powerview:gen3:gateway";
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewSddpDiscoveryParticipant.class);
+    private final HDPowerviewPropertyGetter propertyGetter;
+
+    @Activate
+    public HDPowerViewSddpDiscoveryParticipant(@Reference HDPowerviewPropertyGetter propertyGetter) {
+        this.propertyGetter = propertyGetter;
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -56,20 +66,26 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
         final ThingUID thingUID = getThingUID(device);
         if (thingUID != null) {
             try {
+                String label;
+                String serial;
                 int generation = getGeneration(device);
-                String label = generation == 3 //
-                        ? String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress)
-                        : String.format("@text/%s [\"%s\", \"%s\"]",
-                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, generation, device.ipAddress);
-
+                if (generation < 3) {
+                    label = String.format("@text/%s [\"%s\", \"%s\"]",
+                            HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, generation, device.ipAddress);
+                    serial = propertyGetter.getSerialNumberApiV1(device.ipAddress);
+                } else {
+                    label = String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress);
+                    serial = propertyGetter.getSerialNumberApiV3(device.ipAddress);
+                }
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
-                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST).withLabel(label).build();
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
                 logger.debug("SDDP discovered Gen {} hub/gateway '{}' on host '{}'", generation, thingUID,
                         device.ipAddress);
                 return hub;
-            } catch (IllegalArgumentException e) {
-                // error already logged, so fall through
+            } catch (HubException | IllegalArgumentException e) {
+                logger.debug("Error discovering hub", e);
             }
         }
         return null;
@@ -103,8 +119,6 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
         if (device.type.contains(POWERVIEW_HUB_ID)) {
             return device.type.endsWith("v2") ? 2 : 1;
         }
-        final IllegalArgumentException e = new IllegalArgumentException("Device has unexpected 'type' property");
-        logger.debug("{}", e.getMessage());
-        throw e;
+        throw new IllegalArgumentException("Device has unexpected 'type' property");
     }
 }
