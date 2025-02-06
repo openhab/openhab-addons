@@ -92,10 +92,9 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
                         try {
                             String host = address.getInetAddress().getHostAddress();
                             String serial = propertyGetter.getSerialNumberApiV1(host);
-                            String generation = propertyGetter.getGenerationApiV1(host);
                             ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
                             String label = String.format("@text/%s [\"%s\", \"%s\"]",
-                                    HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, generation, host);
+                                    HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, "1", host);
                             DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                                     .withProperty(HDPowerViewHubConfiguration.HOST, host)
                                     .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
