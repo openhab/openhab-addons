@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -106,15 +106,21 @@ public class SenseEnergyApi {
         return this.accessToken;
     }
 
-    /**
+    /*
      * authenticates with the cloud api
      *
      * @param email
+     * 
      * @param password
+     * 
      * @return a set of IDs for all the monitors associated with this account
+     * 
      * @throws SenseEnergyApiException on authentication error
+     * 
      * @throws InterruptedException
+     * 
      * @throws TimeoutException
+     * 
      * @throws ExecutionException
      */
     public Set<Long> initialize(String email, String password)
@@ -144,12 +150,15 @@ public class SenseEnergyApi {
         return Stream.of(data.monitors).map(m -> m.id).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
-    /**
+    /*
      * renew authentication credentials. Timeout of credentials is ~24 hours.
      *
      * @throws InterruptedException
+     * 
      * @throws TimeoutException
+     * 
      * @throws ExecutionException
+     * 
      * @throws SenseEnergyApiException
      */
     public void refreshToken()
@@ -184,15 +193,19 @@ public class SenseEnergyApi {
         sendRequest(request);
     }
 
-    /**
+    /*
      * get overview of Monitor
      *
      * @param id of the monitor
+     * 
      * @return dto structure containing monitor info
      *
      * @throws InterruptedException
+     * 
      * @throws TimeoutException
+     * 
      * @throws ExecutionException
+     * 
      * @throws SenseEnergyApiException
      */
     @Nullable
@@ -212,14 +225,19 @@ public class SenseEnergyApi {
         return monitor;
     }
 
-    /**
+    /*
      * get monitor status
      *
      * @param id - id of monitor
+     * 
      * @return dto structure containing monitor status
+     * 
      * @throws InterruptedException
+     * 
      * @throws TimeoutException
+     * 
      * @throws ExecutionException
+     * 
      * @throws SenseEnergyApiException
      */
     @Nullable
@@ -242,16 +260,23 @@ public class SenseEnergyApi {
         return getTrendData(id, trendScale, Instant.now());
     }
 
-    /**
+    /*
      * get trend totals over a specific period
      *
      * @param id of monitor
+     * 
      * @param trendScale period of time over which to query data
+     * 
      * @param datetime a datetime within the scale of which to receive data. Does not need to be the start or end .
+     * 
      * @return
+     * 
      * @throws InterruptedException
+     * 
      * @throws TimeoutException
+     * 
      * @throws ExecutionException
+     * 
      * @throws SenseEnergyApiException
      */
     @Nullable
@@ -268,11 +293,12 @@ public class SenseEnergyApi {
         return data;
     }
 
-    /**
+    /*
      * Helper function to map jsonElement in stream. For some reason putting the gson conversion inline with the map
      * function yielded a @Nullable mismatch when build with maven
      *
      * @param jsonElement
+     * 
      * @return dto object extracted from the json
      */
     @Nullable
@@ -280,14 +306,19 @@ public class SenseEnergyApi {
         return gson.fromJson(jsonElement, SenseEnergyApiDevice.class);
     }
 
-    /**
+    /*
      * retrieves a Map of discovered devices
      *
      * @param id of the monitor device
+     * 
      * @return Map of discovered devices with the ID of the device as key and the dto object SenseEnergyApiDevice
+     * 
      * @throws InterruptedException
+     * 
      * @throws TimeoutException
+     * 
      * @throws ExecutionException
+     * 
      * @throws SenseEnergyApiException
      */
     public Map<String, SenseEnergyApiDevice> getDevices(long id)

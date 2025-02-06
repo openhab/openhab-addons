@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -344,7 +344,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         return handler.getApi();
     }
 
-    /**
+    /*
      * reconciles the discovered device channels to stay in sync with the discovered device list
      *
      * @param thingBuilder to update if already editing, otherwise will open
@@ -431,11 +431,13 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         builder.withChannel(channel);
     }
 
-    /**
+    /*
      * updates channel label of an existing channel by removing it and then added it back
      *
      * @param thingBuilder
+     * 
      * @param channelUID
+     * 
      * @param label
      */
     public boolean updateDiscoveredChannel(ThingBuilder thingBuilder, ChannelUID channelUID, String label) {
@@ -462,11 +464,13 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         return false;
     }
 
-    /**
+    /*
      * create a channelUID in the designated/consistent format
      *
      * @param senseID
+     * 
      * @param channelID
+     * 
      * @return
      */
     public ChannelUID makeDiscoveredDeviceChannelUID(String senseID, String channelID) {
@@ -475,12 +479,15 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         return new ChannelUID(channelGroupUID, senseID + "-" + channelID);
     }
 
-    /**
+    /*
      * helper function to update channel state
      *
      * @param channelGroup
+     * 
      * @param channel
+     * 
      * @param value
+     * 
      * @param unit
      */
     public void updateChannel(String channelGroup, String channel, float value, Unit<?> unit) {
@@ -488,10 +495,11 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         updateState(channelUID, new QuantityType<>(value, unit));
     }
 
-    /**
+    /*
      * start/stop datagram when a proxy device is ONLINE or when they all are OFFLINE
      *
      * @param proxyDeviceHandler
+     * 
      * @param thingStatus
      */
     public void childStatusChange(SenseEnergyProxyDeviceHandler proxyDeviceHandler, ThingStatus thingStatus) {
@@ -527,10 +535,11 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         }
     }
 
-    /**
+    /*
      * forms and sends response on request for update on power for proxy device
      *
      * @param handler of proxy device
+     * 
      * @param socketAddress of Sense monitor where power update should be sent
      */
     public boolean sendResponse(SenseEnergyProxyDeviceHandler handler, SocketAddress socketAddress) {
@@ -552,9 +561,9 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         return true;
     }
 
-    /***** Datagram listener functions *****/
+    /**** Datagram listener functions *****/
 
-    /**
+    /*
      * handles request for responding to power queries from Sense device. Will limit the number of responses per request
      * so as not to overload the Sense monitor. Uses a round robin to ensure all devices have equal opportunity to
      * respond.
@@ -581,7 +590,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     public void messageReceived(byte[] message) {
     }
 
-    /****** SenseEnergyeWSListener interfaces *****/
+    /***** SenseEnergyeWSListener interfaces *****/
 
     @Override
     public void onWebSocketClose(int statusCode, @Nullable String reason) {
@@ -622,7 +631,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         updateDiscoveredDevicesStatus(update.devices);
     }
 
-    /**
+    /*
      * updates the power state for discovered devices. sends trigger for devices which turn on/off. if necessary,
      * reconciles the channels if there are new discovered devices
      *

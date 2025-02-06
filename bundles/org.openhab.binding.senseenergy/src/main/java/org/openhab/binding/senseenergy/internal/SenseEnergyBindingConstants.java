@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ public class SenseEnergyBindingConstants {
 
     public static final int HEARTBEAT_MINUTES = 5;
 
-    /*** Monitor Bridge/Thing ***/
+    /** Monitor Bridge/Thing ***/
     // Channel group type UIDs
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_DEVICE_TEMPLATE = new ChannelGroupTypeUID(BINDING_ID,
             "discovered-device-template");
@@ -67,7 +67,7 @@ public class SenseEnergyBindingConstants {
     public static final String PROPERTY_MONITOR_SSID = "ssid";
     public static final String PROPERTY_MONITOR_MAC = "mac";
 
-    /*** PROXY DEVICE THING ***/
+    /** PROXY DEVICE THING ***/
     // Channel IDs
     public static final String CHANNEL_PROXY_DEVICE_POWER = "proxy-device-power";
     public static final String CHANNEL_PROXY_DEVICE_SWITCH = "proxy-device-switch";

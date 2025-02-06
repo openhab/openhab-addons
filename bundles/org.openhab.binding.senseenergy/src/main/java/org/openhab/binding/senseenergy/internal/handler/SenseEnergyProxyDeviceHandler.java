@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,9 +23,9 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.senseenergy.internal.SenseEnergyProxyDeviceConfiguration;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyDatagramGetRealtime;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyDatagramGetSysInfo;
+import org.openhab.binding.senseenergy.internal.config.SenseEnergyProxyDeviceConfiguration;
 import org.openhab.binding.senseenergy.internal.handler.helpers.SenseEnergyPowerLevels;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -261,10 +261,12 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
         getSysInfo.mac = getMAC();
         getSysInfo.deviceId = getThing().getUID().getId().toString();
         getSysInfo.alias = (config.senseName.isBlank()) ? getThing().getLabel() : config.senseName;
+        getSysInfo.errorCode = 0;
 
         getRealtime.current = Math.round(electricalData.getCurrent() * 10) / 10;
         getRealtime.voltage = Math.round(electricalData.getVoltage());
         getRealtime.power = Math.round(electricalData.getPower() * 10) / 10;
+        getRealtime.errorCode = 0;
 
         return true;
     }

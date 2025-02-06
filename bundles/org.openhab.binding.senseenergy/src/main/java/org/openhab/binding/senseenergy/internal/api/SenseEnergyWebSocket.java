@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,7 +99,7 @@ public class SenseEnergyWebSocket implements WebSocketListener {
         return (session == null) ? false : session.isRunning();
     }
 
-    /******** WebSocketListener interface ***********/
+    /******* WebSocketListener interface ***********/
     @Override
     public void onWebSocketClose(int statusCode, @Nullable String reason) {
         this.session = null;

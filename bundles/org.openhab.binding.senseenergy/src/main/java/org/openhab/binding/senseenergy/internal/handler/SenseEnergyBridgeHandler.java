@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,9 +28,9 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.senseenergy.internal.SenseEnergyBridgeConfiguration;
 import org.openhab.binding.senseenergy.internal.api.SenseEnergyApi;
 import org.openhab.binding.senseenergy.internal.api.SenseEnergyApiException;
+import org.openhab.binding.senseenergy.internal.config.SenseEnergyBridgeConfiguration;
 import org.openhab.binding.senseenergy.internal.discovery.SenseEnergyDiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -153,7 +153,7 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    /**
+    /*
      * iterate through the monitor IDs (currently initialized when the api initializes) and checks if a thing is
      * already created. If not, will notify discovery service.
      */
@@ -181,7 +181,7 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
         // @formatter:on
     }
 
-    /**
+    /*
      * rediscover the monitors again to add any back to inbox
      */
     @Override
