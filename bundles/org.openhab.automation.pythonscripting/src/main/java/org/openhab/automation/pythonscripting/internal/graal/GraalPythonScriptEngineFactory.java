@@ -27,13 +27,11 @@ import org.graalvm.polyglot.Language;
  * @author Jeff James - Initial contribution
  */
 public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory {
-    private static final String LANGUAGE = "python";
-
     private WeakReference<Engine> defaultEngine;
     private final Engine userDefinedEngine;
 
     private static final String ENGINE_NAME = "Graal.py";
-    private static final String NAME = "python";
+    private static final String NAME = "python3";
 
     private static final String[] EXTENSIONS = { "py" };
 
@@ -89,25 +87,25 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
 
     @Override
     public List<String> getMimeTypes() {
-        Language language = getPolyglotEngine().getLanguages().get(LANGUAGE);
+        Language language = getPolyglotEngine().getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
         return List.copyOf(language.getMimeTypes());
     }
 
     @Override
     public List<String> getNames() {
-        Language language = getPolyglotEngine().getLanguages().get(LANGUAGE);
-        return List.of(language.getName(), LANGUAGE, language.getImplementationName());
+        Language language = getPolyglotEngine().getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
+        return List.of(language.getName(), GraalPythonScriptEngine.LANGUAGE_ID, language.getImplementationName());
     }
 
     @Override
     public String getLanguageName() {
-        Language language = getPolyglotEngine().getLanguages().get(LANGUAGE);
+        Language language = getPolyglotEngine().getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
         return language.getName();
     }
 
     @Override
     public String getLanguageVersion() {
-        Language language = getPolyglotEngine().getLanguages().get(LANGUAGE);
+        Language language = getPolyglotEngine().getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
         return language.getVersion();
     }
 

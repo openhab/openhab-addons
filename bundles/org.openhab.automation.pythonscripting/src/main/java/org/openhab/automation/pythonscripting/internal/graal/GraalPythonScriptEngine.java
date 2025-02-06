@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 public final class GraalPythonScriptEngine extends AbstractScriptEngine
         implements Compilable, Invocable, AutoCloseable {
 
-    private static final String ID = "python";
+    public static final String LANGUAGE_ID = "python";
     private static final String POLYGLOT_CONTEXT = "polyglot.context";
 
     private static final String PYTHON_OPTION_POSIXMODULEBACKEND = "python.PosixModuleBackend";
@@ -80,7 +80,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
 
         Context.Builder contextConfigToUse = contextConfig;
         if (contextConfigToUse == null) {
-            contextConfigToUse = Context.newBuilder(ID) // TODO: ID
+            contextConfigToUse = Context.newBuilder(LANGUAGE_ID) // TODO: ID
                     .allowExperimentalOptions(true) //
                     .allowAllAccess(true) //
                     .allowHostAccess(HostAccess.ALL) //
@@ -134,27 +134,12 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
         return factory.getPolyglotEngine();
     }
 
-    /**
-     * Returns the polyglot context associated with the default ScriptContext of the engine.
-     *
-     * @see #getPolyglotContext(ScriptContext) to access the polyglot context of a particular
-     *      context.
-     */
-    public Context getPolyglotContext() {
-        return getPolyglotContext(context);
-    }
-
-    /**
-     * Returns the polyglot context associated with a ScriptContext. If the context is not yet
-     * initialized then it will be initialized using the default context builder specified in
-     * {@link #create(Engine, org.graalvm.polyglot.Context.Builder)}.
-     */
-    public Context getPolyglotContext(ScriptContext ctxt) {
-        return getOrCreateGraalPythonBindings(ctxt).getContext();
+    private Context getPolyglotContext() {
+        return getOrCreateGraalPythonBindings(context).getContext();
     }
 
     static Value evalInternal(Context context, String script) {
-        return context.eval(Source.newBuilder(ID, script, "internal-script").internal(true).buildLiteral());
+        return context.eval(Source.newBuilder(LANGUAGE_ID, script, "internal-script").internal(true).buildLiteral());
     }
 
     @Override
@@ -210,10 +195,10 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
     private static Source createSource(String script, ScriptContext ctxt) throws ScriptException {
         final Object val = ctxt.getAttribute(ScriptEngine.FILENAME);
         if (val == null) {
-            return Source.newBuilder(ID, script, "<eval>").buildLiteral();
+            return Source.newBuilder(LANGUAGE_ID, script, "<eval>").buildLiteral();
         } else {
             try {
-                return Source.newBuilder(ID, new File(val.toString())).content(script).build();
+                return Source.newBuilder(LANGUAGE_ID, new File(val.toString())).content(script).build();
             } catch (IOException ioex) {
                 throw new ScriptException(ioex);
             }
@@ -316,7 +301,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
     @Override
     public Object invokeFunction(String name, Object... args) throws ScriptException, NoSuchMethodException {
         GraalPythonBindings engineBindings = getOrCreateGraalPythonBindings(context);
-        Value function = engineBindings.getContext().getBindings(ID).getMember(name);
+        Value function = engineBindings.getContext().getBindings(LANGUAGE_ID).getMember(name);
 
         if (function == null) {
             throw noSuchMethod(name);
@@ -407,15 +392,6 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
         } catch (PolyglotException pex) {
             throw toScriptException(pex);
         }
-    }
-
-    /**
-     * Creates a new GraalPythonScriptEngine with default configuration.
-     *
-     * @see #create(Engine, Context.Builder) to customize the configuration.
-     */
-    public static GraalPythonScriptEngine create() {
-        return create(null, null);
     }
 
     /**

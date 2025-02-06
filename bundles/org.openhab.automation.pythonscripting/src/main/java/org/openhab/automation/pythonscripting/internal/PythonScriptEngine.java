@@ -129,102 +129,6 @@ public class PythonScriptEngine
 
             .build();
 
-    private static class LogOutputStream extends OutputStream {
-        private static final int DEFAULT_BUFFER_LENGTH = 2048;
-        private static final String LINE_SEPERATOR = System.getProperty("line.separator");
-        private static final int LINE_SEPERATOR_SIZE = LINE_SEPERATOR.length();
-
-        private Logger logger;
-        private Level level;
-
-        private int bufLength;
-        private byte[] buf;
-        private int count;
-
-        public LogOutputStream(Logger logger, Level level) {
-            this.logger = logger;
-            this.level = level;
-
-            bufLength = DEFAULT_BUFFER_LENGTH;
-            buf = new byte[DEFAULT_BUFFER_LENGTH];
-            count = 0;
-        }
-
-        public void setLogger(Logger logger) {
-            this.logger = logger;
-        }
-
-        @Override
-        public void write(int b) {
-            // don't log nulls
-            if (b == 0) {
-                return;
-            }
-
-            if (count == bufLength) {
-                growBuffer();
-            }
-
-            buf[count] = (byte) b;
-            count++;
-        }
-
-        @Override
-        public void flush() {
-            if (count == 0) {
-                return;
-            }
-
-            // don't print out blank lines;
-            if (count == LINE_SEPERATOR_SIZE) {
-                if (((char) buf[0]) == LINE_SEPERATOR.charAt(0)
-                        && ((count == 1) || ((count == 2) && ((char) buf[1]) == LINE_SEPERATOR.charAt(1)))) {
-                    reset();
-                    return;
-                }
-            } else if (count > LINE_SEPERATOR_SIZE) {
-                // remove linebreaks at the end
-                if (((char) buf[count - 1]) == LINE_SEPERATOR.charAt(LINE_SEPERATOR_SIZE - 1)
-                        && ((LINE_SEPERATOR_SIZE == 1) || ((LINE_SEPERATOR_SIZE == 2)
-                                && ((char) buf[count - 1]) == LINE_SEPERATOR.charAt(LINE_SEPERATOR_SIZE - 2)))) {
-                    count -= LINE_SEPERATOR_SIZE;
-                }
-            }
-
-            final byte[] line = new byte[count];
-            System.arraycopy(buf, 0, line, 0, count);
-            logger.atLevel(level).log(new String(line));
-            reset();
-        }
-
-        private void growBuffer() {
-            final int newBufLength = bufLength + DEFAULT_BUFFER_LENGTH;
-            final byte[] newBuf = new byte[newBufLength];
-            System.arraycopy(buf, 0, newBuf, 0, bufLength);
-            buf = newBuf;
-            bufLength = newBufLength;
-        }
-
-        private void reset() {
-            // don't shrink buffer. assuming that if it grew that it will likely grow similarly again
-            count = 0;
-        }
-    }
-
-    public static class LifecycleTracker {
-        List<Function<Object[], Object>> disposables = new ArrayList<>();
-
-        public void addDisposeHook(Function<Object[], Object> disposable) {
-            disposables.add(disposable);
-        }
-
-        void dispose() {
-            for (Function<Object[], Object> disposable : disposables) {
-                disposable.apply(null);
-            }
-        }
-    }
-
     /** {@link Lock} synchronization of multi-thread access */
     private final Lock lock = new ReentrantLock();
 
@@ -251,7 +155,7 @@ public class PythonScriptEngine
             boolean jythonEmulation) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
 
-        Context.Builder contextConfig = Context.newBuilder("python") //
+        Context.Builder contextConfig = Context.newBuilder(GraalPythonScriptEngine.LANGUAGE_ID) //
                 .out(scriptOutputStream) //
                 .err(scriptErrorStream) //
                 .allowIO(IOAccess.newBuilder() //
@@ -453,5 +357,101 @@ public class PythonScriptEngine
         }
 
         return LoggerFactory.getLogger("org.openhab.automation.pythonscripting." + identifier);
+    }
+
+    private static class LogOutputStream extends OutputStream {
+        private static final int DEFAULT_BUFFER_LENGTH = 2048;
+        private static final String LINE_SEPERATOR = System.getProperty("line.separator");
+        private static final int LINE_SEPERATOR_SIZE = LINE_SEPERATOR.length();
+
+        private Logger logger;
+        private Level level;
+
+        private int bufLength;
+        private byte[] buf;
+        private int count;
+
+        public LogOutputStream(Logger logger, Level level) {
+            this.logger = logger;
+            this.level = level;
+
+            bufLength = DEFAULT_BUFFER_LENGTH;
+            buf = new byte[DEFAULT_BUFFER_LENGTH];
+            count = 0;
+        }
+
+        public void setLogger(Logger logger) {
+            this.logger = logger;
+        }
+
+        @Override
+        public void write(int b) {
+            // don't log nulls
+            if (b == 0) {
+                return;
+            }
+
+            if (count == bufLength) {
+                growBuffer();
+            }
+
+            buf[count] = (byte) b;
+            count++;
+        }
+
+        @Override
+        public void flush() {
+            if (count == 0) {
+                return;
+            }
+
+            // don't print out blank lines;
+            if (count == LINE_SEPERATOR_SIZE) {
+                if (((char) buf[0]) == LINE_SEPERATOR.charAt(0)
+                        && ((count == 1) || ((count == 2) && ((char) buf[1]) == LINE_SEPERATOR.charAt(1)))) {
+                    reset();
+                    return;
+                }
+            } else if (count > LINE_SEPERATOR_SIZE) {
+                // remove linebreaks at the end
+                if (((char) buf[count - 1]) == LINE_SEPERATOR.charAt(LINE_SEPERATOR_SIZE - 1)
+                        && ((LINE_SEPERATOR_SIZE == 1) || ((LINE_SEPERATOR_SIZE == 2)
+                                && ((char) buf[count - 1]) == LINE_SEPERATOR.charAt(LINE_SEPERATOR_SIZE - 2)))) {
+                    count -= LINE_SEPERATOR_SIZE;
+                }
+            }
+
+            final byte[] line = new byte[count];
+            System.arraycopy(buf, 0, line, 0, count);
+            logger.atLevel(level).log(new String(line));
+            reset();
+        }
+
+        private void growBuffer() {
+            final int newBufLength = bufLength + DEFAULT_BUFFER_LENGTH;
+            final byte[] newBuf = new byte[newBufLength];
+            System.arraycopy(buf, 0, newBuf, 0, bufLength);
+            buf = newBuf;
+            bufLength = newBufLength;
+        }
+
+        private void reset() {
+            // don't shrink buffer. assuming that if it grew that it will likely grow similarly again
+            count = 0;
+        }
+    }
+
+    public static class LifecycleTracker {
+        List<Function<Object[], Object>> disposables = new ArrayList<>();
+
+        public void addDisposeHook(Function<Object[], Object> disposable) {
+            disposables.add(disposable);
+        }
+
+        void dispose() {
+            for (Function<Object[], Object> disposable : disposables) {
+                disposable.apply(null);
+            }
+        }
     }
 }

@@ -24,8 +24,6 @@ import javax.script.ScriptEngine;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.TypeLiteral;
 import org.graalvm.polyglot.Value;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /***
  * @author Holger Hees - Initial contribution
@@ -34,8 +32,6 @@ import org.slf4j.LoggerFactory;
 final class GraalPythonBindings extends AbstractMap<String, Object> implements javax.script.Bindings, AutoCloseable {
     private static final TypeLiteral<Map<String, Object>> STRING_MAP = new TypeLiteral<Map<String, Object>>() {
     };
-
-    private final Logger logger = LoggerFactory.getLogger(GraalPythonBindings.class);
 
     private Context context;
     private Map<String, Object> global;
@@ -73,9 +69,9 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
 
         requireContext();
 
-        context.getBindings("python").putMember("engine", scriptEngine);
+        context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember("engine", scriptEngine);
         if (scriptContext != null) {
-            context.getBindings("python").putMember("context", scriptContext);
+            context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember("context", scriptContext);
         }
     }
 
@@ -84,14 +80,14 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
         checkKey(key);
         requireContext();
 
-        context.getBindings("python").putMember(key, v);
+        context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember(key, v);
         return global.put(key, v);
     }
 
     @Override
     public void clear() {
         if (context != null) {
-            Value binding = context.getBindings("python");
+            Value binding = context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID);
             for (var entry : global.entrySet()) {
                 binding.removeMember(entry.getKey());
             }
@@ -116,7 +112,7 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
     public Object remove(Object key) {
         requireContext();
         Object prev = get(key);
-        context.getBindings("python").removeMember((String) key);
+        context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).removeMember((String) key);
         global.remove(key);
         return prev;
     }

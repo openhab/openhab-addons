@@ -129,6 +129,7 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 @when("Thing removed")
 @when("Thing updated")
 ```
+
 ## decorator @onlyif
 
 ```python
