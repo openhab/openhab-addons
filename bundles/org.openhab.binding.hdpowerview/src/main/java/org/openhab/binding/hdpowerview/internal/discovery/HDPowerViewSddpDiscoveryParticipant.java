@@ -60,7 +60,7 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
                 String label = generation == 3 //
                         ? String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress)
                         : String.format("@text/%s [\"%s\", \"%s\"]",
-                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, device.ipAddress, generation);
+                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, generation, device.ipAddress);
 
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
