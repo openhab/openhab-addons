@@ -227,15 +227,12 @@ public class LinkyHandler extends BaseThingHandler {
     private synchronized void updateMetaData() throws LinkyException {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
-            if (thing.getProperties().isEmpty()) {
-                UserInfo userInfo = api.getUserInfo();
-                PrmInfo prmInfo = api.getPrmInfo(userInfo.userProperties.internId);
-                PrmDetail details = api.getPrmDetails(userInfo.userProperties.internId, prmInfo.idPrm);
-                updateProperties(Map.of(USER_ID, userInfo.userProperties.internId, PUISSANCE,
-                        details.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite().valeur()
-                                + " kVA",
-                        PRM_ID, prmInfo.idPrm));
-            }
+            UserInfo userInfo = api.getUserInfo();
+            PrmInfo prmInfo = api.getPrmInfo(userInfo.userProperties.internId);
+            PrmDetail details = api.getPrmDetails(userInfo.userProperties.internId, prmInfo.idPrm);
+            updateProperties(Map.of(USER_ID, userInfo.userProperties.internId, PUISSANCE,
+                    details.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite().valeur() + " kVA",
+                    PRM_ID, prmInfo.idPrm));
 
             prmId = thing.getProperties().get(PRM_ID);
             userId = thing.getProperties().get(USER_ID);
@@ -481,26 +478,32 @@ public class LinkyHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             logger.debug("Refreshing channel {}", channelUID.getId());
             boolean connectedBefore = isConnected();
-            switch (channelUID.getId()) {
-                case YESTERDAY:
-                case LAST_WEEK:
-                case THIS_WEEK:
-                    updateDailyWeeklyData();
-                    break;
-                case LAST_MONTH:
-                case THIS_MONTH:
-                    updateMonthlyData();
-                    break;
-                case LAST_YEAR:
-                case THIS_YEAR:
-                    updateYearlyData();
-                    break;
-                case PEAK_POWER:
-                case PEAK_TIMESTAMP:
-                    updatePowerData();
-                    break;
-                default:
-                    break;
+
+            try {
+                updateMetaData();
+                switch (channelUID.getId()) {
+                    case YESTERDAY:
+                    case LAST_WEEK:
+                    case THIS_WEEK:
+                        updateDailyWeeklyData();
+                        break;
+                    case LAST_MONTH:
+                    case THIS_MONTH:
+                        updateMonthlyData();
+                        break;
+                    case LAST_YEAR:
+                    case THIS_YEAR:
+                        updateYearlyData();
+                        break;
+                    case PEAK_POWER:
+                    case PEAK_TIMESTAMP:
+                        updatePowerData();
+                        break;
+                    default:
+                        break;
+                }
+            } catch (LinkyException ex) {
+                logger.error("Unable to handleCommand refresh", ex);
             }
             if (!connectedBefore && isConnected()) {
                 disconnect();
