@@ -79,7 +79,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     private boolean jythonEmulation = false;
 
     public static final String SCRIPT_TYPE = "application/x-python3";
-    private final List<String> scriptTypes = Arrays.asList(PythonScriptEngineFactory.SCRIPT_TYPE);
+    private final List<String> scriptTypes = Arrays.asList(PythonScriptEngineFactory.SCRIPT_TYPE, "PY3");
 
     private final PythonDependencyTracker pythonDependencyTracker;
 
