@@ -84,10 +84,8 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
                 logger.debug("SDDP discovered Gen {} hub/gateway '{}' on host '{}'", generation, thingUID,
                         device.ipAddress);
                 return hub;
-            } catch (HubException e) {
+            } catch (HubException | IllegalArgumentException e) {
                 logger.debug("Error discovering hub", e);
-            } catch (IllegalArgumentException e) {
-                // error already logged, so fall through
             }
         }
         return null;
@@ -121,8 +119,6 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
         if (device.type.contains(POWERVIEW_HUB_ID)) {
             return device.type.endsWith("v2") ? 2 : 1;
         }
-        final IllegalArgumentException e = new IllegalArgumentException("Device has unexpected 'type' property");
-        logger.debug("{}", e.getMessage());
-        throw e;
+        throw new IllegalArgumentException("Device has unexpected 'type' property");
     }
 }

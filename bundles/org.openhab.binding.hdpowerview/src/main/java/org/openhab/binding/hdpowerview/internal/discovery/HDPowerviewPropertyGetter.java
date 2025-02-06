@@ -79,7 +79,7 @@ public class HDPowerviewPropertyGetter {
             }
             throw new HubProcessingException("getGenerationApiV1(): HTTP error " + content.getReason());
         } catch (JsonSyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-            throw new HubProcessingException("getSerialNumberApiV3(): " + e.getMessage(), e);
+            throw new HubProcessingException("getGenerationApiV1(): " + e.getMessage(), e);
         }
     }
 
@@ -105,7 +105,7 @@ public class HDPowerviewPropertyGetter {
             }
             throw new HubProcessingException("getSerialNumberApiV1(): " + content.getReason());
         } catch (JsonSyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-            throw new HubProcessingException("getSerialNumberApiV3(): " + e.getMessage(), e);
+            throw new HubProcessingException("getSerialNumberApiV1(): " + e.getMessage(), e);
         }
     }
 
