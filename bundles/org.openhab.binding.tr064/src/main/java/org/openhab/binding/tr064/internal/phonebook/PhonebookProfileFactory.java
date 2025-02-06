@@ -63,6 +63,7 @@ public class PhonebookProfileFactory implements ProfileFactory, ProfileTypeProvi
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
 
     private final ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService;
+    @Nullable
     private final Bundle bundle;
 
     @Activate
