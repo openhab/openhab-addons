@@ -67,9 +67,14 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         for (String host : service.getHostAddresses()) {
             if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
+                String generation;
+                try {
+                    generation = propertyGetter.getGenerationApiV1(host);
+                } catch (HubException e) {
+                    generation = "1/2";
+                }
                 try {
                     String serial = propertyGetter.getSerialNumberApiV1(host);
-                    String generation = propertyGetter.getGenerationApiV1(host);
                     ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
                     String label = String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, generation, host);
                     DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
