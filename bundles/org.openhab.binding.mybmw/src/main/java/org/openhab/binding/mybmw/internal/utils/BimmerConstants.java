@@ -68,7 +68,6 @@ public interface BimmerConstants {
     // see const.py of bimmer_constants: user-agent; brand; app_version; region
     static final String X_USER_AGENT = "android(AP2A.240605.024);%s;%s;%s";
 
-    static final String LOGIN_NONCE = "login_nonce";
     static final String AUTHORIZATION_CODE = "authorization_code";
     static final String REFRESH_TOKEN = "refresh_token";
 
