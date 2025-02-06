@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
-import org.openhab.binding.hdpowerview.internal.discovery.SerialNumberHelper.ApiVersion;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -50,13 +50,13 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
 
     private final Runnable scanner;
     private @Nullable ScheduledFuture<?> backgroundFuture;
-    private final SerialNumberHelper serialNumberHelper;
+    private final HDPowerviewPropertyGetter propertyGetter;
 
     @Activate
-    public HDPowerViewHubDiscoveryService(@Reference SerialNumberHelper serialNumberHelper) {
+    public HDPowerViewHubDiscoveryService(@Reference HDPowerviewPropertyGetter propertyGetter) {
         super(Set.of(THING_TYPE_HUB), 60, true);
         scanner = createScanner();
-        this.serialNumberHelper = serialNumberHelper;
+        this.propertyGetter = propertyGetter;
     }
 
     @Override
@@ -89,17 +89,22 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
                 try {
                     NbtAddress address = NbtAddress.getByName(netBiosName);
                     if (address != null) {
-                        String host = address.getInetAddress().getHostAddress();
-                        ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
-                        String label = String.format("@text/%s [\"%s\", \"%s\"]",
-                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, "1/2", host);
-                        String serial = serialNumberHelper.getSerialNumber(host, ApiVersion.V1);
-                        DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                                .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
-                                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
-                        logger.debug("NetBios discovered hub on host '{}'", host);
-                        thingDiscovered(hub);
+                        try {
+                            String host = address.getInetAddress().getHostAddress();
+                            String serial = propertyGetter.getSerialNumberApiV1(host);
+                            String generation = propertyGetter.getGenerationApiV1(host);
+                            ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+                            String label = String.format("@text/%s [\"%s\", \"%s\"]",
+                                    HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, generation, host);
+                            DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
+                                    .withProperty(HDPowerViewHubConfiguration.HOST, host)
+                                    .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                                    .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
+                            logger.debug("NetBios discovered hub on host '{}'", host);
+                            thingDiscovered(hub);
+                        } catch (HubException e) {
+                            logger.debug("Error discovering hub", e);
+                        }
                     }
                 } catch (UnknownHostException e) {
                     // Nothing to do here - the host couldn't be found, likely because it doesn't

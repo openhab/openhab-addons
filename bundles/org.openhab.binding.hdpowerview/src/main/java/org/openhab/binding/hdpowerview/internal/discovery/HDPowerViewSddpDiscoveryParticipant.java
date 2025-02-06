@@ -19,7 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
-import org.openhab.binding.hdpowerview.internal.discovery.SerialNumberHelper.ApiVersion;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.sddp.SddpDevice;
@@ -49,11 +49,11 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
     private static final String POWERVIEW_GEN3_ID = "powerview:gen3:gateway";
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewSddpDiscoveryParticipant.class);
-    private final SerialNumberHelper serialNumberHelper;
+    private final HDPowerviewPropertyGetter propertyGetter;
 
     @Activate
-    public HDPowerViewSddpDiscoveryParticipant(@Reference SerialNumberHelper serialNumberHelper) {
-        this.serialNumberHelper = serialNumberHelper;
+    public HDPowerViewSddpDiscoveryParticipant(@Reference HDPowerviewPropertyGetter propertyGetter) {
+        this.propertyGetter = propertyGetter;
     }
 
     @Override
@@ -66,24 +66,28 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
         final ThingUID thingUID = getThingUID(device);
         if (thingUID != null) {
             try {
-                String label;
-                String serial;
-                int generation = getGeneration(device);
-                if (generation < 3) {
-                    label = String.format("@text/%s [\"%s\", \"%s\"]",
-                            HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, generation, device.ipAddress);
-                    serial = serialNumberHelper.getSerialNumber(device.ipAddress, ApiVersion.V1);
-                } else {
-                    label = String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress);
-                    serial = serialNumberHelper.getSerialNumber(device.ipAddress, ApiVersion.V3);
+                try {
+                    String label;
+                    String serial;
+                    int generation = getGeneration(device);
+                    if (generation < 3) {
+                        label = String.format("@text/%s [\"%s\", \"%s\"]",
+                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, generation, device.ipAddress);
+                        serial = propertyGetter.getSerialNumberApiV1(device.ipAddress);
+                    } else {
+                        label = String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress);
+                        serial = propertyGetter.getSerialNumberApiV3(device.ipAddress);
+                    }
+                    DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
+                            .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
+                            .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                            .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
+                    logger.debug("SDDP discovered Gen {} hub/gateway '{}' on host '{}'", generation, thingUID,
+                            device.ipAddress);
+                    return hub;
+                } catch (HubException e) {
+                    logger.debug("Error discovering hub", e);
                 }
-                DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                        .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
-                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
-                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
-                logger.debug("SDDP discovered Gen {} hub/gateway '{}' on host '{}'", generation, thingUID,
-                        device.ipAddress);
-                return hub;
             } catch (IllegalArgumentException e) {
                 // error already logged, so fall through
             }
