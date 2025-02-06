@@ -13,8 +13,7 @@
 package org.openhab.binding.modbus.stiebeleltron.internal.handler;
 
 import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.*;
-import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.library.unit.Units.*;
+import static org.openhab.core.library.unit.Units.KILOWATT_HOUR;
 
 import java.util.Optional;
 
@@ -25,14 +24,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronConfiguration;
-import org.openhab.binding.modbus.stiebeleltron.internal.dto.EnergyBlock;
-import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemInformationBlock;
-import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemParameterBlock;
-import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateBlock;
-import org.openhab.binding.modbus.stiebeleltron.internal.parser.EnergyBlockParser;
-import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInformationBlockParser;
-import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemParameterBlockParser;
-import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemStateBlockParser;
+import org.openhab.binding.modbus.stiebeleltron.internal.dto.SgReadyEnergyManagementSettingsBlock;
+import org.openhab.binding.modbus.stiebeleltron.internal.dto.SgReadyEnergyManagementSystemInformationBlock;
+import org.openhab.binding.modbus.stiebeleltron.internal.parser.SgReadyEnergyManagementSettingsBlockParser;
+import org.openhab.binding.modbus.stiebeleltron.internal.parser.SgReadyEnergyManagementSystemInformationBlockParser;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
@@ -42,7 +37,6 @@ import org.openhab.core.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.core.io.transport.modbus.PollTask;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -58,18 +52,20 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.wimpi.modbus.Modbus;
+
 /**
- * The {@link StiebelEltronHandler} is responsible for handling commands,
+ * The {@link Modbus.StiebelEltronHandler} is responsible for handling commands,
  * which are sent to one of the channels and for polling the modbus.
  *
  * @author Paul Frank - Initial contribution
+ * @author Thomas Burri - Thing handler for the ISG SG Ready Energy Management
  */
 @NonNullByDefault
-public class StiebelEltronHandler extends BaseThingHandler {
-
+public class StiebelEltronHandlerIsgSgReadyEm extends BaseThingHandler {
     public abstract class AbstractBasePoller {
 
-        private final Logger logger = LoggerFactory.getLogger(StiebelEltronHandler.class);
+        private final Logger logger = LoggerFactory.getLogger(StiebelEltronHandlerIsgSgReadyEm.class);
 
         private volatile @Nullable PollTask pollTask;
 
@@ -79,7 +75,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 return;
             }
 
-            ModbusCommunicationInterface mycomms = StiebelEltronHandler.this.comms;
+            ModbusCommunicationInterface mycomms = StiebelEltronHandlerIsgSgReadyEm.this.comms;
             if (mycomms != null) {
                 mycomms.unregisterRegularPoll(task);
             }
@@ -92,8 +88,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
             logger.debug("Setting up regular polling");
 
-            ModbusCommunicationInterface mycomms = StiebelEltronHandler.this.comms;
-            StiebelEltronConfiguration myconfig = StiebelEltronHandler.this.config;
+            ModbusCommunicationInterface mycomms = StiebelEltronHandlerIsgSgReadyEm.this.comms;
+            StiebelEltronConfiguration myconfig = StiebelEltronHandlerIsgSgReadyEm.this.config;
             if (myconfig == null || mycomms == null) {
                 throw new IllegalStateException("registerPollTask called without proper configuration");
             }
@@ -108,12 +104,12 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 if (getThing().getStatus() != ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 }
-            }, StiebelEltronHandler.this::handleReadError);
+            }, StiebelEltronHandlerIsgSgReadyEm.this::handleReadError);
         }
 
         public synchronized void poll() {
             PollTask task = pollTask;
-            ModbusCommunicationInterface mycomms = StiebelEltronHandler.this.comms;
+            ModbusCommunicationInterface mycomms = StiebelEltronHandlerIsgSgReadyEm.this.comms;
             if (task != null && mycomms != null) {
                 mycomms.submitOneTimePoll(task.getRequest(), task.getResultCallback(), task.getFailureCallback());
             }
@@ -125,44 +121,28 @@ public class StiebelEltronHandler extends BaseThingHandler {
     /**
      * Logger instance
      */
-    private final Logger logger = LoggerFactory.getLogger(StiebelEltronHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(StiebelEltronHandlerIsgSgReadyEm.class);
 
     /**
      * Configuration instance
      */
     protected @Nullable StiebelEltronConfiguration config = null;
     /**
-     * Parser used to convert incoming raw messages into system blocks
+     * Parser used to convert incoming raw messages into SG Ready Energy Management Settings blocks
      */
-    private final SystemInformationBlockParser systemInformationBlockParser = new SystemInformationBlockParser();
+    private final SgReadyEnergyManagementSettingsBlockParser sgReadyEnergyManagementSettingsBlockParser = new SgReadyEnergyManagementSettingsBlockParser();
     /**
-     * Parser used to convert incoming raw messages into system state blocks
+     * Parser used to convert incoming raw messages into SG Ready Energy Management Settings blocks
      */
-    private final SystemStateBlockParser systemstateBlockParser = new SystemStateBlockParser();
-    /**
-     * Parser used to convert incoming raw messages into system parameter blocks
-     */
-    private final SystemParameterBlockParser systemParameterBlockParser = new SystemParameterBlockParser();
-    /**
-     * Parser used to convert incoming raw messages into model blocks
-     */
-    private final EnergyBlockParser energyBlockParser = new EnergyBlockParser();
+    private final SgReadyEnergyManagementSystemInformationBlockParser sgReadyEnergyManagementSystemInformationBlockParser = new SgReadyEnergyManagementSystemInformationBlockParser();
     /**
      * This is the task used to poll the device
      */
-    private volatile @Nullable AbstractBasePoller systemInformationPoller = null;
+    private volatile @Nullable AbstractBasePoller sgReadyEnergyManagementSettingsPoller = null;
     /**
      * This is the task used to poll the device
      */
-    private volatile @Nullable AbstractBasePoller energyPoller = null;
-    /**
-     * This is the task used to poll the device
-     */
-    private volatile @Nullable AbstractBasePoller systemStatePoller = null;
-    /**
-     * This is the task used to poll the device
-     */
-    private volatile @Nullable AbstractBasePoller systemParameterPoller = null;
+    private volatile @Nullable AbstractBasePoller sgReadyEnergyManagementSystemInformationPoller = null;
     /**
      * Communication interface to the slave endpoint we're connecting to
      */
@@ -177,8 +157,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * Instances of this handler should get a reference to the modbus manager
      *
      * @param thing the thing to handle
+     * @param modbusManager the modbus manager
      */
-    public StiebelEltronHandler(Thing thing) {
+    public StiebelEltronHandlerIsgSgReadyEm(Thing thing) {
         super(thing);
     }
 
@@ -187,8 +168,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
-        StiebelEltronConfiguration myconfig = StiebelEltronHandler.this.config;
-        ModbusCommunicationInterface mycomms = StiebelEltronHandler.this.comms;
+        StiebelEltronConfiguration myconfig = StiebelEltronHandlerIsgSgReadyEm.this.config;
+        ModbusCommunicationInterface mycomms = StiebelEltronHandlerIsgSgReadyEm.this.comms;
 
         if (myconfig == null || mycomms == null) {
             throw new IllegalStateException("registerPollTask called without proper configuration");
@@ -206,30 +187,10 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 return;
             }
             logger.debug("Successful write, matching request {}", request);
-            StiebelEltronHandler.this.updateStatus(ThingStatus.ONLINE);
+            StiebelEltronHandlerIsgSgReadyEm.this.updateStatus(ThingStatus.ONLINE);
         }, failure -> {
-            StiebelEltronHandler.this.handleWriteError(failure);
+            StiebelEltronHandlerIsgSgReadyEm.this.handleWriteError(failure);
         });
-    }
-
-    /**
-     * @param command get the value of this command.
-     * @return short the value of the command multiplied by 10 (see datatype 2 in
-     *         the stiebel eltron modbus documentation)
-     */
-    private short getScaledInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof QuantityType) {
-            QuantityType<?> c = ((QuantityType<?>) command).toUnit(CELSIUS);
-            if (c != null) {
-                return (short) (c.doubleValue() * 10);
-            } else {
-                throw new StiebelEltronException("Unsupported unit");
-            }
-        }
-        if (command instanceof DecimalType c) {
-            return (short) (c.doubleValue() * 10);
-        }
-        throw new StiebelEltronException("Unsupported command type");
     }
 
     /**
@@ -237,7 +198,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * @return short the value of the command as short
      */
     private short getInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof DecimalType c) {
+        if (command instanceof DecimalType) {
+            DecimalType c = (DecimalType) command;
             return c.shortValue();
         }
         throw new StiebelEltronException("Unsupported command type");
@@ -253,17 +215,11 @@ public class StiebelEltronHandler extends BaseThingHandler {
             if (groupId != null) {
                 AbstractBasePoller poller;
                 switch (groupId) {
-                    case GROUP_SYSTEM_STATE:
-                        poller = systemStatePoller;
+                    case GROUP_SG_READY_ENERGY_MANAGEMENT_SETTINGS:
+                        poller = sgReadyEnergyManagementSettingsPoller;
                         break;
-                    case GROUP_SYSTEM_PARAMETER:
-                        poller = systemParameterPoller;
-                        break;
-                    case GROUP_SYSTEM_INFO:
-                        poller = systemInformationPoller;
-                        break;
-                    case GROUP_ENERGY_INFO:
-                        poller = energyPoller;
+                    case GROUP_SG_READY_ENERGY_MANAGEMENT_SYSTEM_INFORMATION:
+                        poller = sgReadyEnergyManagementSystemInformationPoller;
                         break;
                     default:
                         poller = null;
@@ -275,22 +231,26 @@ public class StiebelEltronHandler extends BaseThingHandler {
             }
         } else {
             try {
-                if (GROUP_SYSTEM_PARAMETER.equals(channelUID.getGroupId())) {
+                if (GROUP_SG_READY_ENERGY_MANAGEMENT_SETTINGS.equals(channelUID.getGroupId())) {
                     switch (channelUID.getIdWithoutGroup()) {
-                        case CHANNEL_OPERATION_MODE:
-                            writeInt16(1500, getInt16Value(command));
+                        case CHANNEL_SG_READY_ON_OFF_SWITCH:
+                            writeInt16(4000, getInt16Value(command));
                             break;
-                        case CHANNEL_COMFORT_TEMPERATURE_HEATING:
-                            writeInt16(1501, getScaledInt16Value(command));
-                            break;
-                        case CHANNEL_ECO_TEMPERATURE_HEATING:
-                            writeInt16(1502, getScaledInt16Value(command));
-                            break;
-                        case CHANNEL_COMFORT_TEMPERATURE_WATER:
-                            writeInt16(1509, getScaledInt16Value(command));
-                            break;
-                        case CHANNEL_ECO_TEMPERATURE_WATER:
-                            writeInt16(1510, getScaledInt16Value(command));
+                    }
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case CHANNEL_SG_READY_INPUT_LINES:
+                            int selectedOpState = getInt16Value(command);
+                            // only OS1 to OS4 can be used for setting
+                            if (selectedOpState < 1) {
+                                logger.debug("Unsupported value {} used for setting SG Ready Input Lines",
+                                        selectedOpState);
+                                break;
+                            }
+                            short input1 = (short) ((selectedOpState < 3) ? 0 : 1);
+                            short input2 = (short) (((selectedOpState == 2) || (selectedOpState == 3)) ? 0 : 1);
+                            logger.trace("SG Ready Input Lines will be set like: input1:{} input2:{}", input1, input2);
+                            writeInt16(4001, input1);
+                            writeInt16(4002, input2);
                             break;
                     }
                 }
@@ -354,46 +314,27 @@ public class StiebelEltronHandler extends BaseThingHandler {
             return;
         }
 
-        if (systemInformationPoller == null) {
+        if (sgReadyEnergyManagementSettingsPoller == null) {
             AbstractBasePoller poller = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
-                    handlePolledSystemInformationData(registers);
+                    handlePolledSgReadyEnergyManagementSettingsData(registers);
                 }
             };
-            poller.registerPollTask(500, 36, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
-            systemInformationPoller = poller;
+            poller.registerPollTask(4000, 3, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
+            sgReadyEnergyManagementSettingsPoller = poller;
         }
-        if (energyPoller == null) {
+        if (sgReadyEnergyManagementSystemInformationPoller == null) {
             AbstractBasePoller poller = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
-                    handlePolledEnergyData(registers);
+                    handlePolledSgReadyEnergyManagementSystemInformationData(registers);
                 }
             };
-            poller.registerPollTask(3500, 16, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
-            energyPoller = poller;
+            poller.registerPollTask(5000, 2, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
+            sgReadyEnergyManagementSettingsPoller = poller;
         }
-        if (systemStatePoller == null) {
-            AbstractBasePoller poller = new AbstractBasePoller() {
-                @Override
-                protected void handlePolledData(ModbusRegisterArray registers) {
-                    handlePolledSystemStateData(registers);
-                }
-            };
-            poller.registerPollTask(2500, 2, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
-            systemStatePoller = poller;
-        }
-        if (systemParameterPoller == null) {
-            AbstractBasePoller poller = new AbstractBasePoller() {
-                @Override
-                protected void handlePolledData(ModbusRegisterArray registers) {
-                    handlePolledSystemParameterData(registers);
-                }
-            };
-            poller.registerPollTask(1500, 11, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
-            systemParameterPoller = poller;
-        }
+
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -409,36 +350,19 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * Unregister the poll tasks and release the endpoint reference
      */
     private void tearDown() {
-        AbstractBasePoller poller = systemInformationPoller;
+        AbstractBasePoller poller = sgReadyEnergyManagementSettingsPoller;
         if (poller != null) {
-            logger.debug("Unregistering systemInformationPoller from ModbusManager");
+            logger.debug("Unregistering sgReadyEnergyManagementSettingsPoller from ModbusManager");
             poller.unregisterPollTask();
 
-            systemInformationPoller = null;
+            sgReadyEnergyManagementSettingsPoller = null;
         }
-
-        poller = energyPoller;
+        poller = sgReadyEnergyManagementSystemInformationPoller;
         if (poller != null) {
-            logger.debug("Unregistering energyPoller from ModbusManager");
+            logger.debug("Unregistering sgReadyEnergyManagementSystemInformationPoller from ModbusManager");
             poller.unregisterPollTask();
 
-            energyPoller = null;
-        }
-
-        poller = systemStatePoller;
-        if (poller != null) {
-            logger.debug("Unregistering systemStatePoller from ModbusManager");
-            poller.unregisterPollTask();
-
-            systemStatePoller = null;
-        }
-
-        poller = systemParameterPoller;
-        if (poller != null) {
-            logger.debug("Unregistering systemParameterPoller from ModbusManager");
-            poller.unregisterPollTask();
-
-            systemParameterPoller = null;
+            sgReadyEnergyManagementSystemInformationPoller = null;
         }
 
         comms = null;
@@ -474,28 +398,30 @@ public class StiebelEltronHandler extends BaseThingHandler {
             return null;
         }
 
-        if (handler instanceof ModbusEndpointThingHandler thingHandler) {
-            return thingHandler;
+        if (handler instanceof ModbusEndpointThingHandler) {
+            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
+            return slaveEndpoint;
         } else {
             throw new IllegalStateException("Unexpected bridge handler: " + handler.toString());
         }
     }
 
     /**
-     * Returns value divided by the 10
+     * Returns value divided by the scaleFactor (type 2: 10, type 7: 100)
      *
      * @param value the value to alter
+     * @param scaleFactor the scale factor (division)
      * @return the scaled value as a DecimalType
      */
-    protected State getScaled(Number value, Unit<?> unit) {
-        return QuantityType.valueOf(value.doubleValue() / 10, unit);
+    protected State getScaled(Number value, Integer scaleFactor, Unit<?> unit) {
+        return QuantityType.valueOf(value.doubleValue() / scaleFactor, unit);
     }
 
     /**
      * Returns high value * 1000 + low value
      *
      * @param high the high value
-     * @param low the low valze
+     * @param low the low value
      * @return the scaled value as a DecimalType
      */
     protected State getEnergyQuantity(int high, int low) {
@@ -510,34 +436,36 @@ public class StiebelEltronHandler extends BaseThingHandler {
      *
      * @param registers byte array read from the modbus slave
      */
-    protected void handlePolledSystemInformationData(ModbusRegisterArray registers) {
-        logger.trace("System Information block received, size: {}", registers.size());
+    protected void handlePolledSgReadyEnergyManagementSettingsData(ModbusRegisterArray registers) {
+        logger.trace("SG Ready Energy Management Settings block received, size: {}", registers.size());
 
-        SystemInformationBlock block = systemInformationBlockParser.parse(registers);
+        SgReadyEnergyManagementSettingsBlock block = sgReadyEnergyManagementSettingsBlockParser.parse(registers);
 
-        // System information group
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_TEMPERATURE), getScaled(block.temperatureFek, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_TEMPERATURE_SETPOINT),
-                getScaled(block.temperatureFekSetPoint, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_HUMIDITY), getScaled(block.humidityFek, PERCENT));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_DEWPOINT), getScaled(block.dewpointFek, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_OUTDOOR_TEMPERATURE),
-                getScaled(block.temperatureOutdoor, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE), getScaled(block.temperatureHc1, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE_SETPOINT),
-                getScaled(block.temperatureHc1SetPoint, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_SUPPLY_TEMPERATURE),
-                getScaled(block.temperatureSupply, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_RETURN_TEMPERATURE),
-                getScaled(block.temperatureReturn, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_SOURCE_TEMPERATURE),
-                getScaled(block.temperatureSource, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_WATER_TEMPERATURE),
-                getScaled(block.temperatureWater, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_WATER_TEMPERATURE_SETPOINT),
-                getScaled(block.temperatureWaterSetPoint, CELSIUS));
+        logger.trace("SG Ready Switch  = {}", block.sgReadyOnOffSwitch);
+        logger.trace("SG Ready Input 1 = {}", block.sgReadyInput1);
+        logger.trace("SG Ready Input 2 = {}", block.sgReadyInput2);
 
-        resetCommunicationError();
+        updateState(channelUID(GROUP_SG_READY_ENERGY_MANAGEMENT_SETTINGS, CHANNEL_SG_READY_ON_OFF_SWITCH),
+                new DecimalType(block.sgReadyOnOffSwitch));
+
+        int sgReadyInputLines = -1;
+        if ((block.sgReadyInput1 == 32768) || (block.sgReadyInput2 == 32768)) {
+            sgReadyInputLines = -1;
+        } else if (block.sgReadyOnOffSwitch == 0) {
+            sgReadyInputLines = 0;
+        } else {
+            if ((block.sgReadyInput1 == 0) && (block.sgReadyInput2 == 1)) {
+                sgReadyInputLines = 1;
+            } else if ((block.sgReadyInput1 == 0) && (block.sgReadyInput2 == 0)) {
+                sgReadyInputLines = 2;
+            } else if ((block.sgReadyInput1 == 1) && (block.sgReadyInput2 == 0)) {
+                sgReadyInputLines = 3;
+            } else if ((block.sgReadyInput1 == 1) && (block.sgReadyInput2 == 1)) {
+                sgReadyInputLines = 4;
+            }
+        }
+        updateState(channelUID(GROUP_SG_READY_ENERGY_MANAGEMENT_SETTINGS, CHANNEL_SG_READY_INPUT_LINES),
+                new DecimalType(sgReadyInputLines));
     }
 
     /**
@@ -547,81 +475,19 @@ public class StiebelEltronHandler extends BaseThingHandler {
      *
      * @param registers byte array read from the modbus slave
      */
-    protected void handlePolledEnergyData(ModbusRegisterArray registers) {
-        logger.trace("Energy block received, size: {}", registers.size());
+    protected void handlePolledSgReadyEnergyManagementSystemInformationData(ModbusRegisterArray registers) {
+        logger.trace("SG Ready Energy Management Settings block received, size: {}", registers.size());
 
-        EnergyBlock block = energyBlockParser.parse(registers);
+        SgReadyEnergyManagementSystemInformationBlock block = sgReadyEnergyManagementSystemInformationBlockParser
+                .parse(registers);
 
-        // Energy information group
-        updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_PRODUCTION_HEAT_TODAY),
-                new QuantityType<>(block.productionHeatToday, KILOWATT_HOUR));
-        updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_PRODUCTION_HEAT_TOTAL),
-                getEnergyQuantity(block.productionHeatTotalHigh, block.productionHeatTotalLow));
-        updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_PRODUCTION_WATER_TODAY),
-                new QuantityType<>(block.productionWaterToday, KILOWATT_HOUR));
-        updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_PRODUCTION_WATER_TOTAL),
-                getEnergyQuantity(block.productionWaterTotalHigh, block.productionWaterTotalLow));
-        updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_CONSUMPTION_HEAT_TODAY),
-                new QuantityType<>(block.consumptionHeatToday, KILOWATT_HOUR));
-        updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_CONSUMPTION_HEAT_TOTAL),
-                getEnergyQuantity(block.consumptionHeatTotalHigh, block.consumptionHeatTotalLow));
-        updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_CONSUMPTION_WATER_TODAY),
-                new QuantityType<>(block.consumptionWaterToday, KILOWATT_HOUR));
-        updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_CONSUMPTION_WATER_TOTAL),
-                getEnergyQuantity(block.consumptionWaterTotalHigh, block.consumptionWaterTotalLow));
+        logger.trace("SG Ready Operating State           = {}", block.sgReadyOperatingState);
+        logger.trace("SG Ready Controller Identification = {}", block.sgReadyControllerIdentification);
 
-        resetCommunicationError();
-    }
-
-    /**
-     * This method is called each time new data has been polled from the modbus
-     * slave The register array is first parsed, then each of the channels are
-     * updated to the new values
-     *
-     * @param registers byte array read from the modbus slave
-     */
-    protected void handlePolledSystemStateData(ModbusRegisterArray registers) {
-        logger.trace("System state block received, size: {}", registers.size());
-
-        SystemStateBlock block = systemstateBlockParser.parse(registers);
-        boolean isHeating = (block.state & 16) != 0;
-        updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_HEATING),
-                isHeating ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-        updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_HEATING_WATER),
-                (block.state & 32) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-        updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_COOLING),
-                (block.state & 256) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-        updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_SUMMER),
-                (block.state & 128) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-        updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_PUMPING),
-                (block.state & 1) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-
-        resetCommunicationError();
-    }
-
-    /**
-     * This method is called each time new data has been polled from the modbus
-     * slave The register array is first parsed, then each of the channels are
-     * updated to the new values
-     *
-     * @param registers byte array read from the modbus slave
-     */
-    protected void handlePolledSystemParameterData(ModbusRegisterArray registers) {
-        logger.trace("System state block received, size: {}", registers.size());
-
-        SystemParameterBlock block = systemParameterBlockParser.parse(registers);
-        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_OPERATION_MODE), new DecimalType(block.operationMode));
-
-        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_COMFORT_TEMPERATURE_HEATING),
-                getScaled(block.comfortTemperatureHeating, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_ECO_TEMPERATURE_HEATING),
-                getScaled(block.ecoTemperatureHeating, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_COMFORT_TEMPERATURE_WATER),
-                getScaled(block.comfortTemperatureWater, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_ECO_TEMPERATURE_WATER),
-                getScaled(block.ecoTemperatureWater, CELSIUS));
-
-        resetCommunicationError();
+        updateState(channelUID(GROUP_SG_READY_ENERGY_MANAGEMENT_SYSTEM_INFORMATION, CHANNEL_SG_READY_OPERATING_STATE),
+                new DecimalType(block.sgReadyOperatingState));
+        updateState(channelUID(GROUP_SG_READY_ENERGY_MANAGEMENT_SYSTEM_INFORMATION, CHANNEL_SG_READY_CONTROLLER_IDENT),
+                new DecimalType(block.sgReadyControllerIdentification));
     }
 
     /**
