@@ -47,7 +47,6 @@ import org.openhab.binding.mybmw.internal.dto.auth.ChinaTokenResponse;
 import org.openhab.binding.mybmw.internal.dto.auth.OAuthSettingsQueryResponse;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
 import org.openhab.binding.mybmw.internal.handler.backend.JsonStringDeserializer;
-import org.openhab.binding.mybmw.internal.handler.backend.NetworkException;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -106,7 +105,6 @@ public class MyBMWTokenController {
      * the corresponding requests will also fail and update the Thing status accordingly.
      *
      * @return token
-     * @throws NetworkException
      */
     public synchronized AccessTokenResponse getToken() {
         logger.trace("getToken");
@@ -160,7 +158,6 @@ public class MyBMWTokenController {
 
     /**
      * @return true if the token was successfully retrieved
-     * @throws NetworkException
      */
     private boolean loginROW() {
         logger.trace("get initial token");
