@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.hdpowerview.internal.discovery;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -80,7 +79,7 @@ public class HDPowerviewPropertyGetter {
             }
             throw new HubProcessingException("getGenerationApiV1(): HTTP error " + content.getReason());
         } catch (JsonSyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-            throw new HubProcessingException("getGenerationApiV1(): " + e.getMessage());
+            throw new HubProcessingException("getSerialNumberApiV3(): " + e.getMessage(), e);
         }
     }
 
@@ -89,8 +88,7 @@ public class HDPowerviewPropertyGetter {
      *
      * @param host a dotted ipv4 address
      * @return the serial number
-     * @throws IOException if anything failed
-     * @throws HubException
+     * @throws HubException if anything failed
      */
     public String getSerialNumberApiV1(String host) throws HubException {
         try {
@@ -107,7 +105,7 @@ public class HDPowerviewPropertyGetter {
             }
             throw new HubProcessingException("getSerialNumberApiV1(): " + content.getReason());
         } catch (JsonSyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-            throw new HubProcessingException("getSerialNumberApiV1(): " + e.getMessage());
+            throw new HubProcessingException("getSerialNumberApiV3(): " + e.getMessage(), e);
         }
     }
 
@@ -133,7 +131,7 @@ public class HDPowerviewPropertyGetter {
             }
             throw new HubProcessingException("getSerialNumberApiV3(): " + content.getReason());
         } catch (JsonSyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-            throw new HubProcessingException("getSerialNumberApiV3(): " + e.getMessage());
+            throw new HubProcessingException("getSerialNumberApiV3(): " + e.getMessage(), e);
         }
     }
 }

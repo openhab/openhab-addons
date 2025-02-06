@@ -89,25 +89,22 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
                 try {
                     NbtAddress address = NbtAddress.getByName(netBiosName);
                     if (address != null) {
-                        try {
-                            String host = address.getInetAddress().getHostAddress();
-                            String serial = propertyGetter.getSerialNumberApiV1(host);
-                            ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
-                            String label = String.format("@text/%s [\"%s\", \"%s\"]",
-                                    HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, "1", host);
-                            DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                                    .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                                    .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
-                                    .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
-                            logger.debug("NetBios discovered hub on host '{}'", host);
-                            thingDiscovered(hub);
-                        } catch (HubException e) {
-                            logger.debug("Error discovering hub", e);
-                        }
+                        String host = address.getInetAddress().getHostAddress();
+                        String serial = propertyGetter.getSerialNumberApiV1(host);
+                        ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+                        String label = String.format("@text/%s [\"%s\", \"%s\"]",
+                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, "1", host);
+                        DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
+                                .withProperty(HDPowerViewHubConfiguration.HOST, host)
+                                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
+                        logger.debug("NetBios discovered hub on host '{}'", host);
+                        thingDiscovered(hub);
                     }
+                } catch (HubException e) {
+                    logger.debug("Error discovering hub", e);
                 } catch (UnknownHostException e) {
-                    // Nothing to do here - the host couldn't be found, likely because it doesn't
-                    // exist
+                    // Nothing to do here - the host couldn't be found, likely because it doesn't exist
                 }
             }
         };

@@ -66,28 +66,26 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
         final ThingUID thingUID = getThingUID(device);
         if (thingUID != null) {
             try {
-                try {
-                    String label;
-                    String serial;
-                    int generation = getGeneration(device);
-                    if (generation < 3) {
-                        label = String.format("@text/%s [\"%s\", \"%s\"]",
-                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, generation, device.ipAddress);
-                        serial = propertyGetter.getSerialNumberApiV1(device.ipAddress);
-                    } else {
-                        label = String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress);
-                        serial = propertyGetter.getSerialNumberApiV3(device.ipAddress);
-                    }
-                    DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                            .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
-                            .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
-                            .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
-                    logger.debug("SDDP discovered Gen {} hub/gateway '{}' on host '{}'", generation, thingUID,
-                            device.ipAddress);
-                    return hub;
-                } catch (HubException e) {
-                    logger.debug("Error discovering hub", e);
+                String label;
+                String serial;
+                int generation = getGeneration(device);
+                if (generation < 3) {
+                    label = String.format("@text/%s [\"%s\", \"%s\"]",
+                            HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, generation, device.ipAddress);
+                    serial = propertyGetter.getSerialNumberApiV1(device.ipAddress);
+                } else {
+                    label = String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress);
+                    serial = propertyGetter.getSerialNumberApiV3(device.ipAddress);
                 }
+                DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
+                        .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
+                logger.debug("SDDP discovered Gen {} hub/gateway '{}' on host '{}'", generation, thingUID,
+                        device.ipAddress);
+                return hub;
+            } catch (HubException e) {
+                logger.debug("Error discovering hub", e);
             } catch (IllegalArgumentException e) {
                 // error already logged, so fall through
             }
