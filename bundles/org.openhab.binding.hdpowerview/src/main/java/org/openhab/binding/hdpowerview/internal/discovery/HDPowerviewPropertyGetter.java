@@ -24,6 +24,7 @@ import org.openhab.binding.hdpowerview.internal.dto.HubFirmware;
 import org.openhab.binding.hdpowerview.internal.dto.UserData;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.Info;
 import org.openhab.binding.hdpowerview.internal.dto.responses.FirmwareVersion;
+import org.openhab.binding.hdpowerview.internal.dto.responses.UserDataResponse;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
@@ -97,8 +98,9 @@ public class HDPowerviewPropertyGetter {
             ContentResponse content = httpClient.GET(uri);
             if (HttpStatus.OK_200 == content.getStatus()) {
                 String json = content.getContentAsString();
-                UserData userData = gsonParser.fromJson(json, UserData.class);
-                if (userData != null && userData.serialNumber instanceof String serial) {
+                UserDataResponse userDataResponse = gsonParser.fromJson(json, UserDataResponse.class);
+                if (userDataResponse != null && userDataResponse.userData instanceof UserData userData
+                        && userData.serialNumber instanceof String serial) {
                     return serial;
                 }
                 throw new HubInvalidResponseException("getSerialNumberApiV1(): no serial number");
