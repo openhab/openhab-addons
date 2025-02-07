@@ -12,16 +12,10 @@
  */
 package org.openhab.binding.boschshc.internal.devices.windowcontact;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_VIBRATION_SENSOR_ENABLED;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_VIBRATION_SENSOR_SENSITIVITY;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_VIBRATION_SENSOR_STATE;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -31,7 +25,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.mockito.ArgumentCaptor;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.binding.boschshc.internal.services.vibrationsensor.dto.VibrationSensorSensitivity;
 import org.openhab.binding.boschshc.internal.services.vibrationsensor.dto.VibrationSensorServiceState;
@@ -62,7 +55,7 @@ class WindowContact2PlusHandlerTest extends WindowContact2HandlerTest {
 
     @Override
     protected ThingTypeUID getThingTypeUID() {
-        return BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2_PLUS;
+        return THING_TYPE_WINDOW_CONTACT_2_PLUS;
     }
 
     @Override

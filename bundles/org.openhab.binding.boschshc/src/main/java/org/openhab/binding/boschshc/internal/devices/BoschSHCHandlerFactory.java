@@ -12,32 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_CAMERA_360;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_CAMERA_EYES;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_CLIMATE_CONTROL;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_DIMMER;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_INTRUSION_DETECTION_SYSTEM;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_LIGHT_CONTROL_2;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_RELAY;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHC;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SMART_BULB;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR_2;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_THERMOSTAT;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_TWINGUARD;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_USER_DEFINED_STATE;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WATER_DETECTOR;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2_PLUS;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import java.util.Collection;
 import java.util.List;

@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.devices.windowcontact;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_VIBRATION_SENSOR_ENABLED;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_VIBRATION_SENSOR_SENSITIVITY;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_VIBRATION_SENSOR_STATE;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import java.util.List;
 
