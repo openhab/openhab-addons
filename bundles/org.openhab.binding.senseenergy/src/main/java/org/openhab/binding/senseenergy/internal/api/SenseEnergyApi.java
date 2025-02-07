@@ -333,13 +333,11 @@ public class SenseEnergyApi {
         @SuppressWarnings("null") // prevent this warning on d.tags - [WARNING] Potential null pointer access: this
                                   // expression has
                                   // a '@Nullable' type
-        // @formatter:off
-        Map<String, SenseEnergyApiDevice> mapDevices = StreamSupport.stream(jsonDevices.spliterator(), false)
-                .map(j -> jsonToSenseEnergyDevice(j))
-                .filter(Objects::nonNull)
-                .filter(d -> (d.tags == null || !d.tags.userDeleted))
+        Map<String, SenseEnergyApiDevice> mapDevices = StreamSupport.stream(jsonDevices.spliterator(), false) //
+                .map(j -> jsonToSenseEnergyDevice(j)) //
+                .filter(Objects::nonNull) //
+                .filter(d -> (d.tags == null || !d.tags.userDeleted)) //
                 .collect(Collectors.toMap(d -> Objects.requireNonNull(d.id), d -> Objects.requireNonNull(d)));
-        // @formatter:on
 
         return mapDevices;
     }
@@ -380,15 +378,13 @@ public class SenseEnergyApi {
         switch (response.getStatus()) {
             case 200:
                 break;
-            case 400:
-                throw new SenseEnergyApiException("@text/api-bad-request [\"" + response.getReason() + "\"]", false);
+            case 400: // API responses with 400 when user credentials are invalid
             case 401:
-                throw new SenseEnergyApiException(
-                        "@text/api.invalid-user-credentials [\"" + response.getReason() + "\"]", true);
+                throw new SenseEnergyApiException("@text/api.invalid-user-credentials", true);
             case 429:
                 throw new SenseEnergyApiException("@text/api.rate-limit-exceeded", false);
             default:
-                throw new SenseEnergyApiException(response.getReason(), false);
+                throw new SenseEnergyApiException("Unexpected API error: " + response.getReason(), false);
         }
 
         return response;

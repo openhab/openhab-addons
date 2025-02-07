@@ -57,7 +57,7 @@ The monitor will be auto-discovered after the could-connector bridge goes online
 
 ### Virtual Device Emulation
 
-Virtual devices can be created in order to notify Sense of specific power usage of devices in your home. 
+Virtual devices can be created in order to notify Sense of specific power usage of devices in your home. These emulate a TP-Link Kasa HS110 smart plug so you can report actual power usage of any real or virutal device from openHAB.  In order to use, you need to enable "TP-Link HS110/HS300 Smart Plug" in the Sense app.
 
 | Name            | Type             | Description                                                                        | Default | Required | Advanced |
 |-----------------|---------         |---------------------------------------                                             |---------|----------|----------|

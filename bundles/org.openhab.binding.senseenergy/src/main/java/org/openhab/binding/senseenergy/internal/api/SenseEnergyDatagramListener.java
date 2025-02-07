@@ -23,7 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface SenseEnergyDatagramListener {
-    void messageReceived(byte[] message);
-
-    void requestReceived(SocketAddress inetAddress);
+    void requestReceived(SocketAddress socketAddress);
 }

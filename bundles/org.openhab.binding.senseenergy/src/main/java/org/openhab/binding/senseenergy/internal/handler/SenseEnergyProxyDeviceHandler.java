@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.senseenergy.internal.handler;
 
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.*;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_PROXY_DEVICE_DIMMER;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_PROXY_DEVICE_POWER;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_PROXY_DEVICE_STATE;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_PROXY_DEVICE_SWITCH;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CONFIG_PARAMETER_MAC;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CONFIG_PARAMETER_POWER_LEVELS;
 
 import java.util.HexFormat;
 import java.util.Map;
@@ -191,7 +196,7 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
                             logger.debug("Received switch update: {} -> {}", command.toString(), qt);
                             return;
                         }
-                        logger.debug("No power levels specified");
+                        logger.debug("No power levels specified for command: {}", command);
                     }
                 } else if (command instanceof PercentType percentType) {
                     qt = powerLevels.getLevel(percentType.intValue());
@@ -311,7 +316,7 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
 
         public void setPower(float power) {
             this.power = power;
-            this.current = power / voltage;
+            this.current = (voltage != 0) ? power / voltage : 0;
         }
 
         public float getVoltage() {

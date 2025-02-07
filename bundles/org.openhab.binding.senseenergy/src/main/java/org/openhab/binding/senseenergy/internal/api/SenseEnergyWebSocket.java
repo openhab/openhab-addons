@@ -63,7 +63,7 @@ public class SenseEnergyWebSocket implements WebSocketListener {
     }
 
     public void start(long monitorId, String accessToken) throws Exception {
-        logger.debug("Starting Sense Energy WebSocket");
+        logger.debug("Starting Sense Energy WebSocket for monitor ID: {}", monitorId);
         this.monitorId = monitorId;
 
         String url = String.format(WSSURL, monitorId, accessToken);
@@ -71,12 +71,11 @@ public class SenseEnergyWebSocket implements WebSocketListener {
     }
 
     public void restart(String accessToken)
-            throws InterruptedException, ExecutionException, IOException, URISyntaxException {
+            throws InterruptedException, ExecutionException, IOException, URISyntaxException, Exception {
         logger.debug("Re-starting Sense Energy WebSocket");
 
-        this.stop();
-        String url = String.format(WSSURL, monitorId, accessToken);
-        session = (WebSocketSession) client.connect(this, new URI(url)).get();
+        stop();
+        start(monitorId, accessToken);
     }
 
     public synchronized void stop() {
@@ -87,8 +86,10 @@ public class SenseEnergyWebSocket implements WebSocketListener {
         if (localSession != null) {
             try {
                 localSession.close();
-            } catch (Exception ex) {
-                // ignore
+            } catch (Exception e) {
+                logger.warn("Error while closing WebSocket session: {}", e.getMessage(), e);
+            } finally {
+                session = null;
             }
 
             return;
@@ -96,13 +97,14 @@ public class SenseEnergyWebSocket implements WebSocketListener {
     }
 
     public boolean isRunning() {
-        return (session == null) ? false : session.isRunning();
+        WebSocketSession localSession = session;
+        return localSession != null && localSession.isRunning();
     }
 
     /******* WebSocketListener interface ***********/
     @Override
     public void onWebSocketClose(int statusCode, @Nullable String reason) {
-        this.session = null;
+        session = null;
         logger.trace("WebSocket Close: {} - {}", statusCode, reason);
         if (!closing) {
             listener.onWebSocketClose(statusCode, reason);
@@ -117,11 +119,8 @@ public class SenseEnergyWebSocket implements WebSocketListener {
 
     @Override
     public void onWebSocketError(@Nullable Throwable cause) {
-        String causeMessage = (cause instanceof Throwable causeSafe && causeSafe.getMessage() instanceof String message)
-                ? message
-                : "unknown";
-
-        logger.debug("Sense Energy WebSocket error: {}", causeMessage);
+        String causeMessage = cause != null ? String.valueOf(cause.getMessage()) : "unknown";
+        logger.error("Sense Energy WebSocket error: {}", causeMessage, cause);
 
         if (!closing) {
             // let listener handle restart of socket
@@ -131,28 +130,31 @@ public class SenseEnergyWebSocket implements WebSocketListener {
 
     @Override
     public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
-        logger.trace("onWebSocketBinary");
+        logger.warn("Unexpected binary message received");
     }
 
     @Override
     public void onWebSocketText(@Nullable String message) {
-        if (!closing) {
-            if (message == null) {
-                return;
-            }
-            JsonObject jsonResponse = JsonParser.parseString(message).getAsJsonObject();
+        if (closing || message == null) {
+            return;
+        }
 
+        try {
+            JsonObject jsonResponse = JsonParser.parseString(message).getAsJsonObject();
             String type = jsonResponse.get("type").getAsString();
+
             if ("realtime_update".equals(type)) {
+                logger.trace("realtime_update: {}", jsonResponse);
                 SenseEnergyWebSocketRealtimeUpdate update = gson.fromJson(jsonResponse.getAsJsonObject("payload"),
                         SenseEnergyWebSocketRealtimeUpdate.class);
                 if (update != null) {
                     listener.onWebSocketRealtimeUpdate(update);
                 }
             } else if ("error".equals(type)) {
-                // TODO
-                logger.debug("WS error {}", jsonResponse.get("payload").toString());
+                logger.error("WebSocket error {}", jsonResponse.get("payload").toString());
             }
+        } catch (Exception e) {
+            logger.error("Error processing WebSocket message: {}", message, e);
         }
     }
 }

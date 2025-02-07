@@ -59,7 +59,17 @@
 		<description>Sense discovered devices</description>
 	</channel-group-type>
 
-	<channel-group-type id="discovered-device-template">
+	<channel-group-type id="self-reporting-devices">
+		<label>Self-Reporting Devices</label>
+		<description>Devices that self report their power to Sense</description>
+	</channel-group-type>
+
+	<channel-group-type id="discovered-devices">
+		<label>Proxy Devices</label>
+		<description>Proxy devices configured in openHAB which report their power</description>
+	</channel-group-type>
+
+	<channel-group-type id="device-template">
 		<label>Device</label>
 		<description>Discovered devices</description>
 		<channels>

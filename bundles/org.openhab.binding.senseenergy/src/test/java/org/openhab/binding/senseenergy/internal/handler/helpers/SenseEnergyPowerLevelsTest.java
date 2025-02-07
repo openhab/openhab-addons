@@ -60,6 +60,8 @@ class SenseEnergyPowerLevelsTest {
                 qtResult = powerLevels.getLevel((int) value);
             }
 
+            Assertions.assertNotNull(qtResult, "getLevel result is null: " + s);
+
             result = qtResult.floatValue();
             float expected = (float) iter.next();
             Assertions.assertEquals(expected, result, .0001, "getLevel result incorrect");

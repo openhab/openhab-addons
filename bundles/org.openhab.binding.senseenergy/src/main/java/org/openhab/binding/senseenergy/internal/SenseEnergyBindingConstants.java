@@ -38,11 +38,13 @@ public class SenseEnergyBindingConstants {
     /** Monitor Bridge/Thing ***/
     // Channel group type UIDs
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_DEVICE_TEMPLATE = new ChannelGroupTypeUID(BINDING_ID,
-            "discovered-device-template");
+            "device-template");
 
     // Channel Groups
     public static final String CHANNEL_GROUP_GENERAL = "general";
-    public static final String CHANNEL_GROUP_DEVICES = "discovered-devices";
+    public static final String CHANNEL_GROUP_DISCOVERED_DEVICES = "discovered-devices";
+    public static final String CHANNEL_GROUP_SELF_REPORTING_DEVICES = "self-reporting-devices";
+    public static final String CHANNEL_GROUP_PROXY_DEVICES = "proxy-devices";
 
     // Monitor Channel IDs
     public static final String CHANNEL_FREQUENCY = "frequency";

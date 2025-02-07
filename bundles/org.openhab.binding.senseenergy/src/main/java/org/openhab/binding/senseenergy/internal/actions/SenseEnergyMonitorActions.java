@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The { @link SenseEnergyMonitorActions } class defines actions for the Sense Energy Monitor
+ * The { @link SenseEnergyMonitorActions } class implements the action(s) methods for the binding.
  *
  * @author Jeff James - Initial contribution
  */
@@ -69,18 +69,16 @@ public class SenseEnergyMonitorActions implements ThingActions {
     /*
      * Query water usage
      */
-    // @formatter:off
-    @RuleAction(label="Query Energy Trend", description="Queries energy trend over a period of time.")
-    public  @ActionOutput(name="consumption", type="QuantityType<Energy>", description="the total energy (KWh) used over the scale period.")
-            @ActionOutput(name="production", type="QuantityType<Energy>", description="the total energy (KWh) produced over the scale period.")
-            @ActionOutput(name="fromGrid", type="QuantityType<Energy>", description="the total energy (KWh) from the grid over the scale period.")
-            @ActionOutput(name="toGrid", type="QuantityType<Energy>", description="the total energy (KWh) to the grid over the scale period.")
-            @ActionOutput(name="netProduction", type="QuantityType<Energy>", description="the difference in energy (KWh) between what was produced and consumed during the scale period.")
-            @ActionOutput(name="solarPowered", type="QuantityType<Dimensionless>", description="the percent of solar energy production that was directly consumed (not sent to grid) during the scale period.")
-        Map<String, Object> queryEnergyTrend(
-            @ActionInput(name="scale", label="Scale", required=true, description="Scale to be returned (DAY, WEEK, MONTH, YEAR)") @Nullable String scale,
-            @ActionInput(name="datetime", label="Date/Time", required=true, description="Restrict the query range to data samples since this datetime.") @Nullable Instant datetime) {
-    // @formatter:on
+    @RuleAction(label = "Query Energy Trend", description = "Queries energy trend over a period of time.")
+    public @ActionOutput(name = "consumption", type = "QuantityType<Energy>", description = "the total energy (KWh) used over the scale period.") //
+    @ActionOutput(name = "production", type = "QuantityType<Energy>", description = "the total energy (KWh) produced over the scale period.") //
+    @ActionOutput(name = "fromGrid", type = "QuantityType<Energy>", description = "the total energy (KWh) from the grid over the scale period.") //
+    @ActionOutput(name = "toGrid", type = "QuantityType<Energy>", description = "the total energy (KWh) to the grid over the scale period.") //
+    @ActionOutput(name = "netProduction", type = "QuantityType<Energy>", description = "the difference in energy (KWh) between what was produced and consumed during the scale period.") //
+    @ActionOutput(name = "solarPowered", type = "QuantityType<Dimensionless>", description = "the percent of solar energy production that was directly consumed (not sent to grid) during the scale period.") //
+    Map<String, Object> queryEnergyTrend( //
+            @ActionInput(name = "scale", label = "Scale", required = true, description = "Scale to be returned (DAY, WEEK, MONTH, YEAR)") @Nullable String scale, //
+            @ActionInput(name = "datetime", label = "Date/Time", required = true, description = "Restrict the query range to data samples since this datetime.") @Nullable Instant datetime) {
         logger.info("queryEnergyTrend called");
 
         SenseEnergyMonitorHandler localDeviceHandler = deviceHandler;

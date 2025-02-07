@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.senseenergy.internal.handler;
 
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.*;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.HEARTBEAT_MINUTES;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.MONITOR_THING_TYPE;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROXY_DEVICE_THING_TYPE;
 
-import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
@@ -107,7 +107,9 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
                 && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
             goOnline(); // only attempt to goOnline if not a configuration error
             return;
-        } else if (thingStatus != ThingStatus.ONLINE) {
+        }
+
+        if (thingStatus != ThingStatus.ONLINE) {
             return;
         }
 
@@ -119,38 +121,25 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
         }
 
         // call heartbeat for each thing to check health
-        // @formatter:off
-        getThing().getThings().stream()
-            .map(t -> (t.getHandler() instanceof SenseEnergyMonitorHandler handler) ? handler : null)
-            .filter(Objects::nonNull)
-            .forEach(h -> h.heartbeat());
-        // @formatter:on
+        getThing().getThings().stream() //
+                .map(t -> t.getHandler()) //
+                .filter(h -> h instanceof SenseEnergyMonitorHandler) //
+                .map(h -> (SenseEnergyMonitorHandler) h) //
+                .forEach(h -> h.heartbeat());
     }
 
     public void handleApiException(Exception e) {
-        if (e instanceof SenseEnergyApiException) {
-            if (((SenseEnergyApiException) e).isConfigurationIssue()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        e.getLocalizedMessage());
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        e.getLocalizedMessage());
-            }
-        } else if (e instanceof IOException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        } else if (e instanceof InterruptedIOException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        } else if (e instanceof InterruptedException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        } else if (e instanceof TimeoutException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        } else if (e instanceof ExecutionException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
+        ThingStatusDetail statusDetail = ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
+
+        if (e instanceof SenseEnergyApiException apiException) {
+            statusDetail = apiException.isConfigurationIssue() ? ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR
+                    : ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
         } else {
-            // capture in log since this is an unexpected exception
             logger.warn("Unhandled Exception", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.toString());
+            statusDetail = ThingStatusDetail.OFFLINE.NONE;
         }
+
+        updateStatus(ThingStatus.OFFLINE, statusDetail, e.getLocalizedMessage());
     }
 
     /*
@@ -158,27 +147,40 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
      * already created. If not, will notify discovery service.
      */
     public void refreshMonitors() {
-        for (Long id : monitorIDs) {
-            SenseEnergyMonitorHandler monitorHandler = getMonitorHandler(id);
+        SenseEnergyDiscoveryService localDiscoveryService = discoveryService;
+        if (localDiscoveryService == null) {
+            logger.warn("Discovery service is not initialized. Skipping monitor refresh.");
+            return;
+        }
 
-            if (monitorHandler == null) {
+        for (Long id : monitorIDs) {
+            if (getMonitorHandler(id) == null) {
                 logger.info("Found Sense Energy monitor with ID: {}", id);
-                Objects.requireNonNull(discoveryService).notifyDiscoveryMonitor(id);
+                localDiscoveryService.notifyDiscoveryMonitor(id);
             }
         }
     }
 
     @Nullable
     public SenseEnergyMonitorHandler getMonitorHandler(long id) {
-        // @formatter:off
-        return getThing().getThings().stream()
-            .filter(t -> t.getThingTypeUID().equals(MONITOR_THING_TYPE))
-            .map(t -> (SenseEnergyMonitorHandler)t.getHandler())
-            .filter(Objects::nonNull)
-            .filter(h -> h.getId() == id)
-            .findFirst()
-            .orElse(null);
-        // @formatter:on
+        return getThing().getThings().stream() //
+                .filter(t -> t.getThingTypeUID().equals(MONITOR_THING_TYPE)) //
+                .map(t -> (SenseEnergyMonitorHandler) t.getHandler()) //
+                .filter(Objects::nonNull) //
+                .filter(h -> h.getId() == id) //
+                .findFirst() //
+                .orElse(null); //
+    }
+
+    @Nullable
+    public SenseEnergyProxyDeviceHandler getProxyDeviceByMAC(String macAddress) {
+        return getThing().getThings().stream() //
+                .filter(t -> t.getThingTypeUID().equals(PROXY_DEVICE_THING_TYPE)) //
+                .map(t -> (SenseEnergyProxyDeviceHandler) t.getHandler()) //
+                .filter(Objects::nonNull) //
+                .filter(h -> h.getMAC().equals(macAddress)) //
+                .findFirst() //
+                .orElse(null);
     }
 
     /*
@@ -215,9 +217,9 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
     @Override
     public synchronized void dispose() {
         ScheduledFuture<?> localHeartbeatJob = this.heartbeatJob;
-        if (localHeartbeatJob != null) {
+        if (localHeartbeatJob != null && !localHeartbeatJob.isCancelled()) {
             localHeartbeatJob.cancel(true);
-            this.heartbeatJob = null;
         }
+        this.heartbeatJob = null;
     }
 }

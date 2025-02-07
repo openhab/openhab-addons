@@ -31,6 +31,10 @@ public class SenseEnergyApiDeviceTags {
     public boolean userDeleted;
     @SerializedName("AlwaysOn")
     public boolean alwaysOn;
+    @SerializedName("DUID")
+    public String deviceID;
+    @SerializedName("SSIEnabled")
+    public boolean ssiEnabled;
 }
 
 /* @formatter:off
@@ -67,5 +71,40 @@ public class SenseEnergyApiDeviceTags {
       "UserMergeable": "true",
       "UserShowInDeviceList": "true"
       },
+      {
+        "id": "zDcE5VOr",
+        "name": "Sense Whole House Proxy Fan",
+        "icon": "plug",
+        "tags": {
+            "Alertable": "false",
+            "ControlCapabilities": [
+                "OnOff",
+                "StandbyThreshold"
+            ],
+            "DateCreated": "2024-09-22T03:13:45.000Z",
+            "DefaultUserDeviceType": "SmartPlug",
+            "DeviceListAllowed": "false",
+            "DUID": "53:75:31:70:55:53",
+            "IntegratedDeviceType": "IntegratedSmartPlug",
+            "IntegrationType": "TPLink",
+            "name_useredit": "false",
+            "OriginalName": "Sense Whole House Proxy Fan",
+            "Revoked": "false",
+            "SmartPlugModel": "TP-Link Kasa HS110",
+            "SSIEnabled": "true",
+            "SSIModel": "SelfReporting",
+            "TimelineAllowed": "false",
+            "TimelineDefault": "false",
+            "UserDeletable": "false",
+            "UserDeleted": "true",
+            "UserDeviceType": "SmartPlug",
+            "UserDeviceTypeDisplayString": "Smart Plug",
+            "UserEditable": "false",
+            "UserEditableMeta": "true",
+            "UserMergeable": "false",
+            "UserShowInDeviceList": "true",
+            "UserVisibleDeviceId": "53:75:31:70:55:53"
+        }
+    },
  * @formatter:on
  */

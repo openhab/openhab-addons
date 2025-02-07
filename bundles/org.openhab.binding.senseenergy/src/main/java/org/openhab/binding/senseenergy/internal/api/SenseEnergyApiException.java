@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SenseEnergyApiException extends Exception {
     private static final long serialVersionUID = -7059398508028583720L;
-    private boolean configurationIssue;
+    private final boolean configurationIssue;
 
     public SenseEnergyApiException(String message, boolean configurationIssue) {
         super(message);
@@ -31,5 +31,11 @@ public class SenseEnergyApiException extends Exception {
 
     public boolean isConfigurationIssue() {
         return configurationIssue;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("SenseEnergyApiException{message='%s', configurationIssue=%b}", getMessage(),
+                configurationIssue);
     }
 }

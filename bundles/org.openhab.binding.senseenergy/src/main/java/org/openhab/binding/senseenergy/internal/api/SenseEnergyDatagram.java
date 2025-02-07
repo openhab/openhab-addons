@@ -31,7 +31,10 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * @link { SenseEnergyDatagram }
+ * @link { SenseEnergyDatagram } implements the datagram which receives and responds to local requests
+ *       from the sense monitor device querying realtime energy usage. Upon receiving a request for
+ *       energy usage, it will send request to the @link { packetListener } who is responsible for
+ *       calling @link { sendReponse } in order to respond.
  *
  * @author Jeff James - Initial contribution
  */
@@ -43,7 +46,7 @@ public class SenseEnergyDatagram {
 
     private @Nullable DatagramSocket datagramSocket;
     private @Nullable SenseEnergyDatagramListener packetListener;
-    private boolean connected = false;
+    private volatile boolean connected = false;
     private Gson gson = new Gson();
     @Nullable
     private Thread udpListener;
@@ -56,7 +59,7 @@ public class SenseEnergyDatagram {
     }
 
     public synchronized void start(final int port, final String readerThreadName) throws IOException {
-        if (this.connected == true) {
+        if (this.connected) {
             return;
         }
 
@@ -96,7 +99,8 @@ public class SenseEnergyDatagram {
     }
 
     public boolean isRunning() {
-        return (datagramSocket == null) ? false : connected && udpListener != null && udpListener.isAlive();
+        Thread localUDPListener = udpListener;
+        return datagramSocket != null && connected && localUDPListener != null && localUDPListener.isAlive();
     }
 
     private class UDPListener implements Runnable {
@@ -112,7 +116,8 @@ public class SenseEnergyDatagram {
             DatagramSocket localSocket = datagramSocket;
 
             if (localSocket == null) {
-                throw new IllegalStateException("Cannot access socket.");
+                logger.error("UDPListener cannot start: Datagram socket is null.");
+                return;
             }
 
             DatagramPacket packet = new DatagramPacket(new byte[BUFFERSIZE], BUFFERSIZE);
@@ -122,6 +127,11 @@ public class SenseEnergyDatagram {
                     localSocket.receive(packet);
                 } catch (IOException exception) {
                     logger.debug("Exception during packet read - {}", exception.getMessage());
+                    try {
+                        Thread.sleep(100); // allow CPU to breath
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                     break;
                 }
 
@@ -136,13 +146,12 @@ public class SenseEnergyDatagram {
                 try {
                     jsonResponse = JsonParser.parseString(decryptedPacket).getAsJsonObject();
                 } catch (JsonSyntaxException jsonSyntaxException) {
+                    logger.warn("Invalid JSON received");
                     continue;
                 }
 
                 nextPacketTime = System.nanoTime() + 1000000000L;
                 if (jsonResponse.has("system") && jsonResponse.has("emeter")) {
-                    logger.trace("Packet received - {} - {}", packet.getSocketAddress(), jsonResponse);
-
                     SenseEnergyDatagramListener localPacketListener = packetListener;
                     if (localPacketListener != null) {
                         localPacketListener.requestReceived(packet.getSocketAddress());
@@ -155,24 +164,17 @@ public class SenseEnergyDatagram {
     public void sendResponse(SocketAddress socketAddress, SenseEnergyDatagramGetSysInfo getSysInfo,
             SenseEnergyDatagramGetRealtime getRealtime) throws IOException {
 
-        String jsonResponse = "{\"emeter\":{\"get_realtime\":"
-                + gson.toJson(getRealtime, SenseEnergyDatagramGetRealtime.class) + "},\"system\":{\"get_sysinfo\":"
-                + gson.toJson(getSysInfo, SenseEnergyDatagramGetSysInfo.class) + "}}";
+        String jsonResponse = String.format("{\"emeter\":{\"get_realtime\":%s},\"system\":{\"get_sysinfo\":%s}}",
+                gson.toJson(getRealtime), gson.toJson(getSysInfo));
 
         byte[] encrypted = TpLinkEncryption.encrypt(jsonResponse);
 
         DatagramSocket localDatagramSocket = datagramSocket;
-        if (localDatagramSocket != null) {
-            localDatagramSocket.send(new DatagramPacket(encrypted, encrypted.length, socketAddress));
+        if (localDatagramSocket == null) {
+            logger.warn("sendResponse(): Datagram socket is null, cannot send response");
+            return;
         }
-    }
-
-    public void readMessage(byte[] message) {
-        SenseEnergyDatagramListener listener = this.packetListener;
-
-        if (listener != null && message.length != 0) {
-            listener.messageReceived(message);
-        }
+        localDatagramSocket.send(new DatagramPacket(encrypted, encrypted.length, socketAddress));
     }
 }
 

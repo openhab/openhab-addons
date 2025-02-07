@@ -12,12 +12,33 @@
  */
 package org.openhab.binding.senseenergy.internal.handler;
 
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.*;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_DEVICE_POWER;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_DEVICE_TRIGGER;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_DISCOVERED_DEVICES_UPDATED;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_FREQUENCY;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GRID_POWER;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GROUP_DISCOVERED_DEVICES;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GROUP_GENERAL;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GROUP_PROXY_DEVICES;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GROUP_SELF_REPORTING_DEVICES;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GROUP_TYPE_DEVICE_TEMPLATE;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_LEG_1_POWER;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_LEG_2_POWER;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_MAIN_POWER;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_POTENTIAL_1;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_POTENTIAL_2;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_SOLAR_POWER;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PARAM_MONITOR_ID;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROPERTY_MONITOR_IP_ADDRESS;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROPERTY_MONITOR_MAC;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROPERTY_MONITOR_SERIAL;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROPERTY_MONITOR_SOLAR_CONFIGURED;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROPERTY_MONITOR_SSID;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROPERTY_MONITOR_VERSION;
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROXY_DEVICE_THING_TYPE;
 
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.net.SocketAddress;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -94,7 +115,6 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     static final private String CHANNEL_PROPERTY_LABEL = "sense-label";
 
     private long id;
-
     @Nullable
     private SenseEnergyApiMonitorStatus apiMonitorStatus;
 
@@ -105,6 +125,22 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     private final ChannelTypeRegistry channelTypeRegistry;
 
     private Map<String, SenseEnergyApiDevice> senseDiscoveredDevices = Collections.emptyMap();
+
+    public enum DeviceType {
+        DISCOVERED_DEVICE,
+        SELF_REPORTING_DEVICE,
+        PROXY_DEVICE;
+
+        public static String getChannelGroup(DeviceType deviceType) {
+            return switch (deviceType) {
+                case PROXY_DEVICE -> CHANNEL_GROUP_PROXY_DEVICES;
+                case SELF_REPORTING_DEVICE -> CHANNEL_GROUP_SELF_REPORTING_DEVICES;
+                default -> CHANNEL_GROUP_DISCOVERED_DEVICES;
+            };
+        }
+    }
+
+    private Map<String, DeviceType> senseDevicesType = new HashMap<String, DeviceType>();
     private Set<String> discoveredDevicesOn = Collections.emptySet();
     private int countRealTimeUpdate;
 
@@ -163,7 +199,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
         try {
             apiMonitorStatus = getApi().getMonitorStatus(id);
-            senseDiscoveredDevices = getApi().getDevices(id);
+            refreshDevices();
         } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
             handleApiException(e);
             return;
@@ -209,19 +245,14 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         }
 
         logger.debug("SenseEnergyMonitorHandler: heartbeat");
-        try {
-            senseDiscoveredDevices = getApi().getDevices(id);
-        } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
-            handleApiException(e);
-            return;
-        }
+        refreshDevices();
         reconcileDiscoveredDeviceChannels(null);
 
         if (!webSocket.isRunning()) {
             logger.debug("heartbeat: webSocket not running");
             try {
                 webSocket.restart(getApi().getAccessToken());
-            } catch (InterruptedException | ExecutionException | IOException | URISyntaxException e) {
+            } catch (Exception e) {
                 handleApiException(e);
             }
         }
@@ -230,29 +261,17 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     }
 
     public void handleApiException(Exception e) {
+        ThingStatusDetail statusDetail = ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
+
         if (e instanceof SenseEnergyApiException apiException) {
-            if (apiException.isConfigurationIssue()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        apiException.getLocalizedMessage());
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        apiException.getLocalizedMessage());
-            }
-        } else if (e instanceof IOException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getLocalizedMessage());
-        } else if (e instanceof InterruptedIOException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        } else if (e instanceof InterruptedException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        } else if (e instanceof TimeoutException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        } else if (e instanceof ExecutionException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            statusDetail = apiException.isConfigurationIssue() ? ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR
+                    : ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR;
         } else {
-            // capture in log since this is an unexpected exception
             logger.warn("Unhandled Exception", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.getLocalizedMessage());
+            statusDetail = ThingStatusDetail.OFFLINE.NONE;
         }
+
+        updateStatus(ThingStatus.OFFLINE, statusDetail, e.getLocalizedMessage());
     }
 
     @Override
@@ -316,7 +335,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
                 return;
             }
 
-            if (channelGroup.equals(CHANNEL_GROUP_DEVICES)) {
+            if (channelGroup.equals(CHANNEL_GROUP_DISCOVERED_DEVICES)) {
                 Channel channel = getThing().getChannel(channelUID);
 
                 if (channel == null) {
@@ -338,10 +357,30 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     }
 
     public SenseEnergyApi getApi() {
-        Bridge bridge = Objects.requireNonNull(getBridge());
-        SenseEnergyBridgeHandler handler = (SenseEnergyBridgeHandler) Objects.requireNonNull(bridge.getHandler());
+        SenseEnergyBridgeHandler handler = Objects.requireNonNull(getBridgeHandler());
 
         return handler.getApi();
+    }
+
+    private DeviceType deduceDeviceType(SenseEnergyApiDevice apiDevice) {
+        if (apiDevice.tags.ssiEnabled == true) {
+            SenseEnergyBridgeHandler bridgeHandler = Objects.requireNonNull(getBridgeHandler());
+            SenseEnergyProxyDeviceHandler proxyHandler = bridgeHandler.getProxyDeviceByMAC(apiDevice.tags.deviceID);
+            return (proxyHandler != null) ? DeviceType.PROXY_DEVICE : DeviceType.SELF_REPORTING_DEVICE;
+        }
+
+        return DeviceType.DISCOVERED_DEVICE;
+    }
+
+    private void refreshDevices() {
+        try {
+            senseDiscoveredDevices = getApi().getDevices(id);
+            senseDiscoveredDevices.entrySet().stream() //
+                    .filter(e -> !senseDevicesType.containsKey(e.getKey())) //
+                    .forEach(e -> senseDevicesType.put(e.getKey(), deduceDeviceType(e.getValue())));
+        } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
+            handleApiException(e);
+        }
     }
 
     /*
@@ -365,17 +404,18 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             ChannelType channelType = Objects
                     .requireNonNull(channelTypeRegistry.getChannelType(channelDefinition.getChannelTypeUID()));
             // create set of IDs with existing thing channels
-            // @formatter:off
             // note @Nullable attribute seems unnecessary here, but had to include to prevent mismatch error when
             // built in maven
-            // java.util.stream.@NonNull Collector<? super java.lang.@Nullable String,java.lang.Object,java.util.@NonNull Set<java.lang.@NonNull String>> - required
-            // java.util.stream.@NonNull Collector<java.lang.@NonNull String,capture#of ?,java.util.@NonNull Set<java.lang.@NonNull String>>
-            Set<@Nullable String> existingChannels = getThing().getChannelsOfGroup(CHANNEL_GROUP_DEVICES).stream()
-                    .filter(ch -> Objects.requireNonNull(ch.getChannelTypeUID()).equals(channelType.getUID()))
-                    .map(ch -> ch.getProperties().get(CHANNEL_PROPERTY_ID))
-                    .filter(Objects::nonNull)
+            // java.util.stream.@NonNull Collector<? super java.lang.@Nullable
+            // String,java.lang.Object,java.util.@NonNull Set<java.lang.@NonNull String>> - required
+            // java.util.stream.@NonNull Collector<java.lang.@NonNull String,capture#of ?,java.util.@NonNull
+            // Set<java.lang.@NonNull String>>
+            Set<@Nullable String> existingChannels = getThing().getChannelsOfGroup(CHANNEL_GROUP_DISCOVERED_DEVICES)
+                    .stream() //
+                    .filter(ch -> Objects.requireNonNull(ch.getChannelTypeUID()).equals(channelType.getUID())) //
+                    .map(ch -> ch.getProperties().get(CHANNEL_PROPERTY_ID)) //
+                    .filter(Objects::nonNull) //
                     .collect(Collectors.toSet());
-            // @formatter:on
 
             // make a super-set of senseIDs for existing and devices from last API call to iterate over
             Set<String> allChannels = new HashSet<>(existingChannels);
@@ -387,7 +427,9 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             // if channel already exists AND is still reported by sense --> update
             // if channel does not currently exist and is reported by sense --> add
             for (String senseID : allChannels) {
-                ChannelUID channelUID = makeDiscoveredDeviceChannelUID(senseID, channelDefinition.getId());
+                DeviceType deviceType = senseDevicesType.getOrDefault(senseID, DeviceType.DISCOVERED_DEVICE);
+
+                ChannelUID channelUID = makeDeviceChannelUID(deviceType, senseID, channelDefinition.getId());
                 if (existingChannels.contains(senseID)) {
                     if (!senseIDs.contains(senseID)) { // need to remove
                         localBuilder.withoutChannel(channelUID);
@@ -417,17 +459,15 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
     public void addDiscoveredChannel(ThingBuilder builder, ChannelUID channelUID, SenseEnergyApiDevice apiDevice,
             ChannelDefinition channelDefinition, ChannelType channelType) {
-        // @formatter:off
         Channel channel = ChannelBuilder.create(channelUID)
-                .withDescription(Objects.requireNonNull(channelDefinition.getDescription()))
-                .withLabel(apiDevice.name + ": " + channelDefinition.getLabel())
-                .withProperties(Map.of(CHANNEL_PROPERTY_ID, apiDevice.id, CHANNEL_PROPERTY_LABEL, apiDevice.name))
-                .withAcceptedItemType(channelType.getItemType())
-                .withType(channelDefinition.getChannelTypeUID())
-                .withKind(channelType.getKind())
-                .withDefaultTags(channelType.getTags())
+                .withDescription(Objects.requireNonNull(channelDefinition.getDescription())) //
+                .withLabel(apiDevice.name + ": " + channelDefinition.getLabel()) //
+                .withProperties(Map.of(CHANNEL_PROPERTY_ID, apiDevice.id, CHANNEL_PROPERTY_LABEL, apiDevice.name)) //
+                .withAcceptedItemType(channelType.getItemType()) //
+                .withType(channelDefinition.getChannelTypeUID()) //
+                .withKind(channelType.getKind()) //
+                .withDefaultTags(channelType.getTags()) //
                 .build();
-        // @formatter:on
         builder.withChannel(channel);
     }
 
@@ -473,8 +513,9 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
      * 
      * @return
      */
-    public ChannelUID makeDiscoveredDeviceChannelUID(String senseID, String channelID) {
-        ChannelGroupUID channelGroupUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_GROUP_DEVICES);
+    public ChannelUID makeDeviceChannelUID(DeviceType deviceType, String senseID, String channelID) {
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID(getThing().getUID(),
+                DeviceType.getChannelGroup(deviceType));
 
         return new ChannelUID(channelGroupUID, senseID + "-" + channelID);
     }
@@ -514,12 +555,10 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     public void checkDatagramStatus() {
         final String datagramListenerThreadName = "OH-binding-" + getThing().getUID().getAsString();
 
-        // @formatter:off
-        boolean childOnline = getThing().getThings().stream()
-                .filter(t -> t.getThingTypeUID().equals(PROXY_DEVICE_THING_TYPE) && t.getStatus() == ThingStatus.ONLINE)
-                .findAny()
+        boolean childOnline = getThing().getThings().stream() //
+                .filter(t -> t.getThingTypeUID().equals(PROXY_DEVICE_THING_TYPE) && t.getStatus() == ThingStatus.ONLINE) //
+                .findAny() //
                 .isPresent();
-        // @formatter:on
 
         if (childOnline && !datagram.isRunning()) {
             datagram.stop();
@@ -586,10 +625,6 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         }
     }
 
-    @Override
-    public void messageReceived(byte[] message) {
-    }
-
     /***** SenseEnergyeWSListener interfaces *****/
 
     @Override
@@ -652,11 +687,13 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
             // Send trigger if device just turned on
             if (!this.discoveredDevicesOn.contains(device.id)) {
-                triggerChannel(makeDiscoveredDeviceChannelUID(device.id, CHANNEL_DEVICE_TRIGGER), "ON");
+                DeviceType deviceType = senseDevicesType.getOrDefault(device.id, DeviceType.DISCOVERED_DEVICE);
+                triggerChannel(makeDeviceChannelUID(deviceType, device.id, CHANNEL_DEVICE_TRIGGER), "ON");
                 logger.trace("Discovered device turned on: {}({})", device.name, device.id);
             }
 
-            ChannelUID channelUID = makeDiscoveredDeviceChannelUID(device.id, CHANNEL_DEVICE_POWER);
+            DeviceType deviceType = senseDevicesType.getOrDefault(device.id, DeviceType.DISCOVERED_DEVICE);
+            ChannelUID channelUID = makeDeviceChannelUID(deviceType, device.id, CHANNEL_DEVICE_POWER);
             if (isLinked(channelUID)) {
                 updateState(channelUID, new QuantityType<>(device.w, Units.WATT));
             }
@@ -666,10 +703,21 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         Set<String> wasOnNowOff = new HashSet<>(this.discoveredDevicesOn);
         wasOnNowOff.removeAll(updateDevicesOn);
         for (String id : wasOnNowOff) {
-            updateState(makeDiscoveredDeviceChannelUID(id, CHANNEL_DEVICE_POWER), new QuantityType<>(0, Units.WATT));
-            triggerChannel(makeDiscoveredDeviceChannelUID(id, CHANNEL_DEVICE_TRIGGER), "OFF");
+            DeviceType deviceType = senseDevicesType.getOrDefault(id, DeviceType.DISCOVERED_DEVICE);
+            updateState(makeDeviceChannelUID(deviceType, id, CHANNEL_DEVICE_POWER), new QuantityType<>(0, Units.WATT));
+            triggerChannel(makeDeviceChannelUID(deviceType, id, CHANNEL_DEVICE_TRIGGER), "OFF");
             logger.trace("Discovered device turned off: {}", id);
         }
         this.discoveredDevicesOn = updateDevicesOn;
+    }
+
+    @Nullable
+    SenseEnergyBridgeHandler getBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            return null;
+        }
+
+        return (SenseEnergyBridgeHandler) bridge.getHandler();
     }
 }
