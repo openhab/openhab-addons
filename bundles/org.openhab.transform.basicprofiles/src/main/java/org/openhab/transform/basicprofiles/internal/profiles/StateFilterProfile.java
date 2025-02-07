@@ -109,7 +109,7 @@ public class StateFilterProfile implements StateProfile {
     // single cached numeric state for use in conjunction with DELTA and DELTA_PERCENT functions
     private Optional<State> acceptedState = Optional.empty();
 
-    // list of prior numeric states for use in conjunction with AVG, MEDIAN, STDDEV, MIN, MAX functions
+    // cached list of prior numeric states for use in conjunction with AVG, MEDIAN, STDDEV, MIN, MAX functions
     private final List<State> previousStates = new LinkedList<>();
 
     private final int windowSize;
@@ -570,24 +570,31 @@ public class StateFilterProfile implements StateProfile {
 
         public @Nullable State calculate() {
             logger.debug("Calculating function: {}", this);
-            return switch (type) {
-                case DELTA -> calculateDelta();
-                case DELTA_PERCENT -> calculateDeltaPercent();
+            BigDecimal result;
+            switch (type) {
+                case DELTA -> result = calculateDelta();
+                case DELTA_PERCENT -> result = calculateDeltaPercent();
                 default -> {
                     int size = previousStates.size();
                     Integer start = windowSize.map(w -> size - w).orElse(0);
-                    List<State> states = start == null || start <= 0 ? previousStates
-                            : previousStates.subList(start, size);
-                    yield switch (type) {
-                        case AVG, AVERAGE -> calculateAverage(states);
-                        case MEDIAN -> calculateMedian(states);
-                        case STDDEV -> calculateStdDev(states);
-                        case MIN -> calculateMin(states);
-                        case MAX -> calculateMax(states);
-                        default -> null;
-                    };
+                    List<BigDecimal> values = asBigDecimals(
+                            start == null || start <= 0 ? previousStates : previousStates.subList(start, size));
+                    if (values.isEmpty()) {
+                        logger.debug("Not enough states to calculate {}", type);
+                        result = null;
+                    } else {
+                        switch (type) {
+                            case AVG, AVERAGE -> result = calculateAverage(values);
+                            case MEDIAN -> result = calculateMedian(values);
+                            case STDDEV -> result = calculateStdDev(values);
+                            case MIN -> result = calculateMin(values);
+                            case MAX -> result = calculateMax(values);
+                            default -> result = null;
+                        }
+                    }
                 }
-            };
+            }
+            return result != null ? asState(result) : null;
         }
 
         /**
@@ -604,11 +611,8 @@ public class StateFilterProfile implements StateProfile {
             }
             if (type == Function.DELTA_PERCENT) {
                 // avoid division by zero
-                if (acceptedState.get() instanceof QuantityType base) {
-                    return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
-                }
-                if (acceptedState.get() instanceof DecimalType base) {
-                    return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
+                if (asBigDecimal(acceptedState.get()) instanceof BigDecimal base) {
+                    return base.compareTo(BigDecimal.ZERO) == 0;
                 }
             }
             return false;
@@ -616,6 +620,7 @@ public class StateFilterProfile implements StateProfile {
 
         @Override
         public <T extends State> @Nullable T as(@Nullable Class<T> target) {
+            // TODO @andrewfg: do we need to change this ??
             if (target == DecimalType.class || target == QuantityType.class) {
                 return target.cast(calculate());
             }
@@ -650,137 +655,51 @@ public class StateFilterProfile implements StateProfile {
             return toFullString();
         }
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        private @Nullable State calculateAverage(List<State> states) {
-            if (states.isEmpty()) {
-                logger.debug("Not enough states to calculate sum");
-                return null;
-            }
-            if (hasSystemUnit()) {
-                List<QuantityType> quantities = asSystemUnitQuantityTypes(states);
-                return quantities.isEmpty() ? null
-                        : quantities.stream()
-                                .reduce(new QuantityType<>(0, Objects.requireNonNull(systemUnit)), QuantityType::add)
-                                .divide(BigDecimal.valueOf(quantities.size()));
-            }
-            BigDecimal sum = asBigDecimals(states).stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-            return new DecimalType(sum.divide(BigDecimal.valueOf(states.size()), 2, RoundingMode.HALF_EVEN));
+        private @Nullable BigDecimal calculateAverage(List<BigDecimal> values) {
+            return values.stream().reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(values.size()), 2,
+                    RoundingMode.HALF_EVEN);
         }
 
-        private @Nullable State calculateMedian(List<State> states) {
-            if (states.isEmpty()) {
-                logger.debug("Not enough states to calculate median");
-                return null;
-            }
-            if (hasSystemUnit()) {
-                List<State> quantities = asSystemUnitQuantityTypes(states).stream().map(s -> (State) s).toList();
-                BigDecimal median = Statistics.median(asBigDecimals(quantities));
-                return Optional.ofNullable(median).map(m -> new QuantityType<>(m, Objects.requireNonNull(systemUnit)))
-                        .orElse(null);
-            }
-            BigDecimal median = Statistics.median(asBigDecimals(states));
-            return Optional.ofNullable(median).map(DecimalType::new).orElse(null);
+        private @Nullable BigDecimal calculateMedian(List<BigDecimal> values) {
+            return Statistics.median(values);
         }
 
-        @SuppressWarnings({ "rawtypes", "unchecked" })
-        private @Nullable State calculateStdDev(List<State> states) {
-            if (states.isEmpty()) {
-                logger.debug("Not enough states to calculate standard deviation");
-                return null;
-            }
-            State averageState = calculateAverage(states);
-            if (hasSystemUnit()) {
-                if (averageState instanceof QuantityType<?> avg) {
-                    QuantityType zero = new QuantityType<>(0, Objects.requireNonNull(systemUnit));
-                    QuantityType variance = asSystemUnitQuantityTypes(states).stream().map(q -> {
-                        QuantityType delta = q.subtract(avg);
-                        return delta.multiply(delta.toBigDecimal()); // don't square the unit
-                    }).reduce(zero, QuantityType::add).divide(BigDecimal.valueOf(states.size()));
-                    return new QuantityType<>(variance.toBigDecimal().sqrt(MathContext.DECIMAL32), variance.getUnit());
-                }
-                return null;
-            }
-            if (averageState instanceof DecimalType avg) {
-                BigDecimal average = avg.toBigDecimal();
-                BigDecimal variance = asBigDecimals(states).stream().map(b -> {
-                    BigDecimal delta = b.subtract(average);
-                    return delta.multiply(delta);
-                }).reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(states.size()),
-                        MathContext.DECIMAL32);
-                return new DecimalType(variance.sqrt(MathContext.DECIMAL32));
-            }
-            return null;
+        private @Nullable BigDecimal calculateStdDev(List<BigDecimal> values) {
+            BigDecimal average = values.stream().reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .divide(BigDecimal.valueOf(values.size()), 2, RoundingMode.HALF_EVEN);
+
+            BigDecimal variance = values.stream().map(value -> {
+                BigDecimal delta = value.subtract(average);
+                return delta.multiply(delta);
+            }).reduce(BigDecimal.ZERO, BigDecimal::add).divide(BigDecimal.valueOf(values.size()),
+                    MathContext.DECIMAL32);
+
+            return variance.sqrt(MathContext.DECIMAL32);
         }
 
-        @SuppressWarnings("unchecked")
-        private @Nullable State calculateMin(List<State> states) {
-            if (states.isEmpty()) {
-                logger.debug("Not enough states to calculate min");
-                return null;
-            }
-            return hasSystemUnit()
-                    ? asSystemUnitQuantityTypes(states).stream().min(QuantityType::compareTo).orElse(null)
-                    : asBigDecimals(states).stream().min(BigDecimal::compareTo).map(DecimalType::new).orElse(null);
+        private @Nullable BigDecimal calculateMin(List<BigDecimal> values) {
+            return values.stream().min(BigDecimal::compareTo).orElse(null);
         }
 
-        @SuppressWarnings("unchecked")
-        private @Nullable State calculateMax(List<State> states) {
-            if (states.isEmpty()) {
-                logger.debug("Not enough states to calculate max");
-                return null;
-            }
-            return hasSystemUnit()
-                    ? asSystemUnitQuantityTypes(states).stream().max(QuantityType::compareTo).orElse(null)
-                    : asBigDecimals(states).stream().max(BigDecimal::compareTo).map(DecimalType::new).orElse(null);
+        private @Nullable BigDecimal calculateMax(List<BigDecimal> values) {
+            return values.stream().max(BigDecimal::compareTo).orElse(null);
         }
 
-        @SuppressWarnings({ "rawtypes", "unchecked" })
-        private @Nullable State calculateDelta() {
-            if (acceptedState.isEmpty()) {
-                return null;
-            }
-            State acceptState = acceptedState.get();
-            if (hasSystemUnit()) {
-                if ((asSystemUnitQuantityType(newState) instanceof QuantityType nuState)
-                        && (asSystemUnitQuantityType(acceptState) instanceof QuantityType accepted)) {
-                    QuantityType delta = nuState.subtract(accepted);
-                    return delta.toBigDecimal().compareTo(BigDecimal.ZERO) < 0 ? delta.negate() : delta;
-                }
-                return null;
-            }
-            if ((newState instanceof DecimalType nuState) && (acceptState instanceof DecimalType accepted)) {
-                BigDecimal result = nuState.toBigDecimal().subtract(accepted.toBigDecimal()).abs();
-                return new DecimalType(result);
-            }
-            return null;
+        private @Nullable BigDecimal calculateDelta() {
+            return acceptedState.isPresent() //
+                    && asBigDecimal(acceptedState.get()) instanceof BigDecimal acceptedValue
+                    && asBigDecimal(newState) instanceof BigDecimal newValue //
+                            ? newValue.subtract(acceptedValue).abs()
+                            : null;
         }
 
-        private @Nullable State calculateDeltaPercent() {
-            if (acceptedState.isEmpty()) {
-                return null;
-            }
-            State acceptState = acceptedState.get();
-            State deltaState = calculateDelta();
-            if (deltaState == null) {
-                return null;
-            }
-            BigDecimal bdDelta;
-            BigDecimal bdBase;
-            if (hasSystemUnit()) {
-                bdDelta = deltaState instanceof QuantityType delta ? delta.toBigDecimal() : null;
-                bdBase = asSystemUnitQuantityType(acceptState) instanceof QuantityType accepted
-                        ? accepted.toBigDecimal()
-                        : null;
-            } else {
-                bdDelta = deltaState instanceof DecimalType delta ? delta.toBigDecimal() : null;
-                bdBase = acceptState instanceof DecimalType accepted ? accepted.toBigDecimal() : null;
-            }
-            if (bdBase == null || bdDelta == null) {
-                return null;
-            }
-            bdBase = bdBase.abs();
-            BigDecimal percent = bdDelta.multiply(BigDecimal.valueOf(100)).divide(bdBase, 2, RoundingMode.HALF_EVEN);
-            return new DecimalType(percent);
+        private @Nullable BigDecimal calculateDeltaPercent() {
+            return acceptedState.isPresent() //
+                    && asBigDecimal(acceptedState.get()) instanceof BigDecimal acceptedValue
+                    && calculateDelta() instanceof BigDecimal delta
+                            ? delta.multiply(BigDecimal.valueOf(100)).divide(acceptedValue.abs(), 2,
+                                    RoundingMode.HALF_EVEN)
+                            : null;
         }
     }
 
@@ -793,12 +712,57 @@ public class StateFilterProfile implements StateProfile {
      */
     protected synchronized boolean hasSystemUnit() {
         if (!systemUnitInitialized) {
-            systemUnit = (getLinkedItem() instanceof NumberItem item) && (item.getUnit() instanceof Unit<?> unit)
+            systemUnitInitialized = true;
+            systemUnit = getLinkedItem() instanceof NumberItem item && item.getUnit() instanceof Unit<?> unit
                     ? unit.getSystemUnit()
                     : null;
-            systemUnitInitialized = true;
         }
         return systemUnit != null;
+    }
+
+    /**
+     * Convert a {@link State} to a {@link BigDecimal}. If it is a {@link QuantityType} and there is a 'systemUnit' its
+     * value is converted (if possible) to the 'systemUnit' before converting it to a {@link BigDecimal}. Returns null
+     * if the {@link State} does not have a numeric value, or if the conversion to 'systemUnit' fails.
+     *
+     * @return a {@link BigDecimal} or null.
+     */
+    protected @Nullable BigDecimal asBigDecimal(State state) {
+        if (state instanceof DecimalType decimalType) {
+            return decimalType.toBigDecimal();
+        }
+        if (state instanceof QuantityType<?> quantityType) {
+            return hasSystemUnit() //
+                    ? asSystemUnitQuantityType(state) instanceof QuantityType<?> suQuantityType
+                            ? suQuantityType.toBigDecimal()
+                            : null
+                    : quantityType.toBigDecimal();
+        }
+        return state.as(DecimalType.class) instanceof DecimalType decimalType //
+                ? decimalType.toBigDecimal()
+                : null;
+    }
+
+    /**
+     * Convert a list of {@link State} to a list of {@link BigDecimal} values.
+     *
+     * @param states list of {@link State} values.
+     * @return list of {@link BigDecimal} values.
+     */
+    protected List<BigDecimal> asBigDecimals(List<? extends State> states) {
+        return states.stream().map(s -> asBigDecimal(s)).filter(Objects::nonNull).toList();
+    }
+
+    /**
+     * Create a new {@link State} from the given {@link BigDecimal} value. If there is a 'systemUnit' it creates a
+     * {@link QuantityType} based on that unit. Otherwise it creates a {@link DecimalType}.
+     *
+     * @return a {@link QuantityType} or a {@link DecimalType}
+     */
+    protected State asState(BigDecimal value) {
+        return hasSystemUnit() //
+                ? new QuantityType<>(value, Objects.requireNonNull(systemUnit))
+                : new DecimalType(value);
     }
 
     /**
@@ -808,60 +772,38 @@ public class StateFilterProfile implements StateProfile {
      * The conversion can be made to both inverted and non-inverted units, so invertible type conversions
      * (e.g. Mirek <=> Kelvin) are supported.
      *
-     * @return a {@link QuantityType} based on 'systemUnit'
+     * @return a {@link QuantityType} based on 'systemUnit'.
      */
     protected @Nullable QuantityType<?> asSystemUnitQuantityType(State state) {
-        return (state instanceof QuantityType<?> quantity) && hasSystemUnit()
-                ? quantity.toInvertibleUnit(Objects.requireNonNull(systemUnit))
+        return state instanceof QuantityType<?> quantityType && hasSystemUnit()
+                ? quantityType.toInvertibleUnit(Objects.requireNonNull(systemUnit))
                 : null;
     }
 
     /**
-     * Convert a list of {@link State} to a list of {@link QuantityType} converted to 'systemUnit'. Exclude
-     * any {@link State} that are not a {@link QuantityType}. Convert any remaining {@link QuantityType} to the
-     * 'systemUnit' and exclude any values that did not convert.
+     * Check if the given {@link State} is allowed. Non -allowed states are those which are a {@link QuantityType}
+     * and if there is a 'systemUnit' not compatible with that.
      *
-     * @param states list of {@link State} values
-     * @return list of {@link State} values
-     */
-    @SuppressWarnings("rawtypes")
-    protected List<QuantityType> asSystemUnitQuantityTypes(List<State> states) {
-        return !hasSystemUnit() ? List.of()
-                : states.stream().map(s -> Optional.ofNullable(asSystemUnitQuantityType(s))).filter(o -> o.isPresent())
-                        .map(o -> (QuantityType) o.get()).toList();
-    }
-
-    /**
-     * Convert a list of {@link State} to a list of {@link BigDecimal} values.
-     *
-     * @param states list of {@link State} values
-     * @return list of {@link State} values
-     */
-    protected List<BigDecimal> asBigDecimals(List<State> states) {
-        return states.stream().map(s -> Optional.ofNullable(s.as(DecimalType.class))).filter(o -> o.isPresent())
-                .map(o -> o.get().toBigDecimal()).toList();
-    }
-
-    /**
-     * Check if the given {@link State} is allowed. Allowed are all that are NOT a {@link QuantityType},
-     * plus -- if there is a 'systemUnit' -- all quantities compatible with that.
-     *
-     * @param state the incoming state
-     * @return true if allowed
+     * @param state the incoming state.
+     * @return true if allowed.
      */
     protected boolean isAllowed(State state) {
-        return hasSystemUnit() ? asSystemUnitQuantityType(state) != null : true;
+        return hasSystemUnit() //
+                ? asSystemUnitQuantityType(state) != null
+                : true;
     }
 
     /**
      * Check if the given {@link State} is suitable to be cached. This means it is suitable to add to the
-     * 'previousStates' list and/or to set to the 'acceptedState` field. This means that either there is a
+     * 'previousStates' list and/or to set to the 'acceptedState' field. This means that either there is a
      * 'systemUnit' with which 'state' is compatible, or it can provide a {@link DecimalType} value.
      *
      * @param state the {@link State} to be tested.
      * @return true if the 'state' is suitable to be cached.
      */
     protected boolean isCacheable(State state) {
-        return hasSystemUnit() ? asSystemUnitQuantityType(state) != null : state.as(DecimalType.class) != null;
+        return hasSystemUnit() //
+                ? asSystemUnitQuantityType(state) != null
+                : state.as(DecimalType.class) != null;
     }
 }
