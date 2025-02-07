@@ -71,6 +71,8 @@ public class AlarmControlPanelTests extends AbstractComponentTests {
         assertChannel(component, AlarmControlPanel.STATE_CHANNEL_ID, "zigbee2mqtt/alarm/state",
                 "zigbee2mqtt/alarm/set/state", "alarm", TextValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/alarm/state", "armed_home");
         assertState(component, AlarmControlPanel.STATE_CHANNEL_ID, new StringType("armed_home"));
         publishMessage("zigbee2mqtt/alarm/state", "armed_away");
