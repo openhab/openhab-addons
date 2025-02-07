@@ -107,10 +107,7 @@ public class LinkyHandler extends BaseThingHandler {
         this.weekFields = WeekFields.of(localeProvider.getLocale());
         this.timeZoneProvider = timeZoneProvider;
 
-        this.cachedDailyData = new ExpiringDayCache<>("daily cache", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
-                REFRESH_INTERVAL_IN_MIN);
-
-        this.cachedDailyData.setAction(() -> {
+        this.cachedDailyData = new ExpiringDayCache<>("daily cache", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
             Consumption consumption = getConsumptionData(today.minusDays(15), today);
 
@@ -122,29 +119,28 @@ public class LinkyHandler extends BaseThingHandler {
             return consumption;
         });
 
-        this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
-                REFRESH_INTERVAL_IN_MIN, () -> {
-                    // We request data for yesterday and the day before yesterday, even if the data for the day before
-                    // yesterday
-                    // is not needed by the binding. This is only a workaround to an API bug that will return
-                    // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday
-                    // is not
-                    // yet available.
-                    // By requesting two days, the API is not failing and you get the expected NaN value for yesterday
-                    // when the
-                    // data is not yet available.
-                    LocalDate today = LocalDate.now();
-                    Consumption consumption = getPowerData(today.minusDays(2), today);
-                    if (consumption != null) {
-                        logData(consumption.aggregats.days, "Day (peak)", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME,
-                                Target.ALL);
-                        consumption = getConsumptionAfterChecks(consumption, Target.LAST);
-                    }
-                    return consumption;
-                });
+        this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY, () -> {
+            // We request data for yesterday and the day before yesterday, even if the data for the day before
+            // yesterday
+            // is not needed by the binding. This is only a workaround to an API bug that will return
+            // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday
+            // is not
+            // yet available.
+            // By requesting two days, the API is not failing and you get the expected NaN value for yesterday
+            // when the
+            // data is not yet available.
+            LocalDate today = LocalDate.now();
+            Consumption consumption = getPowerData(today.minusDays(2), today);
+            if (consumption != null) {
+                logData(consumption.aggregats.days, "Day (peak)", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+                        Target.ALL);
+                consumption = getConsumptionAfterChecks(consumption, Target.LAST);
+            }
+            return consumption;
+        });
 
         this.cachedMonthlyData = new ExpiringDayCache<>("monthly cache", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
-                REFRESH_INTERVAL_IN_MIN, () -> {
+                () -> {
                     LocalDate today = LocalDate.now();
                     Consumption consumption = getConsumptionData(today.withDayOfMonth(1).minusMonths(1), today);
                     if (consumption != null) {
@@ -156,7 +152,7 @@ public class LinkyHandler extends BaseThingHandler {
                 });
 
         this.cachedYearlyData = new ExpiringDayCache<>("yearly cache", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
-                REFRESH_INTERVAL_IN_MIN, () -> {
+                () -> {
                     LocalDate today = LocalDate.now();
                     Consumption consumption = getConsumptionData(LocalDate.of(today.getYear() - 1, 1, 1), today);
                     if (consumption != null) {

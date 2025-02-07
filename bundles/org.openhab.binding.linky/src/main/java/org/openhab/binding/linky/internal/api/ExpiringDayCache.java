@@ -44,7 +44,6 @@ public class ExpiringDayCache<V> {
     private final String name;
     private final int beginningHour;
     private final int beginningMinute;
-    private final int refreshInterval;
 
     @Nullable
     private Supplier<@Nullable V> action;
@@ -59,32 +58,11 @@ public class ExpiringDayCache<V> {
      * @param beginningHour the hour in the day at which the validity period is starting
      * @param action the action to retrieve/calculate the value
      */
-    public ExpiringDayCache(String name, int beginningHour, int beginningMinute, int refreshInterval,
-            Supplier<@Nullable V> action) {
+    public ExpiringDayCache(String name, int beginningHour, int beginningMinute, Supplier<@Nullable V> action) {
         this.name = name;
         this.beginningHour = beginningHour;
         this.beginningMinute = beginningMinute;
-        this.refreshInterval = refreshInterval;
         this.expiresAt = calcAlreadyExpired();
-        this.action = action;
-    }
-
-    /**
-     * Create a new instance.
-     *
-     * @param name the name of this cache
-     * @param beginningHour the hour in the day at which the validity period is starting
-     * @param action the action to retrieve/calculate the value
-     */
-    public ExpiringDayCache(String name, int beginningHour, int beginningMinute, int refreshInterval) {
-        this.name = name;
-        this.beginningHour = beginningHour;
-        this.beginningMinute = beginningMinute;
-        this.refreshInterval = refreshInterval;
-        this.expiresAt = calcAlreadyExpired();
-    }
-
-    public void setAction(Supplier<@Nullable V> action) {
         this.action = action;
     }
 
