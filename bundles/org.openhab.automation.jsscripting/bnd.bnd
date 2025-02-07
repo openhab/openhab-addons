@@ -7,6 +7,13 @@ Require-Capability:
     osgi.serviceloader:=
       filter:="(osgi.serviceloader=org.graalvm.polyglot.impl.AbstractPolyglotImpl)";
       cardinality:=multiple
+Require-Bundle: org.graalvm.sdk.collections;bundle-version="24.1.2",\
+ org.graalvm.sdk.jniutils;bundle-version="24.1.2",\
+ org.graalvm.sdk.nativeimage;bundle-version="24.1.2",\
+ org.graalvm.sdk.word;bundle-version="24.1.2",\
+ org.graalvm.shadowed.icu4j;bundle-version="24.1.2",\
+ org.graalvm.truffle.truffle-compiler;bundle-version="24.1.2",\
+ org.graalvm.truffle.truffle-runtime;bundle-version="24.1.2"
 
 SPI-Provider: *
 SPI-Consumer: *
