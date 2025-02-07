@@ -124,33 +124,22 @@ public class LinkyHandler extends BaseThingHandler {
         config = getConfigAs(LinkyConfiguration.class);
         this.timeZoneProvider = timeZoneProvider;
 
-        this.metaData = new ExpiringDayCache<>("metaData", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
-                REFRESH_INTERVAL_IN_MIN);
-        this.metaData.setAction(() -> {
+        this.metaData = new ExpiringDayCache<>("metaData", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY, () -> {
             MetaData metaData = getMetaData();
             return metaData;
         });
 
         this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
-                REFRESH_INTERVAL_IN_MIN);
-
-        this.dailyConsumption.setAction(() -> {
-            LocalDate today = LocalDate.now();
-            MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
-            boolean missingData = checkMissingData(meterReading);
-            if (missingData) {
-                logger.debug("({}) API have returned incomplete data, we will recheck in {} mn", config.prmId,
-                        REFRESH_INTERVAL_IN_MIN);
-                this.dailyConsumption.setMissingData(true);
-            }
-
-            meterReading = getMeterReadingAfterChecks(meterReading);
-            if (meterReading != null) {
-                logData(meterReading.baseValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
-                logData(meterReading.weekValue, "Week", DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
-            }
-            return meterReading;
-        });
+                () -> {
+                    LocalDate today = LocalDate.now();
+                    MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
+                    meterReading = getMeterReadingAfterChecks(meterReading);
+                    if (meterReading != null) {
+                        logData(meterReading.baseValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
+                        logData(meterReading.weekValue, "Week", DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
+                    }
+                    return meterReading;
+                });
 
         // We request data for yesterday and the day before yesterday, even if the data for the day before yesterday
         // is not needed by the binding. This is only a workaround to an API bug that will return
@@ -159,7 +148,7 @@ public class LinkyHandler extends BaseThingHandler {
         // By requesting two days, the API is not failing and you get the expected NaN value for yesterday when the data
         // is not yet available.
         this.dailyConsumptionMaxPower = new ExpiringDayCache<>("dailyConsumptionMaxPower", REFRESH_HOUR_OF_DAY,
-                REFRESH_MINUTE_OF_DAY, REFRESH_INTERVAL_IN_MIN, () -> {
+                REFRESH_MINUTE_OF_DAY, () -> {
                     LocalDate today = LocalDate.now();
                     MeterReading meterReading = getPowerData(today.minusDays(1095), today);
                     meterReading = getMeterReadingAfterChecks(meterReading);
@@ -171,7 +160,7 @@ public class LinkyHandler extends BaseThingHandler {
 
         // Read Tempo Information
         this.tempoInformation = new ExpiringDayCache<>("tempoInformation", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
-                REFRESH_INTERVAL_IN_MIN, () -> {
+                () -> {
                     LocalDate today = LocalDate.now();
 
                     ResponseTempo tempoData = getTempoData(today.minusDays(1095), today.plusDays(1));
@@ -180,7 +169,7 @@ public class LinkyHandler extends BaseThingHandler {
 
         // Comsuption Load Curve
         this.loadCurveConsumption = new ExpiringDayCache<>("loadCurveConsumption", REFRESH_HOUR_OF_DAY,
-                REFRESH_MINUTE_OF_DAY, REFRESH_INTERVAL_IN_MIN, () -> {
+                REFRESH_MINUTE_OF_DAY, () -> {
                     LocalDate today = LocalDate.now();
                     MeterReading meterReading = getLoadCurveConsumption(today.minusDays(6), today);
                     meterReading = getMeterReadingAfterChecks(meterReading);
@@ -794,6 +783,11 @@ public class LinkyHandler extends BaseThingHandler {
             return null;
         }
 
+        if (!isDataLastDayAvailable(meterReading)) {
+            logger.debug("Data including yesterday are not yet available");
+            return null;
+        }
+
         if (meterReading != null) {
             if (meterReading.weekValue == null) {
                 LocalDate startDate = meterReading.baseValue[0].date.toLocalDate();
@@ -863,18 +857,6 @@ public class LinkyHandler extends BaseThingHandler {
         return meterReading;
     }
 
-    private boolean checkMissingData(@Nullable MeterReading meterReading) {
-        if (meterReading != null) {
-            for (int idx = 0; idx < meterReading.baseValue.length; idx++) {
-                IntervalReading ir = meterReading.baseValue[idx];
-                if (Double.isNaN(ir.value)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private void checkData(@Nullable MeterReading meterReading) throws LinkyException {
         if (meterReading != null) {
             if (meterReading.baseValue.length == 0) {
@@ -883,20 +865,13 @@ public class LinkyHandler extends BaseThingHandler {
         }
     }
 
-    /*
-     *
-     * private boolean isDataFirstDayAvailable(Consumption consumption) {
-     * Aggregate days = consumption.aggregats.days;
-     * logData(days, "First day", false, DateTimeFormatter.ISO_LOCAL_DATE, Target.FIRST);
-     * return days.datas != null && !days.datas.isEmpty() && !days.datas.get(0).isNaN();
-     * }
-     *
-     * private boolean isDataLastDayAvailable(Consumption consumption) {
-     * Aggregate days = consumption.aggregats.days;
-     * logData(days, "Last day", false, DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
-     * return days.datas != null && !days.datas.isEmpty() && !days.datas.get(days.datas.size() - 1).isNaN();
-     * }
-     */
+    private boolean isDataLastDayAvailable(@Nullable MeterReading meterReading) {
+
+        IntervalReading[] iv = meterReading.baseValue;
+
+        logData(iv, "Last day", DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
+        return iv != null && iv.length != 0 && !iv[iv.length - 1].value.isNaN();
+    }
 
     private void logData(IntervalReading[] ivArray, String title, DateTimeFormatter dateTimeFormatter, Target target) {
         if (logger.isDebugEnabled()) {
