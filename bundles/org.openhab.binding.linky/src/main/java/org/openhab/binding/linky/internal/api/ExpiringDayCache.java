@@ -52,8 +52,6 @@ public class ExpiringDayCache<V> {
     private @Nullable V value;
     private LocalDateTime expiresAt;
 
-    public boolean missingData = false;
-
     /**
      * Create a new instance.
      *
@@ -128,25 +126,12 @@ public class ExpiringDayCache<V> {
         return !LocalDateTime.now().isBefore(expiresAt);
     }
 
-    public void setMissingData(boolean missingData) {
-        this.missingData = missingData;
-    }
-
     private LocalDateTime calcNextExpiresAt() {
         LocalDateTime now = LocalDateTime.now();
-
-        if (missingData) {
-            LocalDateTime result = now.plusMinutes(refreshInterval);
-            logger.debug("calcNextExpiresAt result = {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            missingData = false;
-            return result;
-        } else {
-            LocalDateTime limit = now.withHour(beginningHour).withMinute(beginningMinute)
-                    .truncatedTo(ChronoUnit.MINUTES);
-            LocalDateTime result = now.isBefore(limit) ? limit : limit.plusDays(1);
-            logger.debug("calcNextExpiresAt result = {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            return result;
-        }
+        LocalDateTime limit = now.withHour(beginningHour).withMinute(beginningMinute).truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime result = now.isBefore(limit) ? limit : limit.plusDays(1);
+        logger.debug("calcNextExpiresAt result = {}", result.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        return result;
     }
 
     private LocalDateTime calcAlreadyExpired() {

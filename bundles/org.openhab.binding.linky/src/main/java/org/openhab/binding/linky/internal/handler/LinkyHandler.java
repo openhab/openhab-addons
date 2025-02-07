@@ -37,7 +37,6 @@ import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Aggregate;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Consumption;
-import org.openhab.binding.linky.internal.dto.ConsumptionReport.Data;
 import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.UserInfo;
@@ -116,13 +115,6 @@ public class LinkyHandler extends BaseThingHandler {
             Consumption consumption = getConsumptionData(today.minusDays(15), today);
 
             if (consumption != null) {
-                boolean missingData = checkMissingData(consumption);
-                if (missingData) {
-                    logger.debug("API have returned incomplete data, we will recheck in {} mn",
-                            REFRESH_INTERVAL_IN_MIN);
-                    this.cachedDailyData.setMissingData(true);
-                }
-
                 logData(consumption.aggregats.days, "Day", false, DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
                 logData(consumption.aggregats.weeks, "Week", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
                 consumption = getConsumptionAfterChecks(consumption, Target.LAST);
@@ -529,19 +521,6 @@ public class LinkyHandler extends BaseThingHandler {
             return null;
         }
         return consumption;
-    }
-
-    private boolean checkMissingData(@Nullable Consumption consumption) {
-        if (consumption != null) {
-
-            for (int idx = 0; idx < consumption.aggregats.days.datas.size(); idx++) {
-                Data data = consumption.aggregats.days.datas.get(idx);
-                if (Double.isNaN(data.valeur)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private void checkData(Consumption consumption) throws LinkyException {
