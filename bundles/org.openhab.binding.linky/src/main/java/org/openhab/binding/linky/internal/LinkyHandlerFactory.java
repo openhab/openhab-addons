@@ -103,7 +103,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
                                     .atStartOfDay();
                         }
                     })
-            .registerTypeAdapter(Double.class, new DoubleTypeAdapter()).serializeNulls().create();
+            .registerTypeAdapter(Double.class, new DoubleTypeAdapter()).create();
 
     private final LocaleProvider localeProvider;
 
