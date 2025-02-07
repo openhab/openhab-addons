@@ -93,7 +93,8 @@ public class EaseeConfiguration {
         builder.append("EaseeConfiguration [username=").append(username).append(", password=").append(password)
                 .append(", siteId=").append(siteId).append(", asyncTimeout=").append(asyncTimeout)
                 .append(", syncTimeout=").append(syncTimeout).append(", dataPollingInterval=")
-                .append(dataPollingInterval).append(", sessionDataPollingInterval=").append(sessionDataPollingInterval).append("]");
+                .append(dataPollingInterval).append(", sessionDataPollingInterval=").append(sessionDataPollingInterval)
+                .append("]");
         return builder.toString();
     }
 }
