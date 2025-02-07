@@ -34,8 +34,6 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -65,6 +63,20 @@ public class D2LBridgeHandler extends LinkyBridgeHandler {
         super.initialize();
 
         pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Disposing the D2LBridgeHandler handler");
+        ScheduledFuture<?> job = this.pollingJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
+            pollingJob = null;
+        }
+
+        logger.debug("Shutting down Enedis bridge handler.");
+        super.dispose();
+
     }
 
     private void pollingCode() {
@@ -127,7 +139,6 @@ public class D2LBridgeHandler extends LinkyBridgeHandler {
                         if (bytesRead == -1) {
                             client.close();
                         } else if (bytesRead > 0) {
-                            System.out.println("bytes:" + bytesRead + ":Message: " + new String(buf.array()));
                             handleRead(buf);
                             myKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                         }
@@ -145,7 +156,7 @@ public class D2LBridgeHandler extends LinkyBridgeHandler {
 
             }
         } catch (Exception ex) {
-            System.out.println(ex.toString());
+            logger.error("errors occured in data reception loop", ex);
         }
     }
 
@@ -153,12 +164,10 @@ public class D2LBridgeHandler extends LinkyBridgeHandler {
 
         List<Thing> lThing = getThing().getThings();
         for (Thing th : lThing) {
-            ThingTypeUID ttuid = th.getThingTypeUID();
-            ThingUID uid = th.getUID();
-
             LinkyHandlerDirect handler = (LinkyHandlerDirect) th.getHandler();
-            handler.handleRead(byteBuffer);
-            System.out.print("");
+            if (handler != null) {
+                handler.handleRead(byteBuffer);
+            }
         }
     }
 
@@ -234,13 +243,6 @@ public class D2LBridgeHandler extends LinkyBridgeHandler {
     @Override
     public boolean supportNewApiFormat() {
         return false;
-    }
-
-    @Override
-    public void dispose() {
-        logger.debug("Shutting down Enedis bridge handler.");
-
-        super.dispose();
     }
 
     @Override

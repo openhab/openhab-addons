@@ -221,6 +221,7 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             }
 
             authData.callbacks.get(1).input.get(0).value = lcConfig.password;
+
             logger.debug("Step 4: auth2 - send the auth data");
             result = httpClient.POST(authenticateUrl).header(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                     .header("X-NoSession", "true").header("X-Password", "anonymous")
