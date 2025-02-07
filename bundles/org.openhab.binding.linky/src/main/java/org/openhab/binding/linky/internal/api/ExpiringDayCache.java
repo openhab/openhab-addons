@@ -45,7 +45,6 @@ public class ExpiringDayCache<V> {
     private final int beginningHour;
     private final int beginningMinute;
 
-    @Nullable
     private Supplier<@Nullable V> action;
 
     private @Nullable V value;
@@ -87,12 +86,9 @@ public class ExpiringDayCache<V> {
      * @return the new value
      */
     public synchronized @Nullable V refreshValue() {
-        if (action != null) {
-            value = action.get();
-            expiresAt = calcNextExpiresAt();
-            return value;
-        }
-        return null;
+        value = action.get();
+        expiresAt = calcNextExpiresAt();
+        return value;
     }
 
     /**
