@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="bambulab"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="printer">
 		<label>Bambu Lab Printer</label>
@@ -57,17 +57,53 @@
 				<label>Sequence ID</label>
 				<description>Unique sequence identifier for commands.</description>
 			</channel>
-			<channel id="upgradeStatus" typeId="string">
-				<label>Upgrade Status</label>
-				<description>Current status of firmware upgrade.</description>
+			<channel id="upgradeState" typeId="string">
+				<label>Upgrade State</label>
+				<description>Current state of the printer firmware upgrade.</description>
+			</channel>
+			<channel id="ipcam" typeId="string">
+				<label>IP Camera</label>
+				<description>IP camera details of the printer.</description>
+			</channel>
+			<channel id="xcam" typeId="string">
+				<label>XCam</label>
+				<description>XCam details of the printer.</description>
+			</channel>
+			<channel id="upload" typeId="string">
+				<label>Upload</label>
+				<description>Upload status details.</description>
+			</channel>
+			<channel id="net" typeId="string">
+				<label>Network</label>
+				<description>Network configuration and info.</description>
 			</channel>
 			<channel id="ipcamDev" typeId="string">
 				<label>IP Camera Device</label>
-				<description>Current IP camera device connected to the printer.</description>
+				<description>IP camera device associated with the printer.</description>
+			</channel>
+			<channel id="buildplateMarkerDetector" typeId="boolean">
+				<label>Buildplate Marker Detector</label>
+				<description>Indicates if the buildplate marker detection is enabled.</description>
+			</channel>
+			<channel id="uploadStatus" typeId="string">
+				<label>Upload Status</label>
+				<description>Current file upload status.</description>
+			</channel>
+			<channel id="uploadProgress" typeId="number">
+				<label>Upload Progress</label>
+				<description>File upload progress percentage.</description>
+			</channel>
+			<channel id="uploadMessage" typeId="string">
+				<label>Upload Message</label>
+				<description>Message related to the upload status.</description>
+			</channel>
+			<channel id="netConf" typeId="number">
+				<label>Network Configuration</label>
+				<description>Configuration settings of the printer network.</description>
 			</channel>
 			<channel id="ipcamRecord" typeId="string">
 				<label>IP Camera Record</label>
-				<description>IP camera recording status.</description>
+				<description>Current recording status of the IP camera.</description>
 			</channel>
 			<channel id="timelapse" typeId="string">
 				<label>Timelapse</label>
@@ -75,15 +111,15 @@
 			</channel>
 			<channel id="resolution" typeId="string">
 				<label>Camera Resolution</label>
-				<description>Current resolution of the printer's camera.</description>
+				<description>Resolution of the IP camera.</description>
 			</channel>
-			<channel id="uploadStatus" typeId="string">
-				<label>Upload Status</label>
-				<description>Current file upload status.</description>
+			<channel id="tutkServer" typeId="string">
+				<label>Tutk Server</label>
+				<description>Tutk server details for IP camera.</description>
 			</channel>
-			<channel id="uploadProgress" typeId="temperature">
-				<label>Upload Progress</label>
-				<description>File upload progress percentage.</description>
+			<channel id="modeBits" typeId="number">
+				<label>Mode Bits</label>
+				<description>Mode bits setting of the IP camera.</description>
 			</channel>
 		</channels>
 
@@ -94,9 +130,21 @@
 				<description>Unique serial number of the printer.</description>
 			</parameter>
 
-			<parameter name="host" type="text" required="true">
-				<label>Host</label>
+			<parameter name="scheme" type="text" required="false">
+				<label>Scheme</label>
+				<description>URI scheme.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
 				<description>IP address of the printer or `us.mqtt.bambulab.com` for cloud mode.</description>
+			</parameter>
+
+			<parameter name="port" type="integer" required="false">
+				<label>Port</label>
+				<description>URI port.</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="username" type="text" required="true">
@@ -104,9 +152,10 @@
 				<description>`bblp` for local mode or your Bambu Lab user (starts with `u_`).</description>
 			</parameter>
 
-			<parameter name="accessCode" type="text"  required="true">
+			<parameter name="accessCode" type="text" required="true">
 				<label>Access Code</label>
-				<description>Access code of the printer. The method of obtaining it differs for local and cloud modes.</description>
+				<description>Access code of the printer. The method of obtaining it differs for local and cloud modes.
+				</description>
 				<context>password</context>
 			</parameter>
 		</config-description>

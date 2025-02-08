@@ -15,17 +15,16 @@ package org.openhab.binding.bambulab.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link BambuLabConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link PrinterConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class BambuLabConfiguration {
-
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
+public class PrinterConfiguration {
+    public String serial = "";
+    public String scheme = "todo";// todo set scheme from JBambuApi
     public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    public int port = 1337; //todo set port from jba,bu api
+    public String username = "";
+    public String accessCode = "";
 }

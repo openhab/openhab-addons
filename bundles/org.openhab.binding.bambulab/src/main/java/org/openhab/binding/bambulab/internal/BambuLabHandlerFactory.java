@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.bambulab.internal;
 
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.*;
-
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,6 +23,8 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PRINTER_THING_TYPE;
+
 /**
  * The {@link BambuLabHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.bambulab", service = ThingHandlerFactory.class)
 public class BambuLabHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(PRINTER_THING_TYPE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,8 +46,8 @@ public class BambuLabHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new BambuLabHandler(thing);
+        if (PRINTER_THING_TYPE.equals(thingTypeUID)) {
+            return new PrinterHandler(thing);
         }
 
         return null;
