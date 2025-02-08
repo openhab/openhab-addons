@@ -4,45 +4,112 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="BambuLabBridge" />
-			</supported-bridge-type-refs>
-		-->
-
-		<label>BambuLab Binding Thing</label>
-		<description>Sample thing for BambuLab Binding</description>
+	<thing-type id="printer">
+		<label>Bambu Lab Printer</label>
+		<description>Represents a Bambu Lab 3D printer connected via MQTT</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="nozzleTemperature" typeId="temperature">
+				<label>Nozzle Temperature</label>
+				<description>Current temperature of the nozzle.</description>
+			</channel>
+			<channel id="nozzleTargetTemperature" typeId="temperature">
+				<label>Nozzle Target Temperature</label>
+				<description>Target temperature of the nozzle.</description>
+			</channel>
+			<channel id="bedTemperature" typeId="temperature">
+				<label>Bed Temperature</label>
+				<description>Current temperature of the heated bed.</description>
+			</channel>
+			<channel id="bedTargetTemperature" typeId="temperature">
+				<label>Bed Target Temperature</label>
+				<description>Target temperature of the heated bed.</description>
+			</channel>
+			<channel id="chamberTemperature" typeId="temperature">
+				<label>Chamber Temperature</label>
+				<description>Current temperature inside the printer chamber.</description>
+			</channel>
+			<channel id="mcPrintStage" typeId="string">
+				<label>Print Stage</label>
+				<description>Current stage of the print process.</description>
+			</channel>
+			<channel id="mcPercent" typeId="temperature">
+				<label>Print Progress</label>
+				<description>Percentage of the print completed.</description>
+			</channel>
+			<channel id="mcRemainingTime" typeId="temperature">
+				<label>Remaining Print Time</label>
+				<description>Estimated time remaining for the print in seconds.</description>
+			</channel>
+			<channel id="wifiSignal" typeId="string">
+				<label>WiFi Signal Strength</label>
+				<description>Current WiFi signal strength.</description>
+			</channel>
+			<channel id="command" typeId="string">
+				<label>Printer Command</label>
+				<description>Current command being executed by the printer.</description>
+			</channel>
+			<channel id="message" typeId="temperature">
+				<label>Message Code</label>
+				<description>Message code from the printer.</description>
+			</channel>
+			<channel id="sequenceId" typeId="string">
+				<label>Sequence ID</label>
+				<description>Unique sequence identifier for commands.</description>
+			</channel>
+			<channel id="upgradeStatus" typeId="string">
+				<label>Upgrade Status</label>
+				<description>Current status of firmware upgrade.</description>
+			</channel>
+			<channel id="ipcamDev" typeId="string">
+				<label>IP Camera Device</label>
+				<description>Current IP camera device connected to the printer.</description>
+			</channel>
+			<channel id="ipcamRecord" typeId="string">
+				<label>IP Camera Record</label>
+				<description>IP camera recording status.</description>
+			</channel>
+			<channel id="timelapse" typeId="string">
+				<label>Timelapse</label>
+				<description>Status of the timelapse recording.</description>
+			</channel>
+			<channel id="resolution" typeId="string">
+				<label>Camera Resolution</label>
+				<description>Current resolution of the printer's camera.</description>
+			</channel>
+			<channel id="uploadStatus" typeId="string">
+				<label>Upload Status</label>
+				<description>Current file upload status.</description>
+			</channel>
+			<channel id="uploadProgress" typeId="temperature">
+				<label>Upload Progress</label>
+				<description>File upload progress percentage.</description>
+			</channel>
 		</channels>
 
+		<representation-property>serial</representation-property>
 		<config-description>
-			<parameter name="hostname" type="text" required="true">
-				<context>network-address</context>
-				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+			<parameter name="serial" type="text" required="true">
+				<label>Serial Number</label>
+				<description>Unique serial number of the printer.</description>
 			</parameter>
-			<parameter name="password" type="text" required="true">
+
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>IP address of the printer or `us.mqtt.bambulab.com` for cloud mode.</description>
+			</parameter>
+
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>`bblp` for local mode or your Bambu Lab user (starts with `u_`).</description>
+			</parameter>
+
+			<parameter name="accessCode" type="text"  required="true">
+				<label>Access Code</label>
+				<description>Access code of the printer. The method of obtaining it differs for local and cloud modes.</description>
 				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the device</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
-				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for BambuLab Binding</description>
-	</channel-type>
 </thing:thing-descriptions>
