@@ -12,14 +12,6 @@
  */
 package org.openhab.binding.bambulab.internal;
 
-import static org.openhab.core.thing.ThingStatus.*;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
-import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ChannelUID;
@@ -30,10 +22,17 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pl.grzeslowski.jbambuapi.PrinterClient;
 import pl.grzeslowski.jbambuapi.PrinterState;
 import pl.grzeslowski.jbambuapi.PrinterWatcher;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.openhab.core.thing.ThingStatus.*;
+import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
+import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
 
 /**
  * The {@link PrinterHandler} is responsible for handling commands, which are
@@ -138,9 +137,12 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
     }
 
     @Override
-    public void newPrinterState(PrinterState delta, PrinterState fullState) {
+    public void newPrinterState(@Nullable PrinterState delta, @Nullable PrinterState fullState) {
         // only need to update channels from delta
         // do not need to use full state, because at some point in past channels was already updated with its values
+        if (delta == null) {
+            return;
+        }
         updatePrinterChannels(delta);
     }
 
