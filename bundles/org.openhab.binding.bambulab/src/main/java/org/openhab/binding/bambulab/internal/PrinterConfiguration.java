@@ -13,6 +13,11 @@
 package org.openhab.binding.bambulab.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import pl.grzeslowski.jbambuapi.PrinterClientConfig;
+
+import java.util.UUID;
+
+import static pl.grzeslowski.jbambuapi.PrinterClientConfig.*;
 
 /**
  * The {@link PrinterConfiguration} class contains fields mapping thing configuration parameters.
@@ -22,9 +27,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PrinterConfiguration {
     public String serial = "";
-    public String scheme = "todo";// todo set scheme from JBambuApi
+    public String scheme = SCHEME;
     public String hostname = "";
-    public int port = 1337; //todo set port from jba,bu api
+    public int port = DEFAULT_PORT;
     public String username = "";
     public String accessCode = "";
 }

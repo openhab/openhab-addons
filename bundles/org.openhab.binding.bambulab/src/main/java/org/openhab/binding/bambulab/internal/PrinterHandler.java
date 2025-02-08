@@ -16,18 +16,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.grzeslowski.jbambuapi.PrinterClient;
+import pl.grzeslowski.jbambuapi.PrinterState;
+import pl.grzeslowski.jbambuapi.PrinterWatcher;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
+import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
 
 /**
  * The {@link PrinterHandler} is responsible for handling commands, which are
@@ -36,10 +41,11 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class PrinterHandler extends BaseThingHandler {
+public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.PrinterStateSubscriber {
     private Logger logger = LoggerFactory.getLogger(PrinterHandler.class);
 
     private @Nullable PrinterConfiguration config;
+    private @Nullable PrinterClient client;
 
     public PrinterHandler(Thing thing) {
         super(thing);
@@ -89,49 +95,58 @@ public class PrinterHandler extends BaseThingHandler {
             return;
         }
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly, i.e. any network access must be done in
-        // the background initialization below.
-        // Also, before leaving this method a thing status from one of ONLINE, OFFLINE or UNKNOWN must be set. This
-        // might already be the real thing status in case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
-
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
         updateStatus(UNKNOWN);
 
-        // Example for background initialization:
+        try {
+            client = new PrinterClient(requiredFields(
+                    uri,
+                    config.username,
+                    config.serial,
+                    config.accessCode.toCharArray()));
+        } catch (Exception e) {
+            updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            return;
+        }
         scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
+            try {
+                client.connect();
+                var printerWatcher = new PrinterWatcher();
+                client.subscribe(printerWatcher);
+                printerWatcher.subscribe(this);
+                // send request to update all channels
+                client.getChannel().sendCommand(defaultPushingCommand());
                 updateStatus(ONLINE);
-            } else {
-                updateStatus(OFFLINE);
+            } catch (Exception e) {
+                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
             }
         });
-
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
-        //
-        // Logging to INFO should be avoided normally.
-        // See https://www.openhab.org/docs/developer/guidelines.html#f-logging
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     @Override
     public void dispose() {
+        {
+            var localClient = client;
+            client = null;
+            if (localClient != null) {
+                try {
+                    localClient.close();
+                } catch (Exception e) {
+                    logger.warn("Could not correctly dispose PrinterClient", e);
+                }
+            }
+        }
         logger = LoggerFactory.getLogger(PrinterHandler.class);
         super.dispose();
+    }
+
+    @Override
+    public void newPrinterState(PrinterState delta, PrinterState fullState) {
+        // only need to update channels from delta
+        // do not need to use full state, because at some point in past channels was already updated with its values
+        updatePrinterChannels(delta);
+    }
+
+    private void updatePrinterChannels(PrinterState state) {
+// todo
     }
 }
