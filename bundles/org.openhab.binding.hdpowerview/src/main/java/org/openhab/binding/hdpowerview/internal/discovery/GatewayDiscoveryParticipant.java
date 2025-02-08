@@ -14,7 +14,9 @@ package org.openhab.binding.hdpowerview.internal.discovery;
 
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jmdns.ServiceInfo;
 
@@ -43,11 +45,12 @@ import org.slf4j.LoggerFactory;
 @Component
 public class GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    private static final String LABEL_KEY = "discovery.gateway.label";
-
     private final Logger logger = LoggerFactory.getLogger(GatewayDiscoveryParticipant.class);
 
     private final HDPowerviewPropertyGetter propertyGetter;
+
+    // map of serial numbers to host addresses
+    private final Map<String, String> serialHostMap = new ConcurrentHashMap<>();
 
     @Activate
     public GatewayDiscoveryParticipant(@Reference HDPowerviewPropertyGetter propertyGetter) {
@@ -56,21 +59,18 @@ public class GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
-        for (String host : service.getHostAddresses()) {
-            if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
-                try {
-                    String serial = propertyGetter.getSerialNumberApiV3(host);
-                    ThingUID thingUID = new ThingUID(THING_TYPE_GATEWAY, host.replace('.', '_'));
-                    String label = String.format("@text/%s [\"%s\"]", LABEL_KEY, host);
-                    DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                            .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                            .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
-                            .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
-                    logger.debug("mDNS discovered Gen 3 gateway on host '{}'", host);
-                    return hub;
-                } catch (HubException e) {
-                    logger.debug("Error discovering hub", e);
-                }
+        ThingUID thingUID = getThingUID(service);
+        if (thingUID != null) {
+            String serial = thingUID.getId();
+            String host = serialHostMap.get(serial);
+            if (host != null) {
+                String label = String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, host);
+                DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
+                        .withProperty(HDPowerViewHubConfiguration.HOST, host)
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
+                logger.debug("mDNS discovered Gen 3 gateway '{}' on host '{}'", thingUID, host);
+                return hub;
             }
         }
         return null;
@@ -90,7 +90,13 @@ public class GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         for (String host : service.getHostAddresses()) {
             if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
-                return new ThingUID(THING_TYPE_GATEWAY, host.replace('.', '_'));
+                try {
+                    String serial = propertyGetter.getSerialNumberApiV3(host);
+                    serialHostMap.put(serial, host);
+                    return new ThingUID(THING_TYPE_GATEWAY, serial);
+                } catch (HubException e) {
+                    logger.debug("Error discovering gateway", e);
+                }
             }
         }
         return null;

@@ -14,7 +14,9 @@ package org.openhab.binding.hdpowerview.internal.discovery;
 
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jmdns.ServiceInfo;
 
@@ -43,10 +45,12 @@ import org.slf4j.LoggerFactory;
 @Component
 public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    public static final String LABEL_KEY_HUB = "discovery.hub.label";
-
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubMDNSDiscoveryParticipant.class);
+
     private final HDPowerviewPropertyGetter propertyGetter;
+
+    // map of serial numbers to host addresses
+    private final Map<String, String> serialHostMap = new ConcurrentHashMap<>();
 
     @Activate
     public HDPowerViewHubMDNSDiscoveryParticipant(@Reference HDPowerviewPropertyGetter propertyGetter) {
@@ -65,27 +69,24 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
-        for (String host : service.getHostAddresses()) {
-            if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
+        ThingUID thingUID = getThingUID(service);
+        if (thingUID != null) {
+            String serial = thingUID.getId();
+            String host = serialHostMap.get(serial);
+            if (host != null) {
                 String generation;
                 try {
                     generation = propertyGetter.getGenerationApiV1(host);
                 } catch (HubException e) {
                     generation = "1/2";
                 }
-                try {
-                    String serial = propertyGetter.getSerialNumberApiV1(host);
-                    ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
-                    String label = String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, generation, host);
-                    DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                            .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                            .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
-                            .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
-                    logger.debug("mDNS discovered Gen {} hub on host '{}'", generation, host);
-                    return hub;
-                } catch (HubException e) {
-                    logger.debug("Error discovering hub", e);
-                }
+                String label = String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, generation, host);
+                DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
+                        .withProperty(HDPowerViewHubConfiguration.HOST, host)
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
+                logger.debug("mDNS discovered Gen {} hub '{}' on host '{}'", generation, thingUID, host);
+                return hub;
             }
         }
         return null;
@@ -95,7 +96,13 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         for (String host : service.getHostAddresses()) {
             if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
-                return new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+                try {
+                    String serial = propertyGetter.getSerialNumberApiV1(host);
+                    serialHostMap.put(serial, host);
+                    return new ThingUID(THING_TYPE_HUB, serial);
+                } catch (HubException e) {
+                    logger.debug("Error discovering hub", e);
+                }
             }
         }
         return null;
