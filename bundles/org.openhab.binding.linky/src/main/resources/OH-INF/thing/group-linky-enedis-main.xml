@@ -1,75 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="linky"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-    <channel-group-type id="linky-main">
-        <label>Main</label>
-        <channels>
-            <channel id="identity" typeId="info">
-                <label>Identity</label>
-            </channel>
+	<channel-group-type id="linky-main">
+		<label>Main</label>
+		<channels>
+			<channel id="identity" typeId="info">
+				<label>Identity</label>
+			</channel>
 
-            <channel id="contractSubscribedPower" typeId="info">
-                <label>Subscribed Power</label>
-            </channel>
-            <channel id="contractLastActivationDate" typeId="infoDate">
-                <label>Last Activation Date</label>
-            </channel>
-            <channel id="contractDistributionTariff" typeId="info">
-                <label>Distribution Tariff</label>
-            </channel>
-            <channel id="contractOffpeakHours" typeId="info">
-                <label>Offpeak Hours</label>
-            </channel>
-            <channel id="contractStatus" typeId="info">
-                <label>Contract Status</label>
-            </channel>
-            <channel id="contractType" typeId="info">
-                <label>Contract Type</label>
-            </channel>
-            <channel id="contractLastDistributionTariffChangeDate" typeId="infoDate">
-                <label>Last Distribution Tariff ChangeDate</label>
-            </channel>
-            <channel id="contractSegment" typeId="info">
-                <label>Contract Segment</label>
-            </channel>
+			<channel id="contractSubscribedPower" typeId="info">
+				<label>Subscribed Power</label>
+			</channel>
+			<channel id="contractLastActivationDate" typeId="infoDate">
+				<label>Last Activation Date</label>
+			</channel>
+			<channel id="contractDistributionTariff" typeId="info">
+				<label>Distribution Tariff</label>
+			</channel>
+			<channel id="contractOffpeakHours" typeId="info">
+				<label>Offpeak Hours</label>
+			</channel>
+			<channel id="contractStatus" typeId="info">
+				<label>Contract Status</label>
+			</channel>
+			<channel id="contractType" typeId="info">
+				<label>Contract Type</label>
+			</channel>
+			<channel id="contractLastDistributionTariffChangeDate" typeId="infoDate">
+				<label>Last Distribution Tariff ChangeDate</label>
+			</channel>
+			<channel id="contractSegment" typeId="info">
+				<label>Contract Segment</label>
+			</channel>
 
-            <channel id="usagePointId" typeId="info">
-                <label>UsagePoint Id</label>
-            </channel>
-            <channel id="usagePointStatus" typeId="info">
-                <label>UsagePoin Status</label>
-            </channel>
-            <channel id="usagePointMeterType" typeId="info">
-                <label>UsagePoint Meter Type</label>
-            </channel>
+			<channel id="usagePointId" typeId="info">
+				<label>UsagePoint Id</label>
+			</channel>
+			<channel id="usagePointStatus" typeId="info">
+				<label>UsagePoin Status</label>
+			</channel>
+			<channel id="usagePointMeterType" typeId="info">
+				<label>UsagePoint Meter Type</label>
+			</channel>
 
-            <channel id="usagePointAddressCity" typeId="info">
-                <label>City</label>
-            </channel>
-            <channel id="usagePointAddressCountry" typeId="info">
-                <label>Country</label>
-            </channel>
-            <channel id="usagePointAddressInseeCode" typeId="info">
-                <label>Insee Code</label>
-            </channel>
-            <channel id="usagePointAddressPostalCode" typeId="info">
-                <label>Postal Code</label>
-            </channel>
-            <channel id="usagePointAddressStreet" typeId="info">
-                <label>Street</label>
-            </channel>
+			<channel id="usagePointAddressCity" typeId="info">
+				<label>City</label>
+			</channel>
+			<channel id="usagePointAddressCountry" typeId="info">
+				<label>Country</label>
+			</channel>
+			<channel id="usagePointAddressInseeCode" typeId="info">
+				<label>Insee Code</label>
+			</channel>
+			<channel id="usagePointAddressPostalCode" typeId="info">
+				<label>Postal Code</label>
+			</channel>
+			<channel id="usagePointAddressStreet" typeId="info">
+				<label>Street</label>
+			</channel>
 
-            <channel id="contactMail" typeId="info">
-                <label>Mail</label>
-            </channel>
-            <channel id="contactPhone" typeId="info">
-                <label>Phone</label>
-            </channel>
-        </channels>
-    </channel-group-type>
+			<channel id="contactMail" typeId="info">
+				<label>Mail</label>
+			</channel>
+			<channel id="contactPhone" typeId="info">
+				<label>Phone</label>
+			</channel>
+		</channels>
+	</channel-group-type>
 
-  
+
 </thing:thing-descriptions>

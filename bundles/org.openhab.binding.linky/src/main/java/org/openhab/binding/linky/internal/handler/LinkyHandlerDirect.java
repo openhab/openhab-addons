@@ -225,7 +225,6 @@ public class LinkyHandlerDirect extends BaseThingHandler {
         // updateState(LINKY_DIRECT_MAIN_GROUP, "SINSTS", new StringType(payLoad.get("SINSTS")));
         // updateState(LINKY_DIRECT_MAIN_GROUP, "DATE", new StringType(payLoad.get("DATE")));
         // updateState(LINKY_DIRECT_MAIN_GROUP, "IRMS1", new StringType(payLoad.get("IRMS1")));
-
     }
 
     protected void updateState(String groupId, String channelID, State state) {

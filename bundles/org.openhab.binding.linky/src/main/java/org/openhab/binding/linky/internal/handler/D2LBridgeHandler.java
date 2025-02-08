@@ -76,7 +76,6 @@ public class D2LBridgeHandler extends LinkyBridgeHandler {
 
         logger.debug("Shutting down Enedis bridge handler.");
         super.dispose();
-
     }
 
     private void pollingCode() {
