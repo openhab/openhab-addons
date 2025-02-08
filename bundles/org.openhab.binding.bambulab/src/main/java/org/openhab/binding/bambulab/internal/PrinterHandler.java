@@ -150,7 +150,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
         // todo
     }
 
-    public void sendCommand(PrinterClient.Channel.PrintCommand command) {
+    public void sendCommand(PrinterClient.Channel.Command command) {
         var localClient = client;
         if(localClient == null) {
             logger.warn("Client not connected. Cannot send command {}", command);
