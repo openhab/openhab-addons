@@ -900,11 +900,6 @@ public class StateFilterProfileTest {
     }
 
     public static Stream<Arguments> testMixedStates() {
-        /*
-         * -------------------------------------------------------------------------------------
-         * TODO some of these test cases will fail unless OH Core PR #4561 will have been merged
-         * -------------------------------------------------------------------------------------
-         */
         NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
 
         List<State> states = List.of( //
@@ -1007,11 +1002,6 @@ public class StateFilterProfileTest {
     }
 
     public static Stream<Arguments> testColorTemperatureValues() {
-        /*
-         * -------------------------------------------------------------------------------------
-         * TODO some of these test cases will fail unless OH Core PR #4561 will have been merged
-         * -------------------------------------------------------------------------------------
-         */
         NumberItem kelvinItem = new NumberItem("Number:Temperature", "kelvinItem", UNIT_PROVIDER);
         NumberItem mirekItem = new NumberItem("Number:Temperature", "mirekItem", new MirekUnitProvider());
 

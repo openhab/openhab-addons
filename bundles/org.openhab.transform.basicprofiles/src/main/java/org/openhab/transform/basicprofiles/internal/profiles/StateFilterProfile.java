@@ -54,6 +54,8 @@ import org.openhab.transform.basicprofiles.internal.config.StateFilterProfileCon
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tech.units.indriya.AbstractUnit;
+
 /**
  * Accepts updates to state as long as conditions are met. Support for sending fixed state if conditions are *not*
  * met.
@@ -779,15 +781,34 @@ public class StateFilterProfile implements StateProfile {
      * Convert a {@link State} to a {@link QuantityType} with its value converted to the 'systemUnit'.
      * Returns null if the state is not a {@link QuantityType} or it does not convert to 'systemUnit'.
      *
-     * The conversion can be made to both inverted and non-inverted units, so invertible type conversions
-     * (e.g. Mirek <=> Kelvin) are supported.
-     *
      * @return a {@link QuantityType} based on 'systemUnit'.
      */
     protected @Nullable QuantityType<?> toSystemUnitQuantityType(State state) {
-        return state instanceof QuantityType<?> quantityType && hasSystemUnit()
-                ? quantityType.toInvertibleUnit(Objects.requireNonNull(systemUnit))
+        return state instanceof QuantityType<?> quantityType && hasSystemUnit() //
+                ? toInvertibleUnit(quantityType, Objects.requireNonNull(systemUnit))
                 : null;
+    }
+
+    /**
+     * Convert the given {@link QuantityType} to an equivalent based on the 'systemUnit'. The conversion can be made to
+     * both inverted and non-inverted units, so invertible type conversions (e.g. Mirek <=> Kelvin) are supported.
+     * <p>
+     * Note: we can use {@link QuantityType.toInvertibleUnit()} if OH Core PR #4561 is merged.
+     *
+     * @param sourceQtyType the {@link QuantityType} to be converted.
+     * @param targetUnit the {@link Unit} to convert to.
+     *
+     * @return a new {@link QuantityType} based on 'systemUnit' or null.
+     */
+    public @Nullable QuantityType<?> toInvertibleUnit(QuantityType<?> sourceQtyType, Unit<?> targetUnit) {
+        Unit<?> sourceSystemUnit = sourceQtyType.getUnit().getSystemUnit();
+        if (!targetUnit.equals(sourceSystemUnit) && !targetUnit.isCompatible(AbstractUnit.ONE)
+                && sourceSystemUnit.inverse().isCompatible(targetUnit)) {
+            return sourceQtyType.toUnit(sourceSystemUnit) instanceof QuantityType<?> systemQtyType //
+                    ? systemQtyType.inverse().toUnit(targetUnit)
+                    : null;
+        }
+        return sourceQtyType.toUnit(targetUnit);
     }
 
     /**
