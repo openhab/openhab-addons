@@ -55,7 +55,7 @@ public class SenseEnergyBindingConstants {
     public static final String CHANNEL_LEG_2_POWER = "leg-2-power";
     public static final String CHANNEL_MAIN_POWER = "main-power";
     public static final String CHANNEL_SOLAR_POWER = "solar-power";
-    public static final String CHANNEL_DISCOVERED_DEVICES_UPDATED = "discovered-devices-updated";
+    public static final String CHANNEL_DEVICES_UPDATED_TRIGGER = "devices-updated-trigger";
 
     // Discovered Device Channel IDs
     public static final String CHANNEL_DEVICE_POWER = "device-power";

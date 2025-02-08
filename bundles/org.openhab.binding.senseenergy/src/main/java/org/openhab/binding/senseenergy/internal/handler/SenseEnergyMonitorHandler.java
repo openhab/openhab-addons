@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.senseenergy.internal.handler;
 
+import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_DEVICES_UPDATED_TRIGGER;
 import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_DEVICE_POWER;
 import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_DEVICE_TRIGGER;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_DISCOVERED_DEVICES_UPDATED;
 import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_FREQUENCY;
 import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GRID_POWER;
 import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CHANNEL_GROUP_DISCOVERED_DEVICES;
@@ -124,8 +124,6 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
     private final ChannelTypeRegistry channelTypeRegistry;
 
-    private Map<String, SenseEnergyApiDevice> senseDiscoveredDevices = Collections.emptyMap();
-
     public enum DeviceType {
         DISCOVERED_DEVICE,
         SELF_REPORTING_DEVICE,
@@ -140,8 +138,17 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         }
     }
 
+    // Map of all device types from the api
+    private Map<String, SenseEnergyApiDevice> senseDevices = Collections.emptyMap();
+    // DeviceTypes deduced from the senseDevices
     private Map<String, DeviceType> senseDevicesType = new HashMap<String, DeviceType>();
-    private Set<String> discoveredDevicesOn = Collections.emptySet();
+    // Keep track of which devices are on so we can send trigger when devices are turned on/off
+    private Set<String> devicesOn = Collections.emptySet();
+
+    private static final Set<String> GENERATED_CHANNEL_GROUPS = Set.of(CHANNEL_GROUP_DISCOVERED_DEVICES,
+            CHANNEL_GROUP_SELF_REPORTING_DEVICES, CHANNEL_GROUP_PROXY_DEVICES);
+
+    // counter to slow down updates to openHAB for every power update
     private int countRealTimeUpdate;
 
     private Iterator<Thing> roundRobinIterator = Collections.emptyIterator();
@@ -177,27 +184,13 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     }
 
     public void goOnline() {
-        if (getThing().getStatus() == ThingStatus.ONLINE) {
+        if (getThing().getStatus() == ThingStatus.ONLINE || !checkBridgeStatus()) {
             return;
         }
-
-        if (!checkBridgeStatus()) {
-            return;
-        }
-
-        SenseEnergyApiMonitor apiMonitor;
-        try {
-            if ((apiMonitor = getApi().getMonitorOverview(id)) == null) {
-                return;
-            }
-        } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
-            handleApiException(e);
-            return;
-        }
-
-        this.solarConfigured = apiMonitor.solarConfigured;
 
         try {
+            SenseEnergyApiMonitor apiMonitor = getApi().getMonitorOverview(id);
+            this.solarConfigured = apiMonitor.solarConfigured;
             apiMonitorStatus = getApi().getMonitorStatus(id);
             refreshDevices();
         } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
@@ -218,7 +211,6 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
         reconcileDiscoveredDeviceChannels(thingBuilder);
         updateThing(thingBuilder.build());
-
         updateProperties();
 
         try {
@@ -244,7 +236,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             return;
         }
 
-        logger.debug("SenseEnergyMonitorHandler: heartbeat");
+        logger.trace("SenseEnergyMonitorHandler: heartbeat");
         refreshDevices();
         reconcileDiscoveredDeviceChannels(null);
 
@@ -325,19 +317,29 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         return true;
     }
 
+    @Nullable
+    SenseEnergyBridgeHandler getBridgeHandler() {
+        Bridge bridge = getBridge();
+        return (bridge != null) ? (SenseEnergyBridgeHandler) bridge.getHandler() : null;
+    }
+
+    public SenseEnergyApi getApi() {
+        SenseEnergyBridgeHandler handler = Objects.requireNonNull(getBridgeHandler(),
+                "Invalid state where handler is null");
+        return handler.getApi();
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             String channelGroup = channelUID.getGroupId();
-
             if (channelGroup == null) {
                 logger.debug("Channel does not have a group ID: {}", channelUID);
                 return;
             }
 
-            if (channelGroup.equals(CHANNEL_GROUP_DISCOVERED_DEVICES)) {
+            if (GENERATED_CHANNEL_GROUPS.contains(channelGroup)) {
                 Channel channel = getThing().getChannel(channelUID);
-
                 if (channel == null) {
                     logger.debug("Channel does not exist: {}", channelUID);
                     return;
@@ -349,33 +351,42 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
                     return;
                 }
 
-                if (!discoveredDevicesOn.contains(senseID)) {
+                if (!devicesOn.contains(senseID)) {
                     updateState(channelUID, new QuantityType<>(0, Units.WATT));
                 }
             }
         }
     }
 
-    public SenseEnergyApi getApi() {
-        SenseEnergyBridgeHandler handler = Objects.requireNonNull(getBridgeHandler());
-
-        return handler.getApi();
-    }
-
+    /**
+     * Deduces the device type based by examining the properties and identifying if the device is a proxy device
+     * in openHAB.
+     *
+     * @param apiDevice The device for which the type needs to be deduced.
+     * @return The deduced DeviceType.
+     */
     private DeviceType deduceDeviceType(SenseEnergyApiDevice apiDevice) {
-        if (apiDevice.tags.ssiEnabled == true) {
-            SenseEnergyBridgeHandler bridgeHandler = Objects.requireNonNull(getBridgeHandler());
-            SenseEnergyProxyDeviceHandler proxyHandler = bridgeHandler.getProxyDeviceByMAC(apiDevice.tags.deviceID);
-            return (proxyHandler != null) ? DeviceType.PROXY_DEVICE : DeviceType.SELF_REPORTING_DEVICE;
+        if (!apiDevice.tags.ssiEnabled) {
+            return DeviceType.DISCOVERED_DEVICE;
         }
 
-        return DeviceType.DISCOVERED_DEVICE;
+        SenseEnergyBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
+            throw new IllegalStateException("Bridge handler is not available");
+        }
+
+        SenseEnergyProxyDeviceHandler proxyHandler = bridgeHandler.getProxyDeviceByMAC(apiDevice.tags.deviceID);
+        return (proxyHandler != null) ? DeviceType.PROXY_DEVICE : DeviceType.SELF_REPORTING_DEVICE;
     }
 
+    /**
+     * Refreshes the list of devices by retrieving them from the API and then updating the map of DeviceTypes.
+     */
     private void refreshDevices() {
         try {
-            senseDiscoveredDevices = getApi().getDevices(id);
-            senseDiscoveredDevices.entrySet().stream() //
+            senseDevices = getApi().getDevices(id);
+
+            senseDevices.entrySet().stream() //
                     .filter(e -> !senseDevicesType.containsKey(e.getKey())) //
                     .forEach(e -> senseDevicesType.put(e.getKey(), deduceDeviceType(e.getValue())));
         } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
@@ -384,7 +395,8 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     }
 
     /*
-     * reconciles the discovered device channels to stay in sync with the discovered device list
+     * Reconciles the discovered device channels to stay in sync with the discovered device list to ensure
+     * all the channels in the channel template exist for every sense devices.
      *
      * @param thingBuilder to update if already editing, otherwise will open
      */
@@ -392,72 +404,59 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         ChannelGroupType channelGroupType = Objects
                 .requireNonNull(channelGroupTypeRegistry.getChannelGroupType(CHANNEL_GROUP_TYPE_DEVICE_TEMPLATE));
         List<ChannelDefinition> channelDefinitions = channelGroupType.getChannelDefinitions();
-        boolean channelsUpdated = false;
 
-        Set<String> senseIDs = new HashSet<>(senseDiscoveredDevices.keySet());
+        Set<String> senseIDs = new HashSet<>(senseDevices.keySet());
         senseIDs.remove("solar"); // don't create solar as a separate channel
 
         logger.trace("Reconciling channels with Sense device, channel count: {}", senseIDs.size());
+
+        boolean channelsUpdated = false;
+        ThingBuilder localBuilder = (thingBuilder != null) ? thingBuilder : editThing();
 
         // reconcile every channel type that is in the group template
         for (ChannelDefinition channelDefinition : channelDefinitions) {
             ChannelType channelType = Objects
                     .requireNonNull(channelTypeRegistry.getChannelType(channelDefinition.getChannelTypeUID()));
-            // create set of IDs with existing thing channels
-            // note @Nullable attribute seems unnecessary here, but had to include to prevent mismatch error when
-            // built in maven
-            // java.util.stream.@NonNull Collector<? super java.lang.@Nullable
-            // String,java.lang.Object,java.util.@NonNull Set<java.lang.@NonNull String>> - required
-            // java.util.stream.@NonNull Collector<java.lang.@NonNull String,capture#of ?,java.util.@NonNull
-            // Set<java.lang.@NonNull String>>
-            Set<@Nullable String> existingChannels = getThing().getChannelsOfGroup(CHANNEL_GROUP_DISCOVERED_DEVICES)
-                    .stream() //
-                    .filter(ch -> Objects.requireNonNull(ch.getChannelTypeUID()).equals(channelType.getUID())) //
+            // create set of IDs of existing channels of the TypeUID from the template.
+            @SuppressWarnings("null")
+            Set<String> existingChannels = getThing().getChannels().stream() //
+                    .filter(ch -> GENERATED_CHANNEL_GROUPS.contains(ch.getUID().getGroupId())) //
+                    .filter(ch -> ch.getChannelTypeUID() != null && ch.getChannelTypeUID().equals(channelType.getUID())) //
                     .map(ch -> ch.getProperties().get(CHANNEL_PROPERTY_ID)) //
                     .filter(Objects::nonNull) //
                     .collect(Collectors.toSet());
 
-            // make a super-set of senseIDs for existing and devices from last API call to iterate over
             Set<String> allChannels = new HashSet<>(existingChannels);
             allChannels.addAll(senseIDs);
 
-            ThingBuilder localBuilder = (thingBuilder != null) ? thingBuilder : editThing();
-
-            // if channel already exists AND is no longer reported by sense --> remove
-            // if channel already exists AND is still reported by sense --> update
-            // if channel does not currently exist and is reported by sense --> add
             for (String senseID : allChannels) {
                 DeviceType deviceType = senseDevicesType.getOrDefault(senseID, DeviceType.DISCOVERED_DEVICE);
 
                 ChannelUID channelUID = makeDeviceChannelUID(deviceType, senseID, channelDefinition.getId());
-                if (existingChannels.contains(senseID)) {
-                    if (!senseIDs.contains(senseID)) { // need to remove
-                        localBuilder.withoutChannel(channelUID);
-                        channelsUpdated = true;
-                    } else { // update label/etc as necessary
-                        channelsUpdated = channelsUpdated || updateDiscoveredChannel(localBuilder, channelUID,
-                                Objects.requireNonNull(senseDiscoveredDevices.get(senseID)).name);
-                    }
-                } else { // need to add
-                    addDiscoveredChannel(localBuilder, channelUID,
-                            Objects.requireNonNull(senseDiscoveredDevices.get(senseID)), channelDefinition,
-                            channelType);
+                if (existingChannels.contains(senseID) && !senseIDs.contains(senseID)) { // remove outdated channel
+                    localBuilder.withoutChannel(channelUID);
+                    channelsUpdated = true;
+                } else if (existingChannels.contains(senseID) && senseIDs.contains(senseID)) { // update existing
+                    String deviceName = Objects.requireNonNull(senseDevices.get(senseID)).name;
+                    channelsUpdated |= updateGeneratedChannel(localBuilder, channelUID, deviceName);
+                } else if (!existingChannels.contains(senseID) && senseIDs.contains(senseID)) { // add new channel
+                    addGeneratedChannel(localBuilder, channelUID, Objects.requireNonNull(senseDevices.get(senseID)),
+                            channelDefinition, channelType);
                     channelsUpdated = true;
                 }
             }
+        }
 
-            if (thingBuilder == null) {
-                updateThing(localBuilder.build());
-            }
+        if (thingBuilder == null) {
+            updateThing(localBuilder.build());
+        }
 
-            if (channelsUpdated) {
-                triggerChannel(
-                        new ChannelUID(getThing().getUID(), CHANNEL_GROUP_GENERAL, CHANNEL_DISCOVERED_DEVICES_UPDATED));
-            }
+        if (channelsUpdated) {
+            triggerChannel(new ChannelUID(getThing().getUID(), CHANNEL_GROUP_GENERAL, CHANNEL_DEVICES_UPDATED_TRIGGER));
         }
     }
 
-    public void addDiscoveredChannel(ThingBuilder builder, ChannelUID channelUID, SenseEnergyApiDevice apiDevice,
+    public void addGeneratedChannel(ThingBuilder builder, ChannelUID channelUID, SenseEnergyApiDevice apiDevice,
             ChannelDefinition channelDefinition, ChannelType channelType) {
         Channel channel = ChannelBuilder.create(channelUID)
                 .withDescription(Objects.requireNonNull(channelDefinition.getDescription())) //
@@ -479,29 +478,33 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
      * @param channelUID
      * 
      * @param label
+     * 
+     * @return whether channel needed to be updated
      */
-    public boolean updateDiscoveredChannel(ThingBuilder thingBuilder, ChannelUID channelUID, String label) {
-        if (getThing().getChannel(channelUID) instanceof Channel channel) {
-            Map<String, String> properties = channel.getProperties();
+    public boolean updateGeneratedChannel(ThingBuilder thingBuilder, ChannelUID channelUID, String label) {
+        Channel channel = getThing().getChannel(channelUID);
 
-            String currentLabel = properties.get(CHANNEL_PROPERTY_LABEL);
-            if (currentLabel != null && currentLabel.equals(label)) {
-                return false;
-            }
-
-            Map<String, String> newProperties = new HashMap<String, String>(properties);
-
-            thingBuilder.withoutChannel(channelUID);
-
-            newProperties.put(CHANNEL_PROPERTY_LABEL, label);
-            Channel newChannel = ChannelBuilder.create(channel).withProperties(newProperties).withLabel(label).build();
-
-            thingBuilder.withChannel(newChannel);
-
-            return true;
+        if (channel == null) {
+            return false;
         }
 
-        return false;
+        Map<String, String> properties = channel.getProperties();
+
+        String currentLabel = properties.get(CHANNEL_PROPERTY_LABEL);
+        if (label.equals(currentLabel)) {
+            return false;
+        }
+
+        thingBuilder.withoutChannel(channelUID);
+
+        Map<String, String> newProperties = new HashMap<String, String>(properties);
+        newProperties.put(CHANNEL_PROPERTY_LABEL, label);
+
+        Channel newChannel = ChannelBuilder.create(channel).withProperties(newProperties).withLabel(label).build();
+
+        thingBuilder.withChannel(newChannel);
+
+        return true;
     }
 
     /*
@@ -552,6 +555,9 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         checkDatagramStatus();
     }
 
+    /**
+     * start/stop and check datagram status depending on whether there are proxy devices or not
+     */
     public void checkDatagramStatus() {
         final String datagramListenerThreadName = "OH-binding-" + getThing().getUID().getAsString();
 
@@ -676,17 +682,16 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         Set<String> updateDevicesOn = new HashSet<>();
 
         for (SenseEnergyWebSocketDevice device : devices) {
-            // include in the "ON' devices - must be done before reconcileDiscoveredDeviceChannels to prevent recursive
-            // loop
+            // include in the "ON' devices - must be done before reconcileDeviceChannels to prevent recursive loop
             updateDevicesOn.add(device.id);
 
             // check if device channels need to be updated because there is a new device
-            if (!senseDiscoveredDevices.containsKey(device.id)) {
+            if (!senseDevices.containsKey(device.id)) {
                 reconcileDiscoveredDeviceChannels(null);
             }
 
             // Send trigger if device just turned on
-            if (!this.discoveredDevicesOn.contains(device.id)) {
+            if (!this.devicesOn.contains(device.id)) {
                 DeviceType deviceType = senseDevicesType.getOrDefault(device.id, DeviceType.DISCOVERED_DEVICE);
                 triggerChannel(makeDeviceChannelUID(deviceType, device.id, CHANNEL_DEVICE_TRIGGER), "ON");
                 logger.trace("Discovered device turned on: {}({})", device.name, device.id);
@@ -700,7 +705,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         }
 
         // if was ON before and not ON now, update state to 0 and send trigger
-        Set<String> wasOnNowOff = new HashSet<>(this.discoveredDevicesOn);
+        Set<String> wasOnNowOff = new HashSet<>(this.devicesOn);
         wasOnNowOff.removeAll(updateDevicesOn);
         for (String id : wasOnNowOff) {
             DeviceType deviceType = senseDevicesType.getOrDefault(id, DeviceType.DISCOVERED_DEVICE);
@@ -708,16 +713,6 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             triggerChannel(makeDeviceChannelUID(deviceType, id, CHANNEL_DEVICE_TRIGGER), "OFF");
             logger.trace("Discovered device turned off: {}", id);
         }
-        this.discoveredDevicesOn = updateDevicesOn;
-    }
-
-    @Nullable
-    SenseEnergyBridgeHandler getBridgeHandler() {
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            return null;
-        }
-
-        return (SenseEnergyBridgeHandler) bridge.getHandler();
+        this.devicesOn = updateDevicesOn;
     }
 }

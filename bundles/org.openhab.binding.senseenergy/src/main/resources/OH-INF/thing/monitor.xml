@@ -15,6 +15,8 @@
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>
 			<channel-group id="discovered-devices" typeId="discovered-devices"/>
+			<channel-group id="self-reporting-devices" typeId="self-reporting-devices"/>
+			<channel-group id="proxy-devices" typeId="proxy-devices"/>
 		</channel-groups>
 
 		<properties>
@@ -50,7 +52,7 @@
 			<channel id="leg-2-power" typeId="leg-2-power"/>
 			<channel id="main-power" typeId="main-power"/>
 			<channel id="solar-power" typeId="solar-power"/>
-			<channel id="discovered-devices-updated" typeId="discovered-devices-updated"/>
+			<channel id="devices-updated-trigger" typeId="devices-updated-trigger"/>
 		</channels>
 	</channel-group-type>
 
@@ -64,7 +66,7 @@
 		<description>Devices that self report their power to Sense</description>
 	</channel-group-type>
 
-	<channel-group-type id="discovered-devices">
+	<channel-group-type id="proxy-devices">
 		<label>Proxy Devices</label>
 		<description>Proxy devices configured in openHAB which report their power</description>
 	</channel-group-type>
@@ -127,7 +129,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="discovered-devices-updated" advanced="true">
+	<channel-type id="devices-updated-trigger" advanced="true">
 		<kind>trigger</kind>
 		<label>Discovered Devices Updated</label>
 		<description>Triggered when the discovered device list has been updated</description>

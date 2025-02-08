@@ -52,6 +52,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * {@link SenseEnergyApi} implements the api for sense energy cloud service. This is highly leveraged from the python
@@ -208,7 +209,6 @@ public class SenseEnergyApi {
      * 
      * @throws SenseEnergyApiException
      */
-    @Nullable
     public SenseEnergyApiMonitor getMonitorOverview(long id)
             throws InterruptedException, TimeoutException, ExecutionException, SenseEnergyApiException {
         String url = String.format(APIURL_MONITOR_OVERVIEW, id);
@@ -216,13 +216,20 @@ public class SenseEnergyApi {
 
         ContentResponse response = sendRequest(request);
 
-        JsonObject jsonResponse = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
+        try {
+            JsonObject jsonResponse = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
+            SenseEnergyApiMonitor monitor = gson.fromJson(
+                    jsonResponse.getAsJsonObject("monitor_overview").getAsJsonObject("monitor"),
+                    SenseEnergyApiMonitor.class);
 
-        SenseEnergyApiMonitor monitor = gson.fromJson(
-                jsonResponse.getAsJsonObject("monitor_overview").getAsJsonObject("monitor"),
-                SenseEnergyApiMonitor.class);
+            if (monitor == null) {
+                throw new SenseEnergyApiException("@text/api.response-invalid", false);
+            }
 
-        return monitor;
+            return monitor;
+        } catch (JsonSyntaxException e) {
+            throw new SenseEnergyApiException("@text/api.response-invalid", false);
+        }
     }
 
     /*

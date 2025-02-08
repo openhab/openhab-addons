@@ -72,7 +72,6 @@ public class SenseEnergyDatagram {
         localUdpListener.setName(readerThreadName);
         localUdpListener.setDaemon(true);
         localUdpListener.start();
-
         udpListener = localUdpListener;
 
         this.connected = true;
@@ -146,7 +145,7 @@ public class SenseEnergyDatagram {
                 try {
                     jsonResponse = JsonParser.parseString(decryptedPacket).getAsJsonObject();
                 } catch (JsonSyntaxException jsonSyntaxException) {
-                    logger.warn("Invalid JSON received");
+                    logger.trace("Invalid JSON received");
                     continue;
                 }
 
