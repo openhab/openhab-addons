@@ -45,7 +45,6 @@ import pl.grzeslowski.jbambuapi.PrinterWatcher;
 public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.PrinterStateSubscriber {
     private Logger logger = LoggerFactory.getLogger(PrinterHandler.class);
 
-    private @Nullable PrinterConfiguration config;
     private @Nullable PrinterClient client;
 
     public PrinterHandler(Thing thing) {
@@ -62,7 +61,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
 
     @Override
     public void initialize() {
-        config = getConfigAs(PrinterConfiguration.class);
+        var config = getConfigAs(PrinterConfiguration.class);
 
         if (config.serial.isEmpty()) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/handler.printer.init.noSerial");
