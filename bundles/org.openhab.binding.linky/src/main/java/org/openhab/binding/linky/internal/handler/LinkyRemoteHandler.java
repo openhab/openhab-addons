@@ -77,7 +77,7 @@ import org.threeten.extra.Weeks;
 import org.threeten.extra.Years;
 
 /**
- * The {@link LinkyHandler} is responsible for handling commands, which are
+ * The {@link LinkyRemoteHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Gaël L'hopital - Initial contribution
@@ -86,7 +86,7 @@ import org.threeten.extra.Years;
 
 @NonNullByDefault
 @SuppressWarnings("null")
-public class LinkyHandler extends BaseThingHandler {
+public class LinkyRemoteHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private ZoneId zoneId = ZoneId.systemDefault();
 
@@ -95,7 +95,7 @@ public class LinkyHandler extends BaseThingHandler {
     private static final int REFRESH_MINUTE_OF_DAY = randomNumbers.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
-    private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(LinkyRemoteHandler.class);
 
     private final ExpiringDayCache<MetaData> metaData;
     private final ExpiringDayCache<MeterReading> dailyConsumption;
@@ -118,7 +118,7 @@ public class LinkyHandler extends BaseThingHandler {
         ALL
     }
 
-    public LinkyHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
+    public LinkyRemoteHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
 
         config = getConfigAs(LinkyConfiguration.class);
@@ -205,7 +205,7 @@ public class LinkyHandler extends BaseThingHandler {
             return;
         }
 
-        LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
+        BridgeLinkyHandler bridgeHandler = (BridgeLinkyHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             return;
         }
@@ -234,7 +234,7 @@ public class LinkyHandler extends BaseThingHandler {
             throw new LinkyException("Unable to get bridge in supportNewApiFormat()");
         }
 
-        LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
+        BridgeLinkyHandler bridgeHandler = (BridgeLinkyHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             throw new LinkyException("Unable to get bridgeHandler in supportNewApiFormat()");
         }
@@ -254,7 +254,7 @@ public class LinkyHandler extends BaseThingHandler {
                     return;
                 }
 
-                LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) lcBridge.getHandler();
+                BridgeLinkyHandler bridgeHandler = (BridgeLinkyHandler) lcBridge.getHandler();
                 if (bridgeHandler == null) {
                     return;
                 }

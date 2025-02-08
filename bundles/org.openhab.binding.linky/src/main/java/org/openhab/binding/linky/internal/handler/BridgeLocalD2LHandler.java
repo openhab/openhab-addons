@@ -43,16 +43,16 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * {@link D2LBridgeHandler} is the base handler to access enedis data.
+ * {@link BridgeLocalD2LHandler} is the base handler to access enedis data.
  *
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public class D2LBridgeHandler extends LinkyBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(D2LBridgeHandler.class);
+public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
+    private final Logger logger = LoggerFactory.getLogger(BridgeLocalD2LHandler.class);
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
-    public D2LBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
+    public BridgeLocalD2LHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
         super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
@@ -163,7 +163,7 @@ public class D2LBridgeHandler extends LinkyBridgeHandler {
 
         List<Thing> lThing = getThing().getThings();
         for (Thing th : lThing) {
-            LinkyHandlerDirect handler = (LinkyHandlerDirect) th.getHandler();
+            LinkyLocalHandler handler = (LinkyLocalHandler) th.getHandler();
             if (handler != null) {
                 handler.handleRead(byteBuffer);
             }
@@ -225,7 +225,7 @@ public class D2LBridgeHandler extends LinkyBridgeHandler {
     }
 
     @Override
-    public String getToken(LinkyHandler handler) throws LinkyException {
+    public String getToken(LinkyRemoteHandler handler) throws LinkyException {
         return "";
     }
 

@@ -33,7 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.UrlEncoded;
-import org.openhab.binding.linky.internal.handler.ApiBridgeHandler;
+import org.openhab.binding.linky.internal.handler.BridgeRemoteApiHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,9 +80,9 @@ public class LinkyAuthServlet extends HttpServlet {
     private final String myelectricaldataStep2;
     private final String myelectricaldataStep3;
 
-    private ApiBridgeHandler apiBridgeHandler;
+    private BridgeRemoteApiHandler apiBridgeHandler;
 
-    public LinkyAuthServlet(ApiBridgeHandler apiBridgeHandler) throws LinkyException {
+    public LinkyAuthServlet(BridgeRemoteApiHandler apiBridgeHandler) throws LinkyException {
         this.apiBridgeHandler = apiBridgeHandler;
 
         try {

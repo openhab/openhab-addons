@@ -35,13 +35,13 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * {@link MyElectricalDataBridgeHandler} is the base handler to access enedis data.
+ * {@link BridgeRemoteMyElectricalDataHandler} is the base handler to access enedis data.
  *
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(MyElectricalDataBridgeHandler.class);
+public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler {
+    private final Logger logger = LoggerFactory.getLogger(BridgeRemoteMyElectricalDataHandler.class);
 
     private static final String BASE_URL = "https://www.myelectricaldata.fr/";
 
@@ -57,8 +57,8 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
     // List of Linky services related urls, information
     public static final String LINKY_MYELECTRICALDATA_ACCOUNT_URL = "https://www.myelectricaldata.fr/";
-    public static final String LINKY_MYELECTRICALDATA_AUTHORIZE_URL = EnedisBridgeHandler.ENEDIS_ACCOUNT_URL_PROD
-            + EnedisBridgeHandler.ENEDIS_AUTHORIZE_URL;
+    public static final String LINKY_MYELECTRICALDATA_AUTHORIZE_URL = BridgeRemoteEnedisHandler.ENEDIS_ACCOUNT_URL_PROD
+            + BridgeRemoteEnedisHandler.ENEDIS_AUTHORIZE_URL;
     public static final String LINKY_MYELECTRICALDATA_API_TOKEN_URL = LINKY_MYELECTRICALDATA_ACCOUNT_URL
             + "v1/oauth2/authorize?client_id=%s&response_type=code&redirect_uri=na&user_type=na&state=na&person_id=-1&usage_points_id=%s";
 
@@ -71,7 +71,7 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
     // https://www.myelectricaldata.fr/v1/oauth2/authorize?response_type=code&client_id=&state=linky&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fconnectlinky&scope=am_application_scope+default&user_type=aa&person_id=-1&usage_points_id=aa
 
-    public MyElectricalDataBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
+    public BridgeRemoteMyElectricalDataHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
         super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
@@ -84,15 +84,15 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public void initialize() {
-        tokenUrl = MyElectricalDataBridgeHandler.LINKY_MYELECTRICALDATA_API_TOKEN_URL;
-        authorizeUrl = MyElectricalDataBridgeHandler.LINKY_MYELECTRICALDATA_AUTHORIZE_URL;
+        tokenUrl = BridgeRemoteMyElectricalDataHandler.LINKY_MYELECTRICALDATA_API_TOKEN_URL;
+        authorizeUrl = BridgeRemoteMyElectricalDataHandler.LINKY_MYELECTRICALDATA_AUTHORIZE_URL;
 
         super.initialize();
     }
 
     @Override
     public String getClientId() {
-        return MyElectricalDataBridgeHandler.LINKY_MYELECTRICALDATA_CLIENT_ID;
+        return BridgeRemoteMyElectricalDataHandler.LINKY_MYELECTRICALDATA_CLIENT_ID;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public String authorize(String redirectUri, String reqState, String reqCode) throws LinkyException {
-        String url = String.format(MyElectricalDataBridgeHandler.LINKY_MYELECTRICALDATA_API_TOKEN_URL, getClientId(),
+        String url = String.format(BridgeRemoteMyElectricalDataHandler.LINKY_MYELECTRICALDATA_API_TOKEN_URL, getClientId(),
                 reqCode);
         EnedisHttpApi enedisApi = getEnedisApi();
         if (enedisApi == null) {
@@ -134,7 +134,7 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
                 }
 
                 config.put("token", token);
-                LinkyHandler handler = (LinkyHandler) thing.getHandler();
+                LinkyRemoteHandler handler = (LinkyRemoteHandler) thing.getHandler();
                 if (handler != null) {
                     handler.saveConfiguration(config);
                 }
@@ -151,7 +151,7 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     }
 
     @Override
-    public String getToken(LinkyHandler handler) throws LinkyException {
+    public String getToken(LinkyRemoteHandler handler) throws LinkyException {
         LinkyConfiguration config = handler.getLinkyConfig();
         if (config == null) {
             return "";
