@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
-import static org.openhab.binding.linky.internal.LinkyBindingConstants.MAIN2_GROUP;
+import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
 
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -27,10 +27,13 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.linky.internal.Label;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
+import org.openhab.binding.linky.internal.ValueType;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -178,11 +181,9 @@ public class LinkyHandlerDirect extends BaseThingHandler {
                 }.getType();
 
                 Map<String, String> r1 = gson.fromJson(st1, type);
-
-                updateState(MAIN2_GROUP, "_ID_D2L", new StringType(r1.get("_ID_D2L")));
-                updateState(MAIN2_GROUP, "SINSTS", new StringType(r1.get("SINSTS")));
-                updateState(MAIN2_GROUP, "DATE", new StringType(r1.get("DATE")));
-                updateState(MAIN2_GROUP, "IRMS1", new StringType(r1.get("IRMS1")));
+                if (r1 != null) {
+                    handlePayload(r1);
+                }
             }
 
             System.out.print(st1);
@@ -191,6 +192,40 @@ public class LinkyHandlerDirect extends BaseThingHandler {
 
             System.out.print(ex.toString());
         }
+    }
+
+    protected void handlePayload(Map<String, String> payLoad) {
+
+        for (String key : payLoad.keySet()) {
+            String value = payLoad.get(key);
+
+            try {
+                Label label = Label.getEnum(key);
+
+                if (label.getChannelName().equals(CHANNEL_NONE)) {
+                    continue;
+                }
+
+                if (value != null) {
+                    if (label.getType() == ValueType.STRING) {
+                        updateState(LINKY_DIRECT_MAIN_GROUP, label.getChannelName(), StringType.valueOf(value));
+                    } else if (label.getType() == ValueType.INTEGER) {
+                        updateState(LINKY_DIRECT_MAIN_GROUP, label.getChannelName(),
+                                QuantityType.valueOf(label.getFactor() * Integer.parseInt(value), label.getUnit()));
+                    }
+                }
+
+                logger.info("");
+            } catch (IllegalArgumentException ex) {
+                logger.error("err", ex);
+            }
+        }
+
+        // updateState(LINKY_DIRECT_MAIN_GROUP, "_ID_D2L", new StringType(payLoad.get("_ID_D2L")));
+        // updateState(LINKY_DIRECT_MAIN_GROUP, "SINSTS", new StringType(payLoad.get("SINSTS")));
+        // updateState(LINKY_DIRECT_MAIN_GROUP, "DATE", new StringType(payLoad.get("DATE")));
+        // updateState(LINKY_DIRECT_MAIN_GROUP, "IRMS1", new StringType(payLoad.get("IRMS1")));
+
     }
 
     protected void updateState(String groupId, String channelID, State state) {

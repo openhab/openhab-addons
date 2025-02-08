@@ -4,384 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="enedis">
-		<label>EnedisBridge</label>
-		<description>
-			Provides your energy consumption data.
-			In order to receive the data, you must activate your account at
-			https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
-		</description>
-
-		<config-description>
-			<parameter name="clientId" type="text" required="false">
-				<label>clientId</label>
-				<description>Your Enedis clientId</description>
-			</parameter>
-			<parameter name="clientSecret" type="text" required="false">
-				<label>clientSecret</label>
-				<description>Your Enedis clientSecret</description>
-			</parameter>
-			<parameter name="isSandbox" type="boolean" required="false">
-				<label>isSandbox</label>
-				<description>To test on the sandbox environment</description>
-				<advanced>true</advanced>
-			</parameter>
-		</config-description>
-
-	</bridge-type>
-
-	<bridge-type id="enedis-web">
-		<label>EnedisWebBridge</label>
-		<description>
-			Provides your energy consumption data.
-			In order to receive the data, you must activate your account at
-			https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
-		</description>
-
-		<config-description>
-			<parameter name="username" type="text" required="true">
-				<label>Username</label>
-				<context>email</context>
-				<description>Your Enedis Username</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<label>Password</label>
-				<context>password</context>
-				<description>Your Enedis Password</description>
-			</parameter>
-			<parameter name="internalAuthId" type="text" required="true">
-				<label>Auth ID</label>
-				<description>Authentication ID delivered after the captcha (see documentation).</description>
-			</parameter>
-		</config-description>
-	</bridge-type>
-
-	<bridge-type id="my-electrical-data">
-		<label>MyElectricalDataBridge</label>
-		<description>
-			Provides your energy consumption data.
-			In order to receive the data, you must activate your account at
-			https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
-		</description>
-
-		<config-description>
-		</config-description>
-	</bridge-type>
-
-	<bridge-type id="d2l">
-		<label>D2L Bridge</label>
-		<description>
-		</description>
-
-		<config-description>
-		</config-description>
-	</bridge-type>
-
-	<thing-type id="linky-direct">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="d2l"/>
-		</supported-bridge-type-refs>
-
-		<label>Linky Direct</label>
-		<description>
-			Provides your energy consumption data.
-			In order to receive the data, you must activate your account at
-			https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
-		</description>
-
-		<channel-groups>
-			<channel-group typeId="main2" id="main2"/>
-		</channel-groups>
-
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Id</label>
-				<description>Your D2L id</description>
-			</parameter>
-			<parameter name="appKey" type="text" required="true">
-				<label>AppKey</label>
-				<description>Your applicative encryption key</description>
-			</parameter>
-			<parameter name="ivKey" type="text" required="true">
-				<label>IvKey</label>
-				<description>Your IV encryption key</description>
-			</parameter>
-		</config-description>
-	</thing-type>
-
-
-	<thing-type id="linky">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="enedis"/>
-			<bridge-type-ref id="enedis-web"/>
-			<bridge-type-ref id="my-electrical-data"/>
-			<bridge-type-ref id="d2l-bridge"/>
-		</supported-bridge-type-refs>
-
-		<label>Linky</label>
-		<description>
-			Provides your energy consumption data.
-			In order to receive the data, you must activate your account at
-			https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
-		</description>
-
-		<channel-groups>
-			<channel-group typeId="main" id="main"/>
-			<channel-group typeId="tempo" id="tempo"/>
-			<channel-group typeId="loadCurve" id="loadCurve"/>
-			<channel-group typeId="daily" id="daily"/>
-			<channel-group typeId="weekly" id="weekly"/>
-			<channel-group typeId="monthly" id="monthly"/>
-			<channel-group typeId="yearly" id="yearly"/>
-		</channel-groups>
-
-		<config-description>
-			<parameter name="prmId" type="text" required="true">
-				<label>prmId</label>
-				<description>Your prmId</description>
-			</parameter>
-			<parameter name="timezone" type="text" required="false">
-				<label>timezone</label>
-				<description>The timezone associated with your Point of delivery.
-					Will default to openhab default timezone.
-					You will
-					need to change this if your linky is located in a different timezone that your openhab location.
-					You can use an
-					offset, or a label like Europe/Paris</description>
-			</parameter>
-			<parameter name="token" type="text" required="false">
-				<label>Token</label>
-				<description>Your Enedis token (can be left empty, use the connection page to automatically fill it
-					http://youopenhab/connectlinky)</description>
-			</parameter>
-		</config-description>
-	</thing-type>
-
-	<channel-group-type id="loadCurve">
-		<label>Load curve</label>
-		<channels>
-			<channel id="power" typeId="power">
-				<label>Load Curve Power</label>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="daily">
-		<label>Daily Consumption</label>
-		<channels>
-			<channel id="yesterday" typeId="consumption">
-				<label>Yesterday Consumption</label>
-			</channel>
-			<channel id="day-2" typeId="consumption">
-				<label>Yesterday Consumption</label>
-			</channel>
-			<channel id="day-3" typeId="consumption">
-				<label>Yesterday Consumption</label>
-			</channel>
-			<channel id="consumption" typeId="consumption">
-				<label>Consumption</label>
-			</channel>
-
-			<channel id="maxPower" typeId="power">
-				<label>Peak Value</label>
-				<description>Maximum power usage value</description>
-			</channel>
-
-			<channel id="power" typeId="power">
-				<label>Peak Value Yesterday</label>
-				<description>Maximum power usage value for Yesterday</description>
-			</channel>
-			<channel id="timestamp" typeId="timestamp">
-				<label>Peak Timestamp Yesterday</label>
-				<description>Maximum power usage timestamp for Yesterday</description>
-			</channel>
-
-			<channel id="power-2" typeId="power">
-				<label>Peak Value Day-2</label>
-				<description>Maximum power usage value for Day-2</description>
-			</channel>
-			<channel id="timestamp-2" typeId="timestamp">
-				<label>Peak Timestamp Day-2</label>
-				<description>Maximum power usage timestamp for Day-2</description>
-			</channel>
-
-			<channel id="power-3" typeId="power">
-				<label>Peak Value Day-3</label>
-				<description>Maximum power usage value for Day-3</description>
-			</channel>
-			<channel id="timestamp-3" typeId="timestamp">
-				<label>Peak Timestamp Day-3</label>
-				<description>Maximum power usage timestamp for Day-3</description>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="weekly">
-		<label>Weekly Consumption</label>
-		<channels>
-			<channel id="thisWeek" typeId="consumption">
-				<label>This Week Consumption</label>
-			</channel>
-			<channel id="lastWeek" typeId="consumption">
-				<label>Last Week Consumption</label>
-			</channel>
-			<channel id="week-2" typeId="consumption">
-				<label>Last Week Consumption</label>
-			</channel>
-			<channel id="consumption" typeId="consumption">
-				<label>Consumption</label>
-			</channel>
-			<channel id="maxPower" typeId="power">
-				<label>Peak Value</label>
-				<description>Maximum power usage value</description>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="monthly">
-		<label>Monthly Consumption</label>
-		<channels>
-			<channel id="thisMonth" typeId="consumption">
-				<label>This Month Consumption</label>
-			</channel>
-			<channel id="lastMonth" typeId="consumption">
-				<label>Last Month Consumption</label>
-			</channel>
-			<channel id="month-2" typeId="consumption">
-				<label>Last Month Consumption</label>
-			</channel>
-			<channel id="consumption" typeId="consumption">
-				<label>Consumption</label>
-			</channel>
-			<channel id="maxPower" typeId="power">
-				<label>Peak Value</label>
-				<description>Maximum power usage value</description>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="yearly">
-		<label>Yearly Consumption</label>
-		<channels>
-			<channel id="thisYear" typeId="consumption">
-				<label>This Year Consumption</label>
-			</channel>
-			<channel id="lastYear" typeId="consumption">
-				<label>Last Year Consumption</label>
-			</channel>
-			<channel id="year-2" typeId="consumption">
-				<label>Last Year Consumption</label>
-			</channel>
-			<channel id="consumption" typeId="consumption">
-				<label>Consumption</label>
-			</channel>
-			<channel id="maxPower" typeId="power">
-				<label>Peak Value</label>
-				<description>Maximum power usage value</description>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="tempo">
-		<label>Tempo</label>
-		<channels>
-			<channel id="tempoInfoToday" typeId="tempoValue">
-				<label>Tempo Today Color</label>
-			</channel>
-			<channel id="tempoInfoTomorrow" typeId="tempoValue">
-				<label>Tempo Today Color</label>
-			</channel>
-			<channel id="tempoInfoTimeSeries" typeId="tempoValue">
-				<label>Tempo Day Information</label>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="main2">
-		<label>Main</label>
-		<channels>
-			<channel id="_ID_D2L" typeId="info">
-				<label>_ID_D2L</label>
-			</channel>
-			<channel id="SINSTS" typeId="info">
-				<label>SINSTS</label>
-			</channel>
-			<channel id="DATE" typeId="info">
-				<label>SINSTS</label>
-			</channel>
-			<channel id="IRMS1" typeId="info">
-				<label>IRMS1</label>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="main">
-		<label>Main</label>
-		<channels>
-			<channel id="identity" typeId="info">
-				<label>Identity</label>
-			</channel>
-
-			<channel id="contractSubscribedPower" typeId="info">
-				<label>Subscribed Power</label>
-			</channel>
-			<channel id="contractLastActivationDate" typeId="infoDate">
-				<label>Last Activation Date</label>
-			</channel>
-			<channel id="contractDistributionTariff" typeId="info">
-				<label>Distribution Tariff</label>
-			</channel>
-			<channel id="contractOffpeakHours" typeId="info">
-				<label>Offpeak Hours</label>
-			</channel>
-			<channel id="contractStatus" typeId="info">
-				<label>Contract Status</label>
-			</channel>
-			<channel id="contractType" typeId="info">
-				<label>Contract Type</label>
-			</channel>
-			<channel id="contractLastDistributionTariffChangeDate" typeId="infoDate">
-				<label>Last Distribution Tariff ChangeDate</label>
-			</channel>
-			<channel id="contractSegment" typeId="info">
-				<label>Contract Segment</label>
-			</channel>
-
-			<channel id="usagePointId" typeId="info">
-				<label>UsagePoint Id</label>
-			</channel>
-			<channel id="usagePointStatus" typeId="info">
-				<label>UsagePoin Status</label>
-			</channel>
-			<channel id="usagePointMeterType" typeId="info">
-				<label>UsagePoint Meter Type</label>
-			</channel>
-
-			<channel id="usagePointAddressCity" typeId="info">
-				<label>City</label>
-			</channel>
-			<channel id="usagePointAddressCountry" typeId="info">
-				<label>Country</label>
-			</channel>
-			<channel id="usagePointAddressInseeCode" typeId="info">
-				<label>Insee Code</label>
-			</channel>
-			<channel id="usagePointAddressPostalCode" typeId="info">
-				<label>Postal Code</label>
-			</channel>
-			<channel id="usagePointAddressStreet" typeId="info">
-				<label>Street</label>
-			</channel>
-
-			<channel id="contactMail" typeId="info">
-				<label>Mail</label>
-			</channel>
-			<channel id="contactPhone" typeId="info">
-				<label>Phone</label>
-			</channel>
-		</channels>
-	</channel-group-type>
-
+	
 	<channel-type id="tempoValue">
 		<item-type>Number</item-type>
 		<label>Tempo Color Information</label>
@@ -431,4 +54,53 @@
 		<category>time</category>
 		<state readOnly="true"/>
 	</channel-type>
+	
+	   <channel-type id="stringType">
+        <item-type>String</item-type>
+        <label>Teleinfo String Type</label>
+        <category>Energy</category>
+        <state pattern="%s" readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="energyType">
+        <item-type>Number:Energy</item-type>
+        <label>Teleinfo Energy Type</label>
+        <category>Energy</category>
+        <state pattern="%d %unit%" readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="currentType">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>Teleinfo Current Type</label>
+        <category>Energy</category>
+        <state pattern="%d %unit%" readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="potentialType">
+        <item-type>Number:ElectricPotential</item-type>
+        <label>Teleinfo Potential Type</label>
+        <category>Energy</category>
+        <state pattern="%d %unit%" readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="powerType">
+        <item-type>Number:Power</item-type>
+        <label>Teleinfo Power Type</label>
+        <category>Energy</category>
+        <state pattern="%d %unit%" readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="switchType">
+        <item-type>Switch</item-type>
+        <label>Teleinfo Switch Type</label>
+        <category>Energy</category>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="dateTimeType">
+        <item-type>DateTime</item-type>
+        <label>Teleinfo DateTime Type</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+    </channel-type>
 </thing:thing-descriptions>

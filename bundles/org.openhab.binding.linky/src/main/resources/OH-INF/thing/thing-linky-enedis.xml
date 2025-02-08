@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+   <thing-type id="linky">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="enedis"/>
+            <bridge-type-ref id="enedis-web"/>
+            <bridge-type-ref id="my-electrical-data"/>
+            <bridge-type-ref id="d2l-bridge"/>
+        </supported-bridge-type-refs>
+
+        <label>Linky</label>
+        <description>
+            Provides your energy consumption data.
+            In order to receive the data, you must activate your account at
+            https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
+        </description>
+
+        <channel-groups>
+            <channel-group typeId="linky-main" id="linky-main"/>
+            <channel-group typeId="linky-tempo" id="linky-tempo"/>
+            <channel-group typeId="linky-loadCurve" id="linky-loadCurve"/>
+            <channel-group typeId="linky-daily" id="linky-daily"/>
+            <channel-group typeId="linky-weekly" id="linky-weekly"/>
+            <channel-group typeId="linky-monthly" id="linky-monthly"/>
+            <channel-group typeId="linky-yearly" id="linky-yearly"/>
+        </channel-groups>
+
+        <config-description>
+            <parameter name="prmId" type="text" required="true">
+                <label>prmId</label>
+                <description>Your prmId</description>
+            </parameter>
+            <parameter name="timezone" type="text" required="false">
+                <label>timezone</label>
+                <description>The timezone associated with your Point of delivery.
+                    Will default to openhab default timezone.
+                    You will
+                    need to change this if your linky is located in a different timezone that your openhab location.
+                    You can use an
+                    offset, or a label like Europe/Paris</description>
+            </parameter>
+            <parameter name="token" type="text" required="false">
+                <label>Token</label>
+                <description>Your Enedis token (can be left empty, use the connection page to automatically fill it
+                    http://youopenhab/connectlinky)</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+
+</thing:thing-descriptions>
