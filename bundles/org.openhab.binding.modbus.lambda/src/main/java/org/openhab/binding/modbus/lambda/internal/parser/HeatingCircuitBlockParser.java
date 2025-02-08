@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.lambda.internal.dto.HeatingCircuitBlock;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
-/**
+/*
  * Parses lambda
  * modbus data into a Heating Circuit Block
  *

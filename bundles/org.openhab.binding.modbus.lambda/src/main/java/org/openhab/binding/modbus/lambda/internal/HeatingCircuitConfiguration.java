@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -14,7 +14,7 @@ package org.openhab.binding.modbus.lambda.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/**
+/*
  * The {@link HeatingCircuitConfiguration} class contains fields mapping
  * thing configuration parameters.
  *
@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class HeatingCircuitConfiguration {
-    /**
+    /*
      * Refresh interval in seconds
      */
     private int refresh = 30;
@@ -31,12 +31,12 @@ public class HeatingCircuitConfiguration {
     private int maxTries = 3;
     // backwards compatibility and tests
 
-    /**
+    /*
      * Subindex to calculate the base adress of the modbus registers
      */
     private int subindex = 0;
 
-    /**
+    /*
      * Gets refresh period in milliseconds
      */
     public long getRefreshMillis() {

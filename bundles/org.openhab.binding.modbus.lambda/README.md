@@ -72,21 +72,8 @@ The other things use another parameter Subindex to add one or more things of thi
 
 Channels within the things are grouped into channel groups.
 
-### Lambda General: General Ambient Group
+### General Ambient Group
 
-This group contains ambient temperatures for the heat pump system.
-
-<<<<<<< HEAD
-| Channel ID                       | Item Type          | Read only | Unit     | Description                                                              |
-| -------------------------------- | ------------------ | --------- | -------- | ------------------------------------------------------------------------ |
-| ambient-error-number             | Number             | true      | [Nr]     | Ambient Error Number (0 = No error)                                      |
-| ambient-operating-state          | Number             | true      | [Nr]     | Ambient Operating State (0 = OFF, 1 = AUTOMATIC, 2 = MANUAL, 3 = ERROR)  |
-| actual-ambient-temperature       | Number:Temperature | false     | [0.1 °C] | Actual Ambient Temperature (min = -50.0°C); max = 80.0°                  |
-| average-ambient-temperature      | Number:Temperature | true      | [0.1 °C] | Arithmetic average temperature of the last 60 minutes                    |
-| calculated-ambient-temperature   | Number:Temperature | true      | [0.1 °C] | Temperature for calculations in heat distribution modules                |
-
-### General E-Manager Group
-=======
 | Channel ID                       | Item Type          | Read only | Description                                                              |
 | -------------------------------- | ------------------ | --------- | ------------------------------------------------------------------------ |
 | ambient-error-number             | Number             | true      | Ambient Error Number (0 = No error)                                      |
@@ -96,7 +83,6 @@ This group contains ambient temperatures for the heat pump system.
 | calculated-ambient-temperature   | Number:Temperature | true      | Temperature for calculations in heat distribution modules                |
 
 ### Lambda General: General E-Manager Group
->>>>>>> a94b30930a27ebb6250a76473a41de81a7945cd6
 
 This group contains parameters signaling the PV excess to the heat pump.
 
@@ -108,11 +94,7 @@ This group contains parameters signaling the PV excess to the heat pump.
 | actual-power-consumption         | Number:Power       | true      | Power consumption of heatpump (only valid when Betriebsart: Automatik, 0 W otherwise)   |
 | power-consumption-setpoint       | Number:Power       | false     | Power consumption setpoint for heat pump 1                                              |
 
-<<<<<<< HEAD
 ### Heat Pump 1 Group
-=======
-### Labda Heat Pump: Heatpump Group
->>>>>>> a94b30930a27ebb6250a76473a41de81a7945cd6
 
 This group contains general operational information about the heat pump itself.
 
@@ -136,11 +118,7 @@ This group contains general operational information about the heat pump itself.
 | heatpump-vdaq                 | Number:Energy             | true      | Accumulated thermal energy output of compressor unit                    |
 | heatpump-set-error-quit       | Number                    | false     | Set Error Quit (1 = Quit all active heat pump errors                    |
 
-<<<<<<< HEAD
-### Boiler 1 Group
-=======
 ### Lambda Boiler: Boiler Group
->>>>>>> a94b30930a27ebb6250a76473a41de81a7945cd6
 
 This group contains information about the boiler for the water for domestic use / tap water / washwater.
 
@@ -164,24 +142,7 @@ This group contains information about the buffer for the heating circuit.
 | buffer-actual-low-temperature          | Number:Temperature | true      | Actual temperature buffer low sensor                                   |
 | buffer-maximum-buffer-temperature      | Number:Temperature | false     | Setting for maximum buffer temperature (min = 25.0°C; max = 65.0°C)    |
 
-<<<<<<< HEAD
-### Heating Circuit 1 Group
 
-This group contains general operational information about the heating circuit 1.
-
-| Channel ID                                     | Item Type          | Read only | Unit         | Description                                                                     |
-| ---------------------------------------------- | -------------------| --------- | ------------ | --------------------------------------------------------------------------------|
-| heatingcircuit1-error-number                   | Number             | true      | [Nr]         | Error Number (0 = No error)                                                     |
-| heatingcircuit1-operating-state                | Number             | true      | [Nr]         | Operating State: See Modbus description manual, link above|                     |
-| heatingcircuit1-flow-line-temperature          | Number:Temperature | true      | [Nr]         | Actual temperature flow line sensor                                             |
-| heatingcircuit1-return-line-temperature        | Number:Temperature | true      | [Nr]         | Actual temperature return line sensor                                           |
-| heatingcircuit1-room-device-temperature        | Number:Temperature | true      | [0.01°C]     | Actual temperature room device sensor (min = -29.9°C; max = 99.9°C)             |
-| heatingcircuit1-setpoint-flow-line-temperature | Number:Temperature | true      | [0.01°C]     | Setpoint temperature flow line (min = 15.0°C; max = 65.0°C)                     | 
-| heatingcircuit1-operating-mode                 | Number             | true      | [Nr]         | Operating Mode: See Modbus description manual, link above                       |
-| heatingcircuit1-offset-flow-line-temperature   | Number:Temperature | true      | [0.01°C]     | Setting for flow line temperature setpoint offset(min = -10.0K; max = 10.0K)    |
-| heatingcircuit1-room-heating-temperature       | Number:Temperature | rue       | [0.01°C]     | Setting for heating mode room setpoint temperature(min = 15.0°C; max = 40.0 °C) |
-| heatingcircuit1-room-cooling-temperature       | Number:Temperature | true      | [0.01 l/min] | Setting for cooling mode room setpoint temperature(min = 15.0°C; max = 40.0 °C) |
-=======
 ### Lambda Heating: Heating Circuit Group
 
 This group contains general operational information about the heating circuit.
@@ -198,7 +159,6 @@ This group contains general operational information about the heating circuit.
 | heatingcircuit-offset-flow-line-temperature   | Number:Temperature | false     | Setting for flow line temperature setpoint offset(min = -10.0K; max = 10.0K)    |
 | heatingcircuit-room-heating-temperature       | Number:Temperature | false     | Setting for heating mode room setpoint temperature(min = 15.0°C; max = 40.0 °C) |
 | heatingcircuit-room-cooling-temperature       | Number:Temperature | false     | Setting for cooling mode room setpoint temperature(min = 15.0°C; max = 40.0 °C) |
->>>>>>> a94b30930a27ebb6250a76473a41de81a7945cd6
 
 ## Full Example
 

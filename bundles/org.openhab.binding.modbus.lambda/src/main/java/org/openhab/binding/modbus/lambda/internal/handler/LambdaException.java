@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -14,7 +14,7 @@ package org.openhab.binding.modbus.lambda.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/**
+/*
  * Thrown when the lambda-heatpump handler sees an error.
  *
  * @author Paul Frank - Initial contribution
