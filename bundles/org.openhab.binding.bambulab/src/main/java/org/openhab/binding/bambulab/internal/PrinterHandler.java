@@ -149,4 +149,17 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
     private void updatePrinterChannels(PrinterState state) {
         // todo
     }
+
+    public void sendCommand(PrinterClient.Channel.PrintCommand command) {
+        var localClient = client;
+        if(localClient == null) {
+            logger.warn("Client not connected. Cannot send command {}", command);
+            return;
+        }
+        try {
+            localClient.getChannel().sendCommand(command);
+        } catch (Exception e) {
+            updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+        }
+    }
 }
