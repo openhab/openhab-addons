@@ -44,8 +44,8 @@ import org.openhab.binding.linky.internal.dto.ResponseMeter;
 import org.openhab.binding.linky.internal.dto.ResponseTempo;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
-import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisWebHandler;
 import org.openhab.binding.linky.internal.handler.BridgeLinkyHandler;
+import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisWebHandler;
 import org.openhab.binding.linky.internal.handler.LinkyRemoteHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -255,8 +255,8 @@ public class EnedisHttpApi {
         return contactResponse.contact;
     }
 
-    private MeterReading getMeasures(LinkyRemoteHandler handler, String apiUrl, String mps, String prmId, LocalDate from,
-            LocalDate to) throws LinkyException {
+    private MeterReading getMeasures(LinkyRemoteHandler handler, String apiUrl, String mps, String prmId,
+            LocalDate from, LocalDate to) throws LinkyException {
         String dtStart = from.format(linkyBridgeHandler.getApiDateFormat());
         String dtEnd = to.format(linkyBridgeHandler.getApiDateFormat());
 
@@ -271,13 +271,13 @@ public class EnedisHttpApi {
         }
     }
 
-    public MeterReading getEnergyData(LinkyRemoteHandler handler, String mps, String prmId, LocalDate from, LocalDate to)
-            throws LinkyException {
+    public MeterReading getEnergyData(LinkyRemoteHandler handler, String mps, String prmId, LocalDate from,
+            LocalDate to) throws LinkyException {
         return getMeasures(handler, linkyBridgeHandler.getDailyConsumptionUrl(), mps, prmId, from, to);
     }
 
-    public MeterReading getLoadCurveData(LinkyRemoteHandler handler, String mps, String prmId, LocalDate from, LocalDate to)
-            throws LinkyException {
+    public MeterReading getLoadCurveData(LinkyRemoteHandler handler, String mps, String prmId, LocalDate from,
+            LocalDate to) throws LinkyException {
         return getMeasures(handler, linkyBridgeHandler.getLoadCurveUrl(), mps, prmId, from, to);
     }
 

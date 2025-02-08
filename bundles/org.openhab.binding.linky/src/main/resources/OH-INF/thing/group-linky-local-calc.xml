@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+
+
+
+
+	<channel-group-type id="linky-local-calc">
+		<label>Producer</label>
+		<channels>
+
+			<channel id="irms1f" typeId="currentType">
+				<label>IRMS1F</label>
+				<description>RMS Current on phase 1 (floating value)</description>
+			</channel>
+
+			<channel id="cosPhi" typeId="powerFactorType">
+				<label>IRMS1F</label>
+				<description>RMS Current on phase 1 (floating value)</description>
+			</channel>
+
+
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

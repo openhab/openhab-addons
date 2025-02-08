@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
-import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
+import static org.openhab.binding.linky.internal.LinkyBindingConstants.CHANNEL_NONE;
 
 import java.lang.reflect.Type;
 import java.math.BigInteger;
@@ -27,12 +27,13 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.Label;
+import org.openhab.binding.linky.internal.LinkyChannelRegistry;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.ValueType;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -200,18 +201,40 @@ public class LinkyLocalHandler extends BaseThingHandler {
             String value = payLoad.get(key);
 
             try {
-                Label label = Label.getEnum(key);
+                LinkyChannelRegistry channelRegistry = LinkyChannelRegistry.getEnum(key);
 
-                if (label.getChannelName().equals(CHANNEL_NONE)) {
+                if (channelRegistry.getChannelName().equals(CHANNEL_NONE)) {
                     continue;
                 }
 
                 if (value != null) {
-                    if (label.getType() == ValueType.STRING) {
-                        updateState(LINKY_DIRECT_MAIN_GROUP, label.getChannelName(), StringType.valueOf(value));
-                    } else if (label.getType() == ValueType.INTEGER) {
-                        updateState(LINKY_DIRECT_MAIN_GROUP, label.getChannelName(),
-                                QuantityType.valueOf(label.getFactor() * Integer.parseInt(value), label.getUnit()));
+                    String timestamp = null;
+                    int pos1 = value.indexOf('|');
+
+                    if (pos1 >= 0) {
+                        timestamp = value.substring(0, pos1);
+                        value = value.substring(pos1 + 1);
+                    }
+
+                    if (channelRegistry.getType() == ValueType.STRING) {
+                        updateState(channelRegistry.getGroupName(), channelRegistry.getChannelName(),
+                                StringType.valueOf(value));
+                    } else if (channelRegistry.getType() == ValueType.INTEGER) {
+                        updateState(channelRegistry.getGroupName(), channelRegistry.getChannelName(),
+                                QuantityType.valueOf(channelRegistry.getFactor() * Integer.parseInt(value),
+                                        channelRegistry.getUnit()));
+                    }
+
+                    if (timestamp != null) {
+                        if (!channelRegistry.getTimestampChannelName().equals(CHANNEL_NONE)) {
+                            String timestampConv = getAsDateTime(timestamp);
+                            if (!timestampConv.isEmpty()) {
+                                logger.trace("Update channel {} to value {}", channelRegistry.getTimestampChannelName(),
+                                        timestamp);
+                                updateState(channelRegistry.getGroupName(), channelRegistry.getTimestampChannelName(),
+                                        DateTimeType.valueOf(timestampConv));
+                            }
+                        }
                     }
                 }
 
@@ -225,6 +248,36 @@ public class LinkyLocalHandler extends BaseThingHandler {
         // updateState(LINKY_DIRECT_MAIN_GROUP, "SINSTS", new StringType(payLoad.get("SINSTS")));
         // updateState(LINKY_DIRECT_MAIN_GROUP, "DATE", new StringType(payLoad.get("DATE")));
         // updateState(LINKY_DIRECT_MAIN_GROUP, "IRMS1", new StringType(payLoad.get("IRMS1")));
+    }
+
+    protected String getAsDateTime(String timestamp) {
+        StringBuilder result = new StringBuilder();
+        result.append("20");
+        result.append(timestamp.substring(1, 3));
+        result.append("-");
+        result.append(timestamp.substring(3, 5));
+        result.append("-");
+        result.append(timestamp.substring(5, 7));
+        result.append("T");
+        if (timestamp.length() > 7) {
+            result.append(timestamp.substring(7, 9));
+        } else {
+            result.append("00");
+        }
+        result.append(":");
+        if (timestamp.length() > 9) {
+            result.append(timestamp.substring(9, 11));
+        } else {
+            result.append("00");
+        }
+        result.append(":");
+        if (timestamp.length() > 11) {
+            result.append(timestamp.substring(11, 13));
+        } else {
+            result.append("00");
+        }
+
+        return result.toString();
     }
 
     protected void updateState(String groupId, String channelID, State state) {

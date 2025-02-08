@@ -297,68 +297,76 @@ public class LinkyRemoteHandler extends BaseThingHandler {
             String firstName = values.identity.firstname;
             String lastName = values.identity.lastname;
 
-            updateState(GROUP_MAIN, CHANNEL_IDENTITY, new StringType(title + " " + firstName + " " + lastName));
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_IDENTITY,
+                    new StringType(title + " " + firstName + " " + lastName));
 
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_SEGMENT, new StringType(values.contract.segment));
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_CONTRACT_STATUS, new StringType(values.contract.contractStatus));
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_CONTRACT_TYPE, new StringType(values.contract.contractType));
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_DISTRIBUTION_TARIFF,
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_SEGMENT, new StringType(values.contract.segment));
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_CONTRACT_STATUS,
+                    new StringType(values.contract.contractStatus));
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_CONTRACT_TYPE,
+                    new StringType(values.contract.contractType));
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_DISTRIBUTION_TARIFF,
                     new StringType(values.contract.distributionTariff));
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_LAST_ACTIVATION_DATE,
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_LAST_ACTIVATION_DATE,
                     new StringType(values.contract.lastActivationDate));
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
                     new StringType(values.contract.lastDistributionTariffChangeDate));
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_OFF_PEAK_HOURS, new StringType(values.contract.offpeakHours));
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_SEGMENT, new StringType(values.contract.segment));
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_SUBSCRIBED_POWER, new StringType(values.contract.subscribedPower));
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_OFF_PEAK_HOURS,
+                    new StringType(values.contract.offpeakHours));
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_SEGMENT, new StringType(values.contract.segment));
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_SUBSCRIBED_POWER,
+                    new StringType(values.contract.subscribedPower));
 
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_ID, new StringType(values.usagePoint.usagePointId));
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_STATUS, new StringType(values.usagePoint.usagePointStatus));
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_METER_TYPE, new StringType(values.usagePoint.meterType));
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_ID, new StringType(values.usagePoint.usagePointId));
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_STATUS,
+                    new StringType(values.usagePoint.usagePointStatus));
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_METER_TYPE,
+                    new StringType(values.usagePoint.meterType));
 
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_CITY,
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_CITY,
                     new StringType(values.usagePoint.usagePointAddresses.city));
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_COUNTRY,
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_COUNTRY,
                     new StringType(values.usagePoint.usagePointAddresses.country));
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_POSTAL_CODE,
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_POSTAL_CODE,
                     new StringType(values.usagePoint.usagePointAddresses.postalCode));
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_INSEE_CODE,
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_INSEE_CODE,
                     new StringType(values.usagePoint.usagePointAddresses.inseeCode));
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_STREET,
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_STREET,
                     new StringType(values.usagePoint.usagePointAddresses.street));
 
-            updateState(GROUP_MAIN, CHANNEL_CONTACT_MAIL, new StringType(values.contact.email));
-            updateState(GROUP_MAIN, CHANNEL_CONTACT_PHONE, new StringType(values.contact.phone));
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTACT_MAIL, new StringType(values.contact.email));
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTACT_PHONE, new StringType(values.contact.phone));
 
             userId = values.identity.internId;
             updateProperties(Map.of(USER_ID, userId, PUISSANCE, values.contract.subscribedPower + " kVA", PRM_ID,
                     values.usagePoint.usagePointId));
         }, () -> {
 
-            updateState(GROUP_MAIN, CHANNEL_IDENTITY, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_IDENTITY, UnDefType.UNDEF);
 
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_SEGMENT, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_CONTRACT_STATUS, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_CONTRACT_TYPE, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_DISTRIBUTION_TARIFF, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_LAST_ACTIVATION_DATE, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_OFF_PEAK_HOURS, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_SEGMENT, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_CONTRACT_SUBSCRIBED_POWER, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_SEGMENT, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_CONTRACT_STATUS, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_CONTRACT_TYPE, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_DISTRIBUTION_TARIFF, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_LAST_ACTIVATION_DATE, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
+                    UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_OFF_PEAK_HOURS, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_SEGMENT, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTRACT_SUBSCRIBED_POWER, UnDefType.UNDEF);
 
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_ID, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_STATUS, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_METER_TYPE, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_ID, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_STATUS, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_METER_TYPE, UnDefType.UNDEF);
 
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_CITY, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_COUNTRY, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_POSTAL_CODE, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_INSEE_CODE, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_STREET, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_CITY, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_COUNTRY, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_POSTAL_CODE, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_INSEE_CODE, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_USAGEPOINT_METER_ADDRESS_STREET, UnDefType.UNDEF);
 
-            updateState(GROUP_MAIN, CHANNEL_CONTACT_MAIL, UnDefType.UNDEF);
-            updateState(GROUP_MAIN, CHANNEL_CONTACT_PHONE, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTACT_MAIL, UnDefType.UNDEF);
+            updateState(LINKY_REMOTE_GROUP_MAIN, CHANNEL_CONTACT_PHONE, UnDefType.UNDEF);
 
         });
     }
@@ -423,15 +431,17 @@ public class LinkyRemoteHandler extends BaseThingHandler {
             int size = values.size();
             Object[] tempoValues = values.values().toArray();
 
-            updateTempoChannel(GROUP_TEMPO, CHANNEL_TEMPO_TODAY_INFO, getTempoIdx((String) tempoValues[size - 2]));
-            updateTempoChannel(GROUP_TEMPO, CHANNEL_TEMPO_TOMORROW_INFO, getTempoIdx((String) tempoValues[size - 1]));
+            updateTempoChannel(LINKY_REMOTE_GROUP_TEMPO, CHANNEL_TEMPO_TODAY_INFO,
+                    getTempoIdx((String) tempoValues[size - 2]));
+            updateTempoChannel(LINKY_REMOTE_GROUP_TEMPO, CHANNEL_TEMPO_TOMORROW_INFO,
+                    getTempoIdx((String) tempoValues[size - 1]));
 
-            sendTimeSeries(GROUP_TEMPO, CHANNEL_TEMPO_TEMPO_INFO_TIME_SERIES, timeSeries);
-            updateState(GROUP_TEMPO, CHANNEL_TEMPO_TEMPO_INFO_TIME_SERIES,
+            sendTimeSeries(LINKY_REMOTE_GROUP_TEMPO, CHANNEL_TEMPO_TEMPO_INFO_TIME_SERIES, timeSeries);
+            updateState(LINKY_REMOTE_GROUP_TEMPO, CHANNEL_TEMPO_TEMPO_INFO_TIME_SERIES,
                     new DecimalType(getTempoIdx((String) tempoValues[size - 2])));
         }, () -> {
-            updateTempoChannel(GROUP_TEMPO, CHANNEL_TEMPO_TODAY_INFO, -1);
-            updateTempoChannel(GROUP_TEMPO, CHANNEL_TEMPO_TOMORROW_INFO, -1);
+            updateTempoChannel(LINKY_REMOTE_GROUP_TEMPO, CHANNEL_TEMPO_TODAY_INFO, -1);
+            updateTempoChannel(LINKY_REMOTE_GROUP_TEMPO, CHANNEL_TEMPO_TOMORROW_INFO, -1);
         });
     }
 
@@ -454,32 +464,35 @@ public class LinkyRemoteHandler extends BaseThingHandler {
         dailyConsumptionMaxPower.getValue().ifPresentOrElse(values -> {
             int dSize = values.baseValue.length;
 
-            updatekVAChannel(GROUP_DAILY, CHANNEL_PEAK_POWER_DAY_MINUS_1, values.baseValue[dSize - 1].value);
-            updateState(GROUP_DAILY, CHANNEL_PEAK_POWER_TS_DAY_MINUS_1,
+            updatekVAChannel(LINKY_REMOTE_GROUP_DAILY, CHANNEL_PEAK_POWER_DAY_MINUS_1,
+                    values.baseValue[dSize - 1].value);
+            updateState(LINKY_REMOTE_GROUP_DAILY, CHANNEL_PEAK_POWER_TS_DAY_MINUS_1,
                     new DateTimeType(values.baseValue[dSize - 1].date.atZone(zoneId)));
 
-            updatekVAChannel(GROUP_DAILY, CHANNEL_PEAK_POWER_DAY_MINUS_2, values.baseValue[dSize - 2].value);
-            updateState(GROUP_DAILY, CHANNEL_PEAK_POWER_TS_DAY_MINUS_2,
+            updatekVAChannel(LINKY_REMOTE_GROUP_DAILY, CHANNEL_PEAK_POWER_DAY_MINUS_2,
+                    values.baseValue[dSize - 2].value);
+            updateState(LINKY_REMOTE_GROUP_DAILY, CHANNEL_PEAK_POWER_TS_DAY_MINUS_2,
                     new DateTimeType(values.baseValue[dSize - 2].date.atZone(zoneId)));
 
-            updatekVAChannel(GROUP_DAILY, CHANNEL_PEAK_POWER_DAY_MINUS_3, values.baseValue[dSize - 3].value);
-            updateState(GROUP_DAILY, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3,
+            updatekVAChannel(LINKY_REMOTE_GROUP_DAILY, CHANNEL_PEAK_POWER_DAY_MINUS_3,
+                    values.baseValue[dSize - 3].value);
+            updateState(LINKY_REMOTE_GROUP_DAILY, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3,
                     new DateTimeType(values.baseValue[dSize - 3].date.atZone(zoneId)));
 
-            updatePowerTimeSeries(GROUP_DAILY, CHANNEL_MAX_POWER, values.baseValue);
-            updatePowerTimeSeries(GROUP_WEEKLY, CHANNEL_MAX_POWER, values.weekValue);
-            updatePowerTimeSeries(GROUP_MONTHLY, CHANNEL_MAX_POWER, values.monthValue);
-            updatePowerTimeSeries(GROUP_YEARLY, CHANNEL_MAX_POWER, values.yearValue);
+            updatePowerTimeSeries(LINKY_REMOTE_GROUP_DAILY, CHANNEL_MAX_POWER, values.baseValue);
+            updatePowerTimeSeries(LINKY_REMOTE_GROUP_WEEKLY, CHANNEL_MAX_POWER, values.weekValue);
+            updatePowerTimeSeries(LINKY_REMOTE_GROUP_MONTHLY, CHANNEL_MAX_POWER, values.monthValue);
+            updatePowerTimeSeries(LINKY_REMOTE_GROUP_YEARLY, CHANNEL_MAX_POWER, values.yearValue);
 
         }, () -> {
-            updateKwhChannel(GROUP_DAILY, CHANNEL_PEAK_POWER_DAY_MINUS_1, Double.NaN);
-            updateState(GROUP_DAILY, CHANNEL_PEAK_POWER_TS_DAY_MINUS_1, UnDefType.UNDEF);
+            updateKwhChannel(LINKY_REMOTE_GROUP_DAILY, CHANNEL_PEAK_POWER_DAY_MINUS_1, Double.NaN);
+            updateState(LINKY_REMOTE_GROUP_DAILY, CHANNEL_PEAK_POWER_TS_DAY_MINUS_1, UnDefType.UNDEF);
 
-            updateKwhChannel(GROUP_DAILY, CHANNEL_PEAK_POWER_DAY_MINUS_2, Double.NaN);
-            updateState(GROUP_DAILY, CHANNEL_PEAK_POWER_TS_DAY_MINUS_2, UnDefType.UNDEF);
+            updateKwhChannel(LINKY_REMOTE_GROUP_DAILY, CHANNEL_PEAK_POWER_DAY_MINUS_2, Double.NaN);
+            updateState(LINKY_REMOTE_GROUP_DAILY, CHANNEL_PEAK_POWER_TS_DAY_MINUS_2, UnDefType.UNDEF);
 
-            updateKwhChannel(GROUP_DAILY, CHANNEL_PEAK_POWER_DAY_MINUS_3, Double.NaN);
-            updateState(GROUP_DAILY, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3, UnDefType.UNDEF);
+            updateKwhChannel(LINKY_REMOTE_GROUP_DAILY, CHANNEL_PEAK_POWER_DAY_MINUS_3, Double.NaN);
+            updateState(LINKY_REMOTE_GROUP_DAILY, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3, UnDefType.UNDEF);
         });
     }
 
@@ -490,52 +503,59 @@ public class LinkyRemoteHandler extends BaseThingHandler {
         dailyConsumption.getValue().ifPresentOrElse(values -> {
             int dSize = values.baseValue.length;
 
-            updateKwhChannel(GROUP_DAILY, CHANNEL_DAY_MINUS_1, values.baseValue[dSize - 1].value);
-            updateKwhChannel(GROUP_DAILY, CHANNEL_DAY_MINUS_2, values.baseValue[dSize - 2].value);
-            updateKwhChannel(GROUP_DAILY, CHANNEL_DAY_MINUS_3, values.baseValue[dSize - 3].value);
+            updateKwhChannel(LINKY_REMOTE_GROUP_DAILY, CHANNEL_DAY_MINUS_1, values.baseValue[dSize - 1].value);
+            updateKwhChannel(LINKY_REMOTE_GROUP_DAILY, CHANNEL_DAY_MINUS_2, values.baseValue[dSize - 2].value);
+            updateKwhChannel(LINKY_REMOTE_GROUP_DAILY, CHANNEL_DAY_MINUS_3, values.baseValue[dSize - 3].value);
 
             int idxCurrentYear = values.yearValue.length - 1;
             int idxCurrentWeek = values.weekValue.length - 1;
             int idxCurrentMonth = values.monthValue.length - 1;
 
-            updateKwhChannel(GROUP_WEEKLY, CHANNEL_WEEK_MINUS_0, values.weekValue[idxCurrentWeek].value);
-            updateKwhChannel(GROUP_WEEKLY, CHANNEL_WEEK_MINUS_1, values.weekValue[idxCurrentWeek - 1].value);
+            updateKwhChannel(LINKY_REMOTE_GROUP_WEEKLY, CHANNEL_WEEK_MINUS_0, values.weekValue[idxCurrentWeek].value);
+            updateKwhChannel(LINKY_REMOTE_GROUP_WEEKLY, CHANNEL_WEEK_MINUS_1,
+                    values.weekValue[idxCurrentWeek - 1].value);
             if (idxCurrentWeek - 2 >= 0) {
-                updateKwhChannel(GROUP_WEEKLY, CHANNEL_WEEK_MINUS_2, values.weekValue[idxCurrentWeek - 2].value);
+                updateKwhChannel(LINKY_REMOTE_GROUP_WEEKLY, CHANNEL_WEEK_MINUS_2,
+                        values.weekValue[idxCurrentWeek - 2].value);
             }
 
-            updateKwhChannel(GROUP_MONTHLY, CHANNEL_MONTH_MINUS_0, values.monthValue[idxCurrentMonth].value);
-            updateKwhChannel(GROUP_MONTHLY, CHANNEL_MONTH_MINUS_1, values.monthValue[idxCurrentMonth - 1].value);
+            updateKwhChannel(LINKY_REMOTE_GROUP_MONTHLY, CHANNEL_MONTH_MINUS_0,
+                    values.monthValue[idxCurrentMonth].value);
+            updateKwhChannel(LINKY_REMOTE_GROUP_MONTHLY, CHANNEL_MONTH_MINUS_1,
+                    values.monthValue[idxCurrentMonth - 1].value);
             if (idxCurrentMonth - 2 >= 0) {
-                updateKwhChannel(GROUP_MONTHLY, CHANNEL_MONTH_MINUS_2, values.monthValue[idxCurrentMonth - 2].value);
+                updateKwhChannel(LINKY_REMOTE_GROUP_MONTHLY, CHANNEL_MONTH_MINUS_2,
+                        values.monthValue[idxCurrentMonth - 2].value);
             }
 
-            updateKwhChannel(GROUP_YEARLY, CHANNEL_YEAR_MINUS_0, values.yearValue[idxCurrentYear].value);
-            updateKwhChannel(GROUP_YEARLY, CHANNEL_YEAR_MINUS_1, values.yearValue[idxCurrentYear - 1].value);
+            updateKwhChannel(LINKY_REMOTE_GROUP_YEARLY, CHANNEL_YEAR_MINUS_0, values.yearValue[idxCurrentYear].value);
+            updateKwhChannel(LINKY_REMOTE_GROUP_YEARLY, CHANNEL_YEAR_MINUS_1,
+                    values.yearValue[idxCurrentYear - 1].value);
             if (idxCurrentYear - 2 >= 0) {
-                updateKwhChannel(GROUP_YEARLY, CHANNEL_YEAR_MINUS_2, values.yearValue[idxCurrentYear - 2].value);
+                updateKwhChannel(LINKY_REMOTE_GROUP_YEARLY, CHANNEL_YEAR_MINUS_2,
+                        values.yearValue[idxCurrentYear - 2].value);
             }
 
-            updateConsumptionTimeSeries(GROUP_DAILY, CHANNEL_CONSUMPTION, values.baseValue);
-            updateConsumptionTimeSeries(GROUP_WEEKLY, CHANNEL_CONSUMPTION, values.weekValue);
-            updateConsumptionTimeSeries(GROUP_MONTHLY, CHANNEL_CONSUMPTION, values.monthValue);
-            updateConsumptionTimeSeries(GROUP_YEARLY, CHANNEL_CONSUMPTION, values.yearValue);
+            updateConsumptionTimeSeries(LINKY_REMOTE_GROUP_DAILY, CHANNEL_CONSUMPTION, values.baseValue);
+            updateConsumptionTimeSeries(LINKY_REMOTE_GROUP_WEEKLY, CHANNEL_CONSUMPTION, values.weekValue);
+            updateConsumptionTimeSeries(LINKY_REMOTE_GROUP_MONTHLY, CHANNEL_CONSUMPTION, values.monthValue);
+            updateConsumptionTimeSeries(LINKY_REMOTE_GROUP_YEARLY, CHANNEL_CONSUMPTION, values.yearValue);
         }, () -> {
-            updateKwhChannel(GROUP_DAILY, CHANNEL_DAY_MINUS_1, Double.NaN);
-            updateKwhChannel(GROUP_DAILY, CHANNEL_DAY_MINUS_2, Double.NaN);
-            updateKwhChannel(GROUP_DAILY, CHANNEL_DAY_MINUS_3, Double.NaN);
+            updateKwhChannel(LINKY_REMOTE_GROUP_DAILY, CHANNEL_DAY_MINUS_1, Double.NaN);
+            updateKwhChannel(LINKY_REMOTE_GROUP_DAILY, CHANNEL_DAY_MINUS_2, Double.NaN);
+            updateKwhChannel(LINKY_REMOTE_GROUP_DAILY, CHANNEL_DAY_MINUS_3, Double.NaN);
 
-            updateKwhChannel(GROUP_WEEKLY, CHANNEL_WEEK_MINUS_0, Double.NaN);
-            updateKwhChannel(GROUP_WEEKLY, CHANNEL_WEEK_MINUS_1, Double.NaN);
-            updateKwhChannel(GROUP_WEEKLY, CHANNEL_WEEK_MINUS_2, Double.NaN);
+            updateKwhChannel(LINKY_REMOTE_GROUP_WEEKLY, CHANNEL_WEEK_MINUS_0, Double.NaN);
+            updateKwhChannel(LINKY_REMOTE_GROUP_WEEKLY, CHANNEL_WEEK_MINUS_1, Double.NaN);
+            updateKwhChannel(LINKY_REMOTE_GROUP_WEEKLY, CHANNEL_WEEK_MINUS_2, Double.NaN);
 
-            updateKwhChannel(GROUP_MONTHLY, CHANNEL_MONTH_MINUS_0, Double.NaN);
-            updateKwhChannel(GROUP_MONTHLY, CHANNEL_MONTH_MINUS_1, Double.NaN);
-            updateKwhChannel(GROUP_MONTHLY, CHANNEL_MONTH_MINUS_2, Double.NaN);
+            updateKwhChannel(LINKY_REMOTE_GROUP_MONTHLY, CHANNEL_MONTH_MINUS_0, Double.NaN);
+            updateKwhChannel(LINKY_REMOTE_GROUP_MONTHLY, CHANNEL_MONTH_MINUS_1, Double.NaN);
+            updateKwhChannel(LINKY_REMOTE_GROUP_MONTHLY, CHANNEL_MONTH_MINUS_2, Double.NaN);
 
-            updateKwhChannel(GROUP_YEARLY, CHANNEL_YEAR_MINUS_0, Double.NaN);
-            updateKwhChannel(GROUP_YEARLY, CHANNEL_YEAR_MINUS_1, Double.NaN);
-            updateKwhChannel(GROUP_YEARLY, CHANNEL_YEAR_MINUS_2, Double.NaN);
+            updateKwhChannel(LINKY_REMOTE_GROUP_YEARLY, CHANNEL_YEAR_MINUS_0, Double.NaN);
+            updateKwhChannel(LINKY_REMOTE_GROUP_YEARLY, CHANNEL_YEAR_MINUS_1, Double.NaN);
+            updateKwhChannel(LINKY_REMOTE_GROUP_YEARLY, CHANNEL_YEAR_MINUS_2, Double.NaN);
         });
     }
 
@@ -544,7 +564,7 @@ public class LinkyRemoteHandler extends BaseThingHandler {
      */
     private synchronized void updateLoadCurveData() {
         loadCurveConsumption.getValue().ifPresentOrElse(values -> {
-            updatePowerTimeSeries(GROUP_LOAD_CURVE, CHANNEL_POWER, values.baseValue);
+            updatePowerTimeSeries(LINKY_REMOTE_GROUP_LOAD_CURVE, CHANNEL_POWER, values.baseValue);
         }, () -> {
         });
     }

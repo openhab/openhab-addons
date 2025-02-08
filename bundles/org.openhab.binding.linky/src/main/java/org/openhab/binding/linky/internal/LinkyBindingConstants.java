@@ -34,13 +34,13 @@ public class LinkyBindingConstants {
     public static final ThingTypeUID THING_TYPE_API_WEB_ENEDIS_BRIDGE = new ThingTypeUID(BINDING_ID, "enedis-web");
     public static final ThingTypeUID THING_TYPE_API_MYELECTRICALDATA_BRIDGE = new ThingTypeUID(BINDING_ID,
             "my-electrical-data");
-    public static final ThingTypeUID THING_TYPE_D2L__BRIDGE = new ThingTypeUID(BINDING_ID, "d2l");
+    public static final ThingTypeUID THING_TYPE_D2L_BRIDGE = new ThingTypeUID(BINDING_ID, "d2l");
     public static final ThingTypeUID THING_TYPE_LINKY = new ThingTypeUID(BINDING_ID, "linky");
-    public static final ThingTypeUID THING_TYPE_LINKY_DIRECT = new ThingTypeUID(BINDING_ID, "linky-direct");
+    public static final ThingTypeUID THING_TYPE_LINKY_LOCAL = new ThingTypeUID(BINDING_ID, "linky-local");
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_API_ENEDIS_BRIDGE,
             THING_TYPE_API_WEB_ENEDIS_BRIDGE, THING_TYPE_API_MYELECTRICALDATA_BRIDGE, THING_TYPE_LINKY,
-            THING_TYPE_D2L__BRIDGE, THING_TYPE_LINKY_DIRECT);
+            THING_TYPE_D2L_BRIDGE, THING_TYPE_LINKY_LOCAL);
 
     // Thing properties
     // List of all Channel groups id's
@@ -49,17 +49,18 @@ public class LinkyBindingConstants {
     public static final String USER_ID = "customerId";
     public static final String AV2_ID = "av2_interne_id";
 
-    public static final String GROUP_DAILY = "linky-daily";
-    public static final String GROUP_WEEKLY = "linky-weekly";
-    public static final String GROUP_MONTHLY = "linky-monthly";
-    public static final String GROUP_YEARLY = "linky-yearly";
-    public static final String GROUP_MAIN = "linky-main";
-    public static final String GROUP_TEMPO = "linky-tempo";
-    public static final String GROUP_LOAD_CURVE = "linky-load-curve";
+    public static final String LINKY_REMOTE_GROUP_DAILY = "linky-remote-daily";
+    public static final String LINKY_REMOTE_GROUP_WEEKLY = "linky-remote-weekly";
+    public static final String LINKY_REMOTE_GROUP_MONTHLY = "linky-remote-monthly";
+    public static final String LINKY_REMOTE_GROUP_YEARLY = "linky-remote-yearly";
+    public static final String LINKY_REMOTE_GROUP_MAIN = "linky-remote-main";
+    public static final String LINKY_REMOTE_GROUP_TEMPO = "linky-remote-tempo";
+    public static final String LINKY_REMOTE_GROUP_LOAD_CURVE = "linky-remote-load-curve";
 
-    public static final String LINKY_DIRECT_MAIN_GROUP = "linky-direct-main";
-    public static final String LINKY_DIRECT_3PHASE_GROUP = "linky-direct-3phase";
-    public static final String LINKY_DIRECT_PRODUCER_GROUP = "linky-direct-producer";
+    public static final String LINKY_LOCAL_MAIN_GROUP = "linky-local-main";
+    public static final String LINKY_LOCAL_3PHASE_GROUP = "linky-local-3phase";
+    public static final String LINKY_LOCAL_PRODUCER_GROUP = "linky-local-producer";
+    public static final String LINKY_LOCAL_CALC_GROUP = "linky-local-calc";
 
     // List of all Channel id's
     public static final String CHANNEL_CONSUMPTION = "consumption";

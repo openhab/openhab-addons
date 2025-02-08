@@ -9,7 +9,7 @@
 
 
 
-	<channel-group-type id="linky-direct-producer">
+	<channel-group-type id="linky-local-producer">
 		<label>Producer</label>
 		<channels>
 
@@ -54,6 +54,17 @@
 				<label>SMAXIN TIMESTAMP</label>
 				<description>Timestamp of SMAXIN value</description>
 			</channel>
+
+			<channel id="smaxinMinus1" typeId="powerType">
+				<label>SMAXIN-1</label>
+				<description>Maximum injected apparent power of the previous day</description>
+			</channel>
+
+			<channel id="smaxinMinus1Date" typeId="dateTimeType">
+				<label>SMAXIN-1 TIMESTAMP</label>
+				<description>Timestamp of SMAXIN-1 value</description>
+			</channel>
+
 
 			<channel id="ccain" typeId="powerType">
 				<label>CCAIN</label>

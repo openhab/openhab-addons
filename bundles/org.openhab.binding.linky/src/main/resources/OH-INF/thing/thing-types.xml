@@ -90,6 +90,13 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="powerFactorType">
+		<item-type>Number:Power</item-type>
+		<label>Teleinfo PowerFactor Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="switchType">
 		<item-type>Switch</item-type>
 		<label>Teleinfo Switch Type</label>

@@ -7,6 +7,10 @@
 	<bridge-type id="d2l">
 		<label>D2L Bridge</label>
 		<description>
+			<parameter name="listenningPort" type="text" required="false">
+				<label>TCP Port</label>
+				<description>The tcp port we receive frame from d2l</description>
+			</parameter>
 		</description>
 
 		<config-description>

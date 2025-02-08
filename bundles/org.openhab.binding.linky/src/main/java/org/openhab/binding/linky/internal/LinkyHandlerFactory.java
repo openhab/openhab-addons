@@ -26,9 +26,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.handler.BridgeLocalD2LHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisWebHandler;
-import org.openhab.binding.linky.internal.handler.LinkyRemoteHandler;
-import org.openhab.binding.linky.internal.handler.LinkyLocalHandler;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteMyElectricalDataHandler;
+import org.openhab.binding.linky.internal.handler.LinkyLocalHandler;
+import org.openhab.binding.linky.internal.handler.LinkyRemoteHandler;
 import org.openhab.binding.linky.internal.utils.DoubleTypeAdapter;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
@@ -138,21 +138,21 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
                     this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
         } else if (THING_TYPE_API_WEB_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
-            BridgeRemoteEnedisWebHandler handler = new BridgeRemoteEnedisWebHandler((Bridge) thing, this.httpClientFactory,
-                    this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
+            BridgeRemoteEnedisWebHandler handler = new BridgeRemoteEnedisWebHandler((Bridge) thing,
+                    this.httpClientFactory, this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
         } else if (THING_TYPE_API_MYELECTRICALDATA_BRIDGE.equals(thing.getThingTypeUID())) {
             BridgeRemoteMyElectricalDataHandler handler = new BridgeRemoteMyElectricalDataHandler((Bridge) thing,
                     this.httpClientFactory, this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
-        } else if (THING_TYPE_D2L__BRIDGE.equals(thing.getThingTypeUID())) {
-            BridgeLocalD2LHandler handler = new BridgeLocalD2LHandler((Bridge) thing, this.httpClientFactory, this.oAuthFactory,
-                    this.httpService, thingRegistry, componentContext, gson);
+        } else if (THING_TYPE_D2L_BRIDGE.equals(thing.getThingTypeUID())) {
+            BridgeLocalD2LHandler handler = new BridgeLocalD2LHandler((Bridge) thing, this.httpClientFactory,
+                    this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
         } else if (THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
             LinkyRemoteHandler handler = new LinkyRemoteHandler(thing, localeProvider, timeZoneProvider);
             return handler;
-        } else if (THING_TYPE_LINKY_DIRECT.equals(thing.getThingTypeUID())) {
+        } else if (THING_TYPE_LINKY_LOCAL.equals(thing.getThingTypeUID())) {
             LinkyLocalHandler handler = new LinkyLocalHandler(thing, localeProvider, timeZoneProvider);
             return handler;
         }
