@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bambulab.internal;
 
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PRINTER_THING_TYPE;
+
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -22,8 +24,6 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
-
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PRINTER_THING_TYPE;
 
 /**
  * The {@link BambuLabHandlerFactory} is responsible for creating things and thing
