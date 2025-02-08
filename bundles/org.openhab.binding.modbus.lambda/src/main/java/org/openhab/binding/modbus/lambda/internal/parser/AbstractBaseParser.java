@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -21,7 +21,7 @@ import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.library.types.DecimalType;
 
-/**
+/*
  * Base class for parsers with some helper methods
  *
  * @author Nagy Attila Gabor - Initial contribution
@@ -30,11 +30,13 @@ import org.openhab.core.library.types.DecimalType;
 @NonNullByDefault
 public class AbstractBaseParser {
 
-    /**
+    /*
      * Extract an optional double value
      *
      * @param raw the register array to extract from
+     * 
      * @param index the address of the field
+     * 
      * @return the parsed value or empty if the field is not implemented
      */
     protected Optional<Double> extractOptionalDouble(ModbusRegisterArray raw, int index) {
@@ -42,23 +44,28 @@ public class AbstractBaseParser {
                 .map(value -> ((double) value.intValue()) / 10.0).filter(value -> value != (short) 0x8000);
     }
 
-    /**
+    /*
      * Extract a mandatory double value
      *
      * @param raw the register array to extract from
+     * 
      * @param index the address of the field
+     * 
      * @param def the default value
+     * 
      * @return the parsed value or the default if the field is not implemented
      */
     protected Double extractDouble(ModbusRegisterArray raw, int index, double def) {
         return Objects.requireNonNull(extractOptionalDouble(raw, index).orElse(def));
     }
 
-    /**
+    /*
      * Extract an optional int16 value
      *
      * @param raw the register array to extract from
+     * 
      * @param index the address of the field
+     * 
      * @return the parsed value or empty if the field is not implemented
      */
     protected Optional<Short> extractOptionalInt16(ModbusRegisterArray raw, int index) {
@@ -66,23 +73,28 @@ public class AbstractBaseParser {
                 .filter(value -> value != (short) 0x8000);
     }
 
-    /**
+    /*
      * Extract a mandatory int16 value
      *
      * @param raw the register array to extract from
+     * 
      * @param index the address of the field
+     * 
      * @param def the default value
+     * 
      * @return the parsed value or the default if the field is not implemented
      */
     protected Short extractInt16(ModbusRegisterArray raw, int index, short def) {
         return Objects.requireNonNull(extractOptionalInt16(raw, index).orElse(def));
     }
 
-    /**
+    /*
      * Extract an optional uint16 value
      *
      * @param raw the register array to extract from
+     * 
      * @param index the address of the field
+     * 
      * @return the parsed value or empty if the field is not implemented
      */
     protected Optional<Integer> extractOptionalUInt16(ModbusRegisterArray raw, int index) {
@@ -90,23 +102,28 @@ public class AbstractBaseParser {
                 .filter(value -> value != 0xffff);
     }
 
-    /**
+    /*
      * Extract a mandatory uint16 value
      *
      * @param raw the register array to extract from
+     * 
      * @param index the address of the field
+     * 
      * @param def the default value
+     * 
      * @return the parsed value or the default if the field is not implemented
      */
     protected Integer extractUInt16(ModbusRegisterArray raw, int index, int def) {
         return Objects.requireNonNull(extractOptionalUInt16(raw, index).orElse(def));
     }
 
-    /**
+    /*
      * Extract an optional acc32 value
      *
      * @param raw the register array to extract from
+     * 
      * @param index the address of the field
+     * 
      * @return the parsed value or empty if the field is not implemented
      */
     protected Optional<Long> extractOptionalUInt32(ModbusRegisterArray raw, int index) {
@@ -119,12 +136,15 @@ public class AbstractBaseParser {
                 .filter(value -> value != 0);
     }
 
-    /**
+    /*
      * Extract a mandatory acc32 value
      *
      * @param raw the register array to extract from
+     * 
      * @param index the address of the field
+     * 
      * @param def the default value
+     * 
      * @return the parsed value or default if the field is not implemented
      */
     protected Long extractUInt32(ModbusRegisterArray raw, int index, long def) {

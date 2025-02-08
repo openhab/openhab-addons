@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="tcp"/>
 		</supported-bridge-type-refs>
-		<label>Lambda Boiler</label>
+		<label>Lambda Boiler Section</label>
 		<description>Lambda Boiler connected through modbus</description>
 
 		<channel-groups>

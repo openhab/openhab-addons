@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.ModbusBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 
-/**
+/*
  * The {@link LambdaBindingConstants} class defines common
  * constants, which are used across the whole binding.
  *

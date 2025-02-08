@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -53,7 +53,7 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
+/*
  * The {@link HeatingCircuitHandler} is responsible for handling commands,
  * which are sent to one of the channels and for polling the modbus.
  *
@@ -81,7 +81,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
             pollTask = null;
         }
 
-        /**
+        /*
          * Register poll task This is where we set up our regular poller
          */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
@@ -117,42 +117,42 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         protected abstract void handlePolledData(ModbusRegisterArray registers);
     }
 
-    /**
+    /*
      * Logger instance
      */
     private final Logger logger = LoggerFactory.getLogger(HeatingCircuitHandler.class);
 
-    /**
+    /*
      * Configuration instance
      */
     protected @Nullable HeatingCircuitConfiguration config = null;
-    /**
+    /*
      * Parser used to convert incoming raw messages into system blocks
      * private final SystemInfromationBlockParser systemInformationBlockParser = new SystemInfromationBlockParser();
      */
-    /**
+    /*
      * Parsers used to convert incoming raw messages into state blocks
      */
 
     private final HeatingCircuitBlockParser heatingcircuitBlockParser = new HeatingCircuitBlockParser();
     private final HeatingCircuitReg50BlockParser heatingcircuitReg50BlockParser = new HeatingCircuitReg50BlockParser();
 
-    /**
+    /*
      * These are the tasks used to poll the device
      */
 
     private volatile @Nullable AbstractBasePoller heatingcircuitPoller = null;
     private volatile @Nullable AbstractBasePoller heatingcircuitReg50Poller = null;
-    /**
+    /*
      * Communication interface to the slave endpoint we're connecting to
      */
     protected volatile @Nullable ModbusCommunicationInterface comms = null;
-    /**
+    /*
      * This is the slave id, we store this once initialization is complete
      */
     private volatile int slaveId;
 
-    /**
+    /*
      * Instances of this handler should get a reference to the modbus manager
      *
      * @param thing the thing to handle
@@ -161,8 +161,9 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         super(thing);
     }
 
-    /**
+    /*
      * @param address address of the value to be written on the modbus
+     * 
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
@@ -194,8 +195,9 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         });
     }
 
-    /**
+    /*
      * @param command get the value of this command.
+     * 
      * @return short the value of the command as short
      */
     private short getInt16Value(Command command) throws LambdaException {
@@ -228,7 +230,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         throw new LambdaException("Unsupported command type");
     }
 
-    /**
+    /*
      * Handle incoming commands.
      */
     @Override
@@ -319,7 +321,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         }
     }
 
-    /**
+    /*
      * Initialization: Load the config object of the block Connect to the slave
      * bridge Start the periodic polling
      */
@@ -411,7 +413,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
     }
 
-    /**
+    /*
      * Dispose the binding correctly
      */
     @Override
@@ -419,7 +421,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         tearDown();
     }
 
-    /**
+    /*
      * Unregister the poll tasks and release the endpoint reference
      */
     private void tearDown() {
@@ -440,14 +442,14 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         comms = null;
     }
 
-    /**
+    /*
      * Returns the current slave id from the bridge
      */
     public int getSlaveId() {
         return slaveId;
     }
 
-    /**
+    /*
      * Get the endpoint handler from the bridge this handler is connected to Checks
      * that we're connected to the right type of bridge
      *
@@ -487,11 +489,13 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         return QuantityType.valueOf(value.doubleValue(), unit);
     }
 
-    /**
+    /*
      * Returns high value * 1000 + low value
      *
      * @param high the high value
+     * 
      * @param low the low valze
+     * 
      * @return the scaled value as a DecimalType
      */
     protected State getEnergyQuantity(int high, int low) {
@@ -499,7 +503,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         return QuantityType.valueOf(value, KILOWATT_HOUR);
     }
 
-    /**
+    /*
      * These methods are called each time new data has been polled from the modbus
      * slave The register array is first parsed, then each of the channels are
      * updated to the new values
@@ -548,7 +552,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         resetCommunicationError();
     }
 
-    /**
+    /*
      * @param bridgeStatusInfo
      */
     @Override
@@ -562,7 +566,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         }
     }
 
-    /**
+    /*
      * Handle errors received during communication
      */
     protected void handleReadError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
@@ -576,7 +580,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
                 String.format("Error with read: %s: %s", cls, msg));
     }
 
-    /**
+    /*
      * Handle errors received during communication
      */
     protected void handleWriteError(AsyncModbusFailure<ModbusWriteRequestBlueprint> failure) {
@@ -590,7 +594,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
                 String.format("Error with write: %s: %s", cls, msg));
     }
 
-    /**
+    /*
      * Returns true, if we're in a CONFIGURATION_ERROR state
      *
      * @return
@@ -601,7 +605,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
                 && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR;
     }
 
-    /**
+    /*
      * Reset communication status to ONLINE if we're in an OFFLINE state
      */
     protected void resetCommunicationError() {
@@ -612,11 +616,13 @@ public class HeatingCircuitHandler extends BaseThingHandler {
         }
     }
 
-    /**
+    /*
      * Returns the channel UID for the specified group and channel id
      *
      * @param string the channel group
+     * 
      * @param string the channel id in that group
+     * 
      * @return the globally unique channel uid
      */
     ChannelUID channelUID(String group, String id) {
