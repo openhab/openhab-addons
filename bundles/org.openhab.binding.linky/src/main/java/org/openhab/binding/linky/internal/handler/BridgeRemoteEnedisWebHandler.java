@@ -52,14 +52,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * {@link EnedisBridgeHandler} is the base handler to access enedis data.
+ * {@link BridgeRemoteEnedisHandler} is the base handler to access enedis data.
  *
  * @author Laurent Arnal - Initial contribution
  *
  */
 @NonNullByDefault
-public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(EnedisWebBridgeHandler.class);
+public class BridgeRemoteEnedisWebHandler extends BridgeLinkyHandler {
+    private final Logger logger = LoggerFactory.getLogger(BridgeRemoteEnedisWebHandler.class);
 
     public static final String ENEDIS_DOMAIN = ".enedis.fr";
 
@@ -93,14 +93,14 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
     private static final String BASE_MYELECT_URL = "https://www.myelectricaldata.fr/";
     private static final String TEMPO_URL = BASE_MYELECT_URL + "rte/tempo/%s/%s";
 
-    public EnedisWebBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
+    public BridgeRemoteEnedisWebHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
         super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
     }
 
     @Override
-    public String getToken(LinkyHandler handler) throws LinkyException {
+    public String getToken(LinkyRemoteHandler handler) throws LinkyException {
         return "";
     }
 

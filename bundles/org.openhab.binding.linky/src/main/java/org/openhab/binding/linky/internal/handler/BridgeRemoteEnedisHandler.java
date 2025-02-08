@@ -31,13 +31,13 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * {@link EnedisBridgeHandler} is the base handler to access enedis data.
+ * {@link BridgeRemoteEnedisHandler} is the base handler to access enedis data.
  *
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public class EnedisBridgeHandler extends ApiBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(EnedisBridgeHandler.class);
+public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
+    private final Logger logger = LoggerFactory.getLogger(BridgeRemoteEnedisHandler.class);
 
     private static final String BASE_URL_PREPROD = "https://gw.ext.prod-sandbox.api.enedis.fr/";
     private static final String ENEDIS_ACCOUNT_URL_PREPROD = "gw.ext.prod-sandbox.api.enedis.fr";
@@ -63,7 +63,7 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     private static final String BASE_MYELECT_URL = "https://www.myelectricaldata.fr/";
     private static final String TEMPO_URL = BASE_MYELECT_URL + "rte/tempo/%s/%s";
 
-    public EnedisBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
+    public BridgeRemoteEnedisHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
         super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
@@ -71,8 +71,8 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public void initialize() {
-        tokenUrl = getBaseUrl() + EnedisBridgeHandler.ENEDIS_API_TOKEN_URL;
-        authorizeUrl = getAccountUrl() + EnedisBridgeHandler.ENEDIS_AUTHORIZE_URL;
+        tokenUrl = getBaseUrl() + BridgeRemoteEnedisHandler.ENEDIS_API_TOKEN_URL;
+        authorizeUrl = getAccountUrl() + BridgeRemoteEnedisHandler.ENEDIS_AUTHORIZE_URL;
 
         super.initialize();
     }
@@ -121,7 +121,7 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     }
 
     @Override
-    public String getToken(LinkyHandler handler) throws LinkyException {
+    public String getToken(LinkyRemoteHandler handler) throws LinkyException {
         AccessTokenResponse accesToken = getAccessTokenResponse();
         if (accesToken == null) {
             accesToken = getAccessTokenByClientCredentials();

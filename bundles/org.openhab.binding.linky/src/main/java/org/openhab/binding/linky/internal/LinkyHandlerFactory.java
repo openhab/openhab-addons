@@ -23,12 +23,12 @@ import java.time.format.DateTimeFormatterBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linky.internal.handler.D2LBridgeHandler;
-import org.openhab.binding.linky.internal.handler.EnedisBridgeHandler;
-import org.openhab.binding.linky.internal.handler.EnedisWebBridgeHandler;
-import org.openhab.binding.linky.internal.handler.LinkyHandler;
-import org.openhab.binding.linky.internal.handler.LinkyHandlerDirect;
-import org.openhab.binding.linky.internal.handler.MyElectricalDataBridgeHandler;
+import org.openhab.binding.linky.internal.handler.BridgeLocalD2LHandler;
+import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisHandler;
+import org.openhab.binding.linky.internal.handler.BridgeRemoteEnedisWebHandler;
+import org.openhab.binding.linky.internal.handler.LinkyRemoteHandler;
+import org.openhab.binding.linky.internal.handler.LinkyLocalHandler;
+import org.openhab.binding.linky.internal.handler.BridgeRemoteMyElectricalDataHandler;
 import org.openhab.binding.linky.internal.utils.DoubleTypeAdapter;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
@@ -134,26 +134,26 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_API_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
-            EnedisBridgeHandler handler = new EnedisBridgeHandler((Bridge) thing, this.httpClientFactory,
+            BridgeRemoteEnedisHandler handler = new BridgeRemoteEnedisHandler((Bridge) thing, this.httpClientFactory,
                     this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
         } else if (THING_TYPE_API_WEB_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
-            EnedisWebBridgeHandler handler = new EnedisWebBridgeHandler((Bridge) thing, this.httpClientFactory,
+            BridgeRemoteEnedisWebHandler handler = new BridgeRemoteEnedisWebHandler((Bridge) thing, this.httpClientFactory,
                     this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
         } else if (THING_TYPE_API_MYELECTRICALDATA_BRIDGE.equals(thing.getThingTypeUID())) {
-            MyElectricalDataBridgeHandler handler = new MyElectricalDataBridgeHandler((Bridge) thing,
+            BridgeRemoteMyElectricalDataHandler handler = new BridgeRemoteMyElectricalDataHandler((Bridge) thing,
                     this.httpClientFactory, this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
         } else if (THING_TYPE_D2L__BRIDGE.equals(thing.getThingTypeUID())) {
-            D2LBridgeHandler handler = new D2LBridgeHandler((Bridge) thing, this.httpClientFactory, this.oAuthFactory,
+            BridgeLocalD2LHandler handler = new BridgeLocalD2LHandler((Bridge) thing, this.httpClientFactory, this.oAuthFactory,
                     this.httpService, thingRegistry, componentContext, gson);
             return handler;
         } else if (THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
-            LinkyHandler handler = new LinkyHandler(thing, localeProvider, timeZoneProvider);
+            LinkyRemoteHandler handler = new LinkyRemoteHandler(thing, localeProvider, timeZoneProvider);
             return handler;
         } else if (THING_TYPE_LINKY_DIRECT.equals(thing.getThingTypeUID())) {
-            LinkyHandlerDirect handler = new LinkyHandlerDirect(thing, localeProvider, timeZoneProvider);
+            LinkyLocalHandler handler = new LinkyLocalHandler(thing, localeProvider, timeZoneProvider);
             return handler;
         }
 

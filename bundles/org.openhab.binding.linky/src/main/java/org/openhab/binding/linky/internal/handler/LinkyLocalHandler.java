@@ -51,7 +51,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * The {@link LinkyHandlerDirect} is responsible for handling commands, which are
+ * The {@link LinkyLocalHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Gaël L'hopital - Initial contribution
@@ -60,11 +60,11 @@ import com.google.gson.reflect.TypeToken;
 
 @NonNullByDefault
 @SuppressWarnings("null")
-public class LinkyHandlerDirect extends BaseThingHandler {
+public class LinkyLocalHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private ZoneId zoneId = ZoneId.systemDefault();
 
-    private final Logger logger = LoggerFactory.getLogger(LinkyHandlerDirect.class);
+    private final Logger logger = LoggerFactory.getLogger(LinkyLocalHandler.class);
 
     private LinkyConfiguration config;
 
@@ -73,7 +73,7 @@ public class LinkyHandlerDirect extends BaseThingHandler {
     private String appKey = "";
     private String ivKey = "";
 
-    public LinkyHandlerDirect(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
+    public LinkyLocalHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
 
         config = getConfigAs(LinkyConfiguration.class);
@@ -107,7 +107,7 @@ public class LinkyHandlerDirect extends BaseThingHandler {
             return;
         }
 
-        LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
+        BridgeLinkyHandler bridgeHandler = (BridgeLinkyHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             return;
         }
@@ -170,7 +170,7 @@ public class LinkyHandlerDirect extends BaseThingHandler {
                 return;
             }
 
-            LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
+            BridgeLinkyHandler bridgeHandler = (BridgeLinkyHandler) bridge.getHandler();
             if (bridgeHandler == null) {
                 return;
             }

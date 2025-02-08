@@ -42,13 +42,13 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * {@link ApiBridgeHandler} is the base handler to access enedis data.
+ * {@link BridgeRemoteApiHandler} is the base handler to access enedis data.
  *
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
+public abstract class BridgeRemoteApiHandler extends BridgeLinkyHandler {
+    private final Logger logger = LoggerFactory.getLogger(BridgeRemoteApiHandler.class);
 
     private final OAuthFactory oAuthFactory;
 
@@ -59,7 +59,7 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
     protected String tokenUrl = "";
     protected String authorizeUrl = "";
 
-    public ApiBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
+    public BridgeRemoteApiHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
         super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
