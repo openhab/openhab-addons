@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+   <thing-type id="linky-direct">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="d2l"/>
+        </supported-bridge-type-refs>
+
+        <label>Linky Direct</label>
+        <description>
+            Provides your energy consumption data.
+            In order to receive the data, you must activate your account at
+            https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
+        </description>
+
+        <channel-groups>
+            <channel-group typeId="linky-direct-main" id="linky-direct-main"/>
+            <channel-group typeId="linky-direct-3phase" id="linky-direct-3phase"/>
+            <channel-group typeId="linky-direct-producer" id="linky-direct-producer"/>
+        </channel-groups>
+
+        <config-description>
+            <parameter name="id" type="text" required="true">
+                <label>Id</label>
+                <description>Your D2L id</description>
+            </parameter>
+            <parameter name="appKey" type="text" required="true">
+                <label>AppKey</label>
+                <description>Your applicative encryption key</description>
+            </parameter>
+            <parameter name="ivKey" type="text" required="true">
+                <label>IvKey</label>
+                <description>Your IV encryption key</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+
+</thing:thing-descriptions>
