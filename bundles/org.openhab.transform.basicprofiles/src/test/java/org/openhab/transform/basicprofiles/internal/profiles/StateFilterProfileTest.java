@@ -916,45 +916,64 @@ public class StateFilterProfileTest {
                 QuantityType.valueOf(3, Units.WATT)); //
 
         return Stream.of(
-                // average function
+                // average function (true)
                 Arguments.of(powerItem, "== $AVG", states, QuantityType.valueOf("2 W"), true),
                 Arguments.of(powerItem, "== $AVG", states, QuantityType.valueOf("2000 mW"), true),
                 Arguments.of(powerItem, "== $AVERAGE", states, QuantityType.valueOf("0.002 kW"), true),
                 Arguments.of(powerItem, "> $AVERAGE", states, QuantityType.valueOf("3 W"), true),
 
+                // average function (false)
                 Arguments.of(powerItem, "> $AVERAGE", states, QuantityType.valueOf("2 W"), false),
                 Arguments.of(powerItem, "== $AVERAGE", states, DecimalType.valueOf("2"), false),
 
-                // min function
+                // min function (true)
                 Arguments.of(powerItem, "== $MIN", states, QuantityType.valueOf("1 W"), true),
                 Arguments.of(powerItem, "== $MIN", states, QuantityType.valueOf("1000 mW"), true),
 
+                // min function (false)
                 Arguments.of(powerItem, "== $MIN", states, DecimalType.valueOf("1"), false),
 
-                // max function
+                // max function (true)
                 Arguments.of(powerItem, "== $MAX", states, QuantityType.valueOf("3 W"), true),
                 Arguments.of(powerItem, "== $MAX", states, QuantityType.valueOf("0.003 kW"), true),
 
+                // max function (false)
                 Arguments.of(powerItem, "== $MAX", states, DecimalType.valueOf("1"), false),
 
-                // delta function
+                // delta function (true)
                 Arguments.of(powerItem, "$DELTA <= 1 W", states, QuantityType.valueOf("4 W"), true),
                 Arguments.of(powerItem, "$DELTA > 0.5 W", states, QuantityType.valueOf("4 W"), true),
                 Arguments.of(powerItem, "$DELTA > 0.0005 kW", states, QuantityType.valueOf("4 W"), true),
                 Arguments.of(powerItem, "0.5 W < $DELTA", states, QuantityType.valueOf("4 W"), true),
                 Arguments.of(powerItem, "500 mW < $DELTA", states, QuantityType.valueOf("4 W"), true),
 
+                // delta function (false)
                 Arguments.of(powerItem, "$DELTA > 0.5 W", states, QuantityType.valueOf("3.4 W"), false),
                 Arguments.of(powerItem, "$DELTA > 0.5", states, QuantityType.valueOf("4 W"), false),
 
-                // delta percent function
+                // delta percent function (true)
                 Arguments.of(powerItem, "$DELTA_PERCENT > 30", states, QuantityType.valueOf("4 W"), true),
                 Arguments.of(powerItem, "30 < $DELTA_PERCENT", states, QuantityType.valueOf("4 W"), true),
 
-                // unit based comparisons
+                // delta percent function (false)
+                Arguments.of(powerItem, "$DELTA_PERCENT > 310", states, QuantityType.valueOf("4 W"), false),
+                Arguments.of(powerItem, "310 < $DELTA_PERCENT", states, QuantityType.valueOf("4 W"), false),
+
+                // unit based comparisons (true)
                 Arguments.of(powerItem, "> 0.5 W", states, QuantityType.valueOf("4 W"), true),
                 Arguments.of(powerItem, "> 500 mW", states, QuantityType.valueOf("4 W"), true),
-                Arguments.of(powerItem, "> 15 %", states, QuantityType.valueOf("4 W"), true) //
+                Arguments.of(powerItem, "> 0.0005 kW", states, QuantityType.valueOf("4 W"), true),
+
+                // unit based comparisons (false)
+                Arguments.of(powerItem, "> 0.5 W", states, QuantityType.valueOf("0.4 W"), false),
+                Arguments.of(powerItem, "> 500 mW", states, QuantityType.valueOf("0.4 W"), false),
+                Arguments.of(powerItem, "> 0.0005 kW", states, QuantityType.valueOf("0.4 W"), false),
+
+                // percent comparisons (true)
+                Arguments.of(powerItem, "> 30 %", states, QuantityType.valueOf("4 W"), true),
+
+                // percent comparisons (false)
+                Arguments.of(powerItem, "> 310 %", states, QuantityType.valueOf("4 W"), false) //
         );
     }
 
