@@ -4,12 +4,12 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="linky-direct">
+	<thing-type id="linky-local">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="d2l"/>
 		</supported-bridge-type-refs>
 
-		<label>Linky Direct</label>
+		<label>Linky Local</label>
 		<description>
 			Provides your energy consumption data.
 			In order to receive the data, you must activate your account at
@@ -17,9 +17,10 @@
 		</description>
 
 		<channel-groups>
-			<channel-group typeId="linky-direct-main" id="linky-direct-main"/>
-			<channel-group typeId="linky-direct-3phase" id="linky-direct-3phase"/>
-			<channel-group typeId="linky-direct-producer" id="linky-direct-producer"/>
+			<channel-group typeId="linky-local-main" id="linky-local-main"/>
+			<channel-group typeId="linky-local-3phase" id="linky-local-3phase"/>
+			<channel-group typeId="linky-local-producer" id="linky-local-producer"/>
+			<channel-group typeId="linky-local-calc" id="linky-local-calc"/>
 		</channel-groups>
 
 		<config-description>

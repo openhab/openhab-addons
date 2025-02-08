@@ -112,8 +112,8 @@ public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler 
 
     @Override
     public String authorize(String redirectUri, String reqState, String reqCode) throws LinkyException {
-        String url = String.format(BridgeRemoteMyElectricalDataHandler.LINKY_MYELECTRICALDATA_API_TOKEN_URL, getClientId(),
-                reqCode);
+        String url = String.format(BridgeRemoteMyElectricalDataHandler.LINKY_MYELECTRICALDATA_API_TOKEN_URL,
+                getClientId(), reqCode);
         EnedisHttpApi enedisApi = getEnedisApi();
         if (enedisApi == null) {
             return "";

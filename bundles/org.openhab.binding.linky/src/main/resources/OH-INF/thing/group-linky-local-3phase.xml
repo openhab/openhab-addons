@@ -9,7 +9,7 @@
 
 
 
-	<channel-group-type id="linky-direct-3phase">
+	<channel-group-type id="linky-local-3phase">
 		<label>3Phase</label>
 		<channels>
 
@@ -38,7 +38,7 @@
 				<description>Instantaneous withdrawn apparent power</description>
 			</channel>
 
-			<channel id="sinst2s" typeId="powerType">
+			<channel id="sinsts2" typeId="powerType">
 				<label>SINSTS2</label>
 				<description>Instantaneous withdrawn apparent power</description>
 			</channel>
