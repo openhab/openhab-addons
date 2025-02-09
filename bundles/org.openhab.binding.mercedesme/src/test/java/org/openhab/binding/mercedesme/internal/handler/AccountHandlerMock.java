@@ -15,7 +15,6 @@ package org.openhab.binding.mercedesme.internal.handler;
 import static org.mockito.Mockito.mock;
 
 import java.util.Locale;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -54,7 +53,7 @@ public class AccountHandlerMock extends AccountHandler {
     public AccountHandlerMock() {
         super(mock(Bridge.class), mock(MercedesMeDiscoveryService.class), mock(HttpClient.class),
                 mock(LocaleProvider.class), mock(StorageService.class));
-        config = Optional.of(new AccountConfiguration());
+        config = new AccountConfiguration();
     }
 
     public AccountHandlerMock(Bridge b, @Nullable String storedObject, HttpClient httpClient) {
@@ -63,7 +62,7 @@ public class AccountHandlerMock extends AccountHandler {
             Storage<String> storage = storageService.getStorage(Constants.BINDING_ID);
             storage.put("a@b.c", storedObject);
         }
-        config = Optional.of(new AccountConfiguration());
+        config = new AccountConfiguration();
     }
 
     @Override

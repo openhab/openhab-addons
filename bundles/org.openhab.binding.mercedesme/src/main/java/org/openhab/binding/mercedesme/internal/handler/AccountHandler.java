@@ -95,7 +95,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private String poiEndpoint = "/v1/vehicle/%s/route";
 
     final MBWebsocket ws;
-    Optional<AccountConfiguration> config = Optional.empty();
+    AccountConfiguration config = new AccountConfiguration();
     @Nullable
     ClientMessage message;
 
@@ -116,15 +116,15 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        config = Optional.of(getConfigAs(AccountConfiguration.class));
+        config = getConfigAs(AccountConfiguration.class);
         String configValidReason = configValid();
         if (!configValidReason.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configValidReason);
         } else {
-            authService = Optional.of(new AuthService(this, httpClient, config.get(), localeProvider.getLocale(),
-                    storage, config.get().refreshToken));
-            refreshScheduler = Optional.of(
-                    scheduler.scheduleWithFixedDelay(this::refresh, 0, config.get().refreshInterval, TimeUnit.MINUTES));
+            authService = Optional.of(new AuthService(this, httpClient, config, localeProvider.getLocale(), storage,
+                    config.refreshToken));
+            refreshScheduler = Optional
+                    .of(scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refreshInterval, TimeUnit.MINUTES));
         }
     }
 
@@ -140,15 +140,15 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     private String configValid() {
-        config = Optional.of(getConfigAs(AccountConfiguration.class));
+        config = getConfigAs(AccountConfiguration.class);
         String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId();
-        if (Constants.NOT_SET.equals(config.get().refreshToken)) {
+        if (Constants.NOT_SET.equals(config.refreshToken)) {
             return textKey + Constants.STATUS_REFRESH_TOKEN_MISSING;
-        } else if (Constants.NOT_SET.equals(config.get().email)) {
+        } else if (Constants.NOT_SET.equals(config.email)) {
             return textKey + Constants.STATUS_EMAIL_MISSING;
-        } else if (Constants.NOT_SET.equals(config.get().region)) {
+        } else if (Constants.NOT_SET.equals(config.region)) {
             return textKey + Constants.STATUS_REGION_MISSING;
-        } else if (config.get().refreshInterval < 5) {
+        } else if (config.refreshInterval < 5) {
             return textKey + Constants.STATUS_REFRESH_INVALID;
         } else {
             return Constants.EMPTY;
@@ -167,6 +167,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         authService = Optional.empty();
     }
 
+    @Override
+    public void handleRemoval() {
+        storage.remove(config.email);
+        super.handleRemoval();
+    }
+
     /**
      * https://next.openhab.org/javadoc/latest/org/openhab/core/auth/client/oauth2/package-summary.html
      */
@@ -183,7 +189,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     public String getWSUri() {
-        return Utils.getWebsocketServer(config.get().region);
+        return Utils.getWebsocketServer(config.region);
     }
 
     public ClientUpgradeRequest getClientUpgradeRequest() {
@@ -193,12 +199,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         request.setHeader("X-TrackingId", UUID.randomUUID().toString());
         request.setHeader("Ris-Os-Name", Constants.RIS_OS_NAME);
         request.setHeader("Ris-Os-Version", Constants.RIS_OS_VERSION);
-        request.setHeader("Ris-Sdk-Version", Utils.getRisSDKVersion(config.get().region));
+        request.setHeader("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
         request.setHeader("X-Locale",
                 localeProvider.getLocale().getLanguage() + "-" + localeProvider.getLocale().getCountry()); // de-DE
-        request.setHeader("User-Agent", Utils.getApplication(config.get().region));
-        request.setHeader("X-Applicationname", Utils.getUserAgent(config.get().region));
-        request.setHeader("Ris-Application-Version", Utils.getRisApplicationVersion(config.get().region));
+        request.setHeader("User-Agent", Utils.getApplication(config.region));
+        request.setHeader("X-Applicationname", Utils.getUserAgent(config.region));
+        request.setHeader("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
         return request;
     }
 
@@ -385,8 +391,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         Map<String, Object> featureMap = new HashMap<>();
         try {
             // add vehicle capabilities
-            String capabilitiesUrl = Utils.getRestAPIServer(config.get().region)
-                    + String.format(capabilitiesEndpoint, vin);
+            String capabilitiesUrl = Utils.getRestAPIServer(config.region) + String.format(capabilitiesEndpoint, vin);
             Request capabilitiesRequest = httpClient.newRequest(capabilitiesUrl);
             authService.get().addBasicHeaders(capabilitiesRequest);
             capabilitiesRequest.header("X-SessionId", UUID.randomUUID().toString());
@@ -422,7 +427,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             }
 
             // add command capabilities
-            String commandCapabilitiesUrl = Utils.getRestAPIServer(config.get().region)
+            String commandCapabilitiesUrl = Utils.getRestAPIServer(config.region)
                     + String.format(commandCapabilitiesEndpoint, vin);
             Request commandCapabilitiesRequest = httpClient.newRequest(commandCapabilitiesUrl);
             authService.get().addBasicHeaders(commandCapabilitiesRequest);
@@ -490,7 +495,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
      */
 
     public void sendPoi(String vin, JSONObject poi) {
-        String poiUrl = Utils.getRestAPIServer(config.get().region) + String.format(poiEndpoint, vin);
+        String poiUrl = Utils.getRestAPIServer(config.region) + String.format(poiEndpoint, vin);
         Request poiRequest = httpClient.POST(poiUrl);
         authService.get().addBasicHeaders(poiRequest);
         poiRequest.header("X-SessionId", UUID.randomUUID().toString());

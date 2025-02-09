@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -72,7 +73,14 @@ public class AuthService {
         if (storedToken != null) {
             // returns INVALID_TOKEN in case of an error
             logger.trace("MB-Auth {} Restore token from persistence", prefix());
-            token = decodeToken(storedToken);
+            try {
+                TokenResponse tokenResponseJson = Utils.GSON.fromJson(storedToken, TokenResponse.class);
+                token = decodeToken(tokenResponseJson, Instant.MIN);
+            } catch (JsonSyntaxException jse) {
+                // fallback of non human readable base64 token persistence
+                logger.debug("MB-Auth {} Fallback token decoding", prefix());
+                token = Utils.fromString(storedToken);
+            }
         } else {
             // initialize token with refresh token from configuration with expiration 0 - triggers refreshToken
             logger.trace("MB-Auth {} Create token from config", prefix());
@@ -107,6 +115,7 @@ public class AuthService {
     }
 
     private void refreshToken() {
+        logger.trace("MB-Auth {} refreshToken", prefix());
         try {
             String url = Utils.getTokenUrl(config.region);
             Request req = httpClient.POST(url);
@@ -124,9 +133,13 @@ public class AuthService {
             int tokenReaponseStatus = cr.getStatus();
             String tokenResponse = cr.getContentAsString();
             if (tokenReaponseStatus == 200) {
-                token = decodeToken(tokenResponse);
+                TokenResponse tokenResponseJson = Utils.GSON.fromJson(tokenResponse, TokenResponse.class);
+                tokenResponseJson.createdOn = Instant.now().toString();
+                token = decodeToken(tokenResponseJson, Instant.now());
                 if (tokenIsValid()) {
-                    storage.put(identifier, tokenResponse);
+                    String tokenStore = Utils.GSON.toJson(tokenResponseJson);
+                    logger.debug("MB-Auth {} refreshToken result {}", prefix(), token.toString());
+                    storage.put(identifier, tokenStore);
                 } else {
                     token = Utils.INVALID_TOKEN;
                     storage.remove(identifier);
@@ -144,38 +157,40 @@ public class AuthService {
                 logger.warn("MB-Auth {} Failed to refresh token {} {}", prefix(), tokenReaponseStatus, tokenResponse);
             }
             listener.onAccessTokenResponse(token);
-        } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException
+                | JsonSyntaxException e) {
             logger.info("{} Failed to refresh token {}", prefix(), e.getMessage());
         }
     }
 
-    private AccessTokenResponse decodeToken(String storedToken) {
-        try {
-            TokenResponse tr = Utils.GSON.fromJson(storedToken, TokenResponse.class);
+    private AccessTokenResponse decodeToken(@Nullable TokenResponse tokenJson, Instant creationInstant) {
+        if (tokenJson != null) {
             AccessTokenResponse atr = new AccessTokenResponse();
-            if (tr != null) {
-                atr.setAccessToken(tr.accessToken);
-                atr.setCreatedOn(Instant.now());
-                atr.setExpiresIn(tr.expiresIn);
+            // check if TokenResponse createdOn field has a real value - if not take value from parameter
+            if (Instant.MIN.toString().equals(tokenJson.createdOn)) {
+                tokenJson.createdOn = creationInstant.toString();
+            }
+            atr.setCreatedOn(Instant.parse(tokenJson.createdOn));
+            atr.setExpiresIn(tokenJson.expiresIn);
+            atr.setAccessToken(tokenJson.accessToken);
+            if (!Constants.NOT_SET.equals(tokenJson.refreshToken)) {
+                atr.setRefreshToken(tokenJson.refreshToken);
+            } else {
                 // Preserve refresh token if available
-                if (Constants.NOT_SET.equals(tr.refreshToken) && !Constants.NOT_SET.equals(token.getRefreshToken())) {
+                if (!Constants.NOT_SET.equals(token.getRefreshToken())) {
                     atr.setRefreshToken(token.getRefreshToken());
-                } else if (!Constants.NOT_SET.equals(tr.refreshToken)) {
-                    atr.setRefreshToken(tr.refreshToken);
                 } else {
                     logger.debug("MB-Auth {} Neither new nor old refresh token available", prefix());
                 }
-                atr.setTokenType("Bearer");
-                atr.setScope(Constants.SCOPE);
-                return atr;
-            } else {
-                logger.debug("MB-Auth {} Neither Token Response is null", prefix());
-                return Utils.INVALID_TOKEN;
             }
-        } catch (JsonSyntaxException jse) {
-            // fallback of non human readable base64 token persistence
-            logger.debug("MB-Auth {} Fallback token decoding", prefix());
-            return Utils.fromString(storedToken);
+            atr.setTokenType("Bearer");
+            atr.setScope(Constants.SCOPE);
+            return atr;
+        } else
+
+        {
+            logger.debug("MB-Auth {} Neither Token Response is null", prefix());
+            return Utils.INVALID_TOKEN;
         }
     }
 
