@@ -14,7 +14,7 @@ package org.openhab.binding.modbus.lambda.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/*
+/**
  * The {@link LambdaConfiguration} class contains fields mapping
  * thing configuration parameters.
  *
@@ -23,14 +23,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class LambdaConfiguration {
-    /*
+    /**
      * Refresh interval in seconds
      */
     private int refresh = 30;
 
     private int maxTries = 3;// backwards compatibility and tests
 
-    /*
+    /**
      * Gets refresh period in milliseconds
      */
     public long getRefreshMillis() {

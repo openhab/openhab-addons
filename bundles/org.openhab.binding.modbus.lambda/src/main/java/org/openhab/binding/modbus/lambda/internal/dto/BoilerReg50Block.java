@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.lambda.internal.dto;
 
-/*
+/**
  * Dto class for the BoilerReg50 Block
  *
  * @author Paul Frank - Initial contribution

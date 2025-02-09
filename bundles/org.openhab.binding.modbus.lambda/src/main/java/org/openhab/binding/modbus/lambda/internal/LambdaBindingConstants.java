@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.ModbusBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 
-/*
+/**
  * The {@link LambdaBindingConstants} class defines common
  * constants, which are used across the whole binding.
  *

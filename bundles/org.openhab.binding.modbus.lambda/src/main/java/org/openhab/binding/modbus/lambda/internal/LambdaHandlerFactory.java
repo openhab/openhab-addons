@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
+/**
  * The {@link LambdaHandlerFactory} is responsible for creating things and thing
  * handlers.
  *

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.lambda.internal.dto;
 
-/*
+/**
  * Dto class for the Ambient Block
  *
  * @author Paul Frank - Initial contribution
