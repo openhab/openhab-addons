@@ -103,7 +103,7 @@ public class StateFilterProfile implements StateProfile {
     private @Nullable Item linkedItem = null;
 
     private State newState = UnDefType.UNDEF;
-    private State acceptedState = UnDefType.UNDEF;
+    private Optional<State> acceptedState = Optional.empty();
     private LinkedList<State> previousStates = new LinkedList<>();
 
     private final int windowSize;
@@ -230,7 +230,7 @@ public class StateFilterProfile implements StateProfile {
         }
 
         if (conditions.stream().allMatch(c -> c.check(state))) {
-            acceptedState = state;
+            acceptedState = Optional.of(state);
             return state;
         } else {
             return configMismatchState;
@@ -339,8 +339,7 @@ public class StateFilterProfile implements StateProfile {
                 if (rhsState == null) {
                     rhsItem = getItemOrNull(rhsString);
                 } else if (rhsState instanceof FunctionType rhsFunction) {
-                    if (acceptedState == UnDefType.UNDEF && (rhsFunction.getType() == FunctionType.Function.DELTA
-                            || rhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)) {
+                    if (rhsFunction.alwaysAccept()) {
                         return true;
                     }
                     rhsItem = getLinkedItem();
@@ -378,8 +377,7 @@ public class StateFilterProfile implements StateProfile {
                 }
 
                 if (lhsState instanceof FunctionType lhsFunction) {
-                    if (acceptedState == UnDefType.UNDEF && (lhsFunction.getType() == FunctionType.Function.DELTA
-                            || lhsFunction.getType() == FunctionType.Function.DELTA_PERCENT)) {
+                    if (lhsFunction.alwaysAccept()) {
                         return true;
                     }
                     lhsItem = getLinkedItem();
@@ -567,6 +565,30 @@ public class StateFilterProfile implements StateProfile {
             };
         }
 
+        /**
+         * If the profile uses the DELTA or DELTA_PERCENT functions, the new state value will always be accepted if the
+         * 'acceptedState' (prior state) has not yet been initialised, or -- in the case of the DELTA_PERCENT function
+         * only -- if 'acceptedState' has a zero value. This ensures that 'acceptedState' is always initialised. And it
+         * also ensures that the DELTA_PERCENT function cannot cause a divide by zero error.
+         *
+         * @return true if the new state value shall be accepted
+         */
+        public boolean alwaysAccept() {
+            if ((type == Function.DELTA || type == Function.DELTA_PERCENT) && acceptedState.isEmpty()) {
+                return true;
+            }
+            if (type == Function.DELTA_PERCENT) {
+                // avoid division by zero
+                if (acceptedState.get() instanceof QuantityType base) {
+                    return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
+                }
+                if (acceptedState.get() instanceof DecimalType base) {
+                    return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
+                }
+            }
+            return false;
+        }
+
         @Override
         public <T extends State> @Nullable T as(@Nullable Class<T> target) {
             if (target == DecimalType.class || target == QuantityType.class) {
@@ -692,27 +714,33 @@ public class StateFilterProfile implements StateProfile {
         }
 
         private @Nullable State calculateDelta() {
+            if (acceptedState.isEmpty()) {
+                return null;
+            }
             if (newState instanceof QuantityType newStateQuantity) {
-                QuantityType result = newStateQuantity.subtract((QuantityType) acceptedState);
+                QuantityType result = newStateQuantity.subtract((QuantityType) acceptedState.get());
                 return result.toBigDecimal().compareTo(BigDecimal.ZERO) < 0 ? result.negate() : result;
             }
             BigDecimal result = ((DecimalType) newState).toBigDecimal()
-                    .subtract(((DecimalType) acceptedState).toBigDecimal()) //
+                    .subtract(((DecimalType) acceptedState.get()).toBigDecimal()) //
                     .abs();
             return new DecimalType(result);
         }
 
         private @Nullable State calculateDeltaPercent() {
+            if (acceptedState.isEmpty()) {
+                return null;
+            }
             State calculatedDelta = calculateDelta();
             BigDecimal bdDelta;
             BigDecimal bdBase;
-            if (acceptedState instanceof QuantityType acceptedStateQuantity) {
+            if (acceptedState.get() instanceof QuantityType acceptedStateQuantity) {
                 // Assume that delta and base are in the same unit
                 bdDelta = ((QuantityType) calculatedDelta).toBigDecimal();
                 bdBase = acceptedStateQuantity.toBigDecimal();
             } else {
                 bdDelta = ((DecimalType) calculatedDelta).toBigDecimal();
-                bdBase = ((DecimalType) acceptedState).toBigDecimal();
+                bdBase = ((DecimalType) acceptedState.get()).toBigDecimal();
             }
             bdBase = bdBase.abs();
             BigDecimal percent = bdDelta.multiply(BigDecimal.valueOf(100)).divide(bdBase, 2, RoundingMode.HALF_EVEN);
