@@ -620,30 +620,6 @@ public class StateFilterProfile implements StateProfile {
             return false;
         }
 
-        /**
-         * If the profile uses the DELTA or DELTA_PERCENT functions, the new state value will always be accepted if the
-         * 'acceptedState' (prior state) has not yet been initialised, or -- in the case of the DELTA_PERCENT function
-         * only -- if 'acceptedState' has a zero value. This ensures that 'acceptedState' is always initialised. And it
-         * also ensures that the DELTA_PERCENT function cannot cause a divide by zero error.
-         *
-         * @return true if the new state value shall be accepted
-         */
-        public boolean alwaysAccept() {
-            if ((type == Function.DELTA || type == Function.DELTA_PERCENT) && acceptedState.isEmpty()) {
-                return true;
-            }
-            if (type == Function.DELTA_PERCENT) {
-                // avoid division by zero
-                if (acceptedState.get() instanceof QuantityType base) {
-                    return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
-                }
-                if (acceptedState.get() instanceof DecimalType base) {
-                    return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
-                }
-            }
-            return false;
-        }
-
         @Override
         public <T extends State> @Nullable T as(@Nullable Class<T> target) {
             // TODO @andrewfg: do we need to change this ??
