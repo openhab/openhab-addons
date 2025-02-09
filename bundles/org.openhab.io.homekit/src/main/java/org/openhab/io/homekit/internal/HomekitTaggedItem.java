@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.measure.Quantity;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -450,36 +451,44 @@ public class HomekitTaggedItem {
      * @param defaultValue default value
      * @return value
      */
-    public QuantityType<?> getConfigurationAsQuantity(String key, QuantityType defaultValue,
+    public <T extends Quantity<T>> QuantityType<T> getConfigurationAsQuantity(String key, QuantityType<T> defaultValue,
             boolean relativeConversion) {
         String stringValue = getConfiguration(key, new String());
         if (stringValue.isEmpty()) {
             return defaultValue;
         }
-        var parsedValue = new QuantityType(stringValue);
-        QuantityType<?> convertedValue;
+        var parsedValue = new QuantityType<>(stringValue);
+        QuantityType<T> convertedValue;
 
         if (relativeConversion) {
-            convertedValue = parsedValue.toUnitRelative(defaultValue.getUnit());
+            if (parsedValue.getUnit().isCompatible(defaultValue.getUnit())) {
+                convertedValue = ((QuantityType<T>) parsedValue).toUnitRelative(defaultValue.getUnit());
+            } else {
+                convertedValue = null;
+            }
         } else {
-            convertedValue = parsedValue.toInvertibleUnit(defaultValue.getUnit());
+            convertedValue = (QuantityType<T>) parsedValue.toInvertibleUnit(defaultValue.getUnit());
         }
         // not convertible? just assume it's in the item's unit
         if (convertedValue == null) {
             Unit unit;
             if (getBaseItem() instanceof NumberItem numberItem && (unit = numberItem.getUnit()) != null) {
                 var bdValue = new BigDecimal(stringValue);
-                parsedValue = new QuantityType(bdValue, unit);
+                parsedValue = new QuantityType<>(bdValue, unit);
                 if (relativeConversion) {
-                    convertedValue = parsedValue.toUnitRelative(defaultValue.getUnit());
+                    if (parsedValue.getUnit().isCompatible(defaultValue.getUnit())) {
+                        convertedValue = ((QuantityType<T>) parsedValue).toUnitRelative(defaultValue.getUnit());
+                    } else {
+                        convertedValue = null;
+                    }
                 } else {
-                    convertedValue = parsedValue.toInvertibleUnit(defaultValue.getUnit());
+                    convertedValue = (QuantityType<T>) parsedValue.toInvertibleUnit(defaultValue.getUnit());
                 }
             }
         }
         // still not convertible? just assume it's in the default's unit
         if (convertedValue == null) {
-            return new QuantityType(parsedValue.toBigDecimal(), defaultValue.getUnit());
+            return new QuantityType<>(parsedValue.toBigDecimal(), defaultValue.getUnit());
         }
         return convertedValue;
     }
