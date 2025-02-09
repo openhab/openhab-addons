@@ -176,20 +176,22 @@ public class TwoZonesWinecoolerHandler extends BaseThingHandler {
                         lr.zone = 2;
                         break;
                 }
-                logger.info("Send {} with command {}", LIGHT_URL, GSON.toJson(lr));
                 Request req = httpClient.POST(LIGHT_URL);
                 req.header(HttpHeader.CONTENT_TYPE, "application/json");
                 req.header(HTTP_HEADER_API_KEY, configuration.apiKey);
                 req.content(new StringContentProvider(GSON.toJson(lr)));
                 try {
                     ContentResponse response = req.timeout(60, TimeUnit.SECONDS).send();
-                    logger.debug("Call to {} responded with status {} reason {}", LIGHT_URL, response.getStatus(),
-                            response.getReason());
+                    int responseStatus = response.getStatus();
+                    if (responseStatus == 200) {
+                        updateState(new ChannelUID(thing.getUID(), group, LIGHT), OnOffType.from(lr.lightOn));
+                    } else {
+                        logger.info("Call to {} responded with status {} reason {}", LIGHT_URL, response.getStatus(),
+                                response.getReason());
+                    }
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
                     logger.debug("Call to {} failed with reason {}", LIGHT_URL, e.getMessage());
                 }
-                // force data update
-                scheduler.schedule(this::dataUpdate, 2, TimeUnit.SECONDS);
             }
         } else {
             logger.debug("Cannot handle command {}", command);
@@ -213,16 +215,16 @@ public class TwoZonesWinecoolerHandler extends BaseThingHandler {
             ContentResponse contentResponse = req.timeout(60, TimeUnit.SECONDS).send();
             int responseStatus = contentResponse.getStatus();
             String contentResult = contentResponse.getContentAsString();
-            if (responseStatus != 200) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/casokitchen.winecooler-2z.status.http-status [\"" + responseStatus + " - "
-                                + contentResult + "\"]");
-            } else {
+            if (responseStatus == 200) {
                 updateStatus(ThingStatus.ONLINE);
                 StatusResult statusResult = GSON.fromJson(contentResult, StatusResult.class);
                 if (statusResult != null) {
                     updateChannels(statusResult);
                 }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/casokitchen.winecooler-2z.status.http-status [\"" + responseStatus + " - "
+                                + contentResult + "\"]");
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

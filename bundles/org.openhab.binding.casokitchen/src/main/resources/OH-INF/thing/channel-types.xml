@@ -24,6 +24,7 @@
 		<item-type>Switch</item-type>
 		<label>Light Switch</label>
 		<description>Switching lights on and off</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="hint">
 		<item-type>String</item-type>

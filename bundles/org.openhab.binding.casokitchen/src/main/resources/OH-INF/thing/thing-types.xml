@@ -23,7 +23,7 @@
 				<label>Device ID</label>
 				<description>Device ID from CASO connected devices</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="m" min="1">
+			<parameter name="refreshInterval" type="integer" unit="m" min="5">
 				<label>Refresh Interval</label>
 				<description>Interval the device is polled in minutes.</description>
 				<default>5</default>

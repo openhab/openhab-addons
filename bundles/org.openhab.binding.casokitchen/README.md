@@ -33,10 +33,9 @@ After register you'll get the
 Channels are separated in 3 groups
 
 - `generic` group channels for states covering the whole device
-- `top` group channels for states covering the top zone
-- `generic` group channels for states covering the bottom zone
+- `top` and `bottom` group channels for states covering the top zone
 
-#### Group Generic
+#### Generic Group 
 
 Group name `generic`.
 
@@ -46,23 +45,9 @@ Group name `generic`.
 | last-update   | DateTime | R          | Date and Time of last update |
 | hint          | String   | R          | General command description  |
 
-#### Group Top Zone
+#### Zone Groups
 
-Group name `top`.
-
-The `set-temperature` channel is holding the desired temperature controlled via buttons on the wine cooler device.
-Currently it cannot be changed using the API.
-
-| Channel          | Type                  | Read/Write | Description                  |
-|------------------|-----------------------|------------|------------------------------|
-| power            | Switch                | R          | Zone Power                   |
-| temperature      | Number:Temperature    | R          | Current Zone Temperature     |
-| set-temperature  | Number:Temperature    | R          | Desired Zone Temperature     |
-| light-switch     | Switch                | RW         | Control lights for this zone |
-
-#### Group Bottom Zone
-
-Group name `bottom`.
+Group `top` and `bottom`.
 
 The `set-temperature` channel is holding the desired temperature controlled via buttons on the wine cooler device.
 Currently it cannot be changed using the API.
