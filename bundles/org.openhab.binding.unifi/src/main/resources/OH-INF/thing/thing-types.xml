@@ -34,6 +34,25 @@
 		<config-description-ref uri="thing-type:unifi:site"/>
 	</thing-type>
 
+	<thing-type id="network">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+
+		<label>UniFi Network</label>
+		<description>A UniFi network</description>
+
+		<channels>
+			<channel id="site" typeId="site">
+				<description>UniFi Site the network is associated with</description>
+			</channel>
+		</channels>
+
+		<representation-property>nid</representation-property>
+
+		<config-description-ref uri="thing-type:unifi:network"/>
+	</thing-type>
+
 	<thing-type id="wlan">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="controller"/>

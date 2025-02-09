@@ -32,6 +32,7 @@ import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
+import org.openhab.binding.unifi.internal.api.dto.UniFiNetwork;
 import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
@@ -81,6 +82,7 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
             final ThingUID bridgeUID = thingHandler.getThing().getUID();
 
             discoverSites(cache, bridgeUID);
+            discoverNetworks(cache, bridgeUID);
             discoverWlans(cache, bridgeUID);
             discoverClients(cache, bridgeUID);
             discoverPoePorts(cache, bridgeUID);
@@ -99,6 +101,18 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(UniFiBindingConstants.THING_TYPE_SITE)
                     .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_SID).withTTL(TTL_SECONDS)
                     .withProperties(properties).withLabel(site.getName()).build());
+        }
+    }
+
+    private void discoverNetworks(final UniFiControllerCache cache, final ThingUID bridgeUID) {
+        for (final UniFiNetwork network : cache.getNetworks()) {
+            final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_NETWORK, bridgeUID,
+                    stripIdShort(network.getId()));
+            final Map<String, Object> properties = Map.of(PARAMETER_WID, network.getId());
+
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(UniFiBindingConstants.THING_TYPE_WLAN)
+                    .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_WID).withTTL(TTL_SECONDS)
+                    .withProperties(properties).withLabel(network.getName()).build());
         }
     }
 

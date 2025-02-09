@@ -23,6 +23,7 @@ import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverrideJsonObject;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
+import org.openhab.binding.unifi.internal.api.dto.UniFiNetwork;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
 import org.openhab.binding.unifi.internal.api.dto.UniFiUnknownClient;
@@ -34,6 +35,7 @@ import org.openhab.binding.unifi.internal.api.util.UnfiPortOverrideJsonElementDe
 import org.openhab.binding.unifi.internal.api.util.UniFiClientDeserializer;
 import org.openhab.binding.unifi.internal.api.util.UniFiClientInstanceCreator;
 import org.openhab.binding.unifi.internal.api.util.UniFiDeviceInstanceCreator;
+import org.openhab.binding.unifi.internal.api.util.UniFiNetworkInstanceCreator;
 import org.openhab.binding.unifi.internal.api.util.UniFiSiteInstanceCreator;
 import org.openhab.binding.unifi.internal.api.util.UniFiVoucherInstanceCreator;
 import org.openhab.binding.unifi.internal.api.util.UniFiWlanInstanceCreator;
@@ -85,12 +87,14 @@ public class UniFiController {
         this.unifios = unifios;
         this.csrfToken = "";
         final UniFiSiteInstanceCreator siteInstanceCreator = new UniFiSiteInstanceCreator(cache);
+        final UniFiNetworkInstanceCreator networkInstanceCreator = new UniFiNetworkInstanceCreator(cache);
         final UniFiWlanInstanceCreator wlanInstanceCreator = new UniFiWlanInstanceCreator(cache);
         final UniFiDeviceInstanceCreator deviceInstanceCreator = new UniFiDeviceInstanceCreator(cache);
         final UniFiClientInstanceCreator clientInstanceCreator = new UniFiClientInstanceCreator(cache);
         final UniFiVoucherInstanceCreator voucherInstanceCreator = new UniFiVoucherInstanceCreator(cache);
         this.gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(UniFiSite.class, siteInstanceCreator)
+                .registerTypeAdapter(UniFiNetwork.class, networkInstanceCreator)
                 .registerTypeAdapter(UniFiWlan.class, wlanInstanceCreator)
                 .registerTypeAdapter(UniFiDevice.class, deviceInstanceCreator)
                 .registerTypeAdapter(UniFiClient.class, new UniFiClientDeserializer())
@@ -147,6 +151,7 @@ public class UniFiController {
         synchronized (this) {
             cache.clear();
             final Collection<UniFiSite> sites = refreshSites();
+            refreshNetworks(sites);
             refreshWlans(sites);
             refreshDevices(sites);
             refreshClients(sites);
@@ -304,6 +309,18 @@ public class UniFiController {
         final UniFiControllerRequest<UniFiSite[]> req = newRequest(UniFiSite[].class, HttpMethod.GET, gson);
         req.setAPIPath("/api/self/sites");
         return cache.setSites(executeRequest(req));
+    }
+
+    private void refreshNetworks(final Collection<UniFiSite> sites) throws UniFiException {
+        for (final UniFiSite site : sites) {
+            cache.putNetworks(getNetworks(site));
+        }
+    }
+
+    private UniFiNetwork @Nullable [] getNetworks(final UniFiSite site) throws UniFiException {
+        final UniFiControllerRequest<UniFiNetwork[]> req = newRequest(UniFiNetwork[].class, HttpMethod.GET, gson);
+        req.setAPIPath(String.format("/api/s/%s/rest/networkconf", site.getName()));
+        return executeRequest(req);
     }
 
     private void refreshWlans(final Collection<UniFiSite> sites) throws UniFiException {
