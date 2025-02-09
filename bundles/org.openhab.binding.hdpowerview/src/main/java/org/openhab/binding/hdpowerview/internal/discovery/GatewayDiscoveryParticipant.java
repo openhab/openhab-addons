@@ -97,7 +97,7 @@ public class GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     private static @Nullable String getIpV4Address(ServiceInfo service) {
-        return Arrays.stream(service.getHostAddresses())
-                .filter(host -> VALID_IP_V4_ADDRESS.matcher(host).matches()).findFirst().orElse(null);
+        return Arrays.stream(service.getHostAddresses()).filter(host -> VALID_IP_V4_ADDRESS.matcher(host).matches())
+                .findFirst().orElse(null);
     }
 }
