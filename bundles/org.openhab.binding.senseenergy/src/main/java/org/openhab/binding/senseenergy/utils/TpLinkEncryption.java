@@ -23,10 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TpLinkEncryption {
-    static final private int STARTKEY = 0xAB;
+    private static final int STARTKEY = 0xAB;
 
-    static public byte[] encrypt(String unencrypted) {
-
+    public static byte[] encrypt(String unencrypted) {
         try {
             return encrypt(unencrypted.getBytes("UTF-8"), unencrypted.length());
         } catch (UnsupportedEncodingException e) {
@@ -34,7 +33,7 @@ public class TpLinkEncryption {
         }
     }
 
-    static public byte[] encrypt(byte[] unencrypted, int l) {
+    public static byte[] encrypt(byte[] unencrypted, int l) {
         int length = (l == 0) ? unencrypted.length : l;
         int key = STARTKEY;
 
@@ -48,7 +47,7 @@ public class TpLinkEncryption {
         return encrypted;
     }
 
-    static public byte[] decrypt(byte[] crypted, int l) {
+    public static byte[] decrypt(byte[] crypted, int l) {
         int key = STARTKEY;
         int a;
 

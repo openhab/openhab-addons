@@ -99,8 +99,9 @@ public class SenseEnergyPowerLevels {
     @Nullable
     public QuantityType<Power> getLevel(int level) {
         int numNodes = powerValueLevels.size();
-        if (numNodes == 0)
+        if (numNodes == 0) {
             return null;
+        }
 
         Point2D.Float p0 = new Point2D.Float(0, 0);
         Point2D.Float p1 = new Point2D.Float(100, getPowerFloatValue(numNodes - 1)); // if only one node, value is set

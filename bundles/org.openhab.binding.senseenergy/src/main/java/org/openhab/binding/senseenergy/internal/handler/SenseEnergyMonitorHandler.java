@@ -108,11 +108,11 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         implements SenseEnergyWebSocketListener, SenseEnergyDatagramListener {
     private final Logger logger = LoggerFactory.getLogger(SenseEnergyMonitorHandler.class);
 
-    static final private int MAX_RESPONSES_PER_REQUEST = 5;
-    static final private int SENSE_DATAGRAM_BCAST_PORT = 9999;
+    private static final int MAX_RESPONSES_PER_REQUEST = 5;
+    private static final int SENSE_DATAGRAM_BCAST_PORT = 9999;
 
-    static final private String CHANNEL_PROPERTY_ID = "sense-id";
-    static final private String CHANNEL_PROPERTY_LABEL = "sense-label";
+    private static final String CHANNEL_PROPERTY_ID = "sense-id";
+    private static final String CHANNEL_PROPERTY_LABEL = "sense-label";
 
     private long id;
     @Nullable
@@ -370,12 +370,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             return DeviceType.DISCOVERED_DEVICE;
         }
 
-        SenseEnergyBridgeHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler == null) {
-            throw new IllegalStateException("Bridge handler is not available");
-        }
-
-        SenseEnergyProxyDeviceHandler proxyHandler = bridgeHandler.getProxyDeviceByMAC(apiDevice.tags.deviceID);
+        SenseEnergyProxyDeviceHandler proxyHandler = getProxyDeviceByMAC(apiDevice.tags.deviceID);
         return (proxyHandler != null) ? DeviceType.PROXY_DEVICE : DeviceType.SELF_REPORTING_DEVICE;
     }
 
@@ -547,7 +542,6 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
      * @param thingStatus
      */
     public void childStatusChange(SenseEnergyProxyDeviceHandler proxyDeviceHandler, ThingStatus thingStatus) {
-
         if (thingStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
             throw new IllegalStateException("Child should never go ONLINE w/o the bridge being online");
         }
@@ -690,14 +684,14 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
                 reconcileDiscoveredDeviceChannels(null);
             }
 
+            DeviceType deviceType = senseDevicesType.getOrDefault(device.id, DeviceType.DISCOVERED_DEVICE);
+
             // Send trigger if device just turned on
             if (!this.devicesOn.contains(device.id)) {
-                DeviceType deviceType = senseDevicesType.getOrDefault(device.id, DeviceType.DISCOVERED_DEVICE);
                 triggerChannel(makeDeviceChannelUID(deviceType, device.id, CHANNEL_DEVICE_TRIGGER), "ON");
                 logger.trace("Discovered device turned on: {}({})", device.name, device.id);
             }
 
-            DeviceType deviceType = senseDevicesType.getOrDefault(device.id, DeviceType.DISCOVERED_DEVICE);
             ChannelUID channelUID = makeDeviceChannelUID(deviceType, device.id, CHANNEL_DEVICE_POWER);
             if (isLinked(channelUID)) {
                 updateState(channelUID, new QuantityType<>(device.w, Units.WATT));
@@ -714,5 +708,16 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             logger.trace("Discovered device turned off: {}", id);
         }
         this.devicesOn = updateDevicesOn;
+    }
+
+    @Nullable
+    public SenseEnergyProxyDeviceHandler getProxyDeviceByMAC(String macAddress) {
+        return getThing().getThings().stream() //
+                .filter(t -> t.getThingTypeUID().equals(PROXY_DEVICE_THING_TYPE)) //
+                .map(t -> (SenseEnergyProxyDeviceHandler) t.getHandler()) //
+                .filter(Objects::nonNull) //
+                .filter(h -> h.getMAC().equals(macAddress)) //
+                .findFirst() //
+                .orElse(null);
     }
 }

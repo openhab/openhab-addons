@@ -14,7 +14,6 @@ package org.openhab.binding.senseenergy.internal.handler;
 
 import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.HEARTBEAT_MINUTES;
 import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.MONITOR_THING_TYPE;
-import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.PROXY_DEVICE_THING_TYPE;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -170,17 +169,6 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
                 .filter(h -> h.getId() == id) //
                 .findFirst() //
                 .orElse(null); //
-    }
-
-    @Nullable
-    public SenseEnergyProxyDeviceHandler getProxyDeviceByMAC(String macAddress) {
-        return getThing().getThings().stream() //
-                .filter(t -> t.getThingTypeUID().equals(PROXY_DEVICE_THING_TYPE)) //
-                .map(t -> (SenseEnergyProxyDeviceHandler) t.getHandler()) //
-                .filter(Objects::nonNull) //
-                .filter(h -> h.getMAC().equals(macAddress)) //
-                .findFirst() //
-                .orElse(null);
     }
 
     /*

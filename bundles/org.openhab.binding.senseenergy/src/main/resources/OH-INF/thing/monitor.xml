@@ -81,49 +81,49 @@
 	</channel-group-type>
 
 	<channel-type id="potential-1">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Potential 1</label>
 		<description>Potential measured on first 120V branch.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="potential-2">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Potential 2</label>
 		<description>Potential measured on second 120V branch.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="leg-1-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Leg 1 Power</label>
 		<description>Power detected by the first Sense clamp.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="leg-2-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Leg 2 Power</label>
 		<description>Power detected by the second Sense clamp.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="main-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Main Power</label>
 		<description>Power detected by the main Sense clamp.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="solar-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Solar Power</label>
 		<description>Power detected by the solar Sense clamp.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="grid-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Grid Power</label>
 		<description>Power consumed from the grid (negative if supplying power to grid)</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -136,7 +136,7 @@
 	</channel-type>
 
 	<channel-type id="device-power">
-		<item-type>Number:Power</item-type>
+		<item-type unitHint="W">Number:Power</item-type>
 		<label>Power</label>
 		<description>Power draw of discovered device.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -155,7 +155,7 @@
 	</channel-type>
 
 	<channel-type id="frequency" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="Hz">Number:Frequency</item-type>
 		<label>Frequency</label>
 		<description>Electrical frequency detected by Sense.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

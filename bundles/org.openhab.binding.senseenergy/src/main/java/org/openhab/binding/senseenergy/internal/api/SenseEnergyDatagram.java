@@ -42,7 +42,7 @@ import com.google.gson.JsonSyntaxException;
 public class SenseEnergyDatagram {
 
     private final Logger logger = LoggerFactory.getLogger(SenseEnergyDatagram.class);
-    static private final int BUFFERSIZE = 1024;
+    private static final int BUFFERSIZE = 1024;
 
     private @Nullable DatagramSocket datagramSocket;
     private @Nullable SenseEnergyDatagramListener packetListener;
@@ -124,11 +124,11 @@ public class SenseEnergyDatagram {
             while (connected) {
                 try {
                     localSocket.receive(packet);
-                } catch (IOException exception) {
-                    logger.debug("Exception during packet read - {}", exception.getMessage());
+                } catch (IOException e) {
+                    logger.debug("Exception during packet read - {}", e.getMessage());
                     try {
                         Thread.sleep(100); // allow CPU to breath
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
                     }
                     break;
@@ -162,7 +162,6 @@ public class SenseEnergyDatagram {
 
     public void sendResponse(SocketAddress socketAddress, SenseEnergyDatagramGetSysInfo getSysInfo,
             SenseEnergyDatagramGetRealtime getRealtime) throws IOException {
-
         String jsonResponse = String.format("{\"emeter\":{\"get_realtime\":%s},\"system\":{\"get_sysinfo\":%s}}",
                 gson.toJson(getRealtime), gson.toJson(getSysInfo));
 

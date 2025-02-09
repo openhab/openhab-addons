@@ -19,6 +19,7 @@ import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstan
 import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CONFIG_PARAMETER_MAC;
 import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstants.CONFIG_PARAMETER_POWER_LEVELS;
 
+import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.Map;
 import java.util.Objects;
@@ -59,11 +60,11 @@ import org.slf4j.LoggerFactory;
 public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SenseEnergyProxyDeviceHandler.class);
 
-    static final private byte[] OUI = new byte[] { 0x53, 0x75, 0x31 };
-    static final private String PROXY_DEVICE_SW_VERSION = "1.2.5 Build 171206 Rel.085954";
-    static final private String PROXY_DEVICE_HW_VERSION = "1.0";
-    static final private String PROXY_DEVICE_TYPE = "IOT.SMARTPLUGSWITCH";
-    static final private String PROXY_DEVICE_MODEL = "HS110(US)";
+    private static final byte[] OUI = new byte[] { 0x53, 0x75, 0x31 };
+    private static final String PROXY_DEVICE_SW_VERSION = "1.2.5 Build 171206 Rel.085954";
+    private static final String PROXY_DEVICE_HW_VERSION = "1.0";
+    private static final String PROXY_DEVICE_TYPE = "IOT.SMARTPLUGSWITCH";
+    private static final String PROXY_DEVICE_MODEL = "HS110(US)";
 
     private SenseEnergyProxyDeviceConfiguration config = new SenseEnergyProxyDeviceConfiguration();
 
@@ -87,7 +88,7 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
             byte[] mac = randomizeMAC(OUI);
 
             String macAddress = HexFormat.of().withDelimiter(":").formatHex(mac).toUpperCase();
-            logger.trace("Spoof MAC address: {}", macAddress);
+            logger.debug("Spoof MAC address: {}", macAddress);
 
             selfConfigurationChange = true;
             c = this.editConfiguration();
@@ -293,10 +294,9 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
         }
 
         if (oui != null) {
-            for (int i = 0; i < oui.length; i++) {
-                macAddress[i] = oui[i];
-            }
+            macAddress = Arrays.copyOf(oui, oui.length);
         }
+
         return macAddress;
     }
 
