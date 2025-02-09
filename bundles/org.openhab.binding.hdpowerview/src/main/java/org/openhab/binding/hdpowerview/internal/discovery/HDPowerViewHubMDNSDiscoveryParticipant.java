@@ -14,9 +14,8 @@ package org.openhab.binding.hdpowerview.internal.discovery;
 
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 
-import java.util.Map;
+import java.util.Arrays;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jmdns.ServiceInfo;
 
@@ -49,9 +48,6 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
 
     private final HDPowerviewPropertyGetter propertyGetter;
 
-    // map of serial numbers to host addresses
-    private final Map<String, String> serialHostMap = new ConcurrentHashMap<>();
-
     @Activate
     public HDPowerViewHubMDNSDiscoveryParticipant(@Reference HDPowerviewPropertyGetter propertyGetter) {
         this.propertyGetter = propertyGetter;
@@ -72,7 +68,7 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
         ThingUID thingUID = getThingUID(service);
         if (thingUID != null) {
             String serial = thingUID.getId();
-            String host = serialHostMap.get(serial);
+            String host = getIpV4Address(service);
             if (host != null) {
                 String generation;
                 try {
@@ -94,17 +90,20 @@ public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryPart
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        for (String host : service.getHostAddresses()) {
-            if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
-                try {
-                    String serial = propertyGetter.getSerialNumberApiV1(host);
-                    serialHostMap.put(serial, host);
-                    return new ThingUID(THING_TYPE_HUB, serial);
-                } catch (HubException e) {
-                    logger.debug("Error discovering hub", e);
-                }
+        String host = getIpV4Address(service);
+        if (host != null) {
+            try {
+                String serial = propertyGetter.getSerialNumberApiV1(host);
+                return new ThingUID(THING_TYPE_HUB, serial);
+            } catch (HubException e) {
+                logger.debug("Error discovering hub", e);
             }
         }
         return null;
+    }
+
+    private static @Nullable String getIpV4Address(ServiceInfo service) {
+        return Arrays.stream(service.getHostAddresses())
+                .filter(host -> VALID_IP_V4_ADDRESS.matcher(host).matches()).findFirst().orElse(null);
     }
 }

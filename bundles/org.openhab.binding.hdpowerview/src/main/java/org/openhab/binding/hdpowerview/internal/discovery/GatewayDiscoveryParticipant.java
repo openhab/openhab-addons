@@ -14,9 +14,8 @@ package org.openhab.binding.hdpowerview.internal.discovery;
 
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 
-import java.util.Map;
+import java.util.Arrays;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jmdns.ServiceInfo;
 
@@ -49,9 +48,6 @@ public class GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final HDPowerviewPropertyGetter propertyGetter;
 
-    // map of serial numbers to host addresses
-    private final Map<String, String> serialHostMap = new ConcurrentHashMap<>();
-
     @Activate
     public GatewayDiscoveryParticipant(@Reference HDPowerviewPropertyGetter propertyGetter) {
         this.propertyGetter = propertyGetter;
@@ -62,7 +58,7 @@ public class GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
         ThingUID thingUID = getThingUID(service);
         if (thingUID != null) {
             String serial = thingUID.getId();
-            String host = serialHostMap.get(serial);
+            String host = getIpV4Address(service);
             if (host != null) {
                 String label = String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, host);
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
@@ -88,17 +84,20 @@ public class GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        for (String host : service.getHostAddresses()) {
-            if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
-                try {
-                    String serial = propertyGetter.getSerialNumberApiV3(host);
-                    serialHostMap.put(serial, host);
-                    return new ThingUID(THING_TYPE_GATEWAY, serial);
-                } catch (HubException e) {
-                    logger.debug("Error discovering gateway", e);
-                }
+        String host = getIpV4Address(service);
+        if (host != null) {
+            try {
+                String serial = propertyGetter.getSerialNumberApiV3(host);
+                return new ThingUID(THING_TYPE_GATEWAY, serial);
+            } catch (HubException e) {
+                logger.debug("Error discovering gateway", e);
             }
         }
         return null;
+    }
+
+    private static @Nullable String getIpV4Address(ServiceInfo service) {
+        return Arrays.stream(service.getHostAddresses())
+                .filter(host -> VALID_IP_V4_ADDRESS.matcher(host).matches()).findFirst().orElse(null);
     }
 }
