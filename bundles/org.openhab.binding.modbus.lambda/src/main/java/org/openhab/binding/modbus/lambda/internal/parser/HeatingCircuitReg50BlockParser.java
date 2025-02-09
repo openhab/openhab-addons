@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.lambda.internal.dto.HeatingCircuitReg50Block;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
-/*
+/**
  * Parses lambda modbus data into a HeatingCircuitReg50 Block
  *
  * @author Paul Frank - Initial contribution

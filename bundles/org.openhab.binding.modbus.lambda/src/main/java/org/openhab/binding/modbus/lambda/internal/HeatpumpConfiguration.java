@@ -14,7 +14,7 @@ package org.openhab.binding.modbus.lambda.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/*
+/**
  * The {@link HeatpumpConfiguration} class contains fields mapping
  * thing configuration parameters.
  *
@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class HeatpumpConfiguration {
 
-    /*
+    /**
      * Refresh interval in seconds
      */
     private int refresh = 30;
@@ -33,12 +33,12 @@ public class HeatpumpConfiguration {
 
     // backwards compatibility and tests
 
-    /*
+    /**
      * Subindex to calculate the base adress of the modbus registers
      */
     private int subindex = 0;
 
-    /*
+    /**
      * Gets refresh period in milliseconds
      */
     public long getRefreshMillis() {

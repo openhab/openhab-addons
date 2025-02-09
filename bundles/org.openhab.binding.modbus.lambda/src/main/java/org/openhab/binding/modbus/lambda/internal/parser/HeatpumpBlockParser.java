@@ -18,7 +18,7 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
+/**
  * Parses inlambda modbus data into a Heatpump Block
  *
  * @author Paul Frank - Initial contribution
@@ -27,8 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HeatpumpBlockParser extends AbstractBaseParser {
-    private final Logger logger = LoggerFactory.getLogger(HeatpumpBlockParser.class);
-
+ 
     public HeatpumpBlock parse(ModbusRegisterArray raw) {
         HeatpumpBlock block = new HeatpumpBlock();
         block.heatpumpErrorState = extractUInt16(raw, 0, (short) 0);

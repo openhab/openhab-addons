@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.lambda.internal.dto.BufferBlock;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
-/*
+/**
  * Parses lambda modbus data into a Buffer Block
  *
  * @author Paul Frank - Initial contribution

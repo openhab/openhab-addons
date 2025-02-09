@@ -14,7 +14,7 @@ package org.openhab.binding.modbus.lambda.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/*
+/**
  * The {@link BufferConfiguration} class contains fields mapping
  * thing configuration parameters.
  *
@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class BufferConfiguration {
-    /*
+    /**
      * Refresh interval in seconds
      */
     private int refresh = 30;
@@ -31,12 +31,12 @@ public class BufferConfiguration {
     private int maxTries = 3;
     // backwards compatibility and tests
 
-    /*
+    /**
      * Subindex to calculate the base adress of the modbus registers
      */
     private int subindex = 0;
 
-    /*
+    /**
      * Gets refresh period in milliseconds
      */
     public long getRefreshMillis() {

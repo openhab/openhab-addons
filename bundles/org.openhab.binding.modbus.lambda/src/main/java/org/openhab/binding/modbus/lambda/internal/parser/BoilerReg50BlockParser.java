@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.lambda.internal.dto.BoilerReg50Block;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
-/*
+/**
  * Parses modbus data into an BoilerReg50 Block -
  *
  * @author Paul Frank - Initial contribution

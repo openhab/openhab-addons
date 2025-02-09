@@ -14,7 +14,7 @@ package org.openhab.binding.modbus.lambda.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/*
+/**
  * Thrown when the lambda-heatpump handler sees an error.
  *
  * @author Paul Frank - Initial contribution

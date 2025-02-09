@@ -21,7 +21,7 @@ import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.library.types.DecimalType;
 
-/*
+/**
  * Base class for parsers with some helper methods
  *
  * @author Nagy Attila Gabor - Initial contribution
@@ -30,7 +30,7 @@ import org.openhab.core.library.types.DecimalType;
 @NonNullByDefault
 public class AbstractBaseParser {
 
-    /*
+    /**
      * Extract an optional double value
      *
      * @param raw the register array to extract from
@@ -44,7 +44,7 @@ public class AbstractBaseParser {
                 .map(value -> ((double) value.intValue()) / 10.0).filter(value -> value != (short) 0x8000);
     }
 
-    /*
+    /**
      * Extract a mandatory double value
      *
      * @param raw the register array to extract from
@@ -59,7 +59,7 @@ public class AbstractBaseParser {
         return Objects.requireNonNull(extractOptionalDouble(raw, index).orElse(def));
     }
 
-    /*
+    /**
      * Extract an optional int16 value
      *
      * @param raw the register array to extract from
@@ -73,7 +73,7 @@ public class AbstractBaseParser {
                 .filter(value -> value != (short) 0x8000);
     }
 
-    /*
+    /**
      * Extract a mandatory int16 value
      *
      * @param raw the register array to extract from
@@ -88,7 +88,7 @@ public class AbstractBaseParser {
         return Objects.requireNonNull(extractOptionalInt16(raw, index).orElse(def));
     }
 
-    /*
+    /**
      * Extract an optional uint16 value
      *
      * @param raw the register array to extract from
@@ -102,7 +102,7 @@ public class AbstractBaseParser {
                 .filter(value -> value != 0xffff);
     }
 
-    /*
+    /**
      * Extract a mandatory uint16 value
      *
      * @param raw the register array to extract from
@@ -117,7 +117,7 @@ public class AbstractBaseParser {
         return Objects.requireNonNull(extractOptionalUInt16(raw, index).orElse(def));
     }
 
-    /*
+    /**
      * Extract an optional acc32 value
      *
      * @param raw the register array to extract from
@@ -136,7 +136,7 @@ public class AbstractBaseParser {
                 .filter(value -> value != 0);
     }
 
-    /*
+    /**
      * Extract a mandatory acc32 value
      *
      * @param raw the register array to extract from
