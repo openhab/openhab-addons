@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,6 @@ import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.toCelsius;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
@@ -314,9 +313,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             NextChangeModel nextChange = heatingModel.getNextchange();
             if (nextChange != null) {
                 int endPeriod = nextChange.getEndperiod();
-                updateThingChannelState(CHANNEL_NEXT_CHANGE, endPeriod == 0 ? UnDefType.UNDEF
-                        : new DateTimeType(
-                                ZonedDateTime.ofInstant(Instant.ofEpochSecond(endPeriod), ZoneId.systemDefault())));
+                updateThingChannelState(CHANNEL_NEXT_CHANGE,
+                        endPeriod == 0 ? UnDefType.UNDEF : new DateTimeType(Instant.ofEpochSecond(endPeriod)));
                 BigDecimal nextTemperature = nextChange.getTchange();
                 updateThingChannelState(CHANNEL_NEXTTEMP, TEMP_FRITZ_UNDEFINED.equals(nextTemperature) ? UnDefType.UNDEF
                         : new QuantityType<>(toCelsius(nextTemperature), SIUnits.CELSIUS));

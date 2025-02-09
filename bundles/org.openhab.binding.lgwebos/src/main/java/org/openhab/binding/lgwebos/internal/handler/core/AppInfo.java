@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,14 +50,17 @@ public class AppInfo {
     private String id;
     @SerializedName(value = "name", alternate = { "appName", "title" })
     private String name;
+    @SerializedName(value = "playState")
+    private String playState; // see MediaAppInfo for possible values
 
     public AppInfo() {
         // no-argument constructor for gson
     }
 
-    public AppInfo(String id, String name) {
+    public AppInfo(String id, String name, String playState) {
         this.id = id;
         this.name = name;
+        this.playState = playState;
     }
 
     public String getId() {
@@ -68,9 +71,13 @@ public class AppInfo {
         return name;
     }
 
+    public String getPlayState() {
+        return playState;
+    }
+
     @Override
     public String toString() {
-        return "AppInfo [id=" + id + ", name=" + name + "]";
+        return "AppInfo [id=" + id + ", name=" + name + ", playState=" + playState + "]";
     }
 
     @Override

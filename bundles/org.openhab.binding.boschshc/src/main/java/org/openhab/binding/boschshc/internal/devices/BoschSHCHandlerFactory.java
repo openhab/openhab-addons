@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,6 @@ import org.openhab.binding.boschshc.internal.devices.wallthermostat.WallThermost
 import org.openhab.binding.boschshc.internal.devices.waterleakage.WaterLeakageSensorHandler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContact2Handler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContactHandler;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -76,9 +75,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link BoschSHCHandlerFactory} is responsible for creating things and
@@ -93,13 +90,6 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.boschshc", service = ThingHandlerFactory.class)
 public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
-
-    private TimeZoneProvider timeZoneProvider;
-
-    @Activate
-    public BoschSHCHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider) {
-        this.timeZoneProvider = timeZoneProvider;
-    }
 
     private static class ThingTypeHandlerMapping {
         public ThingTypeUID thingTypeUID;
@@ -130,10 +120,8 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_SMART_BULB, SmartBulbHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR, SmokeDetectorHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_USER_DEFINED_STATE, UserStateHandler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH,
-                    thing -> new UniversalSwitchHandler(thing, timeZoneProvider)),
-            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH_2,
-                    thing -> new UniversalSwitch2Handler(thing, timeZoneProvider)),
+            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH, thing -> new UniversalSwitchHandler(thing)),
+            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH_2, thing -> new UniversalSwitch2Handler(thing)),
             new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR_2, SmokeDetector2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_LIGHT_CONTROL_2, LightControl2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_DIMMER, DimmerHandler::new),

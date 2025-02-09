@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.boschshc.internal.devices.universalswitch;
 import static org.mockito.Mockito.verify;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -42,7 +40,7 @@ class UniversalSwitchHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest
 
     @Override
     protected UniversalSwitchHandler createFixture() {
-        return new UniversalSwitchHandler(getThing(), () -> ZoneId.systemDefault());
+        return new UniversalSwitchHandler(getThing());
     }
 
     @Override
@@ -80,8 +78,7 @@ class UniversalSwitchHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_KEY_EVENT_TYPE),
                 new StringType("PRESS_SHORT"));
 
-        ZonedDateTime expectedTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(1705130891435l),
-                ZoneId.systemDefault());
+        Instant expectedTime = Instant.ofEpochMilli(1705130891435l);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_KEY_EVENT_TIMESTAMP),
                 new DateTimeType(expectedTime));

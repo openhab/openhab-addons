@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,7 +103,7 @@ public class StateFilterProfile implements StateProfile {
     private @Nullable Item linkedItem = null;
 
     private State newState = UnDefType.UNDEF;
-    private State deltaState = UnDefType.UNDEF;
+    private Optional<State> acceptedState = Optional.empty();
     private LinkedList<State> previousStates = new LinkedList<>();
 
     private final int windowSize;
@@ -230,6 +230,7 @@ public class StateFilterProfile implements StateProfile {
         }
 
         if (conditions.stream().allMatch(c -> c.check(state))) {
+            acceptedState = Optional.of(state);
             return state;
         } else {
             return configMismatchState;
@@ -248,7 +249,7 @@ public class StateFilterProfile implements StateProfile {
         // Quoted strings are parsed as StringType
         if (stateString == null || stateString.isEmpty()) {
             return null;
-        } else if (stateString.startsWith("'") && stateString.endsWith("'")) {
+        } else if (isQuotedString(stateString)) {
             return new StringType(stateString.substring(1, stateString.length() - 1));
         } else if (parseFunction(stateString) instanceof FunctionType function) {
             return function;
@@ -256,6 +257,11 @@ public class StateFilterProfile implements StateProfile {
             return state;
         }
         return null;
+    }
+
+    private boolean isQuotedString(String value) {
+        return (value.startsWith("'") && value.endsWith("'")) || //
+                (value.startsWith("\"") && value.endsWith("\""));
     }
 
     @Nullable
@@ -272,9 +278,7 @@ public class StateFilterProfile implements StateProfile {
         String functionName = matcher.group(1).toUpperCase(Locale.ROOT);
         try {
             FunctionType.Function type = FunctionType.Function.valueOf(functionName);
-
-            Optional<Integer> windowSize = Optional.empty();
-            windowSize = Optional.ofNullable(matcher.group(2)).map(Integer::parseInt);
+            Optional<Integer> windowSize = Optional.ofNullable(matcher.group(2)).map(Integer::parseInt);
             return new FunctionType(type, windowSize);
         } catch (IllegalArgumentException e) {
             logger.warn("Invalid function name: '{}'. Expected one of: {}", functionName,
@@ -300,8 +304,8 @@ public class StateFilterProfile implements StateProfile {
 
         public StateCondition(String lhs, ComparisonType comparisonType, String rhs) {
             this.comparisonType = comparisonType;
-            this.lhsString = lhs;
-            this.rhsString = rhs;
+            lhsString = lhs;
+            rhsString = rhs;
             // Convert quoted strings to StringType, and UnDefTypes to UnDefType
             // UnDefType gets special treatment because we don't want `UNDEF` to be parsed as a string
             // Anything else, defer parsing until we're checking the condition
@@ -330,16 +334,36 @@ public class StateFilterProfile implements StateProfile {
                 State rhsState = this.rhsState;
                 Item lhsItem = null;
                 Item rhsItem = null;
+                boolean isDeltaCheck = false;
 
                 if (rhsState == null) {
                     rhsItem = getItemOrNull(rhsString);
-                } else if (rhsState instanceof FunctionType) {
+                } else if (rhsState instanceof FunctionType rhsFunction) {
+                    if (rhsFunction.alwaysAccept()) {
+                        return true;
+                    }
                     rhsItem = getLinkedItem();
                 }
 
                 if (lhsString.isEmpty()) {
                     lhsItem = getLinkedItem();
-                    lhsState = input;
+                    // special handling for `> 50%` condition
+                    // we need to calculate the delta percent between the input and the accepted state
+                    // but if the input is an actual Percent Quantity, perform a direct comparison between input and rhs
+                    if (rhsString.endsWith("%")) {
+                        // late-parsing because now we have the input state and can determine its type
+                        if (input instanceof QuantityType qty && "%".equals(qty.getUnit().getSymbol())) {
+                            lhsState = input;
+                        } else {
+                            lhsString = "$DELTA_PERCENT";
+                            // Override rhsString and this.lhsState to avoid re-parsing them later
+                            rhsString = rhsString.substring(0, rhsString.length() - 1).trim();
+                            this.lhsState = new FunctionType(FunctionType.Function.DELTA_PERCENT, Optional.empty());
+                            lhsState = this.lhsState;
+                        }
+                    } else {
+                        lhsState = input;
+                    }
                 } else if (lhsState == null) {
                     lhsItem = getItemOrNull(lhsString);
                     lhsState = itemStateOrParseState(lhsItem, lhsString, rhsItem);
@@ -350,12 +374,20 @@ public class StateFilterProfile implements StateProfile {
                                 lhsString, rhsString);
                         return false;
                     }
-                } else if (lhsState instanceof FunctionType lhsFunction) {
+                }
+
+                if (lhsState instanceof FunctionType lhsFunction) {
+                    if (lhsFunction.alwaysAccept()) {
+                        return true;
+                    }
                     lhsItem = getLinkedItem();
                     lhsState = lhsFunction.calculate();
                     if (lhsState == null) {
                         logger.debug("Couldn't calculate the left hand side function '{}'", lhsString);
                         return false;
+                    }
+                    if (lhsFunction.getType() == FunctionType.Function.DELTA) {
+                        isDeltaCheck = true;
                     }
                 }
 
@@ -365,6 +397,10 @@ public class StateFilterProfile implements StateProfile {
 
                 // Don't convert QuantityType to other types, so that 1500 != 1500 W
                 if (rhsState != null && !(rhsState instanceof QuantityType)) {
+                    if (rhsState instanceof FunctionType rhsFunction
+                            && rhsFunction.getType() == FunctionType.Function.DELTA) {
+                        isDeltaCheck = true;
+                    }
                     // Try to convert it to the same type as the lhs
                     // This allows comparing compatible types, e.g. PercentType vs OnOffType
                     rhsState = rhsState.as(lhsState.getClass());
@@ -402,6 +438,12 @@ public class StateFilterProfile implements StateProfile {
 
                 rhs = Objects.requireNonNull(rhsState instanceof StringType ? rhsState.toString() : rhsState);
 
+                if (isDeltaCheck && rhs instanceof QuantityType rhsQty && lhs instanceof QuantityType lhsQty) {
+                    if (rhsQty.toUnitRelative(lhsQty.getUnit()) instanceof QuantityType relativeRhs) {
+                        rhs = relativeRhs;
+                    }
+                }
+
                 if (logger.isDebugEnabled()) {
                     if (lhsString.isEmpty()) {
                         logger.debug("Performing a comparison between input '{}' ({}) and value '{}' ({})", lhs,
@@ -420,10 +462,6 @@ public class StateFilterProfile implements StateProfile {
                     case LT -> ((Comparable) lhs).compareTo(rhs) < 0;
                     case LTE -> ((Comparable) lhs).compareTo(rhs) <= 0;
                 };
-
-                if (result) {
-                    deltaState = input;
-                }
 
                 return result;
             } catch (IllegalArgumentException | ClassCastException e) {
@@ -494,6 +532,7 @@ public class StateFilterProfile implements StateProfile {
     class FunctionType implements State {
         enum Function {
             DELTA,
+            DELTA_PERCENT,
             AVERAGE,
             AVG,
             MEDIAN,
@@ -517,12 +556,37 @@ public class StateFilterProfile implements StateProfile {
             List<State> states = start <= 0 ? previousStates : previousStates.subList(start, size);
             return switch (type) {
                 case DELTA -> calculateDelta();
+                case DELTA_PERCENT -> calculateDeltaPercent();
                 case AVG, AVERAGE -> calculateAverage(states);
                 case MEDIAN -> calculateMedian(states);
                 case STDDEV -> calculateStdDev(states);
                 case MIN -> calculateMin(states);
                 case MAX -> calculateMax(states);
             };
+        }
+
+        /**
+         * If the profile uses the DELTA or DELTA_PERCENT functions, the new state value will always be accepted if the
+         * 'acceptedState' (prior state) has not yet been initialised, or -- in the case of the DELTA_PERCENT function
+         * only -- if 'acceptedState' has a zero value. This ensures that 'acceptedState' is always initialised. And it
+         * also ensures that the DELTA_PERCENT function cannot cause a divide by zero error.
+         *
+         * @return true if the new state value shall be accepted
+         */
+        public boolean alwaysAccept() {
+            if ((type == Function.DELTA || type == Function.DELTA_PERCENT) && acceptedState.isEmpty()) {
+                return true;
+            }
+            if (type == Function.DELTA_PERCENT) {
+                // avoid division by zero
+                if (acceptedState.get() instanceof QuantityType base) {
+                    return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
+                }
+                if (acceptedState.get() instanceof DecimalType base) {
+                    return base.toBigDecimal().compareTo(BigDecimal.ZERO) == 0;
+                }
+            }
+            return false;
         }
 
         @Override
@@ -534,9 +598,9 @@ public class StateFilterProfile implements StateProfile {
         }
 
         public int getWindowSize() {
-            if (type == Function.DELTA) {
+            if (type == Function.DELTA || type == Function.DELTA_PERCENT) {
                 // We don't need to keep previous states list to calculate the delta,
-                // the previous state is kept in the deltaState variable
+                // the previous state is kept in the acceptedState variable
                 return 0;
             }
             return windowSize.orElse(DEFAULT_WINDOW_SIZE);
@@ -650,19 +714,37 @@ public class StateFilterProfile implements StateProfile {
         }
 
         private @Nullable State calculateDelta() {
-            if (deltaState == UnDefType.UNDEF) {
-                logger.debug("No previous data to calculate delta");
-                deltaState = newState;
+            if (acceptedState.isEmpty()) {
                 return null;
             }
-
             if (newState instanceof QuantityType newStateQuantity) {
-                QuantityType result = newStateQuantity.subtract((QuantityType) deltaState);
+                QuantityType result = newStateQuantity.subtract((QuantityType) acceptedState.get());
                 return result.toBigDecimal().compareTo(BigDecimal.ZERO) < 0 ? result.negate() : result;
             }
             BigDecimal result = ((DecimalType) newState).toBigDecimal()
-                    .subtract(((DecimalType) deltaState).toBigDecimal());
-            return result.compareTo(BigDecimal.ZERO) < 0 ? new DecimalType(result.negate()) : new DecimalType(result);
+                    .subtract(((DecimalType) acceptedState.get()).toBigDecimal()) //
+                    .abs();
+            return new DecimalType(result);
+        }
+
+        private @Nullable State calculateDeltaPercent() {
+            if (acceptedState.isEmpty()) {
+                return null;
+            }
+            State calculatedDelta = calculateDelta();
+            BigDecimal bdDelta;
+            BigDecimal bdBase;
+            if (acceptedState.get() instanceof QuantityType acceptedStateQuantity) {
+                // Assume that delta and base are in the same unit
+                bdDelta = ((QuantityType) calculatedDelta).toBigDecimal();
+                bdBase = acceptedStateQuantity.toBigDecimal();
+            } else {
+                bdDelta = ((DecimalType) calculatedDelta).toBigDecimal();
+                bdBase = ((DecimalType) acceptedState.get()).toBigDecimal();
+            }
+            bdBase = bdBase.abs();
+            BigDecimal percent = bdDelta.multiply(BigDecimal.valueOf(100)).divide(bdBase, 2, RoundingMode.HALF_EVEN);
+            return new DecimalType(percent);
         }
     }
 }

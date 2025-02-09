@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
@@ -271,6 +272,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     public void registerVin(String vin, VehicleHandler handler) {
         discoveryService.vehicleRemove(this, vin, handler.getThing().getThingTypeUID().getId());
         activeVehicleHandlerMap.put(vin, handler);
+        discovery(vin); // update properties for added vehicle
         VEPUpdate updateForVin = vepUpdateMap.get(vin);
         if (updateForVin != null) {
             handler.enqueueUpdate(updateForVin);
@@ -340,7 +342,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(array);
             if (pm.hasVepUpdates()) {
                 boolean distributed = distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
-                logger.trace("Distributed VEPUpdate {}", distributed);
                 if (distributed) {
                     AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
                             .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
@@ -349,7 +350,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 }
             } else if (pm.hasAssignedVehicles()) {
                 for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
-                    String vin = pm.getAssignedVehicles().getVins(0);
+                    String vin = pm.getAssignedVehicles().getVins(i);
                     discovery(vin);
                 }
                 AcknowledgeAssignedVehicles ack = AcknowledgeAssignedVehicles.newBuilder().build();
@@ -394,6 +395,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             }
         });
         notFoundList.forEach(vin -> {
+            discovery(vin); // add vehicle to discovery
             logger.trace("No VehicleHandler available for VIN {}", vin);
         });
         return notFoundList.isEmpty();
@@ -410,13 +412,18 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         });
     }
 
+    /**
+     * Updates properties for existing handlers or delivers discovery result
+     *
+     * @param vin of discovered vehicle
+     */
     @SuppressWarnings("null")
     public void discovery(String vin) {
         if (activeVehicleHandlerMap.containsKey(vin)) {
             VehicleHandler vh = activeVehicleHandlerMap.get(vin);
-            if (vh.getThing().getProperties().isEmpty()) {
-                vh.getThing().setProperties(getStringCapabilities(vin));
-            }
+            Map<String, String> properties = getStringCapabilities(vin);
+            properties.putAll(vh.getThing().getProperties());
+            vh.getThing().setProperties(properties);
         } else {
             if (!capabilitiesMap.containsKey(vin)) {
                 // only report new discovery if capabilities aren't discovered yet
@@ -515,7 +522,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             // store in cache
             capabilitiesMap.put(vin, featureMap);
             return featureMap;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
             logger.trace("Error retrieving capabilities: {}", e.getMessage());
             featureMap.clear();
         }

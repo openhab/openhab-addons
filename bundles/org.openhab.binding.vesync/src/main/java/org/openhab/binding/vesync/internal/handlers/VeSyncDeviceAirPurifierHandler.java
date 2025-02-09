@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,7 @@ package org.openhab.binding.vesync.internal.handlers;
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -97,8 +96,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
             NIGHT_LIGHTS);
 
     public static final VeSyncDevicePurifierMetadata CORE300S = new VeSyncDevicePurifierMetadata(1,
-            DEV_FAMILY_CORE_300S, List.of("C301S", "C302S"), List.of("Core300S"), FAN_MODES_MAN_SLEEP, 1, 3,
-            NIGHT_LIGHTS);
+            DEV_FAMILY_CORE_300S, List.of("C301S", "C302S"), List.of("Core300S"), FAN_MODES_NO_PET, 1, 3, NIGHT_LIGHTS);
 
     public static final VeSyncDevicePurifierMetadata CORE400S = new VeSyncDevicePurifierMetadata(1,
             DEV_FAMILY_CORE_400S, List.of("C401S"), List.of("Core400S"), FAN_MODES_NO_PET, 1, 4, NO_NIGHT_LIGHTS);
@@ -528,8 +526,8 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
         // Only 400S appears to have this JSON extension object
         if (purifierStatus.result.result.extension != null) {
             if (purifierStatus.result.result.extension.timerRemain > 0) {
-                updateState(DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME, new DateTimeType(LocalDateTime.now()
-                        .plus(purifierStatus.result.result.extension.timerRemain, ChronoUnit.SECONDS).toString()));
+                updateState(DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME, new DateTimeType(
+                        Instant.now().plusSeconds(purifierStatus.result.result.extension.timerRemain)));
             } else {
                 updateState(DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME, new DateTimeItem("nullEnforcements").getState());
             }

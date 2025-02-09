@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class IpCameraBindingConstants {
-    private static final String BINDING_ID = "ipcamera";
+    public static final String BINDING_ID = "ipcamera";
     public static final String AUTH_HANDLER = "authorizationHandler";
     public static final String AMCREST_HANDLER = "amcrestHandler";
     public static final String COMMON_HANDLER = "commonHandler";

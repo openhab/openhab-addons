@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,8 +107,7 @@ public class Utils {
      * @return openHAB DateTimeType according to configured TimeZone
      */
     public static DateTimeType getDateTimeType(long ms) {
-        Instant timestamp = Instant.ofEpochMilli(ms);
-        return new DateTimeType(timestamp.atZone(timeZoneProvider.getTimeZone()));
+        return new DateTimeType(Instant.ofEpochMilli(ms));
     }
 
     /**

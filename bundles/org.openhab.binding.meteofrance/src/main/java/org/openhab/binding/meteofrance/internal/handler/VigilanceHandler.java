@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -183,7 +183,7 @@ public class VigilanceHandler extends BaseThingHandler implements MeteoFranceChi
 
     private void updateDate(String channelId, ZonedDateTime zonedDateTime) {
         if (isLinked(channelId)) {
-            updateState(channelId, new DateTimeType(zonedDateTime.withZoneSameInstant(systemZoneId)));
+            updateState(channelId, new DateTimeType(zonedDateTime));
         }
     }
 }

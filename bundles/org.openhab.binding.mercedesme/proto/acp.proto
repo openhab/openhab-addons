@@ -1,9 +1,7 @@
 syntax = "proto3";
 package proto;
 
-//import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "gogo.proto";
-
 
 option (gogoproto.goproto_enum_prefix_all) = true;
 option java_package = "com.daimler.mbcarkit.proto";
@@ -48,6 +46,9 @@ message VehicleAPI {
         FINISHED = 5;
         // There was an error while executing the command process.
         FAILED = 6;
+        // added 20241105
+        ACKED_BY_APPTWIN = 7;
+        PIN_VALID = 8;
     }
 
     enum AttributeStatus {
@@ -284,6 +285,8 @@ message ACP {
         RTMREADCONFIG = 2410;
         AVPACTIVATE = 2700;
         CHARGECONTROLCONFIGURE = 2800;
+        CHARGINGBREAKCLOCKTIMERCONFIGURE = 3000;
+        WIPERRESET = 3110;
 
         unknownCommandType = 0;
         doorsLock = 100;
@@ -416,5 +419,7 @@ message ACP {
         rtmReadConfig = 2410;
         avpActivate = 2700;
         chargecontrolconfigure = 2800;
+        chargingbreakclocktimerconfigure = 3000;
+        wiperreset = 3110;
     }
 }

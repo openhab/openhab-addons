@@ -14,6 +14,11 @@
 			<description>MyBMW Password</description>
 			<context>password</context>
 		</parameter>
+		<parameter name="hcaptchatoken" type="text" required="true">
+			<label>Captcha-Token</label>
+			<description>Captcha-Token for login (see https://bimmer-connected.readthedocs.io/en/stable/captcha.html)</description>
+			<context>hcaptchatoken</context>
+		</parameter>
 		<parameter name="region" type="text" required="true">
 			<label>Region</label>
 			<description>Select Region in order to connect to the appropriate BMW Server</description>

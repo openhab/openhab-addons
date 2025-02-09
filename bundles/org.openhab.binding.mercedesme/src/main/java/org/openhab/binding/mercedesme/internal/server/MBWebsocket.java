@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -225,8 +225,7 @@ public class MBWebsocket {
 
     @OnWebSocketError
     public void onError(Throwable t) {
-        logger.warn("onError {}", t.getMessage());
         accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "@text/mercedesme.account.status.websocket-failure");
+                "@text/mercedesme.account.status.websocket-failure [\"" + t.getMessage() + "\"]");
     }
 }

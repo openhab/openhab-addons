@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,10 +16,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,24 +41,18 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LegacyRequestManager {
-    private static @Nullable LegacyRequestManager instance = null;
     private final Logger logger = LoggerFactory.getLogger(LegacyRequestManager.class);
-    private @Nullable Thread queueThread = null;
+
+    private ScheduledExecutorService scheduler;
+    private @Nullable ScheduledFuture<?> job;
     private Queue<RequestQueue> requestQueues = new PriorityQueue<>();
     private Map<LegacyDevice, RequestQueue> requestQueueHash = new HashMap<>();
-    private boolean keepRunning = true;
 
-    private LegacyRequestManager() {
-        queueThread = new Thread(new RequestQueueReader());
-        setParamsAndStart(queueThread);
-    }
-
-    private void setParamsAndStart(@Nullable Thread thread) {
-        if (thread != null) {
-            thread.setName("OH-binding-" + InsteonBindingConstants.BINDING_ID + "-requestQueueReader");
-            thread.setDaemon(true);
-            thread.start();
-        }
+    /**
+     * Constructor
+     */
+    public LegacyRequestManager(ScheduledExecutorService scheduler) {
+        this.scheduler = scheduler;
     }
 
     /**
@@ -93,24 +89,22 @@ public class LegacyRequestManager {
     }
 
     /**
+     * Starts request queue thread
+     */
+    public void start() {
+        if (job == null) {
+            job = scheduler.schedule(new RequestQueueReader(), 0, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
      * Stops request queue thread
      */
-    private void stopThread() {
-        logger.debug("stopping thread");
-        Thread queueThread = this.queueThread;
-        if (queueThread != null) {
-            synchronized (requestQueues) {
-                keepRunning = false;
-                requestQueues.notifyAll();
-            }
-            try {
-                logger.debug("waiting for thread to join");
-                queueThread.join();
-                logger.debug("request queue thread exited!");
-            } catch (InterruptedException e) {
-                logger.warn("got interrupted waiting for thread exit ", e);
-            }
-            this.queueThread = null;
+    public void stop() {
+        ScheduledFuture<?> job = this.job;
+        if (job != null) {
+            job.cancel(true);
+            this.job = null;
         }
     }
 
@@ -118,11 +112,16 @@ public class LegacyRequestManager {
         @Override
         public void run() {
             logger.debug("starting request queue thread");
-            synchronized (requestQueues) {
-                while (keepRunning) {
-                    try {
-                        RequestQueue queue;
-                        while (keepRunning && (queue = requestQueues.peek()) != null) {
+            try {
+                while (!Thread.interrupted()) {
+                    synchronized (requestQueues) {
+                        if (requestQueues.isEmpty()) {
+                            logger.trace("waiting for request queues to fill");
+                            requestQueues.wait();
+                            continue;
+                        }
+                        RequestQueue queue = requestQueues.peek();
+                        if (queue != null) {
                             long now = System.currentTimeMillis();
                             long expTime = queue.getExpirationTime();
                             LegacyDevice device = queue.getDevice();
@@ -150,13 +149,10 @@ public class LegacyRequestManager {
                                 logger.debug("device queue for {} is empty!", device.getAddress());
                             }
                         }
-                        logger.trace("waiting for request queues to fill");
-                        requestQueues.wait();
-                    } catch (InterruptedException e) {
-                        logger.warn("request queue thread got interrupted, breaking..", e);
-                        break;
                     }
                 }
+            } catch (InterruptedException e) {
+                logger.trace("request queue thread interrupted!");
             }
             logger.debug("exiting request queue thread!");
         }
@@ -186,21 +182,6 @@ public class LegacyRequestManager {
         @Override
         public int compareTo(RequestQueue queue) {
             return (int) (expirationTime - queue.expirationTime);
-        }
-    }
-
-    public static synchronized @Nullable LegacyRequestManager instance() {
-        if (instance == null) {
-            instance = new LegacyRequestManager();
-        }
-        return instance;
-    }
-
-    public static synchronized void destroyInstance() {
-        LegacyRequestManager instance = LegacyRequestManager.instance;
-        if (instance != null) {
-            instance.stopThread();
-            LegacyRequestManager.instance = null;
         }
     }
 }

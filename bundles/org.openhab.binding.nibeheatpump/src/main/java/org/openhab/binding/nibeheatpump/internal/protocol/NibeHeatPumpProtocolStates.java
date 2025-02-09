@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,7 +72,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
                                 break;
                         }
                     } catch (NibeHeatPumpException e) {
-                        LOGGER.trace("Error occured during parsing message: {}", e.getMessage());
+                        LOGGER.trace("Error occurred during parsing message: {}", e.getMessage());
                         context.state(CHECKSUM_FAILURE);
                     }
                 }

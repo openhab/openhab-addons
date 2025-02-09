@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,8 +59,8 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
         }
     }
 
-    public DeviceTrigger(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public DeviceTrigger(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         if (!"trigger".equals(channelConfiguration.automationType)) {
             throw new ConfigurationException("Component:DeviceTrigger must have automation_type 'trigger'");
@@ -72,13 +72,11 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
             throw new ConfigurationException("Component:DeviceTrigger must have a subtype");
         }
 
-        if (newStyleChannels) {
-            // Name the channel after the subtype, not the component ID
-            // So that we only end up with a single channel for all possible events
-            // for a single button (subtype is the button, type is type of press)
-            componentId = channelConfiguration.subtype;
-            groupId = null;
-        }
+        // Name the channel after the subtype, not the component ID
+        // So that we only end up with a single channel for all possible events
+        // for a single button (subtype is the button, type is type of press)
+        componentId = channelConfiguration.subtype;
+        groupId = null;
 
         TextValue value;
         String payload = channelConfiguration.payload;
@@ -111,17 +109,22 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
         newConfiguration.put("nodeid", currentConfiguration.get("nodeid"));
         Object objectIdObject = currentConfiguration.get("objectid");
         if (objectIdObject instanceof String objectIdString) {
-            newConfiguration.put("objectid", List.of(objectIdString, other.getHaID().objectID));
+            if (!objectIdString.equals(other.getHaID().objectID)) {
+                newConfiguration.put("objectid", List.of(objectIdString, other.getHaID().objectID));
+            }
         } else if (objectIdObject instanceof List<?> objectIdList) {
-            newConfiguration.put("objectid",
-                    Stream.concat(objectIdList.stream(), Stream.of(other.getHaID().objectID)).toList());
+            newConfiguration.put("objectid", Stream.concat(objectIdList.stream(), Stream.of(other.getHaID().objectID))
+                    .sorted().distinct().toList());
         }
         Object configObject = currentConfiguration.get("config");
         if (configObject instanceof String configString) {
-            newConfiguration.put("config", List.of(configString, other.getChannelConfigurationJson()));
+            if (!configString.equals(other.getChannelConfigurationJson())) {
+                newConfiguration.put("config", List.of(configString, other.getChannelConfigurationJson()));
+            }
         } else if (configObject instanceof List<?> configList) {
             newConfiguration.put("config",
-                    Stream.concat(configList.stream(), Stream.of(other.getChannelConfigurationJson())).toList());
+                    Stream.concat(configList.stream(), Stream.of(other.getChannelConfigurationJson())).sorted()
+                            .distinct().toList());
         }
 
         // Append payload to allowed values
@@ -130,7 +133,8 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
             // Need to accept anything
             value = new TextValue();
         } else {
-            String[] newValues = Stream.concat(payloads.stream(), Stream.of(otherPayload)).toArray(String[]::new);
+            String[] newValues = Stream.concat(payloads.stream(), Stream.of(otherPayload)).distinct()
+                    .toArray(String[]::new);
             value = new TextValue(newValues);
         }
 

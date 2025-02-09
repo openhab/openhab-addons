@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.roku.internal.RokuHttpException;
+import org.openhab.binding.roku.internal.RokuLimitedModeException;
 import org.openhab.binding.roku.internal.dto.ActiveApp;
 import org.openhab.binding.roku.internal.dto.Apps;
 import org.openhab.binding.roku.internal.dto.Apps.App;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RokuCommunicator {
     private static final int REQUEST_TIMEOUT = 5000;
+    private static final String LIMITED_MODE_RESPONSE = "ECP command not allowed";
 
     private final Logger logger = LoggerFactory.getLogger(RokuCommunicator.class);
     private final HttpClient httpClient;
@@ -283,8 +285,12 @@ public class RokuCommunicator {
      */
     private String getCommand(String url) throws RokuHttpException {
         try {
-            return httpClient.newRequest(url).method(HttpMethod.GET).timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS)
-                    .send().getContentAsString();
+            final String response = httpClient.newRequest(url).method(HttpMethod.GET)
+                    .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send().getContentAsString();
+            if (response != null && response.contains(LIMITED_MODE_RESPONSE)) {
+                throw new RokuLimitedModeException(url + ": " + response);
+            }
+            return response != null ? response : "";
         } catch (TimeoutException | ExecutionException e) {
             throw new RokuHttpException("Error executing GET command for URL: " + url, e);
         } catch (InterruptedException e) {

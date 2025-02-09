@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -244,8 +244,8 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss,SSS");
 
         public SerialPortReader(InputStream in) {
+            super("OH-binding-" + getThing().getUID());
             this.inputStream = in;
-            this.setName("SerialPortReader-" + getThing().getUID());
         }
 
         @Override

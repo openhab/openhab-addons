@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,8 @@ package org.openhab.binding.tesla.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tesla.internal.protocol.Vehicle;
-import org.openhab.binding.tesla.internal.protocol.VehicleConfig;
+import org.openhab.binding.tesla.internal.protocol.dto.Vehicle;
+import org.openhab.binding.tesla.internal.protocol.dto.VehicleConfig;
 
 /**
  * The {@link VehicleListener} interface can be implemented by classes that want to be informed about

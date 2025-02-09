@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.openweathermap.internal.handler;
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +27,6 @@ import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapLocation
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
 import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.i18n.ConfigurationException;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -69,14 +67,11 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_WEATHER_AND_FORECAST,
             THING_TYPE_AIR_POLLUTION, THING_TYPE_ONECALL_WEATHER_AND_FORECAST, THING_TYPE_ONECALL_HISTORY);
 
-    private final TimeZoneProvider timeZoneProvider;
-
     // keeps track of the parsed location
     protected @Nullable PointType location;
 
-    public AbstractOpenWeatherMapHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+    public AbstractOpenWeatherMapHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -171,9 +166,7 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     protected abstract void updateChannel(ChannelUID channelUID);
 
     protected State getDateTimeTypeState(@Nullable Integer value) {
-        return (value == null) ? UnDefType.UNDEF
-                : new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(value.longValue()),
-                        timeZoneProvider.getTimeZone()));
+        return (value == null) ? UnDefType.UNDEF : new DateTimeType(Instant.ofEpochSecond(value.longValue()));
     }
 
     protected State getDecimalTypeState(@Nullable Double value) {

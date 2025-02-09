@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,18 +55,16 @@ public class UpbUnitHandler extends DimmableUnitHandler {
             return;
         }
 
-        switch (channelUID.getId()) {
-            case CHANNEL_UPB_STATUS:
-                if (command instanceof StringType) {
-                    sendOmnilinkCommand(CommandMessage.CMD_UNIT_UPB_REQ_STATUS, 0, thingID);
-                    updateState(CHANNEL_UPB_STATUS, UnDefType.UNDEF);
-                } else {
-                    logger.debug("Invalid command: {}, must be StringType", command);
-                }
-                break;
-            default:
-                logger.debug("Unknown channel for UPB Unit thing: {}", channelUID);
-                super.handleCommand(channelUID, command);
+        if (CHANNEL_UPB_STATUS.equals(channelUID.getId())) {
+            if (command instanceof StringType) {
+                sendOmnilinkCommand(CommandMessage.CMD_UNIT_UPB_REQ_STATUS, 0, thingID);
+                updateState(CHANNEL_UPB_STATUS, UnDefType.UNDEF);
+            } else {
+                logger.debug("Invalid command: {}, must be StringType", command);
+            }
+        } else {
+            logger.debug("Unknown channel for UPB Unit thing: {}", channelUID);
+            super.handleCommand(channelUID, command);
         }
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.automower.internal.things;
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -36,7 +35,6 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Posi
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.RestrictedReason;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.State;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -76,7 +74,6 @@ public class AutomowerHandler extends BaseThingHandler {
     private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.MINUTES.toSeconds(10);
 
     private final Logger logger = LoggerFactory.getLogger(AutomowerHandler.class);
-    private final TimeZoneProvider timeZoneProvider;
 
     private AtomicReference<String> automowerId = new AtomicReference<>(NO_ID);
     private long lastQueryTimeMs = 0L;
@@ -97,9 +94,8 @@ public class AutomowerHandler extends BaseThingHandler {
         }
     };
 
-    public AutomowerHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public AutomowerHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -287,7 +283,7 @@ public class AutomowerHandler extends BaseThingHandler {
             }
 
             updateState(CHANNEL_STATUS_LAST_UPDATE,
-                    new DateTimeType(toZonedDateTime(mower.getAttributes().getMetadata().getStatusTimestamp())));
+                    new DateTimeType(Instant.ofEpochMilli(mower.getAttributes().getMetadata().getStatusTimestamp())));
             updateState(CHANNEL_STATUS_BATTERY,
                     new QuantityType<>(mower.getAttributes().getBattery().getBatteryPercent(), Units.PERCENT));
 
@@ -297,7 +293,7 @@ public class AutomowerHandler extends BaseThingHandler {
             if (errorCodeTimestamp == 0L) {
                 updateState(CHANNEL_STATUS_ERROR_TIMESTAMP, UnDefType.NULL);
             } else {
-                updateState(CHANNEL_STATUS_ERROR_TIMESTAMP, new DateTimeType(toZonedDateTime(errorCodeTimestamp)));
+                updateState(CHANNEL_STATUS_ERROR_TIMESTAMP, new DateTimeType(Instant.ofEpochMilli(errorCodeTimestamp)));
             }
 
             long nextStartTimestamp = mower.getAttributes().getPlanner().getNextStartTimestamp();
@@ -305,7 +301,7 @@ public class AutomowerHandler extends BaseThingHandler {
             if (nextStartTimestamp == 0L) {
                 updateState(CHANNEL_PLANNER_NEXT_START, UnDefType.NULL);
             } else {
-                updateState(CHANNEL_PLANNER_NEXT_START, new DateTimeType(toZonedDateTime(nextStartTimestamp)));
+                updateState(CHANNEL_PLANNER_NEXT_START, new DateTimeType(Instant.ofEpochMilli(nextStartTimestamp)));
             }
             updateState(CHANNEL_PLANNER_OVERRIDE_ACTION,
                     new StringType(mower.getAttributes().getPlanner().getOverride().getAction()));
@@ -338,19 +334,5 @@ public class AutomowerHandler extends BaseThingHandler {
         }
 
         updateProperties(properties);
-    }
-
-    /**
-     * Converts timestamp returned by the Automower API into local time-zone.
-     * Timestamp returned by the API doesn't have offset and it always in the current time zone - it can be treated as
-     * UTC.
-     * Method builds a ZonedDateTime with same hour value but in the current system timezone.
-     *
-     * @param timestamp - Automower API timestamp
-     * @return ZonedDateTime in system timezone
-     */
-    private ZonedDateTime toZonedDateTime(long timestamp) {
-        Instant timestampInstant = Instant.ofEpochMilli(timestamp);
-        return ZonedDateTime.ofInstant(timestampInstant, timeZoneProvider.getTimeZone());
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -216,7 +216,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
         sendCommand(new LIPCommand(TargetType.BRIDGE, LutronOperation.QUERY, LutronCommandType.SYSTEM, null,
                 SYSTEM_DBEXPORTDATETIME));
 
-        messageSender = new Thread(this::sendCommandsThread, "Lutron sender");
+        messageSender = new Thread(this::sendCommandsThread, "OH-binding-" + getThing().getUID() + "-IPBridgeSender");
         messageSender.start();
 
         logger.debug("Starting keepAlive job with interval {}", heartbeatInterval);

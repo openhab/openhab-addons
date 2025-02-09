@@ -557,7 +557,7 @@
 	</channel-type>
 
 	<channel-type id="fan_in_RPM" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Fan In (rpm)</label>
 		<description>Current rotational speed of incoming fan</description>
 		<category>Number</category>
@@ -565,7 +565,7 @@
 	</channel-type>
 
 	<channel-type id="fan_out_RPM" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Fan Out (rpm)</label>
 		<description>Current rotational speed of outgoing fan</description>
 		<category>Number</category>

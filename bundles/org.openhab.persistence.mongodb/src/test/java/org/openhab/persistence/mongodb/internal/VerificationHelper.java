@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.persistence.mongodb.internal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -176,7 +177,8 @@ public class VerificationHelper {
 
     private static Pair<Object, Object> handleDateTimeType(Object ev, Document doc) {
         String value = doc.getString(MongoDBFields.FIELD_VALUE);
-        return Pair.of(((DateTimeType) ev).getZonedDateTime().toString(), value != null ? value : new Object());
+        return Pair.of(((DateTimeType) ev).getZonedDateTime(ZoneId.systemDefault()).toString(),
+                value != null ? value : new Object());
     }
 
     private static Pair<Object, Object> handlePercentType(Object ev, Document doc) {

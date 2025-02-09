@@ -144,6 +144,7 @@
 			<property name="productType"/>
 			<property name="productName"/>
 			<property name="pairingAt"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>id</representation-property>
 	</thing-type>
@@ -186,6 +187,7 @@
 			<property name="productType"/>
 			<property name="productName"/>
 			<property name="pairingAt"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>id</representation-property>
 	</thing-type>
@@ -548,17 +550,17 @@
 	</channel-type>
 
 	<channel-type id="rssiDeviceType" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal Strength Device (RSSI)</label>
 		<description>The received device signal strength (RSSI).</description>
-		<state readOnly="true" pattern="%.2f dB"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rssiHubType" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal Strength Hub (RSSI)</label>
 		<description>The received hub signal strength (RSSI).</description>
-		<state readOnly="true" pattern="%.2f dB"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="bowlsFoodType">

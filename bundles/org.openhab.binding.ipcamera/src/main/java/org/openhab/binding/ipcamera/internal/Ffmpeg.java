@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,6 +103,7 @@ public class Ffmpeg {
         public int countOfMotions;
 
         IpCameraFfmpegThread() {
+            super(String.format("OH-binding-%s-%s", IpCameraBindingConstants.BINDING_ID, "Ffmpeg"));
             setDaemon(true);
         }
 

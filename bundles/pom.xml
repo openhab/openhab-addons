@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>4.3.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -484,6 +484,7 @@
     <module>org.openhab.voice.mactts</module>
     <module>org.openhab.voice.marytts</module>
     <module>org.openhab.voice.mimictts</module>
+    <module>org.openhab.voice.openaitts</module>
     <module>org.openhab.voice.picotts</module>
     <module>org.openhab.voice.pipertts</module>
     <module>org.openhab.voice.pollytts</module>
@@ -650,7 +651,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.6.1</version>
+        <version>3.8.1</version>
         <executions>
           <execution>
             <id>embed-dependencies</id>

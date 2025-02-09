@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,6 @@ import org.openhab.binding.nest.internal.sdm.dto.SDMEvent.SDMResourceUpdateEvent
 import org.openhab.binding.nest.internal.sdm.exception.FailedSendingSDMDataException;
 import org.openhab.binding.nest.internal.sdm.exception.InvalidSDMAccessTokenException;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
@@ -64,8 +63,8 @@ public class SDMCameraHandler extends SDMBaseHandler {
     private @Nullable ZonedDateTime lastPersonEventTimestamp;
     private @Nullable ZonedDateTime lastSoundEventTimestamp;
 
-    public SDMCameraHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public SDMCameraHandler(Thing thing) {
+        super(thing);
     }
 
     private void updateLiveStreamChannels() throws FailedSendingSDMDataException, InvalidSDMAccessTokenException {
@@ -87,8 +86,7 @@ public class SDMCameraHandler extends SDMBaseHandler {
         SDMGenerateCameraRtspStreamResults results = response.results;
         if (results != null) {
             updateState(CHANNEL_LIVE_STREAM_CURRENT_TOKEN, new StringType(results.streamToken));
-            updateState(CHANNEL_LIVE_STREAM_EXPIRATION_TIMESTAMP,
-                    new DateTimeType(results.expiresAt.withZoneSameInstant(timeZoneProvider.getTimeZone())));
+            updateState(CHANNEL_LIVE_STREAM_EXPIRATION_TIMESTAMP, new DateTimeType(results.expiresAt));
             updateState(CHANNEL_LIVE_STREAM_EXTENSION_TOKEN, new StringType(results.streamExtensionToken));
             updateState(CHANNEL_LIVE_STREAM_URL, new StringType(results.streamUrls.rtspUrl));
         }
@@ -167,8 +165,7 @@ public class SDMCameraHandler extends SDMBaseHandler {
             updateState(imageChannelName, getCameraImage(event.eventId, imageWidth, imageHeight));
         }
 
-        updateState(timeChannelName,
-                new DateTimeType(eventTimestamp.withZoneSameInstant(timeZoneProvider.getTimeZone())));
+        updateState(timeChannelName, new DateTimeType(eventTimestamp));
 
         logger.debug("Updated {} channel and {} with image of event at {}", imageChannelName, timeChannelName,
                 eventTimestamp);
