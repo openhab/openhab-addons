@@ -27,7 +27,6 @@
 				<label>Refresh Interval</label>
 				<description>Interval the device is polled in minutes.</description>
 				<default>5</default>
-				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

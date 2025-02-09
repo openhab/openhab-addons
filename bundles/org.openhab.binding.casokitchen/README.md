@@ -32,8 +32,8 @@ After register you'll get the
 
 Channels are separated in 3 groups
 
-- `generic` group channels for states covering the whole device
-- `top` and `bottom` group channels for states covering the top zone
+- `generic` group covering states for the whole device
+- `top` and `bottom` group covering states related to top or bottom zone
 
 #### Generic Group 
 
