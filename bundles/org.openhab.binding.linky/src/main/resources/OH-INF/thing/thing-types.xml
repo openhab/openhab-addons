@@ -38,8 +38,10 @@
 				<label>Timezone</label>
 				<description>The timezone associated with your Point of delivery.
 					Will default to openHAB default timezone.
-					You will need to change this if your Linky is located in a different timezone that your openHAB location.
-					You can use an offset, or a label like Europe/Paris</description>
+					You will
+					need to change this if your Linky is located in a different timezone that your openHAB location.
+					You can use an
+					offset, or a label like Europe/Paris</description>
 			</parameter>
 
 		</config-description>
