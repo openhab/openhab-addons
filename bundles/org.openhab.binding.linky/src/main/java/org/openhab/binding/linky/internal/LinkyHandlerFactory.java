@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -82,7 +83,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
                         try {
                             return LocalDateTime.parse(json.getAsJsonPrimitive().getAsString(),
                                     LINKY_LOCALDATETIME_FORMATTER);
-                        } catch (Exception ex) {
+                        } catch (DateTimeParseException ex) {
                             return LocalDate.parse(json.getAsJsonPrimitive().getAsString(), LINKY_LOCALDATE_FORMATTER)
                                     .atStartOfDay();
                         }

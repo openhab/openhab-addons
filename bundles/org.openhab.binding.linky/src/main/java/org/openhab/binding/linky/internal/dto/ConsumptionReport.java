@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * returned by API calls
  *
  * @author Gaël L'hopital - Initial contribution
- * @author Laurent ARNAL - fix to handle new Dto format after enedis site modifications
+ * @author Laurent Arnal - fix to handle new Dto format after enedis site modifications
  */
 public class ConsumptionReport {
 

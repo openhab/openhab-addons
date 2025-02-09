@@ -40,7 +40,6 @@ import org.openhab.binding.linky.internal.dto.ConsumptionReport.Consumption;
 import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.UserInfo;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -69,14 +68,12 @@ import com.google.gson.Gson;
 
 @NonNullByDefault
 public class LinkyHandler extends BaseThingHandler {
-    private final TimeZoneProvider timeZoneProvider;
-    private ZoneId zoneId = ZoneId.systemDefault();
-
     private static final Random randomNumbers = new Random();
     private static final int REFRESH_HOUR_OF_DAY = 1;
     private static final int REFRESH_MINUTE_OF_DAY = randomNumbers.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
+    private final TimeZoneProvider timeZoneProvider;
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
     private final HttpClient httpClient;
     private final Gson gson;
@@ -86,6 +83,8 @@ public class LinkyHandler extends BaseThingHandler {
     private final ExpiringDayCache<Consumption> cachedPowerData;
     private final ExpiringDayCache<Consumption> cachedMonthlyData;
     private final ExpiringDayCache<Consumption> cachedYearlyData;
+
+    private ZoneId zoneId = ZoneId.systemDefault();
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable EnedisHttpApi enedisApi;
@@ -120,15 +119,12 @@ public class LinkyHandler extends BaseThingHandler {
         });
 
         this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY, () -> {
-            // We request data for yesterday and the day before yesterday, even if the data for the day before
-            // yesterday
-            // is not needed by the binding. This is only a workaround to an API bug that will return
-            // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday
-            // is not
-            // yet available.
+            // We request data for yesterday and the day before yesterday,
+            // even if the data for the day before yesterday is not needed by the binding.
+            // This is only a workaround to an API bug that will return INTERNAL_SERVER_ERROR rather
+            // than the expected data with a NaN value when the data for yesterday is not yet available.
             // By requesting two days, the API is not failing and you get the expected NaN value for yesterday
-            // when the
-            // data is not yet available.
+            // when the data is not yet available.
             LocalDate today = LocalDate.now();
             Consumption consumption = getPowerData(today.minusDays(2), today);
             if (consumption != null) {
@@ -169,21 +165,15 @@ public class LinkyHandler extends BaseThingHandler {
         logger.debug("Initializing Linky handler.");
         updateStatus(ThingStatus.UNKNOWN);
 
-        // update the timezone if not set to default to openhab default timezone
-        Configuration thingConfig = getConfig();
-
-        String val = (String) thingConfig.get("timezone");
-        if (val == null || val.isBlank()) {
-            zoneId = this.timeZoneProvider.getTimeZone();
-            thingConfig.put("timezone", zoneId.getId());
-        } else {
-            zoneId = ZoneId.of(val);
-        }
-
-        updateConfiguration(thingConfig);
-
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
         if (config.seemsValid()) {
+
+            if (config.timezone.isBlank()) {
+                zoneId = this.timeZoneProvider.getTimeZone();
+            } else {
+                zoneId = ZoneId.of(config.timezone);
+            }
+
             enedisApi = new EnedisHttpApi(config, gson, httpClient);
             scheduler.submit(() -> {
                 try {
@@ -242,7 +232,7 @@ public class LinkyHandler extends BaseThingHandler {
                 disconnect();
             }
         } catch (LinkyException e) {
-            logger.error("Exception occurs during data update {}", e.getMessage(), e);
+            logger.debug("Exception occurs during data update {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -491,7 +481,7 @@ public class LinkyHandler extends BaseThingHandler {
                         break;
                 }
             } catch (LinkyException ex) {
-                logger.error("Unable to handleCommand refresh", ex);
+                logger.debug("Unable to handleCommand refresh", ex);
             }
             if (!connectedBefore && isConnected()) {
                 disconnect();
@@ -520,7 +510,7 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     private void checkData(Consumption consumption) throws LinkyException {
-        if (consumption.aggregats.days.datas.isEmpty()) {
+        if (consumption.aggregats.days != null && consumption.aggregats.days.datas.isEmpty()) {
             throw new LinkyException("Invalid consumptions data: no day period");
         }
         if (consumption.aggregats.weeks != null && consumption.aggregats.weeks.datas.isEmpty()) {
@@ -568,17 +558,12 @@ public class LinkyHandler extends BaseThingHandler {
 
     private void logData(Aggregate aggregate, int index, String title, boolean withDateFin,
             DateTimeFormatter dateTimeFormatter) {
-        try {
-            if (withDateFin) {
-                logger.debug("{} {} {} value {}", title, aggregate.datas.get(index).dateDebut.format(dateTimeFormatter),
-                        aggregate.datas.get(index).dateFin.format(dateTimeFormatter),
-                        aggregate.datas.get(index).valeur);
-            } else {
-                logger.debug("{} {} value {}", title, aggregate.datas.get(index).dateDebut.format(dateTimeFormatter),
-                        aggregate.datas.get(index).valeur);
-            }
-        } catch (Exception e) {
-            logger.error("error during logData", e);
+        if (withDateFin) {
+            logger.debug("{} {} {} value {}", title, aggregate.datas.get(index).dateDebut.format(dateTimeFormatter),
+                    aggregate.datas.get(index).dateFin.format(dateTimeFormatter), aggregate.datas.get(index).valeur);
+        } else {
+            logger.debug("{} {} value {}", title, aggregate.datas.get(index).dateDebut.format(dateTimeFormatter),
+                    aggregate.datas.get(index).valeur);
         }
     }
 }

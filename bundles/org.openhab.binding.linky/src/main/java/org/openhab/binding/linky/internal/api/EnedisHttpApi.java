@@ -295,13 +295,10 @@ public class EnedisHttpApi {
         }
         try {
             T result = Objects.requireNonNull(gson.fromJson(data, clazz));
-            logger.debug("getData success {}: {}", clazz.getName(), url);
+            logger.trace("getData success {}: {}", clazz.getName(), url);
             return result;
         } catch (JsonSyntaxException e) {
             logger.debug("Invalid JSON response not matching {}: {}", clazz.getName(), data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
-        } catch (Exception e) {
-            logger.error("Error {}: {}", clazz.getName(), data, e);
             throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
         }
     }
