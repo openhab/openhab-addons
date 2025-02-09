@@ -51,6 +51,11 @@
 				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
 				<default>10</default>
 			</parameter>
+			<parameter name="loadSourceList" type="boolean">
+				<label>Load Source List</label>
+				<description>Attempt to load source list options from the Projector when True</description>
+				<default>true</default>
+			</parameter>
 			<parameter name="maxVolume" type="integer">
 				<label>Volume Range</label>
 				<description>Set to Match the Volume Range Seen in the Projector's OSD</description>
@@ -118,6 +123,11 @@
 				<label>Polling Interval</label>
 				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
 				<default>10</default>
+			</parameter>
+			<parameter name="loadSourceList" type="boolean">
+				<label>Load Source List</label>
+				<description>Attempt to load source list options from the Projector when True</description>
+				<default>true</default>
 			</parameter>
 			<parameter name="maxVolume" type="integer">
 				<label>Volume Range</label>
@@ -219,6 +229,9 @@
 				<option value="20">PC DSUB</option>
 				<option value="41">Video</option>
 				<option value="42">S-Video</option>
+				<option value="52">USB</option>
+				<option value="53">LAN</option>
+				<option value="56">WiFi Direct</option>
 			</options>
 		</state>
 	</channel-type>

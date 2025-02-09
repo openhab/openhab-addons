@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -183,8 +183,9 @@ public class NetworkHandler extends BaseThingHandler
             presenceDetection.setIOSDevice(handlerConfiguration.useIOSWakeUp);
             // Hand over binding configurations to the network service
             presenceDetection.setUseDhcpSniffing(configuration.allowDHCPlisten);
-            presenceDetection.setUseIcmpPing(configuration.allowSystemPings);
-            presenceDetection.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
+            presenceDetection.setUseIcmpPing(handlerConfiguration.useIcmpPing ? configuration.allowSystemPings : null);
+            presenceDetection.setUseArpPing(handlerConfiguration.useArpPing, configuration.arpPingToolPath,
+                    configuration.arpPingUtilMethod);
         }
 
         this.retries = handlerConfiguration.retry.intValue();

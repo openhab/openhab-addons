@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Power;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +38,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -172,8 +176,21 @@ public class StateFilterProfileTest {
     }
 
     @Test
-    public void testSingleConditionMatchQuoted() throws ItemNotFoundException {
+    public void testSingleConditionMatchSingleQuoted() throws ItemNotFoundException {
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", "ItemName eq 'Value'")));
+        when(mockItemRegistry.getItem("ItemName")).thenReturn(stringItemWithState("ItemName", "Value"));
+
+        StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
+
+        State expectation = new StringType("NewValue");
+        profile.onStateUpdateFromHandler(expectation);
+        verify(mockCallback, times(1)).sendUpdate(eq(expectation));
+    }
+
+    @Test
+    public void testSingleConditionMatchDoubleQuoted() throws ItemNotFoundException {
+        when(mockContext.getConfiguration())
+                .thenReturn(new Configuration(Map.of("conditions", "ItemName eq \"Value\"")));
         when(mockItemRegistry.getItem("ItemName")).thenReturn(stringItemWithState("ItemName", "Value"));
 
         StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
@@ -656,10 +673,15 @@ public class StateFilterProfileTest {
 
     public static Stream<Arguments> testFunctions() {
         NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
+        NumberItem percentItem = new NumberItem("Number:Dimensionless", "percentItem", UNIT_PROVIDER);
         NumberItem decimalItem = new NumberItem("decimalItem");
         List<Number> numbers = List.of(1, 2, 3, 4, 5);
-        List<QuantityType> quantities = numbers.stream().map(n -> new QuantityType(n, Units.WATT)).toList();
+        List<Number> negatives = List.of(-1, -2, -3, -4, -5);
+        List<QuantityType<Power>> quantities = numbers.stream().map(n -> new QuantityType<>(n, Units.WATT)).toList();
+        List<QuantityType<Dimensionless>> percentQuantities = numbers.stream()
+                .map(n -> new QuantityType<>(n, Units.PERCENT)).toList();
         List<DecimalType> decimals = numbers.stream().map(DecimalType::new).toList();
+        List<DecimalType> negativeDecimals = negatives.stream().map(DecimalType::new).toList();
 
         return Stream.of( //
                 // test custom window size
@@ -673,6 +695,10 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "1 <= $DELTA", decimals, DecimalType.valueOf("6"), true), //
                 Arguments.of(decimalItem, "$DELTA >= 1", decimals, DecimalType.valueOf("10"), true), //
                 Arguments.of(decimalItem, "$DELTA >= 1", decimals, DecimalType.valueOf("5.5"), false), //
+
+                // Multiple delta conditions
+                Arguments.of(decimalItem, "$DELTA >= 1, $DELTA <= 10", decimals, DecimalType.valueOf("15"), true), //
+                Arguments.of(decimalItem, "$DELTA >= 1, $DELTA <= 10", decimals, DecimalType.valueOf("16"), false), //
 
                 Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("4.6"), false), //
                 Arguments.of(decimalItem, "$DELTA_PERCENT >= 10", decimals, DecimalType.valueOf("4.5"), true), //
@@ -695,10 +721,33 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.91"), true), //
                 Arguments.of(decimalItem, "$DELTA_PERCENT < 10", decimals, DecimalType.valueOf("0.89"), false), //
 
+                Arguments.of(decimalItem, "$DELTA_PERCENT < 10", negativeDecimals, DecimalType.valueOf("0"), false),
+                Arguments.of(decimalItem, "10 > $DELTA_PERCENT", negativeDecimals, DecimalType.valueOf("0"), false),
+
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.09"), true), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("1.11"), false), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("0.91"), true), //
                 Arguments.of(decimalItem, "< 10%", decimals, DecimalType.valueOf("0.89"), false), //
+
+                // Check against possible division-by-zero errors in $DELTA_PERCENT
+                Arguments.of(decimalItem, "> 10%", List.of(DecimalType.ZERO), DecimalType.valueOf("1"), true), //
+                Arguments.of(decimalItem, "< 10%", List.of(DecimalType.ZERO), DecimalType.valueOf("1"), true), //
+
+                // Contrast a simple comparison against a Percent QuantityType vs delta percent check
+                Arguments.of(percentItem, "> 5%", percentQuantities, QuantityType.valueOf("5.1 %"), true), //
+                Arguments.of(percentItem, "$DELTA_PERCENT > 5", percentQuantities, QuantityType.valueOf("5.1 %"),
+                        false), //
+
+                Arguments.of(percentItem, "> 5%", percentQuantities, QuantityType.valueOf("-10 %"), false), //
+                Arguments.of(percentItem, "$DELTA_PERCENT > 5", percentQuantities, QuantityType.valueOf("-10 %"), true), //
+
+                Arguments.of(percentItem, "< 200%", percentQuantities, QuantityType.valueOf("100 %"), true), //
+                Arguments.of(percentItem, "$DELTA_PERCENT < 200", percentQuantities, QuantityType.valueOf("100 %"),
+                        false), //
+
+                Arguments.of(percentItem, "< 200%", percentQuantities, QuantityType.valueOf("-100 %"), true), //
+                Arguments.of(percentItem, "$DELTA_PERCENT < 200", percentQuantities, QuantityType.valueOf("-100 %"),
+                        false), //
 
                 Arguments.of(decimalItem, "1 == $MIN", decimals, DecimalType.valueOf("20"), true), //
                 Arguments.of(decimalItem, "0 < $MIN", decimals, DecimalType.valueOf("20"), true), //
@@ -746,6 +795,68 @@ public class StateFilterProfileTest {
     @MethodSource
     public void testFunctions(Item item, String condition, List<State> states, State input, boolean expected)
             throws ItemNotFoundException {
+        internalTestFunctions(item, condition, states, input, expected);
+    }
+
+    public static Stream<Arguments> testDeltaWithRelativeUnit() {
+        NumberItem temperatureItem = new NumberItem("Number:Temperature", "temperatureItem", UNIT_PROVIDER);
+
+        State initialC = QuantityType.valueOf("5 °C");
+        State initialF = QuantityType.valueOf("5 °F");
+
+        State qty_7_C = QuantityType.valueOf("7 °C");
+        State qty_7_F = QuantityType.valueOf("7 °F");
+
+        return Stream.of( //
+                // Celsius inputs
+                // same unit
+                Arguments.of(temperatureItem, "$DELTA > 1 °C", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "1 °C < $DELTA", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "$DELTA < 1 °C", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "1 °C > $DELTA", initialC, qty_7_C, false), //
+
+                // Celsius vs Fahrenheit: 2 °C = 35.6 °F (absolute), 2 °C = 3.6 °F (relative)
+                Arguments.of(temperatureItem, "$DELTA > 4 °F", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "4 °F < $DELTA", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "$DELTA < 4 °F", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "4 °F > $DELTA", initialC, qty_7_C, true), //
+
+                // Celsius vs Kelvin: °C = K in relative unit
+                Arguments.of(temperatureItem, "$DELTA > 1 K", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "1 K < $DELTA", initialC, qty_7_C, true), //
+                Arguments.of(temperatureItem, "$DELTA < 1 K", initialC, qty_7_C, false), //
+                Arguments.of(temperatureItem, "1 K > $DELTA", initialC, qty_7_C, false), //
+
+                // Fahrenheit inputs
+                // same unit, in F
+                Arguments.of(temperatureItem, "$DELTA > 1 °F", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "1 °F < $DELTA", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "$DELTA < 2 °F", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "2 °F > $DELTA", initialF, qty_7_F, false), //
+
+                // Fahrenheit vs Celsius: 2 °F = -16.67 °C (absolute), 2 °F = 1.11 °C (relative)
+                Arguments.of(temperatureItem, "$DELTA > 1 °C", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "1 °C < $DELTA", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "$DELTA < 1 °C", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "1 °C > $DELTA", initialF, qty_7_F, false), //
+
+                // Fahreheit vs Kelvin: 2 °F = 256.48 K (absolute), 2 °F = 1.11 K (relative)
+                Arguments.of(temperatureItem, "$DELTA > 2 K", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "2 K < $DELTA", initialF, qty_7_F, false), //
+                Arguments.of(temperatureItem, "$DELTA < 2 K", initialF, qty_7_F, true), //
+                Arguments.of(temperatureItem, "2 K > $DELTA", initialF, qty_7_F, true) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testDeltaWithRelativeUnit(Item item, String condition, State initialState, State input,
+            boolean expected) throws ItemNotFoundException {
+        internalTestFunctions(item, condition, List.of(initialState), input, expected);
+    }
+
+    private void internalTestFunctions(Item item, String condition, List<State> states, State input, boolean expected)
+            throws ItemNotFoundException {
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", condition)));
         when(mockItemRegistry.getItem(item.getName())).thenReturn(item);
         when(mockItemChannelLink.getItemName()).thenReturn(item.getName());
@@ -761,5 +872,31 @@ public class StateFilterProfileTest {
 
         profile.onStateUpdateFromHandler(input);
         verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(input);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { //
+            "$DELTA > 10", //
+            "$DELTA < 10", //
+            "10 < $DELTA", //
+            "10 > $DELTA", //
+            "$DELTA_PERCENT > 10", //
+            "$DELTA_PERCENT < 10", //
+            "10 < $DELTA_PERCENT", //
+            "10 > $DELTA_PERCENT", //
+            "> 10%", //
+            "< 10%" //
+    })
+    public void testFirstDataIsAcceptedForDeltaFunctions(String conditions) throws ItemNotFoundException {
+        NumberItem decimalItem = new NumberItem("decimalItem");
+
+        when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", conditions)));
+        when(mockItemRegistry.getItem(decimalItem.getName())).thenReturn(decimalItem);
+        when(mockItemChannelLink.getItemName()).thenReturn(decimalItem.getName());
+
+        StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
+
+        profile.onStateUpdateFromHandler(DecimalType.valueOf("1"));
+        verify(mockCallback, times(1)).sendUpdate(DecimalType.valueOf("1"));
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -306,10 +306,10 @@ public class OnvifConnection {
             }
         } catch (IndexOutOfBoundsException e) {
             if (!isConnected) {
-                logger.debug("IndexOutOfBoundsException occured, camera is not connected via ONVIF: {}",
+                logger.debug("IndexOutOfBoundsException occurred, camera is not connected via ONVIF: {}",
                         e.getMessage());
             } else {
-                logger.debug("IndexOutOfBoundsException occured, {}", e.getMessage());
+                logger.debug("IndexOutOfBoundsException occurred, {}", e.getMessage());
             }
         }
         return "notfound";
@@ -388,7 +388,7 @@ public class OnvifConnection {
                 break;
             case PullMessages:
                 try {
-                    eventRecieved(message);
+                    eventReceived(message);
                 } catch (Exception e) {
                     logger.error("Error processing PullMessages error:\n{}\nmessage: {}", e.toString(), message);
                 }
@@ -813,7 +813,7 @@ public class OnvifConnection {
         }
     }
 
-    public void eventRecieved(String eventMessage) {
+    public void eventReceived(String eventMessage) {
         Document xmlDocument;
         try {
             xmlDocument = Helper.loadXMLFromString(eventMessage);

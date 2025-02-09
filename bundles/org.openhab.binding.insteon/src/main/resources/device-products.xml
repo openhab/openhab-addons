@@ -1530,7 +1530,7 @@
 		<description>TED 3000 Three Phase MTU</description>
 		<vendor>Energy Inc.</vendor>
 	</product>
-	<product devCat="0x09" subCat="0x07" productKey="0x00006C">
+	<product devCat="0x09" subCat="0x07" productKey="0x00006C" firstRecord="0x00FF">
 		<description>iMeter Solo</description>
 		<model>2423A1</model>
 		<vendor>Insteon</vendor>

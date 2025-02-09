@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -98,8 +98,8 @@ public class DeviceTracker extends AbstractComponent<DeviceTracker.ChannelConfig
     private final LocationValue locationValue = new LocationValue();
     private final @Nullable ComponentChannel homeChannel, locationChannel, accuracyChannel;
 
-    public DeviceTracker(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public DeviceTracker(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
         this.channelStateUpdateListener = componentConfiguration.getUpdateListener();
 
         if (channelConfiguration.stateTopic == null && channelConfiguration.getJsonAttributesTopic() == null) {

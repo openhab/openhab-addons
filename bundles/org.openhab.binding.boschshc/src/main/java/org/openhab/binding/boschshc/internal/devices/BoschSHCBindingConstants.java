@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,6 +116,7 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_IMPULSE_SWITCH = "impulse-switch";
     public static final String CHANNEL_IMPULSE_LENGTH = "impulse-length";
     public static final String CHANNEL_INSTANT_OF_LAST_IMPULSE = "instant-of-last-impulse";
+    public static final String CHANNEL_ALARM = "alarm";
     // numbered channels
     // the rationale for introducing numbered channels was discussed in
     // https://github.com/openhab/openhab-addons/pull/16400

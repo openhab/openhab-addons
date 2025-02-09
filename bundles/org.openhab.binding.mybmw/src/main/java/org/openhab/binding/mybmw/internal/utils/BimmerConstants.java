@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,4 +82,8 @@ public interface BimmerConstants {
     static final String API_VEHICLES = "/eadrax-vcs/v4/vehicles";
     static final String API_REMOTE_SERVICE_BASE_URL = "/eadrax-vrccs/v3/presentation/remote-commands/"; // '/{vin}/{service_type}'
     static final String API_POI = "/eadrax-dcs/v1/send-to-car/send-to-car";
+    static final String CHARGING_STATISTICS = "/eadrax-chs/v2/charging-statistics?";
+    static final String CHARGING_SESSIONS = "/eadrax-chs/v2/charging-sessions?";
+    static final String PARAM_VIN = "$vin$";
+    static final String IMAGE_URL = "/eadrax-ics/v3/presentation/vehicles/" + PARAM_VIN + "/images?carView=";
 }

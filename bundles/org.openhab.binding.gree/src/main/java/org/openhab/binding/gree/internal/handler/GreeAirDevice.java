@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -164,7 +164,7 @@ public class GreeAirDevice {
             DatagramPacket sendPacket = createPackRequest(1, encryptedBindReqData);
             clientSocket.send(sendPacket);
 
-            // Recieve a response, create the JSON to hold the response values
+            // Receive a response, create the JSON to hold the response values
             GreeBindResponseDTO resp = receiveResponse(clientSocket, GreeBindResponseDTO.class);
             resp.decryptedPack = GreeCryptoUtil.decrypt(resp, encType);
             resp.packJson = GSON.fromJson(resp.decryptedPack, GreeBindResponsePackDTO.class);

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,17 +88,16 @@ public class LockHandler extends AbstractOmnilinkStatusHandler<ExtendedAccessCon
             return;
         }
 
-        switch (channelUID.getId()) {
-            case CHANNEL_LOCK_SWITCH:
-                if (command instanceof OnOffType) {
-                    sendOmnilinkCommand(OnOffType.OFF.equals(command) ? CommandMessage.CMD_UNLOCK_DOOR
-                            : CommandMessage.CMD_LOCK_DOOR, 0, thingID);
-                } else {
-                    logger.debug("Invalid command {}, must be OnOffType", command);
-                }
-                break;
-            default:
-                logger.warn("Unknown channel for Lock thing: {}", channelUID);
+        if (CHANNEL_LOCK_SWITCH.equals(channelUID.getId())) {
+            if (command instanceof OnOffType) {
+                sendOmnilinkCommand(
+                        OnOffType.OFF.equals(command) ? CommandMessage.CMD_UNLOCK_DOOR : CommandMessage.CMD_LOCK_DOOR,
+                        0, thingID);
+            } else {
+                logger.debug("Invalid command {}, must be OnOffType", command);
+            }
+        } else {
+            logger.warn("Unknown channel for Lock thing: {}", channelUID);
         }
     }
 
