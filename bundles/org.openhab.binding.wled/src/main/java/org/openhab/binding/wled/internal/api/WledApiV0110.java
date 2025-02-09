@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.wled.internal.WledState.PresetState;
 import org.openhab.binding.wled.internal.handlers.WLedBridgeHandler;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateOption;
 
@@ -93,5 +94,10 @@ public class WledApiV0110 extends WledApiV084 {
     @Override
     public void setSleepMode(String value) throws ApiException {
         postState("{\"nl\":{\"mode\":" + value + "}}");
+    }
+
+    @Override
+    public void setLegacyWhite(String whiteChannel, PercentType brightness, int segmentIndex) throws ApiException {
+        sendGetRequest(whiteChannel + brightness.toBigDecimal().multiply(BIG_DECIMAL_2_55) + "&SS=" + segmentIndex);
     }
 }
