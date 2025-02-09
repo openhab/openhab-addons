@@ -65,6 +65,7 @@
 /bundles/org.openhab.binding.bticinosmarther/ @MrRonfo
 /bundles/org.openhab.binding.buienradar/ @gedejong
 /bundles/org.openhab.binding.caddx/ @jossuar
+/bundles/org.openhab.binding.casokitchen/ @weymann
 /bundles/org.openhab.binding.cbus/ @jpharvey
 /bundles/org.openhab.binding.chatgpt/ @kaikreuzer
 /bundles/org.openhab.binding.chromecast/ @kaikreuzer
