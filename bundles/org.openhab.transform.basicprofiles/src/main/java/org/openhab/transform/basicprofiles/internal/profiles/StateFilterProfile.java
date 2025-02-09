@@ -223,7 +223,7 @@ public class StateFilterProfile implements StateProfile {
             logger.debug("Received state update from handler: {}, not forwarded to item", state);
         }
         if (windowSize > 0 && isCacheable(state)) {
-            previousStates.addLast(state);
+            previousStates.add(state);
             if (previousStates.size() > windowSize) {
                 previousStates.removeFirst();
             }
@@ -412,10 +412,6 @@ public class StateFilterProfile implements StateProfile {
 
                 // Don't convert QuantityType to other types, so that 1500 != 1500 W
                 if (rhsState != null && !(rhsState instanceof QuantityType)) {
-                    if (rhsState instanceof FunctionType rhsFunction
-                            && rhsFunction.getType() == FunctionType.Function.DELTA) {
-                        isDeltaCheck = true;
-                    }
                     // Try to convert it to the same type as the lhs
                     // This allows comparing compatible types, e.g. PercentType vs OnOffType
                     rhsState = rhsState.as(lhsState.getClass());
@@ -669,11 +665,6 @@ public class StateFilterProfile implements StateProfile {
         }
 
         private @Nullable State calculateStdDev(List<BigDecimal> values) {
-            // prevent divide-by-zero
-            if (values.isEmpty()) {
-                return null;
-            }
-
             BigDecimal average = values.stream().reduce(BigDecimal.ZERO, BigDecimal::add)
                     .divide(BigDecimal.valueOf(values.size()), 2, RoundingMode.HALF_EVEN);
 
@@ -790,25 +781,25 @@ public class StateFilterProfile implements StateProfile {
     }
 
     /**
-     * Convert the given {@link QuantityType} to an equivalent based on the 'systemUnit'. The conversion can be made to
-     * both inverted and non-inverted units, so invertible type conversions (e.g. Mirek <=> Kelvin) are supported.
+     * Convert the given {@link QuantityType} to an equivalent based on the target {@link Unit}. The conversion can be
+     * made to both inverted and non-inverted units, so invertible type conversions (e.g. Mirek <=> Kelvin) are
+     * supported.
      * <p>
      * Note: we can use {@link QuantityType.toInvertibleUnit()} if OH Core PR #4561 is merged.
      *
-     * @param sourceQtyType the {@link QuantityType} to be converted.
+     * @param source the {@link QuantityType} to be converted.
      * @param targetUnit the {@link Unit} to convert to.
      *
      * @return a new {@link QuantityType} based on 'systemUnit' or null.
      */
-    public @Nullable QuantityType<?> toInvertibleUnit(QuantityType<?> sourceQtyType, Unit<?> targetUnit) {
-        Unit<?> sourceSystemUnit = sourceQtyType.getUnit().getSystemUnit();
+    protected @Nullable QuantityType<?> toInvertibleUnit(QuantityType<?> source, Unit<?> targetUnit) {
+        Unit<?> sourceSystemUnit = source.getUnit().getSystemUnit();
         if (!targetUnit.equals(sourceSystemUnit) && !targetUnit.isCompatible(AbstractUnit.ONE)
                 && sourceSystemUnit.inverse().isCompatible(targetUnit)) {
-            return sourceQtyType.toUnit(sourceSystemUnit) instanceof QuantityType<?> systemQtyType //
-                    ? systemQtyType.inverse().toUnit(targetUnit)
-                    : null;
+            QuantityType<?> sourceInItsSystemUnit = source.toUnit(sourceSystemUnit);
+            return sourceInItsSystemUnit != null ? sourceInItsSystemUnit.inverse().toUnit(targetUnit) : null;
         }
-        return sourceQtyType.toUnit(targetUnit);
+        return source.toUnit(targetUnit);
     }
 
     /**
