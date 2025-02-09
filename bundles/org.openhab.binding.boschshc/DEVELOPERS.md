@@ -3,13 +3,15 @@
 ## Typical Workflow for Supporting new Devices / Services / Channels
 
 1. Define new thing types and channel types in `src/main/resources/OH-INF/thing/thing-types.xml`
-1. Define constants for the new thing/channel types in `BoschSHCBindingConstants`
-1. Create new packages for services that are not implemented yet and create a service class
+1. If `thing-types.xml` was modified, re-generate the i18n properties file by running Maven with the goal `i18n:generate-default-translations`
+1. Define constants for new thing/channel types in `BoschSHCBindingConstants`
+1. Create new packages for services that are not implemented yet and create service classes
 1. Create new DTO packages for new services and implement data transfer model classes / enums according to the JSON structure of the service requests
 1. Create a new handler or extend existing handlers to update channel states according to what was received, and/or to send new states to the Bosch Smart Home Controller in case of writable channels
 1. Register new handlers in `BoschSHCHandlerFactory`, if applicable
+1. Register new thing types in `ThingDiscoveryService`, if applicable
 1. Implement unit tests for new handlers / services / model classes
-1. If `thing-types.xml` was modified, re-generate the i18n properties file by running Maven with the goal `i18n:generate-default-translations`
+
 1. If channels were added to existing devices/things, add a migration instruction set to `src/main/resources/update/binding.xml`
 1. Add documentation for new things/channels to `README.md`
 1. Apply automatic code formatting by running a Maven build with goal `spotless:apply`

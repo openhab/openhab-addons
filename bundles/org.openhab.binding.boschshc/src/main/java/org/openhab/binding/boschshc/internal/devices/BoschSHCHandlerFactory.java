@@ -43,6 +43,7 @@ import org.openhab.binding.boschshc.internal.devices.userdefinedstate.UserStateH
 import org.openhab.binding.boschshc.internal.devices.wallthermostat.WallThermostatHandler;
 import org.openhab.binding.boschshc.internal.devices.waterleakage.WaterLeakageSensorHandler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContact2Handler;
+import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContact2PlusHandler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContactHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -83,7 +84,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_TWINGUARD, TwinguardHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT, WindowContactHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT_2, WindowContact2Handler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT_2_PLUS, WindowContact2Handler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT_2_PLUS, WindowContact2PlusHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_MOTION_DETECTOR, MotionDetectorHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL, ShutterControlHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL_2, ShutterControl2Handler::new),
