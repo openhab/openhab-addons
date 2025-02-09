@@ -14,7 +14,7 @@
 		</instruction-set>
 		<instruction-set targetVersion="2">
 			<update-channel id="display">
-				<type>system.power</type>
+				<type>system:power</type>
 				<label>Display power</label>
 				<description>Switches the display ON or OFF</description>
 			</update-channel>
