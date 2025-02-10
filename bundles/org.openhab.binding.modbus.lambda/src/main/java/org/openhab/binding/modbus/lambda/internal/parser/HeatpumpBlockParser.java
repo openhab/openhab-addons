@@ -15,11 +15,9 @@ package org.openhab.binding.modbus.lambda.internal.parser;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.lambda.internal.dto.HeatpumpBlock;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Parses inlambda modbus data into a Heatpump Block
+ * Parses lambda modbus data into a Heatpump Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
@@ -27,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HeatpumpBlockParser extends AbstractBaseParser {
- 
+
     public HeatpumpBlock parse(ModbusRegisterArray raw) {
         HeatpumpBlock block = new HeatpumpBlock();
         block.heatpumpErrorState = extractUInt16(raw, 0, (short) 0);
