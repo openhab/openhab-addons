@@ -41,10 +41,11 @@ public final class UniFiBindingConstants {
     public static final ThingTypeUID THING_TYPE_POE_PORT = new ThingTypeUID(BINDING_ID, "poePort");
     public static final ThingTypeUID THING_TYPE_ACCESS_POINT = new ThingTypeUID(BINDING_ID, "accessPoint");
     public static final Set<ThingTypeUID> ALL_THING_TYPE_SUPPORTED = Set.of(THING_TYPE_CONTROLLER, THING_TYPE_SITE,
+            THING_TYPE_NETWORK, THING_TYPE_WLAN, THING_TYPE_WIRED_CLIENT, THING_TYPE_WIRELESS_CLIENT,
+            THING_TYPE_POE_PORT, THING_TYPE_ACCESS_POINT);
+    public static final Set<ThingTypeUID> THING_TYPE_SUPPORTED = Set.of(THING_TYPE_SITE, THING_TYPE_NETWORK,
             THING_TYPE_WLAN, THING_TYPE_WIRED_CLIENT, THING_TYPE_WIRELESS_CLIENT, THING_TYPE_POE_PORT,
             THING_TYPE_ACCESS_POINT);
-    public static final Set<ThingTypeUID> THING_TYPE_SUPPORTED = Set.of(THING_TYPE_SITE, THING_TYPE_WLAN,
-            THING_TYPE_WIRED_CLIENT, THING_TYPE_WIRELESS_CLIENT, THING_TYPE_POE_PORT, THING_TYPE_ACCESS_POINT);
 
     // List of site channels
     public static final String CHANNEL_TOTAL_CLIENTS = "totalClients";
@@ -53,6 +54,9 @@ public final class UniFiBindingConstants {
     public static final String CHANNEL_GUEST_CLIENTS = "guestClients";
     public static final String CHANNEL_GUEST_VOUCHER = "guestVoucher";
     public static final String CHANNEL_GUEST_VOUCHERS_GENERATE = "guestVouchersGenerate";
+
+    // List of network channels
+    public static final String CHANNEL_PURPOSE = "purpose";
 
     // List of wlan channels
     public static final String CHANNEL_SECURITY = "security";
@@ -113,6 +117,7 @@ public final class UniFiBindingConstants {
     public static final String PARAMETER_CID = "cid";
     public static final String PARAMETER_SID = "sid";
     public static final String PARAMETER_WID = "wid";
+    public static final String PARAMETER_NID = "nid";
     public static final String PARAMETER_VOUCHER_COUNT = "voucherCount";
     public static final String PARAMETER_VOUCHER_EXPIRATION = "voucherExpiration";
     public static final String PARAMETER_VOUCHER_USERS = "voucherUsers";

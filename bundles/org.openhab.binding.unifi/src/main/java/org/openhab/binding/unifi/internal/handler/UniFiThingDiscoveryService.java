@@ -15,6 +15,7 @@ package org.openhab.binding.unifi.internal.handler;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.DEVICE_TYPE_UAP;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_CID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_MAC_ADDRESS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_NID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_PORT_NUMBER;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_SID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_SITE;
@@ -108,11 +109,12 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
         for (final UniFiNetwork network : cache.getNetworks()) {
             final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_NETWORK, bridgeUID,
                     stripIdShort(network.getId()));
-            final Map<String, Object> properties = Map.of(PARAMETER_WID, network.getId());
+            final Map<String, Object> properties = Map.of(PARAMETER_NID, network.getId());
 
-            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(UniFiBindingConstants.THING_TYPE_WLAN)
-                    .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_WID).withTTL(TTL_SECONDS)
-                    .withProperties(properties).withLabel(network.getName()).build());
+            thingDiscovered(
+                    DiscoveryResultBuilder.create(thingUID).withThingType(UniFiBindingConstants.THING_TYPE_NETWORK)
+                            .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_NID).withTTL(TTL_SECONDS)
+                            .withProperties(properties).withLabel(network.getName()).build());
         }
     }
 

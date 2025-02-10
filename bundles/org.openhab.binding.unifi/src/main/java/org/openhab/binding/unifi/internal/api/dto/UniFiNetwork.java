@@ -30,6 +30,10 @@ public class UniFiNetwork implements HasId {
 
     private String siteId;
 
+    private boolean enabled;
+
+    private String purpose;
+
     public UniFiNetwork(final UniFiControllerCache cache) {
         this.cache = cache;
     }
@@ -45,6 +49,14 @@ public class UniFiNetwork implements HasId {
 
     public UniFiSite getSite() {
         return cache.getSite(siteId);
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public String getPurpose() {
+        return purpose;
     }
 
     @Override

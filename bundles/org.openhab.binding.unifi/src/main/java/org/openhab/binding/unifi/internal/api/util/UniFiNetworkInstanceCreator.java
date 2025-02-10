@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.dto.UniFiNetwork;
-import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonSyntaxException;

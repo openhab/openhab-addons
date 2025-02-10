@@ -211,8 +211,17 @@ public class UniFiController {
         refresh();
     }
 
+    public void enableNetwork(final UniFiNetwork network, final boolean enable) throws UniFiException {
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, gson);
+        req.setAPIPath(String.format("/api/s/%s/rest/networkconf/%s", network.getSite().getName(), network.getId()));
+        req.setBodyParameter("_id", network.getId());
+        req.setBodyParameter("enabled", enable ? "true" : "false");
+        executeRequest(req);
+        refresh();
+    }
+
     public void enableWifi(final UniFiWlan wlan, final boolean enable) throws UniFiException {
-        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, poeGson);
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, gson);
         req.setAPIPath(String.format("/api/s/%s/rest/wlanconf/%s", wlan.getSite().getName(), wlan.getId()));
         req.setBodyParameter("_id", wlan.getId());
         req.setBodyParameter("enabled", enable ? "true" : "false");
