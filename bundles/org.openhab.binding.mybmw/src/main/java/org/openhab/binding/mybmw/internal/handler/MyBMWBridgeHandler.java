@@ -145,6 +145,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
                 return;
             }
         }
+        // Update the central configuration and get the updates configuration back
         super.updateConfiguration(config);
         localBridgeConfiguration = getConfigAs(MyBMWBridgeConfiguration.class);
 

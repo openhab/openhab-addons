@@ -50,7 +50,7 @@ public class MyBMWAuthServlet extends HttpServlet {
     public MyBMWAuthServlet(MyBMWBridgeHandler bridgeHandler, String region, HttpService httpService) {
         this.httpService = httpService;
         this.bridgeHandler = bridgeHandler;
-        this.path = MyBMWConstants.BASE_PATH + bridgeHandler.getThing().getUID().getAsString();
+        this.path = MyBMWConstants.LOCAL_OPENHAB_BASE_PATH + bridgeHandler.getThing().getUID().getAsString();
         String captchaTemplate = MyBMWConstants.CAPTCHA_HTML.get(region);
         if (captchaTemplate != null) {
             try (InputStream stream = classLoader.getResourceAsStream(captchaTemplate)) {

@@ -61,13 +61,13 @@ public interface MyBMWConstants {
 
     static final int DEFAULT_REFRESH_INTERVAL_MINUTES = 60;
 
-    static final String BASE_PATH = "/" + BINDING_ID + "/";
+    static final String LOCAL_OPENHAB_BASE_PATH = "/" + BINDING_ID + "/";
 
-    static final String HTML_SOURCE = "captcha/";
+    static final String CAPTCHA_URL_ROOT = "captcha/";
     static final String NORTH_AMERICA = "NORTH_AMERICA";
     static final String ROW = "ROW";
-    static final Map<String, String> CAPTCHA_HTML = Map.of(NORTH_AMERICA, HTML_SOURCE + "north_america_form.html", ROW,
-            HTML_SOURCE + "rest_of_world_form.html");
+    static final Map<String, String> CAPTCHA_HTML = Map.of(NORTH_AMERICA, CAPTCHA_URL_ROOT + "north_america_form.html", ROW,
+            CAPTCHA_URL_ROOT + "rest_of_world_form.html");
 
     static final String STATUS_AUTH_NEEDED = "@text/mybmw.status.authorization-needed";
     static final String STATUS_USER_DETAILS_MISSING = "@text/mybmw.status.user-details-missing";
