@@ -119,8 +119,10 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
                     if (myKey.isAcceptable()) {
                         SocketChannel client = socket.accept();
 
-                        client.configureBlocking(false);
-                        client.register(myKey.selector(), SelectionKey.OP_READ, ByteBuffer.allocate(20000));
+                        if (client != null) {
+                            client.configureBlocking(false);
+                            client.register(myKey.selector(), SelectionKey.OP_READ, ByteBuffer.allocate(20000));
+                        }
                     }
 
                     /*
