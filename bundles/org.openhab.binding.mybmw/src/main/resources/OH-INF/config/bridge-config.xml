@@ -19,7 +19,6 @@
 			<description>Select Region in order to connect to the appropriate BMW Server</description>
 			<options>
 				<option value="NORTH_AMERICA">North America</option>
-				<option value="CHINA">China</option>
 				<option value="ROW">Rest of the World</option>
 			</options>
 			<default>ROW</default>

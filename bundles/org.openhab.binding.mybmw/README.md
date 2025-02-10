@@ -21,6 +21,8 @@ Please note **this isn't a real-time binding**.
 If a door is opened the state isn't transmitted and changed immediately.
 It's not a flaw in the binding itself because the state in BMW's own MyBMW App is also updated with some delay.
 
+This binding does not support China.
+
 ## Supported Things
 
 ### Bridge
@@ -84,10 +86,9 @@ Properties will be attached to predefined vehicles if the VIN is matching.
 | password        | text    | MyBMW Password                                                                                         |
 | region          | text    | Select region in order to connect to the appropriate BMW server.                                       |
 
-The region Configuration has 3 different options
+The region Configuration has 2 different options
 
 - _NORTH_AMERICA_
-- _CHINA_
 - _ROW_  (Rest of World)
 
 At first initialization, follow the online instructions for login into the BMW API.

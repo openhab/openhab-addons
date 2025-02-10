@@ -17,18 +17,13 @@ import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-
-import javax.crypto.Cipher;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,9 +36,6 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
-import org.openhab.binding.mybmw.internal.dto.auth.ChinaPublicKeyResponse;
-import org.openhab.binding.mybmw.internal.dto.auth.ChinaTokenExpiration;
-import org.openhab.binding.mybmw.internal.dto.auth.ChinaTokenResponse;
 import org.openhab.binding.mybmw.internal.dto.auth.OAuthSettingsQueryResponse;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
 import org.openhab.binding.mybmw.internal.handler.backend.JsonStringDeserializer;
@@ -67,6 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - extracted from myBmwProxy
  * @author Mark Herwege - refactor to use OAuthFactory
+ * @author Mark Herwege - remove China
  */
 @NonNullByDefault
 public class MyBMWTokenController {
@@ -127,28 +120,20 @@ public class MyBMWTokenController {
             // reset the token as it times out
             bridgeHandler.setHCaptchaToken(Constants.EMPTY);
         } else if (!waitingForInitialToken && tokenResponse.isExpired(Instant.now(), 5)) {
-            if (REGION_CHINA.equals(bridgeConfiguration.getRegion())) {
-                // in China no hcaptchatoken is required, so no need to wait for reinitialization
-                boolean tokenUpdateSuccess = getAndRefreshTokenChina();
-                if (!tokenUpdateSuccess) {
-                    logger.warn("Updating token failed!");
-                }
-            } else {
-                // try to refresh the token
-                boolean tokenUpdateSuccess = refreshTokenROW();
-                logger.trace("update token {}", tokenUpdateSuccess ? "success" : "failed");
+            // try to refresh the token
+            boolean tokenUpdateSuccess = refreshTokenROW();
+            logger.trace("update token {}", tokenUpdateSuccess ? "success" : "failed");
 
-                if (!tokenUpdateSuccess) {
-                    logger.warn("Updating token failed!");
-                    waitingForInitialToken = true;
+            if (!tokenUpdateSuccess) {
+                logger.warn("Updating token failed!");
+                waitingForInitialToken = true;
 
-                    if (bridgeConfiguration.getHCaptchaToken().isBlank()) {
-                        logger.warn(
-                                "initial Authentication failed, request a new captcha token, see https://bimmer-connected.readthedocs.io/en/stable/captcha.html!");
-                        bridgeHandler.tokenInitError();
-                    } else {
-                        getToken();
-                    }
+                if (bridgeConfiguration.getHCaptchaToken().isBlank()) {
+                    logger.warn(
+                            "initial Authentication failed, request a new captcha token, see https://bimmer-connected.readthedocs.io/en/stable/captcha.html!");
+                    bridgeHandler.tokenInitError();
+                } else {
+                    getToken();
                 }
             }
         }
@@ -335,89 +320,5 @@ public class MyBMWTokenController {
             }
         });
         return codeFound.toString();
-    }
-
-    /**
-     * @return true if the token was successfully updated
-     */
-    private boolean getAndRefreshTokenChina() {
-        try {
-            /**
-             * Step 1) get public key
-             */
-            String publicKeyUrl = "https://" + EADRAX_SERVER_MAP.get(REGION_CHINA) + CHINA_PUBLIC_KEY;
-            Request oauthQueryRequest = httpClient.newRequest(publicKeyUrl);
-            oauthQueryRequest.header(HttpHeader.USER_AGENT, USER_AGENT);
-            oauthQueryRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW,
-                    APP_VERSIONS.get(bridgeConfiguration.getRegion()), bridgeConfiguration.getRegion()));
-            ContentResponse publicKeyResponse = oauthQueryRequest.send();
-            if (publicKeyResponse.getStatus() != 200) {
-                throw new HttpResponseException("URL: " + oauthQueryRequest.getURI() + ", Error: "
-                        + publicKeyResponse.getStatus() + ", Message: " + publicKeyResponse.getContentAsString(),
-                        publicKeyResponse);
-            }
-            ChinaPublicKeyResponse pkr = JsonStringDeserializer
-                    .deserializeString(publicKeyResponse.getContentAsString(), ChinaPublicKeyResponse.class);
-
-            /**
-             * Step 2) Encode password with public key
-             */
-            // https://www.baeldung.com/java-read-pem-file-keys
-            String publicKeyStr = pkr.data.value;
-            String publicKeyPEM = publicKeyStr.replace("-----BEGIN PUBLIC KEY-----", "")
-                    .replaceAll(System.lineSeparator(), "").replace("-----END PUBLIC KEY-----", "").replace("\\r", "")
-                    .replace("\\n", "").trim();
-            byte[] encoded = Base64.getDecoder().decode(publicKeyPEM);
-            X509EncodedKeySpec spec = new X509EncodedKeySpec(encoded);
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            PublicKey publicKey = kf.generatePublic(spec);
-            // https://www.thexcoders.net/java-ciphers-rsa/
-            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            byte[] encryptedBytes = cipher.doFinal(bridgeConfiguration.getPassword().getBytes());
-            String encodedPassword = Base64.getEncoder().encodeToString(encryptedBytes);
-
-            /**
-             * Step 3) Send Auth with encoded password
-             */
-            String tokenUrl = "https://" + EADRAX_SERVER_MAP.get(REGION_CHINA) + CHINA_LOGIN;
-            Request loginRequest = httpClient.POST(tokenUrl);
-            loginRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW,
-                    APP_VERSIONS.get(bridgeConfiguration.getRegion()), bridgeConfiguration.getRegion()));
-            String jsonContent = "{ \"mobile\":\"" + bridgeConfiguration.getUserName() + "\", \"password\":\""
-                    + encodedPassword + "\"}";
-            loginRequest.content(new StringContentProvider(jsonContent));
-            Instant tokenCreatedOn = Instant.now();
-            ContentResponse tokenResponse = loginRequest.send();
-            if (tokenResponse.getStatus() != 200) {
-                throw new HttpResponseException("URL: " + loginRequest.getURI() + ", Error: "
-                        + tokenResponse.getStatus() + ", Message: " + tokenResponse.getContentAsString(),
-                        tokenResponse);
-            }
-            String authCode = getAuthCode(tokenResponse.getContentAsString());
-
-            /**
-             * Step 4) Decode access token
-             */
-            ChinaTokenResponse cat = JsonStringDeserializer.deserializeString(authCode, ChinaTokenResponse.class);
-            String token = cat.data.accessToken;
-            // https://www.baeldung.com/java-jwt-token-decode
-            String[] chunks = token.split("\\.");
-            String tokenJwtDecodeStr = new String(Base64.getUrlDecoder().decode(chunks[1]));
-            ChinaTokenExpiration cte = JsonStringDeserializer.deserializeString(tokenJwtDecodeStr,
-                    ChinaTokenExpiration.class);
-
-            AccessTokenResponse t = new AccessTokenResponse();
-            t.setAccessToken(token);
-            t.setTokenType(cat.data.tokenType);
-            t.setCreatedOn(tokenCreatedOn);
-            t.setExpiresIn(cte.exp);
-
-            this.tokenResponse = t;
-            return true;
-        } catch (Exception e) {
-            logger.warn("Authorization Exception: {}", e.getMessage());
-        }
-        return false;
     }
 }
