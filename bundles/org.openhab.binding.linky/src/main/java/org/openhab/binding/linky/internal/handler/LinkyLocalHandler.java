@@ -18,7 +18,14 @@ import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.crypto.Cipher;
@@ -220,26 +227,39 @@ public class LinkyLocalHandler extends BaseThingHandler {
                         updateState(channelRegistry.getGroupName(), channelRegistry.getChannelName(),
                                 StringType.valueOf(value));
                     } else if (channelRegistry.getType() == ValueType.INTEGER) {
-                        updateState(channelRegistry.getGroupName(), channelRegistry.getChannelName(),
-                                QuantityType.valueOf(channelRegistry.getFactor() * Integer.parseInt(value),
-                                        channelRegistry.getUnit()));
+                        if (!value.isEmpty()) {
+                            updateState(channelRegistry.getGroupName(), channelRegistry.getChannelName(),
+                                    QuantityType.valueOf(channelRegistry.getFactor() * Integer.parseInt(value),
+                                            channelRegistry.getUnit()));
+                        }
+                    } else if (channelRegistry.getType() == ValueType.DATE) {
+                        if (!value.isEmpty()) {
+                            Instant timestampConv = getAsInstant(value);
+
+                            if (timestampConv != null) {
+                                updateState(channelRegistry.getGroupName(), channelRegistry.getChannelName(),
+                                        new DateTimeType(timestampConv));
+                            }
+                        }
                     }
 
                     if (timestamp != null) {
                         if (!channelRegistry.getTimestampChannelName().equals(CHANNEL_NONE)) {
-                            String timestampConv = getAsDateTime(timestamp);
-                            if (!timestampConv.isEmpty()) {
+                            Instant timestampConv = getAsInstant(timestamp);
+
+                            if (timestampConv != null) {
                                 logger.trace("Update channel {} to value {}", channelRegistry.getTimestampChannelName(),
                                         timestamp);
+
                                 updateState(channelRegistry.getGroupName(), channelRegistry.getTimestampChannelName(),
-                                        DateTimeType.valueOf(timestampConv));
+                                        new DateTimeType(timestampConv));
                             }
                         }
                     }
                 }
 
                 logger.info("");
-            } catch (IllegalArgumentException ex) {
+            } catch (Exception ex) {
                 logger.error("err", ex);
             }
         }
@@ -250,34 +270,24 @@ public class LinkyLocalHandler extends BaseThingHandler {
         // updateState(LINKY_DIRECT_MAIN_GROUP, "IRMS1", new StringType(payLoad.get("IRMS1")));
     }
 
-    protected String getAsDateTime(String timestamp) {
-        StringBuilder result = new StringBuilder();
-        result.append("20");
-        result.append(timestamp.substring(1, 3));
-        result.append("-");
-        result.append(timestamp.substring(3, 5));
-        result.append("-");
-        result.append(timestamp.substring(5, 7));
-        result.append("T");
-        if (timestamp.length() > 7) {
-            result.append(timestamp.substring(7, 9));
-        } else {
-            result.append("00");
-        }
-        result.append(":");
-        if (timestamp.length() > 9) {
-            result.append(timestamp.substring(9, 11));
-        } else {
-            result.append("00");
-        }
-        result.append(":");
-        if (timestamp.length() > 11) {
-            result.append(timestamp.substring(11, 13));
-        } else {
-            result.append("00");
+    protected @Nullable Instant getAsInstant(String timestamp) {
+        LocalDateTime res;
+
+        if (timestamp.isEmpty()) {
+            return null;
         }
 
-        return result.toString();
+        if (timestamp.startsWith("H") || timestamp.startsWith(" ")) {
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyMMdd[HH][mm][ss]");
+            res = LocalDateTime.parse(timestamp.substring(1), df);
+
+        } else {
+            DateTimeFormatter df = new DateTimeFormatterBuilder().appendPattern("MMM ppd yyyy")
+                    .toFormatter(Locale.ENGLISH);
+            res = LocalDate.parse(timestamp, df).atStartOfDay();
+        }
+
+        return res.toInstant(ZoneOffset.of("+1"));
     }
 
     protected void updateState(String groupId, String channelID, State state) {
