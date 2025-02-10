@@ -62,7 +62,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class EnedisHttpApi {
-    private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String ENEDIS_DOMAIN = ".enedis.fr";
     private static final String URL_APPS_LINCS = "https://alex.microapplications" + ENEDIS_DOMAIN;
     private static final String URL_MON_COMPTE = "https://mon-compte" + ENEDIS_DOMAIN;
@@ -70,10 +70,10 @@ public class EnedisHttpApi {
     private static final String URL_ENEDIS_AUTHENTICATE = URL_APPS_LINCS + "/authenticate?target=" + URL_COMPTE_PART;
     private static final String USER_INFO_CONTRACT_URL = URL_APPS_LINCS + "/mon-compte-client/api/private/v1/userinfos";
     private static final String USER_INFO_URL = URL_APPS_LINCS + "/userinfos";
-    private static final String PRM_INFO_BASE_URL = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/";
+    private static final String PRM_INFO_BASE_URL = URL_APPS_LINCS + "/mes-mesures-prm/api/private/v1/personnes/";
     private static final String PRM_INFO_URL = URL_APPS_LINCS + "/mes-prms-part/api/private/v2/personnes/%s/prms";
     private static final String MEASURE_URL = PRM_INFO_BASE_URL
-            + "%s/prms/%s/donnees-%s?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=%s&mesuresCorrigees=false&typeDonnees=CONS&dateDebut=%s";
     private static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
     private static final Pattern REQ_PATTERN = Pattern.compile("ReqID%(.*?)%26");
 
@@ -90,10 +90,16 @@ public class EnedisHttpApi {
         this.config = config;
     }
 
+    public void removeAllCookie() {
+        httpClient.getCookieStore().removeAll();
+    }
+
     public void initialize() throws LinkyException {
         logger.debug("Starting login process for user: {}", config.username);
 
         try {
+            removeAllCookie();
+
             addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
             logger.debug("Step 1: getting authentification");
             String data = getContent(URL_ENEDIS_AUTHENTICATE);
@@ -237,10 +243,37 @@ public class EnedisHttpApi {
 
     private String getContent(String url) throws LinkyException {
         try {
-            Request request = httpClient.newRequest(url)
-                    .agent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0");
+            Request request = httpClient.newRequest(url);
+
+            request = request.agent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0");
             request = request.method(HttpMethod.GET);
             ContentResponse result = request.send();
+            if (result.getStatus() == HttpStatus.TEMPORARY_REDIRECT_307
+                    || result.getStatus() == HttpStatus.MOVED_TEMPORARILY_302) {
+                String loc = result.getHeaders().get("Location");
+                String newUrl = "";
+
+                if (loc.startsWith("http://") || loc.startsWith("https://")) {
+                    newUrl = loc;
+                } else {
+                    newUrl = URL_APPS_LINCS + loc;
+                }
+
+                request = httpClient.newRequest(newUrl);
+                request = request.method(HttpMethod.GET);
+                result = request.send();
+
+                if (result.getStatus() == HttpStatus.TEMPORARY_REDIRECT_307
+                        || result.getStatus() == HttpStatus.MOVED_TEMPORARILY_302) {
+                    loc = result.getHeaders().get("Location");
+                    String[] urlParts = loc.split("/");
+                    if (urlParts.length < 4) {
+                        throw new LinkyException("malformed url : %s", loc);
+                    }
+                    return urlParts[3];
+                }
+            }
+
             if (result.getStatus() != HttpStatus.OK_200) {
                 throw new LinkyException("Error requesting '%s': %s", url, result.getContentAsString());
             }
@@ -261,7 +294,9 @@ public class EnedisHttpApi {
             throw new LinkyException("Requesting '%s' returned an empty response", url);
         }
         try {
-            return Objects.requireNonNull(gson.fromJson(data, clazz));
+            T result = Objects.requireNonNull(gson.fromJson(data, clazz));
+            logger.trace("getData success {}: {}", clazz.getName(), url);
+            return result;
         } catch (JsonSyntaxException e) {
             logger.debug("Invalid JSON response not matching {}: {}", clazz.getName(), data);
             throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
@@ -289,17 +324,16 @@ public class EnedisHttpApi {
 
     private Consumption getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)
             throws LinkyException {
-        String url = String.format(MEASURE_URL, userId, prmId, request, from.format(API_DATE_FORMAT),
-                to.format(API_DATE_FORMAT));
+        String url = String.format(MEASURE_URL, userId, prmId, request, from.format(API_DATE_FORMAT));
         ConsumptionReport report = getData(url, ConsumptionReport.class);
-        return report.firstLevel.consumptions;
+        return report.consumptions;
     }
 
     public Consumption getEnergyData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(userId, prmId, from, to, "energie");
+        return getMeasures(userId, prmId, from, to, "ENERGIE");
     }
 
     public Consumption getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(userId, prmId, from, to, "pmax");
+        return getMeasures(userId, prmId, from, to, "PMAX");
     }
 }
