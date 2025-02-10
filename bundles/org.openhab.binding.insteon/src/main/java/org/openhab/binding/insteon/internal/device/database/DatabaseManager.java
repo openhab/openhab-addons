@@ -96,6 +96,7 @@ public class DatabaseManager {
         if (job == null && !terminated) {
             job = scheduler.schedule(() -> {
                 modem.getRequestManager().pause();
+                modem.getPollManager().pause();
 
                 handleNextOperation();
             }, delay, TimeUnit.MILLISECONDS);
@@ -109,6 +110,7 @@ public class DatabaseManager {
         DatabaseOperation operation = operationQueue.poll();
         if (operation == null || terminated) {
             modem.getRequestManager().resume();
+            modem.getPollManager().resume();
             job = null;
             return;
         }

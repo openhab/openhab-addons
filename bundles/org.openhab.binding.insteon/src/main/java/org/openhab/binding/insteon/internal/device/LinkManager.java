@@ -118,6 +118,7 @@ public class LinkManager implements PortListener {
 
         modem.getPort().registerListener(this);
         modem.getRequestManager().pause();
+        modem.getPollManager().pause();
 
         setAddress(address);
         setGroup(-1);
@@ -147,6 +148,7 @@ public class LinkManager implements PortListener {
         }
 
         modem.getRequestManager().resume();
+        modem.getPollManager().resume();
         modem.getPort().unregisterListener(this);
     }
 

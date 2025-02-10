@@ -61,7 +61,6 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     private Queue<DeviceRequest> requestQueue = new PriorityQueue<>();
     private Map<Msg, DeviceRequest> requestQueueHash = new HashMap<>();
     private @Nullable DeviceFeature featureQueried;
-    private long pollInterval = -1L; // in milliseconds
     private volatile int failedRequestCount = 0;
     private volatile long lastRequestSent = 0L;
 
@@ -192,13 +191,6 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
         }
     }
 
-    public void setPollInterval(long pollInterval) {
-        if (pollInterval > 0) {
-            logger.trace("setting poll interval for {} to {}", address, pollInterval);
-            this.pollInterval = pollInterval;
-        }
-    }
-
     @Override
     public String toString() {
         String s = address.toString();
@@ -250,12 +242,13 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      */
     public void startPolling() {
         InsteonModem modem = getModem();
-        // start polling if currently disabled
-        if (modem != null && getStatus() != DeviceStatus.POLLING) {
-            getFeatures().forEach(DeviceFeature::initializeQueryStatus);
-            int ndbes = modem.getDB().getEntries().size();
-            modem.getPollManager().startPolling(this, pollInterval, ndbes);
-            setStatus(DeviceStatus.POLLING);
+        if (modem != null) {
+            if (modem.getPollManager().startPolling(this)) {
+                getFeatures().forEach(DeviceFeature::initializeQueryStatus);
+                setStatus(DeviceStatus.POLLING);
+            } else {
+                setStatus(DeviceStatus.STOPPED);
+            }
         }
     }
 
@@ -264,8 +257,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      */
     public void stopPolling() {
         InsteonModem modem = getModem();
-        // stop polling if currently enabled
-        if (modem != null && getStatus() == DeviceStatus.POLLING) {
+        if (modem != null) {
             modem.getPollManager().stopPolling(this);
             clearRequestQueue();
             setStatus(DeviceStatus.STOPPED);
@@ -452,7 +444,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
         }
         InsteonModem modem = getModem();
         if (modem != null) {
-            modem.getRequestManager().addQueue(this, delay);
+            modem.getRequestManager().addRequest(this, delay);
         }
     }
 
