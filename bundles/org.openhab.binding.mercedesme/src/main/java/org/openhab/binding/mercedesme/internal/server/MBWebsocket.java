@@ -225,6 +225,7 @@ public class MBWebsocket {
 
     @OnWebSocketError
     public void onError(Throwable t) {
+        logger.debug("Error during web socket connection - {}", t.getMessage());
         accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "@text/mercedesme.account.status.websocket-failure [\"" + t.getMessage() + "\"]");
     }
