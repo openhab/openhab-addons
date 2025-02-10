@@ -146,6 +146,11 @@ public class LinkyLocalHandler extends BaseThingHandler {
         int length = byteBuffer.getShort(2);
         // long idd2l = byteBuffer.getLong(4);
 
+        if (byteBuffer.position() < length) {
+            // We have incomplete data, wait next read on buffer
+            return;
+        }
+
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
@@ -184,7 +189,10 @@ public class LinkyLocalHandler extends BaseThingHandler {
             }
             Gson gson = bridgeHandler.getGson();
 
-            if (payloadType == 3) {
+            logger.info("frame with payload: {}", payloadType);
+
+            if (payloadType == 0x03) {
+                // PUSH_JSON request
                 Type type = new TypeToken<Map<String, String>>() {
                 }.getType();
 
@@ -193,12 +201,22 @@ public class LinkyLocalHandler extends BaseThingHandler {
                     handlePayload(r1);
                 }
             }
+            if (payloadType == 0x01) {
+                // UPDATE_REQUEST request
+                logger.info("");
+            }
+            if (payloadType == 0x05) {
+                // GET_HORLOGE request
+                logger.info("");
+            } else {
+                logger.info("");
+            }
 
-            System.out.print(st1);
+            logger.info("");
 
         } catch (Exception ex) {
 
-            System.out.print(ex.toString());
+            logger.error("ex: {}", ex.toString(), ex);
         }
     }
 
@@ -257,8 +275,6 @@ public class LinkyLocalHandler extends BaseThingHandler {
                         }
                     }
                 }
-
-                logger.info("");
             } catch (Exception ex) {
                 logger.error("err", ex);
             }
