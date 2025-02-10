@@ -26,6 +26,7 @@ public class LinkyConfiguration {
     public String username = "";
     public String password = "";
     public String internalAuthId = "";
+    public String timezone = "";
 
     public boolean seemsValid() {
         return !username.isBlank() && !password.isBlank() && !internalAuthId.isBlank();
