@@ -171,9 +171,9 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_PCOUP = "pcoup";
 
     public static final String CHANNEL_SINSTS = "sinsts";
-    public static final String CHANNEL_SINSTS1 = "sinsts";
-    public static final String CHANNEL_SINSTS2 = "sinsts";
-    public static final String CHANNEL_SINSTS3 = "sinsts";
+    public static final String CHANNEL_SINST1 = "sinst1";
+    public static final String CHANNEL_SINST2 = "sinst2";
+    public static final String CHANNEL_SINST3 = "sinst3";
 
     public static final String CHANNEL_SMAXSN = "smaxsn";
     public static final String CHANNEL_SMAXSN1 = "smaxsn1";

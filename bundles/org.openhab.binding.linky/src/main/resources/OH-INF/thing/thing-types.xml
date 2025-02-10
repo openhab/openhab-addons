@@ -33,6 +33,13 @@
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
 
+    <channel-type id="numericType">
+        <item-type>Number</item-type>
+        <label>Numeric Type Consumption</label>
+        <category>energy</category>
+        <state readOnly="true" pattern="%.0f"/>
+    </channel-type>
+
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>

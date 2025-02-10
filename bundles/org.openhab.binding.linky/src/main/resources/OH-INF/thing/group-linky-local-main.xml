@@ -31,7 +31,7 @@
 				<description>Adresse Secondaire du Compteur</description>
 			</channel>
 
-			<channel id="vtic" typeId="stringType">
+			<channel id="vtic" typeId="numericType">
 				<label>VTIC</label>
 				<description>Version de la TIC</description>
 			</channel>
