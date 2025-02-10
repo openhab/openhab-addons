@@ -22,16 +22,13 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
-import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,13 +42,6 @@ import org.slf4j.LoggerFactory;
 public class GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(GatewayDiscoveryParticipant.class);
-
-    private final HDPowerviewPropertyGetter propertyGetter;
-
-    @Activate
-    public GatewayDiscoveryParticipant(@Reference HDPowerviewPropertyGetter propertyGetter) {
-        this.propertyGetter = propertyGetter;
-    }
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
@@ -86,11 +76,11 @@ public class GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         String host = getIpV4Address(service);
         if (host != null) {
-            try {
-                String serial = propertyGetter.getSerialNumberApiV3(host);
+            String serial = service.getPropertyString("sn");
+            if (serial != null) {
                 return new ThingUID(THING_TYPE_GATEWAY, serial);
-            } catch (HubException e) {
-                logger.debug("Error discovering gateway", e);
+            } else {
+                logger.debug("Error discovering gateway 'missing serial number'");
             }
         }
         return null;
