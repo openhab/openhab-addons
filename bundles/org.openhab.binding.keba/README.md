@@ -70,7 +70,7 @@ end
 
 | Parameter  | Description                                                                                                                                |
 |------------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| text  | Text shown on the display. Maximum 23 ASCII characters can be used., ~ == \u03A3, $ == blank, == comma |
+| text  | Text shown on the display. Maximum 23 ASCII characters can be used. `~` == Σ, `$` == blank, `,` == comma |
 | durationMin _(optional)_   | Defines the duration in seconds how long the text will displayed before another display command will be processed (internal MID metering relevant information may overrule this) |
 | durationMax _(optional)_| Defines the duration in seconds how long the text will displayed if no additional display command follows. |
 
