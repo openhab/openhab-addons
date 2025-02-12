@@ -11,7 +11,7 @@ The protocol supports daisy-chaining of serial devices.
 
 The LG serial command set appears to be similar on many models ([1], [5]), but not all commands will work on all models.
 
-The serial port on most TVs is a male DE-9 connector that requires a "Null modem" cable to connect to a serial port or USB to serial adapter.
+The control port on most TVs is a male DE-9 connector that requires a "Null modem" cable to connect to a serial port or USB to serial adapter.
 
 Some TVs have a 3.5 mm phone jack for the control port instead of a standard DE-9 connector, and may thus require the use of an adapter cable.
 
