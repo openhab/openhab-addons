@@ -21,7 +21,7 @@ Please note **this isn't a real-time binding**.
 If a door is opened the state isn't transmitted and changed immediately.
 It's not a flaw in the binding itself because the state in BMW's own MyBMW App is also updated with some delay.
 
-This binding does not support China.
+This binding does not support the region: China.
 
 ## Supported Things
 
