@@ -118,20 +118,20 @@ public class AwtrixLightBindingConstants {
     public static final String[] DEFAULT_APPS = { "Time", "Date", "Temperature", "Humidity", "Battery" };
 
     // Common Channels
-    public static final String CHANNEL_BUTLEFT = "buttonleft";
-    public static final String CHANNEL_BUTRIGHT = "buttonright";
-    public static final String CHANNEL_BUTSELECT = "buttonselect";
+    public static final String CHANNEL_BUTLEFT = "button-left";
+    public static final String CHANNEL_BUTRIGHT = "button-right";
+    public static final String CHANNEL_BUTSELECT = "button-select";
 
     // Clock Channels
     public static final String CHANNEL_APP = "app";
-    public static final String CHANNEL_AUTO_BRIGHTNESS = "autoBrightness";
-    public static final String CHANNEL_BATTERY = "batterylevel";
+    public static final String CHANNEL_AUTO_BRIGHTNESS = "auto-brightness";
+    public static final String CHANNEL_BATTERY = "battery-level";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_DISPLAY = "display";
     public static final String CHANNEL_HUMIDITY = "humidity";
-    public static final String CHANNEL_INDICATOR1 = "indicator1";
-    public static final String CHANNEL_INDICATOR2 = "indicator2";
-    public static final String CHANNEL_INDICATOR3 = "indicator3";
+    public static final String CHANNEL_INDICATOR1 = "indicator-1";
+    public static final String CHANNEL_INDICATOR2 = "indicator-2";
+    public static final String CHANNEL_INDICATOR3 = "indicator-3";
     public static final String CHANNEL_LOW_BATTERY = "low-battery";
     public static final String CHANNEL_LUX = "lux";
     public static final String CHANNEL_RSSI = "rssi";
@@ -145,33 +145,33 @@ public class AwtrixLightBindingConstants {
     public static final String CHANNEL_AUTOSCALE = "autoscale";
     public static final String CHANNEL_BACKGROUND = "background";
     public static final String CHANNEL_BAR = "bar";
-    public static final String CHANNEL_BLINK_TEXT = "blinkText";
+    public static final String CHANNEL_BLINK_TEXT = "blink-text";
     public static final String CHANNEL_CENTER = "center";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_DURATION = "duration";
     public static final String CHANNEL_EFFECT = "effect";
-    public static final String CHANNEL_EFFECT_BLEND = "effectBlend";
-    public static final String CHANNEL_EFFECT_PALETTE = "effectPalette";
-    public static final String CHANNEL_EFFECT_SPEED = "effectSpeed";
-    public static final String CHANNEL_FADE_TEXT = "fadeText";
-    public static final String CHANNEL_GRADIENT_COLOR = "gradientColor";
+    public static final String CHANNEL_EFFECT_BLEND = "effect-blend";
+    public static final String CHANNEL_EFFECT_PALETTE = "effect-palette";
+    public static final String CHANNEL_EFFECT_SPEED = "effect-speed";
+    public static final String CHANNEL_FADE_TEXT = "fade-text";
+    public static final String CHANNEL_GRADIENT_COLOR = "gradient-color";
     public static final String CHANNEL_ICON = "icon";
     public static final String CHANNEL_LIFETIME = "lifetime";
-    public static final String CHANNEL_LIFETIME_MODE = "lifetimeMode";
+    public static final String CHANNEL_LIFETIME_MODE = "lifetime-mode";
     public static final String CHANNEL_LINE = "line";
     public static final String CHANNEL_OVERLAY = "overlay";
     public static final String CHANNEL_PROGRESS = "progress";
-    public static final String CHANNEL_PROGRESSC = "progressColor";
-    public static final String CHANNEL_PROGRESSBC = "progressBackground";
-    public static final String CHANNEL_PUSH_ICON = "pushIcon";
+    public static final String CHANNEL_PROGRESSC = "progress-color";
+    public static final String CHANNEL_PROGRESSBC = "progress-background";
+    public static final String CHANNEL_PUSH_ICON = "push-icon";
     public static final String CHANNEL_RAINBOW = "rainbow";
     public static final String CHANNEL_REPEAT = "repeat";
     public static final String CHANNEL_RESET = "reset";
-    public static final String CHANNEL_SCROLLSPEED = "scrollSpeed";
+    public static final String CHANNEL_SCROLLSPEED = "scroll-speed";
     public static final String CHANNEL_TEXT = "text";
-    public static final String CHANNEL_TEXTCASE = "textCase";
-    public static final String CHANNEL_TEXT_OFFSET = "textOffset";
-    public static final String CHANNEL_TOP_TEXT = "topText";
+    public static final String CHANNEL_TEXTCASE = "text-case";
+    public static final String CHANNEL_TEXT_OFFSET = "text-offset";
+    public static final String CHANNEL_TOP_TEXT = "top-text";
 
     public static final String PUSH_ICON_OPTION_0 = "STATIC";
     public static final String PUSH_ICON_OPTION_1 = "PUSHOUT";
