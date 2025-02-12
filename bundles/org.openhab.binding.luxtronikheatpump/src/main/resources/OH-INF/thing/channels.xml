@@ -2045,7 +2045,7 @@
 
 	<channel-type id="powerConsumption" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>Heating Power Actual Value</label>
+		<label>Power Consumption</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
