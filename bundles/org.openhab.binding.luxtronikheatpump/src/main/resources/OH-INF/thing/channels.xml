@@ -2043,6 +2043,12 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="powerConsumption" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Heating Power Actual Value</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="unknown" advanced="true">
 		<item-type>Number</item-type>
 		<label>Unknown Channel</label>

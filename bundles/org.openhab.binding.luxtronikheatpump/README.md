@@ -282,6 +282,15 @@ The following channels are holding read only values:
 | heatingPowerActualValue                 | Number:Power              | x        | Heating Power Actual Value                                     |
 | outputControlSignalCooling              | Switch                    | x        | Output "Control Signal Cooling"                                |
 | timeCoolingRelease                      | Number:Time               | x        | Release Cooling Time                                           |
+| channel260                              | Number                    | x        | Channel 260                                                    |
+| channel261                              | Number                    | x        | Channel 261                                                    |
+| channel262                              | Number                    | x        | Channel 262                                                    |
+| channel263                              | Number                    | x        | Channel 263                                                    |
+| channel264                              | Number                    | x        | Channel 264                                                    |
+| channel265                              | Number                    | x        | Channel 265                                                    |
+| channel266                              | Number                    | x        | Channel 266                                                    |
+| channel267                              | Number                    | x        | Channel 267                                                    |
+| powerConsumption                        | Number:Power              | x        | Power Consumption                                              |
 
 The usage of the numbered channels above is currently unknown. If you are able to directly match one of the values to any value reported by your heat pump, feel free to report back on the forum, so we are able to give the channel a proper name instead.
 
