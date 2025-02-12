@@ -13,11 +13,11 @@ The LG serial command set appears to be similar on many models ([1], [5]), but n
 
 The control port on most TVs is a male DE-9 connector that requires a "Null modem" cable to connect to a serial port or USB to serial adapter.
 
-Some TVs have a 3.5 mm phone jack for the control port instead of the DE-9 connector, and may thus require the use of an adapter cable.
+Some TVs have a 3.5 mm phone jack for the control port instead of a DE-9 connector, and may thus require the use of an adapter cable.
 
 The 3.5 mm phone jack may work with a generic 3.5 mm TRS phone plug to DE-9 cable or possibly LG part # EAD62707901 or EAD62707902 (3.5 mm TRRS to DE-9).
 
-The serial port may be marked "Service Only".
+The control port may be marked "Service Only".
 
 Tested and developed with:
 
