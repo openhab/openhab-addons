@@ -14,17 +14,11 @@
 			<description>MyBMW Password</description>
 			<context>password</context>
 		</parameter>
-		<parameter name="hcaptchatoken" type="text" required="true">
-			<label>Captcha-Token</label>
-			<description>Captcha-Token for login (see https://bimmer-connected.readthedocs.io/en/stable/captcha.html)</description>
-			<context>hcaptchatoken</context>
-		</parameter>
 		<parameter name="region" type="text" required="true">
 			<label>Region</label>
 			<description>Select Region in order to connect to the appropriate BMW Server</description>
 			<options>
 				<option value="NORTH_AMERICA">North America</option>
-				<option value="CHINA">China</option>
 				<option value="ROW">Rest of the World</option>
 			</options>
 			<default>ROW</default>
@@ -34,6 +28,23 @@
 			<description>Channel data can be returned in the desired language like en, de, fr ...</description>
 			<advanced>true</advanced>
 			<default>AUTODETECT</default>
+		</parameter>
+		<parameter name="hcaptchatoken" type="text">
+			<label>Captcha-Token</label>
+			<description>Captcha-Token for login (see https://bimmer-connected.readthedocs.io/en/stable/captcha.html)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="callbackIP" type="text">
+			<label>Callback IP Address</label>
+			<description>IP address for openHAB callback URL, defaults to IP of openHAB host</description>
+			<context>network-address</context>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="callbackPort" type="integer">
+			<label>Callback Port Number</label>
+			<description>Port Number for openHAB callback URL, default 8090</description>
+			<default>8090</default>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

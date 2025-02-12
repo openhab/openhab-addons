@@ -35,6 +35,7 @@ public class NetworkException extends Exception {
     }
 
     public NetworkException(String url, int status, @Nullable String reason, @Nullable String body) {
+        super(reason);
         this.url = url;
         this.status = status;
         this.reason = reason != null ? reason : "";

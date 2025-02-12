@@ -12,15 +12,8 @@
  */
 package org.openhab.binding.mybmw.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -28,7 +21,10 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+
+import javax.measure.quantity.Pressure;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -165,6 +161,7 @@ public class VehicleHandlerTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testPressureConversion() {
         try {
@@ -172,9 +169,9 @@ public class VehicleHandlerTest {
             calculatePressureMethod.setAccessible(true);
             State state = (State) calculatePressureMethod.invoke(vehicleHandler, 110);
             assertInstanceOf(QuantityType.class, state);
-            assertEquals(1.1, ((QuantityType) state).doubleValue());
+            assertEquals(1.1, Objects.requireNonNull((QuantityType<Pressure>) state).doubleValue());
             state = (State) calculatePressureMethod.invoke(vehicleHandler, 280);
-            assertEquals(2.8, ((QuantityType) state).doubleValue());
+            assertEquals(2.8, Objects.requireNonNull(((QuantityType<Pressure>) state)).doubleValue());
 
             state = (State) calculatePressureMethod.invoke(vehicleHandler, -1);
             assertInstanceOf(UnDefType.class, state);
