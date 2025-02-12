@@ -71,6 +71,13 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
         this.sessionDataPollingJobReference = new AtomicReference<>(null);
     }
 
+    void reInit() {
+        if (isInitialized()) {
+            dispose();
+            initialize();
+        }
+    }
+
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);

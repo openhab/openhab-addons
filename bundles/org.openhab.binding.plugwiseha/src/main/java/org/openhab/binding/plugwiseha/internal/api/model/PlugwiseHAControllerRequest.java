@@ -247,12 +247,12 @@ public class PlugwiseHAControllerRequest<T> {
         try {
             response = request.send();
         } catch (InterruptedException e) {
-            this.logger.trace("InterruptedException occured {} {}", e.getMessage(), e.getStackTrace());
+            this.logger.trace("InterruptedException occurred {} {}", e.getMessage(), e.getStackTrace());
             Thread.currentThread().interrupt();
             throw new PlugwiseHATimeoutException(e);
         } catch (TimeoutException e) {
             if (retries > 0) {
-                this.logger.debug("TimeoutException occured, remaining retries {}", retries - 1);
+                this.logger.debug("TimeoutException occurred, remaining retries {}", retries - 1);
                 try {
                     Thread.sleep(RETRY_DELAY_TIMOUT);
                 } catch (InterruptedException ie) {
