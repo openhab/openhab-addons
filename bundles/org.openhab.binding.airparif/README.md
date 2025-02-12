@@ -160,6 +160,7 @@ Bridge airparif:api:local "AirParif" [ apikey="xxxxx-dddd-cccc-4321-zzzzzzzzzzzz
     location 78 "Yvelines" [ department="78", location="52.639,1.8284" ]
 }
 ```
+
 ### Item Configurationn
 
 ```java
