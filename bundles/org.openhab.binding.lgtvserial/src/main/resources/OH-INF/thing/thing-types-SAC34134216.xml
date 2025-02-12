@@ -43,7 +43,7 @@
 
 	<thing-type id="lgtv-LVx55-series">
 		<label>LV/LW Series</label>
-		<description><![CDATA[This thing supports the *LV255C, *LV355B, *LV355C models.]]></description>
+		<description><![CDATA[This thing supports the *LV255C, *LV355B, *LV355C models]]></description>
 		<channels>
 			<channel id="3d" typeId="3d"/>
 			<channel id="3d-extended" typeId="3d-extended"/>
