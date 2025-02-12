@@ -54,8 +54,8 @@ public class AwtrixActions implements ThingActions {
     }
 
     public static void blinkIndicator(@Nullable ThingActions actions, int indicatorId, int[] rgb, int blinkTimeInMs) {
-        if (actions instanceof AwtrixActions) {
-            ((AwtrixActions) actions).blinkIndicator(indicatorId, rgb, blinkTimeInMs);
+        if (actions instanceof AwtrixActions awtrixActions) {
+            awtrixActions.blinkIndicator(indicatorId, rgb, blinkTimeInMs);
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
         }
@@ -70,8 +70,8 @@ public class AwtrixActions implements ThingActions {
     }
 
     public static void fadeIndicator(@Nullable ThingActions actions, int indicatorId, int[] rgb, int fadeTimeInMs) {
-        if (actions instanceof AwtrixActions) {
-            ((AwtrixActions) actions).fadeIndicator(indicatorId, rgb, fadeTimeInMs);
+        if (actions instanceof AwtrixActions awtrixActions) {
+            awtrixActions.fadeIndicator(indicatorId, rgb, fadeTimeInMs);
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
         }
@@ -86,8 +86,8 @@ public class AwtrixActions implements ThingActions {
     }
 
     public static void activateIndicator(@Nullable ThingActions actions, int indicatorId, int[] rgb) {
-        if (actions instanceof AwtrixActions) {
-            ((AwtrixActions) actions).activateIndicator(indicatorId, rgb);
+        if (actions instanceof AwtrixActions awtrixActions) {
+            awtrixActions.activateIndicator(indicatorId, rgb);
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
         }
@@ -102,8 +102,8 @@ public class AwtrixActions implements ThingActions {
     }
 
     public static void deactivateIndicator(@Nullable ThingActions actions, int indicatorId) {
-        if (actions instanceof AwtrixActions) {
-            ((AwtrixActions) actions).deactivateIndicator(indicatorId);
+        if (actions instanceof AwtrixActions awtrixActions) {
+            awtrixActions.deactivateIndicator(indicatorId);
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
         }
@@ -118,8 +118,8 @@ public class AwtrixActions implements ThingActions {
     }
 
     public static void reboot(@Nullable ThingActions actions) {
-        if (actions instanceof AwtrixActions) {
-            ((AwtrixActions) actions).reboot();
+        if (actions instanceof AwtrixActions awtrixActions) {
+            awtrixActions.reboot();
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
         }
@@ -134,8 +134,8 @@ public class AwtrixActions implements ThingActions {
     }
 
     public static void sleep(@Nullable ThingActions actions, int seconds) {
-        if (actions instanceof AwtrixActions) {
-            ((AwtrixActions) actions).sleep(seconds);
+        if (actions instanceof AwtrixActions awtrixActions) {
+            awtrixActions.sleep(seconds);
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
         }
@@ -150,8 +150,8 @@ public class AwtrixActions implements ThingActions {
     }
 
     public static void upgrade(@Nullable ThingActions actions) {
-        if (actions instanceof AwtrixActions) {
-            ((AwtrixActions) actions).upgrade();
+        if (actions instanceof AwtrixActions awtrixActions) {
+            awtrixActions.upgrade();
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
         }
@@ -166,9 +166,9 @@ public class AwtrixActions implements ThingActions {
     }
 
     public static void playSound(@Nullable ThingActions actions, @Nullable String melody) {
-        if (actions instanceof AwtrixActions) {
+        if (actions instanceof AwtrixActions awtrixActions) {
             if (melody != null) {
-                ((AwtrixActions) actions).playSound(melody);
+                awtrixActions.playSound(melody);
             }
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
@@ -184,9 +184,9 @@ public class AwtrixActions implements ThingActions {
     }
 
     public static void playRtttl(@Nullable ThingActions actions, @Nullable String rtttl) {
-        if (actions instanceof AwtrixActions) {
+        if (actions instanceof AwtrixActions awtrixActions) {
             if (rtttl != null) {
-                ((AwtrixActions) actions).playRtttl(rtttl);
+                awtrixActions.playRtttl(rtttl);
             }
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
@@ -206,9 +206,9 @@ public class AwtrixActions implements ThingActions {
 
     public static void showNotification(@Nullable ThingActions actions, @Nullable String message,
             @Nullable String icon) {
-        if (actions instanceof AwtrixActions) {
+        if (actions instanceof AwtrixActions awtrixActions) {
             if (message != null && icon != null) {
-                ((AwtrixActions) actions).showNotification(message, icon);
+                awtrixActions.showNotification(message, icon);
             }
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
@@ -227,10 +227,9 @@ public class AwtrixActions implements ThingActions {
     public static void showCustomNotification(@Nullable ThingActions actions, @Nullable Map<String, Object> appParams,
             boolean hold, boolean wakeUp, boolean stack, @Nullable String rtttl, @Nullable String sound,
             boolean loopSound) {
-        if (actions instanceof AwtrixActions) {
+        if (actions instanceof AwtrixActions awtrixActions) {
             if (appParams != null) {
-                ((AwtrixActions) actions).showCustomNotification(appParams, hold, wakeUp, stack, rtttl, sound,
-                        loopSound);
+                awtrixActions.showCustomNotification(appParams, hold, wakeUp, stack, rtttl, sound, loopSound);
             }
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");

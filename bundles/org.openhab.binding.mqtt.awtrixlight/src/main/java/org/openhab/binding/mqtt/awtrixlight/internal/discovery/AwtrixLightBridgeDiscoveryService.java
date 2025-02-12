@@ -59,9 +59,9 @@ public class AwtrixLightBridgeDiscoveryService extends AbstractDiscoveryService 
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof AwtrixLightBridgeHandler) {
-            this.bridgeHandler = (AwtrixLightBridgeHandler) handler;
-            ((AwtrixLightBridgeHandler) handler).setAppDiscoveryCallback(this);
+        if (handler instanceof AwtrixLightBridgeHandler bridgeHandler) {
+            this.bridgeHandler = bridgeHandler;
+            bridgeHandler.setAppDiscoveryCallback(this);
         }
     }
 

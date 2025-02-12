@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:mqtt:awtrixclock">
+	<config-description uri="thing-type:mqtt:awtrix-clock">
 		<parameter name="basetopic" type="text" required="true">
 			<label>Base topic</label>
 			<description>Base topic as configured in the Awtrix Light device.</description>
@@ -28,7 +28,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:mqtt:awtrixapp">
+	<config-description uri="thing-type:mqtt:awtrix-app">
 		<parameter name="appname" type="text" required="true">
 			<label>App name</label>
 			<description>Name of the app</description>

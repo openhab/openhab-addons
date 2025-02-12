@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="awtrixclock">
+	<bridge-type id="awtrix-clock">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
 		</supported-bridge-type-refs>
@@ -13,18 +13,18 @@
 		<category>screen</category>
 		<channels>
 			<channel id="app" typeId="app"/>
-			<channel id="autoBrightness" typeId="autoBrightness"/>
-			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="auto-brightness" typeId="auto-brightness"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="brightness" typeId="brightness"/>
-			<channel id="buttonLeft" typeId="system.rawbutton">
+			<channel id="button-left" typeId="system.rawbutton">
 				<label>Button Left</label>
 				<description>Left button pressed</description>
 			</channel>
-			<channel id="buttonRight" typeId="system.rawbutton">
+			<channel id="button-right" typeId="system.rawbutton">
 				<label>Button Right</label>
 				<description>Right button pressed</description>
 			</channel>
-			<channel id="buttonSelect" typeId="system.rawbutton">
+			<channel id="button-select" typeId="system.rawbutton">
 				<label>Button Select</label>
 				<description>Select button pressed</description>
 			</channel>
@@ -34,10 +34,10 @@
 				<autoUpdatePolicy>recommend</autoUpdatePolicy>
 			</channel>
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
-			<channel id="indicator1" typeId="indicator"/>
-			<channel id="indicator2" typeId="indicator"/>
-			<channel id="indicator3" typeId="indicator"/>
-			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="indicator-1" typeId="indicator"/>
+			<channel id="indicator-2" typeId="indicator"/>
+			<channel id="indicator-3" typeId="indicator"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 			<channel id="lux" typeId="lux"/>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="rtttl" typeId="rtttl"/>
@@ -52,12 +52,12 @@
 			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>uniqueId</representation-property>
-		<config-description-ref uri="thing-type:mqtt:awtrixclock"/>
+		<config-description-ref uri="thing-type:mqtt:awtrix-clock"/>
 	</bridge-type>
 
-	<thing-type id="awtrixapp">
+	<thing-type id="awtrix-app">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="awtrixclock"/>
+			<bridge-type-ref id="awtrix-clock"/>
 		</supported-bridge-type-refs>
 		<label>Awtrix App</label>
 		<description>An app for an Awtrix Light device</description>
@@ -72,50 +72,50 @@
 			<channel id="autoscale" typeId="autoscale"/>
 			<channel id="background" typeId="background"/>
 			<channel id="bar" typeId="bar"/>
-			<channel id="blinkText" typeId="blinkText"/>
-			<channel id="buttonLeft" typeId="system.rawbutton">
+			<channel id="blink-text" typeId="blink-text"/>
+			<channel id="button-left" typeId="system.rawbutton">
 				<label>Button Left</label>
 				<description>Left button pressed</description>
 			</channel>
-			<channel id="buttonRight" typeId="system.rawbutton">
+			<channel id="button-right" typeId="system.rawbutton">
 				<label>Button Right</label>
 				<description>Right button pressed</description>
 			</channel>
-			<channel id="buttonSelect" typeId="system.rawbutton">
+			<channel id="button-select" typeId="system.rawbutton">
 				<label>Button Select</label>
 				<description>Select button pressed</description>
 			</channel>
 			<channel id="center" typeId="center"/>
-			<channel id="color" typeId="mainColor"/>
+			<channel id="color" typeId="main-color"/>
 			<channel id="duration" typeId="duration"/>
 			<channel id="effect" typeId="effect"/>
-			<channel id="effectBlend" typeId="effectBlend"/>
-			<channel id="effectPalette" typeId="effectPalette"/>
-			<channel id="effectSpeed" typeId="effectSpeed"/>
-			<channel id="fadeText" typeId="fadeText"/>
-			<channel id="gradientColor" typeId="gradientColor"/>
+			<channel id="effect-blend" typeId="effect-blend"/>
+			<channel id="effect-palette" typeId="effect-palette"/>
+			<channel id="effect-speed" typeId="effect-speed"/>
+			<channel id="fade-text" typeId="fade-text"/>
+			<channel id="gradient-color" typeId="gradient-color"/>
 			<channel id="icon" typeId="icon"/>
 			<channel id="lifetime" typeId="lifetime"/>
-			<channel id="lifetimeMode" typeId="lifetimeMode"/>
+			<channel id="lifetime-mode" typeId="lifetime-mode"/>
 			<channel id="line" typeId="line"/>
 			<channel id="overlay" typeId="overlay"/>
 			<channel id="progress" typeId="progress"/>
-			<channel id="progressBackground" typeId="progressBackground"/>
-			<channel id="progressColor" typeId="progressColor"/>
-			<channel id="pushIcon" typeId="pushIcon"/>
+			<channel id="progress-background" typeId="progress-background"/>
+			<channel id="progress-color" typeId="progress-color"/>
+			<channel id="push-icon" typeId="push-icon"/>
 			<channel id="rainbow" typeId="rainbow"/>
-			<channel id="scrollSpeed" typeId="scrollSpeed"/>
+			<channel id="scroll-speed" typeId="scroll-speed"/>
 			<channel id="text" typeId="text"/>
-			<channel id="textCase" typeId="textCase"/>
-			<channel id="textOffset" typeId="textOffset"/>
-			<channel id="topText" typeId="topText"/>
+			<channel id="text-case" typeId="text-case"/>
+			<channel id="text-offset" typeId="text-offset"/>
+			<channel id="top-text" typeId="top-text"/>
 		</channels>
 		<properties>
 			<property name="appid"></property>
 			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>appid</representation-property>
-		<config-description-ref uri="thing-type:mqtt:awtrixapp"/>
+		<config-description-ref uri="thing-type:mqtt:awtrix-app"/>
 	</thing-type>
 
 	<channel-type id="lux">
@@ -130,9 +130,9 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
-	<channel-type id="autoBrightness">
+	<channel-type id="auto-brightness">
 		<item-type>Switch</item-type>
-		<label>Automatc Brightness</label>
+		<label>Automatic Brightness</label>
 		<description>Let the clock set brightness automatically based on internal brightness sensor readings</description>
 		<category>screen</category>
 		<tags>
@@ -158,9 +158,6 @@
 		<label>WiFi Signal</label>
 		<description>RSSI value of WiFi signal</description>
 		<category>qualityofservice</category>
-		<tags>
-			<tag>Measurement</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
@@ -180,9 +177,6 @@
 		<label>Active App</label>
 		<description>App currently shown on screen</description>
 		<category>screen</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -195,19 +189,16 @@
 			]]>
 		</description>
 		<category>screen</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 	</channel-type>
 
-	<channel-type id="mainColor">
+	<channel-type id="main-color">
 		<item-type>Color</item-type>
-		<label>Color</label>
+		<label>Main Color</label>
 		<description>Color to display text and charts on the screen</description>
 		<category>colorpicker</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
@@ -216,9 +207,6 @@
 		<label>Reset</label>
 		<description>Resets the app and the linked items to the default settings</description>
 		<category>switch</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="background">
@@ -228,14 +216,14 @@
 		<category>colorpicker</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
-	<channel-type id="gradientColor">
+	<channel-type id="gradient-color">
 		<item-type>Color</item-type>
 		<label>Gradient Color</label>
-		<description>Color text as gradient from Color to Gradient Color</description>
+		<description>Color text as gradient from Main Color to Gradient Color</description>
 		<category>colorpicker</category>
 		<tags>
 			<tag>Control</tag>
@@ -259,9 +247,6 @@
 		<label>Background effect</label>
 		<description>Effect shown in the background of the app</description>
 		<category>screen</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="None">None</option>
@@ -287,7 +272,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="effectPalette">
+	<channel-type id="effect-palette">
 		<item-type>String</item-type>
 		<label>Effect Color Palette</label>
 		<description>Changes the color scheme of the effect settings</description>
@@ -310,24 +295,18 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="effectBlend" advanced="true">
+	<channel-type id="effect-blend" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Smooth Effects</label>
 		<description>Smoother effect animations</description>
 		<category>switch</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
-	<channel-type id="effectSpeed" advanced="true">
+	<channel-type id="effect-speed" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Background effect speed</label>
 		<description>Playback speed of background animations</description>
 		<category>time</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="text">
@@ -335,20 +314,13 @@
 		<label>Display Text</label>
 		<description>Text displayed in the app</description>
 		<category>text</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 	</channel-type>
 
-	<channel-type id="textCase" advanced="true">
+	<channel-type id="text-case" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Text Case</label>
 		<description>Change case of displayed text. Default uses the global preset.</description>
 		<category>text</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="0">Default</option>
@@ -358,27 +330,21 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="textOffset" advanced="true">
+	<channel-type id="text-offset" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Text Offset</label>
 		<description>Offset on x-axis in pixel for displayed text</description>
 		<category>text</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
-	<channel-type id="topText" advanced="true">
+	<channel-type id="top-text" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Show text on top</label>
 		<description>Draws the text on the top of the display</description>
 		<category>text</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
-	<channel-type id="blinkText">
+	<channel-type id="blink-text">
 		<item-type>Number:Time</item-type>
 		<label>Blink Text</label>
 		<description>Blink text in specified time interval</description>
@@ -390,7 +356,7 @@
 		<state step="0.1" pattern="%.1f s" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="fadeText">
+	<channel-type id="fade-text">
 		<item-type>Number:Time</item-type>
 		<label>Fade Text</label>
 		<description>Fade text in specified interval</description>
@@ -407,9 +373,6 @@
 		<label>Rainbow Color</label>
 		<description>Fades the text color in rainbow colors</description>
 		<category>text</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="center" advanced="true">
@@ -417,9 +380,6 @@
 		<label>Center short texts</label>
 		<description>Short texts will be centered instead of scrolling</description>
 		<category>text</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="icon">
@@ -427,19 +387,13 @@
 		<label>Icon</label>
 		<description>Icon ID or filename without extension</description>
 		<category>screen</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
-	<channel-type id="pushIcon">
+	<channel-type id="push-icon">
 		<item-type>String</item-type>
 		<label>Scroll Icon</label>
 		<description>Make the icon scroll along with the text</description>
 		<category>screen</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="STATIC">Icon does not move</option>
@@ -454,9 +408,6 @@
 		<label>Line Graph</label>
 		<description>Draw a line graph (format: "value1,value2,value3", last 16 entries will be displayed, last 11 with icon)</description>
 		<category>qualityofservice</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="lifetime">
@@ -470,14 +421,11 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="lifetimeMode">
+	<channel-type id="lifetime-mode">
 		<item-type>String</item-type>
 		<label>App Lifetime Mode</label>
 		<description>Delete the app or mark as stale after lifetime</description>
 		<category>screen</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="DELETE">Delete</option>
@@ -491,9 +439,6 @@
 		<label>Bar Graph</label>
 		<description>Draw a bar graph (format: "value1,value2,value3", last 16 entries will be displayed, last 11 with icon)</description>
 		<category>qualityofservice</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="autoscale" advanced="true">
@@ -501,9 +446,6 @@
 		<label>Autoscale graphs</label>
 		<description>Automatically scales graphs to fit onto display</description>
 		<category>qualityofservice</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="overlay">
@@ -511,9 +453,6 @@
 		<label>App Overlay</label>
 		<description>Overlay effect (overriden by global clock overlay)</description>
 		<category>screen</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="clear">Clear</option>
@@ -532,13 +471,10 @@
 		<label>Progress Bar</label>
 		<description>Show progress bar with specified percentage</description>
 		<category>qualityofservice</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 		<state min="0" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
 
-	<channel-type id="progressColor">
+	<channel-type id="progress-color">
 		<item-type>Color</item-type>
 		<label>Progress Bar Color</label>
 		<description>Color of progress bar</description>
@@ -549,24 +485,21 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="progressBackground">
+	<channel-type id="progress-background">
 		<item-type>Color</item-type>
 		<label>Progress Bar Background Color</label>
 		<description>Color of progress bar background</description>
 		<category>colorpicker</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
-	<channel-type id="scrollSpeed">
+	<channel-type id="scroll-speed">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Scroll Speed</label>
 		<description>Speed of text scrolling as percentage of default speed</description>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 		<state pattern="%.0f %unit%"></state>
 	</channel-type>
 
@@ -575,9 +508,6 @@
 		<label>Play melody from MELODIES folder</label>
 		<description>Name of the melody file in the clocks MELODIES folder</description>
 		<category>text</category>
-		<tags>
-			<tag>Point</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="rtttl">
@@ -585,9 +515,6 @@
 		<label>Play RTTTL</label>
 		<description>Ring Tone Text Transfer Language (RTTTL) compliant sound string</description>
 		<category>text</category>
-		<tags>
-			<tag>Point</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

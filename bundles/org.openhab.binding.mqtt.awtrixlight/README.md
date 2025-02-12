@@ -1,107 +1,124 @@
 # MQTT Awtrix 3 Binding
 
-This binding allows you to control Awtrix 3 (formerly Awtrix Light) LED matrix displays via MQTT. The Awtrix 3 is a customizable 32x8 LED matrix display that can show various information like time, weather, notifications and custom text/graphics.
+This binding allows you to control Awtrix 3 (formerly Awtrix Light) LED matrix displays via MQTT.
+Awtrix 3 is a firmware for a 32x8 LED matrix display that can show various information like time, weather, notifications and custom text/graphics.
+The most popular choice for a device that supports the Awtrix 3 firmware is the Ulanzi tc0001 clock.
 
 ## Supported Things
 
 This binding supports two types of things:
 
-| Thing Type             | Description                                                                                     |
-|------------------------|-------------------------------------------------------------------------------------------------|
-| `awtrixclock` (Bridge) | Represents an Awtrix 3 display device. Acts as a bridge for apps.                               |
-| `awtrixapp`            | Represents an app running on the Awtrix display. Apps can show text, icons, notifications, etc. |
+| Thing Type              | Description                                                                                     |
+|-------------------------|-------------------------------------------------------------------------------------------------|
+| `awtrix-clock` (Bridge) | Represents an Awtrix 3 display device. Acts as a bridge for apps.                               |
+| `awtrix-app`            | Represents an app running on the Awtrix display. Apps can show text, icons, notifications, etc. |
 
-## Prerequisites
+The binding was tested with the Ulanzi tc0001 clock.
 
-- An MQTT broker (the MQTT binding must be installed and a broker configured)
-- An Awtrix 3 LED matrix display configured to use MQTT
+## Discovery
+
+The binding can automatically discover Awtrix 3 devices that publish their status to the configured MQTT broker.
+Make sure to use a mqtt prefix that starts with `awtrix` for discovery to work.
+It is however recommended to use a prefix with two topic levels, for example `awtrix/clock1` so that you can discover and control multiple devices.
+Once a device is discovered, it will appear in the inbox.
+There is no need to trigger a discovery scan manually.
+Default Awtrix apps can also be discovered if `discoverDefaultApps` is enabled on the bridge.
+This is however not recommended as the default apps cannot be controlled with this binding.
+
+## Binding Configuration
+
+The Awtrix 3 binding does not offer any binding configuration parameters.
 
 ## Thing Configuration
 
 ### Bridge Configuration (`awtrixclock`)
 
-| Parameter             | Description                                                                                                                                | Required | Default  |
+| Parameter             | Description                                                                                                                                | Default  | Required |
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------|----------|----------|
-| `basetopic`           | The MQTT base topic for the Awtrix device                                                                                                  | Yes      | "awtrix" |
-| `appLockTimeout`      | Timeout in seconds before releasing the lock to a selected app and returning to normal app cycle (see App Configuration for more details). | No       | 10       |
-| `discoverDefaultApps` | Enable discovery of default apps. Since default apps cannot be controlled by this binding this should usually be disabled.                 | No       | false    |
-| `lowBatteryThreshold` | Battery level threshold for low battery warning.                                                                                           | No       | 25       |
+| `basetopic`           | The MQTT base topic for the Awtrix device                                                                                                  | "awtrix" | Yes      |
+| `appLockTimeout`      | Timeout in seconds before releasing the lock to a selected app and returning to normal app cycle (see App Configuration for more details). | 10       | Yes      |
+| `discoverDefaultApps` | Enable discovery of default apps. Since default apps cannot be controlled by this binding this should usually be disabled.                 | false    | Yes      |
+| `lowBatteryThreshold` | Battery level threshold for low battery warning.                                                                                           | 25       | Yes      |
 
 ### App Configuration (`awtrixapp`)
 
-| Parameter    | Description                        | Required | Default |
-|--------------|------------------------------------|----------|---------|
-| `appname`    | Name of the app                    | Yes      | -       |
-| `useButtons` | Enable button control for this app | No       | false   |
+| Parameter    | Description                        | Default | Required |
+|--------------|------------------------------------|---------|----------|
+| `appname`    | Name of the app                    | -       | Yes      |
+| `useButtons` | Enable button control for this app | false   | No       |
 
-When you enable the button control for an app, you can lock the app to the display by pushing the select button on the clock device. A red indicator will be shown while the app is locked and will start to blink shortly before the lock ends. The lock will last for the appLockTimeout set for the bridge. As long as the app is locked the normal app cycle is disabled and you can control the app by pressing the left and right buttons or the select button on the clock device. Pressing a button while the app is locked will reset the lock timeout to the value set for appLockTimeout. Left and right button presses will emit button events on the clock itself and the selected app. The button events can be used by rules to change the displayed app or perform any other actions (for example change the text color of the app or skip the current song playing on your audio device).
+When you enable the button control for an app, you can lock the app to the display by pushing the select button on the clock device.
+A red indicator will be shown while the app is locked and will start to blink shortly before the lock ends.
+The lock will last for the appLockTimeout set for the bridge.
+As long as the app is locked the normal app cycle is disabled and you can control the app by pressing the left and right buttons or the select button on the clock device.
+Pressing a button while the app is locked will reset the lock timeout to the value set for appLockTimeout. Left and right button presses will emit button events on the clock itself and the selected app.
+The button events can be used by rules to change the displayed app or perform any other actions (for example change the text color of the app or skip the current song playing on your audio device).
 
 ## Channels
 
 ### Bridge Channels (`awtrixclock`)
 
-| Channel           | Type                 | Description                                                                                                                                    |
-|-------------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| `app`             | String               | Currently active app: Will show the name of the app that is currently shown on the display.                                                    |
-| `autoBrightness`  | Switch               | Automatic brightness control: The clock will adjust the display brightness automatically based on ambient light.                               |
-| `batteryLevel`    | Number               | Battery level: The battery level of the internal battery in percent.                                                                           |
-| `brightness`      | Dimmer               | Display brightness: The brightness of the display in percent.                                                                                  |
-| `buttonLeft`      | Trigger              | Left button press event: Triggered when the left button is pressed/released (Event PRESSED or RELEASED).                                       |
-| `buttonRight`     | Trigger              | Right button press event: Triggered when the right button is pressed/released (Event PRESSED or RELEASED).                                     |
-| `buttonSelect`    | Trigger              | Select button press event: Triggered when the select button is pressed/released (Event PRESSED or RELEASED).                                   |
-| `display`         | Switch               | Display on/off: Switches the display on or off. The clock will still stay on while the display is off.                                         |
-| `humidity`        | Number:Dimensionless | Relative humidity: Relative humidity in percent. For the Ulanzi clock values are usually very inaccurate.                                      |
-| `indicator1`      | Switch               | Control first indicator LED: Switches the first indicator LED on or off. The color of the LED will be green but can be customised by using thing actions (you can also use blinking/fading effects).                                                                                                                                                      |
-| `indicator2`      | Switch               | Control second indicator LED: Switches the second indicator LED on or off.The color of the LED will be green but can be customised by using thing actions (you can also use blinking/fading effects).                                                                                                                                                 |
-| `indicator3`      | Switch               | Control third indicator LED: Switches the third indicator LED on or off. The color of the LED will be green but can be customised by using thing actions (you can also use blinking/fading effects).                                                                                                                                                      |
-| `lowBattery`      | Switch               | Low battery warning: Will be switched ON as soon as the battery level drops below the lowBatteryThreshold set for the bridge.                  |
-| `lux`             | Number:Illuminance   | Ambient light level: Ambient light level in lux as measured by the built-in light sensor.                                                      |
-| `rssi`            | Number:Dimensionless | WiFi signal strength (RSSI): WiFi signal strength (RSSI) in dBm.                                                                               |
-| `rtttl`           | String               | Play RTTTL ringtone: Play a ringtone specified in RTTTL format (see https://de.wikipedia.org/wiki/Ring_Tones_Text_Transfer_Language)           |
-| `screen`          | String               | Screen image: Allows you to mirror the screen image from the clock. The screen image will be updated automatically when the app changes but can be updated manually by sending a RefreshType command to the channel.                                                                                                                                   |
-| `sound`           | String               | Play sound file: The sound file must be available on the clock device in the MELODIES folder. Save a file with a valid RTTTL string (e.g. melody.txt) in this folder and play it by sending a String command to the channel with the filename without file extension (e.g. "melody").                                                                     |
-| `temperature`     | Number:Temperature   | Device temperature: Temperature in °C as measured by the built-in temperature sensor. For the Ulanzi clock values are usually very inaccurate. |
+| Channel          | Type                 | Read/Write | Description                                                                                                                                                                                                                                                                           |
+|------------------|----------------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `app`            | String               | R          | Currently active app: Will show the name of the app that is currently shown on the display.                                                                                                                                                                                           |
+| `autoBrightness` | Switch               | RW         | Automatic brightness control: The clock will adjust the display brightness automatically based on ambient light.                                                                                                                                                                      |
+| `batteryLevel`   | Number               | R          | Battery level: The battery level of the internal battery in percent.                                                                                                                                                                                                                  |
+| `brightness`     | Dimmer               | RW         | Display brightness: The brightness of the display in percent.                                                                                                                                                                                                                         |
+| `buttonLeft`     | Trigger              | R          | Left button press event: Triggered when the left button is pressed/released (Event PRESSED or RELEASED).                                                                                                                                                                              |
+| `buttonRight`    | Trigger              | R          | Right button press event: Triggered when the right button is pressed/released (Event PRESSED or RELEASED).                                                                                                                                                                            |
+| `buttonSelect`   | Trigger              | R          | Select button press event: Triggered when the select button is pressed/released (Event PRESSED or RELEASED).                                                                                                                                                                          |
+| `display`        | Switch               | RW         | Display on/off: Switches the display on or off. The clock will still stay on while the display is off.                                                                                                                                                                                |
+| `humidity`       | Number:Dimensionless | R          | Relative humidity: Relative humidity in percent. For the Ulanzi clock values are usually very inaccurate.                                                                                                                                                                             |
+| `indicator1`     | Switch               | RW         | Control first indicator LED: Switches the first indicator LED on or off. The color of the LED will be green but can be customised by using thing actions (you can also use blinking/fading effects).                                                                                  |
+| `indicator2`     | Switch               | RW         | Control second indicator LED: Switches the second indicator LED on or off.The color of the LED will be green but can be customised by using thing actions (you can also use blinking/fading effects).                                                                                 |
+| `indicator3`     | Switch               | RW         | Control third indicator LED: Switches the third indicator LED on or off. The color of the LED will be green but can be customised by using thing actions (you can also use blinking/fading effects).                                                                                  |
+| `lowBattery`     | Switch               | R          | Low battery warning: Will be switched ON as soon as the battery level drops below the lowBatteryThreshold set for the bridge.                                                                                                                                                         |
+| `lux`            | Number:Illuminance   | R          | Ambient light level: Ambient light level in lux as measured by the built-in light sensor.                                                                                                                                                                                             |
+| `rssi`           | Number:Dimensionless | R          | WiFi signal strength (RSSI): WiFi signal strength (RSSI) in dBm.                                                                                                                                                                                                                      |
+| `rtttl`          | String               | W          | Play RTTTL ringtone: Play a ringtone specified in RTTTL format (see https://de.wikipedia.org/wiki/Ring_Tones_Text_Transfer_Language)                                                                                                                                                  |
+| `screen`         | String               | R          | Screen image: Allows you to mirror the screen image from the clock. The screen image will be updated automatically when the app changes but can be updated manually by sending a RefreshType command to the channel.                                                                  |
+| `sound`          | String               | W          | Play sound file: The sound file must be available on the clock device in the MELODIES folder. Save a file with a valid RTTTL string (e.g. melody.txt) in this folder and play it by sending a String command to the channel with the filename without file extension (e.g. "melody"). |
+| `temperature`    | Number:Temperature   | R          | Device temperature: Temperature in °C as measured by the built-in temperature sensor. For the Ulanzi clock values are usually very inaccurate.                                                                                                                                        |
 
 ### App Channels (`awtrixapp`)
-
-| Channel              | Type                 | Description                                                                                                                                 |
-|----------------------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| `active`             | Switch               | Enable/disable the app: Switches the app on or off. Note that channels of inactive apps will be reset to their default values during a restart of openHAB.                                                                                                                                                                                    |
-| `autoscale`          | Switch               | Enable/disable autoscaling for bar and linechart.                                                                                           |
-| `background`         | Color                | Sets a background color.                                                                                                                    |
-| `bar`                | String               | Shows a bar chart: Send a string with values separated by commas (e.g. "value1,value2,value3"). Only the last 16 values will be displayed.  |
-| `blink`              | Number:Time          | Blink text: Blink the text in the specified interval. Ignored if gradientColor or rainbow are set.                                          |
-| `center`             | Switch               | Center short text horizontally and disable scrolling.                                                                                       |
-| `color`              | Color                | Text, bar or line chart color.                                                                                                              |
-| `duration`           | Number:Time          | Display duration in seconds.                                                                                                                |
-| `effect`             | String               | Display effect (see https://blueforcer.github.io/awtrix3/#/effects for possible values).                                                    |
-| `effectBlend`        | Switch               | Enable smoother effect transitions. Only to be used with effect.                                                                            |
-| `effectPalette`      | String               | Color palette for effects (see https://blueforcer.github.io/awtrix3/#/effects for possible values and how to create custom palettes). Only to be used with effect.                                                                                                                                                                                     |
-| `effectSpeed`        | Number:Dimensionless | Effect animation speed: Higher means faster (see https://blueforcer.github.io/awtrix3/#/effects). Only to be used with effect.              |
-| `fade`               | Number:Time          | Fade text: Fades the text in and out in the specified interval. Ignored if gradientColor or rainbow are set.                                |
-| `gradientColor`      | Color                | Secondary color for gradient effects. Use color for setting the primary color.                                                              |
-| `icon`               | String               | Icon name to display: Install icons on the clock device first.                                                                              |
-| `lifetime`           | Number:Time          | App lifetime: Define how long the app will remain active on the clock.                                                                      |
-| `lifetimeMode`       | String               | Lifetime mode: Define if the app should be deleted (Command DELETE) or marked as stale (Command STALE) after lifetime.                      |
-| `line`               | String               | Shows a line chart: Send a string with values separated by commas (e.g. "value1,value2,value3"). Only the last 16 values will be displayed. |
-| `overlay`            | String               | Enable overlay mode: Shows a weather overlay effect (can be any of clear, snow, rain, drizzle, storm, thunder, frost).                      |
-| `progress`           | Number:Dimensionless | Progress value: Shows a progress bar at the bottom of the app with the specified percentage value.                                          |
-| `progressBackground` | Color                | Progress bar background color: Background color for the progress bar.                                                                       |
-| `progressColor`      | Color                | Progress bar color: Color for the progress bar.                                                                                             |
-| `pushIcon`           | String               | Push icon animation (STATIC=Icon doesn't move, PUSHOUT=Icon moves with text and will not appear again, PUSHOUTRETURN=Icon moves with text but appears again when the text starts to scroll again).                                                                                                                                                |
-| `rainbow`            | Switch               | Enable rainbow effect: Uses a rainbow effect for the displayed text.                                                                        |
-| `reset`              | Switch               | Reset app to default state: All channels will be reset to their default values.                                                             |
-| `scrollSpeed`        | Number:Dimensionless | Text scrolling speed: Provide as percentage value. The original speed is 100%. Values above 100% will increase the scrolling speed, values below 100% will decrease it. Setting this value to 0 will disable scrolling completely.                                                                                                                     |
-| `text`               | String               | Text to display.                                                                                                                            |
-| `textCase`           | Number:Dimensionless | Set text case (0=normal, 1=uppercase, 2=lowercase).                                                                                         |
-| `textOffset`         | Number:Dimensionless | Text offset position: Horizontal offset of the text in pixels.                                                                              |
-| `topText`            | String               | Draws the text on the top of the display.                                                                                                   |
+| Channel              | Type                 | Read/Write | Description                                                                                                                                                                                                                        |
+|----------------------|----------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `active`             | Switch               | W          | Enable/disable the app: Switches the app on or off. Note that channels of inactive apps will be reset to their default values during a restart of openHAB.                                                                         |
+| `autoscale`          | Switch               | RW         | Enable/disable autoscaling for bar and linechart.                                                                                                                                                                                  |
+| `background`         | Color                | RW         | Sets a background color.                                                                                                                                                                                                           |
+| `bar`                | String               | RW         | Shows a bar chart: Send a string with values separated by commas (e.g. "value1,value2,value3"). Only the last 16 values will be displayed.                                                                                         |
+| `blink`              | Number:Time          | RW         | Blink text: Blink the text in the specified interval. Ignored if gradientColor or rainbow are set.                                                                                                                                 |
+| `center`             | Switch               | RW         | Center short text horizontally and disable scrolling.                                                                                                                                                                              |
+| `color`              | Color                | RW         | Text, bar or line chart color.                                                                                                                                                                                                     |
+| `duration`           | Number:Time          | RW         | Display duration in seconds.                                                                                                                                                                                                       |
+| `effect`             | String               | RW         | Display effect (see https://blueforcer.github.io/awtrix3/#/effects for possible values).                                                                                                                                           |
+| `effectBlend`        | Switch               | RW         | Enable smoother effect transitions. Only to be used with effect.                                                                                                                                                                   |
+| `effectPalette`      | String               | RW         | Color palette for effects (see https://blueforcer.github.io/awtrix3/#/effects for possible values and how to create custom palettes). Only to be used with effect.                                                                 |
+| `effectSpeed`        | Number:Dimensionless | RW         | Effect animation speed: Higher means faster (see https://blueforcer.github.io/awtrix3/#/effects). Only to be used with effect.                                                                                                     |
+| `fade`               | Number:Time          | RW         | Fade text: Fades the text in and out in the specified interval. Ignored if gradientColor or rainbow are set.                                                                                                                       |
+| `gradientColor`      | Color                | RW         | Secondary color for gradient effects. Use color for setting the primary color.                                                                                                                                                     |
+| `icon`               | String               | RW         | Icon name to display: Install icons on the clock device first.                                                                                                                                                                     |
+| `lifetime`           | Number:Time          | RW         | App lifetime: Define how long the app will remain active on the clock.                                                                                                                                                             |
+| `lifetimeMode`       | String               | RW         | Lifetime mode: Define if the app should be deleted (Command DELETE) or marked as stale (Command STALE) after lifetime.                                                                                                             |
+| `line`               | String               | RW         | Shows a line chart: Send a string with values separated by commas (e.g. "value1,value2,value3"). Only the last 16 values will be displayed.                                                                                        |
+| `overlay`            | String               | RW         | Enable overlay mode: Shows a weather overlay effect (can be any of clear, snow, rain, drizzle, storm, thunder, frost).                                                                                                             |
+| `progress`           | Number:Dimensionless | RW         | Progress value: Shows a progress bar at the bottom of the app with the specified percentage value.                                                                                                                                 |
+| `progressBackground` | Color                | RW         | Progress bar background color: Background color for the progress bar.                                                                                                                                                              |
+| `progressColor`      | Color                | RW         | Progress bar color: Color for the progress bar.                                                                                                                                                                                    |
+| `pushIcon`           | String               | RW         | Push icon animation (STATIC=Icon doesn't move, PUSHOUT=Icon moves with text and will not appear again, PUSHOUTRETURN=Icon moves with text but appears again when the text starts to scroll again).                                 |
+| `rainbow`            | Switch               | RW         | Enable rainbow effect: Uses a rainbow effect for the displayed text.                                                                                                                                                               |
+| `reset`              | Switch               | RW         | Reset app to default state: All channels will be reset to their default values.                                                                                                                                                    |
+| `scrollSpeed`        | Number:Dimensionless | RW         | Text scrolling speed: Provide as percentage value. The original speed is 100%. Values above 100% will increase the scrolling speed, values below 100% will decrease it. Setting this value to 0 will disable scrolling completely. |
+| `text`               | String               | RW         | Text to display.                                                                                                                                                                                                                   |
+| `textCase`           | Number:Dimensionless | RW         | Set text case (0=normal, 1=uppercase, 2=lowercase).                                                                                                                                                                                |
+| `textOffset`         | Number:Dimensionless | RW         | Text offset position: Horizontal offset of the text in pixels.                                                                                                                                                                     |
+| `topText`            | String               | RW         | Draws the text on the top of the display.                                                                                                                                                                                          |
 
 ## Full Example
 
 ### Things
 
-```
+```java
 Bridge mqtt:broker:myBroker [ host="localhost", port=1883 ]
 Bridge mqtt:awtrixclock:myBroker:myAwtrix "Living Room Display" (mqtt:broker:myBroker) [ basetopic="awtrix", appLockTimeout=10, lowBatteryThreshold=25 ] {
     Thing awtrixapp clock "Clock App" [ appname="clock", useButtons=true ]
@@ -113,7 +130,7 @@ Bridge mqtt:awtrixclock:myBroker:myAwtrix "Living Room Display" (mqtt:broker:myB
 
 ### Items
 
-```
+```java
 // Bridge items (Living Room Display)
 Group gAwtrix "Living Room Awtrix Display" <screen>
 Dimmer Display_Brightness "Brightness [%d %%]" (gAwtrix) { channel="mqtt:awtrixclock:myBroker:myAwtrix:brightness" }
@@ -157,7 +174,7 @@ Color Custom_ProgressColor "Progress Color" (gAwtrix) { channel="mqtt:awtrixapp:
 
 ### Sitemap
 
-```
+```perl
 
 sitemap awtrix label="Awtrix Display" {
     Frame label="Display Control" {
@@ -203,23 +220,19 @@ sitemap awtrix label="Awtrix Display" {
 
 ```
 
-## Discovery
-
-The binding can automatically discover Awtrix devices that publish their status to the configured MQTT broker. Once a device is discovered, it will appear in the inbox. Default Awtrix apps can also be discovered if `discoverDefaultApps` is enabled on the bridge. This is however not recommended as the default apps cannot be controlled via this binding.
-
 ## Actions
 
 The binding provides various actions that can be used in rules to control the Awtrix display. To use these actions, you need to import them in your rules.
 
 Rules DSL:
 
-```
+```java
 val awtrixActions = getActions("mqtt.awtrixlight", "mqtt:awtrixclock:myBroker:myAwtrix")
 ```
 
 JS Scripting:
 
-```javascript
+```java
 var awtrixActions = actions.thingActions("mqtt.awtrixlight", "mqtt:awtrixclock:myBroker:myAwtrix");
 ```
 
@@ -227,7 +240,7 @@ var awtrixActions = actions.thingActions("mqtt.awtrixlight", "mqtt:awtrixclock:m
 
 Control the three indicator LEDs on the Awtrix display (JS Scripting):
 
-```javascript
+```java
 // Blink indicator 1 in red for 1 second
 awtrixActions.blinkIndicator(1, [255,0,0], 1000)
 
@@ -245,7 +258,7 @@ awtrixActions.deactivateIndicator(1)
 
 Control basic device functions:
 
-```javascript
+```java
 // Reboot the device
 awtrixActions.reboot()
 
@@ -260,7 +273,7 @@ awtrixActions.upgrade()
 
 Play sounds and melodies:
 
-```javascript
+```java
 // Play a predefined sound file (without extension)
 awtrixActions.playSound("notification")
 
@@ -272,7 +285,7 @@ awtrixActions.playRtttl("Indiana:d=4,o=5,b=250:e,8p,8f,8g,8p,1c6,8p.,d,8p,8e,1f,
 
 Display notifications on the screen:
 
-```
+```java
 // Show simple notification with icon
 awtrixActions.showNotification("Hello World", "alert")
 
@@ -299,15 +312,15 @@ awtrixActions.showCustomNotification(
 
 The action method parameters:
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `hold` | Boolean | Keep notification until manually cleared |
-| `wakeUp` | Boolean | Wake up from screen saver |
-| `stack` | Boolean | Add to notification stack |
-| `rtttl` | String | RTTTL melody to play |
-| `sound` | String | Sound file to play (without extension) |
-| `loopSound` | Boolean | Loop the sound |
-| `params` | Map | Notification parameters |
+| Parameter   | Type    | Description                              |
+|-------------|---------|------------------------------------------|
+| `hold`      | Boolean | Keep notification until manually cleared |
+| `wakeUp`    | Boolean | Wake up from screen saver                |
+| `stack`     | Boolean | Add to notification stack                |
+| `rtttl`     | String  | RTTTL melody to play                     |
+| `sound`     | String  | Sound file to play (without extension)   |
+| `loopSound` | Boolean | Loop the sound                           |
+| `params`    | Map     | Notification parameters                  |
 
 The `showCustomNotification` action accepts all app channels as shown above as parameters in the params map.
 
@@ -315,7 +328,7 @@ The `showCustomNotification` action accepts all app channels as shown above as p
 
 Here are some example rules demonstrating various features:
 
-```
+```java
 
 rule "Battery Status Indicator Demo"
 when

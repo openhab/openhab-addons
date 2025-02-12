@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>org.openhab.binding.mqtt.awtrixlight</artifactId>
-  <name>openHAB Add-ons :: Bundles :: MQTT Awtrix Light</name>
+  <name>openHAB Add-ons :: Bundles :: MQTT Awtrix 3</name>
 
   <dependencies>
     <dependency>

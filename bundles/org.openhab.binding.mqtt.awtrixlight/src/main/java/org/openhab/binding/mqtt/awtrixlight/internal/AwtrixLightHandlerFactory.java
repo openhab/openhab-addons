@@ -53,11 +53,9 @@ public class AwtrixLightHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (AwtrixLightBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            AwtrixLightBridgeHandler bridgeHandler = new AwtrixLightBridgeHandler((Bridge) thing);
-            return bridgeHandler;
+            return new AwtrixLightBridgeHandler((Bridge) thing);
         } else if (AwtrixLightAppHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            AwtrixLightAppHandler appHandler = new AwtrixLightAppHandler((Thing) thing);
-            return appHandler;
+            return new AwtrixLightAppHandler((Thing) thing);
         }
 
         return null;
