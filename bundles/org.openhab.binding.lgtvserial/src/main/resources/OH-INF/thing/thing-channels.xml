@@ -6,14 +6,14 @@
 
 	<channel-type id="3d">
 		<item-type>String</item-type>
-		<label>3d</label>
-		<description>Change the 3d mode, if your TV supports it</description>
+		<label>3D</label>
+		<description>Change the 3D mode, if your TV supports it</description>
 	</channel-type>
 
 	<channel-type id="3d-extended">
 		<item-type>String</item-type>
-		<label>3d Extended</label>
-		<description>Change the 3d option, if your TV supports it</description>
+		<label>3D Extended</label>
+		<description>Change the 3D option, if your TV supports it</description>
 	</channel-type>
 
 	<channel-type id="aspect-ratio">
@@ -376,7 +376,7 @@
 	<channel-type id="raw" advanced="true">
 		<item-type>String</item-type>
 		<label>Raw</label>
-		<description>Send raw command over the serial power directly to TV(s)</description>
+		<description>Send raw command over the serial port directly to the device(s)</description>
 	</channel-type>
 
 	<channel-type id="screen-mute">
@@ -468,7 +468,7 @@
 	<channel-type id="tile">
 		<item-type>String</item-type>
 		<label>Tile Mode</label>
-		<description>Change a tile mode</description>
+		<description>Change the tile mode</description>
 		<state>
 			<options>
 				<option value="00">Tile mode off</option>
