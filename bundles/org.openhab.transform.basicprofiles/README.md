@@ -242,6 +242,10 @@ The `LHS_OPERAND` and the `RHS_OPERAND` can be either one of these:
   This can be customized by specifying the "window size" or sample count applicable to the function, e.g. `$MEDIAN(10)` will return the median of the last 10 values.
   All the functions except `$DELTA` support a custom window size.
 
+In the case of comparisons and calculations involving `QuantityType` values, all the values are converted to the Unit of the linked Item before the calculation and/or comparison is done.
+Note: if the binding sends a value that cannot be converted to the Unit of the linked Item, then that value is excluded.
+e.g. if the linked item has a Unit of `Units.METRE` and the binding sends a value of `Units.CELSIUS` then the value is ignored.
+
 The state of one item can be compared against the state of another item by having item names on both sides of the comparison, e.g.: `Item1 > Item2`.
 When `LHS_OPERAND` is omitted, e.g. `> 10, < 100`, the comparisons are applied against the input data from the binding.
 The `RHS_OPERAND` can be any of the valid values listed above.
