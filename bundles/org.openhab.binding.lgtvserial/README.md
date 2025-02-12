@@ -42,8 +42,8 @@ On Linux systems, this will usually be either `/dev/ttyS0`, `/dev/ttyUSB0` or `/
 On Windows it will be `COM1`, `COM2`, etc.
 
 The Set ID can also be specified when using daisy-chaining.
-This allows you to have a Thing that will handle a particular device (with set id other than 0), and another to send commands to all devices (with set id equals 0).
-However, the item values for the Thing with set id 0 will never display the right values as it receives responses from many devices.
+This allows you to have a Thing that will handle a particular device (with Set Id other than 0), and another to send commands to all devices (with Set Id equals 0).
+However, the item values for the Thing with Set Id 0 will never display the right values as it receives responses from many devices.
 
 ## Channels
 
