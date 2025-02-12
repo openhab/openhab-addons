@@ -42,14 +42,14 @@ On Linux systems, this will usually be either `/dev/ttyS0`, `/dev/ttyUSB0` or `/
 On Windows it will be `COM1`, `COM2`, etc.
 
 The Set ID can also be specified when using daisy-chaining.
-This allows you to have a Thing that will handle a particular device (with Set Id other than 0), and another to send commands to all devices (with Set Id equals 0).
-However, the item values for the Thing with Set Id 0 will never display the right values as it receives responses from many devices.
+This allows you to have a Thing that will handle a particular device (with Set ID other than 0), and another to send commands to all devices (with Set  equals 0).
+However, the item values for the Thing with Set ID 0 will never display the right values as it receives responses from many devices.
 
 ## Channels
 
 The following channels are common to most TVs, taken from [4].
 
-| Channel type id | Command | Item type | Description                                      |
+| Channel ID      | Command | Item Type | Description                                      |
 |-----------------|---------|-----------|--------------------------------------------------|
 | aspect-ratio    | k c     | String    | Adjust screen format, at least 4:3, 16:9 formats |
 | power           | k a     | Switch    | Turns the device on or off                       |
@@ -66,7 +66,7 @@ For instance, getting the volume status when the device is off makes no sense.
 
 Here is the list of all the LG TV commands added to the binding, in channel type id alphabetic order:
 
-| Channel type id    | Command | Item type | Description                                         |
+| Channel ID         | Command | Item Type | Description                                         |
 |--------------------|---------|-----------|-----------------------------------------------------|
 | 3d                 | x t     | String    | To change the 3D mode                               |
 | 3d-extended        | x v     | String    | To change the 3D options                            |
@@ -124,7 +124,7 @@ Here is the list of all the LG TV commands added to the binding, in channel type
 
 The following commands/channels are not currently implemented in the binding but the commands could be sent via the `raw` channel.
 
-| Channel type id    | Command | Description
+| Channel ID         | Command | Description
 |--------------------|---------|------------------------------------------------------------------------------------------------------------|
 | abnormal-state     | k z     | Used to read the power off status when in Stand-by mode                                                    |
 | auto-configuration | j u     | To adjust picture position and minimize image shaking automatically. it works only in RGB(PC) mode.        |
