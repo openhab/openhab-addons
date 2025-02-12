@@ -30,13 +30,20 @@ No discovery supported; manual configuration is required.
 
 ## Thing Configuration
 
-It is necessary to specify the serial port device used for communication.
+The thing has the following configuration parameters:
+
+| Parameter Label        | Parameter ID         | Description                                                                     | Accepted values  |
+|------------------------|----------------------|---------------------------------------------------------------------------------|------------------|
+| Serial Port            | port                 | Serial port to use for connecting to TV/monitor/projector.                      | Serial port name |
+| Set ID                 | setId                | Set ID configured in the TV. If 0, will send the commands to every chained TV.  | 0-99             |
+
+It is necessary to specify the serial port used for communication.
 On Linux systems, this will usually be either `/dev/ttyS0`, `/dev/ttyUSB0` or `/dev/ttyACM0` (or a higher  number than `0` if multiple devices are present).
 On Windows it will be `COM1`, `COM2`, etc.
 
-The set id can also be specified when using daisy-chaining.
-This allows you to have a thing that will handle a particular device (with set id other than 0), and another to send commands to all devices (with set id equals 0).
-However, the item values for the thing with set id 0 will never display the right values as it receives responses from many devices.
+The Set ID can also be specified when using daisy-chaining.
+This allows you to have a Thing that will handle a particular device (with set id other than 0), and another to send commands to all devices (with set id equals 0).
+However, the item values for the Thing with set id 0 will never display the right values as it receives responses from many devices.
 
 ## Channels
 
@@ -113,7 +120,7 @@ Here is the list of all the LG TV commands added to the binding, in channel type
 | v-position         | f r     | Dimmer    | To set the Vertical position, from 0 to 100         |
 | raw **(advanced)** |         | String    | To send a raw command directly to the device(s)     |
 
-### Not added or linked commands
+## Not added or linked commands
 
 The following commands/channels are not currently implemented in the binding but the commands could be sent via the `raw` channel.
 
