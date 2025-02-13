@@ -68,185 +68,185 @@
 		<category>Energy</category>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
-	
 
-	
+
+
 	<channel-type id="cutoffType">
-        <item-type>Number</item-type>
-        <label>Type of cutoff</label>
-        <description>This status describes the current cutoff type.</description>
-        <state>
-            <options>
-                <option value="0">Not cutoff</option>
-                <option value="1">Cutoff over power</option>
-                <option value="2">Cutoff over voltage</option>
-                <option value="3">Cutoff for delest</option>
-                <option value="4">Cutoff from Eredis</option>
-                <option value="5">Cutoff over heating with over currency</option>
-                <option value="6">Cutoff over heating without over currency</option>
-            </options>
-        </state>
-    </channel-type>
+		<item-type>Number</item-type>
+		<label>Type of cutoff</label>
+		<description>This status describes the current cutoff type.</description>
+		<state>
+			<options>
+				<option value="0">Not cutoff</option>
+				<option value="1">Cutoff over power</option>
+				<option value="2">Cutoff over voltage</option>
+				<option value="3">Cutoff for delest</option>
+				<option value="4">Cutoff from Eredis</option>
+				<option value="5">Cutoff over heating with over currency</option>
+				<option value="6">Cutoff over heating without over currency</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="tempoType">
-        <item-type>Number</item-type>
-        <label>Tempo Color Information</label>
-        <description>This status describes the tempo color of a day.</description>
-        <state>
-            <options>
-                <option value="0">Unknow</option>
-                <option value="1">Blue</option>
-                <option value="2">White</option>
-                <option value="3">Red</option>
-            </options>
-        </state>
-    </channel-type>
-    
-     <channel-type id="pmType">
-        <item-type>Number</item-type>
-        <label>Type of pm</label>
-        <description>This status describes pm.</description>
-        <state>
-            <options>
-                <option value="0">Pas de en cours</option>
-                <option value="1">PM1 en cours</option>
-                <option value="2">PM2 en cours</option>
-                <option value="3">PM3 en cours</option>
-            </options>
-        </state>
-    </channel-type>
-    
-      <channel-type id="overVoltageStateType">
-        <item-type>Number</item-type>
-        <label>State of over voltage Type</label>
-        <description>This type describes over voltage state.</description>
-        <state>
-            <options>
-                <option value="0">No overvoltage</option>
-                <option value="1">Overvoltage</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="exceedingPowerStateType">
-        <item-type>Number</item-type>
-        <label>State of exceeding power Type</label>
-        <description>This type describes exceeding power condition state.</description>
-        <state>
-            <options>
-                <option value="0">No exceeding power</option>
-                <option value="1">Exceeding power</option>
-            </options>
-        </state>
-    </channel-type>
-    
-  <channel-type id="functionType">
-        <item-type>Number</item-type>
-        <label>State of functionnality : consummer / producer</label>
-        <description>This type describes functionnality type : Consummer / Producer.</description>
-        <state>
-            <options>
-                <option value="0">Consummer</option>
-                <option value="1">Producer</option>
-            </options>
-        </state>
-    </channel-type>
-        
-    <channel-type id="directionType">
-        <item-type>Number</item-type>
-        <label>State active energy</label>
-        <description>State active energy.</description>
-        <state>
-            <options>
-                <option value="0">Active energy positive</option>
-                <option value="1">Active energy negative</option>
-            </options>
-        </state>
-    </channel-type>        
-    
-    
-    <channel-type id="clockStateType">
-        <item-type>Number</item-type>
-        <label>Clock state</label>
-        <description>State of the clock energy.</description>
-        <state>
-            <options>
-                <option value="0">Clock ok</option>
-                <option value="1">Clock degrade</option>
-            </options>
-        </state>
-    </channel-type>
-    
- 
-     <channel-type id="plcType">
-        <item-type>Number</item-type>
-        <label>PLC Mode</label>
-        <description>Mode of the PLC</description>
-        <state>
-            <options>
-                <option value="0">Historic Mode</option>
-                <option value="1">Standard mode</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="ouputComStateType">
-        <item-type>Number</item-type>
-        <label>Output com state</label>
-        <description>State of the communication output</description>
-        <state>
-            <options>
-                <option value="0">Desactivated</option>
-                <option value="1">Activated without security</option>
-                <option value="2">Unknow</option>
-                <option value="3">Activated with security</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="plcStateType">
-        <item-type>Number</item-type>
-        <label>PLC State</label>
-        <description>State of the PLC</description>
-        <state>
-            <options>
-                <option value="0">New/Unlock</option>
-                <option value="1">New/Lock</option>
-                <option value="1">Registered</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="synchroPlcStateType">
-        <item-type>Number</item-type>
-        <label>PLC Synchro state</label>
-        <description>State of the PLC Synchro</description>
-        <state>
-            <options>
-                <option value="0">PLC Sync</option>
-                <option value="1">PLC Not Sync</option>
-            </options>
-        </state>
-    </channel-type>    
-    
-      
-    <channel-type id="movingTipsType">
-        <item-type>Number</item-type>
-        <label>Moving tips</label>
-        <description>Moving tips</description>
-        <state>
-            <options>
-                <option value="0">Not moving tips</option>
-                <option value="1">Moving tips 1</option>
-                <option value="2">Moving tips 2</option>
-                <option value="3">Moving tips 3</option>
-                
-            </options>
-        </state>
-    </channel-type>    
-    
-  
-    
+	<channel-type id="tempoType">
+		<item-type>Number</item-type>
+		<label>Tempo Color Information</label>
+		<description>This status describes the tempo color of a day.</description>
+		<state>
+			<options>
+				<option value="0">Unknow</option>
+				<option value="1">Blue</option>
+				<option value="2">White</option>
+				<option value="3">Red</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="pmType">
+		<item-type>Number</item-type>
+		<label>Type of pm</label>
+		<description>This status describes pm.</description>
+		<state>
+			<options>
+				<option value="0">Pas de en cours</option>
+				<option value="1">PM1 en cours</option>
+				<option value="2">PM2 en cours</option>
+				<option value="3">PM3 en cours</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="overVoltageStateType">
+		<item-type>Number</item-type>
+		<label>State of over voltage Type</label>
+		<description>This type describes over voltage state.</description>
+		<state>
+			<options>
+				<option value="0">No overvoltage</option>
+				<option value="1">Overvoltage</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="exceedingPowerStateType">
+		<item-type>Number</item-type>
+		<label>State of exceeding power Type</label>
+		<description>This type describes exceeding power condition state.</description>
+		<state>
+			<options>
+				<option value="0">No exceeding power</option>
+				<option value="1">Exceeding power</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="functionType">
+		<item-type>Number</item-type>
+		<label>State of functionnality : consummer / producer</label>
+		<description>This type describes functionnality type : Consummer / Producer.</description>
+		<state>
+			<options>
+				<option value="0">Consummer</option>
+				<option value="1">Producer</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="directionType">
+		<item-type>Number</item-type>
+		<label>State active energy</label>
+		<description>State active energy.</description>
+		<state>
+			<options>
+				<option value="0">Active energy positive</option>
+				<option value="1">Active energy negative</option>
+			</options>
+		</state>
+	</channel-type>
+
+
+	<channel-type id="clockStateType">
+		<item-type>Number</item-type>
+		<label>Clock state</label>
+		<description>State of the clock energy.</description>
+		<state>
+			<options>
+				<option value="0">Clock ok</option>
+				<option value="1">Clock degrade</option>
+			</options>
+		</state>
+	</channel-type>
+
+
+	<channel-type id="plcType">
+		<item-type>Number</item-type>
+		<label>PLC Mode</label>
+		<description>Mode of the PLC</description>
+		<state>
+			<options>
+				<option value="0">Historic Mode</option>
+				<option value="1">Standard mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ouputComStateType">
+		<item-type>Number</item-type>
+		<label>Output com state</label>
+		<description>State of the communication output</description>
+		<state>
+			<options>
+				<option value="0">Desactivated</option>
+				<option value="1">Activated without security</option>
+				<option value="2">Unknow</option>
+				<option value="3">Activated with security</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="plcStateType">
+		<item-type>Number</item-type>
+		<label>PLC State</label>
+		<description>State of the PLC</description>
+		<state>
+			<options>
+				<option value="0">New/Unlock</option>
+				<option value="1">New/Lock</option>
+				<option value="1">Registered</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="synchroPlcStateType">
+		<item-type>Number</item-type>
+		<label>PLC Synchro state</label>
+		<description>State of the PLC Synchro</description>
+		<state>
+			<options>
+				<option value="0">PLC Sync</option>
+				<option value="1">PLC Not Sync</option>
+			</options>
+		</state>
+	</channel-type>
+
+
+	<channel-type id="movingTipsType">
+		<item-type>Number</item-type>
+		<label>Moving tips</label>
+		<description>Moving tips</description>
+		<state>
+			<options>
+				<option value="0">Not moving tips</option>
+				<option value="1">Moving tips 1</option>
+				<option value="2">Moving tips 2</option>
+				<option value="3">Moving tips 3</option>
+
+			</options>
+		</state>
+	</channel-type>
+
+
+
 	<channel-type id="energyType">
 		<item-type>Number:Energy</item-type>
 		<label>Teleinfo Energy Type</label>
@@ -288,14 +288,14 @@
 		<category>Energy</category>
 		<state readOnly="true"/>
 	</channel-type>
-	
+
 	<channel-type id="contactType">
-        <item-type>Contact</item-type>
-        <label>Teleinfo Contact Type</label>
-        <category>Energy</category>
-        <state readOnly="true"/>
-    </channel-type>
-	
+		<item-type>Contact</item-type>
+		<label>Teleinfo Contact Type</label>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
 
 	<channel-type id="dateTimeType">
 		<item-type>DateTime</item-type>

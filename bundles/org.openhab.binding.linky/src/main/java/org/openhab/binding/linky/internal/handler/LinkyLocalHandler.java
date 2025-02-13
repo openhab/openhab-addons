@@ -345,7 +345,6 @@ public class LinkyLocalHandler extends BaseThingHandler {
 
         updateState(channelSreactive.getGroupName(), channelSreactive.getChannelName(),
                 QuantityType.valueOf(channelSreactive.getFactor() * sreactive, channelSreactive.getUnit()));
-
     }
 
     // @formatter:off
@@ -433,7 +432,6 @@ public class LinkyLocalHandler extends BaseThingHandler {
                 new DecimalType(movingTipsAdvice));
         updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_MOVING_TIPS,
                 new DecimalType(movingTips));
-
     }
 
     private OpenClosedType getOpenClosed(String val) {
@@ -456,7 +454,6 @@ public class LinkyLocalHandler extends BaseThingHandler {
                     OnOffType.from(relaisState[i]));
 
         }
-
     }
 
     private void handlePayload(String channelName, String value) {
