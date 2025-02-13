@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.huesync.internal.factory;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.security.cert.CertificateException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -31,8 +28,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HueSyncHandlerFactory} is responsible for creating things and
@@ -44,9 +39,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.huesync", service = ThingHandlerFactory.class)
 public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
-
     private final HttpClientFactory httpClientFactory;
-    private final Logger logger = LoggerFactory.getLogger(HueSyncHandlerFactory.class);
 
     @Activate
     public HueSyncHandlerFactory(@Reference final HttpClientFactory httpClientFactory) throws Exception {
@@ -66,12 +59,7 @@ public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (HueSyncConstants.THING_TYPE_UID.equals(thingTypeUID)) {
-            try {
-                return new HueSyncHandler(thing, this.httpClientFactory);
-            } catch (IOException | URISyntaxException | CertificateException e) {
-                this.logger.warn("It was not possible to create a handler for {}: {}", thingTypeUID.getId(),
-                        e.getMessage());
-            }
+            return new HueSyncHandler(thing, this.httpClientFactory);
         }
 
         return null;

@@ -13,6 +13,7 @@
 package org.openhab.binding.huesync.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
@@ -21,8 +22,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class HueSyncConnectionException extends HueSyncException {
     private static final long serialVersionUID = 0L;
+    private @Nullable Exception innerException = null;
+
+    public HueSyncConnectionException(String message, Exception exception) {
+        super(message);
+        this.innerException = exception;
+    }
 
     public HueSyncConnectionException(String message) {
         super(message);
+    }
+
+    public @Nullable Exception getInnerException() {
+        return this.innerException;
     }
 }
