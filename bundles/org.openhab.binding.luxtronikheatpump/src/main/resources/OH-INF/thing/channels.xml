@@ -2013,7 +2013,7 @@
 
 	<channel-type id="temperatureHotGasMax" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature Hot Gas Max</label>
+		<label>Hot Gas Temp. Max</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>

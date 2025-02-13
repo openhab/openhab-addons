@@ -274,7 +274,7 @@ The following channels are holding read only values:
 | channel249                              | Number                    | x        | Channel 249                                                    |
 | channel250                              | Number                    | x        | Channel 250                                                    |
 | channel251                              | Number                    | x        | Channel 251                                                    |
-| temperatureHotGasMax                    | Number:Temperature        | x        | Temperature Hot Gas Max                                        |
+| temperatureHotGasMax                    | Number:Temperature        | x        | Hot Gas Temp. Max                                              |
 | channel253                              | Number                    | x        | Channel 253                                                    |
 | flowRateHeatSource2                     | Number:VolumetricFlowRate | x        | Flow Rate Heat Source                                          |
 | channel255                              | Number                    | x        | Channel 255                                                    |
