@@ -18,10 +18,20 @@
 				<description>RMS Current on phase 1 (floating value)</description>
 			</channel>
 
-			<channel id="cosPhi" typeId="powerFactorType">
+			<channel id="cosphi" typeId="powerFactorType">
 				<label>CosPhi</label>
 				<description>RMS Current on phase 1 (floating value)</description>
 			</channel>
+			
+			<channel id="sactive" typeId="powerType">
+                <label>Sactive</label>
+                <description>Instantaneous withdrawn active power</description>
+            </channel>
+
+            <channel id="sreactive" typeId="powerType">
+                <label>Sreactive</label>
+                <description>Instantaneous withdrawn reactive power</description>
+            </channel>
 
             <channel id="relais1" typeId="switchType">
                 <label>Relais 1</label>
