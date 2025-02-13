@@ -13,7 +13,7 @@
 package org.openhab.binding.mercedesme;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
@@ -109,6 +109,7 @@ class StatusTests {
         tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
+        ahm.refresh();
         tsi = tcl.getThingStatus();
         assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Auth offline");
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Auth detail");
@@ -139,6 +140,7 @@ class StatusTests {
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
+        ahm.refresh();
         ThingStatusInfo tsi = tcl.getThingStatus();
         assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Auth Offline");
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Auth details");

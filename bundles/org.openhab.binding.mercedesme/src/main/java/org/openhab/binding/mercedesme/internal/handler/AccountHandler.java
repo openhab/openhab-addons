@@ -85,7 +85,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Map<String, VEPUpdate> vepUpdateMap = new HashMap<>();
     private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<>();
 
-    private Optional<AuthService> authService = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshScheduler = Optional.empty();
     private List<byte[]> eventQueue = new ArrayList<>();
     private boolean updateRunning = false;
@@ -94,6 +93,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private String commandCapabilitiesEndpoint = "/v1/vehicle/%s/capabilities/commands";
     private String poiEndpoint = "/v1/vehicle/%s/route";
 
+    Optional<AuthService> authService = Optional.empty();
     final MBWebsocket ws;
     AccountConfiguration config = new AccountConfiguration();
     @Nullable

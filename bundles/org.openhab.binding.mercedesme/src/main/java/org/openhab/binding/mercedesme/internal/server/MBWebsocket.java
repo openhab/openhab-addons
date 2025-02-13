@@ -177,7 +177,8 @@ public class MBWebsocket {
             }
         } else {
             if (!b) {
-                // after keep alive is finished add 5 minutes to cover e.g. door events after trip is finished
+                // after keep alive is finished add 5 minutes to cover e.g. door events after
+                // trip is finished
                 runTill = Instant.now().plusMillis(KEEP_ALIVE_ADDON);
                 logger.trace("Websocket - keep alive stop - run till {}", runTill.toString());
             }
@@ -190,7 +191,12 @@ public class MBWebsocket {
      */
 
     @OnWebSocketMessage
-    public void onBytes(InputStream is) {
+    public void onBinaryMessage(byte buf[], int offset, int length) {
+        logger.trace("WebSocket - Message offset # size # length {} # {} # {}", offset, buf.length, length);
+        int dataSize = buf.length - offset;
+        byte[] dataArray = new byte[dataSize];
+        System.arraycopy(buf, offset, dataArray, 0, dataSize);
+        // public void onBytes(InputStream is) {
         try {
             byte[] array = is.readAllBytes();
             is.close();
@@ -199,8 +205,10 @@ public class MBWebsocket {
              * https://community.openhab.org/t/mercedes-me/136866/12
              * Release Websocket thread as early as possible to avoid execeptions
              *
-             * 1. Websocket thread responsible for reading stream in bytes and enqueue for AccountHandler.
-             * 2. AccountHamdler thread responsible for encoding proto message. In case of update enqueue proto message
+             * 1. Websocket thread responsible for reading stream in bytes and enqueue for
+             * AccountHandler.
+             * 2. AccountHamdler thread responsible for encoding proto message. In case of
+             * update enqueue proto message
              * at VehicleHandöer
              * 3. VehicleHandler responsible to update channels
              */

@@ -74,38 +74,26 @@ public class AuthService {
             // returns INVALID_TOKEN in case of an error
             logger.trace("MB-Auth {} Restore token from persistence", prefix());
             try {
+                logger.trace("MB-Auth {} storedToken", storedToken);
                 TokenResponse tokenResponseJson = Utils.GSON.fromJson(storedToken, TokenResponse.class);
-                token = decodeToken(tokenResponseJson, Instant.MIN);
+                token = decodeToken(tokenResponseJson);
             } catch (JsonSyntaxException jse) {
                 // fallback of non human readable base64 token persistence
                 logger.debug("MB-Auth {} Fallback token decoding", prefix());
                 token = Utils.fromString(storedToken);
             }
         } else {
-            // initialize token with refresh token from configuration with expiration 0 - triggers refreshToken
+            // initialize token with refresh token from configuration and expiration 0
+            // this will trigger an immediately refresh of the token
             logger.trace("MB-Auth {} Create token from config", prefix());
             token = new AccessTokenResponse();
             token.setAccessToken(refreshToken);
             token.setRefreshToken(refreshToken);
             token.setExpiresIn(0);
         }
-
-        if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
-            if (tokenIsValid()) {
-                // expired but refresh token available
-                refreshToken();
-            } else {
-                // token expired and no refresh token available will put bridge into OFFLINE mode
-                listener.onAccessTokenResponse(token);
-            }
-        } else {
-            // valid token
-            listener.onAccessTokenResponse(token);
-        }
-        logger.trace("MB-Auth {} Token after init {}", prefix(), token.toString());
     }
 
-    public String getToken() {
+    public synchronized String getToken() {
         if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
             if (tokenIsValid()) {
                 refreshToken();
@@ -130,21 +118,27 @@ public class AuthService {
             req.content(new StringContentProvider(content));
 
             ContentResponse cr = req.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
-            int tokenReaponseStatus = cr.getStatus();
+            int tokenResponseStatus = cr.getStatus();
             String tokenResponse = cr.getContentAsString();
-            if (tokenReaponseStatus == 200) {
+            if (tokenResponseStatus == 200) {
                 TokenResponse tokenResponseJson = Utils.GSON.fromJson(tokenResponse, TokenResponse.class);
-                tokenResponseJson.createdOn = Instant.now().toString();
-                token = decodeToken(tokenResponseJson, Instant.now());
-                if (tokenIsValid()) {
-                    String tokenStore = Utils.GSON.toJson(tokenResponseJson);
-                    logger.debug("MB-Auth {} refreshToken result {}", prefix(), token.toString());
-                    storage.put(identifier, tokenStore);
+                if (tokenResponseJson != null) {
+                    // response doesn't contain creation date time so set it manually
+                    tokenResponseJson.createdOn = Instant.now().toString();
+                    token = decodeToken(tokenResponseJson);
+                    if (tokenIsValid()) {
+                        String tokenStore = Utils.GSON.toJson(tokenResponseJson);
+                        logger.debug("MB-Auth {} refreshToken result {}", prefix(), token.toString());
+                        storage.put(identifier, tokenStore);
+                    } else {
+                        token = Utils.INVALID_TOKEN;
+                        storage.remove(identifier);
+                        logger.warn("MB-Auth {} Refresh token delivered invalid result {} {}", prefix(),
+                                tokenResponseStatus, tokenResponse);
+                    }
                 } else {
+                    logger.debug("MB-Auth {} token refersh delivered not parsable result {}", prefix(), tokenResponse);
                     token = Utils.INVALID_TOKEN;
-                    storage.remove(identifier);
-                    logger.warn("MB-Auth {} Refresh token delivered invalid result {} {}", prefix(),
-                            tokenReaponseStatus, tokenResponse);
                 }
             } else {
                 token = Utils.INVALID_TOKEN;
@@ -154,7 +148,7 @@ public class AuthService {
                  * 3) user needs to update refreshToken configuration parameter
                  */
                 storage.remove(identifier);
-                logger.warn("MB-Auth {} Failed to refresh token {} {}", prefix(), tokenReaponseStatus, tokenResponse);
+                logger.warn("MB-Auth {} Failed to refresh token {} {}", prefix(), tokenResponseStatus, tokenResponse);
             }
             listener.onAccessTokenResponse(token);
         } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException
@@ -163,13 +157,9 @@ public class AuthService {
         }
     }
 
-    private AccessTokenResponse decodeToken(@Nullable TokenResponse tokenJson, Instant creationInstant) {
+    private AccessTokenResponse decodeToken(@Nullable TokenResponse tokenJson) {
         if (tokenJson != null) {
             AccessTokenResponse atr = new AccessTokenResponse();
-            // check if TokenResponse createdOn field has a real value - if not take value from parameter
-            if (Instant.MIN.toString().equals(tokenJson.createdOn)) {
-                tokenJson.createdOn = creationInstant.toString();
-            }
             atr.setCreatedOn(Instant.parse(tokenJson.createdOn));
             atr.setExpiresIn(tokenJson.expiresIn);
             atr.setAccessToken(tokenJson.accessToken);
@@ -186,12 +176,10 @@ public class AuthService {
             atr.setTokenType("Bearer");
             atr.setScope(Constants.SCOPE);
             return atr;
-        } else
-
-        {
+        } else {
             logger.debug("MB-Auth {} Neither Token Response is null", prefix());
-            return Utils.INVALID_TOKEN;
         }
+        return Utils.INVALID_TOKEN;
     }
 
     private boolean tokenIsValid() {
