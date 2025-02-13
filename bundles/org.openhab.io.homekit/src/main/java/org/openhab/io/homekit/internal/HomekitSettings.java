@@ -34,6 +34,7 @@ public class HomekitSettings {
     public boolean useFahrenheitTemperature = false;
     public boolean useOHmDNS = false;
     public boolean blockUserDeletion = false;
+    public boolean listenToNetworkChanges = true;
     public String networkInterface;
 
     @Override
@@ -68,6 +69,8 @@ public class HomekitSettings {
         } else if (!useOHmDNS != other.useOHmDNS) {
             return false;
         } else if (!blockUserDeletion != other.blockUserDeletion) {
+            return false;
+        } else if (!listenToNetworkChanges != other.listenToNetworkChanges) {
             return false;
         } else if (!pin.equals(other.pin)) {
             return false;
