@@ -56,6 +56,7 @@ public class VATTransformationProfileFactory implements ProfileFactory, ProfileT
     private final RateProvider rateProvider = new RateProvider();
     private final ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService;
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
+    @Nullable
     private final Bundle bundle;
 
     private @NonNullByDefault({}) TransformationService transformationService;

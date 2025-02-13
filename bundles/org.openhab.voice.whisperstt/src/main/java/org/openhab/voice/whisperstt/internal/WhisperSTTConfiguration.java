@@ -146,4 +146,29 @@ public class WhisperSTTConfiguration {
      * Print whisper.cpp library logs as binding debug logs.
      */
     public boolean enableWhisperLog;
+    /**
+     * local to use embedded whisper or openaiapi to use an external API
+     */
+    public Mode mode = Mode.LOCAL;
+    /**
+     * If mode set to openaiapi, then use this URL
+     */
+    public String apiUrl = "https://api.openai.com/v1/audio/transcriptions";
+    /**
+     * if mode set to openaiapi, use this api key to access apiUrl
+     */
+    public String apiKey = "";
+    /**
+     * If specified, speed up recognition by avoiding auto-detection
+     */
+    public String language = "";
+    /**
+     * Model name (API only)
+     */
+    public String apiModelName = "whisper-1";
+
+    public static enum Mode {
+        LOCAL,
+        API;
+    }
 }
