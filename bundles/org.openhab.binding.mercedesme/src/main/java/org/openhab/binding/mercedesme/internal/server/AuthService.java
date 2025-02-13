@@ -74,9 +74,14 @@ public class AuthService {
             // returns INVALID_TOKEN in case of an error
             logger.trace("MB-Auth {} Restore token from persistence", prefix());
             try {
-                logger.trace("MB-Auth {} storedToken", storedToken);
+                logger.trace("MB-Auth {} storedToken {}", prefix(), storedToken);
                 TokenResponse tokenResponseJson = Utils.GSON.fromJson(storedToken, TokenResponse.class);
                 token = decodeToken(tokenResponseJson);
+                if (!tokenIsValid()) {
+                    token = Utils.INVALID_TOKEN;
+                    storage.remove(identifier);
+                    logger.trace("MB-Auth {} invalid storedToken {}", prefix(), storedToken);
+                }
             } catch (JsonSyntaxException jse) {
                 // fallback of non human readable base64 token persistence
                 logger.debug("MB-Auth {} Fallback token decoding", prefix());
@@ -125,6 +130,11 @@ public class AuthService {
                 if (tokenResponseJson != null) {
                     // response doesn't contain creation date time so set it manually
                     tokenResponseJson.createdOn = Instant.now().toString();
+                    // a new refresh token is delivered optional
+                    // if not set in response take old one
+                    if (Constants.NOT_SET.equals(tokenResponseJson.refreshToken)) {
+                        tokenResponseJson.refreshToken = token.getAccessToken();
+                    }
                     token = decodeToken(tokenResponseJson);
                     if (tokenIsValid()) {
                         String tokenStore = Utils.GSON.toJson(tokenResponseJson);
@@ -171,6 +181,7 @@ public class AuthService {
                     atr.setRefreshToken(token.getRefreshToken());
                 } else {
                     logger.debug("MB-Auth {} Neither new nor old refresh token available", prefix());
+                    return Utils.INVALID_TOKEN;
                 }
             }
             atr.setTokenType("Bearer");
