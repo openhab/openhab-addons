@@ -45,6 +45,7 @@ import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Switch;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
@@ -76,6 +77,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
     private @Nullable Throwable failure;
 
     private @Mock @NonNullByDefault({}) ChannelStateUpdateListener channelStateUpdateListener;
+    private @Mock @NonNullByDefault({}) HomeAssistantChannelLinkageChecker linkageChecker;
     private @Mock @NonNullByDefault({}) AvailabilityTracker availabilityTracker;
 
     /**
@@ -169,8 +171,11 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         Jinjava jinjava = new Jinjava();
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
-        DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING,
-                scheduler, channelStateUpdateListener, availabilityTracker, gson, jinjava, unitProvider));
+        DiscoverComponents discover = spy(
+                new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING, scheduler,
+                        channelStateUpdateListener, linkageChecker, availabilityTracker, gson, jinjava, unitProvider));
+
+        when(linkageChecker.isChannelLinked(any())).thenReturn(true);
 
         // The DiscoverComponents object calls ComponentDiscovered callbacks.
         // In the following implementation we add the found component to the `haComponents` map
