@@ -226,6 +226,8 @@ public class LinkyBindingConstants {
 
     public static final String CHANNEL_STGE = "stge";
 
+    public static final String CHANNEL_RELAIS = "relais";
+
     public static final String CHANNEL_DPM1 = "dpm1";
     public static final String CHANNEL_DPM1_DATE = "dpm1Date";
 
@@ -254,6 +256,28 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_NJOURF_PLUS_1 = "njourfPlus1";
     public static final String CHANNEL_PJOURF_PLUS_1 = "pjourfPlus1";
     public static final String CHANNEL_PPOINTE = "ppointe";
+
+    public static final String CHANNEL_PJOURF_IDX = "pjourf";
+    public static final String CHANNEL_PPOINTE_IDX = "ppointe";
+
+    public static final String CHANNEL_CONTACT_SEC = "contactSec";
+    public static final String CHANNEL_CACHE = "cache";
+    public static final String CHANNEL_CUT_OFF = "cutOff";
+    public static final String CHANNEL_OVER_VOLTAGE = "overVoltage";
+    public static final String CHANNEL_EXCEEDING_POWER = "exceedingPower";
+    public static final String CHANNEL_FUNCTION = "function";
+    public static final String CHANNEL_DIRECTION = "direction";
+    public static final String CHANNEL_SUPPLIER_RATE = "supplierRate";
+    public static final String CHANNEL_DISTRIBUTOR_RATE = "distributorRate";
+    public static final String CHANNEL_CLOCK = "clock";
+    public static final String CHANNEL_PLC = "plc";
+    public static final String CHANNEL_COM_OUTPUT = "outputCom";
+    public static final String CHANNEL_PLC_STATE = "plcState";
+    public static final String CHANNEL_PLC_SYNCHRO = "plcSynchro";
+    public static final String CHANNEL_TEMPO_TODAY = "tempoToday";
+    public static final String CHANNEL_TEMPO_TOMORROW = "tempoTomorrow";
+    public static final String CHANNEL_MOVING_TIPS_ADVICE = "movingTips";
+    public static final String CHANNEL_MOVING_TIPS = "adviceMovingTips";
 
     // Authorization related Servlet and resources aliases.
     public static final String LINKY_ALIAS = "/connectlinky";

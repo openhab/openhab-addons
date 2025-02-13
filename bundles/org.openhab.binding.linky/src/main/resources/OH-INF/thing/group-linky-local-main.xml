@@ -349,37 +349,9 @@
 
 
 
-			<channel id="relais1" typeId="switchType">
-				<label>Relais 1</label>
-			</channel>
-
-			<channel id="relais2" typeId="switchType">
-				<label>Relais 2</label>
-			</channel>
-
-			<channel id="relais3" typeId="switchType">
-				<label>Relais 3</label>
-			</channel>
-
-			<channel id="relais4" typeId="switchType">
-				<label>Relais 4</label>
-			</channel>
-
-			<channel id="relais5" typeId="switchType">
-				<label>Relais 5</label>
-			</channel>
-
-			<channel id="relais6" typeId="switchType">
-				<label>Relais 6</label>
-			</channel>
-
-			<channel id="relais7" typeId="switchType">
-				<label>Relais 7</label>
-			</channel>
-
-			<channel id="relais8" typeId="switchType">
-				<label>Relais 8</label>
-			</channel>
+            <channel id="relais" typeId="switchType">
+                <label>Relais</label>
+            </channel>
 
 
 		</channels>
