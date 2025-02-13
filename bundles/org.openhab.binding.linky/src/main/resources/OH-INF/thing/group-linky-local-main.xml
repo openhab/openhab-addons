@@ -349,9 +349,9 @@
 
 
 
-            <channel id="relais" typeId="switchType">
-                <label>Relais</label>
-            </channel>
+			<channel id="relais" typeId="switchType">
+				<label>Relais</label>
+			</channel>
 
 
 		</channels>
