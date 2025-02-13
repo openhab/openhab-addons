@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -43,10 +44,12 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -135,6 +138,32 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
             assertThat(e.getMessage(), false);
         }
         return Objects.requireNonNull(thingHandler.getDiscoveredComponent());
+    }
+
+    /**
+     * Simulate linking an item to a channel, so that the handler knows it should subscribe to the relevant topics
+     *
+     * @param component component
+     * @param channelId channel
+     */
+    protected void linkChannel(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId) {
+        var stateChannel = Objects.requireNonNull(component.getChannel(channelId));
+        thingHandler.linkChannel(stateChannel.getChannel().getUID());
+    }
+
+    /**
+     * Simulate linking an item to a all channels of a component, so that the handler knows it should subscribe to the
+     * relevant topics
+     *
+     * @param component component
+     */
+    protected void linkAllChannels(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component) {
+        component.getChannels().forEach(c -> {
+            if (c.getKind().equals(ChannelKind.STATE)) {
+                thingHandler.linkChannel(c.getUID());
+            }
+        });
     }
 
     /**
@@ -328,6 +357,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     }
 
     protected static class LatchThingHandler extends HomeAssistantThingHandler {
+        private final Set<ChannelUID> linkedChannels = new HashSet<>();
         private @Nullable CountDownLatch latch;
         private @Nullable AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> discoveredComponent;
 
@@ -355,6 +385,16 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
 
         public @Nullable AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> getDiscoveredComponent() {
             return discoveredComponent;
+        }
+
+        public void linkChannel(ChannelUID channelUID) {
+            linkedChannels.add(channelUID);
+            channelLinked(channelUID);
+        }
+
+        @Override
+        protected boolean isLinked(ChannelUID channelUID) {
+            return linkedChannels.contains(channelUID);
         }
     }
 }

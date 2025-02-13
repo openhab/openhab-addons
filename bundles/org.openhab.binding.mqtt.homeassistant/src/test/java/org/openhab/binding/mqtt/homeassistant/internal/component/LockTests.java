@@ -72,6 +72,8 @@ public class LockTests extends AbstractComponentTests {
         assertChannel(component, Lock.STATE_CHANNEL_ID, "zigbee2mqtt/lock/state", "zigbee2mqtt/lock/set/state", "State",
                 TextValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/lock/state", "LOCKED_");
         assertState(component, Lock.STATE_CHANNEL_ID, new StringType("LOCKED_"));
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.ON);
@@ -136,6 +138,8 @@ public class LockTests extends AbstractComponentTests {
                 """);
         // @formatter:on
 
+        linkAllChannels(component);
+
         component.getChannel(Lock.LOCK_CHANNEL_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/lock/set/state", "UNLOCK");
         assertState(component, Lock.STATE_CHANNEL_ID, new StringType("UNLOCKED"));
@@ -186,6 +190,8 @@ public class LockTests extends AbstractComponentTests {
                 }
                 """);
 
+        linkAllChannels(component);
+
         component.getChannel(Lock.STATE_CHANNEL_ID).getState().publishValue(new StringType("OPEN"));
         assertPublished("zigbee2mqtt/lock/set/state", "OPEN");
         assertState(component, Lock.STATE_CHANNEL_ID, new StringType("UNLOCKED"));
@@ -217,6 +223,8 @@ public class LockTests extends AbstractComponentTests {
                   "command_topic": "zigbee2mqtt/lock/set/state"
                 }
                 """);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/lock/state", "LOCKED");
         assertState(component, Lock.STATE_CHANNEL_ID, new StringType("LOCKED"));

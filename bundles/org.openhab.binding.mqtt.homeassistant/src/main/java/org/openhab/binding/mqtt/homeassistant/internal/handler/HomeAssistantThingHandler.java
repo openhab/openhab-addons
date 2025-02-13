@@ -39,6 +39,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.component.DeviceTrigger;
@@ -83,7 +84,7 @@ import com.hubspot.jinjava.Jinjava;
  */
 @NonNullByDefault
 public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
-        implements ComponentDiscovered, Consumer<List<Object>> {
+        implements ComponentDiscovered, Consumer<List<Object>>, HomeAssistantChannelLinkageChecker {
     public static final String AVAILABILITY_CHANNEL = "availability";
     private static final Comparator<AbstractComponent<?>> COMPONENT_COMPARATOR = Comparator
             .comparing((AbstractComponent<?> component) -> component.hasGroup())
@@ -134,7 +135,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         this.unitProvider = unitProvider;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(attributeReceiveTimeout, this, scheduler);
-        this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this, this, gson, jinjava,
+        this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this, this, this, gson, jinjava,
                 unitProvider);
     }
 
@@ -183,7 +184,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 String channelConfigurationJSON = (String) channelConfig.get("config");
                 try {
                     AbstractComponent<?> component = ComponentFactory.createComponent(thingUID, haID,
-                            channelConfigurationJSON, this, this, scheduler, gson, jinjava, unitProvider);
+                            channelConfigurationJSON, this, this, this, scheduler, gson, jinjava, unitProvider);
                     if (typeID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
                         typeID = calculateThingTypeUID(component);
                     }
@@ -558,4 +559,36 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     Map<@Nullable String, AbstractComponent<?>> getComponents() {
         return haComponents;
     }
+
+    // For components to check if a channel is linked before starting them
+    @Override
+    public boolean isChannelLinked(ChannelUID channelUID) {
+        return isLinked(channelUID);
+    }
+
+    // A channel is newly linked; make sure it is started
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        MqttBrokerConnection connection = this.connection;
+        // We haven't started at all yet.
+        if (connection == null) {
+            return;
+        }
+        synchronized (haComponents) {
+            haComponents.forEach((id, component) -> {
+                if (component.getChannels().stream().anyMatch(channel -> channel.getUID().equals(channelUID))) {
+                    component.start(connection, scheduler, attributeReceiveTimeout).exceptionally(e -> {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                        return null;
+                    });
+                }
+            });
+        }
+        super.channelLinked(channelUID);
+    }
+
+    // Don't bother unsubscribing on unlink; it's a relatively rare operation during normal usage,
+    // and a decent amount of effort to make sure there aren't other links before stopping them, and
+    // making sure not to stop other channels that are still linked.
+    // A disable/re-enable of the thing will clear the subscriptions.
 }

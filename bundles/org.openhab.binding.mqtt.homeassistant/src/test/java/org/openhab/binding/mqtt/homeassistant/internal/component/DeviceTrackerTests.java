@@ -67,6 +67,9 @@ public class DeviceTrackerTests extends AbstractComponentTests {
                 "", "Location Name", TextValue.class);
         assertChannel(component, DeviceTracker.HOME_CHANNEL_ID, "", "", "At Home", OnOffValue.class);
         assertChannel(component, DeviceTracker.SOURCE_TYPE_CHANNEL_ID, "", "", "Source Type", TextValue.class);
+
+        linkAllChannels(component);
+
         assertState(component, DeviceTracker.SOURCE_TYPE_CHANNEL_ID, new StringType("bluetooth_le"));
 
         publishMessage("home/TheengsGateway/BTtoMQTT/112233445566", """
@@ -105,6 +108,8 @@ public class DeviceTrackerTests extends AbstractComponentTests {
                 TextValue.class);
         assertChannel(component, DeviceTracker.HOME_CHANNEL_ID, "", "", "At Home", OnOffValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("devices/112233445566", "home");
         assertState(component, DeviceTracker.LOCATION_NAME_CHANNEL_ID, new StringType("home"));
         assertState(component, DeviceTracker.HOME_CHANNEL_ID, OnOffType.ON);
@@ -139,6 +144,8 @@ public class DeviceTrackerTests extends AbstractComponentTests {
         assertChannel(component, DeviceTracker.GPS_ACCURACY_CHANNEL_ID, "", "", "GPS Accuracy", NumberValue.class);
         assertChannel(component, DeviceTracker.JSON_ATTRIBUTES_CHANNEL_ID, "devices/112233445566/json", "",
                 "JSON Attributes", TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("devices/112233445566", "home");
         assertState(component, DeviceTracker.LOCATION_NAME_CHANNEL_ID, new StringType("home"));
@@ -226,6 +233,8 @@ public class DeviceTrackerTests extends AbstractComponentTests {
         assertChannel(component, DeviceTracker.GPS_ACCURACY_CHANNEL_ID, "", "", "GPS Accuracy", NumberValue.class);
         assertChannel(component, DeviceTracker.JSON_ATTRIBUTES_CHANNEL_ID, "devices/112233445566/json", "",
                 "JSON Attributes", TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("devices/112233445566/json", "not JSON");
         assertState(component, DeviceTracker.LOCATION_CHANNEL_ID, UnDefType.NULL);

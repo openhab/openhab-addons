@@ -70,6 +70,8 @@ public class SensorTests extends AbstractComponentTests {
         assertChannel(component, Sensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "sensor1",
                 NumberValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/bridge/state", "{ \"state\": \"online\" }");
         assertThat(haThing.getStatus(), is(ThingStatus.ONLINE));
         publishMessage("zigbee2mqtt/sensor/state", "10");

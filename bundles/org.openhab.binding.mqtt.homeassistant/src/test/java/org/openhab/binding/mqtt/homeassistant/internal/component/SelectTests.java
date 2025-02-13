@@ -71,6 +71,8 @@ public class SelectTests extends AbstractComponentTests {
         assertChannel(component, Select.SELECT_CHANNEL_ID, "zigbee2mqtt/gbos", "zigbee2mqtt/gbos/set/approach_distance",
                 "Guest Bathroom Occupancy Sensor approach distance", TextValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/gbos", "{\"approach_distance\": \"far\"}");
         assertState(component, Select.SELECT_CHANNEL_ID, new StringType("far"));
         publishMessage("zigbee2mqtt/gbos", "{\"approach_distance\": \"medium\"}");
@@ -118,6 +120,8 @@ public class SelectTests extends AbstractComponentTests {
                         "value_template":"{{ value_json.approach_distance }}"
                     }
                 """);
+
+        linkAllChannels(component);
 
         component.getChannel(Select.SELECT_CHANNEL_ID).getState().publishValue(new StringType("near"));
         assertPublished("zigbee2mqtt/gbos/set/approach_distance", "set to near");

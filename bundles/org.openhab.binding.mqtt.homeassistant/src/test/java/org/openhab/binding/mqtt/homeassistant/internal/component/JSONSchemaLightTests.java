@@ -73,6 +73,8 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
 
         assertChannel(component, Light.COLOR_CHANNEL_ID, "", "dummy", "Color", ColorValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/light/state", "{ \"state\": \"ON\" }");
         assertState(component, Light.COLOR_CHANNEL_ID, HSBType.WHITE);
         publishMessage("zigbee2mqtt/light/state", "{ \"color\": {\"r\": 10, \"g\": 20, \"b\": 30 } }");
@@ -130,6 +132,8 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
 
         assertChannel(component, Light.COLOR_CHANNEL_ID, "", "dummy", "Color", ColorValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/light/state", "{ \"state\": \"ON\" }");
         assertState(component, Light.COLOR_CHANNEL_ID, HSBType.WHITE);
         publishMessage("zigbee2mqtt/light/state", "{ \"color\": {\"r\": 10, \"g\": 20, \"b\": 30 } }");
@@ -172,6 +176,8 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
 
         assertChannel(component, Light.BRIGHTNESS_CHANNEL_ID, "", "dummy", "Brightness", PercentageValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/light/state", "{ \"state\": \"ON\", \"brightness\": 128 }");
         assertState(component, Light.BRIGHTNESS_CHANNEL_ID,
                 new PercentType(new BigDecimal(128 * 100).divide(new BigDecimal(255), MathContext.DECIMAL128)));
@@ -204,6 +210,8 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
         assertThat(component.getName(), is("light"));
 
         assertChannel(component, Light.SWITCH_CHANNEL_ID, "", "dummy", "On/Off State", OnOffValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/light/state", "{ \"state\": \"ON\" }");
         assertState(component, Light.SWITCH_CHANNEL_ID, OnOffType.ON);
