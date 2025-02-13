@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -63,7 +64,7 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
     public void initialize() {
         super.initialize();
 
-        pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
+        pollingJob = scheduler.schedule(this::pollingCode, 1, TimeUnit.SECONDS);
     }
 
     @Override
@@ -82,12 +83,14 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
     private void pollingCode() {
 
         updateStatus(ThingStatus.ONLINE);
+        Selector selector = null;
+        ServerSocketChannel socket = null;
 
         try {
             // define an assign a selector
-            Selector selector = Selector.open();
+            selector = Selector.open();
 
-            ServerSocketChannel socket = ServerSocketChannel.open();
+            socket = ServerSocketChannel.open();
 
             Configuration thingConfig = getConfig();
 
@@ -102,7 +105,8 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
             socket.configureBlocking(false);
             socket.register(selector, SelectionKey.OP_ACCEPT);
 
-            while (true) {
+            while (getThing().getStatus() == ThingStatus.ONLINE) {
+                // logger.debug("pool socket");
                 if (selector.select(3000) == 0) {
                     continue;
                 }
@@ -113,7 +117,7 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
 
                 // iterate over the selected keys
                 while (keyIterator.hasNext()) {
-                    SelectionKey myKey = keyIterator.next();
+                    SelectionKey selectionKey = keyIterator.next();
 
                     /*
                      * if both the server and the client have binded to a port and
@@ -121,12 +125,12 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
                      * will return true
                      */
 
-                    if (myKey.isAcceptable()) {
+                    if (selectionKey.isAcceptable()) {
                         SocketChannel client = socket.accept();
 
                         if (client != null) {
                             client.configureBlocking(false);
-                            client.register(myKey.selector(), SelectionKey.OP_READ, ByteBuffer.allocate(20000));
+                            client.register(selectionKey.selector(), SelectionKey.OP_READ, ByteBuffer.allocate(20000));
                         }
                     }
 
@@ -137,16 +141,16 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
                      * isReadable() will return true
                      */
 
-                    else if (myKey.isReadable()) {
-                        SocketChannel client = (SocketChannel) myKey.channel();
-                        ByteBuffer buf = (ByteBuffer) myKey.attachment();
+                    else if (selectionKey.isReadable()) {
+                        SocketChannel client = (SocketChannel) selectionKey.channel();
+                        ByteBuffer buf = (ByteBuffer) selectionKey.attachment();
                         long bytesRead = client.read(buf);
 
                         if (bytesRead == -1) {
                             client.close();
                         } else if (bytesRead > 0) {
                             handleRead(buf);
-                            myKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                            selectionKey.interestOps(SelectionKey.OP_READ);
                         }
 
                         // do something with your data
@@ -155,6 +159,18 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
                         // ByteBuffer sendAck = ByteBuffer.wrap(ackByte);
                         // mllpClient.write(sendAck);
 
+                    } else if (selectionKey.isWritable()) {
+                        logger.debug("Writable");
+
+                        ByteBuffer buf = (ByteBuffer) selectionKey.attachment();
+                        buf.flip(); // Prepare buffer for writing
+                        SocketChannel clientChannel = (SocketChannel) selectionKey.channel();
+                        clientChannel.write(buf);
+                        if (!buf.hasRemaining()) { // Buffer completely written?
+                            // Nothing left, so no longer interested in writes
+                            selectionKey.interestOps(SelectionKey.OP_READ);
+                        }
+                        buf.compact(); // Make room for more data to be read in
                     }
                 }
                 // once read, each key is removed from the operation.
@@ -162,8 +178,21 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
 
             }
         } catch (Exception ex) {
-            logger.error("errors occured in data reception loop", ex);
+            logger.debug("errors occured in data reception loop", ex);
+        } finally {
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+                if (selector != null) {
+                    selector.close();
+                }
+            } catch (IOException ex) {
+                //
+            }
         }
+
+        logger.debug("end pooling socket");
     }
 
     public void handleRead(ByteBuffer byteBuffer) {
