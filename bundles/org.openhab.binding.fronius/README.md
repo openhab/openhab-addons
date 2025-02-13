@@ -212,12 +212,14 @@ froniusInverterActions.setBackupReservedBatteryCapacity(50);
 demo.things:
 
 ```java
-Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5] {
+Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5, username="customer", password="someSecretPassword"] {
     Thing powerinverter myinverter [deviceId=1]
     Thing meter mymeter [deviceId=0]
     Thing ohmpilot myohmpilot [deviceId=0]
 }
 ```
+
+Please note that `username` and `password` are only required if you want to use battery control Thing actions.
 
 demo.items:
 
