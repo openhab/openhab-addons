@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -91,44 +91,40 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
                 .stateTopic(channelConfiguration.topic, channelConfiguration.getValueTemplate()).trigger(true).build();
     }
 
+    @Override
+    public boolean mergeable(AbstractComponent<?> other) {
+        if (other instanceof DeviceTrigger newTrigger
+                && newTrigger.getChannelConfiguration().getSubtype().equals(getChannelConfiguration().getSubtype())
+                && newTrigger.getChannelConfiguration().getTopic().equals(getChannelConfiguration().getTopic())
+                && getHaID().nodeID.equals(newTrigger.getHaID().nodeID)) {
+            String newTriggerValueTemplate = newTrigger.getChannelConfiguration().getValueTemplate();
+            String oldTriggerValueTemplate = getChannelConfiguration().getValueTemplate();
+            if ((newTriggerValueTemplate == null && oldTriggerValueTemplate == null)
+                    || (newTriggerValueTemplate != null & oldTriggerValueTemplate != null
+                            && newTriggerValueTemplate.equals(oldTriggerValueTemplate))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Take another DeviceTrigger (presumably whose subtype, topic, and value template match),
      * and adjust this component's channel to accept the payload that trigger allows.
      * 
      * @return if the component was stopped, and thus needs restarted
      */
+    @Override
+    public boolean merge(AbstractComponent<?> other) {
+        DeviceTrigger newTrigger = (DeviceTrigger) other;
+        ComponentChannel channel = Objects.requireNonNull(channels.get(componentId));
+        Configuration newConfiguration = mergeChannelConfiguration(channel, newTrigger);
 
-    public boolean merge(DeviceTrigger other) {
-        ComponentChannel channel = channels.get(componentId);
         TextValue value = (TextValue) channel.getState().getCache();
         Set<String> payloads = value.getStates();
-        // Append objectid/config to channel configuration
-        Configuration currentConfiguration = channel.getChannel().getConfiguration();
-        Configuration newConfiguration = new Configuration();
-        newConfiguration.put("component", currentConfiguration.get("component"));
-        newConfiguration.put("nodeid", currentConfiguration.get("nodeid"));
-        Object objectIdObject = currentConfiguration.get("objectid");
-        if (objectIdObject instanceof String objectIdString) {
-            if (!objectIdString.equals(other.getHaID().objectID)) {
-                newConfiguration.put("objectid", List.of(objectIdString, other.getHaID().objectID));
-            }
-        } else if (objectIdObject instanceof List<?> objectIdList) {
-            newConfiguration.put("objectid", Stream.concat(objectIdList.stream(), Stream.of(other.getHaID().objectID))
-                    .sorted().distinct().toList());
-        }
-        Object configObject = currentConfiguration.get("config");
-        if (configObject instanceof String configString) {
-            if (!configString.equals(other.getChannelConfigurationJson())) {
-                newConfiguration.put("config", List.of(configString, other.getChannelConfigurationJson()));
-            }
-        } else if (configObject instanceof List<?> configList) {
-            newConfiguration.put("config",
-                    Stream.concat(configList.stream(), Stream.of(other.getChannelConfigurationJson())).sorted()
-                            .distinct().toList());
-        }
 
         // Append payload to allowed values
-        String otherPayload = other.getChannelConfiguration().payload;
+        String otherPayload = newTrigger.getChannelConfiguration().payload;
         if (payloads == null || otherPayload == null) {
             // Need to accept anything
             value = new TextValue();

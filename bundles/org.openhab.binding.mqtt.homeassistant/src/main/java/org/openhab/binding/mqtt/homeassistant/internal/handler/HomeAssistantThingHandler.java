@@ -42,7 +42,6 @@ import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory;
-import org.openhab.binding.mqtt.homeassistant.internal.component.DeviceTrigger;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Update;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
@@ -482,33 +481,19 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     private boolean addComponent(AbstractComponent<?> component) {
         AbstractComponent<?> existing = haComponents.get(component.getComponentId());
         if (existing != null) {
-            // DeviceTriggers that are for the same subtype, topic, and value template
-            // can be coalesced together
-            if (component instanceof DeviceTrigger newTrigger && existing instanceof DeviceTrigger oldTrigger
-                    && newTrigger.getChannelConfiguration().getSubtype()
-                            .equals(oldTrigger.getChannelConfiguration().getSubtype())
-                    && newTrigger.getChannelConfiguration().getTopic()
-                            .equals(oldTrigger.getChannelConfiguration().getTopic())
-                    && oldTrigger.getHaID().nodeID.equals(newTrigger.getHaID().nodeID)) {
-                String newTriggerValueTemplate = newTrigger.getChannelConfiguration().getValueTemplate();
-                String oldTriggerValueTemplate = oldTrigger.getChannelConfiguration().getValueTemplate();
-                if ((newTriggerValueTemplate == null && oldTriggerValueTemplate == null)
-                        || (newTriggerValueTemplate != null & oldTriggerValueTemplate != null
-                                && newTriggerValueTemplate.equals(oldTriggerValueTemplate))) {
-                    // Adjust the set of valid values
-                    MqttBrokerConnection connection = this.connection;
-
-                    if (oldTrigger.merge(newTrigger) && connection != null) {
-                        // Make sure to re-start if this did something, and it was stopped
-                        oldTrigger.start(connection, scheduler, 0).exceptionally(e -> {
-                            logger.warn("Failed to start component {}", oldTrigger.getHaID(), e);
-                            return null;
-                        });
-                    }
-                    haComponentsByUniqueId.put(component.getUniqueId(), component);
-                    haComponentsByHaId.put(component.getHaID(), component);
-                    return false;
+            // Check for components that merge together
+            if (component.mergeable(existing)) {
+                MqttBrokerConnection connection = this.connection;
+                if (existing.merge(component) && connection != null) {
+                    // Make sure to re-start if this did something, and it was stopped
+                    existing.start(connection, scheduler, 0).exceptionally(e -> {
+                        logger.warn("Failed to start component {}", existing.getHaID(), e);
+                        return null;
+                    });
                 }
+                haComponentsByUniqueId.put(component.getUniqueId(), component);
+                haComponentsByHaId.put(component.getHaID(), component);
+                return false;
             }
 
             // rename the conflict
