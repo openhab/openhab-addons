@@ -34,6 +34,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.linky.internal.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.LinkyChannelRegistry;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.ValueType;
@@ -41,6 +42,9 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -261,6 +265,18 @@ public class LinkyLocalHandler extends BaseThingHandler {
                         }
                     }
 
+                    key = key.replace("+1", "_PLUS_1");
+
+                    if (key.equals(LinkyChannelRegistry.STGE.name())) {
+                        handleStgePayload(value);
+                    } else if (key.equals(LinkyChannelRegistry.RELAIS.name())) {
+                        handleRelaisPayload(value);
+                    } else if (key.equals(LinkyChannelRegistry.PJOURF_PLUS_1.name())) {
+                        handlePayload(LinkyChannelRegistry.PJOURF_PLUS_1.name(), value);
+                    } else if (key.equals(LinkyChannelRegistry.PPOINTE.name())) {
+                        handlePayload(LinkyChannelRegistry.PPOINTE.name(), value);
+                    }
+
                     if (timestamp != null) {
                         if (!channelRegistry.getTimestampChannelName().equals(CHANNEL_NONE)) {
                             Instant timestampConv = getAsInstant(timestamp);
@@ -274,6 +290,7 @@ public class LinkyLocalHandler extends BaseThingHandler {
                             }
                         }
                     }
+
                 }
             } catch (Exception ex) {
                 logger.error("err", ex);
@@ -284,6 +301,180 @@ public class LinkyLocalHandler extends BaseThingHandler {
         // updateState(LINKY_DIRECT_MAIN_GROUP, "SINSTS", new StringType(payLoad.get("SINSTS")));
         // updateState(LINKY_DIRECT_MAIN_GROUP, "DATE", new StringType(payLoad.get("DATE")));
         // updateState(LINKY_DIRECT_MAIN_GROUP, "IRMS1", new StringType(payLoad.get("IRMS1")));
+    }
+
+    // @formatter:off
+    //  1  0  0  0  0  1  0  0  0  1  1  1  0  1  0  1  1  0  0  1  1  0  0  0  0  0  0  0  0  0  1
+    // 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+    // 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+    //
+    //  0  0  0  0  0  0  0  0  0  0  1  1  1  0  1  0  0  1  0  0  0  1  0  0  0  0  0  0  0  0  0  1
+    //  P==>  P==>  T==>  T==>  S  S==>  E==>  N  T  H  T==>  T========>  S  F  D  S  N  C  C=====>  C
+    //  o     o     e     e     y  t     t     o  é  o  a     a           e  o  é  u  o  a  o        o
+    //  i     i     m     m     n  a     a     t  l  r  r     r           n  n  p  r  t  c  u        n
+    //  n     n     p     p     c  t     t        é  l  i     i           s  c  a  t     h  p        t
+    //  t     t     o     o     h  u           U     o  f     f              t  s  e  u  e  u        a
+    //  e     e                 r  t     S     s  i  g                       i  s  n  s     r        c
+    //        +                 o        o     e  n  e  D     F              o  e  s  e     e        t
+    //        1                    C     r     d  f     i     o              n  m  i  d
+    //                          C  P     t        o     s     u                 e  o                 s
+    //                          P  L     i              t     r                 n  n                 e
+    //                          L        e              i     n                 t                    c
+
+    // @formatter:on
+
+    private void handleStgePayload(String value) {
+
+        String binStr = String.format("%32s", new BigInteger(value, 16).toString(2)).replace(' ', '0');
+
+        String relais = binStr.substring(31, 32);
+        int coupure = Integer.parseInt(binStr.substring(28, 31), 2);
+        String cache = binStr.substring(27, 28);
+        String overVoltage = binStr.substring(25, 26);
+        String exceedingPower = binStr.substring(24, 25);
+        String function = binStr.substring(23, 24);
+        String direction = binStr.substring(22, 23);
+        int supplierRate = Integer.parseInt(binStr.substring(18, 22), 2);
+        int distributorRate = Integer.parseInt(binStr.substring(16, 18), 2);
+        String clock = binStr.substring(15, 16);
+        String plc = binStr.substring(14, 15);
+        int comOuput = Integer.parseInt(binStr.substring(11, 13), 2);
+        int plcState = Integer.parseInt(binStr.substring(9, 11), 2);
+        String plcSync = binStr.substring(8, 9);
+        int tempoToday = Integer.parseInt(binStr.substring(6, 8), 2);
+        int tempoTomorrow = Integer.parseInt(binStr.substring(4, 6), 2);
+        int movingTipsAdvice = Integer.parseInt(binStr.substring(2, 4), 2);
+        int movingTips = Integer.parseInt(binStr.substring(0, 2), 2);
+
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_CONTACT_SEC,
+                getOpenClosed(relais));
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_CACHE,
+                getOpenClosed(cache));
+
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_CUT_OFF,
+                new DecimalType(coupure));
+
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_OVER_VOLTAGE,
+                new DecimalType(overVoltage));
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_EXCEEDING_POWER,
+                new DecimalType(exceedingPower));
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_FUNCTION,
+                new DecimalType(function));
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_DIRECTION,
+                new DecimalType(direction));
+
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_SUPPLIER_RATE,
+                new DecimalType(supplierRate));
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_DISTRIBUTOR_RATE,
+                new DecimalType(distributorRate));
+
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_CLOCK,
+                new DecimalType(clock));
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_PLC,
+                new DecimalType(plc));
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_COM_OUTPUT,
+                new DecimalType(comOuput));
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_PLC_STATE,
+                new DecimalType(plcState));
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_PLC_SYNCHRO,
+                new DecimalType(plcSync));
+
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_TEMPO_TODAY,
+                new DecimalType(tempoToday));
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_TEMPO_TOMORROW,
+                new DecimalType(tempoTomorrow));
+
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_MOVING_TIPS_ADVICE,
+                new DecimalType(movingTipsAdvice));
+        updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_MOVING_TIPS,
+                new DecimalType(movingTips));
+
+    }
+
+    private OpenClosedType getOpenClosed(String val) {
+        if (val.equals("0")) {
+            return OpenClosedType.CLOSED;
+        } else if (val.equals("1")) {
+            return OpenClosedType.OPEN;
+        }
+
+        return OpenClosedType.CLOSED;
+    }
+
+    private void handleRelaisPayload(String value) {
+        boolean[] relaisState = new boolean[8];
+        int valuei = Integer.parseInt(value);
+        for (int i = 0; i <= 7; i++) {
+            relaisState[i] = (valuei & 1) == 1;
+            valuei >>= 1;
+            updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP, LinkyBindingConstants.CHANNEL_RELAIS + i,
+                    OnOffType.from(relaisState[i]));
+
+        }
+
+    }
+
+    private void handlePayload(String channelName, String value) {
+        if (value.isEmpty()) {
+            return;
+        }
+
+        String[] parts = value.split(" ");
+        int idx = 1;
+        for (String part : parts) {
+            if (part.equals("NONUTILE")) {
+                continue;
+            }
+
+            int h = Integer.parseInt(part.substring(0, 2), 16);
+            int m = Integer.parseInt(part.substring(2, 4), 16);
+
+            String p2 = part.substring(4, 8);
+            String binStr = String.format("%16s", new BigInteger(p2, 16).toString(2)).replace(' ', '0');
+
+            String index = binStr.substring(12, 16);
+            String relais = binStr.substring(0, 2);
+
+            int indexI = Integer.parseInt(index, 2);
+
+            String tarif = "";
+
+            if (indexI == 1) {
+                tarif = "Bleue-HC";
+            } else if (indexI == 2) {
+                tarif = "Bleue-HP";
+            } else if (indexI == 3) {
+                tarif = "Blanc-HC";
+            } else if (indexI == 4) {
+                tarif = "Blanc-HP";
+            } else if (indexI == 5) {
+                tarif = "Red-HC";
+            } else if (indexI == 6) {
+                tarif = "Red-HP";
+            }
+
+            String relaisSt = "";
+            if (relais.equals("00")) {
+                relaisSt = "Fermé";
+            } else if (relais.equals("01")) {
+                relaisSt = "Ouvert";
+            }
+
+            if (channelName.equals("PJOURF_PLUS_1")) {
+                // PJourF
+                updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP,
+                        LinkyBindingConstants.CHANNEL_PJOURF_IDX + idx + "plus1",
+                        new StringType(h + ":" + m + "<>" + tarif + "<>" + relaisSt));
+            } else if (channelName.equals("PPOINTE")) {
+                // PJourF
+                updateState(LinkyBindingConstants.LINKY_LOCAL_CALC_GROUP,
+                        LinkyBindingConstants.CHANNEL_PPOINTE_IDX + idx,
+                        new StringType(h + ":" + m + "<>" + tarif + "<>" + relaisSt));
+            }
+
+            idx++;
+            logger.info("aa");
+        }
     }
 
     protected @Nullable Instant getAsInstant(String timestamp) {
