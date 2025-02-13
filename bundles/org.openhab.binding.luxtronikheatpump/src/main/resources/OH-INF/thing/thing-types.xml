@@ -266,6 +266,28 @@
 			<channel id="heatingPowerActualValue" typeId="heatingPowerActualValue"/>
 			<channel id="outputControlSignalCooling" typeId="outputControlSignalCooling"/>
 			<channel id="timeCoolingRelease" typeId="timeCoolingRelease"/>
+			<channel id="channel261" typeId="unknown">
+				<label>Channel 261</label>
+			</channel>
+			<channel id="channel262" typeId="unknown">
+				<label>Channel 262</label>
+			</channel>
+			<channel id="channel263" typeId="unknown">
+				<label>Channel 263</label>
+			</channel>
+			<channel id="channel264" typeId="unknown">
+				<label>Channel 264</label>
+			</channel>
+			<channel id="channel265" typeId="unknown">
+				<label>Channel 265</label>
+			</channel>
+			<channel id="channel266" typeId="unknown">
+				<label>Channel 266</label>
+			</channel>
+			<channel id="channel267" typeId="unknown">
+				<label>Channel 267</label>
+			</channel>
+			<channel id="powerConsumption" typeId="powerConsumption"/>
 
 			<channel id="temperatureHeatingParallelShift" typeId="temperatureHeatingParallelShift"/>
 			<channel id="heatingMode" typeId="heatingMode"/>

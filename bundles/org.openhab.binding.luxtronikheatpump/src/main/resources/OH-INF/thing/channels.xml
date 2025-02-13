@@ -2013,7 +2013,7 @@
 
 	<channel-type id="temperatureHotGasMax" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature Hot Gas Max</label>
+		<label>Hot Gas Temp. Max</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -2040,6 +2040,12 @@
 		<item-type>Number:Time</item-type>
 		<label>Release Cooling Time</label>
 		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="powerConsumption" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Power Consumption</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
