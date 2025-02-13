@@ -22,6 +22,6 @@ import java.time.LocalDateTime;
  */
 
 public class IntervalReading {
-    public Double value;
+    public Double value = 0.0;
     public LocalDateTime date;
 }
