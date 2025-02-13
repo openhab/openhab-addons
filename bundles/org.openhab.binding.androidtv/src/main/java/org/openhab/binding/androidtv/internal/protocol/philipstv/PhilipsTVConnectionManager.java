@@ -531,10 +531,11 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     public synchronized void postUpdateThing(ThingStatus status, ThingStatusDetail statusDetail, String msg) {
         logger.trace("postUpdateThing {} {} {}", status, statusDetail, msg);
         if (status == ThingStatus.ONLINE) {
-            if (msg.equalsIgnoreCase(STANDBY_MSG)) {
-                handler.updateChannelState(CHANNEL_POWER, OnOffType.OFF);
-            } else {
-                handler.updateChannelState(CHANNEL_POWER, OnOffType.ON);
+            PhilipsTVService powerService = channelServices.get(CHANNEL_POWER);
+            if (powerService != null) {
+                powerService.handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
+            }
+            if (!msg.equalsIgnoreCase(STANDBY_MSG)) {
                 startDeviceHealthJob(5, TimeUnit.SECONDS);
                 pendingPowerOn = false;
             }
