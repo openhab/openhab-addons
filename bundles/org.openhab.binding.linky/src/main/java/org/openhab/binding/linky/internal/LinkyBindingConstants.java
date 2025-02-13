@@ -159,6 +159,8 @@ public class LinkyBindingConstants {
     public static final String CHANNEL_ERQ3 = "erq3";
     public static final String CHANNEL_ERQ4 = "erq4";
 
+    public static final String CHANNEL_IRMS1F = "irms1f";
+
     public static final String CHANNEL_IRMS1 = "irms1";
     public static final String CHANNEL_IRMS2 = "irms2";
     public static final String CHANNEL_IRMS3 = "irms3";
@@ -169,6 +171,10 @@ public class LinkyBindingConstants {
 
     public static final String CHANNEL_PREF = "pref";
     public static final String CHANNEL_PCOUP = "pcoup";
+
+    public static final String CHANNEL_COSPHI = "cosphi";
+    public static final String CHANNEL_SACTIVE = "sactive";
+    public static final String CHANNEL_SREACTIVE = "sreactive";
 
     public static final String CHANNEL_SINSTS = "sinsts";
     public static final String CHANNEL_SINST1 = "sinst1";

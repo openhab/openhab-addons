@@ -85,6 +85,8 @@ public class LinkyLocalHandler extends BaseThingHandler {
     private String appKey = "";
     private String ivKey = "";
 
+    private double cosphi = Double.NaN;
+
     public LinkyLocalHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
 
@@ -136,6 +138,13 @@ public class LinkyLocalHandler extends BaseThingHandler {
             logger.debug("Refreshing channel {} {}", config.prmId, channelUID.getId());
         } else {
             logger.debug("The Linky binding is read-only and can not handle command {}", command);
+        }
+
+        if (channelUID.getId().indexOf("cosphi") >= 0) {
+            if (command instanceof DecimalType) {
+                DecimalType dc = (DecimalType) command;
+                cosphi = dc.doubleValue();
+            }
         }
     }
 
@@ -225,14 +234,16 @@ public class LinkyLocalHandler extends BaseThingHandler {
     }
 
     protected void handlePayload(Map<String, String> payLoad) {
+        double urms = 0.0;
+        double sinst = 0.0;
 
         for (String key : payLoad.keySet()) {
             String value = payLoad.get(key);
 
             try {
-                LinkyChannelRegistry channelRegistry = LinkyChannelRegistry.getEnum(key);
+                LinkyChannelRegistry channel = LinkyChannelRegistry.getEnum(key);
 
-                if (channelRegistry.getChannelName().equals(CHANNEL_NONE)) {
+                if (channel.getChannelName().equals(CHANNEL_NONE)) {
                     continue;
                 }
 
@@ -245,21 +256,19 @@ public class LinkyLocalHandler extends BaseThingHandler {
                         value = value.substring(pos1 + 1);
                     }
 
-                    if (channelRegistry.getType() == ValueType.STRING) {
-                        updateState(channelRegistry.getGroupName(), channelRegistry.getChannelName(),
-                                StringType.valueOf(value));
-                    } else if (channelRegistry.getType() == ValueType.INTEGER) {
+                    if (channel.getType() == ValueType.STRING) {
+                        updateState(channel.getGroupName(), channel.getChannelName(), StringType.valueOf(value));
+                    } else if (channel.getType() == ValueType.INTEGER) {
                         if (!value.isEmpty()) {
-                            updateState(channelRegistry.getGroupName(), channelRegistry.getChannelName(),
-                                    QuantityType.valueOf(channelRegistry.getFactor() * Integer.parseInt(value),
-                                            channelRegistry.getUnit()));
+                            updateState(channel.getGroupName(), channel.getChannelName(), QuantityType
+                                    .valueOf(channel.getFactor() * Integer.parseInt(value), channel.getUnit()));
                         }
-                    } else if (channelRegistry.getType() == ValueType.DATE) {
+                    } else if (channel.getType() == ValueType.DATE) {
                         if (!value.isEmpty()) {
                             Instant timestampConv = getAsInstant(value);
 
                             if (timestampConv != null) {
-                                updateState(channelRegistry.getGroupName(), channelRegistry.getChannelName(),
+                                updateState(channel.getGroupName(), channel.getChannelName(),
                                         new DateTimeType(timestampConv));
                             }
                         }
@@ -277,15 +286,21 @@ public class LinkyLocalHandler extends BaseThingHandler {
                         handlePayload(LinkyChannelRegistry.PPOINTE.name(), value);
                     }
 
+                    if (key.equals(LinkyChannelRegistry.URMS1.name())) {
+                        urms = Double.valueOf(value);
+                    } else if (key.equals(LinkyChannelRegistry.SINSTS.name())) {
+                        sinst = Double.valueOf(value);
+                    }
+
                     if (timestamp != null) {
-                        if (!channelRegistry.getTimestampChannelName().equals(CHANNEL_NONE)) {
+                        if (!channel.getTimestampChannelName().equals(CHANNEL_NONE)) {
                             Instant timestampConv = getAsInstant(timestamp);
 
                             if (timestampConv != null) {
-                                logger.trace("Update channel {} to value {}", channelRegistry.getTimestampChannelName(),
+                                logger.trace("Update channel {} to value {}", channel.getTimestampChannelName(),
                                         timestamp);
 
-                                updateState(channelRegistry.getGroupName(), channelRegistry.getTimestampChannelName(),
+                                updateState(channel.getGroupName(), channel.getTimestampChannelName(),
                                         new DateTimeType(timestampConv));
                             }
                         }
@@ -297,10 +312,40 @@ public class LinkyLocalHandler extends BaseThingHandler {
             }
         }
 
+        updateCalcVars(urms, sinst);
+
         // updateState(LINKY_DIRECT_MAIN_GROUP, "_ID_D2L", new StringType(payLoad.get("_ID_D2L")));
         // updateState(LINKY_DIRECT_MAIN_GROUP, "SINSTS", new StringType(payLoad.get("SINSTS")));
         // updateState(LINKY_DIRECT_MAIN_GROUP, "DATE", new StringType(payLoad.get("DATE")));
         // updateState(LINKY_DIRECT_MAIN_GROUP, "IRMS1", new StringType(payLoad.get("IRMS1")));
+    }
+
+    private void updateCalcVars(double urms, double sinst) {
+        double irms1c = sinst / urms;
+
+        LinkyChannelRegistry channelIrms1f = LinkyChannelRegistry.IRMS1F;
+        LinkyChannelRegistry channelSactive = LinkyChannelRegistry.SACTIVE;
+        LinkyChannelRegistry channelSreactive = LinkyChannelRegistry.SREACTIVE;
+
+        updateState(channelIrms1f.getGroupName(), channelIrms1f.getChannelName(),
+                QuantityType.valueOf(channelIrms1f.getFactor() * irms1c, channelIrms1f.getUnit()));
+
+        if (Double.isNaN(cosphi)) {
+            return;
+        }
+
+        double phi = Math.acos(cosphi);
+        double sinphi = Math.sin(phi);
+
+        double sactive = sinst * cosphi;
+        double sreactive = sinst * sinphi;
+
+        updateState(channelSactive.getGroupName(), channelSactive.getChannelName(),
+                QuantityType.valueOf(channelSactive.getFactor() * sactive, channelSactive.getUnit()));
+
+        updateState(channelSreactive.getGroupName(), channelSreactive.getChannelName(),
+                QuantityType.valueOf(channelSreactive.getFactor() * sreactive, channelSreactive.getUnit()));
+
     }
 
     // @formatter:off
