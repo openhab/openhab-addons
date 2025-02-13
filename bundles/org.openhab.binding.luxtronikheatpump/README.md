@@ -282,7 +282,6 @@ The following channels are holding read only values:
 | heatingPowerActualValue                 | Number:Power              | x        | Heating Power Actual Value                                     |
 | outputControlSignalCooling              | Switch                    | x        | Output "Control Signal Cooling"                                |
 | timeCoolingRelease                      | Number:Time               | x        | Release Cooling Time                                           |
-| channel260                              | Number                    | x        | Channel 260                                                    |
 | channel261                              | Number                    | x        | Channel 261                                                    |
 | channel262                              | Number                    | x        | Channel 262                                                    |
 | channel263                              | Number                    | x        | Channel 263                                                    |
