@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -88,8 +89,12 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
 
             ServerSocketChannel socket = ServerSocketChannel.open();
 
+            Configuration thingConfig = getConfig();
+
+            Object listenningPort = thingConfig.get("listenningPort");
+
             // specify the port and host to connect to
-            InetSocketAddress serverSocketAddr = new InetSocketAddress(7845);
+            InetSocketAddress serverSocketAddr = new InetSocketAddress(Integer.valueOf((String) listenningPort));
 
             socket.bind(serverSocketAddr);
 
