@@ -584,6 +584,9 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         updateState(new ChannelUID(channelPrefix + CHANNEL_TEXT_OFFSET),
                 new QuantityType<>(this.app.getTextOffset(), Units.ONE));
 
+        updateState(new ChannelUID(channelPrefix + CHANNEL_TEXTCASE),
+                new QuantityType<>(this.app.getTextCase(), Units.ONE));
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_TOP_TEXT),
                 this.app.getTopText() ? OnOffType.ON : OnOffType.OFF);
 
@@ -615,9 +618,6 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
             param = PUSH_ICON_OPTION_2;
         }
         updateState(new ChannelUID(channelPrefix + CHANNEL_PUSH_ICON), new StringType(param));
-
-        updateState(new ChannelUID(channelPrefix + CHANNEL_TEXTCASE),
-                new QuantityType<>(this.app.getBlinkText(), Units.ONE));
 
         BigDecimal[] background = this.app.getBackground().length == 3 ? this.app.getBackground()
                 : new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };

@@ -80,38 +80,199 @@ The button events can be used by rules to change the displayed app or perform an
 | `temperature`     | Number:Temperature   | R          | Device temperature: Temperature in °C as measured by the built-in temperature sensor. For the Ulanzi clock values are usually very inaccurate.                                                                                                                                        |
 
 ### App Channels (`awtrixapp`)
-| Channel               | Type                 | Read/Write | Description                                                                                                                                                                                                                        |
-|-----------------------|----------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `active`              | Switch               | W          | Enable/disable the app: Switches the app on or off. Note that channels of inactive apps will be reset to their default values during a restart of openHAB.                                                                         |
-| `autoscale`           | Switch               | RW         | Enable/disable autoscaling for bar and linechart.                                                                                                                                                                                  |
-| `background`          | Color                | RW         | Sets a background color.                                                                                                                                                                                                           |
-| `bar`                 | String               | RW         | Shows a bar chart: Send a string with values separated by commas (e.g. "value1,value2,value3"). Only the last 16 values will be displayed.                                                                                         |
-| `blink`               | Number:Time          | RW         | Blink text: Blink the text in the specified interval. Ignored if gradientColor or rainbow are set.                                                                                                                                 |
-| `center`              | Switch               | RW         | Center short text horizontally and disable scrolling.                                                                                                                                                                              |
-| `color`               | Color                | RW         | Text, bar or line chart color.                                                                                                                                                                                                     |
-| `duration`            | Number:Time          | RW         | Display duration in seconds.                                                                                                                                                                                                       |
-| `effect`              | String               | RW         | Display effect (see https://blueforcer.github.io/awtrix3/#/effects for possible values).                                                                                                                                           |
-| `effect-blend`        | Switch               | RW         | Enable smoother effect transitions. Only to be used with effect.                                                                                                                                                                   |
-| `effect-palette`      | String               | RW         | Color palette for effects (see https://blueforcer.github.io/awtrix3/#/effects for possible values and how to create custom palettes). Only to be used with effect.                                                                 |
-| `effect-speed`        | Number:Dimensionless | RW         | Effect animation speed: Higher means faster (see https://blueforcer.github.io/awtrix3/#/effects). Only to be used with effect.                                                                                                     |
-| `fade`                | Number:Time          | RW         | Fade text: Fades the text in and out in the specified interval. Ignored if gradientColor or rainbow are set.                                                                                                                       |
-| `gradient-color`      | Color                | RW         | Secondary color for gradient effects. Use color for setting the primary color.                                                                                                                                                     |
-| `icon`                | String               | RW         | Icon name to display: Install icons on the clock device first.                                                                                                                                                                     |
-| `lifetime`            | Number:Time          | RW         | App lifetime: Define how long the app will remain active on the clock.                                                                                                                                                             |
-| `lifetime-mode`       | String               | RW         | Lifetime mode: Define if the app should be deleted (Command DELETE) or marked as stale (Command STALE) after lifetime.                                                                                                             |
-| `line`                | String               | RW         | Shows a line chart: Send a string with values separated by commas (e.g. "value1,value2,value3"). Only the last 16 values will be displayed.                                                                                        |
-| `overlay`             | String               | RW         | Enable overlay mode: Shows a weather overlay effect (can be any of clear, snow, rain, drizzle, storm, thunder, frost).                                                                                                             |
-| `progress`            | Number:Dimensionless | RW         | Progress value: Shows a progress bar at the bottom of the app with the specified percentage value.                                                                                                                                 |
-| `progress-background` | Color                | RW         | Progress bar background color: Background color for the progress bar.                                                                                                                                                              |
-| `progress-color`      | Color                | RW         | Progress bar color: Color for the progress bar.                                                                                                                                                                                    |
-| `push-icon`           | String               | RW         | Push icon animation (STATIC=Icon doesn't move, PUSHOUT=Icon moves with text and will not appear again, PUSHOUTRETURN=Icon moves with text but appears again when the text starts to scroll again).                                 |
-| `rainbow`             | Switch               | RW         | Enable rainbow effect: Uses a rainbow effect for the displayed text.                                                                                                                                                               |
-| `reset`               | Switch               | RW         | Reset app to default state: All channels will be reset to their default values.                                                                                                                                                    |
-| `scroll-speed`        | Number:Dimensionless | RW         | Text scrolling speed: Provide as percentage value. The original speed is 100%. Values above 100% will increase the scrolling speed, values below 100% will decrease it. Setting this value to 0 will disable scrolling completely. |
-| `text`                | String               | RW         | Text to display.                                                                                                                                                                                                                   |
-| `text-case`           | Number:Dimensionless | RW         | Set text case (0=normal, 1=uppercase, 2=lowercase).                                                                                                                                                                                |
-| `text-offset`         | Number:Dimensionless | RW         | Text offset position: Horizontal offset of the text in pixels.                                                                                                                                                                     |
-| `top-text`            | String               | RW         | Draws the text on the top of the display.                                                                                                                                                                                          |
+
+| Channel               | Action parameter (see Actions)           | Action parameter type                          | Type                 | Read/Write                                                                                                                                                 | Description                                                                                                                                                                                                                        |   |
+|-----------------------|------------------------------------------|------------------------------------------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
+| `active`              | -                                        | Switch                                         | W                    | Enable/disable the app: Switches the app on or off. Note that channels of inactive apps will be reset to their default values during a restart of openHAB. |                                                                                                                                                                                                                                    |   |
+| `autoscale`           | `autoscale`                              | boolean                                        | Switch               | RW                                                                                                                                                         | Enable/disable autoscaling for bar and linechart.                                                                                                                                                                                  |   |
+| `background`          | `background`                             | int[] (rgb-Array)                              | Color                | RW                                                                                                                                                         | Sets a background color.                                                                                                                                                                                                           |   |
+| `bar`                 | `bar`                                    | String                                         | String               | RW                                                                                                                                                         | Shows a bar chart: Send a string with values separated by commas (e.g. "value1,value2,value3"). Only the last 16 values will be displayed.                                                                                         |   |
+| `blink`               | `blinkText`                              | BigDecimal (in milliseconds)                   | Number:Time          | RW                                                                                                                                                         | Blink text: Blink the text in the specified interval. Ignored if gradientColor or rainbow are set.                                                                                                                                 |   |
+| `center`              | `center`                                 | boolean                                        | Switch               | RW                                                                                                                                                         | Center short text horizontally and disable scrolling.                                                                                                                                                                              |   |
+| `color`               | `color`                                  | BigDecimal[] (rgb-Array)                       | Color                | RW                                                                                                                                                         | Text, bar or line chart color.                                                                                                                                                                                                     |   |
+| `duration`            | `duration`                               | BigDecimal                                     | Number:Time          | RW                                                                                                                                                         | Display duration in seconds.                                                                                                                                                                                                       |   |
+| `effect`              | `effectSettings`                         | Map&lt;String, Object&gt;                      | String               | RW                                                                                                                                                         | Display effect (see https://blueforcer.github.io/awtrix3/#/effects for possible values).                                                                                                                                           |   |
+| `effect-blend`        | `blend` as key in `effectSettings`       | boolean                                        | Switch               | RW                                                                                                                                                         | Enable smoother effect transitions. Only to be used with effect.                                                                                                                                                                   |   |
+| `effect-palette`      | `palette` as key in `effectSettings` Map | String ("None" for default)                    | String               | RW                                                                                                                                                         | Color palette for effects (see https://blueforcer.github.io/awtrix3/#/effects for possible values and how to create custom palettes). Only to be used with effect.                                                                 |   |
+| `effect-speed`        | `speed` as key in `effectSettings` Map   | BigDecimal                                     | Number:Dimensionless | RW                                                                                                                                                         | Effect animation speed: Higher means faster (see https://blueforcer.github.io/awtrix3/#/effects). Only to be used with effect.                                                                                                     |   |
+| `fade`                | `fadeText`                               | BigDecimal (in milliseconds)                   | Number:Time          | RW                                                                                                                                                         | Fade text: Fades the text in and out in the specified interval. Ignored if gradientColor or rainbow are set.                                                                                                                       |   |
+| `gradient-color`      | `gradient`                               | BigDecimal[] (rgb-Array)                       | Color                | RW                                                                                                                                                         | Secondary color for gradient effects. Use color for setting the primary color.                                                                                                                                                     |   |
+| `icon`                | `icon`                                   | String                                         | String               | RW                                                                                                                                                         | Icon name to display: Install icons on the clock device first.                                                                                                                                                                     |   |
+| `lifetime`            | `lifetime`                               | BigDecimal                                     | Number:Time          | RW                                                                                                                                                         | App lifetime: Define how long the app will remain active on the clock.                                                                                                                                                             |   |
+| `lifetime-mode`       | `lifetimeMode`                           | BigDecimal (0=DELETE, 1=STALE)                 | String               | RW                                                                                                                                                         | Lifetime mode: Define if the app should be deleted (Command DELETE) or marked as stale (Command STALE) after lifetime.                                                                                                             |   |
+| `line`                | `line`                                   | String                                         | String               | RW                                                                                                                                                         | Shows a line chart: Send a string with values separated by commas (e.g. "value1,value2,value3"). Only the last 16 values will be displayed.                                                                                        |   |
+| `overlay`             | `overlay`                                | String                                         | String               | RW                                                                                                                                                         | Enable overlay mode: Shows a weather overlay effect (can be any of clear, snow, rain, drizzle, storm, thunder, frost).                                                                                                             |   |
+| `progress`            | `progress`                               | String                                         | Number:Dimensionless | RW                                                                                                                                                         | Progress value: Shows a progress bar at the bottom of the app with the specified percentage value.                                                                                                                                 |   |
+| `progress-background` | `progressBC`                             | BigDecimal[] (rgb-Array)                       | Color                | RW                                                                                                                                                         | Progress bar background color: Background color for the progress bar.                                                                                                                                                              |   |
+| `progress-color`      | `progressC`                              | BigDecimal[] (rgb-Array)                       | Color                | RW                                                                                                                                                         | Progress bar color: Color for the progress bar.                                                                                                                                                                                    |   |
+| `push-icon`           | `pushIcon`                               | BigDecimal (0=STATIC, 1=PUSHOUT, 2=PUSHRETURN) | String               | RW                                                                                                                                                         | Push icon animation (STATIC=Icon doesn't move, PUSHOUT=Icon moves with text and will not appear again, PUSHOUTRETURN=Icon moves with text but appears again when the text starts to scroll again).                                 |   |
+| `rainbow`             | `rainbow`                                | boolean                                        | Switch               | RW                                                                                                                                                         | Enable rainbow effect: Uses a rainbow effect for the displayed text.                                                                                                                                                               |   |
+| `reset`               | -                                        |                                                | Switch               | RW                                                                                                                                                         | Reset app to default state: All channels will be reset to their default values.                                                                                                                                                    |   |
+| `scroll-speed`        | `scrollSpeed`                            | BigDecimal                                     | Number:Dimensionless | RW                                                                                                                                                         | Text scrolling speed: Provide as percentage value. The original speed is 100%. Values above 100% will increase the scrolling speed, values below 100% will decrease it. Setting this value to 0 will disable scrolling completely. |   |
+| `text`                | `text`                                   | String                                         | String               | RW                                                                                                                                                         | Text to display.                                                                                                                                                                                                                   |   |
+| `text-case`           | `textCase`                               | BigDecimal                                     | Number:Dimensionless | RW                                                                                                                                                         | Set text case (0=normal, 1=uppercase, 2=lowercase).                                                                                                                                                                                |   |
+| `text-offset`         | `textOffset`                             | BigDecimal                                     | Number:Dimensionless | RW                                                                                                                                                         | Text offset position: Horizontal offset of the text in pixels.                                                                                                                                                                     |   |
+| `top-text`            | `topText`                                | boolean                                        | Switch               | RW                                                                                                                                                         | Draws the text on the top of the display.                                                                                                                                                                                          |   |
+
+## Actions
+
+The binding supports various actions that can be used in rules to control the Awtrix display. To use these actions, you need to import them in your rules (see examples below).
+
+The following actions are supported:
+
+<table>
+    <thead>
+        <tr>
+            <th>Action Name</th>
+            <th>Description</th>
+            <th>Parameter Type</th>
+            <th>Parameter Name</th>
+            <th>Parameter Description</th>
+        </tr>
+    </thead>
+  <tr valign='top'>
+    <td rowspan="3">blinkIndicator</td>
+    <td rowspan="3">Blink an indicator LED.</td>
+    <td>int</td>
+    <td>indicatorId</td>
+    <td>1 for top indicator, 2 for center indicator or 3 for bottom indicator.</td>
+  </tr>
+  <tr>
+    <td>int[]</td>
+    <td>rgb</td>
+    <td>Provide an array with exactly 3 values for red, green and blue (in the range 0-255).</td>
+  </tr>
+  <tr>
+    <td>int</td>
+    <td>blinkTimeInMs</td>
+    <td>Provide the blink time in milliseconds.</td>
+  </tr>
+   <tr valign='top'>
+    <td rowspan="3">fadeIndicator</td>
+    <td rowspan="3">Fade an indicator LED in and out.</td>
+    <td>int</td>
+    <td>indicatorId</td>
+    <td>1 for top indicator, 2 for center indicator or 3 for bottom indicator.</td>
+  </tr>
+  <tr>
+    <td>int[]</td>
+    <td>rgb</td>
+    <td>Provide an array with exactly 3 values for red, green and blue (in the range 0-255).</td>
+  </tr>
+  <tr>
+    <td>int</td>
+    <td>fadeTimeInMs</td>
+    <td>Provide the fade time in milliseconds.</td>
+  </tr>
+  <tr valign='top'>
+    <td rowspan="2">activateIndicator</td>
+    <td rowspan="2">Activate an indicator LED.</td>
+    <td>int</td>
+    <td>indicatorId</td>
+    <td>1 for top indicator, 2 for center indicator or 3 for bottom indicator.</td>
+  </tr>
+  <tr>
+    <td>int[]</td>
+    <td>rgb</td>
+    <td>Provide an array with exactly 3 values for red, green and blue (in the range 0-255).</td>
+  </tr>
+  <tr valign='top'>
+    <td>deactivateIndicator</td>
+    <td>Deactivate an indicator LED.</td>
+    <td>int</td>
+    <td>indicatorId</td>
+    <td>1 for top indicator, 2 for center indicator or 3 for bottom indicator.</td>
+  </tr>
+  <tr valign='top'>
+    <td>reboot</td>
+    <td>Reboot the device</td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr valign='top'>
+    <td>sleep</td>
+    <td>Make the device sleep for a number of seconds.</td>
+    <td>int</td>
+    <td>seconds</td>
+    <td>Device will wake up after the specified number of seconds. Sleep can only be interrupted by a press of the select button.</td>
+  </tr>
+    <tr valign='top'>
+    <td>upgrade</td>
+    <td>Upgrade the device if a firmware update is available.</td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr valign='top'>
+    <td>playSound</td>
+    <td>Play a sound file saved on the device.</td>
+    <td>String</td>
+    <td>melody</td>
+    <td >The sound file name saved in the clocks MELODIES folder (without the file extension).</td>
+  </tr>
+ <tr valign='top'>
+    <td>playRtttl</td>
+    <td>Play a rtttl sound.</td>
+    <td>String</td>
+    <td>rtttl</td>
+    <td >The rtttl string to play.</td>
+  </tr>
+  <tr valign='top'>
+    <td rowspan="2">showNotification</td>
+    <td rowspan="2">Show a notification.</td>
+    <td>String</td>
+    <td>message</td>
+    <td>The message to show.</td>
+  </tr>
+  <tr>
+    <td>String</td>
+    <td>icon</td>
+    <td>The name of the icon saved on the device that is shown with the message.</td>
+  </tr>
+  <tr valign='top'>
+    <td rowspan="8">showCustomNotification</td>
+    <td rowspan="8">Show a notification with maximal customization options.</td>
+    <td>Map&lt;String, Object&gt;</td>
+    <td>appParams</td>
+    <td>Map that holds any parameter that is available for an Awtrix App as shown in the App Channels section of the documentation. Please use the values shown in the Action parameter column of the App Channels section as keys.</td>
+  </tr>
+  <tr>
+    <td>boolean</td>
+    <td>hold</td>
+    <td>Whether the notification should stay on the screen until the user presses the select button.</td>
+  </tr>
+  <tr>
+    <td>boolean</td>
+    <td>wakeUp</td>
+    <td>Whether the notification should wake up the device if the display is currently switched off.</td>
+  </tr>
+  <tr>
+    <td>boolean</td>
+    <td>stack</td>
+    <td>Whether the notification should be stacked on top of the previous notification or replace the currently active notification.</td>
+  </tr>
+  <tr>
+    <td>String</td>
+    <td>rtttl</td>
+    <td>Play the specified rtttl sound when displaying the notification.</td>
+  </tr>
+  <tr>
+    <td>String</td>
+    <td>rtttl</td>
+    <td>Play the specified rtttl ringtone when displaying the notification. Set to null for no sound or when the sound parameter is set.</td>
+  </tr>
+  <tr>
+    <td>String</td>
+    <td>sound</td>
+    <td>Play the specified sound file when displaying the notification. Set to null for no sound or when the rtttl parameter is set.</td>
+  </tr>
+  <tr>
+    <td>boolean</td>
+    <td>loopSound</td>
+    <td>Whether the sound should be played in a loop until the notification is dismissed.</td>
+  </tr>
+</table>
 
 ## Full Example
 
@@ -219,7 +380,7 @@ sitemap awtrix label="Awtrix Display" {
 
 ```
 
-## Actions
+### Actions
 
 The binding provides various actions that can be used in rules to control the Awtrix display. To use these actions, you need to import them in your rules.
 
