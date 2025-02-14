@@ -95,6 +95,7 @@ class AwattarApiTest extends JavaTest {
 
         config.basePrice = 0.0;
         config.vatPercent = 0.0;
+        config.serviceFee = 0.0;
         config.country = "DE";
 
         api = new AwattarApi(httpClientMock, timeProviderMock, config);

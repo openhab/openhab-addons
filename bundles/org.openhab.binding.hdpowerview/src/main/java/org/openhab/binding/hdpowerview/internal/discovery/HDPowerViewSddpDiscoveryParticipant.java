@@ -19,13 +19,17 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.sddp.SddpDevice;
 import org.openhab.core.config.discovery.sddp.SddpDiscoveryParticipant;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,13 +42,18 @@ import org.slf4j.LoggerFactory;
 @Component
 public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryParticipant {
 
-    private static final String LABEL_KEY_GATEWAY = "discovery.gateway.label";
-
     private static final String HUNTER_DOUGLAS = "hunterdouglas:";
     private static final String POWERVIEW_HUB_ID = "hub:powerview";
     private static final String POWERVIEW_GEN3_ID = "powerview:gen3:gateway";
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewSddpDiscoveryParticipant.class);
+
+    private final HDPowerviewPropertyGetter propertyGetter;
+
+    @Activate
+    public HDPowerViewSddpDiscoveryParticipant(@Reference HDPowerviewPropertyGetter propertyGetter) {
+        this.propertyGetter = propertyGetter;
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -53,24 +62,20 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
 
     @Override
     public @Nullable DiscoveryResult createResult(SddpDevice device) {
-        final ThingUID thingUID = getThingUID(device);
+        ThingUID thingUID = getThingUID(device);
         if (thingUID != null) {
-            try {
-                int generation = getGeneration(device);
-                String label = generation == 3 //
-                        ? String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress)
-                        : String.format("@text/%s [\"%s\", \"%s\"]",
-                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, device.ipAddress, generation);
-
-                DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                        .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
-                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST).withLabel(label).build();
-                logger.debug("SDDP discovered Gen {} hub/gateway '{}' on host '{}'", generation, thingUID,
-                        device.ipAddress);
-                return hub;
-            } catch (IllegalArgumentException e) {
-                // error already logged, so fall through
-            }
+            String serial = thingUID.getId();
+            String host = device.ipAddress;
+            int generation = getGeneration(device);
+            String label = generation < 3 //
+                    ? String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, generation, host)
+                    : String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, host);
+            DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
+                    .withProperty(HDPowerViewHubConfiguration.HOST, host)
+                    .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial)
+                    .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(label).build();
+            logger.debug("SDDP discovered Gen {} hub/gateway '{}' on host '{}'", generation, thingUID, host);
+            return hub;
         }
         return null;
     }
@@ -78,13 +83,17 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
     @Override
     public @Nullable ThingUID getThingUID(SddpDevice device) {
         if (device.type.startsWith(HUNTER_DOUGLAS)) {
-            try {
-                if (VALID_IP_V4_ADDRESS.matcher(device.ipAddress).matches()) {
-                    return new ThingUID(getGeneration(device) == 3 ? THING_TYPE_GATEWAY : THING_TYPE_HUB,
-                            device.ipAddress.replace('.', '_'));
+            String host = device.ipAddress;
+            if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
+                try {
+                    int generation = getGeneration(device);
+                    String serial = generation < 3 //
+                            ? propertyGetter.getSerialNumberApiV1(host)
+                            : propertyGetter.getSerialNumberApiV3(host);
+                    return new ThingUID(generation < 3 ? THING_TYPE_HUB : THING_TYPE_GATEWAY, serial);
+                } catch (HubException | IllegalArgumentException e) {
+                    logger.debug("Error discovering hub/gateway", e);
                 }
-            } catch (IllegalArgumentException e) {
-                // error already logged, so fall through
             }
         }
         return null;
@@ -103,8 +112,6 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
         if (device.type.contains(POWERVIEW_HUB_ID)) {
             return device.type.endsWith("v2") ? 2 : 1;
         }
-        final IllegalArgumentException e = new IllegalArgumentException("Device has unexpected 'type' property");
-        logger.debug("{}", e.getMessage());
-        throw e;
+        throw new IllegalArgumentException("Device has unexpected 'type' property");
     }
 }

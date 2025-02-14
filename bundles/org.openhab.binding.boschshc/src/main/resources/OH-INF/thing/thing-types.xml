@@ -344,10 +344,15 @@
 		<description>The smoke detector warns you in case of fire.</description>
 
 		<channels>
+			<channel id="alarm" typeId="alarm"/>
 			<channel id="smoke-check" typeId="smoke-check"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
@@ -412,11 +417,16 @@
 		<description>The smoke detector warns you in case of fire.</description>
 
 		<channels>
+			<channel id="alarm" typeId="alarm"/>
 			<channel id="smoke-check" typeId="smoke-check"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
@@ -885,6 +895,23 @@
 		<description>Timestamp indicating when the last impulse was triggered.</description>
 		<category>Time</category>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarm">
+		<item-type>String</item-type>
+		<label>Alarm</label>
+		<description>Alarm state of the smoke detector.</description>
+		<category>Alarm</category>
+		<state readOnly="false">
+			<options>
+				<option value="IDLE_OFF">Alarm off</option>
+				<option value="PRIMARY_ALARM">Primary alarm</option>
+				<option value="SECONDARY_ALARM">Secondary alarm</option>
+				<option value="INTRUSION_ALARM">Intrusion alarm</option>
+				<option value="INTRUSION_ALARM_ON_REQUESTED">Intrusion alarm on requested</option>
+				<option value="INTRUSION_ALARM_OFF_REQUESTED">Intrusion alarm off requested</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

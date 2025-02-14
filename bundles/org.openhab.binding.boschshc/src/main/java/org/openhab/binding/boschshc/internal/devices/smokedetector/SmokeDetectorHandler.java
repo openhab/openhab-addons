@@ -13,7 +13,6 @@
 package org.openhab.binding.boschshc.internal.devices.smokedetector;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.AbstractSmokeDetectorHandler;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -23,7 +22,7 @@ import org.openhab.core.thing.Thing;
  * @author Gerd Zanker - AbstractSmokeDetectorHandler refactoring for reuse
  */
 @NonNullByDefault
-public class SmokeDetectorHandler extends AbstractSmokeDetectorHandler {
+public class SmokeDetectorHandler extends AbstractSmokeDetectorHandlerWithAlarmService {
 
     public SmokeDetectorHandler(Thing thing) {
         super(thing);

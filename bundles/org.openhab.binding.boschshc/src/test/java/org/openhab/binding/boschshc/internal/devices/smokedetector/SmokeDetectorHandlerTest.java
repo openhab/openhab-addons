@@ -13,7 +13,6 @@
 package org.openhab.binding.boschshc.internal.devices.smokedetector;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.AbstractSmokeDetectorHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -24,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  */
 @NonNullByDefault
-public class SmokeDetectorHandlerTest extends AbstractSmokeDetectorHandlerTest<SmokeDetectorHandler> {
+public class SmokeDetectorHandlerTest extends AbstractSmokeDetectorHandlerWithAlarmServiceTest<SmokeDetectorHandler> {
 
     @Override
     protected SmokeDetectorHandler createFixture() {
