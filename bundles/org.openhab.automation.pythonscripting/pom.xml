@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>5.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.automation.pythonscripting</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: Automation :: Python Scripting</name>
+
+  <properties>
+    <bnd.importpackage>
+      !sun.misc.*,
+      !sun.reflect.*,
+      !com.sun.management.*,
+      !jdk.internal.reflect.*,
+      !jdk.vm.ci.services
+    </bnd.importpackage>
+
+    <graalpy.version>24.1.2</graalpy.version>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>embed-dependencies</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <excludes>
+                  <exclude>org.lastnpe.eea:eea-all</exclude>
+                  <exclude>org.apache.karaf.features:framework</exclude>
+                  <!-- we use OSGI-ified version, so we don't need the following -->
+                  <exclude>org.graalvm.sdk:collections</exclude>
+                  <exclude>org.graalvm.sdk:jniutils</exclude>
+                  <exclude>org.graalvm.sdk:nativeimage</exclude>
+                  <exclude>org.graalvm.sdk:word</exclude>
+                  <exclude>org.graalvm.shadowed:icu4j</exclude>
+                  <exclude>org.graalvm.truffle:truffle-compiler</exclude>
+                  <exclude>org.graalvm.truffle:truffle-runtime</exclude>
+                </excludes>
+              </artifactSet>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <transformers>
+                <!-- Transformer to merge module-info.class
+                  files, if needed -->
+                <transformer
+                  implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- run SAT -->
+      <plugin>
+        <groupId>org.openhab.tools.sat</groupId>
+        <artifactId>sat-plugin</artifactId>
+        <configuration>
+          <pmdFilter>${project.basedir}/suppressions.properties</pmdFilter>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- Graal Polyglot Framework -->
+    <dependency>
+      <groupId>org.graalvm.polyglot</groupId>
+      <artifactId>polyglot</artifactId>
+      <version>${graalpy.version}</version>
+    </dependency>
+    <!-- Graal TRegex engine (internally used by Graal Python engine) -->
+    <dependency>
+      <groupId>org.graalvm.regex</groupId>
+      <artifactId>regex</artifactId>
+      <version>${graalpy.version}</version>
+    </dependency>
+    <!-- Graal Python engine (depends on Graal TRegex engine, must be added after it) -->
+    <dependency>
+      <groupId>org.graalvm.polyglot</groupId>
+      <artifactId>python-community</artifactId>
+      <version>${graalpy.version}</version>
+      <type>pom</type>
+    </dependency>
+  </dependencies>
+
+  <!--
+    <dependencies>
+    <dependency>
+    <groupId>org.graalvm.sdk</groupId>
+    <artifactId>collections</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.graalvm.truffle</groupId>
+    <artifactId>truffle-api</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+
+    <dependency>
+    <groupId>org.graalvm.sdk</groupId>
+    <artifactId>nativeimage</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.graalvm.polyglot</groupId>
+    <artifactId>polyglot</artifactId>
+    <version>${graalpy.version}</version>
+    <type>jar</type>
+    </dependency>
+
+    <dependency>
+    <groupId>org.graalvm.sdk</groupId>
+    <artifactId>graal-sdk</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.graalvm.sdk</groupId>
+    <artifactId>word</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+
+    <dependency>
+    <groupId>org.graalvm.shadowed</groupId>
+    <artifactId>icu4j</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+
+    <dependency>
+    <groupId>org.graalvm.tools</groupId>
+    <artifactId>profiler-tool</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.graalvm.truffle</groupId>
+    <artifactId>truffle-nfi</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.graalvm.truffle</groupId>
+    <artifactId>truffle-nfi-libffi</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.graalvm.llvm</groupId>
+    <artifactId>llvm-api</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.graalvm.shadowed</groupId>
+    <artifactId>xz</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.bouncycastle</groupId>
+    <artifactId>bcprov-jdk18on</artifactId>
+    <version>1.78.1</version>
+    </dependency>
+    <dependency>
+    <groupId>org.bouncycastle</groupId>
+    <artifactId>bcpkix-jdk18on</artifactId>
+    <version>1.78.1</version>
+    </dependency>
+    <dependency>
+    <groupId>org.bouncycastle</groupId>
+    <artifactId>bcutil-jdk18on</artifactId>
+    <version>1.78.1</version>
+    </dependency>
+    <dependency>
+    <groupId>org.graalvm.regex</groupId>
+    <artifactId>regex</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.graalvm.python</groupId>
+    <artifactId>python-language</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.graalvm.python</groupId>
+    <artifactId>python-resources</artifactId>
+    <version>${graalpy.version}</version>
+    </dependency>
+    </dependencies>
+  -->
+</project>
