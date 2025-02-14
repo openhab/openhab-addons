@@ -30,6 +30,7 @@ import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.elements.exception.ConnectorException;
 import org.eclipse.californium.scandium.DTLSConnector;
+import org.eclipse.californium.scandium.config.DtlsConfig;
 import org.eclipse.californium.scandium.config.DtlsConnectorConfig;
 import org.eclipse.californium.scandium.dtls.pskstore.AdvancedSinglePskStore;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -154,11 +155,13 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
             return;
         }
 
-        DtlsConnectorConfig.Builder builder = new DtlsConnectorConfig.Builder();
+        org.eclipse.californium.elements.config.Configuration initialConfiguration = new org.eclipse.californium.elements.config.Configuration(
+                org.eclipse.californium.elements.config.Configuration.getStandard());
+        initialConfiguration.set(DtlsConfig.DTLS_MAX_CONNECTIONS, 100);
+        initialConfiguration.set(DtlsConfig.DTLS_STALE_CONNECTION_THRESHOLD, 60, TimeUnit.SECONDS);
+        DtlsConnectorConfig.Builder builder = new DtlsConnectorConfig.Builder(initialConfiguration);
         builder.setAdvancedPskStore(
                 new AdvancedSinglePskStore(configuration.identity, configuration.preSharedKey.getBytes()));
-        builder.setMaxConnections(100);
-        builder.setStaleConnectionThreshold(60);
         dtlsConnector = new DTLSConnector(builder.build());
         endPoint = new CoapEndpoint.Builder().setConnector(dtlsConnector).build();
         deviceClient.setEndpoint(endPoint);
@@ -185,7 +188,8 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
         String authUrl = null;
         String responseText = null;
         try {
-            DtlsConnectorConfig.Builder builder = new DtlsConnectorConfig.Builder();
+            DtlsConnectorConfig.Builder builder = new DtlsConnectorConfig.Builder(
+                    org.eclipse.californium.elements.config.Configuration.getStandard());
             builder.setAdvancedPskStore(new AdvancedSinglePskStore("Client_identity", configuration.code.getBytes()));
 
             DTLSConnector dtlsConnector = new DTLSConnector(builder.build());
