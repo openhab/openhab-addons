@@ -54,8 +54,6 @@ import org.openhab.transform.basicprofiles.internal.config.StateFilterProfileCon
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tech.units.indriya.AbstractUnit;
-
 /**
  * Accepts updates to state as long as conditions are met. Support for sending fixed state if conditions are *not*
  * met.
@@ -776,30 +774,8 @@ public class StateFilterProfile implements StateProfile {
      */
     protected @Nullable QuantityType<?> toSystemUnitQuantityType(State state) {
         return state instanceof QuantityType<?> quantityType && hasSystemUnit() //
-                ? toInvertibleUnit(quantityType, Objects.requireNonNull(systemUnit))
+                ? quantityType.toInvertibleUnit(Objects.requireNonNull(systemUnit))
                 : null;
-    }
-
-    /**
-     * Convert the given {@link QuantityType} to an equivalent based on the target {@link Unit}. The conversion can be
-     * made to both inverted and non-inverted units, so invertible type conversions (e.g. Mirek <=> Kelvin) are
-     * supported.
-     * <p>
-     * Note: we can use {@link QuantityType.toInvertibleUnit()} if OH Core PR #4561 is merged.
-     *
-     * @param source the {@link QuantityType} to be converted.
-     * @param targetUnit the {@link Unit} to convert to.
-     *
-     * @return a new {@link QuantityType} based on 'systemUnit' or null.
-     */
-    protected @Nullable QuantityType<?> toInvertibleUnit(QuantityType<?> source, Unit<?> targetUnit) {
-        Unit<?> sourceSystemUnit = source.getUnit().getSystemUnit();
-        if (!targetUnit.equals(sourceSystemUnit) && !targetUnit.isCompatible(AbstractUnit.ONE)
-                && sourceSystemUnit.inverse().isCompatible(targetUnit)) {
-            QuantityType<?> sourceInItsSystemUnit = source.toUnit(sourceSystemUnit);
-            return sourceInItsSystemUnit != null ? sourceInItsSystemUnit.inverse().toUnit(targetUnit) : null;
-        }
-        return source.toUnit(targetUnit);
     }
 
     /**
