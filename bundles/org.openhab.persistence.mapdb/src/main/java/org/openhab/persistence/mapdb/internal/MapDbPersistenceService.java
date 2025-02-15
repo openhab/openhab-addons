@@ -165,7 +165,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
         return map.values().stream().map(this::deserialize).flatMap(MapDbPersistenceService::streamOptional)
-                .collect(Collectors.<PersistenceItemInfo>toUnmodifiableSet());
+                .collect(Collectors.<PersistenceItemInfo> toUnmodifiableSet());
     }
 
     @Override
