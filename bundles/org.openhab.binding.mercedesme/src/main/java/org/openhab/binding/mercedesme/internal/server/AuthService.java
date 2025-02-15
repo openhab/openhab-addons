@@ -133,7 +133,7 @@ public class AuthService {
                     // a new refresh token is delivered optional
                     // if not set in response take old one
                     if (Constants.NOT_SET.equals(tokenResponseJson.refreshToken)) {
-                        tokenResponseJson.refreshToken = token.getAccessToken();
+                        tokenResponseJson.refreshToken = token.getRefreshToken();
                     }
                     token = decodeToken(tokenResponseJson);
                     if (tokenIsValid()) {
