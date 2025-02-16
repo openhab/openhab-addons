@@ -69,6 +69,7 @@ public class HueSyncHandler extends BaseThingHandler {
     /**
      * Exception handler implementation
      * 
+     * @author Patrik Gfeller - Initial contribution
      * @author Patrik Gfeller - Issue #18062, improve connection exception handling.
      */
     private class ExceptionHandler implements HueSyncExceptionHandler {
