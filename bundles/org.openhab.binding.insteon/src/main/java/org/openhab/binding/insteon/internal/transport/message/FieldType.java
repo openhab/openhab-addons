@@ -21,24 +21,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Defines the data types that can be used in the fields of a message.
+ * The {@link FieldType} represents a field type
  *
  * @author Daniel Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-public enum DataType {
+public enum FieldType {
     BYTE("byte", 1),
     ADDRESS("address", 3);
 
-    private static final Map<String, DataType> NAME_MAP = Arrays.stream(values())
+    private static final Map<String, FieldType> NAME_MAP = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(type -> type.name, Function.identity()));
 
     private final String name;
     private final int size;
 
-    private DataType(String name, int size) {
+    private FieldType(String name, int size) {
         this.name = name;
         this.size = size;
     }
@@ -51,13 +51,7 @@ public enum DataType {
         return size;
     }
 
-    /**
-     * Factory method for getting a DataType from the data type name
-     *
-     * @param name the data type name
-     * @return the data type if defined, otherwise null
-     */
-    public static @Nullable DataType get(String name) {
+    public static @Nullable FieldType get(String name) {
         return NAME_MAP.get(name);
     }
 }
