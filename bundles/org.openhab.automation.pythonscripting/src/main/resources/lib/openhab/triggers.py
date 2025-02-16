@@ -450,6 +450,18 @@ class TimeOfDayCondition(BaseCondition):
     #@onlyif("Time 06:00-13:00")
     regex = r"^Time\s+(?P<start_time>" + timeOfDayRegEx + r")(?:\s*-\s*|\s+to\s+)(?P<end_time>" + timeOfDayRegEx + r")$"
 
+class IntervalCondition(BaseCondition):
+    def __init__(self, min_interval, condition_name=None):
+        condition_name = validate_uid(condition_name)
+        configuration = {
+            "minInterval": min_interval,
+        }
+
+        self.raw_condition = Java_ConditionBuilder.create().withId(condition_name).withTypeUID("timer.IntervalCondition").withConfiguration(Java_Configuration(configuration)).build()
+
+    first_word = ["every"]
+    regex = r"^Every\s+(?P<min_interval>\d+)(?:\s+times)?$"
+
 class onlyif():
     condition_classes = [
         ItemStateCondition,

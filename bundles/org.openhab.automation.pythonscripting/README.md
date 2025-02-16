@@ -202,6 +202,11 @@ The type of the event can also be queried via [AbstractEvent.getTopic](https://w
 | GenericEventTrigger      | GenericEventTrigger(event_source, event_types, event_topic="*/*", trigger_name=None)  |                                                                                                     |
 | ItemEventTrigger         | ItemEventTrigger(event_types, item_name=None, trigger_name=None)                      |                                                                                                     |
 | ThingEventTrigger        | ThingEventTrigger(event_types, thing_uid=None, trigger_name=None)                     |                                                                                                     |
+|                          |                                                                                       |                                                                                                     |
+| ItemStateCondition       | ItemStateCondition(item_name, operator, state, condition_name=None)                   |                                                                                                     |
+| EphemerisCondition       | EphemerisCondition(dayset, offset=0, condition_name=None)                             |                                                                                                     |
+| TimeOfDayCondition       | TimeOfDayCondition(start_time, end_time, condition_name=None)                         |                                                                                                     |
+| IntervalCondition        | IntervalCondition(min_interval, condition_name=None)                                  |                                                                                                     |
 
 ## class Registry 
 
