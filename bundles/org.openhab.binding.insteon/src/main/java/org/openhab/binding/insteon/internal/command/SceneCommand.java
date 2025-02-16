@@ -226,92 +226,61 @@ public class SceneCommand extends InsteonCommand {
         InsteonDevice device = getInsteonDevice(args[2]);
         if (device == null) {
             console.println("The device " + args[2] + " is not configured or enabled!");
-            return;
-        }
-        DeviceFeature feature = device.getFeature(args[3]);
-        if (feature == null) {
-            console.println("The device " + args[2] + " feature " + args[3] + " is not configured!");
-            return;
-        }
-        if (!feature.isResponderFeature()) {
-            console.println("The device " + args[2] + " feature " + args[3] + " is not a responder feature.");
-            return;
-        }
-        if (!device.getLinkDB().isComplete()) {
+        } else if (!device.getLinkDB().isComplete()) {
             console.println("The link database for device " + args[2] + " is not loaded yet.");
-            return;
-        }
-        if (!device.getLinkDB().getChanges().isEmpty()) {
-            console.println("The link database for device " + args[2] + " has pending changes.");
-            return;
-        }
-        if (!getModem().getDB().isComplete()) {
+        } else if (!getModem().getDB().isComplete()) {
             console.println("The modem database is not loaded yet.");
-            return;
-        }
-        if (!getModem().getDB().getChanges().isEmpty()) {
-            console.println("The modem database has pending changes.");
-            return;
-        }
-        int onLevel = OnLevel.getHexValue(args[4], feature.getType());
-        if (onLevel == -1) {
-            console.println("The feature " + args[3] + " onLevel " + args[4] + " is not valid.");
-            return;
-        }
-        RampRate rampRate = null;
-        if (RampRate.supportsFeatureType(feature.getType())) {
-            rampRate = args.length == 6 ? RampRate.fromString(args[5]) : RampRate.DEFAULT;
-            if (rampRate == null) {
-                console.println("The feature " + args[3] + " rampRate " + args[5] + " is not valid.");
-                return;
+        } else {
+            DeviceFeature feature = device.getFeature(args[3]);
+            if (feature == null) {
+                console.println("The device " + args[2] + " feature " + args[3] + " is not configured!");
+            } else if (!feature.isResponderFeature()) {
+                console.println("The device " + args[2] + " feature " + args[3] + " is not a responder feature.");
+            } else {
+                int onLevel = OnLevel.getHexValue(args[4], feature.getType());
+                if (onLevel == -1) {
+                    console.println("The feature " + args[3] + " onLevel " + args[4] + " is not valid.");
+                    return;
+                }
+                RampRate rampRate = null;
+                if (RampRate.supportsFeatureType(feature.getType())) {
+                    rampRate = args.length == 6 ? RampRate.fromString(args[5]) : RampRate.DEFAULT;
+                    if (rampRate == null) {
+                        console.println("The feature " + args[3] + " rampRate " + args[5] + " is not valid.");
+                        return;
+                    }
+                }
+
+                console.println("Adding device " + device.getAddress() + " feature " + feature.getName() + " to scene "
+                        + scene.getGroup() + ".");
+                scene.addDeviceFeature(device, onLevel, rampRate, feature.getComponentId());
             }
         }
-
-        console.println("Adding device " + device.getAddress() + " feature " + feature.getName() + " to scene "
-                + scene.getGroup() + ".");
-        scene.addDeviceFeature(device, onLevel, rampRate, feature.getComponentId());
     }
 
     private void removeDevice(Console console, String[] args) {
         InsteonScene scene = getInsteonScene(args[1]);
+        InsteonDevice device = getInsteonDevice(args[2]);
         if (scene == null) {
             console.println("The scene " + args[1] + " is not configured or enabled!");
-            return;
-        }
-        InsteonDevice device = getInsteonDevice(args[2]);
-        if (device == null) {
+        } else if (device == null) {
             console.println("The device " + args[2] + " is not configured or enabled!");
-            return;
-        }
-        DeviceFeature feature = device.getFeature(args[3]);
-        if (feature == null) {
-            console.println("The device " + args[2] + " feature " + args[3] + " is not configured!");
-            return;
-        }
-        if (!device.getLinkDB().isComplete()) {
+        } else if (!device.getLinkDB().isComplete()) {
             console.println("The link database for device " + args[2] + " is not loaded yet.");
-            return;
-        }
-        if (!device.getLinkDB().getChanges().isEmpty()) {
-            console.println("The link database for device " + args[2] + " has pending changes.");
-            return;
-        }
-        if (!getModem().getDB().isComplete()) {
+        } else if (!getModem().getDB().isComplete()) {
             console.println("The modem database is not loaded yet.");
-            return;
+        } else {
+            DeviceFeature feature = device.getFeature(args[3]);
+            if (feature == null) {
+                console.println("The device " + args[2] + " feature " + args[3] + " is not configured!");
+            } else if (!scene.hasEntry(device.getAddress(), feature.getName())) {
+                console.println("The device " + args[2] + " feature " + args[3] + " is not associated to scene"
+                        + args[1] + ".");
+            } else {
+                console.println("Removing device " + device.getAddress() + " feature " + feature.getName()
+                        + " from scene " + scene.getGroup() + ".");
+                scene.removeDeviceFeature(device, feature.getComponentId());
+            }
         }
-        if (!getModem().getDB().getChanges().isEmpty()) {
-            console.println("The modem database has pending changes.");
-            return;
-        }
-        if (!scene.hasEntry(device.getAddress(), feature.getName())) {
-            console.println(
-                    "The device " + args[2] + " feature " + args[3] + " is not associated to scene" + args[1] + ".");
-            return;
-        }
-
-        console.println("Removing device " + device.getAddress() + " feature " + feature.getName() + " from scene "
-                + scene.getGroup() + ".");
-        scene.removeDeviceFeature(device, feature.getComponentId());
     }
 }
