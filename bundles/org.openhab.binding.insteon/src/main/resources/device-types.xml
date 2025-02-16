@@ -731,13 +731,12 @@
 			<feature name="timeFormat">ThermostatTimeFormat</feature>
 			<feature name="ledOnOff" bit="6">ThermostatOpFlags</feature>
 		</feature-group>
+		<feature name="reporting">ThermostatStatusReporting</feature>
 		<default-link name="cooling" type="controller" group="1" data1="0x03" data2="0x00" data3="0x01"/>
 		<default-link name="heating" type="controller" group="2" data1="0x03" data2="0x00" data3="0x02"/>
 		<default-link name="dehumidifying" type="controller" group="3" data1="0x03" data2="0x00" data3="0x03"/>
 		<default-link name="humidifying" type="controller" group="4" data1="0x03" data2="0x00" data3="0x04"/>
-		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF">
-			<command name="enableStatusReporting" ext="1" cmd1="0x2E" cmd2="0x00" data2="0x08"/>
-		</default-link>
+		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF"/>
 	</device-type>
 
 	<device-type name="ClimateControl_WirelessThermostat" batteryPowered="true">
@@ -773,13 +772,12 @@
 		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
 			<feature name="stayAwake" on="0x06" off="0x07">OpFlags</feature>
 		</feature-group>
+		<feature name="reporting">ThermostatStatusReporting</feature>
 		<default-link name="cooling" type="controller" group="1" data1="0x03" data2="0x00" data3="0x01"/>
 		<default-link name="heating" type="controller" group="2" data1="0x03" data2="0x00" data3="0x02"/>
 		<default-link name="dehumidifying" type="controller" group="3" data1="0x03" data2="0x00" data3="0x03"/>
 		<default-link name="humidifying" type="controller" group="4" data1="0x03" data2="0x00" data3="0x04"/>
-		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF">
-			<command name="enableStatusReporting" ext="1" cmd1="0x2E" cmd2="0x00" data2="0x08"/>
-		</default-link>
+		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF"/>
 	</device-type>
 
 	<device-type name="ClimateControl_VenstarThermostat">
@@ -798,12 +796,11 @@
 			<feature name="programLock" bit="7" on="0x04" off="0x05">OpFlags</feature>
 			<feature name="ledOnOff" bit="5" on="0x06" off="0x07" inverted="true">OpFlags</feature>
 		</feature-group>
+		<feature name="reporting">ThermostatStatusReporting</feature>
 		<default-link name="cooling" type="controller" group="1" data1="0x03" data2="0x00" data3="0x01"/>
 		<default-link name="heating" type="controller" group="2" data1="0x03" data2="0x00" data3="0x02"/>
 		<default-link name="fan" type="controller" group="3" data1="0x03" data2="0x00" data3="0x03"/>
-		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF">
-			<command name="enableStatusReporting" ext="1" cmd1="0x2E" cmd2="0x00" data2="0x08"/>
-		</default-link>
+		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF"/>
 	</device-type>
 
 	<!-- Sensors and Actuators -->

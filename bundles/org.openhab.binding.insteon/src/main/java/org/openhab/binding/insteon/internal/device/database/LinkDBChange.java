@@ -52,16 +52,6 @@ public class LinkDBChange extends DatabaseChange<LinkDBRecord> {
     }
 
     /**
-     * Factory method for creating a new LinkDBChange for add
-     *
-     * @param record the record to add
-     * @return the link db change
-     */
-    public static LinkDBChange forAdd(LinkDBRecord record) {
-        return new LinkDBChange(record, ChangeType.ADD);
-    }
-
-    /**
      * Factory method for creating a new LinkDBChange for modify
      *
      * @param record the record to modify

@@ -922,6 +922,12 @@
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 		<poll-handler>NoPollHandler</poll-handler>
 	</feature-type>
+	<feature-type name="ThermostatStatusReporting" hidden="true">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">ThermostatStatusReportingReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<poll-handler ext="1" cmd1="0x2E" cmd2="0x00" d2="0x08">FlexPollHandler</poll-handler>
+	</feature-type>
 
 	<feature-type name="VenstarCoolSetpoint">
 		<message-dispatcher>DefaultDispatcher</message-dispatcher>

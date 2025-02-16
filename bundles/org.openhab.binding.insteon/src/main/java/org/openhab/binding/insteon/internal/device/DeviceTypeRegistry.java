@@ -19,10 +19,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.InsteonResourceLoader;
-import org.openhab.binding.insteon.internal.device.DeviceType.CommandEntry;
 import org.openhab.binding.insteon.internal.device.DeviceType.DefaultLinkEntry;
 import org.openhab.binding.insteon.internal.device.DeviceType.FeatureEntry;
-import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -249,50 +247,9 @@ public class DeviceTypeRegistry extends InsteonResourceLoader {
                 getHexAttributeAsByte(element, "data3") };
 
         DefaultLinkEntry link = new DefaultLinkEntry(name, isController, group, data);
-
-        NodeList nodes = element.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element child = (Element) node;
-                String nodeName = child.getNodeName();
-                if ("command".equals(nodeName)) {
-                    link.addCommand(getDefaultLinkCommand(child));
-                }
-            }
-        }
-
         if (links.putIfAbsent(name, link) != null) {
             throw new SAXException("duplicate default link: " + name);
         }
-    }
-
-    /**
-     * Returns a default link command
-     *
-     * @param element element to parse
-     * @return default link command
-     * @throws SAXException
-     */
-    private CommandEntry getDefaultLinkCommand(Element element) throws SAXException {
-        String name = element.getAttribute("name");
-        if (name.isEmpty()) {
-            throw new SAXException("undefined default link command name");
-        }
-        int ext = getAttributeAsInteger(element, "ext");
-        if (ext < 0 || ext > 2) {
-            throw new SAXException("out of bound default link command ext argument: " + ext);
-        }
-        byte cmd1 = getHexAttributeAsByte(element, "cmd1");
-        if (cmd1 == 0) {
-            throw new SAXException("invalid default link command cmd1 argument: " + HexUtils.getHexString(cmd1));
-        }
-        byte cmd2 = getHexAttributeAsByte(element, "cmd2", (byte) 0x00);
-        byte[] data = { getHexAttributeAsByte(element, "data1", (byte) 0x00),
-                getHexAttributeAsByte(element, "data2", (byte) 0x00),
-                getHexAttributeAsByte(element, "data3", (byte) 0x00) };
-
-        return new CommandEntry(name, ext, cmd1, cmd2, data);
     }
 
     /**

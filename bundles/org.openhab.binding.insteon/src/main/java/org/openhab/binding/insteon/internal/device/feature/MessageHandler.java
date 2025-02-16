@@ -1719,6 +1719,20 @@ public abstract class MessageHandler extends BaseFeatureHandler {
     }
 
     /**
+     * Thermostat status reporting reply message handler
+     */
+    public static class ThermostatStatusReportingReplyHandler extends MessageHandler {
+        ThermostatStatusReportingReplyHandler(DeviceFeature feature) {
+            super(feature);
+        }
+
+        @Override
+        public void handleMessage(byte cmd1, Msg msg) {
+            logger.debug("{}: thermostat status reporting enabled on {}", nm(), getInsteonDevice().getAddress());
+        }
+    }
+
+    /**
      * Venstar thermostat system mode message handler
      */
     public static class VenstarSystemModeMsgHandler extends CustomMsgHandler {

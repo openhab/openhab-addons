@@ -391,7 +391,7 @@ public class ModemDB {
      *
      * @param change the change to add
      */
-    public void addChange(ModemDBChange change) {
+    private void addChange(ModemDBChange change) {
         ModemDBRecord record = change.getRecord();
         int index = getChangeIndex(record.getAddress(), record.getGroup(), record.isController());
         if (index == -1) {
