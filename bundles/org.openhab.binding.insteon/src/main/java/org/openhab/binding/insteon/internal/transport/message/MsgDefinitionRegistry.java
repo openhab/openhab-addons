@@ -153,7 +153,7 @@ public class MsgDefinitionRegistry extends InsteonResourceLoader {
                 Element child = (Element) node;
                 String nodeName = child.getNodeName();
                 if (!"header".equals(nodeName)) {
-                    // Increment the offset by the field data type length
+                    // Increment the offset by the field type length
                     offset += parseField(child, offset, data, fields);
                 } else if (offset == 0) {
                     headerLength = parseHeader(child, data, fields);
@@ -196,7 +196,7 @@ public class MsgDefinitionRegistry extends InsteonResourceLoader {
             Node node = nodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element child = (Element) node;
-                // Increment the offset by the field data type length
+                // Increment the offset by the field type length
                 offset += parseField(child, offset, data, fields);
             }
         }
@@ -213,16 +213,16 @@ public class MsgDefinitionRegistry extends InsteonResourceLoader {
      * @param offset msg offset
      * @param data msg data to update
      * @param fields fields map to update
-     * @return field data type length
+     * @return field type length
      * @throws SAXException
      */
     private int parseField(Element element, int offset, byte[] data, Map<String, Field> fields) throws SAXException {
         String name = element.getAttribute("name");
-        DataType dataType = DataType.get(element.getNodeName());
-        if (dataType == null) {
-            throw new SAXException("invalid field data type");
+        FieldType fieldType = FieldType.get(element.getNodeName());
+        if (fieldType == null) {
+            throw new SAXException("invalid field type");
         }
-        Field field = new Field(name, offset, dataType);
+        Field field = new Field(name, offset, fieldType);
         try {
             field.set(data, element.getTextContent());
         } catch (FieldException | IllegalArgumentException e) {
@@ -231,7 +231,7 @@ public class MsgDefinitionRegistry extends InsteonResourceLoader {
         if (!name.isEmpty()) {
             fields.put(name, field);
         }
-        return dataType.getSize();
+        return fieldType.getSize();
     }
 
     /**
