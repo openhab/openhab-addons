@@ -121,7 +121,7 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_VIBRATION_SENSOR_ENABLED = "vibration-sensor-enabled";
     public static final String CHANNEL_VIBRATION_SENSOR_SENSITIVITY = "vibration-sensor-sensitivity";
-    public static final String CHANNEL_VIBRATION_SENSOR_STATE = "vvibration-sensor-state";
+    public static final String CHANNEL_VIBRATION_SENSOR_STATE = "vibration-sensor-state";
     // numbered channels
     // the rationale for introducing numbered channels was discussed in
     // https://github.com/openhab/openhab-addons/pull/16400
