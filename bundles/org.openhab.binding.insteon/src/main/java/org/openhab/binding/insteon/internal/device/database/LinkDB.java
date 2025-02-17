@@ -94,10 +94,6 @@ public class LinkDB {
         }
     }
 
-    public int getFirstRecordComponentId() {
-        return Optional.ofNullable(getFirstRecord()).map(LinkDBRecord::getComponentId).orElse(0);
-    }
-
     public @Nullable LinkDBRecord getRecord(int location) {
         synchronized (records) {
             return records.get(location);
@@ -353,8 +349,8 @@ public class LinkDB {
     public @Nullable LinkDBRecord addRecord(LinkDBRecord record) {
         synchronized (records) {
             LinkDBRecord prevRecord = records.put(record.getLocation(), record);
-            // move last record if overwritten
-            if (prevRecord != null && prevRecord.isLast()) {
+            // move last record if overwritten by a different record
+            if (prevRecord != null && prevRecord.isLast() && !prevRecord.equals(record)) {
                 int location = prevRecord.getLocation() - RECORD_BYTE_SIZE;
                 records.put(location, LinkDBRecord.withNewLocation(location, prevRecord));
                 if (logger.isTraceEnabled()) {
@@ -416,7 +412,7 @@ public class LinkDB {
      *
      * @param change the change to add
      */
-    public void addChange(LinkDBChange change) {
+    private void addChange(LinkDBChange change) {
         synchronized (changes) {
             LinkDBChange prevChange = changes.put(change.getLocation(), change);
             if (prevChange == null) {
