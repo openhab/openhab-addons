@@ -94,6 +94,7 @@ class SolcastTest {
         Instant fixedInstant = Instant.parse("2022-07-17T21:00:00Z");
         Clock fixedClock = Clock.fixed(fixedInstant, TEST_ZONE);
         Utils.setClock(fixedClock);
+        Utils.setTimeZoneProvider(TIMEZONEPROVIDER);
 
         JSONArray forecastJson = getForecast();
         now = LocalDateTime.of(2022, 7, 18, 0, 0).atZone(TEST_ZONE);
@@ -105,6 +106,7 @@ class SolcastTest {
         Instant fixedInstant = Instant.parse("2022-07-18T14:23:00Z");
         Clock fixedClock = Clock.fixed(fixedInstant, TEST_ZONE);
         Utils.setClock(fixedClock);
+        Utils.setTimeZoneProvider(TIMEZONEPROVIDER);
 
         JSONArray forecastJson = getForecast();
         now = LocalDateTime.of(2022, 7, 18, 0, 0).atZone(TEST_ZONE);
