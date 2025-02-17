@@ -370,9 +370,8 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
     }
 
     protected void cancelJob(@Nullable ScheduledFuture<?> job, boolean interrupt) {
-        if (job != null) {
+        if (job != null && !job.isCancelled()) {
             job.cancel(interrupt);
-            job = null;
         }
     }
 }
