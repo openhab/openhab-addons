@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.keba.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -13,8 +25,14 @@ import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link KeContactActions} is responsible for handling actions, which
+ * are sent to the binding.
+ *
+ * @author Simon Spielmann - Initial contribution
+ */
 @Component(scope = ServiceScope.PROTOTYPE, service = KeContactActions.class)
-@ThingActionsScope(name = KebaBindingConstants.BINDING_ID) // Your bindings id is usually the scope
+@ThingActionsScope(name = KebaBindingConstants.BINDING_ID)
 @NonNullByDefault
 public class KeContactActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(KeContactActions.class);
@@ -23,7 +41,6 @@ public class KeContactActions implements ThingActions {
     @Override
     public void setThingHandler(ThingHandler handler) {
         this.handler = (KeContactHandler) handler;
-
     }
 
     @Override
@@ -64,5 +81,4 @@ public class KeContactActions implements ThingActions {
     public static void setDisplay(ThingActions actions, @Nullable String text) {
         ((KeContactActions) actions).setDisplay(text);
     }
-
 }
