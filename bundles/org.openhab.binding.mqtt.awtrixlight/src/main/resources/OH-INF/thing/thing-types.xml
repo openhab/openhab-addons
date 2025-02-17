@@ -49,7 +49,6 @@
 			<property name="firmware"></property>
 			<property name="uniqueId"></property>
 			<property name="vendor"></property>
-			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>uniqueId</representation-property>
 		<config-description-ref uri="thing-type:mqtt:awtrix-clock"/>
@@ -112,7 +111,6 @@
 		</channels>
 		<properties>
 			<property name="appid"></property>
-			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>appid</representation-property>
 		<config-description-ref uri="thing-type:mqtt:awtrix-app"/>
@@ -196,10 +194,6 @@
 		<label>Main Color</label>
 		<description>Color to display text and charts on the screen</description>
 		<category>colorpicker</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="reset" advanced="true">
@@ -214,10 +208,6 @@
 		<label>Background Color</label>
 		<description>Color for display background</description>
 		<category>colorpicker</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="gradient-color">
@@ -225,10 +215,6 @@
 		<label>Gradient Color</label>
 		<description>Color text as gradient from Main Color to Gradient Color</description>
 		<category>colorpicker</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="duration">
@@ -236,10 +222,6 @@
 		<label>Duration</label>
 		<description>How long the app should be displayed</description>
 		<category>time</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="effect">
@@ -479,10 +461,6 @@
 		<label>Progress Bar Color</label>
 		<description>Color of progress bar</description>
 		<category>colorpicker</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="progress-background">
@@ -490,10 +468,6 @@
 		<label>Progress Bar Background Color</label>
 		<description>Color of progress bar background</description>
 		<category>colorpicker</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="scroll-speed">

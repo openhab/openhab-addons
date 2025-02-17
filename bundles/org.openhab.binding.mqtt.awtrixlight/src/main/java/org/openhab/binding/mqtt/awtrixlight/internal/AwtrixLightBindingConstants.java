@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.awtrixlight.internal;
 
 import static org.openhab.binding.mqtt.MqttBindingConstants.BINDING_ID;
 
-import java.math.BigDecimal;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,13 +30,9 @@ import org.openhab.core.thing.ThingTypeUID;
 public class AwtrixLightBindingConstants {
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_APP = new ThingTypeUID(BINDING_ID, "awtrixapp");
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "awtrixclock");
+    public static final ThingTypeUID THING_TYPE_APP = new ThingTypeUID(BINDING_ID, "awtrix-app");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "awtrix-clock");
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_APP, THING_TYPE_BRIDGE);
-
-    // Thing Type IDs
-    public static final String AWTRIX_APP = "awtrixapp";
-    public static final String AWTRIX_CLOCK = "awtrixclock";
 
     // Matrix Size
     public static final int SCREEN_HEIGHT = 8;
@@ -176,9 +171,4 @@ public class AwtrixLightBindingConstants {
     public static final String PUSH_ICON_OPTION_0 = "STATIC";
     public static final String PUSH_ICON_OPTION_1 = "PUSHOUT";
     public static final String PUSH_ICON_OPTION_2 = "PUSHOUTRETURN";
-
-    // Just some little helpers...
-    public static final BigDecimal MINUSONE = new BigDecimal(-1);
-    public static final BigDecimal ONEHUNDRED = new BigDecimal(100);
-    public static final BigDecimal THOUSAND = new BigDecimal(1000);
 }

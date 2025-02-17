@@ -13,7 +13,6 @@
 
 package org.openhab.binding.mqtt.awtrixlight.internal.discovery;
 
-import static org.openhab.binding.mqtt.MqttBindingConstants.BINDING_ID;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
@@ -28,7 +27,6 @@ import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -104,8 +102,7 @@ public class AwtrixLightDiscoveryService extends AbstractMQTTDiscovery {
     void publishClock(ThingUID connectionBridgeUid, String baseTopic, String vendor, String firmware,
             String hardwareUid) {
         String name = baseTopic.replace(TOPIC_BASE + "/", "");
-        thingDiscovered(DiscoveryResultBuilder
-                .create(new ThingUID(new ThingTypeUID(BINDING_ID, AWTRIX_CLOCK), connectionBridgeUid, hardwareUid))
+        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_BRIDGE, connectionBridgeUid, hardwareUid))
                 .withBridge(connectionBridgeUid).withProperty(PROP_VENDOR, vendor).withProperty(PROP_FIRMWARE, firmware)
                 .withProperty(PROP_UNIQUEID, hardwareUid).withProperty(PROP_BASETOPIC, baseTopic)
                 .withRepresentationProperty(PROP_UNIQUEID).withLabel("Awtrix Clock " + name).build());

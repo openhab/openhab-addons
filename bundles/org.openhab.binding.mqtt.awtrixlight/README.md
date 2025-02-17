@@ -57,6 +57,7 @@ The button events can be used by rules to change the displayed app or perform an
 ## Channels
 
 ### Bridge Channels (`awtrixclock`)
+
 | Channel           | Type                 | Read/Write | Description                                                                                                                                                                                                                                                                           |
 |-------------------|----------------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `app`             | String               | R          | Currently active app: Will show the name of the app that is currently shown on the display.                                                                                                                                                                                           |

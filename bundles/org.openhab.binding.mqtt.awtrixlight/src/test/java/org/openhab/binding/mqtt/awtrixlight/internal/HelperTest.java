@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,7 +68,7 @@ public class HelperTest {
             } else {
                 Object prop = convertedJson.get(s);
                 assertNotNull(prop);
-                assertEquals(BigDecimal.class, prop.getClass());
+                assertEquals(Double.class, prop.getClass());
             }
         }
     }
@@ -101,43 +100,109 @@ public class HelperTest {
         Helper.decodeImage(imageMessage);
     }
 
-    @Test
-    public void mappingRoundTrip() {
+    private AwtrixApp getTestApp() {
         AwtrixApp app = new AwtrixApp();
-        String appConfig = app.getAppConfig();
-
-        Map<String, Object> convertJson = Helper.decodeAppJson(appConfig).getAppParams();
-        String appConfig2 = Helper.encodeJson(convertJson);
-        assertEquals(appConfig, appConfig2);
-
-        app.updateFields(convertJson);
-        String appConfig3 = app.getAppConfig();
-        assertEquals(appConfig, appConfig3);
-
         app.setText("Test");
-        // app.setRepeat(new BigDecimal(10));
-        BigDecimal[] color = { new BigDecimal(255), new BigDecimal(255), new BigDecimal(255) };
-        app.setColor(color);
+        app.setColor(new int[] { 255, 255, 255 });
         app.setEffect("Radar");
-        app.setEffectSpeed(new BigDecimal(80));
-        String appConfig4 = app.getAppConfig();
-        assertNotEquals(appConfig, appConfig4);
+        app.setEffectSpeed(80);
+        app.setEffectPalette("test");
+        app.setScrollSpeed(70);
+        return app;
+    }
+
+    private AwtrixApp getTestAppWithGradient() {
+        AwtrixApp app = new AwtrixApp();
+        app.setText("Test");
+        app.setColor(new int[] { 255, 255, 255 });
+        app.setGradient(new int[] { 255, 0, 0 });
+        return app;
+    }
+
+    private AwtrixApp getTestAppWithIncompatibleOptions() {
+        AwtrixApp app = getTestApp();
+        app.setFadeText(100);
+        // Rainbow is incompatible with fadeText and will be ignored when generating the JSON
+        app.setRainbow(true);
+        return app;
+    }
+
+    @Test
+    public void copyAppViaJson() {
+        AwtrixApp app = getTestApp();
+        String json = app.getAppConfig();
+        AwtrixApp app2 = Helper.decodeAppJson(json);
+
+        assertEquals(json, app2.getAppConfig());
+        assertEquals(app.toString(), app2.toString());
+    }
+
+    @Test
+    public void copyAppViaParams() {
+        AwtrixApp app = getTestApp();
+        Map<String, Object> appParams = app.getAppParams();
 
         AwtrixApp app2 = new AwtrixApp();
-        Map<String, Object> convertJson4 = Helper.decodeAppJson(appConfig4).getAppParams();
-        app2.updateFields(convertJson4);
-        String appConfig5 = app2.getAppConfig();
-        assertEquals(appConfig4, appConfig5);
+        app2.updateFields(appParams);
 
-        app.updateFields(convertJson);
-        String appConfig6 = app.getAppConfig();
-        assertEquals(appConfig, appConfig6);
+        assertEquals(app.getAppConfig(), app2.getAppConfig());
+        assertEquals(app.toString(), app2.toString());
+    }
+
+    @Test
+    public void copyAppViaJsonWithGradient() {
+        AwtrixApp app = getTestAppWithGradient();
+        String json = app.getAppConfig();
+        AwtrixApp app2 = Helper.decodeAppJson(json);
+
+        assertEquals(json, app2.getAppConfig());
+    }
+
+    @Test
+    public void copyAppViaParamsWithGradient() {
+        AwtrixApp app = getTestAppWithGradient();
+        Map<String, Object> appParams = app.getAppParams();
+
+        AwtrixApp app2 = new AwtrixApp();
+        app2.updateFields(appParams);
+
+        assertEquals(app.getAppConfig(), app2.getAppConfig());
+    }
+
+    @Test
+    public void copyAppViaJsonWithIncompatibleOptions() {
+        AwtrixApp app = getTestAppWithIncompatibleOptions();
+        String json = app.getAppConfig();
+        AwtrixApp app2 = Helper.decodeAppJson(json);
+
+        // Incompatible options are not copied to the new app
+        assertNotEquals(app.getRainbow(), app2.getRainbow());
+        assertEquals(app.getFadeText(), app2.getFadeText());
+
+        // But the generated json should still be the same
+        assertEquals(json, app2.getAppConfig());
+    }
+
+    @Test
+    public void copyAppViaParamsWithIncompatibleOptions() {
+        AwtrixApp app = getTestAppWithIncompatibleOptions();
+        Map<String, Object> appParams = app.getAppParams();
+
+        AwtrixApp app2 = new AwtrixApp();
+        app2.updateFields(appParams);
+
+        // Incompatible options are not copied to the new app
+        assertNotEquals(app.getRainbow(), app2.getRainbow());
+        assertEquals(app.getFadeText(), app2.getFadeText());
+
+        // But the generated json should still be the same
+        assertEquals(app.getAppConfig(), app2.getAppConfig());
     }
 
     @Test
     public void trimArray() {
-        BigDecimal[] untrimmed = { BigDecimal.ZERO, BigDecimal.ONE, BigDecimal.TEN, new BigDecimal(1000) };
-        BigDecimal[] trimmed = Helper.leftTrim(untrimmed, 2);
+        int[] untrimmed = { 0, 1, 10, 1000 };
+        int[] trimmed = Helper.leftTrim(untrimmed, 2);
 
         assertTrue(trimmed.length == 2);
         assertEquals(trimmed[0], untrimmed[untrimmed.length - 2]);

@@ -18,7 +18,6 @@ import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingCo
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.ToNumberPolicy;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -46,7 +44,7 @@ public class Helper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Helper.class);
 
-    private static final Gson GSON = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.BIG_DECIMAL).create();
+    private static final Gson GSON = new GsonBuilder().create();
 
     public static Map<String, Object> decodeStatsJson(String statsJson) {
         Map<String, Object> stats = GSON.fromJson(statsJson, new TypeToken<Map<String, Object>>() {
@@ -110,9 +108,9 @@ public class Helper {
         return bytes == null ? new byte[0] : bytes;
     }
 
-    public static BigDecimal[] leftTrim(BigDecimal[] data, int length) {
+    public static int[] leftTrim(int[] data, int length) {
         if (length < data.length) {
-            BigDecimal[] trimmed = new BigDecimal[length];
+            int[] trimmed = new int[length];
             for (int i = data.length - length; i < data.length; i++) {
                 trimmed[i - (data.length - length)] = data[i];
             }

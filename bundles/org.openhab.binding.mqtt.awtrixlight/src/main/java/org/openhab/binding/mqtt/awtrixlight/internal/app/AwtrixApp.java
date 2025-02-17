@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.mqtt.awtrixlight.internal.app;
 
-import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
-
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,58 +30,58 @@ import org.openhab.binding.mqtt.awtrixlight.internal.Helper;
 public class AwtrixApp {
 
     public static final String DEFAULT_TEXT = "New Awtrix App";
-    public static final BigDecimal DEFAULT_TEXTCASE = BigDecimal.ZERO;
+    public static final int DEFAULT_TEXTCASE = 0;
     public static final boolean DEFAULT_TOPTEXT = false;
-    public static final BigDecimal DEFAULT_TEXTOFFSET = BigDecimal.ZERO;
+    public static final int DEFAULT_TEXTOFFSET = 0;
     public static final boolean DEFAULT_CENTER = true;
-    public static final BigDecimal[] DEFAULT_COLOR = {};
-    public static final BigDecimal[] DEFAULT_GRADIENT = {};
-    public static final BigDecimal DEFAULT_BLINKTEXT = BigDecimal.ZERO;
-    public static final BigDecimal DEFAULT_FADETEXT = BigDecimal.ZERO;
-    public static final BigDecimal[] DEFAULT_BACKGROUND = {};
+    public static final int[] DEFAULT_COLOR = {};
+    public static final int[][] DEFAULT_GRADIENT = {};
+    public static final int DEFAULT_BLINKTEXT = 0;
+    public static final int DEFAULT_FADETEXT = 0;
+    public static final int[] DEFAULT_BACKGROUND = {};
     public static final boolean DEFAULT_RAINBOW = false;
     public static final String DEFAULT_ICON = "None";
-    public static final BigDecimal DEFAULT_PUSHICON = BigDecimal.ZERO;
-    public static final BigDecimal DEFAULT_DURATION = new BigDecimal(7);
-    public static final BigDecimal[] DEFAULT_LINE = {};
-    public static final BigDecimal DEFAULT_LIFETIME = BigDecimal.ZERO;
-    public static final BigDecimal DEFAULT_LIFETIME_MODE = BigDecimal.ZERO;
-    public static final BigDecimal[] DEFAULT_BAR = {};
+    public static final int DEFAULT_PUSHICON = 0;
+    public static final int DEFAULT_DURATION = 7;
+    public static final int[] DEFAULT_LINE = {};
+    public static final int DEFAULT_LIFETIME = 0;
+    public static final int DEFAULT_LIFETIME_MODE = 0;
+    public static final int[] DEFAULT_BAR = {};
     public static final boolean DEFAULT_AUTOSCALE = true;
     public static final String DEFAULT_OVERLAY = "Clear";
-    public static final BigDecimal DEFAULT_PROGRESS = MINUSONE;
-    public static final BigDecimal[] DEFAULT_PROGRESSC = {};
-    public static final BigDecimal[] DEFAULT_PROGRESSBC = {};
-    public static final BigDecimal DEFAULT_SCROLLSPEED = ONEHUNDRED;
+    public static final int DEFAULT_PROGRESS = -1;
+    public static final int[] DEFAULT_PROGRESSC = {};
+    public static final int[] DEFAULT_PROGRESSBC = {};
+    public static final int DEFAULT_SCROLLSPEED = 100;
     public static final String DEFAULT_EFFECT = "None";
-    public static final BigDecimal DEFAULT_EFFECTSPEED = BigDecimal.ONE;
+    public static final int DEFAULT_EFFECTSPEED = 100;
     public static final String DEFAULT_EFFECTPALETTE = "None";
     public static final boolean DEFAULT_EFFECTBLEND = true;
 
     private String text = DEFAULT_TEXT;
-    private BigDecimal textCase = DEFAULT_TEXTCASE;
+    private int textCase = DEFAULT_TEXTCASE;
     private boolean topText = DEFAULT_TOPTEXT;
-    private BigDecimal textOffset = DEFAULT_TEXTOFFSET;
+    private int textOffset = DEFAULT_TEXTOFFSET;
     private boolean center = DEFAULT_CENTER;
-    private BigDecimal[] color = DEFAULT_COLOR;
-    private BigDecimal[] gradient = DEFAULT_GRADIENT;
-    private BigDecimal blinkText = DEFAULT_BLINKTEXT;
-    private BigDecimal fadeText = DEFAULT_FADETEXT;
-    private BigDecimal[] background = DEFAULT_BACKGROUND;
+    private int[] color = DEFAULT_COLOR;
+    private int[][] gradient = DEFAULT_GRADIENT;
+    private int blinkText = DEFAULT_BLINKTEXT;
+    private int fadeText = DEFAULT_FADETEXT;
+    private int[] background = DEFAULT_BACKGROUND;
     private boolean rainbow = DEFAULT_RAINBOW;
     private String icon = DEFAULT_ICON;
-    private BigDecimal pushIcon = DEFAULT_PUSHICON;
-    private BigDecimal duration = DEFAULT_DURATION;
-    private BigDecimal[] line = DEFAULT_LINE;
-    private BigDecimal lifetime = DEFAULT_LIFETIME;
-    private BigDecimal lifetimeMode = DEFAULT_LIFETIME_MODE;
-    private BigDecimal[] bar = DEFAULT_BAR;
+    private int pushIcon = DEFAULT_PUSHICON;
+    private int duration = DEFAULT_DURATION;
+    private int[] line = DEFAULT_LINE;
+    private int lifetime = DEFAULT_LIFETIME;
+    private int lifetimeMode = DEFAULT_LIFETIME_MODE;
+    private int[] bar = DEFAULT_BAR;
     private boolean autoscale = DEFAULT_AUTOSCALE;
     private String overlay = DEFAULT_OVERLAY;
-    private BigDecimal progress = DEFAULT_PROGRESS;
-    private BigDecimal[] progressC = DEFAULT_PROGRESSC;
-    private BigDecimal[] progressBC = DEFAULT_PROGRESSBC;
-    private BigDecimal scrollSpeed = DEFAULT_SCROLLSPEED;
+    private int progress = DEFAULT_PROGRESS;
+    private int[] progressC = DEFAULT_PROGRESSC;
+    private int[] progressBC = DEFAULT_PROGRESSBC;
+    private int scrollSpeed = DEFAULT_SCROLLSPEED;
     private String effect = DEFAULT_EFFECT;
 
     // effectSettings properties
@@ -144,27 +141,27 @@ public class AwtrixApp {
         this.text = text;
     }
 
-    public BigDecimal getTextCase() {
+    public int getTextCase() {
         return this.textCase;
     }
 
-    public void setTextCase(BigDecimal textCase) {
+    public void setTextCase(int textCase) {
         this.textCase = textCase;
     }
 
-    public Boolean getTopText() {
+    public boolean getTopText() {
         return this.topText;
     }
 
-    public void setTopText(Boolean topText) {
+    public void setTopText(boolean topText) {
         this.topText = topText;
     }
 
-    public BigDecimal getTextOffset() {
+    public int getTextOffset() {
         return this.textOffset;
     }
 
-    public void setTextOffset(BigDecimal textOffset) {
+    public void setTextOffset(int textOffset) {
         this.textOffset = textOffset;
     }
 
@@ -176,43 +173,59 @@ public class AwtrixApp {
         this.center = center;
     }
 
-    public BigDecimal[] getColor() {
+    public int[] getColor() {
         return this.color;
     }
 
-    public void setColor(BigDecimal[] color) {
+    public void setColor(int[] color) {
         this.color = color;
+        if (this.gradient.length == 2) {
+            this.gradient[0] = color;
+        }
     }
 
-    public BigDecimal[] getGradient() {
+    public int[][] getGradient() {
         return this.gradient;
     }
 
-    public void setGradient(BigDecimal[] gradient) {
-        this.gradient = gradient;
+    public void setGradient(int[][] gradient) {
+        if (gradient.length != 2) {
+            this.gradient = DEFAULT_GRADIENT;
+        } else {
+            this.gradient = gradient;
+            this.color = gradient[0];
+        }
     }
 
-    public BigDecimal getBlinkText() {
+    public void setGradient(int[] gradient) {
+        if (gradient.length != 3) {
+            this.gradient = DEFAULT_GRADIENT;
+        } else {
+            this.gradient = new int[][] { this.color, gradient };
+        }
+    }
+
+    public int getBlinkText() {
         return this.blinkText;
     }
 
-    public void setBlinkText(BigDecimal blinkText) {
+    public void setBlinkText(int blinkText) {
         this.blinkText = blinkText;
     }
 
-    public BigDecimal getFadeText() {
+    public int getFadeText() {
         return this.fadeText;
     }
 
-    public void setFadeText(BigDecimal fadeText) {
+    public void setFadeText(int fadeText) {
         this.fadeText = fadeText;
     }
 
-    public BigDecimal[] getBackground() {
+    public int[] getBackground() {
         return this.background;
     }
 
-    public void setBackground(BigDecimal[] background) {
+    public void setBackground(int[] background) {
         this.background = background;
     }
 
@@ -232,51 +245,51 @@ public class AwtrixApp {
         this.icon = icon;
     }
 
-    public BigDecimal getPushIcon() {
+    public int getPushIcon() {
         return this.pushIcon;
     }
 
-    public void setPushIcon(BigDecimal pushIcon) {
+    public void setPushIcon(int pushIcon) {
         this.pushIcon = pushIcon;
     }
 
-    public BigDecimal getDuration() {
+    public int getDuration() {
         return this.duration;
     }
 
-    public void setDuration(BigDecimal duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
-    public BigDecimal[] getLine() {
+    public int[] getLine() {
         return this.line;
     }
 
-    public void setLine(BigDecimal[] line) {
+    public void setLine(int[] line) {
         this.line = line;
     }
 
-    public BigDecimal getLifetime() {
+    public int getLifetime() {
         return this.lifetime;
     }
 
-    public void setLifetime(BigDecimal lifetime) {
+    public void setLifetime(int lifetime) {
         this.lifetime = lifetime;
     }
 
-    public BigDecimal getLifetimeMode() {
+    public int getLifetimeMode() {
         return this.lifetimeMode;
     }
 
-    public void setLifetimeMode(BigDecimal lifetimeMode) {
+    public void setLifetimeMode(int lifetimeMode) {
         this.lifetimeMode = lifetimeMode;
     }
 
-    public BigDecimal[] getBar() {
+    public int[] getBar() {
         return this.bar;
     }
 
-    public void setBar(BigDecimal[] bar) {
+    public void setBar(int[] bar) {
         this.bar = bar;
     }
 
@@ -296,39 +309,35 @@ public class AwtrixApp {
         this.overlay = overlay;
     }
 
-    public BigDecimal getProgress() {
+    public int getProgress() {
         return this.progress;
     }
 
-    public void setProgress(BigDecimal progress) {
+    public void setProgress(int progress) {
         this.progress = progress;
     }
 
-    public BigDecimal[] getProgressC() {
+    public int[] getProgressC() {
         return this.progressC;
     }
 
-    public BigDecimal[] setProgressC() {
-        return this.progressC;
-    }
-
-    public void setProgressC(BigDecimal[] progressC) {
+    public void setProgressC(int[] progressC) {
         this.progressC = progressC;
     }
 
-    public BigDecimal[] getProgressBC() {
+    public int[] getProgressBC() {
         return this.progressBC;
     }
 
-    public void setProgressBC(BigDecimal[] progressBC) {
+    public void setProgressBC(int[] progressBC) {
         this.progressBC = progressBC;
     }
 
-    public BigDecimal getScrollSpeed() {
+    public int getScrollSpeed() {
         return this.scrollSpeed;
     }
 
-    public void setScrollSpeed(BigDecimal scrollSpeed) {
+    public void setScrollSpeed(int scrollSpeed) {
         this.scrollSpeed = scrollSpeed;
     }
 
@@ -382,7 +391,7 @@ public class AwtrixApp {
         fields.put("duration", this.duration);
         fields.putAll(getGraphConfig());
         fields.putAll(getProgressConfig());
-        if (this.scrollSpeed.compareTo(BigDecimal.ZERO) == 0) {
+        if (this.scrollSpeed == 0) {
             fields.put("noScroll", true);
         } else {
             fields.put("scrollSpeed", this.scrollSpeed);
@@ -402,36 +411,42 @@ public class AwtrixApp {
         return defaultValue;
     }
 
-    private BigDecimal getNumberValue(Map<String, Object> params, String key, BigDecimal defaultValue) {
+    private int getNumberValue(Map<String, Object> params, String key, int defaultValue) {
         if (params.containsKey(key)) {
             @Nullable
             Object value = params.get(key);
-            if (value instanceof BigDecimal) {
-                return (BigDecimal) value;
+            if (value instanceof Integer intValue) {
+                return intValue;
             }
         }
         return defaultValue;
     }
 
-    private BigDecimal[] getNumberArrayValue(Map<String, Object> params, String key, BigDecimal[] defaultValue) {
+    private int[] getNumberArrayValue(Map<String, Object> params, String key, int[] defaultValue) {
         if (params.containsKey(key)) {
             @Nullable
             Object value = params.get(key);
-            if (value instanceof BigDecimal[]) {
-                return (BigDecimal[]) value;
+            if (value instanceof int[] intArray) {
+                return intArray;
             }
         }
         return defaultValue;
     }
 
-    private BigDecimal[] getGradientValue(Map<String, Object> params, BigDecimal[] defaultValue) {
+    private int[][] getGradientValue(Map<String, Object> params, int[][] defaultValue) {
         if (params.containsKey("gradient")) {
             @Nullable
-            Object value = params.get("gradient");
-            if (value instanceof BigDecimal[][] && ((BigDecimal[][]) value).length == 2) {
-                BigDecimal[] gradientColor = ((BigDecimal[][]) value)[1];
-                if (gradientColor.length == 3) {
-                    return gradientColor;
+            Object gradientParam = params.get("gradient");
+            // Check if we got a complete gradient with two colors
+            if (gradientParam instanceof int[][] gradient) {
+                return gradient;
+            }
+            // Check if we got a single color for the gradient
+            if (gradientParam instanceof int[] gradient) {
+                @Nullable
+                Object colorParam = params.get("color");
+                if (colorParam instanceof int[] color) {
+                    return new int[][] { color, gradient };
                 }
             }
         }
@@ -480,16 +495,25 @@ public class AwtrixApp {
 
     private Map<String, Object> getColorConfig() {
         Map<String, Object> fields = new HashMap<String, Object>();
-        if (this.gradient.length != 3) {
+        // When we don't have a valid gradient array, we just provide a color if available
+        if (this.gradient.length != 2) {
             if (this.color.length == 3) {
                 fields.put("color", this.color);
             }
         } else {
-            if (this.color.length == 3) {
-                BigDecimal[][] gradientColors = { this.color, this.gradient };
-                fields.put("gradient", gradientColors);
+            // Here we have a gradient array. Use it unless it's not a valid gradient
+            if (this.gradient[0] != null && this.gradient[0].length == 3 && this.gradient[1] != null
+                    && this.gradient[1].length == 3) {
+                fields.put("gradient", this.gradient);
             } else {
-                fields.put("color", this.gradient);
+                // If we don't have a valid gradient, we try to provide any color we find
+                if (this.color.length == 3) {
+                    fields.put("color", this.color);
+                } else if (this.gradient[0] != null && this.gradient[0].length == 3) {
+                    fields.put("color", this.gradient);
+                } else if (this.gradient[1] != null && this.gradient[1].length == 3) {
+                    fields.put("color", this.gradient);
+                }
             }
         }
         return fields;
@@ -498,9 +522,9 @@ public class AwtrixApp {
     private Map<String, Object> getTextEffectConfig() {
         Map<String, Object> fields = new HashMap<String, Object>();
         if (this.color.length == 0 || this.gradient.length == 0) {
-            if (this.blinkText.compareTo(BigDecimal.ZERO) > 0) {
+            if (this.blinkText > 0) {
                 fields.put("blinkText", this.blinkText);
-            } else if (this.fadeText.compareTo(BigDecimal.ZERO) > 0) {
+            } else if (this.fadeText > 0) {
                 fields.put("fadeText", this.fadeText);
             } else if (this.rainbow) {
                 fields.put("rainbow", this.rainbow);
@@ -529,7 +553,7 @@ public class AwtrixApp {
     private Map<String, Object> getGraphConfig() {
         Map<String, Object> fields = new HashMap<String, Object>();
         String graphType = null;
-        BigDecimal[] data = null;
+        int[] data = null;
         if (this.bar.length > 0) {
             graphType = "bar";
             if ("None".equals(this.icon)) {
@@ -554,7 +578,7 @@ public class AwtrixApp {
 
     private Map<String, Object> getProgressConfig() {
         Map<String, Object> fields = new HashMap<String, Object>();
-        if (progress.compareTo(MINUSONE) > 0 && progress.compareTo(ONEHUNDRED) <= 0) {
+        if (progress > -1 && progress <= 100) {
             fields.put("progress", this.progress);
             if (this.progressC.length == 3) {
                 fields.put("progressC", this.progressC);
@@ -571,7 +595,7 @@ public class AwtrixApp {
         Map<String, Object> effectSettings = new HashMap<String, Object>();
         fields.put("effect", this.effect);
         if (!"None".equals(this.effect)) {
-            if (getEffectSpeed().compareTo(MINUSONE) > 0) {
+            if (getEffectSpeed() > -1) {
                 effectSettings.put("speed", getEffectSpeed());
             }
             effectSettings.put("palette", getEffectPalette());
@@ -581,17 +605,17 @@ public class AwtrixApp {
         return fields;
     }
 
-    public BigDecimal getEffectSpeed() {
+    public int getEffectSpeed() {
         @Nullable
         Object effectSpeed = this.effectSettings.get("speed");
-        if (effectSpeed instanceof BigDecimal) {
-            return (BigDecimal) effectSpeed;
+        if (effectSpeed instanceof Number numberValue) {
+            return numberValue.intValue();
         } else {
             return DEFAULT_EFFECTSPEED;
         }
     }
 
-    public void setEffectSpeed(BigDecimal effectSpeed) {
+    public void setEffectSpeed(int effectSpeed) {
         this.effectSettings.put("speed", effectSpeed);
     }
 

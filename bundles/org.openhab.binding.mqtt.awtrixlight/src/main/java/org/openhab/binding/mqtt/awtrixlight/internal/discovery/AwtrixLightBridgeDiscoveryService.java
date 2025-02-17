@@ -13,7 +13,6 @@
 
 package org.openhab.binding.mqtt.awtrixlight.internal.discovery;
 
-import static org.openhab.binding.mqtt.MqttBindingConstants.BINDING_ID;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
 
 import java.util.Map;
@@ -24,7 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.awtrixlight.internal.handler.AwtrixLightBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -87,8 +85,7 @@ public class AwtrixLightBridgeDiscoveryService extends AbstractDiscoveryService 
     void publishApp(ThingUID connectionBridgeUid, String bridgeHardwareId, String basetopic, String appName) {
         if (!"Notification".equals(appName)) {
             String appId = bridgeHardwareId + "-" + appName;
-            thingDiscovered(DiscoveryResultBuilder
-                    .create(new ThingUID(new ThingTypeUID(BINDING_ID, AWTRIX_APP), connectionBridgeUid, appName))
+            thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_APP, connectionBridgeUid, appName))
                     .withBridge(connectionBridgeUid).withProperty(PROP_APPID, appId)
                     .withProperty(PROP_APP_CONTROLLABLE, false).withProperty(PROP_APPNAME, appName)
                     .withRepresentationProperty(PROP_APPID).withLabel("Awtrix App " + appName).build());

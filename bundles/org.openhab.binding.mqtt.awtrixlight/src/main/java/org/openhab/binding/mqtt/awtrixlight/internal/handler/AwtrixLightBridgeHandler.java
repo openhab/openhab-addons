@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.awtrixlight.internal.handler;
 
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,7 +81,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     private String channelPrefix = "";
     private String currentApp = "";
     private boolean discoverDefaultApps = false;
-    private BigDecimal lowBatteryThreshold = new BigDecimal(25);
+    private int lowBatteryThreshold = 25;
 
     private Map<String, AwtrixLightAppHandler> appHandlers = new HashMap<String, AwtrixLightAppHandler>();
 
@@ -547,11 +546,10 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                     thing.setProperty(PROP_UNIQUEID, (String) value);
                     break;
                 case FIELD_BRIDGE_BATTERY:
-                    if (value instanceof BigDecimal) {
+                    if (value instanceof Number numberVal) {
                         updateState(new ChannelUID(channelPrefix + CHANNEL_BATTERY),
-                                new QuantityType<>((BigDecimal) value, Units.PERCENT));
-                        OnOffType lowBattery = ((BigDecimal) value).compareTo(this.lowBatteryThreshold) <= 0
-                                ? OnOffType.ON
+                                new QuantityType<>(numberVal, Units.PERCENT));
+                        OnOffType lowBattery = numberVal.intValue() < this.lowBatteryThreshold ? OnOffType.ON
                                 : OnOffType.OFF;
                         updateState(new ChannelUID(channelPrefix + CHANNEL_LOW_BATTERY), lowBattery);
                     }
@@ -563,14 +561,16 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                     thing.setProperty(PROP_FIRMWARE, value.toString());
                     break;
                 case FIELD_BRIDGE_TYPE:
-                    if (value instanceof BigDecimal) {
-                        String vendor = ((BigDecimal) value).compareTo(BigDecimal.ZERO) == 0 ? "Ulanzi" : "Generic";
+                    if (value instanceof Number numberVal) {
+                        String vendor = numberVal.intValue() == 0 ? "Ulanzi" : "Generic";
                         thing.setProperty(PROP_VENDOR, vendor);
-                        break;
                     }
+                    break;
                 case FIELD_BRIDGE_LUX:
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_LUX),
-                            new QuantityType<>((BigDecimal) value, Units.LUX));
+                    if (value instanceof Number numberVal) {
+                        updateState(new ChannelUID(channelPrefix + CHANNEL_LUX),
+                                new QuantityType<>(numberVal, Units.LUX));
+                    }
                     break;
                 case FIELD_BRIDGE_LDR_RAW:
                     // Not mapped to channel atm
@@ -579,46 +579,64 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                     // Not mapped to channel atm
                     break;
                 case FIELD_BRIDGE_MATRIX:
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_DISPLAY),
-                            (boolean) value ? OnOffType.ON : OnOffType.OFF);
+                    if (value instanceof Boolean booleanVal) {
+                        updateState(new ChannelUID(channelPrefix + CHANNEL_DISPLAY),
+                                booleanVal ? OnOffType.ON : OnOffType.OFF);
+                    }
                     break;
                 case FIELD_BRIDGE_BRIGHTNESS:
-                    long brightnessInPercent = Math.round((((BigDecimal) value).doubleValue() / 255) * 100);
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_BRIGHTNESS),
-                            new QuantityType<>(brightnessInPercent, Units.PERCENT));
+                    if (value instanceof Number numberVal) {
+                        long brightnessInPercent = Math.round((numberVal.doubleValue() / 255) * 100);
+                        updateState(new ChannelUID(channelPrefix + CHANNEL_BRIGHTNESS),
+                                new QuantityType<>(brightnessInPercent, Units.PERCENT));
+                    }
                     break;
                 case FIELD_BRIDGE_TEMPERATURE:
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_TEMPERATURE),
-                            new QuantityType<>((BigDecimal) value, SIUnits.CELSIUS));
+                    if (value instanceof Number numberVal) {
+                        updateState(new ChannelUID(channelPrefix + CHANNEL_TEMPERATURE),
+                                new QuantityType<>(numberVal, SIUnits.CELSIUS));
+                    }
                     break;
                 case FIELD_BRIDGE_HUMIDITY:
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_HUMIDITY),
-                            new QuantityType<>((BigDecimal) value, Units.PERCENT));
+                    if (value instanceof Number numberVal) {
+                        updateState(new ChannelUID(channelPrefix + CHANNEL_HUMIDITY),
+                                new QuantityType<>(numberVal, Units.PERCENT));
+                    }
                     break;
                 case FIELD_BRIDGE_UPTIME:
                     // Not mapped to channel atm
                     break;
                 case FIELD_BRIDGE_WIFI_SIGNAL:
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_RSSI),
-                            new QuantityType<>((BigDecimal) value, Units.ONE));
+                    if (value instanceof Number numberVal) {
+                        updateState(new ChannelUID(channelPrefix + CHANNEL_RSSI),
+                                new QuantityType<>(numberVal, Units.ONE));
+                    }
                     break;
                 case FIELD_BRIDGE_MESSAGES:
                     // Not mapped to channel atm
                     break;
                 case FIELD_BRIDGE_INDICATOR1:
-                    OnOffType indicator1 = (Boolean) value ? OnOffType.ON : OnOffType.OFF;
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_INDICATOR1), indicator1);
+                    if (value instanceof Boolean booleanVal) {
+                        OnOffType indicator1 = booleanVal ? OnOffType.ON : OnOffType.OFF;
+                        updateState(new ChannelUID(channelPrefix + CHANNEL_INDICATOR1), indicator1);
+                    }
                     break;
                 case FIELD_BRIDGE_INDICATOR2:
-                    OnOffType indicator2 = (Boolean) value ? OnOffType.ON : OnOffType.OFF;
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_INDICATOR2), indicator2);
+                    if (value instanceof Boolean booleanVal) {
+                        OnOffType indicator2 = booleanVal ? OnOffType.ON : OnOffType.OFF;
+                        updateState(new ChannelUID(channelPrefix + CHANNEL_INDICATOR2), indicator2);
+                    }
                     break;
                 case FIELD_BRIDGE_INDICATOR3:
-                    OnOffType indicator3 = (Boolean) value ? OnOffType.ON : OnOffType.OFF;
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_INDICATOR3), indicator3);
+                    if (value instanceof Boolean booleanVal) {
+                        OnOffType indicator3 = booleanVal ? OnOffType.ON : OnOffType.OFF;
+                        updateState(new ChannelUID(channelPrefix + CHANNEL_INDICATOR3), indicator3);
+                    }
                     break;
                 case FIELD_BRIDGE_APP:
-                    updateState(new ChannelUID(channelPrefix + CHANNEL_APP), new StringType((String) value));
+                    if (value instanceof String stringVal) {
+                        updateState(new ChannelUID(channelPrefix + CHANNEL_APP), new StringType(stringVal));
+                    }
                     break;
             }
         }

@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.awtrixlight.internal.handler;
 
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
@@ -23,7 +22,6 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -119,24 +117,22 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 break;
             case CHANNEL_COLOR:
                 if (command instanceof HSBType) {
-                    int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
-                    this.app.setColor(convertRgbArray(hsbToRgb));
+                    this.app.setColor(ColorUtil.hsbToRgb((HSBType) command));
                 }
                 break;
             case CHANNEL_GRADIENT_COLOR:
                 if (command instanceof HSBType) {
-                    int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
-                    this.app.setGradient(convertRgbArray(hsbToRgb));
+                    this.app.setGradient(ColorUtil.hsbToRgb((HSBType) command));
                 }
                 break;
             case CHANNEL_SCROLLSPEED:
                 if (command instanceof QuantityType) {
-                    this.app.setScrollSpeed(((QuantityType<?>) command).toBigDecimal());
+                    this.app.setScrollSpeed(((QuantityType<?>) command).intValue());
                 }
                 break;
             case CHANNEL_DURATION:
                 if (command instanceof QuantityType) {
-                    this.app.setDuration(((QuantityType<?>) command).toBigDecimal());
+                    this.app.setDuration(((QuantityType<?>) command).intValue());
                 }
                 break;
             case CHANNEL_EFFECT:
@@ -146,7 +142,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 break;
             case CHANNEL_EFFECT_SPEED:
                 if (command instanceof QuantityType) {
-                    this.app.setEffectSpeed(((QuantityType<?>) command).toBigDecimal());
+                    this.app.setEffectSpeed(((QuantityType<?>) command).intValue());
                 }
                 break;
             case CHANNEL_EFFECT_PALETTE:
@@ -166,7 +162,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 break;
             case CHANNEL_TEXT_OFFSET:
                 if (command instanceof QuantityType) {
-                    this.app.setTextOffset(((QuantityType<?>) command).toBigDecimal());
+                    this.app.setTextOffset(((QuantityType<?>) command).intValue());
                 }
                 break;
             case CHANNEL_TOP_TEXT:
@@ -176,7 +172,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 break;
             case CHANNEL_TEXTCASE:
                 if (command instanceof QuantityType) {
-                    this.app.setTextCase(((QuantityType<?>) command).toBigDecimal());
+                    this.app.setTextCase(((QuantityType<?>) command).intValue());
                 }
                 break;
             case CHANNEL_CENTER:
@@ -188,7 +184,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 if (command instanceof QuantityType) {
                     QuantityType<?> blinkInS = ((QuantityType<?>) command).toUnit(Units.SECOND);
                     if (blinkInS != null) {
-                        BigDecimal blinkInMs = blinkInS.toBigDecimal().multiply(THOUSAND);
+                        int blinkInMs = blinkInS.intValue() * 1000;
                         this.app.setBlinkText(blinkInMs);
                     }
                 }
@@ -197,7 +193,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 if (command instanceof QuantityType) {
                     QuantityType<?> fadeInS = ((QuantityType<?>) command).toUnit(Units.SECOND);
                     if (fadeInS != null) {
-                        BigDecimal fadeInMs = fadeInS.toBigDecimal().multiply(THOUSAND);
+                        int fadeInMs = fadeInS.intValue() * 1000;
                         this.app.setFadeText(fadeInMs);
                     }
                 }
@@ -216,32 +212,29 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 if (command instanceof StringType) {
                     switch (((StringType) command).toString()) {
                         case PUSH_ICON_OPTION_0:
-                            this.app.setPushIcon(new BigDecimal(0));
+                            this.app.setPushIcon(0);
                             break;
                         case PUSH_ICON_OPTION_1:
-                            this.app.setPushIcon(new BigDecimal(1));
+                            this.app.setPushIcon(1);
                             break;
                         case PUSH_ICON_OPTION_2:
-                            this.app.setPushIcon(new BigDecimal(2));
+                            this.app.setPushIcon(2);
                             break;
                     }
                 }
                 break;
             case CHANNEL_BACKGROUND:
                 if (command instanceof HSBType) {
-                    int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
-                    this.app.setBackground(convertRgbArray(hsbToRgb));
+                    int[] rgb = ColorUtil.hsbToRgb((HSBType) command);
+                    this.app.setBackground(rgb);
                 }
                 break;
             case CHANNEL_LINE:
                 if (command instanceof StringType) {
                     try {
                         String[] points = command.toString().split(",");
-                        BigDecimal[] pointsAsNumber = new BigDecimal[points.length];
-                        for (int i = 0; i < points.length; i++) {
-                            pointsAsNumber[i] = new BigDecimal(points[i]);
-                        }
-                        this.app.setLine(pointsAsNumber);
+                        int[] pointsAsInt = Arrays.stream(points).mapToInt(Integer::parseInt).toArray();
+                        this.app.setLine(pointsAsInt);
                     } catch (Exception e) {
                         logger.warn("Command {} cannot be parsed as line graph. Format should be: 1,2,3,4,5",
                                 command.toString());
@@ -250,17 +243,17 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 break;
             case CHANNEL_LIFETIME:
                 if (command instanceof QuantityType) {
-                    this.app.setLifetime(((QuantityType<?>) command).toBigDecimal());
+                    this.app.setLifetime(((QuantityType<?>) command).intValue());
                 }
                 break;
             case CHANNEL_LIFETIME_MODE:
                 if (command instanceof StringType) {
                     switch (command.toString()) {
                         case "DELETE":
-                            this.app.setLifetimeMode(new BigDecimal(0));
+                            this.app.setLifetimeMode(0);
                             break;
                         case "STALE":
-                            this.app.setLifetimeMode(new BigDecimal(1));
+                            this.app.setLifetimeMode(1);
                             break;
                     }
                 }
@@ -269,11 +262,8 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 if (command instanceof StringType) {
                     try {
                         String[] points = command.toString().split(",");
-                        BigDecimal[] pointsAsNumber = new BigDecimal[points.length];
-                        for (int i = 0; i < points.length; i++) {
-                            pointsAsNumber[i] = new BigDecimal(points[i]);
-                        }
-                        this.app.setBar(pointsAsNumber);
+                        int[] pointsAsInt = Arrays.stream(points).mapToInt(Integer::parseInt).toArray();
+                        this.app.setBar(pointsAsInt);
                     } catch (Exception e) {
                         logger.warn("Command {} cannot be parsed as bar graph. Format should be: 1,2,3,4,5",
                                 command.toString());
@@ -292,19 +282,19 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 break;
             case CHANNEL_PROGRESS:
                 if (command instanceof QuantityType) {
-                    this.app.setProgress(((QuantityType<?>) command).toBigDecimal());
+                    this.app.setProgress(((QuantityType<?>) command).intValue());
                 }
                 break;
             case CHANNEL_PROGRESSC:
                 if (command instanceof HSBType) {
-                    int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
-                    this.app.setProgressC(convertRgbArray(hsbToRgb));
+                    int[] rgb = ColorUtil.hsbToRgb((HSBType) command);
+                    this.app.setProgressC(rgb);
                 }
                 break;
             case CHANNEL_PROGRESSBC:
                 if (command instanceof HSBType) {
-                    int[] hsbToRgb = ColorUtil.hsbToRgb((HSBType) command);
-                    this.app.setProgressBC(convertRgbArray(hsbToRgb));
+                    int[] rgb = ColorUtil.hsbToRgb((HSBType) command);
+                    this.app.setProgressBC(rgb);
                 }
                 break;
         }
@@ -518,15 +508,6 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         triggerChannel(new ChannelUID(channelPrefix + CHANNEL_BUTSELECT), event);
     }
 
-    private BigDecimal[] convertRgbArray(int[] rgbIn) {
-        if (rgbIn.length == 3) {
-            BigDecimal[] rgb = Arrays.stream(rgbIn).mapToObj(BigDecimal::new).toArray(BigDecimal[]::new);
-            return rgb;
-        } else {
-            return new BigDecimal[0];
-        }
-    }
-
     private void deleteApp() {
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -552,15 +533,13 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
     private void initStates() {
         updateState(new ChannelUID(channelPrefix + CHANNEL_ACTIVE), this.active ? OnOffType.ON : OnOffType.OFF);
 
-        BigDecimal[] color = this.app.getColor().length == 3 ? this.app.getColor()
-                : new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
-        updateState(new ChannelUID(channelPrefix + CHANNEL_COLOR),
-                HSBType.fromRGB(color[0].intValue(), color[1].intValue(), color[2].intValue()));
+        int[] color = this.app.getColor().length == 3 ? this.app.getColor() : new int[] { 0, 0, 0 };
+        updateState(new ChannelUID(channelPrefix + CHANNEL_COLOR), HSBType.fromRGB(color[0], color[1], color[2]));
 
-        BigDecimal[] gradient = this.app.getGradient().length == 3 ? this.app.getGradient()
-                : new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
+        int[] gradient = this.app.getGradient().length == 2 && this.app.getGradient()[1] != null
+                && this.app.getGradient()[1].length == 3 ? this.app.getGradient()[1] : new int[] { 0, 0, 0 };
         updateState(new ChannelUID(channelPrefix + CHANNEL_GRADIENT_COLOR),
-                HSBType.fromRGB(gradient[0].intValue(), gradient[1].intValue(), gradient[2].intValue()));
+                HSBType.fromRGB(gradient[0], gradient[1], gradient[2]));
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_SCROLLSPEED),
                 new QuantityType<>(this.app.getScrollSpeed(), Units.PERCENT));
@@ -593,69 +572,60 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         updateState(new ChannelUID(channelPrefix + CHANNEL_CENTER),
                 this.app.getCenter() ? OnOffType.ON : OnOffType.OFF);
 
-        BigDecimal blinkTextInSeconds = this.app.getBlinkText().divide(THOUSAND);
-        if (blinkTextInSeconds != null) {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_BLINK_TEXT),
-                    new QuantityType<>(blinkTextInSeconds, Units.SECOND));
-        }
+        int blinkTextInSeconds = Math.round(this.app.getBlinkText() / 1000);
+        updateState(new ChannelUID(channelPrefix + CHANNEL_BLINK_TEXT),
+                new QuantityType<>(blinkTextInSeconds, Units.SECOND));
 
-        BigDecimal fadeTextInSeconds = this.app.getFadeText().divide(THOUSAND);
-        if (fadeTextInSeconds != null) {
-            updateState(new ChannelUID(channelPrefix + CHANNEL_FADE_TEXT),
-                    new QuantityType<>(fadeTextInSeconds, Units.SECOND));
-        }
+        int fadeTextInSeconds = Math.round(this.app.getFadeText() / 1000);
+        updateState(new ChannelUID(channelPrefix + CHANNEL_FADE_TEXT),
+                new QuantityType<>(fadeTextInSeconds, Units.SECOND));
+
         updateState(new ChannelUID(channelPrefix + CHANNEL_RAINBOW),
                 this.app.getRainbow() ? OnOffType.ON : OnOffType.OFF);
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_ICON), new StringType(this.app.getIcon()));
 
         String param = "";
-        if (this.app.getPushIcon().equals(BigDecimal.ZERO)) {
+        if (this.app.getPushIcon() == 0) {
             param = PUSH_ICON_OPTION_0;
-        } else if (this.app.getPushIcon().equals(BigDecimal.ONE)) {
+        } else if (this.app.getPushIcon() == 1) {
             param = PUSH_ICON_OPTION_1;
-        } else if (this.app.getPushIcon().equals(new BigDecimal(2))) {
+        } else if (this.app.getPushIcon() == 2) {
             param = PUSH_ICON_OPTION_2;
         }
         updateState(new ChannelUID(channelPrefix + CHANNEL_PUSH_ICON), new StringType(param));
 
-        BigDecimal[] background = this.app.getBackground().length == 3 ? this.app.getBackground()
-                : new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
+        int[] background = this.app.getBackground().length == 3 ? this.app.getBackground() : new int[] { 0, 0, 0 };
         updateState(new ChannelUID(channelPrefix + CHANNEL_BACKGROUND),
-                HSBType.fromRGB(background[0].intValue(), background[1].intValue(), background[2].intValue()));
+                HSBType.fromRGB(background[0], background[1], background[2]));
 
-        BigDecimal[] line = this.app.getLine().length > 0 ? this.app.getLine() : new BigDecimal[] { BigDecimal.ZERO };
-        String lineString = Arrays.stream(line).map(BigDecimal::toString).collect(Collectors.joining(","));
-        updateState(new ChannelUID(channelPrefix + CHANNEL_LINE), new StringType(lineString));
+        String line = this.app.getLine().length > 0 ? Arrays.toString(this.app.getLine()) : "";
+        updateState(new ChannelUID(channelPrefix + CHANNEL_LINE), new StringType(line));
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_LIFETIME),
                 new QuantityType<>(this.app.getLifetime(), Units.SECOND));
 
-        String lifetimeMode = this.app.getLifetimeMode().equals(BigDecimal.ZERO) ? "DELETE" : "STALE";
+        String lifetimeMode = this.app.getLifetimeMode() == 0 ? "DELETE" : "STALE";
         updateState(new ChannelUID(channelPrefix + CHANNEL_LIFETIME_MODE), new StringType(lifetimeMode));
 
-        BigDecimal[] bar = this.app.getBar().length > 0 ? this.app.getBar() : new BigDecimal[] { BigDecimal.ZERO };
-        String barString = Arrays.stream(bar).map(BigDecimal::toString).collect(Collectors.joining(","));
-        updateState(new ChannelUID(channelPrefix + CHANNEL_BAR), new StringType(barString));
+        String bar = this.app.getBar().length > 0 ? Arrays.toString(this.app.getBar()) : "";
+        updateState(new ChannelUID(channelPrefix + CHANNEL_BAR), new StringType(bar));
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_AUTOSCALE),
                 this.app.getAutoscale() ? OnOffType.ON : OnOffType.OFF);
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_OVERLAY), new StringType(this.app.getOverlay()));
 
-        BigDecimal progress = this.app.getProgress().compareTo(BigDecimal.ZERO) > 0 ? this.app.getProgress()
-                : BigDecimal.ZERO;
+        int progress = Math.max(this.app.getProgress(), 0);
         updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESS), new QuantityType<>(progress, Units.PERCENT));
 
-        BigDecimal[] progressC = this.app.getProgressC().length == 3 ? this.app.getProgressC()
-                : new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
+        int[] progressC = this.app.getProgressC().length == 3 ? this.app.getProgressC() : new int[] { 0, 0, 0 };
         updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESSC),
-                HSBType.fromRGB(progressC[0].intValue(), progressC[1].intValue(), progressC[2].intValue()));
+                HSBType.fromRGB(progressC[0], progressC[1], progressC[2]));
 
-        BigDecimal[] progressBC = this.app.getProgressBC().length == 3 ? this.app.getProgressBC()
-                : new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO };
+        int[] progressBC = this.app.getProgressBC().length == 3 ? this.app.getProgressBC() : new int[] { 0, 0, 0 };
         updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESSBC),
-                HSBType.fromRGB(progressBC[0].intValue(), progressBC[1].intValue(), progressBC[2].intValue()));
+                HSBType.fromRGB(progressBC[0], progressBC[1], progressBC[2]));
     }
 
     private void finishInit() {
