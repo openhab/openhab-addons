@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.casokitchen.internal.handler.TwoZonesWinecoolerHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -42,13 +41,13 @@ import org.osgi.service.component.annotations.Reference;
 public class CasoKitchenHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_WINECOOLER);
-    private HttpClient httpClient;
+    private HttpClientFactory httpClientFactory;
     private TimeZoneProvider timeZoneProvider;
 
     @Activate
     public CasoKitchenHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference TimeZoneProvider tzp) {
-        httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
         timeZoneProvider = tzp;
     }
 
@@ -61,7 +60,7 @@ public class CasoKitchenHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_WINECOOLER.equals(thingTypeUID)) {
-            return new TwoZonesWinecoolerHandler(thing, httpClient, timeZoneProvider);
+            return new TwoZonesWinecoolerHandler(thing, httpClientFactory.getCommonHttpClient(), timeZoneProvider);
         }
         return null;
     }

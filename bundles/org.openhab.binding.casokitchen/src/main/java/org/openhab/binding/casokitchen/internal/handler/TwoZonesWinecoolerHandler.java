@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.casokitchen.internal.config.TwoZonesWinecoolerConfiguration;
+import org.openhab.binding.casokitchen.internal.dto.CallResponse;
 import org.openhab.binding.casokitchen.internal.dto.LightRequest;
 import org.openhab.binding.casokitchen.internal.dto.StatusRequest;
 import org.openhab.binding.casokitchen.internal.dto.StatusResult;
@@ -74,31 +75,27 @@ public class TwoZonesWinecoolerHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         configuration = getConfigAs(TwoZonesWinecoolerConfiguration.class);
-        if (checkConfig()) {
+        String configInvalidReason = configValid();
+        if (configInvalidReason.isEmpty()) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                    "@text/casokitchen.winecooler-2z.status.wait-for-response");
             startSchedule();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configInvalidReason);
         }
     }
 
-    private boolean checkConfig() {
-        String reason = "Config Empty";
-        if (configuration.apiKey != EMPTY) {
-            if (configuration.deviceId != EMPTY) {
-                if (configuration.refreshInterval > 0) {
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                            "@text/casokitchen.winecooler-2z.status.wait-for-response");
-                    return true;
-                } else {
-                    reason = "@text/casokitchen.winecooler-2z.status.refresh-interval [\""
-                            + configuration.refreshInterval + "\"]";
-                }
-            } else {
-                reason = "@text/casokitchen.winecooler-2z.status.device-id-missing";
-            }
+    private String configValid() {
+        if (configuration.apiKey.isBlank()) {
+            return "@text/casokitchen.winecooler-2z.status.api-key-missing";
+        } else if (configuration.deviceId.isBlank()) {
+            return "@text/casokitchen.winecooler-2z.status.device-id-missing";
+        } else if (configuration.refreshInterval < MINIMUM_REFRESH_INTERVAL_MIN) {
+            return "@text/casokitchen.winecooler-2z.status.refresh-interval [\"" + configuration.refreshInterval
+                    + "\"]";
         } else {
-            reason = "@text/casokitchen.winecooler-2z.status.api-key-missing";
+            return EMPTY;
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, reason);
-        return false;
     }
 
     private void startSchedule() {
@@ -176,24 +173,14 @@ public class TwoZonesWinecoolerHandler extends BaseThingHandler {
                         lr.zone = 2;
                         break;
                 }
-                Request req = httpClient.POST(LIGHT_URL);
-                req.header(HttpHeader.CONTENT_TYPE, "application/json");
-                req.header(HTTP_HEADER_API_KEY, configuration.apiKey);
-                req.content(new StringContentProvider(GSON.toJson(lr)));
-                try {
-                    ContentResponse response = req.timeout(60, TimeUnit.SECONDS).send();
-                    int responseStatus = response.getStatus();
-                    if (responseStatus == 200) {
-                        updateState(new ChannelUID(thing.getUID(), group, LIGHT), OnOffType.from(lr.lightOn));
-                    } else {
-                        logger.info("Call to {} responded with status {} reason {}", LIGHT_URL, response.getStatus(),
-                                response.getReason());
-                    }
-                } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                    logger.debug("Call to {} failed with reason {}", LIGHT_URL, e.getMessage());
+                CallResponse cr = post(LIGHT_URL, lr);
+                if (cr.status == 200) {
+                    updateState(new ChannelUID(thing.getUID(), group, LIGHT), OnOffType.from(lr.lightOn));
+                } else {
+                    logger.warn("Call to {} responded with status {} reason {}", LIGHT_URL, cr.status,
+                            cr.responseString);
                 }
             }
-        } else {
             logger.debug("Cannot handle command {}", command);
         }
     }
@@ -207,28 +194,19 @@ public class TwoZonesWinecoolerHandler extends BaseThingHandler {
 
     private void dataUpdate() {
         StatusRequest requestContent = new StatusRequest(configuration.deviceId);
-        Request req = httpClient.POST(STATUS_URL);
-        req.header(HttpHeader.CONTENT_TYPE, "application/json");
-        req.header(HTTP_HEADER_API_KEY, configuration.apiKey);
-        req.content(new StringContentProvider(GSON.toJson(requestContent)));
-        try {
-            ContentResponse contentResponse = req.timeout(60, TimeUnit.SECONDS).send();
-            int responseStatus = contentResponse.getStatus();
-            String contentResult = contentResponse.getContentAsString();
-            if (responseStatus == 200) {
-                updateStatus(ThingStatus.ONLINE);
-                StatusResult statusResult = GSON.fromJson(contentResult, StatusResult.class);
-                if (statusResult != null) {
-                    updateChannels(statusResult);
-                }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/casokitchen.winecooler-2z.status.http-status [\"" + responseStatus + " - "
-                                + contentResult + "\"]");
+        CallResponse cr = post(STATUS_URL, requestContent);
+        int responseStatus = cr.status;
+        String responseContent = cr.responseString;
+        if (responseStatus == 200) {
+            updateStatus(ThingStatus.ONLINE);
+            StatusResult statusResult = GSON.fromJson(responseContent, StatusResult.class);
+            if (statusResult != null) {
+                updateChannels(statusResult);
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/casokitchen.winecooler-2z.status.http-status [\"" + e.getMessage() + "\"]");
+                    "@text/casokitchen.winecooler-2z.status.http-status [\"" + responseStatus + " - " + responseContent
+                            + "\"]");
         }
     }
 
@@ -251,5 +229,22 @@ public class TwoZonesWinecoolerHandler extends BaseThingHandler {
 
         ZonedDateTime zdt = Instant.parse(result.logTimestampUtc).atZone(timeZoneProvider.getTimeZone());
         updateState(new ChannelUID(thing.getUID(), GENERIC, LAST_UPDATE), new DateTimeType(zdt));
+    }
+
+    private CallResponse post(String url, Object dto) {
+        Request req = httpClient.POST(url);
+        req.header(HttpHeader.CONTENT_TYPE, "application/json");
+        req.header(HTTP_HEADER_API_KEY, configuration.apiKey);
+        req.content(new StringContentProvider(GSON.toJson(dto)));
+        CallResponse callResponse = new CallResponse();
+        try {
+            ContentResponse cr = req.timeout(60, TimeUnit.SECONDS).send();
+            callResponse.status = cr.getStatus();
+            callResponse.responseString = cr.getContentAsString();
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            String message = e.getMessage();
+            callResponse.responseString = ((message != null) ? message : EMPTY);
+        }
+        return callResponse;
     }
 }

@@ -13,8 +13,8 @@
 	</channel-type>
 	<channel-type id="set-temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Desired Temperature</label>
-		<description>Desired Zone Temperature</description>
+		<label>Target Temperature</label>
+		<description>Target Zone Temperature</description>
 		<tags>
 			<tag>SetPoint</tag>
 		</tags>
@@ -28,8 +28,8 @@
 	</channel-type>
 	<channel-type id="hint">
 		<item-type>String</item-type>
-		<label> Hint</label>
-		<description> Textual hint for device status</description>
+		<label>Hint</label>
+		<description>Textual hint for device status</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last-update">

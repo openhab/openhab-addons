@@ -43,6 +43,7 @@ public class CasoKitchenBindingConstants {
     public static final String HINT = "hint";
     public static final String LAST_UPDATE = "last-update";
 
+    public static final int MINIMUM_REFRESH_INTERVAL_MIN = 5;
     public static final String EMPTY = "";
 
     public static final String BASE_URL = "https://publickitchenapi.casoapp.com";

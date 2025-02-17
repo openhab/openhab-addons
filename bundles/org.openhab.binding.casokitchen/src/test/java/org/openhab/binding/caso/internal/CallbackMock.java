@@ -57,18 +57,16 @@ public class CallbackMock implements ThingHandlerCallback {
     }
 
     public void waitForFullUpdate(int stateCount) {
-        synchronized (this) {
-            Instant startWaiting = Instant.now();
-            while (states.size() < stateCount && startWaiting.plus(5, ChronoUnit.SECONDS).isAfter(Instant.now())) {
-                try {
-                    wait(250);
-                } catch (InterruptedException e) {
-                    fail(e.getMessage());
-                }
+        Instant startWaiting = Instant.now();
+        while (states.size() < stateCount && startWaiting.plus(5, ChronoUnit.SECONDS).isAfter(Instant.now())) {
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+                fail(e.getMessage());
             }
-            if (!ThingStatus.ONLINE.equals(thingStatus)) {
-                fail(thingStatus.toString());
-            }
+        }
+        if (!ThingStatus.ONLINE.equals(thingStatus)) {
+            fail(thingStatus.toString());
         }
     }
 

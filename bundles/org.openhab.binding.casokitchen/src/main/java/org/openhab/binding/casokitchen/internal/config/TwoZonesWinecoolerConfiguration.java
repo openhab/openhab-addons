@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.casokitchen.internal.config;
 
-import static org.openhab.binding.casokitchen.internal.CasoKitchenBindingConstants.EMPTY;
+import static org.openhab.binding.casokitchen.internal.CasoKitchenBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -25,5 +25,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class TwoZonesWinecoolerConfiguration {
     public String apiKey = EMPTY;
     public String deviceId = EMPTY;
-    public int refreshInterval = 5;
+    public int refreshInterval = MINIMUM_REFRESH_INTERVAL_MIN;
 }
