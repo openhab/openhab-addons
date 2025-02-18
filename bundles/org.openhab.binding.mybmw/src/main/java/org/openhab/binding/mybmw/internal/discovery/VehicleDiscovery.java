@@ -83,29 +83,33 @@ public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMW
                 try {
                     return prox.requestVehicles();
                 } catch (NetworkException e) {
-                    throw new IllegalStateException("vehicles could not be discovered: " + e.getMessage(), e);
+                    throw new IllegalStateException(e);
                 }
             });
             vehicleList.ifPresentOrElse(vehicles -> {
-                if (vehicles.size() > 0) {
+                if (!vehicles.isEmpty()) {
                     thingHandler.vehicleDiscoverySuccess();
                     processVehicles(vehicles);
                 } else {
-                    logger.warn("no vehicle found, maybe because of network error");
-                    thingHandler.vehicleDiscoveryError();
+                    thingHandler.vehicleDiscoveryError(MyBMWConstants.STATUS_NETWORK_ERROR);
                 }
-            }, () -> thingHandler.vehicleDiscoveryError());
+            }, () -> thingHandler.vehicleDiscoveryError(Constants.EMPTY));
         } catch (IllegalStateException ex) {
-            thingHandler.vehicleDiscoveryError();
+            NetworkException ne = (NetworkException) ex.getCause();
+            if (ne != null && (ne.getStatus() == 403 || ne.getStatus() == 429)) {
+                thingHandler.vehicleQuotaDiscoveryError(myBMWProxy.get().getNextQuota());
+            } else {
+                thingHandler.vehicleDiscoveryError(MyBMWConstants.STATUS_NETWORK_ERROR);
+            }
         }
     }
 
     /**
      * this method is called by the bridgeHandler if the list of vehicles was retrieved successfully
-     * 
+     *
      * it iterates through the list of existing things and checks if the vehicles found via the API
      * call are already known to OH. If not, it creates a new thing and puts it into the inbox
-     * 
+     *
      * @param vehicleList
      */
     private void processVehicles(List<Vehicle> vehicleList) {

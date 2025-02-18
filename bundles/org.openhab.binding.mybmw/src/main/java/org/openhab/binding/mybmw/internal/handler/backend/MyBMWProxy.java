@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal.handler.backend;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,7 +28,7 @@ import org.openhab.binding.mybmw.internal.utils.ImageProperties;
 
 /**
  * this is the interface for requesting the myBMW responses
- * 
+ *
  * @author Martin Grassl - Initial Contribution
  */
 @NonNullByDefault
@@ -92,4 +93,6 @@ public interface MyBMWProxy {
             throws NetworkException;
 
     ExecutionStatusContainer executeRemoteServiceStatusCall(String brand, String eventId) throws NetworkException;
+
+    Instant getNextQuota();
 }

@@ -73,6 +73,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
     private @Nullable CompletableFuture<@Nullable Void> logoutFuture;
     private @Nullable MieleWebservice webService;
     private @Nullable ThingDiscoveryService discoveryService;
+    private @Nullable String oAuthServiceHandle;
 
     /**
      * Creates a new {@link MieleBridgeHandler}.
@@ -109,7 +110,11 @@ public class MieleBridgeHandler extends BaseBridgeHandler
     }
 
     private String getOAuthServiceHandle() {
-        return getConfig().get(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL).toString();
+        String oAuthServiceHandle = this.oAuthServiceHandle;
+        if (oAuthServiceHandle == null) {
+            oAuthServiceHandle = this.oAuthServiceHandle = getThing().getUID().getAsString();
+        }
+        return oAuthServiceHandle;
     }
 
     @Override
@@ -132,13 +137,30 @@ public class MieleBridgeHandler extends BaseBridgeHandler
         try {
             tokenRefresher.setRefreshListener(this, getOAuthServiceHandle());
         } catch (OAuthException e) {
-            logger.debug("Could not initialize Miele Cloud bridge.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCOUNT_NOT_AUTHORIZED);
-            // When the authorization takes place a new initialization will be triggered. Therefore, we can leave the
-            // bridge in this state.
-            return;
+            String oAuthServiceHandleFallback = getConfig().get(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL)
+                    .toString();
+
+            if (oAuthServiceHandleFallback == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        I18NKeys.BRIDGE_STATUS_DESCRIPTION_EMAIL_NOT_CONFIGURED);
+                return;
+            }
+
+            try {
+                tokenRefresher.setRefreshListener(this, oAuthServiceHandleFallback);
+                oAuthServiceHandle = oAuthServiceHandleFallback;
+
+                logger.warn("Using legacy OAuth service handle, please re-authorize to migrate");
+            } catch (OAuthException e2) {
+                logger.debug("Could not initialize Miele Cloud bridge.", e2);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCOUNT_NOT_AUTHORIZED);
+                // When the authorization takes place a new initialization will be triggered. Therefore, we can leave
+                // the bridge in this state.
+                return;
+            }
         }
+
         languageProvider.setPrioritizedLanguageProvider(this);
         tryInitializeWebservice();
 
@@ -169,6 +191,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
         getWebservice().disconnectSse();
         languageProvider.unsetPrioritizedLanguageProvider();
         tokenRefresher.unsetRefreshListener(getOAuthServiceHandle());
+        oAuthServiceHandle = null;
 
         stopWebservice();
     }

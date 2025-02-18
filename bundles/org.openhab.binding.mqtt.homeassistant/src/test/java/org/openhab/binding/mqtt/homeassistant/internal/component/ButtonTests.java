@@ -62,6 +62,8 @@ public class ButtonTests extends AbstractComponentTests {
         assertThat(Objects.requireNonNull(component.getChannel(Button.BUTTON_CHANNEL_ID)).getChannel()
                 .getAutoUpdatePolicy(), is(AutoUpdatePolicy.VETO));
 
+        linkAllChannels(component);
+
         assertThrows(IllegalArgumentException.class,
                 () -> component.getChannel(Button.BUTTON_CHANNEL_ID).getState().publishValue(new StringType("ON")));
         assertNothingPublished("esphome/single-car-gdo/button/restart/command");
