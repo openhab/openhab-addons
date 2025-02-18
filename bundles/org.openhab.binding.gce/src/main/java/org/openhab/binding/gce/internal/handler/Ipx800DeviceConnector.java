@@ -76,8 +76,7 @@ public class Ipx800DeviceConnector extends Thread {
 
     /**
      *
-     * Stop the
-     * device thread
+     * Stop the device thread
      */
 
     public void dispose() {
@@ -91,16 +90,8 @@ public class Ipx800DeviceConnector extends Thread {
 
     /**
      *
-     * Send a
-     * random keepalive
-     * command which
-     * cause the
-     * IPX to
-     * send an update.*
-     * If we don't
-     * receive the
-     * update maxKeepAliveFailure time,
-     * the connection
+     * Send a random keepalive command which cause the IPX to send an update.
+     * If we don't receive the update maxKeepAliveFailure time, the connection
      * is closed
      */
 
@@ -168,10 +159,7 @@ public class Ipx800DeviceConnector extends Thread {
 
     /**
      *
-     * Set output
-     * of the
-     * device sending
-     * the corresponding command**
+     * Set output of the device sending the corresponding command
      *
      * @param targetPort
      * @param targetValue
@@ -184,8 +172,7 @@ public class Ipx800DeviceConnector extends Thread {
 
     /**
      *
-     * Resets the
-     * counter value to 0**
+     * Resets the counter value to 0
      *
      * @param targetCounter
      */
