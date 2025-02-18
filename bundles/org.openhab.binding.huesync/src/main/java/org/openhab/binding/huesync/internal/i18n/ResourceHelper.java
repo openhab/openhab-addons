@@ -26,9 +26,9 @@ import org.osgi.framework.ServiceReference;
  * @author Patrik Gfeller - Initial Contribution
  */
 @NonNullByDefault
-public class HueSyncLocalizer {
+public class ResourceHelper {
     private static final Locale LOCALE = Locale.ENGLISH;
-    private static final BundleContext BUNDLE_CONTEXT = FrameworkUtil.getBundle(HueSyncLocalizer.class)
+    private static final BundleContext BUNDLE_CONTEXT = FrameworkUtil.getBundle(ResourceHelper.class)
             .getBundleContext();
     private static final ServiceReference<TranslationProvider> SERVICE_REFERENCE = BUNDLE_CONTEXT
             .getServiceReference(TranslationProvider.class);
