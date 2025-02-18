@@ -39,6 +39,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -70,10 +71,22 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
         this.sessionDataPollingJobReference = new AtomicReference<>(null);
     }
 
-    void reInit() {
-        if (isInitialized()) {
-            dispose();
-            initialize();
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            logger.debug("bridgeStatusChanged: ONLINE");
+            if (isInitialized()) {
+                startPolling();
+            }
+        } else {
+            logger.debug("bridgeStatusChanged: NOT ONLINE");
+            if (isInitialized()) {
+                if (bridgeStatusInfo.getStatus() == ThingStatus.UNKNOWN) {
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
+                }
+                stopPolling();
+            }
         }
     }
 
@@ -129,6 +142,14 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
 
         updateJobReference(sessionDataPollingJobReference, scheduler.scheduleWithFixedDelay(this::sessionDataPollingRun,
                 POLLING_INITIAL_DELAY, getBridgeConfiguration().getSessionDataPollingInterval(), TimeUnit.SECONDS));
+    }
+
+    /**
+     * Stops the polling.
+     */
+    private void stopPolling() {
+        cancelJobReference(dataPollingJobReference);
+        cancelJobReference(sessionDataPollingJobReference);
     }
 
     /**
@@ -198,8 +219,7 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
-        cancelJobReference(dataPollingJobReference);
-        cancelJobReference(sessionDataPollingJobReference);
+        stopPolling();
     }
 
     /**
