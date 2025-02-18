@@ -545,6 +545,7 @@ public class AutomowerHandler extends BaseThingHandler {
                             maxQueryFrequencyNanos / 1000000000.0);
                     mowerState = automowerBridge.getAutomowerStatus(id);
 <<<<<<< HEAD
+<<<<<<< HEAD
                     Thread.sleep(maxQueryFrequencyNanos / 1000000L);
                     mowerMessages = automowerBridge.getAutomowerMessages(id);
                     lastQueryTimeMs = System.nanoTime();
@@ -553,10 +554,19 @@ public class AutomowerHandler extends BaseThingHandler {
                             maxQueryFrequencyNanos / 1000000000.0);
 =======
                     Thread.sleep(maxQueryFrequencyNanos / 1000000);
+=======
+                    Thread.sleep(maxQueryFrequencyNanos / 1000000L);
+>>>>>>> logging of the Automower API calls
                     mowerMessages = automowerBridge.getAutomowerMessages(id);
+                    lastQueryTimeMs = System.nanoTime();
                 } else {
+<<<<<<< HEAD
                     logger.trace("Skip mower polling due to maxQueryFrequency: '{}'", maxQueryFrequencyNanos);
 >>>>>>> added message channels
+=======
+                    logger.trace("Skip mower polling due to maxQueryFrequency: '{} <= {}'", timediff / 1000000000.0,
+                            maxQueryFrequencyNanos / 1000000000.0);
+>>>>>>> logging of the Automower API calls
                 }
                 if (isValidResult(mowerState)) {
                     initializeProperties(mowerState);
