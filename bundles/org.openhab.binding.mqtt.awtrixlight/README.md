@@ -31,7 +31,7 @@ The Awtrix 3 binding does not offer any binding configuration parameters.
 
 ## Thing Configuration
 
-### Bridge Configuration (`awtrixclock`)
+### Bridge Configuration (`awtrix-clock`)
 
 | Parameter             | Description                                                                                                                                | Default  | Required |
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------|----------|----------|
@@ -40,7 +40,7 @@ The Awtrix 3 binding does not offer any binding configuration parameters.
 | `discoverDefaultApps` | Enable discovery of default apps. Since default apps cannot be controlled by this binding this should usually be disabled.                 | false    | Yes      |
 | `lowBatteryThreshold` | Battery level threshold for low battery warning.                                                                                           | 25       | Yes      |
 
-### App Configuration (`awtrixapp`)
+### App Configuration (`awtrix-app`)
 
 | Parameter    | Description                        | Default | Required |
 |--------------|------------------------------------|---------|----------|
@@ -56,7 +56,7 @@ The button events can be used by rules to change the displayed app or perform an
 
 ## Channels
 
-### Bridge Channels (`awtrixclock`)
+### Bridge Channels (`awtrix-clock`)
 
 | Channel           | Type                 | Read/Write | Description                                                                                                                                                                                                                                                                           |
 |-------------------|----------------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -80,7 +80,7 @@ The button events can be used by rules to change the displayed app or perform an
 | `sound`           | String               | W          | Play sound file: The sound file must be available on the clock device in the MELODIES folder. Save a file with a valid RTTTL string (e.g. melody.txt) in this folder and play it by sending a String command to the channel with the filename without file extension (e.g. "melody"). |
 | `temperature`     | Number:Temperature   | R          | Device temperature: Temperature in °C as measured by the built-in temperature sensor. For the Ulanzi clock values are usually very inaccurate.                                                                                                                                        |
 
-### App Channels (`awtrixapp`)
+### App Channels (`awtrix-app`)
 
 | Channel               | Action parameter (see Actions)           | Action parameter type                          | Type                 | Read/Write                                                                                                                                                 | Description                                                                                                                                                                                                                        |   |
 |-----------------------|------------------------------------------|------------------------------------------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
@@ -281,11 +281,11 @@ The following actions are supported:
 
 ```java
 Bridge mqtt:broker:myBroker [ host="localhost", port=1883 ]
-Bridge mqtt:awtrixclock:myBroker:myAwtrix "Living Room Display" (mqtt:broker:myBroker) [ basetopic="awtrix", appLockTimeout=10, lowBatteryThreshold=25 ] {
-    Thing awtrixapp clock "Clock App" [ appname="clock", useButtons=true ]
-    Thing awtrixapp weather "Weather App" [ appname="weather" ]
-    Thing awtrixapp calendar "Calendar App" [ appname="calendar" ]
-    Thing awtrixapp custom "Custom App" [ appname="custom" ]
+Bridge mqtt:awtrix-clock:myBroker:myAwtrix "Living Room Display" (mqtt:broker:myBroker) [ basetopic="awtrix", appLockTimeout=10, lowBatteryThreshold=25 ] {
+    Thing awtrix-app clock "Clock App" [ appname="clock", useButtons=true ]
+    Thing awtrix-app weather "Weather App" [ appname="weather" ]
+    Thing awtrix-app calendar "Calendar App" [ appname="calendar" ]
+    Thing awtrix-app custom "Custom App" [ appname="custom" ]
 }
 ```
 
@@ -294,43 +294,43 @@ Bridge mqtt:awtrixclock:myBroker:myAwtrix "Living Room Display" (mqtt:broker:myB
 ```java
 // Bridge items (Living Room Display)
 Group gAwtrix "Living Room Awtrix Display" <screen>
-Dimmer Display_Brightness "Brightness [%d %%]" (gAwtrix) { channel="mqtt:awtrixclock:myBroker:myAwtrix:brightness" }
-Switch Display_Power "Power" (gAwtrix) { channel="mqtt:awtrixclock:myBroker:myAwtrix:power" }
-Switch Display_Screen "Screen" (gAwtrix) { channel="mqtt:awtrixclock:myBroker:myAwtrix:display" }
-Switch Display_Sound "Sound" (gAwtrix) { channel="mqtt:awtrixclock:myBroker:myAwtrix:sound" }
-Switch Display_AutoBrightness "Auto Brightness" (gAwtrix) { channel="mqtt:awtrixclock:myBroker:myAwtrix:autoBrightness" }
-Number:Temperature Display_Temperature "Temperature [%.1f °C]" (gAwtrix) { channel="mqtt:awtrixclock:myBroker:myAwtrix:temperature" }
-Number:Dimensionless Display_Humidity "Humidity [%d %%]" (gAwtrix) { channel="mqtt:awtrixclock:myBroker:myAwtrix:humidity" }
-Number Display_Battery "Battery Level [%d %%]" (gAwtrix) { channel="mqtt:awtrixclock:myBroker:myAwtrix:batteryLevel" }
-Switch Display_LowBattery "Low Battery" (gAwtrix) { channel="mqtt:awtrixclock:myBroker:myAwtrix:lowBattery" }
-Number:Dimensionless Display_WiFi "WiFi Signal [%d %%]" (gAwtrix) { channel="mqtt:awtrixclock:myBroker:myAwtrix:rssi" }
-String Display_CurrentApp "Active App [%s]" (gAwtrix) { channel="mqtt:awtrixclock:myBroker:myAwtrix:app" }
+Dimmer Display_Brightness "Brightness [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:brightness" }
+Switch Display_Power "Power" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:power" }
+Switch Display_Screen "Screen" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:display" }
+Switch Display_Sound "Sound" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:sound" }
+Switch Display_AutoBrightness "Auto Brightness" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:autoBrightness" }
+Number:Temperature Display_Temperature "Temperature [%.1f °C]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:temperature" }
+Number:Dimensionless Display_Humidity "Humidity [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:humidity" }
+Number Display_Battery "Battery Level [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:batteryLevel" }
+Switch Display_LowBattery "Low Battery" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:lowBattery" }
+Number:Dimensionless Display_WiFi "WiFi Signal [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:rssi" }
+String Display_CurrentApp "Active App [%s]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:app" }
 
 // Clock App items
 Group gAwtrixClock "Clock App"
-Switch Clock_Active "Clock Active" (gAwtrixClock) { channel="mqtt:awtrixapp:myBroker:myAwtrix:clock:active" }
-String Clock_Text "Clock Text" (gAwtrixClock) { channel="mqtt:awtrixapp:myBroker:myAwtrix:clock:text" }
-Color Clock_Color "Clock Color" (gAwtrixClock) { channel="mqtt:awtrixapp:myBroker:myAwtrix:clock:color" }
-Number Clock_Duration "Clock Duration" (gAwtrixClock) { channel="mqtt:awtrixapp:myBroker:myAwtrix:clock:duration" }
+Switch Clock_Active "Clock Active" (gAwtrixClock) { channel="mqtt:awtrix-app:myBroker:myAwtrix:clock:active" }
+String Clock_Text "Clock Text" (gAwtrixClock) { channel="mqtt:awtrix-app:myBroker:myAwtrix:clock:text" }
+Color Clock_Color "Clock Color" (gAwtrixClock) { channel="mqtt:awtrix-app:myBroker:myAwtrix:clock:color" }
+Number Clock_Duration "Clock Duration" (gAwtrixClock) { channel="mqtt:awtrix-app:myBroker:myAwtrix:clock:duration" }
 
 // Weather App items
 Group gAwtrixWeather "Weather App"
-Switch Weather_Active "Weather Active" (gAwtrixWeather) { channel="mqtt:awtrixapp:myBroker:myAwtrix:weather:active" }
-String Weather_Text "Weather Text" (gAwtrixWeather) { channel="mqtt:awtrixapp:myBroker:myAwtrix:weather:text" }
-String Weather_Icon "Weather Icon" (gAwtrixWeather) { channel="mqtt:awtrixapp:myBroker:myAwtrix:weather:icon" }
-Color Weather_Color "Weather Color" (gAwtrixWeather) { channel="mqtt:awtrixapp:myBroker:myAwtrix:weather:color" }
-Switch Weather_Rainbow "Weather Rainbow Effect" (gAwtrixWeather) { channel="mqtt:awtrixapp:myBroker:myAwtrix:weather:rainbow" }
+Switch Weather_Active "Weather Active" (gAwtrixWeather) { channel="mqtt:awtrix-app:myBroker:myAwtrix:weather:active" }
+String Weather_Text "Weather Text" (gAwtrixWeather) { channel="mqtt:awtrix-app:myBroker:myAwtrix:weather:text" }
+String Weather_Icon "Weather Icon" (gAwtrixWeather) { channel="mqtt:awtrix-app:myBroker:myAwtrix:weather:icon" }
+Color Weather_Color "Weather Color" (gAwtrixWeather) { channel="mqtt:awtrix-app:myBroker:myAwtrix:weather:color" }
+Switch Weather_Rainbow "Weather Rainbow Effect" (gAwtrixWeather) { channel="mqtt:awtrix-app:myBroker:myAwtrix:weather:rainbow" }
 
 // Custom App items with advanced features
-Switch Custom_Active "Custom App Active" (gAwtrix) { channel="mqtt:awtrixapp:myBroker:myAwtrix:custom:active" }
-String Custom_Text "Custom Text" (gAwtrix) { channel="mqtt:awtrixapp:myBroker:myAwtrix:custom:text" }
-String Custom_Icon "Custom Icon" (gAwtrix) { channel="mqtt:awtrixapp:myBroker:myAwtrix:custom:icon" }
-Color Custom_Color "Text Color" (gAwtrix) { channel="mqtt:awtrixapp:myBroker:myAwtrix:custom:color" }
-Color Custom_Background "Background Color" (gAwtrix) { channel="mqtt:awtrixapp:myBroker:myAwtrix:custom:background" }
-Number:Dimensionless Custom_ScrollSpeed "Scroll Speed" (gAwtrix) { channel="mqtt:awtrixapp:myBroker:myAwtrix:custom:scrollSpeed" }
-Switch Custom_Center "Center Text" (gAwtrix) { channel="mqtt:awtrixapp:myBroker:myAwtrix:custom:center" }
-Number:Dimensionless Custom_Progress "Progress [%d %%]" (gAwtrix) { channel="mqtt:awtrixapp:myBroker:myAwtrix:custom:progress" }
-Color Custom_ProgressColor "Progress Color" (gAwtrix) { channel="mqtt:awtrixapp:myBroker:myAwtrix:custom:progressColor" }
+Switch Custom_Active "Custom App Active" (gAwtrix) { channel="mqtt:awtrix-app:myBroker:myAwtrix:custom:active" }
+String Custom_Text "Custom Text" (gAwtrix) { channel="mqtt:awtrix-app:myBroker:myAwtrix:custom:text" }
+String Custom_Icon "Custom Icon" (gAwtrix) { channel="mqtt:awtrix-app:myBroker:myAwtrix:custom:icon" }
+Color Custom_Color "Text Color" (gAwtrix) { channel="mqtt:awtrix-app:myBroker:myAwtrix:custom:color" }
+Color Custom_Background "Background Color" (gAwtrix) { channel="mqtt:awtrix-app:myBroker:myAwtrix:custom:background" }
+Number:Dimensionless Custom_ScrollSpeed "Scroll Speed" (gAwtrix) { channel="mqtt:awtrix-app:myBroker:myAwtrix:custom:scrollSpeed" }
+Switch Custom_Center "Center Text" (gAwtrix) { channel="mqtt:awtrix-app:myBroker:myAwtrix:custom:center" }
+Number:Dimensionless Custom_Progress "Progress [%d %%]" (gAwtrix) { channel="mqtt:awtrix-app:myBroker:myAwtrix:custom:progress" }
+Color Custom_ProgressColor "Progress Color" (gAwtrix) { channel="mqtt:awtrix-app:myBroker:myAwtrix:custom:progressColor" }
 ```
 
 ### Sitemap
@@ -388,13 +388,13 @@ The binding provides various actions that can be used in rules to control the Aw
 Rules DSL:
 
 ```java
-val awtrixActions = getActions("mqtt.awtrixlight", "mqtt:awtrixclock:myBroker:myAwtrix")
+val awtrixActions = getActions("mqtt.awtrixlight", "mqtt:awtrix-clock:myBroker:myAwtrix")
 ```
 
 JS Scripting:
 
 ```java
-var awtrixActions = actions.thingActions("mqtt.awtrixlight", "mqtt:awtrixclock:myBroker:myAwtrix");
+var awtrixActions = actions.thingActions("mqtt.awtrixlight", "mqtt:awtrix-clock:myBroker:myAwtrix");
 ```
 
 ### Indicator Control
@@ -497,14 +497,14 @@ when
 then
     if (Display_Battery.state <= 20) {
         // Show low battery warning with blinking red indicator
-        getActions("mqtt.awtrixlight", "mqtt:awtrixclock:myBroker:myAwtrix").blinkIndicator(1, [255,0,0], 500)
-        getActions("mqtt.awtrixlight", "mqtt:awtrixclock:myBroker:myAwtrix").showNotification("Low Battery!", "battery-alert")
+        getActions("mqtt.awtrixlight", "mqtt:awtrix-clock:myBroker:myAwtrix").blinkIndicator(1, [255,0,0], 500)
+        getActions("mqtt.awtrixlight", "mqtt:awtrix-clock:myBroker:myAwtrix").showNotification("Low Battery!", "battery-alert")
     } else if (Display_Battery.state <= 50) {
         // Show yellow indicator for medium battery
-        getActions("mqtt.awtrixlight", "mqtt:awtrixclock:myBroker:myAwtrix").setIndicator(1, [255,255,0])
+        getActions("mqtt.awtrixlight", "mqtt:awtrix-clock:myBroker:myAwtrix").setIndicator(1, [255,255,0])
     } else {
         // Show green indicator for good battery
-        getActions("mqtt.awtrixlight", "mqtt:awtrixclock:myBroker:myAwtrix").setIndicator(1, [0,255,0])
+        getActions("mqtt.awtrixlight", "mqtt:awtrix-clock:myBroker:myAwtrix").setIndicator(1, [0,255,0])
     }
 end
 
@@ -513,7 +513,7 @@ when
     Item Doorbell_Button changed to ON
 then
     // Play sound and show notification
-    getActions("mqtt.awtrixlight", "mqtt:awtrixclock:myBroker:myAwtrix").playRtttl("doorbell:d=4,o=6,b=100:8e,8g,8e,8c")
+    getActions("mqtt.awtrixlight", "mqtt:awtrix-clock:myBroker:myAwtrix").playRtttl("doorbell:d=4,o=6,b=100:8e,8g,8e,8c")
     
     var params = newHashMap(
         'text' -> "Doorbell",
@@ -522,7 +522,7 @@ then
         'pushIcon' -> "PUSHOUT",
         'center' -> true
     )
-    getActions("mqtt.awtrixlight", "mqtt:awtrixclock:myBroker:myAwtrix").showCustomNotification(
+    getActions("mqtt.awtrixlight", "mqtt:awtrix-clock:myBroker:myAwtrix").showCustomNotification(
         params, false, true, true, "", "", false
     )
 end
@@ -541,7 +541,7 @@ then
     
     if (progress == 100) {
         // Play sound when done
-        getActions("mqtt.awtrixlight", "mqtt:awtrixclock:myBroker:myAwtrix").playSound("complete")
+        getActions("mqtt.awtrixlight", "mqtt:awtrix-clock:myBroker:myAwtrix").playSound("complete")
     }
 end
 ```

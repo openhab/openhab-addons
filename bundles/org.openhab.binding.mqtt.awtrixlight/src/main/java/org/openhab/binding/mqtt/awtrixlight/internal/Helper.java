@@ -103,7 +103,7 @@ public class Helper {
             ImageIO.write(image, "png", baos);
             bytes = baos.toByteArray();
         } catch (IOException e) {
-            LOGGER.error("Failed to decode image", e);
+            LOGGER.warn("Failed to decode image", e);
         }
         return bytes == null ? new byte[0] : bytes;
     }

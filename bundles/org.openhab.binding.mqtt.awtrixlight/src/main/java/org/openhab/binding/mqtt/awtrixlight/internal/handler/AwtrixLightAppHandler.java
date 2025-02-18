@@ -106,7 +106,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 break;
             case CHANNEL_RESET:
                 if (command instanceof OnOffType) {
-                    if (OnOffType.ON.equals((OnOffType) command)) {
+                    if (OnOffType.ON.equals(command)) {
                         deleteApp();
                         this.app = new AwtrixApp();
                         updateApp();
@@ -116,8 +116,8 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 }
                 break;
             case CHANNEL_COLOR:
-                if (command instanceof HSBType) {
-                    int[] rgb = ColorUtil.hsbToRgb((HSBType) command);
+                if (command instanceof HSBType hsbCommand) {
+                    int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
                     this.app.setColor(rgb);
                     if (this.app.getGradient().length != 0) {
                         this.app.setGradient(new int[][] { rgb, this.app.getGradient()[1] });
@@ -125,69 +125,69 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 }
                 break;
             case CHANNEL_GRADIENT_COLOR:
-                if (command instanceof HSBType) {
-                    int[] rgb = ColorUtil.hsbToRgb((HSBType) command);
+                if (command instanceof HSBType hsbCommand) {
+                    int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
                     this.app.setGradient(new int[][] { this.app.getColor(), rgb });
                 }
                 break;
             case CHANNEL_SCROLLSPEED:
-                if (command instanceof QuantityType) {
-                    this.app.setScrollSpeed(((QuantityType<?>) command).intValue());
+                if (command instanceof QuantityType quantityCommand) {
+                    this.app.setScrollSpeed(quantityCommand.intValue());
                 }
                 break;
             case CHANNEL_DURATION:
-                if (command instanceof QuantityType) {
-                    this.app.setDuration(((QuantityType<?>) command).intValue());
+                if (command instanceof QuantityType quantityCommand) {
+                    this.app.setDuration(quantityCommand.intValue());
                 }
                 break;
             case CHANNEL_EFFECT:
                 if (command instanceof StringType) {
-                    this.app.setEffect(((StringType) command).toString());
+                    this.app.setEffect(command.toString());
                 }
                 break;
             case CHANNEL_EFFECT_SPEED:
-                if (command instanceof QuantityType) {
-                    this.app.setEffectSpeed(((QuantityType<?>) command).intValue());
+                if (command instanceof QuantityType quantityCommand) {
+                    this.app.setEffectSpeed(quantityCommand.intValue());
                 }
                 break;
             case CHANNEL_EFFECT_PALETTE:
                 if (command instanceof StringType) {
-                    this.app.setEffectPalette(((StringType) command).toString());
+                    this.app.setEffectPalette(command.toString());
                 }
                 break;
             case CHANNEL_EFFECT_BLEND:
                 if (command instanceof OnOffType) {
-                    this.app.setEffectBlend(command.equals(OnOffType.ON));
+                    this.app.setEffectBlend(OnOffType.ON.equals(command));
                 }
                 break;
             case CHANNEL_TEXT:
                 if (command instanceof StringType) {
-                    this.app.setText(((StringType) command).toString());
+                    this.app.setText(command.toString());
                 }
                 break;
             case CHANNEL_TEXT_OFFSET:
-                if (command instanceof QuantityType) {
-                    this.app.setTextOffset(((QuantityType<?>) command).intValue());
+                if (command instanceof QuantityType quantityCommand) {
+                    this.app.setTextOffset(quantityCommand.intValue());
                 }
                 break;
             case CHANNEL_TOP_TEXT:
                 if (command instanceof OnOffType) {
-                    this.app.setTopText(command.equals(OnOffType.ON));
+                    this.app.setTopText(OnOffType.ON.equals(command));
                 }
                 break;
             case CHANNEL_TEXTCASE:
-                if (command instanceof QuantityType) {
-                    this.app.setTextCase(((QuantityType<?>) command).intValue());
+                if (command instanceof QuantityType quantityCommand) {
+                    this.app.setTextCase(quantityCommand.intValue());
                 }
                 break;
             case CHANNEL_CENTER:
                 if (command instanceof OnOffType) {
-                    this.app.setCenter(command.equals(OnOffType.ON));
+                    this.app.setCenter(OnOffType.ON.equals(command));
                 }
                 break;
             case CHANNEL_BLINK_TEXT:
-                if (command instanceof QuantityType) {
-                    QuantityType<?> blinkInS = ((QuantityType<?>) command).toUnit(Units.SECOND);
+                if (command instanceof QuantityType quantityCommand) {
+                    QuantityType<?> blinkInS = quantityCommand.toUnit(Units.SECOND);
                     if (blinkInS != null) {
                         int blinkInMs = blinkInS.intValue() * 1000;
                         this.app.setBlinkText(blinkInMs);
@@ -195,8 +195,8 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 }
                 break;
             case CHANNEL_FADE_TEXT:
-                if (command instanceof QuantityType) {
-                    QuantityType<?> fadeInS = ((QuantityType<?>) command).toUnit(Units.SECOND);
+                if (command instanceof QuantityType quantityCommand) {
+                    QuantityType<?> fadeInS = quantityCommand.toUnit(Units.SECOND);
                     if (fadeInS != null) {
                         int fadeInMs = fadeInS.intValue() * 1000;
                         this.app.setFadeText(fadeInMs);
@@ -205,17 +205,17 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 break;
             case CHANNEL_RAINBOW:
                 if (command instanceof OnOffType) {
-                    this.app.setRainbow(command.equals(OnOffType.ON));
+                    this.app.setRainbow(OnOffType.ON.equals(command));
                 }
                 break;
             case CHANNEL_ICON:
                 if (command instanceof StringType) {
-                    this.app.setIcon(((StringType) command).toString());
+                    this.app.setIcon(command.toString());
                 }
                 break;
             case CHANNEL_PUSH_ICON:
                 if (command instanceof StringType) {
-                    switch (((StringType) command).toString()) {
+                    switch (command.toString()) {
                         case PUSH_ICON_OPTION_0:
                             this.app.setPushIcon(0);
                             break;
@@ -229,8 +229,8 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 }
                 break;
             case CHANNEL_BACKGROUND:
-                if (command instanceof HSBType) {
-                    int[] rgb = ColorUtil.hsbToRgb((HSBType) command);
+                if (command instanceof HSBType hsbCommand) {
+                    int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
                     this.app.setBackground(rgb);
                 }
                 break;
@@ -247,8 +247,8 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 }
                 break;
             case CHANNEL_LIFETIME:
-                if (command instanceof QuantityType) {
-                    this.app.setLifetime(((QuantityType<?>) command).intValue());
+                if (command instanceof QuantityType quantityCommand) {
+                    this.app.setLifetime(quantityCommand.intValue());
                 }
                 break;
             case CHANNEL_LIFETIME_MODE:
@@ -277,28 +277,28 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 break;
             case CHANNEL_AUTOSCALE:
                 if (command instanceof OnOffType) {
-                    this.app.setAutoscale(command.equals(OnOffType.ON));
+                    this.app.setAutoscale(OnOffType.ON.equals(command));
                 }
                 break;
             case CHANNEL_OVERLAY:
                 if (command instanceof StringType) {
-                    this.app.setOverlay(((StringType) command).toString());
+                    this.app.setOverlay(command.toString());
                 }
                 break;
             case CHANNEL_PROGRESS:
-                if (command instanceof QuantityType) {
-                    this.app.setProgress(((QuantityType<?>) command).intValue());
+                if (command instanceof QuantityType quantityCommand) {
+                    this.app.setProgress(quantityCommand.intValue());
                 }
                 break;
             case CHANNEL_PROGRESSC:
-                if (command instanceof HSBType) {
-                    int[] rgb = ColorUtil.hsbToRgb((HSBType) command);
+                if (command instanceof HSBType hsbCommand) {
+                    int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
                     this.app.setProgressC(rgb);
                 }
                 break;
             case CHANNEL_PROGRESSBC:
-                if (command instanceof HSBType) {
-                    int[] rgb = ColorUtil.hsbToRgb((HSBType) command);
+                if (command instanceof HSBType hsbCommand) {
+                    int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
                     this.app.setProgressBC(rgb);
                 }
                 break;
@@ -463,8 +463,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
             return;
         }
         ThingHandler handler = localBridge.getHandler();
-        if (handler instanceof AwtrixLightBridgeHandler) {
-            AwtrixLightBridgeHandler albh = (AwtrixLightBridgeHandler) handler;
+        if (handler instanceof AwtrixLightBridgeHandler albh) {
             Map<String, String> bridgeProperties = albh.getThing().getProperties();
             @Nullable
             String bridgeHardwareId = bridgeProperties.get(PROP_UNIQUEID);
@@ -517,8 +516,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof AwtrixLightBridgeHandler) {
-                AwtrixLightBridgeHandler albh = (AwtrixLightBridgeHandler) bridgeHandler;
+            if (bridgeHandler instanceof AwtrixLightBridgeHandler albh) {
                 albh.deleteApp(this.appName);
             }
         }
@@ -528,8 +526,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof AwtrixLightBridgeHandler) {
-                AwtrixLightBridgeHandler albh = (AwtrixLightBridgeHandler) bridgeHandler;
+            if (bridgeHandler instanceof AwtrixLightBridgeHandler albh) {
                 albh.updateApp(this.appName, this.app.getAppConfig());
             }
         }
@@ -640,7 +637,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         }
         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         Future<?> localJob = this.finishInitJob;
-        if (localJob != null && !localJob.isCancelled() && !localJob.isDone()) {
+        if (localJob != null) {
             localJob.cancel(true);
             this.finishInitJob = null;
         }
