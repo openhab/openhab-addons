@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.gce.internal.model;
 
-import java.util.stream.Stream;
+import java.util.EnumSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -29,25 +29,19 @@ public enum PortDefinition {
     RELAY("led", "O", "GetOut", 8),
     CONTACT("btn", "I", "GetIn", 8);
 
-    private final String nodeName; // Name used in the status xml file
-    private final String portName; // Name used by the M2M protocol
-    private final String m2mCommand; // associated M2M command
-    private final int quantity; // base number of ports
+    public final String nodeName; // Name used in the status xml file
+    public final String portName; // Name used by the M2M protocol
+    public final String m2mCommand; // associated M2M command
+    public final int quantity; // base number of ports
 
-    PortDefinition(String nodeName, String portName, String m2mCommand, int quantity) {
+    private PortDefinition(String nodeName, String portName, String m2mCommand, int quantity) {
         this.nodeName = nodeName;
         this.portName = portName;
         this.m2mCommand = m2mCommand;
         this.quantity = quantity;
     }
 
-    public String getNodeName() {
-        return nodeName;
-    }
-
-    public String getPortName() {
-        return portName;
-    }
+    public static final EnumSet<PortDefinition> AS_SET = EnumSet.allOf(PortDefinition.class);
 
     @Override
     public String toString() {
@@ -58,20 +52,12 @@ public enum PortDefinition {
         return id >= quantity;
     }
 
-    public String getM2mCommand() {
-        return m2mCommand;
-    }
-
-    public static Stream<PortDefinition> asStream() {
-        return Stream.of(PortDefinition.values());
-    }
-
     public static PortDefinition fromM2MCommand(String m2mCommand) {
-        return asStream().filter(v -> m2mCommand.startsWith(v.m2mCommand)).findFirst().get();
+        return AS_SET.stream().filter(v -> m2mCommand.startsWith(v.m2mCommand)).findFirst().get();
     }
 
     public static PortDefinition fromPortName(String portName) {
-        return asStream().filter(v -> portName.startsWith(v.portName)).findFirst().get();
+        return AS_SET.stream().filter(v -> portName.startsWith(v.portName)).findFirst().get();
     }
 
     public static PortDefinition fromGroupId(String groupId) {
@@ -80,7 +66,7 @@ public enum PortDefinition {
 
     public static String asChannelId(String portDefinition) {
         String portKind = portDefinition.substring(0, 1);
-        PortDefinition result = asStream().filter(v -> v.portName.startsWith(portKind)).findFirst().get();
-        return result.toString() + "#" + portDefinition.substring(1);
+        PortDefinition result = AS_SET.stream().filter(v -> v.portName.equals(portKind)).findFirst().get();
+        return "%s#%s".formatted(result.toString(), portDefinition.substring(1));
     }
 }
