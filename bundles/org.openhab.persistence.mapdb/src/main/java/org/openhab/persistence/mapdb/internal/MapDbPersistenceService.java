@@ -165,7 +165,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
         return map.values().stream().map(this::deserialize).flatMap(MapDbPersistenceService::streamOptional)
-                .collect(Collectors.<PersistenceItemInfo> toUnmodifiableSet());
+                .collect(Collectors.<PersistenceItemInfo>toUnmodifiableSet());
     }
 
     @Override
@@ -211,13 +211,17 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     }
 
     @Override
-    public @Nullable PersistedItem persistedItem(String itemName) {
-        String json = map.get(itemName);
+    public @Nullable PersistedItem persistedItem(String itemName, @Nullable String alias) {
+        String json = map.get(alias != null ? alias : itemName);
         if (json == null) {
             return null;
         }
         Optional<MapDbItem> item = deserialize(json);
-        return item.orElse(null);
+        MapDbItem dbItem = item.orElse(null);
+        if (dbItem != null) {
+            dbItem.setName(itemName);
+        }
+        return dbItem;
     }
 
     private String serialize(MapDbItem item) {
