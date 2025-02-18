@@ -25,10 +25,14 @@ import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +46,13 @@ import org.slf4j.LoggerFactory;
 @Component
 public class GrundfosAlphaDiscoveryParticipant implements BluetoothDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(GrundfosAlphaDiscoveryParticipant.class);
+
+    private final TranslationProvider translationProvider;
+
+    @Activate
+    public GrundfosAlphaDiscoveryParticipant(final @Reference TranslationProvider translationProvider) {
+        this.translationProvider = translationProvider;
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -85,12 +96,10 @@ public class GrundfosAlphaDiscoveryParticipant implements BluetoothDiscoveryPart
             return null;
         }
 
-        String label;
-        if ("MI401".equals(device.getName())) {
-            label = "Grundfos Alpha Reader MI401";
-        } else {
-            label = "Grundfos Alpha3";
-        }
+        String thingID = thingUID.getAsString().split(ThingUID.SEPARATOR)[1];
+        String label = translationProvider.getText(FrameworkUtil.getBundle(getClass()),
+                "discovery.%s.label".formatted(thingID), null, null);
+
         Map<String, Object> properties = new HashMap<>();
         properties.put(CONFIGURATION_ADDRESS, device.getAddress().toString());
         String deviceName = device.getName();
