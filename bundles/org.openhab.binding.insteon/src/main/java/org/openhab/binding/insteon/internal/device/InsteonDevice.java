@@ -14,7 +14,6 @@ package org.openhab.binding.insteon.internal.device;
 
 import static org.openhab.binding.insteon.internal.InsteonBindingConstants.*;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -34,10 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
 import org.openhab.binding.insteon.internal.device.DeviceFeature.QueryStatus;
 import org.openhab.binding.insteon.internal.device.database.LinkDB;
-import org.openhab.binding.insteon.internal.device.database.LinkDBChange;
 import org.openhab.binding.insteon.internal.device.database.LinkDBRecord;
-import org.openhab.binding.insteon.internal.device.database.ModemDB;
-import org.openhab.binding.insteon.internal.device.database.ModemDBChange;
 import org.openhab.binding.insteon.internal.device.database.ModemDBEntry;
 import org.openhab.binding.insteon.internal.device.database.ModemDBRecord;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.DeviceTypeRenamer;
@@ -618,11 +614,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             // create modem db record
             ModemDBRecord modemDBRecord = ModemDBRecord.create(address, link.getGroup(), !link.isController(),
                     !link.isController() ? productData.getRecordData() : new byte[3]);
-            // create default link commands
-            List<Msg> commands = link.getCommands().stream().map(command -> command.getMessage(this))
-                    .filter(Objects::nonNull).map(Objects::requireNonNull).toList();
             // add default link
-            addDefaultLink(new DefaultLink(name, linkDBRecord, modemDBRecord, commands));
+            addDefaultLink(new DefaultLink(name, linkDBRecord, modemDBRecord));
         });
     }
 
@@ -644,14 +637,16 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      *
      * @return map of missing link db records based on default links
      */
-    public Map<String, LinkDBChange> getMissingDeviceLinks() {
-        Map<String, LinkDBChange> links = new LinkedHashMap<>();
+    public Map<String, LinkDBRecord> getMissingDeviceLinks() {
+        Map<String, LinkDBRecord> links = new LinkedHashMap<>();
         if (linkDB.isComplete() && hasModemDBEntry()) {
+            int linkCount = getDefaultLinks().size();
             for (DefaultLink link : getDefaultLinks()) {
                 LinkDBRecord record = link.getLinkDBRecord();
-                if ((record.getComponentId() > 0 && !linkDB.hasComponentIdRecord(record.getComponentId(), true))
-                        || !linkDB.hasGroupRecord(record.getGroup(), true)) {
-                    links.put(link.getName(), LinkDBChange.forAdd(record));
+                if ((linkCount > 1 && record.getComponentId() > 0
+                        && !linkDB.hasComponentIdRecord(record.getComponentId(), record.isController()))
+                        || !linkDB.hasGroupRecord(record.getGroup(), record.isController())) {
+                    links.put(link.getName(), record);
                 }
             }
         }
@@ -663,14 +658,16 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      *
      * @return map of missing modem db records based on default links
      */
-    public Map<String, ModemDBChange> getMissingModemLinks() {
-        Map<String, ModemDBChange> links = new LinkedHashMap<>();
+    public Map<String, ModemDBRecord> getMissingModemLinks() {
+        Map<String, ModemDBRecord> links = new LinkedHashMap<>();
         InsteonModem modem = getModem();
         if (modem != null && modem.getDB().isComplete() && hasModemDBEntry()) {
+            State monitorMode = modem.getFeatureState(FEATURE_MONITOR_MODE);
             for (DefaultLink link : getDefaultLinks()) {
                 ModemDBRecord record = link.getModemDBRecord();
-                if (!modem.getDB().hasRecord(record.getAddress(), record.getGroup(), record.isController())) {
-                    links.put(link.getName(), ModemDBChange.forAdd(record));
+                if ((OnOffType.OFF.equals(monitorMode) || record.isController())
+                        && !modem.getDB().hasRecord(record.getAddress(), record.getGroup(), record.isController())) {
+                    links.put(link.getName(), record);
                 }
             }
         }
@@ -697,56 +694,6 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                     "device {} has missing default links {}, "
                             + "run 'insteon device addMissingLinks' command via openhab console to fix.",
                     address, links);
-        }
-    }
-
-    /**
-     * Adds missing links to link db for this device
-     */
-    public void addMissingDeviceLinks() {
-        if (getDefaultLinks().isEmpty()) {
-            return;
-        }
-        List<LinkDBChange> changes = getMissingDeviceLinks().values().stream().distinct().toList();
-        if (changes.isEmpty()) {
-            logger.debug("no missing default links from link db to add for {}", address);
-        } else {
-            logger.trace("adding missing default links to link db for {}", address);
-            linkDB.clearChanges();
-            changes.forEach(linkDB::addChange);
-            linkDB.update();
-        }
-
-        InsteonModem modem = getModem();
-        if (modem != null) {
-            getMissingDeviceLinks().keySet().stream().map(this::getDefaultLink).filter(Objects::nonNull)
-                    .map(Objects::requireNonNull).flatMap(link -> link.getCommands().stream()).forEach(msg -> {
-                        try {
-                            modem.writeMessage(msg);
-                        } catch (IOException e) {
-                            logger.warn("message write failed for msg: {}", msg, e);
-                        }
-                    });
-        }
-    }
-
-    /**
-     * Adds missing links to modem db for this device
-     */
-    public void addMissingModemLinks() {
-        InsteonModem modem = getModem();
-        if (modem == null || getDefaultLinks().isEmpty()) {
-            return;
-        }
-        List<ModemDBChange> changes = getMissingModemLinks().values().stream().distinct().toList();
-        if (changes.isEmpty()) {
-            logger.debug("no missing default links from modem db to add for {}", address);
-        } else {
-            logger.trace("adding missing default links to modem db for {}", address);
-            ModemDB modemDB = modem.getDB();
-            modemDB.clearChanges();
-            changes.forEach(modemDB::addChange);
-            modemDB.update();
         }
     }
 

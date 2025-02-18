@@ -41,16 +41,6 @@ public class ModemDBChange extends DatabaseChange<ModemDBRecord> {
     }
 
     /**
-     * Factory method for creating a new ModemDBChange for add
-     *
-     * @param record the record to add
-     * @return the modem db change
-     */
-    public static ModemDBChange forAdd(ModemDBRecord record) {
-        return new ModemDBChange(record, ChangeType.ADD);
-    }
-
-    /**
      * Factory method for creating a new ModemDBChange for modify
      *
      * @param record the record to modify
