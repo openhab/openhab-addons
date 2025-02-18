@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,7 +82,7 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
                 for (EmotivaSubscriptionTags modeKey : modeKeys) {
                     options.add(new StateOption(modeKey.name(), modes.get(modeKey)));
                 }
-                logger.debug("Updated '{}' with '{}'", CHANNEL_MODE, options);
+                logger.trace("Updating OH channel '{}' with state options '{}'", CHANNEL_MODE, options);
                 setStateOptions(channel.getUID(), options);
             }
         }
@@ -100,7 +100,7 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
                 options.add(new StateOption(sourceKey.name(), sourceKey.getLabel()));
             }
         }
-        logger.debug("Updated '{}' with '{}'", channel.getUID().getId(), options);
+        logger.trace("Updating OH channel '{}' with state options '{}'", channel.getUID().getId(), options);
         setStateOptions(channel.getUID(), options);
     }
 }

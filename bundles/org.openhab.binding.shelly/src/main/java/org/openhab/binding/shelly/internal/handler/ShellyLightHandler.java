@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -187,6 +188,12 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     } else if (command instanceof DecimalType decimalCommand) {
                         temp = decimalCommand.intValue();
                         logger.debug("{}: Set color temp to {}K (Integer)", thingName, temp);
+                    } else if (command instanceof QuantityType<?> genericQuantity) {
+                        QuantityType<?> kelvinQuantity = genericQuantity.toInvertibleUnit(Units.KELVIN);
+                        if (kelvinQuantity != null) {
+                            temp = kelvinQuantity.intValue();
+                            logger.debug("{}: Set color temp to {}K (Integer)", thingName, temp);
+                        }
                     }
                     validateRange(CHANNEL_COLOR_TEMP, temp, col.minTemp, col.maxTemp);
                     col.setTemp(temp);
@@ -353,7 +360,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 postEvent(ALARM_TYPE_OVERPOWER, false);
             }
 
-            if (profile.inColor) {
+            if (profile.inColor || (profile.isGen2 && profile.isRGBW2)) {
                 logger.trace("{}: update color settings", thingName);
                 col.setRGBW(getInteger(light.red), getInteger(light.green), getInteger(light.blue),
                         getInteger(light.white));
@@ -376,7 +383,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_PICKER, col.toHSB());
             }
 
-            if (!profile.inColor || profile.isBulb) {
+            if ((!profile.inColor && !profile.isGen2) || profile.isBulb) {
                 String whiteGroup = buildWhiteGroupName(profile, channelId);
                 col.setBrightness(getInteger(light.brightness));
                 updated |= updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Switch", col.power);
@@ -458,7 +465,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         if (autoOn && (newCol.brightness >= 0)) {
             parms.put(SHELLY_LIGHT_TURN, profile.inColor || newCol.brightness > 0 ? SHELLY_API_ON : SHELLY_API_OFF);
         }
-        if (profile.inColor) {
+        if (profile.inColor || (profile.isGen2 && profile.isRGBW2)) {
             if (oldCol.red != newCol.red || oldCol.green != newCol.green || oldCol.blue != newCol.blue
                     || oldCol.white != newCol.white) {
                 logger.debug("{}: Setting RGBW to {}/{}/{}/{}", thingName, newCol.red, newCol.green, newCol.blue,

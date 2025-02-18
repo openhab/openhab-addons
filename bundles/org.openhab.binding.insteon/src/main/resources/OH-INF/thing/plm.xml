@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteon"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="plm">
+		<label>Insteon PLM</label>
+		<description>An Insteon PLM that communicates with Insteon devices.</description>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<context>serial-port</context>
+				<label>Serial Port</label>
+				<description>Serial port connected to the modem. Example: /dev/ttyS0 or COM1</description>
+			</parameter>
+
+			<parameter name="baudRate" type="integer" required="true">
+				<label>Baud Rate</label>
+				<description>Baud rate of the serial port connected to the modem.</description>
+				<default>19200</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="1200">1200</option>
+					<option value="2400">2400</option>
+					<option value="4800">4800</option>
+					<option value="9600">9600</option>
+					<option value="19200">19200</option>
+					<option value="38400">38400</option>
+					<option value="57600">57600</option>
+					<option value="115200">115200</option>
+				</options>
+			</parameter>
+
+			<parameter name="devicePollIntervalInSeconds" type="integer" min="5" max="3600">
+				<label>Device Poll Interval</label>
+				<description>Device poll interval in seconds.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="deviceDiscoveryEnabled" type="boolean">
+				<label>Discover Devices</label>
+				<description>Discover Insteon devices found in the modem database.</description>
+				<default>true</default>
+			</parameter>
+
+			<parameter name="sceneDiscoveryEnabled" type="boolean">
+				<label>Discover Scenes</label>
+				<description>Discover Insteon scenes found in the modem database.</description>
+				<default>false</default>
+			</parameter>
+
+			<parameter name="deviceSyncEnabled" type="boolean">
+				<label>Synchronize Related Devices</label>
+				<description>Synchronize related devices based on their all-link database.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

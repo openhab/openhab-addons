@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ public class TPLinkSmartHomeActions implements ThingActions, ThingHandlerService
     private @Nullable SmartHomeHandler handler;
 
     @RuleAction(label = "@text/actions.tplinksmarthome.send.label", description = "@text/actions.tplinksmarthome.send.description")
-    public @ActionOutput(name = "response", label = "@text/actions.tplinksmarthome.send.response.label", description = "@text/actions.tplinksmarthome.send.response.description", type = "java.lang.String") String send(
+    public @ActionOutput(label = "@text/actions.tplinksmarthome.send.response.label", description = "@text/actions.tplinksmarthome.send.response.description", type = "java.lang.String") String send(
             @ActionInput(name = "command", label = "@text/actions.tplinksmarthome.send.command.label", description = "@text/actions.tplinksmarthome.send.command.description", type = "java.lang.String", required = true) final String command)
             throws IOException {
         if (handler instanceof SmartHomeHandler) {

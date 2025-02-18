@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,11 +20,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("service")
 public class Service extends PlugwiseBaseModel {
 
-    @SuppressWarnings("unused")
     @XStreamAlias("log_type")
     private String logType;
 
-    @SuppressWarnings("unused")
     @XStreamAlias("point_log")
     private String pointLogId;
 }

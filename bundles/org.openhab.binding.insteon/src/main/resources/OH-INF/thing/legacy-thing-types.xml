@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteon"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="network">
+		<label>Insteon Network (Legacy)</label>
+		<description>An Insteon PLM or Hub that communicates with Insteon devices.</description>
+
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Port</label>
+				<description>Configuration information that is used to connect to PLM or hub.</description>
+			</parameter>
+
+			<parameter name="devicePollIntervalSeconds" type="integer" min="5" max="3600">
+				<label>Device Poll Interval</label>
+				<description>Device poll interval in seconds.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="additionalDevices" type="text">
+				<label>Additional Devices</label>
+				<description>File with additional device types.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="additionalFeatures" type="text">
+				<label>Additional Features</label>
+				<description>File with additional feature templates.</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="legacy-device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="network"/>
+		</supported-bridge-type-refs>
+
+		<label>Insteon Device (Legacy)</label>
+		<description>An Insteon or X10 device such as a switch, dimmer, keypad, sensor, etc.</description>
+
+		<representation-property>address</representation-property>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Device Address</label>
+				<description>Device address. Example: 12.34.56 (Insteon) or A.1 (X10)</description>
+			</parameter>
+
+			<parameter name="productKey" type="text" required="true">
+				<label>Product Key</label>
+				<description>Product key used to identify the model of the device.</description>
+				<options>
+					<option value="F00.00.01">2477D SwitchLinc Dimmer - F00.00.01</option>
+					<option value="F00.00.02">2477S SwitchLinc Switch - F00.00.02</option>
+					<option value="F00.00.03">2845-222 Hidden Door Sensor - F00.00.03</option>
+					<option value="F00.00.04">2876S ICON Switch - F00.00.04</option>
+					<option value="F00.00.05">2456D3 LampLinc V2 - F00.00.05</option>
+					<option value="F00.00.06">2442-222 Micro Dimmer - F00.00.06</option>
+					<option value="F00.00.07">2453-222 DIN Rail On/Off - F00.00.07</option>
+					<option value="F00.00.08">2452-222 DIN Rail Dimmer - F00.00.08</option>
+					<option value="F00.00.09">2458-A1 MorningLinc RF Lock Controller - F00.00.09</option>
+					<option value="F00.00.0A">2852-222 Leak Sensor - F00.00.0A</option>
+					<option value="F00.00.0B">2672-422 LED Dimmer - F00.00.0B</option>
+					<option value="F00.00.0C">2476D SwitchLinc Dimmer - F00.00.0C</option>
+					<option value="F00.00.0D">2634-222 On/Off Dual-Band Outdoor Module - F00.00.0D</option>
+					<option value="F00.00.10">2342-2 Mini Remote - F00.00.10</option>
+					<option value="F00.00.11">2466D ToggleLinc Dimmer - F00.00.11</option>
+					<option value="F00.00.12">2466S ToggleLinc Switch - F00.00.12</option>
+					<option value="F00.00.13">2672-222 LED Bulb - F00.00.13</option>
+					<option value="F00.00.14">2487S KeypadLinc On/Off 6-Button - F00.00.14</option>
+					<option value="F00.00.15">2334-232 KeypadLink Dimmer 6-Button - F00.00.15</option>
+					<option value="F00.00.16">2334-232 KeypadLink Dimmer 8-Button - F00.00.16</option>
+					<option value="F00.00.17">2423A1 iMeter Solo Power Meter - F00.00.17</option>
+					<option value="F00.00.18">2423A1 Thermostat 2441TH - F00.00.18</option>
+					<option value="F00.00.19">2457D2 LampLinc Dimmer - F00.00.19</option>
+					<option value="F00.00.1A">2475SDB In-LineLinc Relay - F00.00.1A</option>
+					<option value="F00.00.1B">2635-222 On/Off Module - F00.00.1B</option>
+					<option value="F00.00.1C">2475F FanLinc Module - F00.00.1C</option>
+					<option value="F00.00.1D">2456S3 ApplianceLinc - F00.00.1D</option>
+					<option value="F00.00.1E">2674-222 LED Bulb (Recessed) - F00.00.1E</option>
+					<option value="F00.00.1F">2477SA1 220V 30-amp Load Controller N/O - F00.00.1F</option>
+					<option value="F00.00.20">2342-222 Mini Remote (8-Button) - F00.00.20</option>
+					<option value="F00.00.21">2441V Insteon Thermostat Adaptor for Venstar - F00.00.21</option>
+					<option value="F00.00.22">2982-222 Insteon Smoke Bridge - F00.00.22</option>
+					<option value="F00.00.23">2487S KeypadLinc On/Off 8-Button - F00.00.23</option>
+					<option value="F00.00.24">Motion Sensor II - F00.00.24</option>
+					<option value="0x00001A">2450 IO Link - 0x00001A</option>
+					<option value="0x000037">2486D KeypadLinc Dimmer - 0x000037</option>
+					<option value="0x000039">2663-222 On/Off Outlet - 0x000039</option>
+					<option value="0x000041">2484DWH8 KeypadLinc Countdown Timer - 0x000041</option>
+					<option value="0x000045">PLM or Hub - 0x000045</option>
+					<option value="0x000049">2843-222 Wireless Open/Close Sensor - 0x000049</option>
+					<option value="0x00004A">2842-222 Motion Sensor - 0x00004A</option>
+					<option value="0x000051">2486DWH8 KeypadLinc Dimmer - 0x000051</option>
+					<option value="0x000068">2472D OutletLinc Dimmer - 0x000068</option>
+					<option value="X00.00.01">X10 switch Generic X10 switch - X00.00.01</option>
+					<option value="X00.00.02">X10 dimmer Generic X10 dimmer - X00.00.02</option>
+					<option value="X00.00.03">X10 motion Generic X10 motion sensor - X00.00.03</option>
+				</options>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
+
+			<parameter name="deviceConfig" type="text">
+				<label>Device Configuration</label>
+				<description>Optional JSON object with device specific configuration.</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="legacyAcDelay">
+		<item-type>Number</item-type>
+		<label>AC Delay</label>
+	</channel-type>
+
+	<channel-type id="legacyBacklightDuration">
+		<item-type>Number</item-type>
+		<label>Back Light Duration</label>
+	</channel-type>
+
+	<channel-type id="legacyBatteryLevel">
+		<item-type>Number</item-type>
+		<label>Battery Level</label>
+	</channel-type>
+
+	<channel-type id="legacyBatteryPercent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Percent</label>
+	</channel-type>
+
+	<channel-type id="legacyBatteryWatermarkLevel">
+		<item-type>Number</item-type>
+		<label>Battery Watermark Level</label>
+	</channel-type>
+
+	<channel-type id="legacyBeep">
+		<item-type>Switch</item-type>
+		<label>Beep</label>
+	</channel-type>
+
+	<channel-type id="legacyBottomOutlet">
+		<item-type>Switch</item-type>
+		<label>Bottom Outlet</label>
+		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
+	</channel-type>
+
+	<channel-type id="legacyButtonA">
+		<item-type>Switch</item-type>
+		<label>Button A</label>
+		<config-description-ref uri="channel-type:insteon:legacy-button"/>
+	</channel-type>
+
+	<channel-type id="legacyButtonB">
+		<item-type>Switch</item-type>
+		<label>Button B</label>
+		<config-description-ref uri="channel-type:insteon:legacy-button"/>
+	</channel-type>
+
+	<channel-type id="legacyButtonC">
+		<item-type>Switch</item-type>
+		<label>Button C</label>
+		<config-description-ref uri="channel-type:insteon:legacy-button"/>
+	</channel-type>
+
+	<channel-type id="legacyButtonD">
+		<item-type>Switch</item-type>
+		<label>Button D</label>
+		<config-description-ref uri="channel-type:insteon:legacy-button"/>
+	</channel-type>
+
+	<channel-type id="legacyButtonE">
+		<item-type>Switch</item-type>
+		<label>Button E</label>
+		<config-description-ref uri="channel-type:insteon:legacy-button"/>
+	</channel-type>
+
+	<channel-type id="legacyButtonF">
+		<item-type>Switch</item-type>
+		<label>Button F</label>
+		<config-description-ref uri="channel-type:insteon:legacy-button"/>
+	</channel-type>
+
+	<channel-type id="legacyButtonG">
+		<item-type>Switch</item-type>
+		<label>Button G</label>
+		<config-description-ref uri="channel-type:insteon:legacy-button"/>
+	</channel-type>
+
+	<channel-type id="legacyButtonH">
+		<item-type>Switch</item-type>
+		<label>Button H</label>
+		<config-description-ref uri="channel-type:insteon:legacy-button"/>
+	</channel-type>
+
+	<channel-type id="legacyBroadcastOnOff">
+		<item-type>Switch</item-type>
+		<label>Broadcast On/Off</label>
+		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
+	</channel-type>
+
+	<channel-type id="legacyContact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<config-description-ref uri="channel-type:insteon:legacy-contact"/>
+	</channel-type>
+
+	<channel-type id="legacyCoolSetPoint">
+		<item-type>Number</item-type>
+		<label>Cool Setpoint</label>
+	</channel-type>
+
+	<channel-type id="legacyDimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<config-description-ref uri="channel-type:insteon:legacy-dimmer"/>
+	</channel-type>
+
+	<channel-type id="legacyFan">
+		<item-type>Number</item-type>
+		<label>Fan</label>
+	</channel-type>
+
+	<channel-type id="legacyFanMode">
+		<item-type>Number</item-type>
+		<label>Fan Mode</label>
+	</channel-type>
+
+	<channel-type id="legacyFastOnOff">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off</label>
+	</channel-type>
+
+	<channel-type id="legacyFastOnOffButtonA">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button A</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
+	</channel-type>
+
+	<channel-type id="legacyFastOnOffButtonB">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button B</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
+	</channel-type>
+
+	<channel-type id="legacyFastOnOffButtonC">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button C</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
+	</channel-type>
+
+	<channel-type id="legacyFastOnOffButtonD">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button D</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
+	</channel-type>
+
+	<channel-type id="legacyFastOnOffButtonE">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button E</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
+	</channel-type>
+
+	<channel-type id="legacyFastOnOffButtonF">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button F</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
+	</channel-type>
+
+	<channel-type id="legacyFastOnOffButtonG">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button G</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
+	</channel-type>
+
+	<channel-type id="legacyFastOnOffButtonH">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off Button H</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-fastonoff"/>
+	</channel-type>
+
+	<channel-type id="legacyHeatSetPoint">
+		<item-type>Number</item-type>
+		<label>Heat Setpoint</label>
+	</channel-type>
+
+	<channel-type id="legacyHumidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+	</channel-type>
+
+	<channel-type id="legacyHumidityHigh">
+		<item-type>Number</item-type>
+		<label>Humidity High</label>
+	</channel-type>
+
+	<channel-type id="legacyHumidityLow">
+		<item-type>Number</item-type>
+		<label>Humidity Low</label>
+	</channel-type>
+
+	<channel-type id="legacyIsCooling">
+		<item-type>Number</item-type>
+		<label>Is Cooling</label>
+	</channel-type>
+
+	<channel-type id="legacyIsHeating">
+		<item-type>Number</item-type>
+		<label>Is Heating</label>
+	</channel-type>
+
+	<channel-type id="legacyKeypadButtonA">
+		<item-type>Switch</item-type>
+		<label>Keypad Button A</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
+	</channel-type>
+
+	<channel-type id="legacyKeypadButtonB">
+		<item-type>Switch</item-type>
+		<label>Keypad Button B</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
+	</channel-type>
+
+	<channel-type id="legacyKeypadButtonC">
+		<item-type>Switch</item-type>
+		<label>Keypad Button C</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
+	</channel-type>
+
+	<channel-type id="legacyKeypadButtonD">
+		<item-type>Switch</item-type>
+		<label>Keypad Button D</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
+	</channel-type>
+
+	<channel-type id="legacyKeypadButtonE">
+		<item-type>Switch</item-type>
+		<label>Keypad Button E</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
+	</channel-type>
+
+	<channel-type id="legacyKeypadButtonF">
+		<item-type>Switch</item-type>
+		<label>Keypad Button F</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
+	</channel-type>
+
+	<channel-type id="legacyKeypadButtonG">
+		<item-type>Switch</item-type>
+		<label>Keypad Button G</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
+	</channel-type>
+
+	<channel-type id="legacyKeypadButtonH">
+		<item-type>Switch</item-type>
+		<label>Keypad Button H</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button"/>
+	</channel-type>
+
+	<channel-type id="legacyKWh">
+		<item-type>Number:Energy</item-type>
+		<label>Kilowatt Hour</label>
+	</channel-type>
+
+	<channel-type id="legacyLastHeardFrom">
+		<item-type>DateTime</item-type>
+		<label>Last Heard From</label>
+	</channel-type>
+
+	<channel-type id="legacyLedBrightness">
+		<item-type>Number</item-type>
+		<label>LED Brightness</label>
+	</channel-type>
+
+	<channel-type id="legacyLedOnOff">
+		<item-type>Switch</item-type>
+		<label>LED On/Off</label>
+	</channel-type>
+
+	<channel-type id="legacyLightDimmer">
+		<item-type>Dimmer</item-type>
+		<label>Light Dimmer</label>
+		<config-description-ref uri="channel-type:insteon:legacy-dimmer"/>
+	</channel-type>
+
+	<channel-type id="legacyLightLevel">
+		<item-type>Number</item-type>
+		<label>Light Level</label>
+	</channel-type>
+
+	<channel-type id="legacyLightLevelAboveThreshold">
+		<item-type>Contact</item-type>
+		<label>Light Level Above/Below Threshold</label>
+	</channel-type>
+
+	<channel-type id="legacyLoadDimmer">
+		<item-type>Dimmer</item-type>
+		<label>Load Dimmer</label>
+		<config-description-ref uri="channel-type:insteon:legacy-dimmer"/>
+	</channel-type>
+
+	<channel-type id="legacyLoadSwitch">
+		<item-type>Switch</item-type>
+		<label>Load Switch</label>
+		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
+	</channel-type>
+
+	<channel-type id="legacyLoadSwitchFastOnOff">
+		<item-type>Switch</item-type>
+		<label>Load Switch Fast On/Off</label>
+		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
+	</channel-type>
+
+	<channel-type id="legacyLoadSwitchManualChange">
+		<item-type>Number</item-type>
+		<label>Load Switch Manual Change</label>
+	</channel-type>
+
+	<channel-type id="legacyLowBattery">
+		<item-type>Contact</item-type>
+		<label>Low Battery</label>
+	</channel-type>
+
+	<channel-type id="legacyManualChange">
+		<item-type>Number</item-type>
+		<label>Manual Change</label>
+	</channel-type>
+
+	<channel-type id="legacyManualChangeButtonA">
+		<item-type>Number</item-type>
+		<label>Manual Change Button A</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-manualchange"/>
+	</channel-type>
+
+	<channel-type id="legacyManualChangeButtonB">
+		<item-type>Number</item-type>
+		<label>Manual Change Button B</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-manualchange"/>
+	</channel-type>
+
+	<channel-type id="legacyManualChangeButtonC">
+		<item-type>Number</item-type>
+		<label>Manual Change Button C</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-manualchange"/>
+	</channel-type>
+
+	<channel-type id="legacyManualChangeButtonD">
+		<item-type>Number</item-type>
+		<label>Manual Change Button D</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-manualchange"/>
+	</channel-type>
+
+	<channel-type id="legacyManualChangeButtonE">
+		<item-type>Number</item-type>
+		<label>Manual Change Button E</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-manualchange"/>
+	</channel-type>
+
+	<channel-type id="legacyManualChangeButtonF">
+		<item-type>Number</item-type>
+		<label>Manual Change Button F</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-manualchange"/>
+	</channel-type>
+
+	<channel-type id="legacyManualChangeButtonG">
+		<item-type>Number</item-type>
+		<label>Manual Change Button G</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-manualchange"/>
+	</channel-type>
+
+	<channel-type id="legacyManualChangeButtonH">
+		<item-type>Number</item-type>
+		<label>Manual Change Button H</label>
+		<config-description-ref uri="channel-type:insteon:legacy-keypad-button-manualchange"/>
+	</channel-type>
+
+	<channel-type id="legacyNotification">
+		<item-type>Number</item-type>
+		<label>Notification</label>
+	</channel-type>
+
+	<channel-type id="legacyOnLevel">
+		<item-type>Number</item-type>
+		<label>On Level</label>
+	</channel-type>
+
+	<channel-type id="legacyRampDimmer">
+		<item-type>Dimmer</item-type>
+		<label>Ramp Dimmer</label>
+	</channel-type>
+
+	<channel-type id="legacyRampRate">
+		<item-type>Number</item-type>
+		<label>Ramp Rate</label>
+	</channel-type>
+
+	<channel-type id="legacyReset">
+		<item-type>Switch</item-type>
+		<label>Reset</label>
+	</channel-type>
+
+	<channel-type id="legacyStage1Duration">
+		<item-type>Number</item-type>
+		<label>Stage 1 Duration</label>
+	</channel-type>
+
+	<channel-type id="legacySwitch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
+	</channel-type>
+
+	<channel-type id="legacySystemMode">
+		<item-type>Number</item-type>
+		<label>System Mode</label>
+	</channel-type>
+
+	<channel-type id="legacyTamperSwitch">
+		<item-type>Contact</item-type>
+		<label>Tamper Switch</label>
+	</channel-type>
+
+	<channel-type id="legacyTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+	</channel-type>
+
+	<channel-type id="legacyTemperatureLevel">
+		<item-type>Number</item-type>
+		<label>Temperature Level</label>
+	</channel-type>
+
+	<channel-type id="legacyTopOutlet">
+		<item-type>Switch</item-type>
+		<label>Top Outlet</label>
+		<config-description-ref uri="channel-type:insteon:legacy-switch"/>
+	</channel-type>
+
+	<channel-type id="legacyUpdate">
+		<item-type>Switch</item-type>
+		<label>Update</label>
+	</channel-type>
+
+	<channel-type id="legacyWatts">
+		<item-type>Number:Power</item-type>
+		<label>Watts</label>
+	</channel-type>
+
+</thing:thing-descriptions>

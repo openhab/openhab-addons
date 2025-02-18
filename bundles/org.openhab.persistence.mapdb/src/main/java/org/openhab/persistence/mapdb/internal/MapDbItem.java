@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.PersistedItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -28,21 +28,24 @@ import org.openhab.core.types.UnDefType;
  * This is a Java bean used to persist item states with timestamps in the database.
  *
  * @author Jens Viebig - Initial contribution
+ * @author Mark Herwege - Add lastState and lastStateChange
  *
  */
 @NonNullByDefault
-public class MapDbItem implements HistoricItem, PersistenceItemInfo {
+class MapDbItem implements PersistedItem, PersistenceItemInfo {
 
     private String name = "";
     private State state = UnDefType.NULL;
     private Date timestamp = new Date(0);
+    private @Nullable State lastState = null;
+    private @Nullable Date lastStateChange = null;
 
     @Override
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    void setName(String name) {
         this.name = name;
     }
 
@@ -51,7 +54,7 @@ public class MapDbItem implements HistoricItem, PersistenceItemInfo {
         return state;
     }
 
-    public void setState(State state) {
+    void setState(State state) {
         this.state = state;
     }
 
@@ -60,8 +63,27 @@ public class MapDbItem implements HistoricItem, PersistenceItemInfo {
         return ZonedDateTime.ofInstant(timestamp.toInstant(), ZoneId.systemDefault());
     }
 
-    public void setTimestamp(Date timestamp) {
+    void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    @Override
+    public @Nullable State getLastState() {
+        return lastState;
+    }
+
+    void setLastState(@Nullable State lastState) {
+        this.lastState = lastState;
+    }
+
+    @Override
+    public @Nullable ZonedDateTime getLastStateChange() {
+        return lastStateChange != null ? ZonedDateTime.ofInstant(lastStateChange.toInstant(), ZoneId.systemDefault())
+                : null;
+    }
+
+    void setLastStateChange(@Nullable Date lastStateChange) {
+        this.lastStateChange = lastStateChange;
     }
 
     @Override
@@ -84,7 +106,7 @@ public class MapDbItem implements HistoricItem, PersistenceItemInfo {
         return null;
     }
 
-    public boolean isValid() {
+    boolean isValid() {
         return name != null && state != null && timestamp != null;
     }
 }

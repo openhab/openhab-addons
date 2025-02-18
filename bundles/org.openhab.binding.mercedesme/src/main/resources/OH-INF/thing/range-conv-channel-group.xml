@@ -14,6 +14,7 @@
 			<channel id="fuel-level" typeId="fuel-level"/>
 			<channel id="fuel-remain" typeId="fuel-remain"/>
 			<channel id="fuel-open" typeId="fuel-open"/>
+			<channel id="adblue-level" typeId="adblue-level"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

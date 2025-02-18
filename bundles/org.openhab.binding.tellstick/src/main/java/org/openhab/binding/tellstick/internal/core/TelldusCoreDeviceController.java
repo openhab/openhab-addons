@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,11 +55,11 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     private Thread workerThread;
     private SortedMap<Device, TelldusCoreSendEvent> messageQue;
 
-    public TelldusCoreDeviceController(long resendInterval) {
+    public TelldusCoreDeviceController(long resendInterval, final String threadName) {
         this.resendInterval = resendInterval;
         messageQue = Collections.synchronizedSortedMap(new TreeMap<>());
         telldusCoreWorker = new TelldusCoreWorker(messageQue);
-        workerThread = new Thread(telldusCoreWorker);
+        workerThread = new Thread(telldusCoreWorker, threadName);
     }
 
     @Override

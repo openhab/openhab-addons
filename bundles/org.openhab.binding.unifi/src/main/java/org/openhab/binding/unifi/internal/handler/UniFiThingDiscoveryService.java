@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_SID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_SITE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_WID;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_WIFI_NAME;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -107,9 +106,7 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
         for (final UniFiWlan wlan : cache.getWlans()) {
             final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_WLAN, bridgeUID,
                     stripIdShort(wlan.getId()));
-            final String siteName = wlan.getSite() == null ? "" : wlan.getSite().getName();
-            final Map<String, Object> properties = Map.of(PARAMETER_WID, wlan.getId(), PARAMETER_SITE, siteName,
-                    PARAMETER_WIFI_NAME, wlan.getName());
+            final Map<String, Object> properties = Map.of(PARAMETER_WID, wlan.getId());
 
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(UniFiBindingConstants.THING_TYPE_WLAN)
                     .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_WID).withTTL(TTL_SECONDS)

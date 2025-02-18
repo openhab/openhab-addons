@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,4 +25,12 @@ public class ChatGPTConfiguration {
     public String apiKey = "";
     public String apiUrl = "https://api.openai.com/v1/chat/completions";
     public String modelUrl = "https://api.openai.com/v1/models";
+    public boolean useSemanticModel = true;
+    public String model = "gpt-4o-mini";
+    public Double temperature = 1.0;
+    public Integer maxTokens = 1000;
+    public Double topP = 1.0;
+    public String systemMessage = "";
+    public Integer keepContext = 2;
+    public Integer contextThreshold = 10000;
 }

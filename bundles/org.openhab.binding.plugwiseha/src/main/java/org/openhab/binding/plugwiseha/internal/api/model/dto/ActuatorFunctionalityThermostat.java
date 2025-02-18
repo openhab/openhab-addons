@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,15 +24,12 @@ public class ActuatorFunctionalityThermostat extends ActuatorFunctionality {
     @SuppressWarnings("unused")
     private Double setpoint;
 
-    @SuppressWarnings("unused")
     @XStreamAlias("preheating_allowed")
     private Boolean preheatingAllowed;
 
-    @SuppressWarnings("unused")
     @XStreamAlias("cooling_allowed")
     private Boolean coolingAllowed;
 
-    @SuppressWarnings("unused")
     @XStreamAlias("regulation_control")
     private String regulationControl;
 

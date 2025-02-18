@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -324,7 +324,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                 value = command == OnOffType.ON ? "1" : "0";
             } else if (command instanceof DateTimeType dateTimeCommand) {
                 try {
-                    ZonedDateTime d = dateTimeCommand.getZonedDateTime();
+                    ZonedDateTime d = dateTimeCommand.getZonedDateTime(ZoneId.systemDefault());
                     if (channelId.equals(HeliosEasyControlsBindingConstants.SYS_DATE)) {
                         setSysDateTime(d);
                     } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_FROM)) {
@@ -332,7 +332,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_TO)) {
                         this.setBypass(false, d.getDayOfMonth(), d.getMonthValue());
                     } else {
-                        value = formatDate(channelId, dateTimeCommand.getZonedDateTime());
+                        value = formatDate(channelId, d);
                     }
                 } catch (InterruptedException e) {
                     logger.debug(
@@ -534,11 +534,13 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
     }
 
     private void updateSysDate(DateTimeType dateTime) {
-        this.updateSysDateTime(dateTime.getZonedDateTime(), true, sysDate.getOffset().getTotalSeconds() / 60 / 60);
+        this.updateSysDateTime(dateTime.getZonedDateTime(ZoneId.systemDefault()), true,
+                sysDate.getOffset().getTotalSeconds() / 60 / 60);
     }
 
     private void updateSysTime(DateTimeType dateTime) {
-        this.updateSysDateTime(dateTime.getZonedDateTime(), false, sysDate.getOffset().getTotalSeconds() / 60 / 60);
+        this.updateSysDateTime(dateTime.getZonedDateTime(ZoneId.systemDefault()), false,
+                sysDate.getOffset().getTotalSeconds() / 60 / 60);
     }
 
     private void updateUtcOffset(int utcOffset) {

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -28,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
-    public static final String SWITCH_CHANNEL_ID = "switch"; // Randomly chosen channel "ID"
+    public static final String SWITCH_CHANNEL_ID = "switch";
 
     /**
      * Configuration class for MQTT component
@@ -53,22 +52,10 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
         protected String payloadOn = "ON";
         @SerializedName("payload_off")
         protected String payloadOff = "OFF";
-
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
     }
 
-    public Switch(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
-
-        boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
-                : channelConfiguration.stateTopic.isBlank();
-
-        if (optimistic && !channelConfiguration.stateTopic.isBlank()) {
-            throw new ConfigurationException("Component:Switch does not support forced optimistic mode");
-        }
+    public Switch(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         OnOffValue value = new OnOffValue(channelConfiguration.stateOn, channelConfiguration.stateOff,
                 channelConfiguration.payloadOn, channelConfiguration.payloadOff);
@@ -78,6 +65,8 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
-                .build();
+                .inferOptimistic(channelConfiguration.optimistic).build();
+
+        finalizeChannels();
     }
 }

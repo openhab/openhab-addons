@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,9 +51,6 @@ public class EmotivaBindingConstants {
      * Default Emotiva device keep alive in milliseconds. {@link org.openhab.binding.emotiva.internal.dto.ControlDTO}
      */
     static final int DEFAULT_KEEP_ALIVE_IN_MILLISECONDS = 7500;
-
-    /** State name for storing keepAlive timestamp messages */
-    public static final String LAST_SEEN_STATE_NAME = "no-channel#last-seen";
 
     /**
      * Default Emotiva device considered list in milliseconds.
@@ -118,7 +115,7 @@ public class EmotivaBindingConstants {
     public static final String CHANNEL_MODE_SURROUND = "general#mode-surround";
     public static final String CHANNEL_SPEAKER_PRESET = "general#speaker-preset";
     public static final String CHANNEL_MAIN_VOLUME = "main-zone#volume";
-    public static final String CHANNEL_MAIN_VOLUME_DB = "main-zone#volume_db";
+    public static final String CHANNEL_MAIN_VOLUME_DB = "main-zone#volume-db";
     public static final String CHANNEL_LOUDNESS = "general#loudness";
     public static final String CHANNEL_ZONE2_POWER = "zone2#power";
     public static final String CHANNEL_ZONE2_VOLUME = "zone2#volume";

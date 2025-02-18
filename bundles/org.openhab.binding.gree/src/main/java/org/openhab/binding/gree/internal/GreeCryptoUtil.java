@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.gree.internal;
+
+import static org.openhab.binding.gree.internal.GreeBindingConstants.EncryptionTypes;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
@@ -44,11 +46,6 @@ public class GreeCryptoUtil {
     private static final String GCM_IV = "5440784449675a516c5e6313";
     private static final String GCM_ADD = "qualcomm-test";
     private static final int TAG_LENGTH = 16;
-
-    public enum EncryptionTypes {
-        ECB,
-        GCM
-    };
 
     public static byte[] getAESGeneralKeyByteArray() {
         return AES_KEY.getBytes(StandardCharsets.UTF_8);
@@ -86,6 +83,10 @@ public class GreeCryptoUtil {
     }
 
     public static <T extends GreeBaseDTO> String decrypt(T response, EncryptionTypes encType) throws GreeException {
+        if (encType == EncryptionTypes.UNKNOWN) {
+            encType = getEncryptionType(response);
+        }
+
         if (encType == EncryptionTypes.GCM) {
             return decrypt(getGCMGeneralKeyByteArray(), response, encType);
         } else {
@@ -95,6 +96,10 @@ public class GreeCryptoUtil {
 
     public static <T extends GreeBaseDTO> String decrypt(byte[] keyarray, T response, EncryptionTypes encType)
             throws GreeException {
+        if (encType == EncryptionTypes.UNKNOWN) {
+            encType = getEncryptionType(response);
+        }
+
         if (encType == EncryptionTypes.GCM) {
             return decryptGCMPack(keyarray, response.pack, response.tag);
         } else {
@@ -115,7 +120,7 @@ public class GreeCryptoUtil {
             return new String(bytePlainText, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException
                 | IllegalBlockSizeException ex) {
-            throw new GreeException("Decryption of recieved data failed", ex);
+            throw new GreeException("Decryption of received data failed", ex);
         }
     }
 
@@ -140,7 +145,7 @@ public class GreeCryptoUtil {
             return new String(bytePlainText, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | InvalidAlgorithmParameterException ex) {
-            throw new GreeException("GCM decryption of recieved data failed", ex);
+            throw new GreeException("GCM decryption of received data failed", ex);
         }
     }
 

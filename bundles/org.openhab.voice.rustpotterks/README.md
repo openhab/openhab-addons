@@ -66,7 +66,6 @@ As an example, the file generated for the keyword "ok openhab" will be named 'ok
 
 The service will only work if it's able to find the correct rpw for your magic word configuration.
 
-
 ## Default Keyword Spotter and Magic Word Configuration
 
 You can setup your preferred default keyword spotter and default magic word in the UI:

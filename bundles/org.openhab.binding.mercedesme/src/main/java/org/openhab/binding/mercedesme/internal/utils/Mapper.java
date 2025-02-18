@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -197,6 +197,7 @@ public class Mapper {
                 // Percentages
                 case MB_KEY_SOC:
                 case MB_KEY_TANKLEVELPERCENT:
+                case MB_KEY_ADBLUELEVELPERCENT:
                 case MB_KEY_ECOSCORE_ACCEL:
                 case MB_KEY_ECOSCORE_CONSTANT:
                 case MB_KEY_ECOSCORE_COASTING:
@@ -404,6 +405,7 @@ public class Mapper {
         CHANNELS.put(MB_KEY_RANGELIQUID, new String[] { OH_CHANNEL_RANGE_FUEL, GROUP_RANGE });
         CHANNELS.put(MB_KEY_OVERALL_RANGE, new String[] { OH_CHANNEL_RANGE_HYBRID, GROUP_RANGE });
         CHANNELS.put(MB_KEY_TANKLEVELPERCENT, new String[] { OH_CHANNEL_FUEL_LEVEL, GROUP_RANGE });
+        CHANNELS.put(MB_KEY_ADBLUELEVELPERCENT, new String[] { OH_CHANNEL_ADBLUE_LEVEL, GROUP_RANGE });
 
         CHANNELS.put(MB_KEY_CHARGE_FLAP_DC_STATUS, new String[] { OH_CHANNEL_CHARGE_FLAP, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_CHARGE_COUPLER_AC_STATUS, new String[] { OH_CHANNEL_COUPLER_AC, GROUP_CHARGE });

@@ -9,7 +9,7 @@ This binding supports two thing types based on the connection used: `projector-s
 
 ## Discovery
 
-If the projector has a built-in Ethernet port connected to the same network as the openHAB server and either the 'AMX Device Discovery' or 'Control4 SDDP' options are present and enabled in the projector's network menu, the thing will be discovered automatically.
+If the projector has a built-in Ethernet port connected to the same network as the openHAB server and either the 'AMX Device Discovery' or 'Control4 SDDP' options are present and enabled in the projector's network menu, the Thing will be discovered automatically.
 Serial port or serial over IP connections must be configured manually.
 
 ## Binding Configuration
@@ -25,7 +25,8 @@ The `projector-serial` thing has the following configuration parameters:
 |-----------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
 | serialPort      | Serial Port      | Serial port device name that is connected to the Epson projector to control, e.g. COM1 on Windows, /dev/ttyS0 on Linux or /dev/tty.PL2303-0000103D on Mac. | yes      |
 | pollingInterval | Polling Interval | Polling interval in seconds to update channel states, range 5-60 seconds; default 10 seconds.                                                              | no       |
-| maxVolume       | Max Volume Range | Set to the maximum volume level available in the projector's OSD to select the correct range for the volume control. e.g. 20 or 40; default 20             | no       |
+| loadSourceList  | Load Source List | Attempt to load source list options from the projector when True; default True.                                                                            | no       |
+| maxVolume       | Volume Range     | Set to the maximum volume level available in the projector's OSD to select the correct range for the volume control. e.g. 20 or 40; default 20             | no       |
 
 The `projector-tcp` thing has the following configuration parameters:
 
@@ -34,12 +35,15 @@ The `projector-tcp` thing has the following configuration parameters:
 | host            | Host Name        | Host Name or IP address for the projector or serial over IP device.                                                                            | yes      |
 | port            | Port             | Port for the projector or serial over IP device; default 3629 for projectors with built-in Ethernet connector or Wi-Fi.                        | yes      |
 | pollingInterval | Polling Interval | Polling interval in seconds to update channel states, range 5-60 seconds; default 10 seconds.                                                  | no       |
-| maxVolume       | Max Volume Range | Set to the maximum volume level available in the projector's OSD to select the correct range for the volume control. e.g. 20 or 40; default 20 | no       |
+| loadSourceList  | Load Source List | Attempt to load source list options from the projector when True; default True.                                                                | no       |
+| maxVolume       | Volume Range     | Set to the maximum volume level available in the projector's OSD to select the correct range for the volume control. e.g. 20 or 40; default 20 | no       |
 
 Some notes:
 
 - The binding should work on all Epson projectors that support the ESC/VP21 protocol, however not all binding channels will be useable on all projectors.
 - The _source_ channel includes a dropdown with the most common source inputs.
+- When the `loadSourceList` configuration option is set to true, the binding attempts to retrieve the available sources list from the projector and loads them into the _source_ channel.
+- The command to retrieve the sources list is not supported by older projectors and in this case the pre-defined sources list is used instead.
 - If your projector has a source input that is not in the dropdown, the two character hex code to access that input will be displayed by the _source_ channel when that input is selected by the remote control.
 - By using the sitemap mapping or a rule to send the input's code back to the _source_ channel, any source on the projector can be accessed by the binding.
 - The following channels _aspectratio_, _colormode_, _luminance_, _gamma_ and _background_ are pre-populated with a full set of options but not every option will be useable on all projectors.
@@ -105,7 +109,7 @@ connection: &conEpson
 
 ## Full Example
 
-things/epson.things:
+### `epson.things` Example
 
 ```java
 // serial port connection
@@ -116,7 +120,7 @@ epsonprojector:projector-tcp:hometheater "Projector" [ host="192.168.0.10", port
 
 ```
 
-items/epson.items
+### `epson.items` Example
 
 ```java
 Switch epsonPower                                      { channel="epsonprojector:projector-serial:hometheater:power" }
@@ -152,14 +156,15 @@ Number epsonErrCode     "Error Code [%d]"    <error>   { channel="epsonprojector
 String epsonErrMessage  "Error Message [%s]" <error>   { channel="epsonprojector:projector-serial:hometheater:errmessage" }
 ```
 
-sitemaps/epson.sitemap
+### `epson.sitemap` Example
 
 ```perl
 sitemap epson label="Epson Projector"
 {
     Frame label="Controls" {
         Switch     item=epsonPower   label="Power"
-        Selection  item=epsonSource  label="Source" mappings=["30"="HDMI1", "A0"="HDMI2", "14"="Component", "20"="PC DSUB", "41"="Video", "42"="S-Video"]
+        // Uncomment mappings below to override the Source state options
+        Selection  item=epsonSource  label="Source" // mappings=["30"="HDMI1", "A0"="HDMI2", "14"="Component", "20"="PC DSUB", "41"="Video", "42"="S-Video", "52"="USB", "53"="LAN", "56"="WiFi Direct"]
         Switch     item=epsonFreeze  label="Freeze"
         Switch     item=epsonMute    label="AV Mute"
         // Volume can be a Setpoint also

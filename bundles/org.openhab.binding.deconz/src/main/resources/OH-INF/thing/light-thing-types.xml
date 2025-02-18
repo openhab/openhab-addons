@@ -87,13 +87,13 @@
 		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="system.brightness" id="brightness"/>
-			<channel typeId="ct" id="color_temperature"/>
+			<channel typeId="system.color-temperature-abs" id="color_temperature"/>
 			<channel typeId="ontime" id="ontime"/>
 			<channel typeId="alert" id="alert"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>uid</representation-property>
@@ -132,13 +132,13 @@
 		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="system.color" id="color"/>
-			<channel typeId="ct" id="color_temperature"/>
+			<channel typeId="system.color-temperature-abs" id="color_temperature"/>
 			<channel typeId="ontime" id="ontime"/>
 			<channel typeId="alert" id="alert"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>uid</representation-property>
@@ -167,14 +167,6 @@
 		<label>Position</label>
 		<category>Rollershutter</category>
 		<state pattern="%.1f %%"/>
-	</channel-type>
-
-	<channel-type id="ct">
-		<item-type>Number</item-type>
-		<label>Color Temperature</label>
-		<description>Controls the color temperature of the light in Kelvin</description>
-		<category>ColorLight</category>
-		<state pattern="%.0f K" min="1000" max="10000"/>
 	</channel-type>
 
 	<channel-type id="ontime">

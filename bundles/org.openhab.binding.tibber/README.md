@@ -115,112 +115,136 @@ Example of tomorrow and today prices data structure - an array of tuples:
 [
   {
     "startsAt": "2022-09-27T00:00:00.000+02:00",
-    "total": 3.8472
+    "total": 3.8472,
+    "level": "NORMAL"
   },
   {
     "startsAt": "2022-09-27T01:00:00.000+02:00",
-    "total": 3.0748
+    "total": 3.0748,
+    "level": "NORMAL"
   },
   {
     "startsAt": "2022-09-27T02:00:00.000+02:00",
-    "total": 2.2725
+    "total": 2.2725,
+    "level": "CHEAP"
   },
   {
     "startsAt": "2022-09-27T03:00:00.000+02:00",
-    "total": 2.026
+    "total": 2.026,
+    "level": "VERY_CHEAP"
   },
   {
     "startsAt": "2022-09-27T04:00:00.000+02:00",
-    "total": 2.6891
+    "total": 2.6891,
+    "level": "CHEAP"
   },
   {
     "startsAt": "2022-09-27T05:00:00.000+02:00",
-    "total": 3.7821
+    "total": 3.7821,
+    "level": "NORMAL"
   },
   {
     "startsAt": "2022-09-27T06:00:00.000+02:00",
-    "total": 3.9424
+    "total": 3.9424,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T07:00:00.000+02:00",
-    "total": 4.158
+    "total": 4.158,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T08:00:00.000+02:00",
-    "total": 4.2648
+    "total": 4.2648,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T09:00:00.000+02:00",
-    "total": 4.2443
+    "total": 4.2443,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T10:00:00.000+02:00",
-    "total": 4.2428
+    "total": 4.2428,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T11:00:00.000+02:00",
-    "total": 4.2061
+    "total": 4.2061,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T12:00:00.000+02:00",
-    "total": 4.1458
+    "total": 4.1458,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T13:00:00.000+02:00",
-    "total": 3.9396
+    "total": 3.9396,
+    "level": "NORMAL"
   },
   {
     "startsAt": "2022-09-27T14:00:00.000+02:00",
-    "total": 3.8563
+    "total": 3.8563,
+    "level": "NORMAL"
   },
   {
     "startsAt": "2022-09-27T15:00:00.000+02:00",
-    "total": 4.0364
+    "total": 4.0364,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T16:00:00.000+02:00",
-    "total": 4.093
+    "total": 4.093,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T17:00:00.000+02:00",
-    "total": 4.1823
+    "total": 4.1823,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T18:00:00.000+02:00",
-    "total": 4.2779
+    "total": 4.2779,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T19:00:00.000+02:00",
-    "total": 4.3154
+    "total": 4.3154,
+    "level": "VERY_EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T20:00:00.000+02:00",
-    "total": 4.3469
+    "total": 4.3469,
+    "level": "VERY_EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T21:00:00.000+02:00",
-    "total": 4.2329
+    "total": 4.2329,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T22:00:00.000+02:00",
-    "total": 4.1014
+    "total": 4.1014,
+    "level": "EXPENSIVE"
   },
   {
     "startsAt": "2022-09-27T23:00:00.000+02:00",
-    "total": 4.0265
+    "total": 4.0265,
+    "level": "EXPENSIVE"
   }
 ]
 ```
 
 ## Full Example
 
-### demo.things
+### `demo.things` Example
 
 ```java
 Thing tibber:tibberapi:7cfae492 [ homeid="xxx", token="xxxxxxx" ]
 ```
 
-### demo.items:
+### `demo.items` Example
 
 ```java
 Number:Dimensionless       TibberAPICurrentTotal                 "Current Total Price [%.2f NOK]"            {channel="tibber:tibberapi:7cfae492:current_total"}

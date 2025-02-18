@@ -117,7 +117,7 @@ Examples:
 
 ## Full Example
 
-### demo.things
+### `demo.things` Example
 
 ```java
 Thing smhi:forecast:demoforecast "Demo forecast" [ latitude=57.997072, longitude=15.990068, hourlyForecasts=0,1,2, dailyForecasts=0,1 ]
@@ -136,7 +136,7 @@ Number:Temperature Smhi_Temperature_Tomorrow "Temperature tomorrow [%.1f °C]" {
 Number:Speed Smhi_Min_Precipitation_Tomorrow "Precipitaion tomorrow (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_1#pmin"}
 ```
 
-### demo.sitemap
+### `demo.sitemap` Example
 
 ```java
 sitemap demo label="Smhi" {

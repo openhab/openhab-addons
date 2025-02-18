@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,10 +37,15 @@ public class HomeEvent extends Event {
     public class NAEventsDataResponse extends ApiResponse<BodyResponse<Home>> {
     }
 
-    private record Snapshot(String url, ZonedDateTime expiresAt) {
-        // If the snapshot is expired we consider it as not available, so do not provide the url
+    private record Snapshot(@Nullable String url, @Nullable ZonedDateTime expiresAt) {
         public @Nullable String url() {
-            return expiresAt.isAfter(ZonedDateTime.now().withZoneSameInstant(expiresAt.getZone())) ? url : null;
+            ZonedDateTime expires = expiresAt;
+            // If no expiration data provided, lets consider it is available
+            if (expires == null) {
+                return url;
+            }
+            // If the snapshot is expired we consider it as not available, so do not provide the url
+            return expires.isAfter(ZonedDateTime.now().withZoneSameInstant(expires.getZone())) ? url : null;
         }
     }
 

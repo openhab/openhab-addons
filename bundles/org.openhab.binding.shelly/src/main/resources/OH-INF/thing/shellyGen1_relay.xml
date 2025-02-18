@@ -528,6 +528,19 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="totalKWH">
+		<item-type>Number:Energy</item-type>
+		<label>@text/channel-type.shelly.totalKWH.label</label>
+		<description>@text/channel-type.shelly.totalKWH.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
 	<channel-type id="meterReactive">
 		<item-type>Number:Power</item-type>
 		<label>@text/channel-type.shelly.meterReactive.label</label>

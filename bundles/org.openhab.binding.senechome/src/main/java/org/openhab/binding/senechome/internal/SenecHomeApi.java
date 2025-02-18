@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,6 @@ public class SenecHomeApi {
      */
     public SenecHomeResponse getStatistics()
             throws TimeoutException, ExecutionException, IOException, InterruptedException, JsonSyntaxException {
-
         String dataToSend = gson.toJson(new SenecHomeResponse());
         ContentResponse response = postRequest(dataToSend);
         return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), SenecHomeResponse.class));

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetBridgeHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
+import org.openhab.core.automation.annotation.ActionOutputs;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -61,7 +62,7 @@ public class OpenWebNetBridgeActions implements ThingActions {
     }
 
     @RuleAction(label = "sendMessage", description = "@text/action.sendMessage.desc")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMessage(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendMessage(
             @ActionInput(name = "message", label = "message", description = "@text/action.sendMessage.input.message.desc") @Nullable String message) {
         @Nullable
         Boolean s = (Boolean) sendMessageInternal(message).get("success");
@@ -73,8 +74,9 @@ public class OpenWebNetBridgeActions implements ThingActions {
     }
 
     @RuleAction(label = "sendMessageWithResponse", description = "@text/action.sendMessageWithResponse.desc")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") @ActionOutput(name = "responseMessages", type = "java.util.List<String>") Map<String, Object> sendMessageWithResponse(
-            @ActionInput(name = "message", label = "message", description = "@text/action.sendMessage.input.message.desc") @Nullable String message) {
+    public @ActionOutputs({ @ActionOutput(name = "success", label = "Success", type = "java.lang.Boolean"),
+            @ActionOutput(name = "responseMessages", label = "Response Messages", type = "java.util.List<String>") }) Map<String, Object> sendMessageWithResponse(
+                    @ActionInput(name = "message", label = "message", description = "@text/action.sendMessage.input.message.desc") @Nullable String message) {
         return sendMessageInternal(message);
     }
 

@@ -1,0 +1,680 @@
+# European Union countries
+# Austria
+- country: "AT"
+  vatPeriod:
+    - percentage: 20
+# Belgium
+- country: "BE"
+  vatPeriod:
+    - percentage: 21
+# Bulgaria
+- country: "BG"
+  vatPeriod:
+    - percentage: 20
+# Croatia
+- country: "HR"
+  vatPeriod:
+    - percentage: 25
+# Cyprus
+- country: "CY"
+  vatPeriod:
+    - percentage: 19
+# Czech Republic
+- country: "CZ"
+  vatPeriod:
+    - percentage: 21
+# Denmark
+- country: "DK"
+  vatPeriod:
+    - percentage: 25
+# Estonia
+- country: "EE"
+  vatPeriod:
+    - percentage: 20
+# Finland
+- country: "FI"
+  vatPeriod:
+    - percentage: 24
+# France
+- country: "FR"
+  vatPeriod:
+    - percentage: 20
+# Germany
+- country: "DE"
+  vatPeriod:
+    - percentage: 19
+# Greece
+- country: "GR"
+  vatPeriod:
+    - percentage: 24
+# Hungary
+- country: "HU"
+  vatPeriod:
+    - percentage: 27
+# Ireland
+- country: "IE"
+  vatPeriod:
+    - percentage: 23
+# Italy
+- country: "IT"
+  vatPeriod:
+    - percentage: 22
+# Latvia
+- country: "LV"
+  vatPeriod:
+    - percentage: 21
+# Lithuania
+- country: "LT"
+  vatPeriod:
+    - percentage: 21
+# Luxembourg
+- country: "LU"
+  vatPeriod:
+    - percentage: 17
+# Malta
+- country: "MT"
+  vatPeriod:
+    - percentage: 18
+# Netherlands
+- country: "NL"
+  vatPeriod:
+    - percentage: 21
+# Poland
+- country: "PL"
+  vatPeriod:
+    - percentage: 23
+# Portugal
+- country: "PT"
+  vatPeriod:
+    - percentage: 23
+# Romania
+- country: "RO"
+  vatPeriod:
+    - percentage: 19
+# Slovakia
+- country: "SK"
+  vatPeriod:
+    - percentage: 20
+# Slovenia
+- country: "SI"
+  vatPeriod:
+    - percentage: 22
+# Spain
+- country: "ES"
+  vatPeriod:
+    - percentage: 21
+# Sweden
+- country: "SE"
+  vatPeriod:
+    - percentage: 25
+# Non-European Union countries
+# Albania
+- country: "AL"
+  vatPeriod:
+    - percentage: 20
+# Algeria
+- country: "DZ"
+  vatPeriod:
+    - percentage: 19
+# Andorra
+- country: "AD"
+  vatPeriod:
+    - percentage: 4.5
+# Angola
+- country: "AO"
+  vatPeriod:
+    - percentage: 14
+# Antigua and Barbuda
+- country: "AG"
+  vatPeriod:
+    - percentage: 15
+# Argentina
+- country: "AR"
+  vatPeriod:
+    - percentage: 21
+# Armenia
+- country: "AM"
+  vatPeriod:
+    - percentage: 20
+# Australia
+- country: "AU"
+  vatPeriod:
+    - percentage: 10
+# Azerbaijan
+- country: "AZ"
+  vatPeriod:
+    - percentage: 18
+# Bahamas
+- country: "BS"
+  vatPeriod:
+    - percentage: 12
+# Bahrain
+- country: "BH"
+  vatPeriod:
+    - percentage: 10
+# Bangladesh
+- country: "BD"
+  vatPeriod:
+    - percentage: 15
+# Barbados
+- country: "BB"
+  vatPeriod:
+    - percentage: 17.5
+# Belarus
+- country: "BY"
+  vatPeriod:
+    - percentage: 20
+# Belize
+- country: "BZ"
+  vatPeriod:
+    - percentage: 12.5
+# Benin
+- country: "BJ"
+  vatPeriod:
+    - percentage: 18
+# Bolivia
+- country: "BO"
+  vatPeriod:
+    - percentage: 13
+# Bosnia and Herzegovina
+- country: "BA"
+  vatPeriod:
+    - percentage: 17
+# Botswana
+- country: "BW"
+  vatPeriod:
+    - percentage: 12
+# Brazil
+- country: "BR"
+  vatPeriod:
+    - percentage: 20
+# Burkina Faso
+- country: "BF"
+  vatPeriod:
+    - percentage: 18
+# Burundi
+- country: "BI"
+  vatPeriod:
+    - percentage: 18
+# Cambodia
+- country: "KH"
+  vatPeriod:
+    - percentage: 10
+# Cameroon
+- country: "CM"
+  vatPeriod:
+    - percentage: 19.25
+# Canada
+- country: "CA"
+  vatPeriod:
+    - percentage: 5
+# Cape Verde
+- country: "CV"
+  vatPeriod:
+    - percentage: 15
+# Central African Republic
+- country: "CF"
+  vatPeriod:
+    - percentage: 19
+# Chad
+- country: "TD"
+  vatPeriod:
+    - percentage: 18
+# Chile
+- country: "CL"
+  vatPeriod:
+    - percentage: 19
+# China
+- country: "CN"
+  vatPeriod:
+    - percentage: 13
+# Colombia
+- country: "CO"
+  vatPeriod:
+    - percentage: 19
+# Costa Rica
+- country: "CR"
+  vatPeriod:
+    - percentage: 13
+# Democratic Republic of the Congo
+- country: "CD"
+  vatPeriod:
+    - percentage: 16
+# Dominica
+- country: "DM"
+  vatPeriod:
+    - percentage: 15
+# Dominican Republic
+- country: "DO"
+  vatPeriod:
+    - percentage: 18
+# Ecuador
+- country: "EC"
+  vatPeriod:
+    - percentage: 12
+# Egypt
+- country: "EG"
+  vatPeriod:
+    - percentage: 14
+# El Salvador
+- country: "SV"
+  vatPeriod:
+    - percentage: 13
+# Equatorial Guinea
+- country: "GQ"
+  vatPeriod:
+    - percentage: 15
+# Ethiopia
+- country: "ET"
+  vatPeriod:
+    - percentage: 15
+# Faroe Islands
+- country: "FO"
+  vatPeriod:
+    - percentage: 25
+# Fiji
+- country: "FJ"
+  vatPeriod:
+    - percentage: 15
+# Gabon
+- country: "GA"
+  vatPeriod:
+    - percentage: 18
+# Gambia
+- country: "GM"
+  vatPeriod:
+    - percentage: 15
+# Georgia
+- country: "GE"
+  vatPeriod:
+    - percentage: 18
+# Ghana
+- country: "GH"
+  vatPeriod:
+    - percentage: 15
+# Grenada
+- country: "GD"
+  vatPeriod:
+    - percentage: 15
+# Guatemala
+- country: "GT"
+  vatPeriod:
+    - percentage: 12
+# Guinea
+- country: "GN"
+  vatPeriod:
+    - percentage: 18
+# Guinea-Bissau
+- country: "GW"
+  vatPeriod:
+    - percentage: 15
+# Guyana
+- country: "GY"
+  vatPeriod:
+    - percentage: 16
+# Haiti
+- country: "HT"
+  vatPeriod:
+    - percentage: 10
+# Honduras
+- country: "HN"
+  vatPeriod:
+    - percentage: 15
+# Iceland
+- country: "IS"
+  vatPeriod:
+    - percentage: 24
+# India
+- country: "IN"
+  vatPeriod:
+    - percentage: 5.5
+# Indonesia
+- country: "ID"
+  vatPeriod:
+    - start: null
+      end: 2024-12-31T17:00:00Z
+      percentage: 11
+    - start: 2024-12-31T17:00:00Z
+      end: null
+      percentage: 12
+# Iran
+- country: "IR"
+  vatPeriod:
+    - percentage: 9
+# Isle of Man
+- country: "IM"
+  vatPeriod:
+    - percentage: 20
+# Israel
+- country: "IL"
+  vatPeriod:
+    - start: null
+      end: 2024-12-31T22:00:00Z
+      percentage: 17
+    - start: 2024-12-31T22:00:00Z
+      end: null
+      percentage: 18
+# Ivory Coast
+- country: "CI"
+  vatPeriod:
+    - percentage: 18
+# Jamaica
+- country: "JM"
+  vatPeriod:
+    - percentage: 12.5
+# Japan
+- country: "JP"
+  vatPeriod:
+    - percentage: 10
+# Jersey
+- country: "JE"
+  vatPeriod:
+    - percentage: 5
+# Jordan
+- country: "JO"
+  vatPeriod:
+    - percentage: 16
+# Kazakhstan
+- country: "KZ"
+  vatPeriod:
+    - percentage: 12
+# Kenya
+- country: "KE"
+  vatPeriod:
+    - percentage: 16
+# Kyrgyzstan
+- country: "KG"
+  vatPeriod:
+    - percentage: 20
+# Laos
+- country: "LA"
+  vatPeriod:
+    - percentage: 10
+# Lebanon
+- country: "LB"
+  vatPeriod:
+    - percentage: 11
+# Lesotho
+- country: "LS"
+  vatPeriod:
+    - percentage: 14
+# Liechtenstein
+- country: "LI"
+  vatPeriod:
+    - percentage: 7.7
+# Madagascar
+- country: "MG"
+  vatPeriod:
+    - percentage: 20
+# Malawi
+- country: "MW"
+  vatPeriod:
+    - percentage: 16.5
+# Malaysia
+- country: "MY"
+  vatPeriod:
+    - percentage: 6
+# Maldives
+- country: "MV"
+  vatPeriod:
+    - percentage: 6
+# Mali
+- country: "ML"
+  vatPeriod:
+    - percentage: 18
+# Mauritania
+- country: "MR"
+  vatPeriod:
+    - percentage: 14
+# Mauritius
+- country: "MU"
+  vatPeriod:
+    - percentage: 15
+# Mexico
+- country: "MX"
+  vatPeriod:
+    - percentage: 16
+# Moldova
+- country: "MD"
+  vatPeriod:
+    - percentage: 20
+# Monaco
+- country: "MC"
+  vatPeriod:
+    - percentage: 19.6
+# Mongolia
+- country: "MN"
+  vatPeriod:
+    - percentage: 10
+# Montenegro
+- country: "ME"
+  vatPeriod:
+    - percentage: 21
+# Morocco
+- country: "MA"
+  vatPeriod:
+    - percentage: 20
+# Mozambique
+- country: "MZ"
+  vatPeriod:
+    - percentage: 17
+# Namibia
+- country: "NA"
+  vatPeriod:
+    - percentage: 15
+# Nepal
+- country: "NP"
+  vatPeriod:
+    - percentage: 13
+# New Zealand
+- country: "NZ"
+  vatPeriod:
+    - percentage: 15
+# Nicaragua
+- country: "NI"
+  vatPeriod:
+    - percentage: 15
+# Niger
+- country: "NE"
+  vatPeriod:
+    - percentage: 19
+# Nigeria
+- country: "NG"
+  vatPeriod:
+    - percentage: 7.5
+# Niue
+- country: "NU"
+  vatPeriod:
+    - percentage: 5
+# North Macedonia
+- country: "MK"
+  vatPeriod:
+    - percentage: 18
+# Norway
+- country: "NO"
+  vatPeriod:
+    - percentage: 25
+# Pakistan
+- country: "PK"
+  vatPeriod:
+    - percentage: 17
+# Palau
+- country: "PW"
+  vatPeriod:
+    - percentage: 10
+# Palestine
+- country: "PS"
+  vatPeriod:
+    - percentage: 16
+# Panama
+- country: "PA"
+  vatPeriod:
+    - percentage: 7
+# Papua New Guinea
+- country: "PG"
+  vatPeriod:
+    - percentage: 10
+# Paraguay
+- country: "PY"
+  vatPeriod:
+    - percentage: 10
+# Peru
+- country: "PE"
+  vatPeriod:
+    - percentage: 18
+# Philippines
+- country: "PH"
+  vatPeriod:
+    - percentage: 12
+# Republic of Congo
+- country: "CG"
+  vatPeriod:
+    - percentage: 16
+# Russia
+- country: "RU"
+  vatPeriod:
+    - percentage: 20
+# Rwanda
+- country: "RW"
+  vatPeriod:
+    - percentage: 18
+# Saint Kitts and Nevis
+- country: "KN"
+  vatPeriod:
+    - percentage: 17
+# Saint Vincent and the Grenadines
+- country: "VC"
+  vatPeriod:
+    - percentage: 15
+# Samoa
+- country: "WS"
+  vatPeriod:
+    - percentage: 15
+# Saudi Arabia
+- country: "SA"
+  vatPeriod:
+    - percentage: 15
+# Senegal
+- country: "SN"
+  vatPeriod:
+    - percentage: 18
+# Serbia
+- country: "RS"
+  vatPeriod:
+    - percentage: 20
+# Seychelles
+- country: "SC"
+  vatPeriod:
+    - percentage: 15
+# Sierra Leone
+- country: "SL"
+  vatPeriod:
+    - percentage: 15
+# Singapore
+- country: "SG"
+  vatPeriod:
+    - percentage: 8
+# South Africa
+- country: "ZA"
+  vatPeriod:
+    - percentage: 15
+# South Korea
+- country: "KR"
+  vatPeriod:
+    - percentage: 10
+# Sri Lanka
+- country: "LK"
+  vatPeriod:
+    - percentage: 12
+# Sudan
+- country: "SD"
+  vatPeriod:
+    - percentage: 17
+# Switzerland
+- country: "CH"
+  vatPeriod:
+    - percentage: 7.7
+# Taiwan
+- country: "TW"
+  vatPeriod:
+    - percentage: 5
+# Tajikistan
+- country: "TJ"
+  vatPeriod:
+    - percentage: 20
+# Tanzania
+- country: "TZ"
+  vatPeriod:
+    - percentage: 18
+# Thailand
+- country: "TH"
+  vatPeriod:
+    - percentage: 10
+# Togo
+- country: "TG"
+  vatPeriod:
+    - percentage: 18
+# Tonga
+- country: "TO"
+  vatPeriod:
+    - percentage: 15
+# Trinidad and Tobago
+- country: "TT"
+  vatPeriod:
+    - percentage: 12.5
+# Tunisia
+- country: "TN"
+  vatPeriod:
+    - percentage: 18
+# Turkey
+- country: "TR"
+  vatPeriod:
+    - percentage: 18
+# Turkmenistan
+- country: "TM"
+  vatPeriod:
+    - percentage: 15
+# Uganda
+- country: "UG"
+  vatPeriod:
+    - percentage: 18
+# Ukraine
+- country: "UA"
+  vatPeriod:
+    - percentage: 20
+# United Arab Emirates
+- country: "AE"
+  vatPeriod:
+    - percentage: 5
+# United Kingdom
+- country: "GB"
+  vatPeriod:
+    - percentage: 20
+# Uruguay
+- country: "UY"
+  vatPeriod:
+    - percentage: 22
+# Uzbekistan
+- country: "UZ"
+  vatPeriod:
+    - percentage: 12
+# Vanuatu
+- country: "VU"
+  vatPeriod:
+    - percentage: 13
+# Vietnam
+- country: "VN"
+  vatPeriod:
+    - percentage: 10
+# Venezuela
+- country: "VE"
+  vatPeriod:
+    - percentage: 12
+# Zambia
+- country: "ZM"
+  vatPeriod:
+    - percentage: 16
+# Zimbabwe
+- country: "ZW"
+  vatPeriod:
+    - percentage: 15

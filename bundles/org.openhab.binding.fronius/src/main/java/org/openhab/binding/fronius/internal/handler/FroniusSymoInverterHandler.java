@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.action.FroniusSymoInverterActions;
 import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
+import org.openhab.binding.fronius.internal.api.FroniusUnauthorizedException;
 import org.openhab.binding.fronius.internal.api.dto.ValueUnit;
 import org.openhab.binding.fronius.internal.api.dto.inverter.InverterDeviceStatus;
 import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeBody;
@@ -107,59 +108,98 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         return batteryControl;
     }
 
-    public void resetBatteryControl() {
+    public boolean resetBatteryControl() {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             try {
                 batteryControl.reset();
+                return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to reset battery control", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to reset battery control: Invalid username or password");
             }
         }
+        return false;
     }
 
-    public void holdBatteryCharge() {
+    public boolean holdBatteryCharge() {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             try {
                 batteryControl.holdBatteryCharge();
+                return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to set battery control to hold battery charge", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to set battery control to hold battery charge: Invalid username or password");
             }
         }
+        return false;
     }
 
-    public void addHoldBatteryChargeSchedule(LocalTime from, LocalTime until) {
+    public boolean addHoldBatteryChargeSchedule(LocalTime from, LocalTime until) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             try {
                 batteryControl.addHoldBatteryChargeSchedule(from, until);
+                return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to add hold battery charge schedule to battery control", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn(
+                        "Failed to add hold battery charge schedule to battery control: Invalid username or password");
             }
         }
+        return false;
     }
 
-    public void forceBatteryCharging(QuantityType<Power> power) {
+    public boolean forceBatteryCharging(QuantityType<Power> power) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             try {
                 batteryControl.forceBatteryCharging(power);
+                return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to set battery control to force battery charge", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to set battery control to force battery charge: Invalid username or password");
             }
         }
+        return false;
     }
 
-    public void addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power) {
+    public boolean addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             try {
                 batteryControl.addForcedBatteryChargingSchedule(from, until, power);
+                return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to add forced battery charge schedule to battery control", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn(
+                        "Failed to add forced battery charge schedule to battery control: Invalid username or password");
             }
         }
+        return false;
+    }
+
+    public boolean setBackupReservedBatteryCapacity(int percent) {
+        FroniusBatteryControl batteryControl = getBatteryControl();
+        if (batteryControl != null) {
+            try {
+                batteryControl.setBackupReservedCapacity(percent);
+                return true;
+            } catch (IllegalArgumentException e) {
+                logger.warn("Failed to set backup reserved battery capacity: {}", e.getMessage());
+            } catch (FroniusCommunicationException e) {
+                logger.warn("Failed to set backup reserved battery capacity", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to set backup reserved battery capacity: Invalid username or password");
+            }
+        }
+        return false;
     }
 
     /**

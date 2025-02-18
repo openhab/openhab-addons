@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.km200.internal.KM200BindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -675,7 +676,7 @@ public class KM200DataHandler {
                             break;
                     }
                 } else if (CoreItemFactory.DATETIME.equals(itemType)) {
-                    ZonedDateTime swTime = ((DateTimeType) command).getZonedDateTime();
+                    ZonedDateTime swTime = ((DateTimeType) command).getZonedDateTime(ZoneId.systemDefault());
                     KM200SwitchProgramServiceHandler sPService = ((KM200SwitchProgramServiceHandler) objParent
                             .getValueParameter());
                     if (null != sPService) {

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="metofficedatahub"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+
+		<label>MetOffice DataHub Account</label>
+		<description>MetOffice DataHub API Account</description>
+
+		<properties>
+			<property name="Site Specific API Call Count"/>
+		</properties>
+
+		<config-description>
+			<parameter name="siteApiKey" type="text" required="true">
+				<context>password</context>
+				<label>Site Specific API Key</label>
+				<description>The API Key for the Site Specific subscription in your MET Office Data Hub account</description>
+			</parameter>
+			<parameter name="siteRateDailyLimit" type="integer" unit="s" min="1">
+				<label>API Daily Limit</label>
+				<description>A limit to the number of daily site specific API requests</description>
+				<default>250</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="site">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Forecast Data</label>
+		<description>Site Specific forecast data</description>
+
+		<channel-groups>
+			<channel-group id="current-forecast" typeId="site-hr-forecast-grp">
+				<label>Forecast Current Hour</label>
+				<description>This is the weather forecast for the current hour.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus01" typeId="site-hr-forecast-grp">
+				<label>Forecast +1 Hour</label>
+				<description>This is the weather forecast in 1 hour.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus02" typeId="site-hr-forecast-grp">
+				<label>Forecast +2 Hours</label>
+				<description>This is the weather forecast in 2 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus03" typeId="site-hr-forecast-grp">
+				<label>Forecast +3 Hours</label>
+				<description>This is the weather forecast in 3 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus04" typeId="site-hr-forecast-grp">
+				<label>Forecast +4 Hours</label>
+				<description>This is the weather forecast in 4 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus05" typeId="site-hr-forecast-grp">
+				<label>Forecast +5 Hours</label>
+				<description>This is the weather forecast in 5 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus06" typeId="site-hr-forecast-grp">
+				<label>Forecast +6 Hours</label>
+				<description>This is the weather forecast in 6 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus07" typeId="site-hr-forecast-grp">
+				<label>Forecast +7 Hours</label>
+				<description>This is the weather forecast in 7 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus08" typeId="site-hr-forecast-grp">
+				<label>Forecast +8 Hours</label>
+				<description>This is the weather forecast in 8 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus09" typeId="site-hr-forecast-grp">
+				<label>Forecast +9 Hours</label>
+				<description>This is the weather forecast in 9 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus10" typeId="site-hr-forecast-grp">
+				<label>Forecast +10 Hours</label>
+				<description>This is the weather forecast in 10 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus11" typeId="site-hr-forecast-grp">
+				<label>Forecast +11 Hours</label>
+				<description>This is the weather forecast in 11 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus12" typeId="site-hr-forecast-grp">
+				<label>Forecast +12 Hours</label>
+				<description>This is the weather forecast in 12 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus13" typeId="site-hr-forecast-grp">
+				<label>Forecast +13 Hours</label>
+				<description>This is the weather forecast in 13 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus14" typeId="site-hr-forecast-grp">
+				<label>Forecast +14 Hours</label>
+				<description>This is the weather forecast in 14 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus15" typeId="site-hr-forecast-grp">
+				<label>Forecast +15 Hours</label>
+				<description>This is the weather forecast in 15 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus16" typeId="site-hr-forecast-grp">
+				<label>Forecast +16 Hours</label>
+				<description>This is the weather forecast in 16 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus17" typeId="site-hr-forecast-grp">
+				<label>Forecast +17 Hours</label>
+				<description>This is the weather forecast in 17 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus18" typeId="site-hr-forecast-grp">
+				<label>Forecast +18 Hours</label>
+				<description>This is the weather forecast in 18 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus19" typeId="site-hr-forecast-grp">
+				<label>Forecast +19 Hours</label>
+				<description>This is the weather forecast in 19 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus20" typeId="site-hr-forecast-grp">
+				<label>Forecast +20 Hours</label>
+				<description>This is the weather forecast in 20 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus21" typeId="site-hr-forecast-grp">
+				<label>Forecast +21 Hours</label>
+				<description>This is the weather forecast in 21 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus22" typeId="site-hr-forecast-grp">
+				<label>Forecast +22 Hours</label>
+				<description>This is the weather forecast in 22 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus23" typeId="site-hr-forecast-grp">
+				<label>Forecast +23 Hours</label>
+				<description>This is the weather forecast in 23 hours.</description>
+			</channel-group>
+			<channel-group id="current-forecast-plus24" typeId="site-hr-forecast-grp">
+				<label>Forecast +24 Hours</label>
+				<description>This is the weather forecast in 24 hours.</description>
+			</channel-group>
+			<channel-group id="daily-forecast" typeId="site-daily-forecast-grp">
+				<label>Forecast Current Day</label>
+				<description>This is the weather forecast for the current day.</description>
+			</channel-group>
+			<channel-group id="daily-forecast-plus01" typeId="site-daily-forecast-grp">
+				<label>Forecast +1 Day</label>
+				<description>This is the weather forecast in 1 day.</description>
+			</channel-group>
+			<channel-group id="daily-forecast-plus02" typeId="site-daily-forecast-grp">
+				<label>Forecast +2 Days</label>
+				<description>This is the weather forecast in 2 days.</description>
+			</channel-group>
+			<channel-group id="daily-forecast-plus03" typeId="site-daily-forecast-grp">
+				<label>Forecast +3 Days</label>
+				<description>This is the weather forecast in 3 days.</description>
+			</channel-group>
+			<channel-group id="daily-forecast-plus04" typeId="site-daily-forecast-grp">
+				<label>Forecast +4 Days</label>
+				<description>This is the weather forecast in 4 days.</description>
+			</channel-group>
+			<channel-group id="daily-forecast-plus05" typeId="site-daily-forecast-grp">
+				<label>Forecast +5 Days</label>
+				<description>This is the weather forecast in 5 days.</description>
+			</channel-group>
+			<channel-group id="daily-forecast-plus06" typeId="site-daily-forecast-grp">
+				<label>Forecast +6 Days</label>
+				<description>This is the weather forecast in 6 days.</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="location" type="text">
+				<context>location</context>
+				<label>Weather Location</label>
+				<description>Location of weather forecast in geographical coordinates (latitude/longitude).</description>
+			</parameter>
+			<parameter name="hourlyForecastPollRate" type="integer" min="1" max="24">
+				<label>Hourly Poll Interval</label>
+				<description>The default number of hours to wait between retrieving hourly forecast data</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="dailyForecastPollRate" type="integer" min="1" max="24">
+				<label>Daily Poll Interval</label>
+				<description>The default number of hours to wait between retrieving daily forecast data</description>
+				<default>3</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

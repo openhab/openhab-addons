@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,6 +123,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
 
                 // minimum and maximum are inverted due to mired/kelvin conversion!
                 StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                        .withStep(BigDecimal.valueOf(100)).withPattern("%.0f K")
                         .withMinimum(new BigDecimal(miredToKelvin(ctMax)))
                         .withMaximum(new BigDecimal(miredToKelvin(ctMin))).build();
                 stateDescriptionProvider.setDescriptionFragment(
@@ -244,9 +245,15 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 }
             }
             case CHANNEL_COLOR_TEMPERATURE -> {
-                if (command instanceof DecimalType) {
-                    int miredValue = kelvinToMired(((DecimalType) command).intValue());
-                    newLightState.ct = constrainToRange(miredValue, ctMin, ctMax);
+                QuantityType<?> miredQuantity = null;
+                if (command instanceof QuantityType<?> genericQuantity) {
+                    miredQuantity = genericQuantity.toInvertibleUnit(Units.MIRED);
+                } else if (command instanceof DecimalType decimal) {
+                    miredQuantity = QuantityType.valueOf(decimal.intValue(), Units.KELVIN)
+                            .toInvertibleUnit(Units.MIRED);
+                }
+                if (miredQuantity != null) {
+                    newLightState.ct = constrainToRange(miredQuantity.intValue(), ctMin, ctMax);
                     newLightState.on = true;
                 }
             }

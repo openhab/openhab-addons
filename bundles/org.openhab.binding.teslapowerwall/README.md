@@ -44,13 +44,13 @@ As a minimum, the hostname is needed:
 
 ## Full Example
 
-### `teslapowerwall.things`:
+### `teslapowerwall.things`
 
 ```java
 teslapowerwall:tesla-powerwall:TeslaPowerwall [ hostname="192.168.0.5" ]
 ```
 
-### `teslapowerwall.items`:
+### `teslapowerwall.items`
 
 ```java
 String TeslaPowerwall_grid-status { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:grid-status" }
@@ -74,7 +74,7 @@ Number:Dimensionless TeslaPowerwall_degradation { channel="teslapowerwall:tesla-
 Number:Energy TeslaPowerwall_full-pack-energy { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:full-pack-energy" }
 ```
 
-### `teslapowerwall.sitemap`:
+### `teslapowerwall.sitemap`
 
 ```perl
 Text item=TeslaPowerwall_grid-status label="Grid Status [%s]"
@@ -97,4 +97,3 @@ Text item=TeslaPowerwall_solar-energy-imported label="Solar Energy Imported [%.1
 Text item=TeslaPowerwall_full-pack-energy label="Full Pack Energy"
 Text item=TeslaPowerwall_degradation label="Degradation level"
 ```
-

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.automation.jsscripting.internal;
 import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
@@ -36,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
  */
 class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & Lock>
-        extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T> {
+        extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T> implements Lock {
 
     private static final int STACK_TRACE_LENGTH = 5;
 
@@ -110,5 +112,35 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
         }
 
         logger = LoggerFactory.getLogger("org.openhab.automation.script.javascript." + identifier);
+    }
+
+    @Override
+    public void lock() {
+        delegate.lock();
+    }
+
+    @Override
+    public void lockInterruptibly() throws InterruptedException {
+        delegate.lockInterruptibly();
+    }
+
+    @Override
+    public boolean tryLock() {
+        return delegate.tryLock();
+    }
+
+    @Override
+    public boolean tryLock(long l, TimeUnit timeUnit) throws InterruptedException {
+        return delegate.tryLock(l, timeUnit);
+    }
+
+    @Override
+    public void unlock() {
+        delegate.unlock();
+    }
+
+    @Override
+    public Condition newCondition() {
+        return delegate.newCondition();
     }
 }

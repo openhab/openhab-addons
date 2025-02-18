@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,9 +15,7 @@ package org.openhab.binding.tellstick.internal.handler;
 import static org.openhab.binding.tellstick.internal.TellstickBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Calendar;
+import java.time.Instant;
 
 import org.openhab.binding.tellstick.internal.TellstickBindingConstants;
 import org.openhab.binding.tellstick.internal.live.xml.DataTypeValue;
@@ -292,10 +290,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
             } else {
                 logger.debug("Unhandled Device {}.", device.getDeviceType());
             }
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(event.getTimestamp());
-            updateState(timestampChannel,
-                    new DateTimeType(ZonedDateTime.ofInstant(cal.toInstant(), ZoneId.systemDefault())));
+            updateState(timestampChannel, new DateTimeType(Instant.ofEpochMilli(event.getTimestamp())));
         }
     }
 

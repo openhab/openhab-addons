@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,6 +47,7 @@ public class XMLConnection extends AbstractConnection {
     private static final String HEADER_CHARSET_PART = "charset=";
 
     private static final int CONNECTION_TIMEOUT_MS = 5000;
+    private static final int READ_TIMEOUT_MS = 3000;
 
     public XMLConnection(String host) {
         super(host);
@@ -77,6 +78,7 @@ public class XMLConnection extends AbstractConnection {
 
             // Set a timeout in case the device is not reachable (went offline)
             connection.setConnectTimeout(CONNECTION_TIMEOUT_MS);
+            connection.setReadTimeout(READ_TIMEOUT_MS);
 
             connection.setUseCaches(false);
             connection.setDoInput(true);

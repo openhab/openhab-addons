@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
                     context.msg().put(b);
 
                     try {
-                        msgStatus status = checkNibeMessage(context.msg().asReadOnlyBuffer());
+                        MsgStatus status = checkNibeMessage(context.msg().asReadOnlyBuffer());
                         switch (status) {
                             case INVALID:
                                 context.state(WAIT_START);
@@ -72,7 +72,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
                                 break;
                         }
                     } catch (NibeHeatPumpException e) {
-                        LOGGER.trace("Error occured during parsing message: {}", e.getMessage());
+                        LOGGER.trace("Error occurred during parsing message: {}", e.getMessage());
                         context.state(CHECKSUM_FAILURE);
                     }
                 }
@@ -130,7 +130,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
         }
     };
 
-    private enum msgStatus {
+    private enum MsgStatus {
         VALID,
         VALID_BUT_NOT_READY,
         INVALID
@@ -139,13 +139,13 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
     /*
      * Throws NibeHeatPumpException when checksum fails
      */
-    private static msgStatus checkNibeMessage(ByteBuffer byteBuffer) throws NibeHeatPumpException {
+    private static MsgStatus checkNibeMessage(ByteBuffer byteBuffer) throws NibeHeatPumpException {
         byteBuffer.flip();
         int len = byteBuffer.remaining();
 
         if (len >= 1) {
             if (byteBuffer.get(0) != NibeHeatPumpProtocol.FRAME_START_CHAR_RES) {
-                return msgStatus.INVALID;
+                return MsgStatus.INVALID;
             }
 
             if (len >= 6) {
@@ -153,7 +153,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
 
                 // check if all bytes received
                 if (len < datalen + 6) {
-                    return msgStatus.VALID_BUT_NOT_READY;
+                    return MsgStatus.VALID_BUT_NOT_READY;
                 }
 
                 // calculate XOR checksum
@@ -173,11 +173,11 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
                     }
                 }
 
-                return msgStatus.VALID;
+                return MsgStatus.VALID;
             }
         }
 
-        return msgStatus.VALID_BUT_NOT_READY;
+        return MsgStatus.VALID_BUT_NOT_READY;
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NibeHeatPumpProtocolStates.class);

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.smarthome;
 
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.ITEM_TYPE_NUMBER;
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.ITEM_TYPE_STRING;
+import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,7 +26,10 @@ import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHan
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
@@ -51,13 +53,13 @@ public class HandlerColorTemperatureController extends HandlerBase {
     private static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEMPERATURE_NAME = new ChannelTypeUID(
             AmazonEchoControlBindingConstants.BINDING_ID, "colorTemperatureName");
 
-    private static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "colorTemperatureInKelvin");
+    private static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEMPERATURE_IN_KELVIN = //
+            DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_COLOR_TEMPERATURE_ABS;
 
     // Channel and Properties
     private static final ChannelInfo COLOR_TEMPERATURE_IN_KELVIN = new ChannelInfo(
             "colorTemperatureInKelvin" /* propertyName */ , "colorTemperatureInKelvin" /* ChannelId */,
-            CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN /* Channel Type */ , ITEM_TYPE_NUMBER /* Item Type */);
+            CHANNEL_TYPE_COLOR_TEMPERATURE_IN_KELVIN /* Channel Type */ , ITEM_TYPE_NUMBER_TEMPERATURE /* Item Type */);
 
     private static final ChannelInfo COLOR_TEMPERATURE_NAME = new ChannelInfo("colorProperties" /* propertyName */ ,
             "colorTemperatureName" /* ChannelId */, CHANNEL_TYPE_COLOR_TEMPERATURE_NAME /* Channel Type */ ,
@@ -130,15 +132,21 @@ public class HandlerColorTemperatureController extends HandlerBase {
         if (channelId.equals(COLOR_TEMPERATURE_IN_KELVIN.channelId)) {
             // WRITING TO THIS CHANNEL DOES CURRENTLY NOT WORK, BUT WE LEAVE THE CODE FOR FUTURE USE!
             if (containsCapabilityProperty(capabilities, COLOR_TEMPERATURE_IN_KELVIN.propertyName)) {
-                if (command instanceof DecimalType) {
-                    int intValue = ((DecimalType) command).intValue();
-                    if (intValue < 1000) {
-                        intValue = 1000;
+                QuantityType<?> kelvinQuantity = null;
+                if (command instanceof QuantityType<?> genericQuantity) {
+                    kelvinQuantity = genericQuantity.toInvertibleUnit(Units.KELVIN);
+                } else if (command instanceof DecimalType decimal) {
+                    kelvinQuantity = QuantityType.valueOf(decimal.intValue(), Units.KELVIN);
+                }
+                if (kelvinQuantity != null) {
+                    int kelvin = kelvinQuantity.intValue();
+                    if (kelvin < 1000) {
+                        kelvin = 1000;
                     }
-                    if (intValue > 10000) {
-                        intValue = 10000;
+                    if (kelvin > 10000) {
+                        kelvin = 10000;
                     }
-                    connection.smartHomeCommand(entityId, "setColorTemperature", "colorTemperatureInKelvin", intValue);
+                    connection.smartHomeCommand(entityId, "setColorTemperature", "colorTemperatureInKelvin", kelvin);
                     return true;
                 }
             }

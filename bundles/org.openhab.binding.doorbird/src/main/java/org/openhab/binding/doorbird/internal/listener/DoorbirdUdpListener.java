@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.doorbird.internal.DoorbirdBindingConstants;
 import org.openhab.binding.doorbird.internal.api.DoorbirdSession;
 import org.openhab.binding.doorbird.internal.handler.DoorbellHandler;
 import org.slf4j.Logger;
@@ -58,6 +59,7 @@ public class DoorbirdUdpListener extends Thread {
     private long lastDataTime;
 
     public DoorbirdUdpListener(DoorbellHandler thingHandler) {
+        super(String.format("OH-binding-%s-%s", DoorbirdBindingConstants.BINDING_ID, "UdpListener"));
         this.thingHandler = thingHandler;
     }
 

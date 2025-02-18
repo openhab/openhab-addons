@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -129,7 +129,8 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     private void setupDeviceController(TellstickBridgeConfiguration configuration) {
-        deviceController = new TelldusCoreDeviceController(configuration.resendInterval);
+        deviceController = new TelldusCoreDeviceController(configuration.resendInterval,
+                "OH-binding-" + getThing().getUID() + "-worker");
         eventHandler.addListener((TelldusCoreDeviceController) deviceController);
     }
 
