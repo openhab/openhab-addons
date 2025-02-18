@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Marker interface for exception handler implementations
  * 
- * @author Patrik Gfeller - Issue #18062, improve connection exception handling.
+ * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
 public interface HueSyncExceptionHandler {
