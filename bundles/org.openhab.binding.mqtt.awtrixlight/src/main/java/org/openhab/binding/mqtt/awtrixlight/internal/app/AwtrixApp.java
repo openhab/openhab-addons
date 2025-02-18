@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.awtrixlight.internal.app;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,11 +35,11 @@ public class AwtrixApp {
     public static final boolean DEFAULT_TOPTEXT = false;
     public static final int DEFAULT_TEXTOFFSET = 0;
     public static final boolean DEFAULT_CENTER = true;
-    public static final int[] DEFAULT_COLOR = {};
+    public static final int[] DEFAULT_COLOR = { 255, 255, 255 };
     public static final int[][] DEFAULT_GRADIENT = {};
     public static final int DEFAULT_BLINKTEXT = 0;
     public static final int DEFAULT_FADETEXT = 0;
-    public static final int[] DEFAULT_BACKGROUND = {};
+    public static final int[] DEFAULT_BACKGROUND = { 0, 0, 0 };
     public static final boolean DEFAULT_RAINBOW = false;
     public static final String DEFAULT_ICON = "None";
     public static final int DEFAULT_PUSHICON = 0;
@@ -50,8 +51,8 @@ public class AwtrixApp {
     public static final boolean DEFAULT_AUTOSCALE = true;
     public static final String DEFAULT_OVERLAY = "Clear";
     public static final int DEFAULT_PROGRESS = -1;
-    public static final int[] DEFAULT_PROGRESSC = {};
-    public static final int[] DEFAULT_PROGRESSBC = {};
+    public static final int[] DEFAULT_PROGRESSC = { 0, 255, 0 };
+    public static final int[] DEFAULT_PROGRESSBC = { 255, 255, 255 };
     public static final int DEFAULT_SCROLLSPEED = 100;
     public static final String DEFAULT_EFFECT = "None";
     public static final int DEFAULT_EFFECTSPEED = 100;
@@ -179,9 +180,6 @@ public class AwtrixApp {
 
     public void setColor(int[] color) {
         this.color = color;
-        if (this.gradient.length == 2) {
-            this.gradient[0] = color;
-        }
     }
 
     public int[][] getGradient() {
@@ -189,20 +187,7 @@ public class AwtrixApp {
     }
 
     public void setGradient(int[][] gradient) {
-        if (gradient.length != 2) {
-            this.gradient = DEFAULT_GRADIENT;
-        } else {
-            this.gradient = gradient;
-            this.color = gradient[0];
-        }
-    }
-
-    public void setGradient(int[] gradient) {
-        if (gradient.length != 3) {
-            this.gradient = DEFAULT_GRADIENT;
-        } else {
-            this.gradient = new int[][] { this.color, gradient };
-        }
+        this.gradient = gradient;
     }
 
     public int getBlinkText() {
@@ -359,8 +344,9 @@ public class AwtrixApp {
 
     protected String propertiesAsString() {
         return "text=" + text + ", textCase=" + textCase + ", topText=" + topText + ", textOffset=" + textOffset
-                + ", center=" + center + ", color=" + Arrays.toString(color) + ", gradient=" + Arrays.toString(gradient)
-                + ", blinkText=" + blinkText + ", fadeText=" + fadeText + ", background=" + Arrays.toString(background)
+                + ", center=" + center + ", color=" + Arrays.toString(color) + ", gradient=["
+                + Arrays.stream(gradient).map(color -> Arrays.toString(color)).collect(Collectors.joining(", "))
+                + "], blinkText=" + blinkText + ", fadeText=" + fadeText + ", background=" + Arrays.toString(background)
                 + ", rainbow=" + rainbow + ", icon=" + icon + ", pushIcon=" + pushIcon + ", duration=" + duration
                 + ", line=" + Arrays.toString(line) + ", lifetime=" + lifetime + ", lifetimeMode=" + lifetimeMode
                 + ", bar=" + Arrays.toString(bar) + ", autoscale=" + autoscale + ", overlay=" + overlay + ", progress="
@@ -521,7 +507,7 @@ public class AwtrixApp {
 
     private Map<String, Object> getTextEffectConfig() {
         Map<String, Object> fields = new HashMap<String, Object>();
-        if (this.color.length == 0 || this.gradient.length == 0) {
+        if (Arrays.equals(this.color, DEFAULT_COLOR) && Arrays.equals(this.gradient, DEFAULT_GRADIENT)) {
             if (this.blinkText > 0) {
                 fields.put("blinkText", this.blinkText);
             } else if (this.fadeText > 0) {
@@ -580,12 +566,8 @@ public class AwtrixApp {
         Map<String, Object> fields = new HashMap<String, Object>();
         if (progress > -1 && progress <= 100) {
             fields.put("progress", this.progress);
-            if (this.progressC.length == 3) {
-                fields.put("progressC", this.progressC);
-            }
-            if (this.progressBC.length == 3) {
-                fields.put("progressBC", this.progressBC);
-            }
+            fields.put("progressC", this.progressC);
+            fields.put("progressBC", this.progressBC);
         }
         return fields;
     }

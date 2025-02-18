@@ -117,12 +117,17 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 break;
             case CHANNEL_COLOR:
                 if (command instanceof HSBType) {
-                    this.app.setColor(ColorUtil.hsbToRgb((HSBType) command));
+                    int[] rgb = ColorUtil.hsbToRgb((HSBType) command);
+                    this.app.setColor(rgb);
+                    if (this.app.getGradient().length != 0) {
+                        this.app.setGradient(new int[][] { rgb, this.app.getGradient()[1] });
+                    }
                 }
                 break;
             case CHANNEL_GRADIENT_COLOR:
                 if (command instanceof HSBType) {
-                    this.app.setGradient(ColorUtil.hsbToRgb((HSBType) command));
+                    int[] rgb = ColorUtil.hsbToRgb((HSBType) command);
+                    this.app.setGradient(new int[][] { this.app.getColor(), rgb });
                 }
                 break;
             case CHANNEL_SCROLLSPEED:
@@ -533,13 +538,10 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
     private void initStates() {
         updateState(new ChannelUID(channelPrefix + CHANNEL_ACTIVE), this.active ? OnOffType.ON : OnOffType.OFF);
 
-        int[] color = this.app.getColor().length == 3 ? this.app.getColor() : new int[] { 0, 0, 0 };
+        int[] color = this.app.getColor();
         updateState(new ChannelUID(channelPrefix + CHANNEL_COLOR), HSBType.fromRGB(color[0], color[1], color[2]));
-
-        int[] gradient = this.app.getGradient().length == 2 && this.app.getGradient()[1] != null
-                && this.app.getGradient()[1].length == 3 ? this.app.getGradient()[1] : new int[] { 0, 0, 0 };
         updateState(new ChannelUID(channelPrefix + CHANNEL_GRADIENT_COLOR),
-                HSBType.fromRGB(gradient[0], gradient[1], gradient[2]));
+                HSBType.fromRGB(color[0], color[1], color[2]));
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_SCROLLSPEED),
                 new QuantityType<>(this.app.getScrollSpeed(), Units.PERCENT));
@@ -585,22 +587,23 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_ICON), new StringType(this.app.getIcon()));
 
-        String param = "";
-        if (this.app.getPushIcon() == 0) {
-            param = PUSH_ICON_OPTION_0;
-        } else if (this.app.getPushIcon() == 1) {
-            param = PUSH_ICON_OPTION_1;
-        } else if (this.app.getPushIcon() == 2) {
-            param = PUSH_ICON_OPTION_2;
+        switch (this.app.getPushIcon()) {
+            case 0:
+                updateState(new ChannelUID(channelPrefix + CHANNEL_PUSH_ICON), new StringType(PUSH_ICON_OPTION_0));
+                break;
+            case 1:
+                updateState(new ChannelUID(channelPrefix + CHANNEL_PUSH_ICON), new StringType(PUSH_ICON_OPTION_1));
+                break;
+            case 2:
+                updateState(new ChannelUID(channelPrefix + CHANNEL_PUSH_ICON), new StringType(PUSH_ICON_OPTION_2));
+                break;
         }
-        updateState(new ChannelUID(channelPrefix + CHANNEL_PUSH_ICON), new StringType(param));
 
-        int[] background = this.app.getBackground().length == 3 ? this.app.getBackground() : new int[] { 0, 0, 0 };
+        int[] background = this.app.getBackground();
         updateState(new ChannelUID(channelPrefix + CHANNEL_BACKGROUND),
                 HSBType.fromRGB(background[0], background[1], background[2]));
 
-        String line = this.app.getLine().length > 0 ? Arrays.toString(this.app.getLine()) : "";
-        updateState(new ChannelUID(channelPrefix + CHANNEL_LINE), new StringType(line));
+        updateState(new ChannelUID(channelPrefix + CHANNEL_LINE), new StringType(Arrays.toString(this.app.getLine())));
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_LIFETIME),
                 new QuantityType<>(this.app.getLifetime(), Units.SECOND));
@@ -608,8 +611,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         String lifetimeMode = this.app.getLifetimeMode() == 0 ? "DELETE" : "STALE";
         updateState(new ChannelUID(channelPrefix + CHANNEL_LIFETIME_MODE), new StringType(lifetimeMode));
 
-        String bar = this.app.getBar().length > 0 ? Arrays.toString(this.app.getBar()) : "";
-        updateState(new ChannelUID(channelPrefix + CHANNEL_BAR), new StringType(bar));
+        updateState(new ChannelUID(channelPrefix + CHANNEL_BAR), new StringType(Arrays.toString(this.app.getBar())));
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_AUTOSCALE),
                 this.app.getAutoscale() ? OnOffType.ON : OnOffType.OFF);
@@ -619,11 +621,11 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         int progress = Math.max(this.app.getProgress(), 0);
         updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESS), new QuantityType<>(progress, Units.PERCENT));
 
-        int[] progressC = this.app.getProgressC().length == 3 ? this.app.getProgressC() : new int[] { 0, 0, 0 };
+        int[] progressC = this.app.getProgressC();
         updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESSC),
                 HSBType.fromRGB(progressC[0], progressC[1], progressC[2]));
 
-        int[] progressBC = this.app.getProgressBC().length == 3 ? this.app.getProgressBC() : new int[] { 0, 0, 0 };
+        int[] progressBC = this.app.getProgressBC();
         updateState(new ChannelUID(channelPrefix + CHANNEL_PROGRESSBC),
                 HSBType.fromRGB(progressBC[0], progressBC[1], progressBC[2]));
     }

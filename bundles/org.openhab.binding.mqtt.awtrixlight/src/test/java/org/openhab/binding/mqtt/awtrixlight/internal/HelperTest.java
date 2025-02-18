@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -58,14 +59,17 @@ public class HelperTest {
             String[] stringProperties = { FIELD_BRIDGE_APP, FIELD_BRIDGE_FIRMWARE };
             String[] booleanProperties = { FIELD_BRIDGE_INDICATOR1, FIELD_BRIDGE_INDICATOR2, FIELD_BRIDGE_INDICATOR3 };
             if (Arrays.stream(stringProperties).anyMatch(s::equals)) {
+                @Nullable
                 Object prop = convertedJson.get(s);
                 assertNotNull(prop);
                 assertEquals(String.class, prop.getClass());
             } else if (Arrays.stream(booleanProperties).anyMatch(s::equals)) {
+                @Nullable
                 Object prop = convertedJson.get(s);
                 assertNotNull(prop);
                 assertEquals(Boolean.class, prop.getClass());
             } else {
+                @Nullable
                 Object prop = convertedJson.get(s);
                 assertNotNull(prop);
                 assertEquals(Double.class, prop.getClass());
@@ -115,7 +119,7 @@ public class HelperTest {
         AwtrixApp app = new AwtrixApp();
         app.setText("Test");
         app.setColor(new int[] { 255, 255, 255 });
-        app.setGradient(new int[] { 255, 0, 0 });
+        app.setGradient(new int[][] { { 255, 255, 255 }, { 255, 0, 0 } });
         return app;
     }
 
