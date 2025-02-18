@@ -354,7 +354,7 @@ class ForecastSolarTest {
         ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
 
         TimeSeries powerSeries = fo.getPowerTimeSeries(QueryMode.Average);
-        Instant now = Instant.now(Utils.getClock());
+        Instant now = Utils.now();
         assertEquals(24, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
             assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now));
