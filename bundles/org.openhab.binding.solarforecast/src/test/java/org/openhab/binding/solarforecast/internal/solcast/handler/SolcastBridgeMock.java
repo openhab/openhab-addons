@@ -13,33 +13,22 @@
 package org.openhab.binding.solarforecast.internal.solcast.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
-import org.json.JSONArray;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.storage.Storage;
-import org.openhab.core.thing.Thing;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.thing.Bridge;
 
 /**
- * The {@link SolcastPlaneMock} mocks Plane Handler for solcast
+ * The {@link SolcastBridgeMock} is mocking Solcast Bridge Handler
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SolcastPlaneMock extends SolcastPlaneHandler {
-
-    public SolcastPlaneMock(Thing thing, HttpClient hc, Storage<String> storage) {
-        super(thing, hc, storage);
+public class SolcastBridgeMock extends SolcastBridgeHandler {
+    public SolcastBridgeMock(Bridge b, TimeZoneProvider tzp) {
+        super(b, tzp);
     }
 
     public void updateConfig(Configuration config) {
         super.updateConfiguration(config);
-    }
-
-    public static JSONArray getTodaysJson(JSONArray forecast) {
-        return getTodaysValues(forecast);
-    }
-
-    public static JSONArray merge(JSONArray actuals, JSONArray forecast) {
-        return mergeArrays(actuals, forecast);
     }
 }
