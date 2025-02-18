@@ -112,8 +112,8 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
-                if (command instanceof QuantityType) {
-                    double brightnessInt = ((QuantityType<?>) command).doubleValue();
+                if (command instanceof QuantityType quantityCommand) {
+                    double brightnessInt = quantityCommand.doubleValue();
                     if (0 <= brightnessInt && brightnessInt <= 100) {
                         long param = Math.round(255 * (brightnessInt / 100));
                         sendMQTT(this.basetopic + TOPIC_SETTINGS, "{\"" + FIELD_BRIDGE_SET_AUTO_BRIGHTNESS
@@ -235,8 +235,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
             return;
         }
         ThingHandler handler = localBridge.getHandler();
-        if (handler instanceof AbstractBrokerHandler) {
-            AbstractBrokerHandler abh = (AbstractBrokerHandler) handler;
+        if (handler instanceof AbstractBrokerHandler abh) {
             final MqttBrokerConnection connection;
             try {
                 connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
@@ -272,8 +271,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof AwtrixLightAppHandler) {
-            AwtrixLightAppHandler alah = (AwtrixLightAppHandler) childHandler;
+        if (childHandler instanceof AwtrixLightAppHandler alah) {
             this.appHandlers.put(alah.getAppName(), alah);
             MqttBrokerConnection localConnection = connection;
             if (localConnection != null) {
@@ -284,8 +282,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof AwtrixLightAppHandler) {
-            AwtrixLightAppHandler alah = (AwtrixLightAppHandler) childHandler;
+        if (childHandler instanceof AwtrixLightAppHandler alah) {
             this.appHandlers.remove(alah.getAppName());
             MqttBrokerConnection localConnection = connection;
             if (localConnection != null) {
@@ -504,13 +501,11 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     }
 
     private void handleScreenMessage(String screenMessage) {
-        logger.trace("Incoming screen message {}", screenMessage);
         byte[] bytes = Helper.decodeImage(screenMessage);
         updateState(new ChannelUID(channelPrefix + CHANNEL_SCREEN), new RawType(bytes, "image/png"));
     }
 
     private void handleCurrentAppMessage(String currentAppMessage) {
-        logger.trace("Incoming currentApp message {}", currentAppMessage);
         this.currentApp = currentAppMessage;
         ThingHandlerCallback callback = getCallback();
         if (callback != null && callback.isChannelLinked(new ChannelUID(this.channelPrefix + CHANNEL_SCREEN))) {
@@ -533,10 +528,8 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     }
 
     private void handleStatsMessage(String statsMessage) {
-        logger.trace("Incoming stats message {}", statsMessage);
         Map<String, Object> params = Helper.decodeStatsJson(statsMessage);
         for (Map.Entry<String, Object> entry : params.entrySet()) {
-
             @Nullable
             String key = entry.getKey();
             @Nullable

@@ -259,9 +259,6 @@
 		<label>Effect Color Palette</label>
 		<description>Changes the color scheme of the effect settings</description>
 		<category>colorpicker</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 		<state>
 			<options>
 				<option value="None">None</option>
