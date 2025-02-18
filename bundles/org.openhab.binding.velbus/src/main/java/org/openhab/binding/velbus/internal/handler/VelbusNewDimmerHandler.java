@@ -198,10 +198,13 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
                 packet.setMode(fadeModeChannels[Byte.toUnsignedInt(channel) - 1]);
                 velbusBridgeHandler.sendPacket(packet.getBytes());
             } else if (command instanceof OnOffType onOffCommand) {
-                colorChannel.setBrightness((onOffCommand == OnOffType.ON) ? 100 : 0);
-
                 VelbusSetDimPacket packet = new VelbusSetDimPacket(address, channel);
-                packet.setDim(colorChannel.getBrightnessVelbus());
+                if (onOffCommand == OnOffType.ON) {
+                    packet.setLastUsedDim();
+                } else {
+                    colorChannel.setBrightness(0);
+                    packet.setDim(colorChannel.getBrightnessVelbus());
+                }
                 packet.setMode(fadeModeChannels[Byte.toUnsignedInt(channel) - 1]);
                 velbusBridgeHandler.sendPacket(packet.getBytes());
             } else {
