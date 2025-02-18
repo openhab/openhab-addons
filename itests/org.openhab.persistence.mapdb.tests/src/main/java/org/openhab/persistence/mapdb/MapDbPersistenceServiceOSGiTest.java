@@ -135,6 +135,8 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
         assertThat(persistenceService.query(filterByName), is(emptyIterable()));
         waitForAssert(() -> assertThat(persistenceService.query(filterByAlias),
                 contains(allOf(hasProperty("name", equalTo(alias)), hasProperty("state", equalTo(state))))));
+        waitForAssert(() -> assertThat(persistenceService.query(filterByName, alias),
+                contains(allOf(hasProperty("name", equalTo(name)), hasProperty("state", equalTo(state))))));
     }
 
     @Test
@@ -148,11 +150,11 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
         GenericItem item = new DimmerItem(name);
         item.setState(state, lastState, lastStateUpdate, lastStateChange);
 
-        assertNull(persistenceService.persistedItem(name));
+        assertNull(persistenceService.persistedItem(name, null));
 
         persistenceService.store(item);
 
-        waitForAssert(() -> assertThat(persistenceService.persistedItem(name),
+        waitForAssert(() -> assertThat(persistenceService.persistedItem(name, null),
                 allOf(hasProperty("name", equalTo(name)), hasProperty("state", equalTo(state)),
                         hasProperty("lastState", equalTo(lastState)),
                         hasProperty("timestamp", any(ZonedDateTime.class)),
