@@ -29,6 +29,7 @@ import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusSetDimPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusSetScenePacket;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -191,6 +192,13 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
 
             if (command instanceof PercentType percentCommand) {
                 colorChannel.setBrightness(percentCommand);
+
+                VelbusSetDimPacket packet = new VelbusSetDimPacket(address, channel);
+                packet.setDim(colorChannel.getBrightnessVelbus());
+                packet.setMode(fadeModeChannels[Byte.toUnsignedInt(channel) - 1]);
+                velbusBridgeHandler.sendPacket(packet.getBytes());
+            } else if (command instanceof OnOffType onOffCommand) {
+                colorChannel.setBrightness((onOffCommand == OnOffType.ON) ? 100 : 0);
 
                 VelbusSetDimPacket packet = new VelbusSetDimPacket(address, channel);
                 packet.setDim(colorChannel.getBrightnessVelbus());

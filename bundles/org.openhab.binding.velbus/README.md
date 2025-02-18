@@ -551,7 +551,7 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 ### Module `vmb4ledpwm-20`
 | Supported channels groups | Supported channels     | Supported command types         | Remarks           |
 |---------------------------|------------------------|---------------------------------|-------------------|
-| `brightness`              | `CH1` ... `CH4`        | Percent                         |                   |
+| `brightness`              | `CH1` ... `CH4`        | Percent, OnOff                  |                   |
 | `fade-mode`               | `CH1` ... `CH4`        | Direct, Fade_Rate, Fade_Time    |                   |
 | `scene`                   | `CH1` ... `CH4`        | Number                          | Min = 1, Max = 15 |
 
