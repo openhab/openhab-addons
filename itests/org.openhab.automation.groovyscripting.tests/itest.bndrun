@@ -91,5 +91,6 @@ Fragment-Host: org.openhab.automation.groovyscripting
 	biz.aQute.tester.junit-platform;version='[7.1.0,7.1.1)',\
 	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
 	de.focus_shift.jollyday-core;version='[1.4.0,1.4.1)',\
-	de.focus_shift.jollyday-jackson;version='[1.4.0,1.4.1)'
+	de.focus_shift.jollyday-jackson;version='[1.4.0,1.4.1)',\
+	org.jsr-305;version='[3.0.2,3.0.3)'
 

@@ -68,6 +68,7 @@ public class MqttOSGiTest extends JavaOSGiTest {
         properties.put(BrokerConstants.SSL_PORT_PROPERTY_NAME, BrokerConstants.DISABLED_PORT_BIND);
         properties.put(BrokerConstants.WEB_SOCKET_PORT_PROPERTY_NAME, BrokerConstants.DISABLED_PORT_BIND);
         properties.put(BrokerConstants.WSS_PORT_PROPERTY_NAME, BrokerConstants.DISABLED_PORT_BIND);
+        properties.put(BrokerConstants.ENABLE_TELEMETRY_NAME, "false");
         return properties;
     }
 
