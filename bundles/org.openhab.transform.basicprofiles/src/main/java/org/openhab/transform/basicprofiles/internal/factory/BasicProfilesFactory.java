@@ -42,6 +42,7 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.util.BundleResolver;
 import org.openhab.transform.basicprofiles.internal.profiles.DebounceCountingStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.DebounceTimeStateProfile;
+import org.openhab.transform.basicprofiles.internal.profiles.FlatLineProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.GenericCommandTriggerProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.GenericToggleSwitchTriggerProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.InvertStateProfile;
@@ -72,6 +73,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     public static final ProfileTypeUID THRESHOLD_UID = new ProfileTypeUID(SCOPE, "threshold");
     public static final ProfileTypeUID TIME_RANGE_COMMAND_UID = new ProfileTypeUID(SCOPE, "time-range-command");
     public static final ProfileTypeUID STATE_FILTER_UID = new ProfileTypeUID(SCOPE, "state-filter");
+    public static final ProfileTypeUID FLAT_LINE_UID = new ProfileTypeUID(SCOPE, "flat-line");
 
     private static final ProfileType PROFILE_TYPE_GENERIC_COMMAND = ProfileTypeBuilder
             .newTrigger(GENERIC_COMMAND_UID, "Generic Command") //
@@ -108,13 +110,16 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     private static final ProfileType PROFILE_STATE_FILTER = ProfileTypeBuilder
             .newState(STATE_FILTER_UID, "State Filter").build();
 
+    private static final ProfileType PROFILE_TYPE_FLAT_LINE = ProfileTypeBuilder.newState(FLAT_LINE_UID, "Flat Line")
+            .withSupportedItemTypes(CoreItemFactory.SWITCH).build();
+
     private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Set.of(GENERIC_COMMAND_UID,
             GENERIC_TOGGLE_SWITCH_UID, DEBOUNCE_COUNTING_UID, DEBOUNCE_TIME_UID, INVERT_UID, ROUND_UID, THRESHOLD_UID,
-            TIME_RANGE_COMMAND_UID, STATE_FILTER_UID);
+            TIME_RANGE_COMMAND_UID, STATE_FILTER_UID, FLAT_LINE_UID);
     private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Set.of(PROFILE_TYPE_GENERIC_COMMAND,
             PROFILE_TYPE_GENERIC_TOGGLE_SWITCH, PROFILE_TYPE_DEBOUNCE_COUNTING, PROFILE_TYPE_DEBOUNCE_TIME,
             PROFILE_TYPE_INVERT, PROFILE_TYPE_ROUND, PROFILE_TYPE_THRESHOLD, PROFILE_TYPE_TIME_RANGE_COMMAND,
-            PROFILE_STATE_FILTER);
+            PROFILE_STATE_FILTER, PROFILE_TYPE_FLAT_LINE);
 
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
 
@@ -155,6 +160,8 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             return new TimeRangeCommandProfile(callback, context, timeZoneProvider);
         } else if (STATE_FILTER_UID.equals(profileTypeUID)) {
             return new StateFilterProfile(callback, context, itemRegistry);
+        } else if (FLAT_LINE_UID.equals(profileTypeUID)) {
+            return new FlatLineProfile(callback, context);
         }
         return null;
     }
