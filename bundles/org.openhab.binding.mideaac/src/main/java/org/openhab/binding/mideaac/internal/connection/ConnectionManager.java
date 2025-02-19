@@ -106,16 +106,6 @@ public class ConnectionManager {
     }
 
     /**
-     * Validate if String is blank
-     * 
-     * @param str string to be evaluated
-     * @return boolean true or false
-     */
-    public static boolean isBlank(String str) {
-        return str.trim().isEmpty();
-    }
-
-    /**
      * After checking if the key and token need to be updated (Default = 0 Never)
      * The socket is established with the writer and inputStream (for reading responses)
      * The device is considered connected. V2 devices will proceed to send the poll or the
@@ -150,7 +140,7 @@ public class ConnectionManager {
         }
         if (retryCount == maxTries) {
             deviceIsConnected = false;
-            logger.info("Failed to connect after {} tries. Try again with next scheduled poll", maxTries);
+            logger.debug("Failed to connect after {} tries. Try again with next scheduled poll", maxTries);
             throw new MideaConnectionException("Failed to connect after maximum tries");
         }
 
@@ -194,7 +184,7 @@ public class ConnectionManager {
         logger.trace("Token: {}", token);
         logger.trace("Cloud {}", cloud);
 
-        if (!isBlank(token) && !isBlank(key) && !"".equals(cloud)) {
+        if (!token.isBlank() && !key.isBlank() && !"".equals(cloud)) {
             logger.debug("Device at IP: {} authenticating", ipAddress);
             doV3Handshake();
         } else {
