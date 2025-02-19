@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -115,7 +114,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     private final Map<String, EchoHandler> echoHandlers = new ConcurrentHashMap<>();
     private final Set<SmartHomeDeviceHandler> smartHomeDeviceHandlers = new CopyOnWriteArraySet<>();
     private final Set<FlashBriefingProfileHandler> flashBriefingProfileHandlers = new CopyOnWriteArraySet<>();
-    private final Set<String> deviceSerialNumbers = new CopyOnWriteArraySet<>();
+    private final LinkedBlockingQueue<String> pushActivityProcessingQueue = new LinkedBlockingQueue<>();
 
     private final Object synchronizeConnection = new Object();
     private Map<String, DeviceTO> serialNumberDeviceMapping = new HashMap<>();
@@ -628,14 +627,15 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                         }
                         echoHandler.handlePushCommand(command, payload);
                         if ("PUSH_EQUALIZER_STATE_CHANGE".equals(command) || "PUSH_VOLUME_CHANGE".equals(command)) {
-                            deviceSerialNumbers.add(dopplerId.deviceSerialNumber);
+                            pushActivityProcessingQueue.add(dopplerId.deviceSerialNumber);
+
+                            // check if a processing job is already scheduled or we need to create a new one
                             ScheduledFuture<?> refreshActivityJob = this.refreshActivityJob;
-                            if (refreshActivityJob != null) {
-                                refreshActivityJob.cancel(false);
+                            if (refreshActivityJob == null || refreshActivityJob.isDone()) {
+                                this.refreshActivityJob = scheduler.schedule(
+                                        () -> handlePushActivity(pushCommand.timeStamp),
+                                        handlerConfig.activityRequestDelay, TimeUnit.SECONDS);
                             }
-                            this.refreshActivityJob = scheduler.schedule(
-                                    () -> handlePushActivity(deviceSerialNumbers, pushCommand.timeStamp),
-                                    handlerConfig.activityRequestDelay, TimeUnit.SECONDS);
                         }
                     }
                 }
@@ -672,13 +672,13 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         return connection.getActivities(startTimestamp, endTimestamp);
     }
 
-    private void handlePushActivity(Set<String> deviceSerialNumbers, @Nullable Long timestamp) {
+    private void handlePushActivity(@Nullable Long timestamp) {
         List<CustomerHistoryRecordTO> activityRecords = getCustomerActivity(timestamp);
 
-        Iterator<String> iterator = deviceSerialNumbers.iterator();
-        while (iterator.hasNext()) {
+        while (!pushActivityProcessingQueue.isEmpty()) {
+            String deviceSerialNumber = pushActivityProcessingQueue.poll();
             try {
-                String deviceSerialNumber = iterator.next();
+                Objects.requireNonNull(deviceSerialNumber);
                 EchoHandler echoHandler = echoHandlers.get(deviceSerialNumber);
                 if (echoHandler == null) {
                     logger.warn("Could not find thing handler for serialnumber {}", deviceSerialNumber);
@@ -686,8 +686,8 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                 }
                 activityRecords.stream().filter(r -> r.recordKey.endsWith(deviceSerialNumber))
                         .forEach(echoHandler::handlePushActivity);
-            } finally {
-                iterator.remove();
+            } catch (RuntimeException e) {
+                logger.warn("Could not handle push activity", e);
             }
         }
     }
