@@ -1,4 +1,8 @@
-# JuiceNet Binding
+# JuiceNet Binding (DEPRECATED)
+
+::: tip Note:
+The parent company that manufactures the Juicenet EV charger (Enel X) has dropped support for their API (at least in the US) and so this binding no longer functions.
+There are several efforts (https://juice-rescue.org/) to replace that functionality which will require a major rewrite of the binding.
 
 The JuiceNet binding will interface with the cloud portal to get status and manage your JuiceBox EV charger(s).
 In addition to getting the status of various items from the EV charger, it is also possible to start and stop charging sessions.
