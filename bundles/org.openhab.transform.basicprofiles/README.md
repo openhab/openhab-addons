@@ -13,6 +13,7 @@ This bundle provides a list of useful Profiles:
 | [Threshold Profile](#threshold-profile)                         | Translates numeric input data to `ON` or `OFF` based on a threshold value                    |
 | [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType` |
 | [State Filter Profile](#state-filter-profile)                   | Filters input data using arithmetic comparison conditions                                    |
+| [Flat Line Profile](#flat-line-profile)                         | Sets the linked Item On or Off depending whether the Channel has recently produced data      |
 
 ## Generic Command Profile
 
@@ -334,3 +335,15 @@ Number:Power PowerUsage {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions=">= MinimumPowerLimit", "< MaximumPowerLimit" ]
 }
 ```
+
+## Flat Line Profile
+
+This profile sets the state of the item to `ON` (resp. `OFF`) if the binding has not provided any new data values within a given timeout period.
+The purpose is to indicate an alarm condition if the binding is no longer providing values for the given channel.
+
+### Flat Line Profile Configuration
+
+| Configuration Parameter | Type | Description                                                                                                                                                              |
+| ----------------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `timeout`               | text | The time out after which the profile will set the state of the item if the binding provides no updates. The value is in `QuantityType` format e.g. `1 h`, `60 s`, `2 d`  |
+| `inverted`              | text | Optional string indicating if item shall be set to `ON` or `OFF` after the timeout expires. Where `false` => `ON` resp. `true` => `OFF`. The default value is `false`.   |
