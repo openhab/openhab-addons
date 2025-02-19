@@ -33,6 +33,6 @@ public class XMPPClientConfiguration {
 
     public boolean isValid() {
         String host = this.host;
-        return !(host == null || host.isBlank());
+        return !((host == null || host.isBlank()) && domain.isBlank());
     }
 }
