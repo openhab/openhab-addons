@@ -271,11 +271,19 @@ public class DebugCommand extends InsteonCommand implements PortListener {
         return getBindingDataFilePath(MSG_EVENTS_FILE_PREFIX + "-" + name + ".log");
     }
 
-    private void clearMonitorFiles(@Nullable DeviceAddress address) {
-        String prefix = address == null ? MSG_EVENTS_FILE_PREFIX
-                : getMsgEventsFilePath(address).getFileName().toString();
+    private void clearMonitorFiles() {
+        getBindingDataFilePaths(MSG_EVENTS_FILE_PREFIX).map(Path::toFile).forEach(File::delete);
+    }
 
-        getBindingDataFilePaths(prefix).map(Path::toFile).forEach(File::delete);
+    private void truncateMonitorFile(DeviceAddress address) {
+        try {
+            Path path = getMsgEventsFilePath(address);
+
+            Files.createDirectories(path.getParent());
+            Files.writeString(path, "", StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            logger.warn("failed to truncate message event file", e);
+        }
     }
 
     private void logMessageEvent(Msg msg) {
@@ -315,7 +323,7 @@ public class DebugCommand extends InsteonCommand implements PortListener {
             monitoredAddresses.clear();
             console.println("Started monitoring all devices.");
             console.println("Message events logged in " + getBindingDataDirPath());
-            clearMonitorFiles(null);
+            clearMonitorFiles();
         } else {
             DeviceAddress address = InsteonAddress.isValid(arg) ? new InsteonAddress(arg)
                     : X10Address.isValid(arg) ? new X10Address(arg) : null;
@@ -324,7 +332,7 @@ public class DebugCommand extends InsteonCommand implements PortListener {
             } else if (monitoredAddresses.add(address)) {
                 console.println("Started monitoring the device " + address + ".");
                 console.println("Message events logged in " + getMsgEventsFilePath(address));
-                clearMonitorFiles(address);
+                truncateMonitorFile(address);
             } else {
                 console.println("Already monitoring the device " + address + ".");
             }
