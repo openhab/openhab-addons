@@ -110,7 +110,7 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
         }
-        pollingJob = scheduler.scheduleWithFixedDelay(this::refreshDeviceList, 0, refreshInterval,
+        this.pollingJob = scheduler.scheduleWithFixedDelay(this::refreshDeviceList, 0, refreshInterval,
                 TimeUnit.MILLISECONDS);
     }
 
