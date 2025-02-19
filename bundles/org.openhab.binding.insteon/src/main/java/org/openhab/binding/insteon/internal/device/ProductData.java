@@ -159,28 +159,19 @@ public class ProductData {
             deviceType = productData.deviceType;
             deviceTypeUpdated = productData.deviceType != null;
         }
-        // update remaining properties if defined in given product data
-        if (productData.productKey != 0) {
-            productKey = productData.productKey;
-        }
-        if (productData.description != null) {
-            description = productData.description;
-        }
-        if (productData.model != null) {
-            model = productData.model;
-        }
-        if (productData.vendor != null) {
-            vendor = productData.vendor;
-        }
-        if (productData.firstRecord != 0) {
-            firstRecord = productData.firstRecord;
-        }
+        // update firmware and hardware if defined in given product data
         if (productData.firmware != 0) {
             firmware = productData.firmware;
         }
         if (productData.hardware != 0) {
             hardware = productData.hardware;
         }
+        // update remaining properties
+        productKey = productData.productKey;
+        description = productData.description;
+        model = productData.model;
+        vendor = productData.vendor;
+        firstRecord = productData.firstRecord;
         return deviceTypeUpdated;
     }
 
@@ -209,7 +200,7 @@ public class ProductData {
             properties.add("deviceType:" + deviceType);
         }
         if (firstRecord != 0) {
-            properties.add("firstRecord:" + HexUtils.getHexString(firstRecord));
+            properties.add("firstRecord:" + HexUtils.getHexString(firstRecord, 4));
         }
         if (firmware != 0) {
             properties.add("firmwareVersion:" + HexUtils.getHexString(firmware));
