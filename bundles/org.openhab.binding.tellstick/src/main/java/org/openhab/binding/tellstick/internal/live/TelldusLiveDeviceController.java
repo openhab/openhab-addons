@@ -109,9 +109,8 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
         ConsumerKey consumer = new ConsumerKey(publicKey, privateKey);
         RequestToken user = new RequestToken(token, tokenSecret);
         OAuthSignatureCalculator calc = new OAuthSignatureCalculator(consumer, user);
-        AsyncHttpClient client = new DefaultAsyncHttpClient(createAsyncHttpClientConfig());
+        AsyncHttpClient client = this.client = new DefaultAsyncHttpClient(createAsyncHttpClientConfig());
         client.setSignatureCalculator(calc);
-        this.client = client;
         try {
             Response response = client.prepareGet(HTTP_TELLDUS_CLIENTS).execute().get();
             logger.debug("Response {} statusText {}", response.getResponseBody(), response.getStatusText());
