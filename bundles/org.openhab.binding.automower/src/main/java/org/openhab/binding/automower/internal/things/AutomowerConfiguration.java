@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class AutomowerConfiguration {
     public @Nullable String mowerId;
     public @Nullable Integer pollingInterval;
+    public @Nullable String mowerZoneId;
 
     @Nullable
     public String getMowerId() {
@@ -40,5 +41,10 @@ public class AutomowerConfiguration {
 
     public void setPollingInterval(Integer pollingInterval) {
         this.pollingInterval = pollingInterval;
+    }
+
+    @Nullable
+    public String getMowerZoneId() {
+        return mowerZoneId;
     }
 }

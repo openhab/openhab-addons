@@ -13,16 +13,25 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
- * @author Marcin Czeczko - Initial Contribution
+ * @author MikeTheTux - Initial contribution
  */
-public enum RestrictedReason {
-    NONE,
-    WEEK_SCHEDULE,
-    PARK_OVERRIDE,
-    SENSOR,
-    DAILY_LIMIT,
-    FOTA,
-    FROST,
-    ALL_WORK_AREAS_COMPLETED,
-    EXTERNAL
+public class MowerWorkAreaAttributes {
+    private byte cuttingHeight;
+    private boolean enable;
+
+    public byte getCuttingHeight() {
+        return cuttingHeight;
+    }
+
+    public void setCuttingHeight(byte cuttingHeight) {
+        this.cuttingHeight = cuttingHeight;
+    }
+
+    public boolean getEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
+    }
 }

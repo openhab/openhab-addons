@@ -13,16 +13,10 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
- * @author Marcin Czeczko - Initial Contribution
+ * @author MikeTheTux - Initial contribution
  */
-public enum RestrictedReason {
+public enum InactiveReason {
     NONE,
-    WEEK_SCHEDULE,
-    PARK_OVERRIDE,
-    SENSOR,
-    DAILY_LIMIT,
-    FOTA,
-    FROST,
-    ALL_WORK_AREAS_COMPLETED,
-    EXTERNAL
+    PLANNING,
+    SEARCHING_FOR_SATELLITES
 }
