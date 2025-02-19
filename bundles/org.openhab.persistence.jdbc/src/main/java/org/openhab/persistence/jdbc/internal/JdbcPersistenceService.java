@@ -189,7 +189,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      * Queries the {@link PersistenceService} for data with a given filter
      * criteria
      *
-     * @param filterthe filter to apply to the query
+     * @param filter the filter to apply to the query
      * @return a time series of items
      */
     @Override
@@ -242,9 +242,11 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
             }
         }
 
-        String table = itemNameToTableNameMap.get(alias != null ? alias : itemName);
+        String localAlias = alias != null ? alias : itemName;
+        String table = itemNameToTableNameMap.get(localAlias);
         if (table == null) {
-            logger.debug("JDBC::query: unable to find table for item with name: '{}', no data in database.", itemName);
+            logger.debug("JDBC::query: unable to find table for item with name or alias: '{}', no data in database.",
+                    localAlias);
             return List.of();
         }
 

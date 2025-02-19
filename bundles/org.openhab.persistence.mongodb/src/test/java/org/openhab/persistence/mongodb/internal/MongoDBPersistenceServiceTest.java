@@ -837,7 +837,6 @@ public class MongoDBPersistenceServiceTest {
     /**
      * Tests the toString of a MongoDBItem
      *
-     *
      * @param item The item to store in the database.
      */
     @Test
