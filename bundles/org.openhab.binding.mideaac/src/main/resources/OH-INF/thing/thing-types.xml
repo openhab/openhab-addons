@@ -119,20 +119,19 @@
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power</label>
-		<description>Turn the AC on and off.</description>
+		<description>Turn the AC on or off.</description>
 		<category>Switch</category>
 	</channel-type>
 	<channel-type id="target-temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Target temperature</label>
-		<description>Target temperature.</description>
+		<label>Target Temperature</label>
 		<category>Temperature</category>
 		<state readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="operational-mode">
 		<item-type>String</item-type>
-		<label>Operational mode</label>
-		<description>Operational mode: AUTO, COOL, DRY, HEAT.</description>
+		<label>Operational Mode</label>
+		<description>Operational modes: AUTO, COOL, DRY, HEAT, FAN ONLY.</description>
 		<state>
 			<options>
 				<option value="AUTO">AUTO</option>
@@ -145,8 +144,8 @@
 	</channel-type>
 	<channel-type id="fan-speed">
 		<item-type>String</item-type>
-		<label>Fan speed</label>
-		<description>Fan speed: SILENT, LOW, MEDIUM, HIGH, FULL, AUTO.</description>
+		<label>Fan Speed</label>
+		<description>Fan speeds: SILENT, LOW, MEDIUM, HIGH, FULL, AUTO.</description>
 		<state>
 			<options>
 				<option value="SILENT">SILENT</option>
@@ -160,8 +159,8 @@
 	</channel-type>
 	<channel-type id="swing-mode">
 		<item-type>String</item-type>
-		<label>Swing mode</label>
-		<description>Swing mode: OFF, VERTICAL, HORIZONTAL, BOTH. Some V3 versions do not support</description>
+		<label>Swing Mode</label>
+		<description>Swing modes: OFF, VERTICAL, HORIZONTAL, BOTH. Some V3 versions do not support</description>
 		<state>
 			<options>
 				<option value="OFF">OFF</option>
@@ -173,71 +172,69 @@
 	</channel-type>
 	<channel-type id="eco-mode">
 		<item-type>Switch</item-type>
-		<label>Eco mode</label>
+		<label>Eco Mode</label>
 		<description>Eco mode, Cool only, Temp: min. 24C, Fan: AUTO. </description>
 		<category>Switch</category>
 	</channel-type>
 	<channel-type id="turbo-mode">
 		<item-type>Switch</item-type>
-		<label>Turbo mode</label>
+		<label>Turbo Mode</label>
 		<description>Turbo mode, "Boost" in Midea Air app, long press "+" on IR Remote Controller. Only works in COOL and HEAT
 			mode.</description>
 		<category>Switch</category>
 	</channel-type>
 	<channel-type id="indoor-temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Indoor temperature</label>
+		<label>Indoor Temperature</label>
 		<description>Indoor temperature measured by the internal unit. Not frequent when unit is off</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="outdoor-temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Outdoor temperature</label>
+		<label>Outdoor Temperature</label>
 		<description>Outdoor temperature from the external unit. Not frequent when unit is off</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="sleep-function">
 		<item-type>Switch</item-type>
-		<label>Sleep function</label>
+		<label>Sleep Function</label>
 		<description>Sleep function ("Moon with a star" icon on IR Remote Controller).</description>
 		<category>Switch</category>
 	</channel-type>
 	<channel-type id="temperature-unit" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Temperature unit on LED Display</label>
+		<label>Temperature Unit F/C</label>
 		<description>On = Farenheit on Indoor AC unit LED display, Off = Celsius.</description>
 		<category>Switch</category>
 	</channel-type>
 	<channel-type id="screen-display" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Screen display</label>
+		<label>Screen Display</label>
 		<description>Status of LEDs on the device. Not all models work on LAN (only IR). No confirmation
 			possible either.</description>
 		<category>Switch</category>
 	</channel-type>
 	<channel-type id="appliance-error" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Appliance error</label>
-		<description>Appliance error (Read Only).</description>
+		<label>Appliance Error</label>
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="on-timer" advanced="true">
 		<item-type>String</item-type>
-		<label>ON Timer</label>
-		<description>ON Timer (HH:MM) to set.</description>
+		<label>On Timer</label>
+		<description>On Timer (HH:MM) to set.</description>
 	</channel-type>
 	<channel-type id="off-timer" advanced="true">
 		<item-type>String</item-type>
-		<label>OFF Timer</label>
-		<description>OFF Timer (HH:MM) to set.</description>
+		<label>Off Timer</label>
+		<description>Off Timer (HH:MM) to set.</description>
 	</channel-type>
 	<channel-type id="auxiliary-heat" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Auxiliary heat</label>
-		<description>Auxiliary heat (Read Only).</description>
+		<label>Auxiliary Heat</label>
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -250,8 +247,7 @@
 	</channel-type>
 	<channel-type id="alternate-target-temperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Alternate Target Temperature</label>
-		<description>Alternate Target Temperature (Read Only).</description>
+		<label>Alt. Target Temperature</label>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
