@@ -137,14 +137,16 @@ public class LinkyLocalHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             logger.debug("Refreshing channel {} {}", config.prmId, channelUID.getId());
         } else {
-            logger.debug("The Linky binding is read-only and can not handle command {}", command);
-        }
-
-        if (channelUID.getId().indexOf("cosphi") >= 0) {
-            if (command instanceof DecimalType) {
-                DecimalType dc = (DecimalType) command;
-                cosphi = dc.doubleValue();
+            if (channelUID.getId().indexOf("cosphi") >= 0) {
+                if (command instanceof DecimalType) {
+                    DecimalType dc = (DecimalType) command;
+                    cosphi = dc.doubleValue();
+                }
+            } else {
+                logger.debug("The Linky local binding is read-only and can not handle command {} {}",
+                        channelUID.getId(), command);
             }
+
         }
     }
 
@@ -213,23 +215,17 @@ public class LinkyLocalHandler extends BaseThingHandler {
                 if (r1 != null) {
                     handlePayload(r1);
                 }
-            }
-            if (payloadType == 0x01) {
+            } else if (payloadType == 0x01) {
                 // UPDATE_REQUEST request
-                logger.info("");
-            }
-            if (payloadType == 0x05) {
+                logger.info("Update request !");
+            } else if (payloadType == 0x05) {
                 // GET_HORLOGE request
-                logger.info("");
+                logger.info("Get Horloge request !");
             } else {
-                logger.info("");
+                logger.info("Unknown request !");
             }
-
-            logger.info("");
-
         } catch (Exception ex) {
-
-            logger.error("ex: {}", ex.toString(), ex);
+            logger.debug("ex: {}", ex.toString(), ex);
         }
     }
 
@@ -257,9 +253,13 @@ public class LinkyLocalHandler extends BaseThingHandler {
                     }
 
                     if (channel.getType() == ValueType.STRING) {
+                        logger.trace("Update channel {} to value {}", channel.getChannelName(), value);
+
                         updateState(channel.getGroupName(), channel.getChannelName(), StringType.valueOf(value));
                     } else if (channel.getType() == ValueType.INTEGER) {
                         if (!value.isEmpty()) {
+                            logger.trace("Update channel {} to value {}", channel.getChannelName(), value);
+
                             updateState(channel.getGroupName(), channel.getChannelName(), QuantityType
                                     .valueOf(channel.getFactor() * Integer.parseInt(value), channel.getUnit()));
                         }
@@ -268,6 +268,8 @@ public class LinkyLocalHandler extends BaseThingHandler {
                             Instant timestampConv = getAsInstant(value);
 
                             if (timestampConv != null) {
+                                logger.trace("Update channel {} to value {}", channel.getChannelName(), value);
+
                                 updateState(channel.getGroupName(), channel.getChannelName(),
                                         new DateTimeType(timestampConv));
                             }
@@ -308,7 +310,7 @@ public class LinkyLocalHandler extends BaseThingHandler {
 
                 }
             } catch (Exception ex) {
-                logger.error("err", ex);
+                logger.debug("err", ex);
             }
         }
 
@@ -515,7 +517,6 @@ public class LinkyLocalHandler extends BaseThingHandler {
             }
 
             idx++;
-            logger.info("aa");
         }
     }
 
