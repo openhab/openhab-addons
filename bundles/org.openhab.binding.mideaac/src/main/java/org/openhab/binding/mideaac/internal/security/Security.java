@@ -182,6 +182,7 @@ public class Security {
             md.update(combine);
             return md.digest();
         } catch (NoSuchAlgorithmException e) {
+            logger.warn("Encode32 Data: NoSuchAlgorithmException {}", e.getMessage());
         }
         return new byte[0];
     }
