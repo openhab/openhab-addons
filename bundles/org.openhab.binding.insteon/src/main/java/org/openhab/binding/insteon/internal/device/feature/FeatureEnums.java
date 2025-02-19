@@ -478,6 +478,32 @@ public class FeatureEnums {
         }
     }
 
+    public static enum X10Event {
+        ON,
+        OFF,
+        BRIGHT,
+        DIM;
+
+        public static X10Event valueOf(int cmd) throws IllegalArgumentException {
+            switch (cmd) {
+                case 0x02:
+                case 0x11:
+                    return X10Event.ON;
+                case 0x03:
+                case 0x13:
+                    return X10Event.OFF;
+                case 0x05:
+                case 0x15:
+                    return X10Event.BRIGHT;
+                case 0x04:
+                case 0x16:
+                    return X10Event.DIM;
+                default:
+                    throw new IllegalArgumentException("unexpected x10 event");
+            }
+        }
+    }
+
     public interface DeviceTypeRenamer {
         String getNewDeviceType(String deviceType);
     }

@@ -968,6 +968,7 @@
 		<description>X10 RF Transceiver</description>
 		<model>EZX10RF</model>
 		<vendor>Compacta</vendor>
+		<device-type>NetworkBridge_X10</device-type>
 	</product>
 	<product devCat="0x03" subCat="0x0E" productKey="0x00002C">
 		<description>X10 Translator</description>

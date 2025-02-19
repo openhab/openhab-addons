@@ -351,8 +351,24 @@ In order to determine which channels a device supports, check the device in the 
 | event-button-bottom | Event Button Bottom |
 | event-button-top    | Event Button Top    |
 | im-event-button     | Event Button        |
+| x10-event1          | X10 Event 1         |
+| x10-event2          | X10 Event 2         |
+| x10-event3          | X10 Event 3         |
+| x10-event4          | X10 Event 4         |
+| x10-event5          | X10 Event 5         |
+| x10-event6          | X10 Event 6         |
+| x10-event7          | X10 Event 7         |
+| x10-event8          | X10 Event 8         |
+| x10-event9          | X10 Event 9         |
+| x10-event10         | X10 Event 10        |
+| x10-event11         | X10 Event 11        |
+| x10-event12         | X10 Event 12        |
+| x10-event13         | X10 Event 13        |
+| x10-event14         | X10 Event 14        |
+| x10-event15         | X10 Event 15        |
+| x10-event16         | X10 Event 16        |
 
-The supported triggered events for Insteon Device things:
+The button events for supported Insteon devices:
 
 | Event                | Description                           |
 | -------------------- | ------------------------------------- |
@@ -364,13 +380,22 @@ The supported triggered events for Insteon Device things:
 | `HELD_DOWN`          | Button Held Down (Manual Change Down) |
 | `RELEASED`           | Button Released (Manual Change Stop)  |
 
-And for Insteon Hub and PLM things:
+And for Insteon Hubs and PLMs:
 
 | Event      | Description     |
 | ---------- | --------------- |
 | `PRESSED`  | Button Pressed  |
 | `HELD`     | Button Held     |
 | `RELEASED` | Button Released |
+
+The events for the Insteon X10 RF Transceiver (EZX10RF):
+
+| Event    | Description |
+| -------- | ----------- |
+| `ON`     | On          |
+| `OFF`    | Off         |
+| `BRIGHT` | Bright      |
+| `DIM`    | Dim         |
 
 ### Legacy Channels
 
