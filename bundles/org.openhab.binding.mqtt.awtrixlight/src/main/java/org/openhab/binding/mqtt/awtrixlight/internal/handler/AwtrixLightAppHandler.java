@@ -425,7 +425,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
     public void initialize() {
         this.synchronizationRequired = true;
         AppConfigOptions config = getConfigAs(AppConfigOptions.class);
-        if (!this.appName.equals(config.appname)) {
+        if (!this.appName.isBlank() && !this.appName.equals(config.appname)) {
             // The app name has changed. Get rid of the old App first and init a new one
             deleteApp();
         }
