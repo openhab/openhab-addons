@@ -212,7 +212,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         if (b != null) {
             return b.getStatusInfo();
         } else {
-            return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
         }
     }
 
