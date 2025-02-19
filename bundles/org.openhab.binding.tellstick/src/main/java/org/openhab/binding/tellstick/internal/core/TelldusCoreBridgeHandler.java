@@ -177,7 +177,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     private synchronized void setupListeners() {
-        TellstickEventHandler eventHandler = new TellstickEventHandler(deviceList);
+        TellstickEventHandler eventHandler = this.eventHandler = new TellstickEventHandler(deviceList);
         eventHandler.addListener(this);
         this.eventHandler = eventHandler;
     }
