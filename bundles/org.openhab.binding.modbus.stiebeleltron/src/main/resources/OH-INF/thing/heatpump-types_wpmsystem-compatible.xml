@@ -17,7 +17,7 @@
 			<channel-group id="systemInformationWpm" typeId="system-information-wpm"/>
 			<channel-group id="systemParameterWpm" typeId="system-parameter-wpm"/>
 			<channel-group id="systemStateWpm" typeId="system-state-wpm"/>
-            <channel-group id="energyRuntimeInformationWpmWpm3" typeId="energy-runtime-information-wpm-wpm3"/>
+			<channel-group id="energyRuntimeInformationWpmWpm3" typeId="energy-runtime-information-wpm-wpm3"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:stiebeleltron:modbusconfig"/>
