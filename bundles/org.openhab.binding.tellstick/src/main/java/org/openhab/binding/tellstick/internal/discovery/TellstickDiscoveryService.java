@@ -16,12 +16,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tellstick.internal.TellstickBindingConstants;
 import org.openhab.binding.tellstick.internal.handler.DeviceStatusListener;
 import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
-import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
-import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice;
-import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
+import org.openhab.binding.tellstick.internal.live.dto.LiveDataType;
+import org.openhab.binding.tellstick.internal.live.dto.TellstickNetDevice;
+import org.openhab.binding.tellstick.internal.live.dto.TellstickNetSensor;
 import org.openhab.binding.tellstick.internal.local.dto.TellstickLocalDeviceDTO;
 import org.openhab.binding.tellstick.internal.local.dto.TellstickLocalSensorDTO;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -46,6 +48,7 @@ import org.tellstick.enums.DataType;
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public class TellstickDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
     private static final long DEFAULT_TTL = 60 * 60; // 1 Hour
 
@@ -121,7 +124,7 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
         }
     }
 
-    private ThingUID getThingUID(Bridge bridge, Device device) {
+    private @Nullable ThingUID getThingUID(Bridge bridge, Device device) {
         ThingUID thingUID = null;
         switch (device.getDeviceType()) {
             case SENSOR:
