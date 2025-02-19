@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.panasonicbdp.internal.discovery;
 
 import static org.openhab.binding.panasonicbdp.internal.PanaBlurayBindingConstants.*;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,12 +61,10 @@ public class PanaBlurayDiscoveryParticipant implements UpnpDiscoveryParticipant 
         final ThingUID uid = getThingUID(device);
         if (uid != null) {
             final Map<String, Object> properties = new HashMap<>(2);
-
-            final URL url = device.getIdentity().getDescriptorURL();
             final String label = device.getDetails().getFriendlyName();
 
             properties.put(PROPERTY_UUID, uid.getId());
-            properties.put(PROPERTY_HOST_NAME, url.getHost());
+            properties.put(PROPERTY_HOST_NAME, device.getIdentity().getDescriptorURL().getHost());
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withRepresentationProperty(PROPERTY_UUID).withLabel(label).build();

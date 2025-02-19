@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,6 +47,8 @@ public class TextTests extends AbstractComponentTests {
         assertThat(component.getName(), is("MQTT Text"));
 
         assertChannel(component, Text.TEXT_CHANNEL_ID, "txt/state", "txt/cmd", "MQTT Text", TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("txt/state", "stuff");
         assertState(component, Text.TEXT_CHANNEL_ID, new StringType("stuff"));

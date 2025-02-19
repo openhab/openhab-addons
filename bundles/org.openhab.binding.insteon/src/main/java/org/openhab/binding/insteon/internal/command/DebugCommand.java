@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,11 +13,11 @@
 package org.openhab.binding.insteon.internal.command;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +27,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.insteon.internal.InsteonBindingConstants;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.device.DeviceAddress;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonScene;
 import org.openhab.binding.insteon.internal.device.X10Address;
@@ -71,7 +72,7 @@ public class DebugCommand extends InsteonCommand implements PortListener {
 
     private static final String ALL_OPTION = "--all";
 
-    private static final String MSG_EVENTS_FILE_PREFIX = "messageEvents";
+    private static final String MSG_EVENTS_FILE_PREFIX = "message-events";
 
     private static enum MessageType {
         STANDARD,
@@ -83,7 +84,8 @@ public class DebugCommand extends InsteonCommand implements PortListener {
 
     private boolean monitoring = false;
     private boolean monitorAllDevices = false;
-    private Set<InsteonAddress> monitoredAddresses = new HashSet<>();
+    private Set<DeviceAddress> monitoredAddresses = new HashSet<>();
+    private @Nullable X10Address lastX10Address;
 
     public DebugCommand(InsteonCommandExtension commandExtension) {
         super(NAME, DESCRIPTION, commandExtension);
@@ -91,11 +93,11 @@ public class DebugCommand extends InsteonCommand implements PortListener {
 
     @Override
     public List<String> getUsages() {
-        return List.of(buildCommandUsage(LIST_MONITORED, "list monitored device(s)"),
+        return List.of(buildCommandUsage(LIST_MONITORED, "list monitored Insteon/X10 device(s)"),
                 buildCommandUsage(START_MONITORING + " " + ALL_OPTION + "|<address>",
-                        "start logging message events for device(s) in separate file(s)"),
+                        "start logging message events for Insteon/X10 device(s) in separate file(s)"),
                 buildCommandUsage(STOP_MONITORING + " " + ALL_OPTION + "|<address>",
-                        "stop logging message events for device(s) in separate file(s)"),
+                        "stop logging message events for Insteon/X10 device(s) in separate file(s)"),
                 buildCommandUsage(SEND_BROADCAST_MESSAGE + " <group> <cmd1> <cmd2>",
                         "send an Insteon broadcast message to a group"),
                 buildCommandUsage(SEND_STANDARD_MESSAGE + " <address> <cmd1> <cmd2>",
@@ -195,9 +197,17 @@ public class DebugCommand extends InsteonCommand implements PortListener {
         } else if (cursorArgumentIndex == 1) {
             switch (args[0]) {
                 case START_MONITORING:
+                    strings = monitorAllDevices ? List.of()
+                            : Stream.concat(Stream.of(ALL_OPTION),
+                                    Stream.concat(Stream.of(getModem().getAddress()),
+                                            getModem().getDB().getDevices().stream())
+                                            .filter(address -> !monitoredAddresses.contains(address))
+                                            .map(InsteonAddress::toString))
+                                    .toList();
+                    break;
                 case STOP_MONITORING:
-                    strings = Stream.concat(Stream.of(ALL_OPTION),
-                            getModem().getDB().getDevices().stream().map(InsteonAddress::toString)).toList();
+                    strings = monitorAllDevices ? List.of(ALL_OPTION)
+                            : monitoredAddresses.stream().map(DeviceAddress::toString).toList();
                     break;
                 case SEND_BROADCAST_MESSAGE:
                     strings = getModem().getDB().getBroadcastGroups().stream().map(String::valueOf).toList();
@@ -229,69 +239,65 @@ public class DebugCommand extends InsteonCommand implements PortListener {
 
     @Override
     public void messageReceived(Msg msg) {
-        try {
-            InsteonAddress address = msg.getInsteonAddress(msg.isReply() ? "toAddress" : "fromAddress");
-            if (monitorAllDevices || monitoredAddresses.contains(address)) {
-                logMessageEvent(address, msg);
-            }
-        } catch (FieldException ignored) {
-            // ignore message with no address field
-        }
+        logMessageEvent(msg);
     }
 
     @Override
     public void messageSent(Msg msg) {
+        logMessageEvent(msg);
+    }
+
+    private DeviceAddress getMsgEventAddress(Msg msg) throws FieldException {
+        if (msg.isX10()) {
+            X10Address address = msg.isX10Address() ? msg.getX10Address() : lastX10Address;
+            if (address == null) {
+                throw new FieldException("unknown x10 address");
+            }
+            lastX10Address = address;
+            return address;
+        } else if (msg.isInsteon()) {
+            return msg.isInbound() && !msg.isReply() ? msg.getInsteonAddress("fromAddress")
+                    : !msg.isAllLinkBroadcast() ? msg.getInsteonAddress("toAddress") : getModem().getAddress();
+        } else {
+            return getModem().getAddress();
+        }
+    }
+
+    private Path getMsgEventsFilePath(DeviceAddress address) {
+        String name = address.toString().toLowerCase().replace(".", "");
+        if (address instanceof X10Address) {
+            name = "x10-" + name;
+        }
+        return getBindingDataFilePath(MSG_EVENTS_FILE_PREFIX + "-" + name + ".log");
+    }
+
+    private void clearMonitorFiles(@Nullable DeviceAddress address) {
+        String prefix = address == null ? MSG_EVENTS_FILE_PREFIX
+                : getMsgEventsFilePath(address).getFileName().toString();
+
+        getBindingDataFilePaths(prefix).map(Path::toFile).forEach(File::delete);
+    }
+
+    private void logMessageEvent(Msg msg) {
         try {
-            InsteonAddress address = msg.getInsteonAddress("toAddress");
+            DeviceAddress address = getMsgEventAddress(msg);
             if (monitorAllDevices || monitoredAddresses.contains(address)) {
-                logMessageEvent(address, msg);
+                String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
+                String line = timestamp + " " + msg + System.lineSeparator();
+                Path path = getMsgEventsFilePath(address);
+
+                Files.createDirectories(path.getParent());
+                Files.writeString(path, line, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
             }
-        } catch (FieldException ignored) {
-            // ignore message with no address field
-        }
-    }
-
-    private String getMsgEventsFileName(String address) {
-        return MSG_EVENTS_FILE_PREFIX + "-" + address.replace(".", "") + ".log";
-    }
-
-    private String getMsgEventsFilePath(String address) {
-        return InsteonBindingConstants.BINDING_DATA_DIR + File.separator + getMsgEventsFileName(address);
-    }
-
-    private void clearMonitorFiles(String address) {
-        File folder = new File(InsteonBindingConstants.BINDING_DATA_DIR);
-        String prefix = ALL_OPTION.equals(address) ? MSG_EVENTS_FILE_PREFIX : getMsgEventsFileName(address);
-
-        if (folder.isDirectory()) {
-            Arrays.asList(folder.listFiles()).stream().filter(file -> file.getName().startsWith(prefix))
-                    .forEach(File::delete);
-        }
-    }
-
-    private void logMessageEvent(InsteonAddress address, Msg msg) {
-        String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
-        String pathname = getMsgEventsFilePath(address.toString());
-
-        try {
-            File file = new File(pathname);
-            File parent = file.getParentFile();
-            if (parent == null) {
-                throw new IOException(pathname + " does not name a parent directory");
-            }
-            parent.mkdirs();
-            file.createNewFile();
-
-            PrintStream ps = new PrintStream(new FileOutputStream(file, true));
-            ps.println(timestamp + " " + msg.toString());
-            ps.close();
+        } catch (FieldException e) {
+            logger.warn("failed to parse message", e);
         } catch (IOException e) {
             logger.warn("failed to write to message event file", e);
         }
     }
 
     private void listMonitoredDevices(Console console) {
-        String addresses = monitoredAddresses.stream().map(InsteonAddress::toString).collect(Collectors.joining(", "));
+        String addresses = monitoredAddresses.stream().map(DeviceAddress::toString).collect(Collectors.joining(", "));
         if (!addresses.isEmpty()) {
             console.println("The monitored device(s) are: " + addresses);
         } else if (monitorAllDevices) {
@@ -301,30 +307,27 @@ public class DebugCommand extends InsteonCommand implements PortListener {
         }
     }
 
-    private void startMonitoring(Console console, String address) {
-        if (ALL_OPTION.equals(address)) {
-            if (!monitorAllDevices) {
-                monitorAllDevices = true;
-                monitoredAddresses.clear();
-                console.println("Started monitoring all devices.");
-                console.println("Message events logged in " + InsteonBindingConstants.BINDING_DATA_DIR);
-                clearMonitorFiles(address);
-            } else {
-                console.println("Already monitoring all devices.");
-            }
-        } else if (InsteonAddress.isValid(address)) {
-            if (monitorAllDevices) {
-                console.println("Already monitoring all devices.");
-            } else if (monitoredAddresses.add(new InsteonAddress(address))) {
+    private void startMonitoring(Console console, String arg) {
+        if (monitorAllDevices) {
+            console.println("Already monitoring all devices.");
+        } else if (ALL_OPTION.equals(arg)) {
+            monitorAllDevices = true;
+            monitoredAddresses.clear();
+            console.println("Started monitoring all devices.");
+            console.println("Message events logged in " + getBindingDataDirPath());
+            clearMonitorFiles(null);
+        } else {
+            DeviceAddress address = InsteonAddress.isValid(arg) ? new InsteonAddress(arg)
+                    : X10Address.isValid(arg) ? new X10Address(arg) : null;
+            if (address == null) {
+                console.println("Invalid device address argument: " + arg);
+            } else if (monitoredAddresses.add(address)) {
                 console.println("Started monitoring the device " + address + ".");
                 console.println("Message events logged in " + getMsgEventsFilePath(address));
                 clearMonitorFiles(address);
             } else {
                 console.println("Already monitoring the device " + address + ".");
             }
-        } else {
-            console.println("Invalid device address" + address + ".");
-            return;
         }
 
         if (!monitoring) {
@@ -333,31 +336,26 @@ public class DebugCommand extends InsteonCommand implements PortListener {
         }
     }
 
-    private void stopMonitoring(Console console, String address) {
-        if (!monitoring) {
-            console.println("Not monitoring any devices.");
-            return;
-        }
-
-        if (ALL_OPTION.equals(address)) {
+    private void stopMonitoring(Console console, String arg) {
+        if (ALL_OPTION.equals(arg)) {
             if (monitorAllDevices) {
                 monitorAllDevices = false;
                 console.println("Stopped monitoring all devices.");
             } else {
                 console.println("Not monitoring all devices.");
             }
-        } else if (InsteonAddress.isValid(address)) {
+        } else {
+            DeviceAddress address = InsteonAddress.isValid(arg) ? new InsteonAddress(arg)
+                    : X10Address.isValid(arg) ? new X10Address(arg) : null;
             if (monitorAllDevices) {
                 console.println("Not monitoring individual devices.");
-            } else if (monitoredAddresses.remove(new InsteonAddress(address))) {
+            } else if (address == null) {
+                console.println("Invalid device address argument: " + arg);
+            } else if (monitoredAddresses.remove(address)) {
                 console.println("Stopped monitoring the device " + address + ".");
             } else {
                 console.println("Not monitoring the device " + address + ".");
-                return;
             }
-        } else {
-            console.println("Invalid address device address " + address + ".");
-            return;
         }
 
         if (!monitorAllDevices && monitoredAddresses.isEmpty()) {

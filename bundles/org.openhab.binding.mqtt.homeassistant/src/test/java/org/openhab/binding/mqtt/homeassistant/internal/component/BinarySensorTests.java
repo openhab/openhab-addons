@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,6 +70,8 @@ public class BinarySensorTests extends AbstractComponentTests {
         assertChannel(component, BinarySensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "onoffsensor",
                 OnOffValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"ON_\" }");
         assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OnOffType.ON);
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"ON_\" }");
@@ -112,6 +114,8 @@ public class BinarySensorTests extends AbstractComponentTests {
                 """);
         // @formatter:on
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"ON_\" }");
         assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OnOffType.ON);
 
@@ -149,6 +153,8 @@ public class BinarySensorTests extends AbstractComponentTests {
                 }\
                 """);
         // @formatter:on
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"OFF_\" }");
         assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OnOffType.OFF);

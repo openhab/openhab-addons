@@ -98,9 +98,9 @@
     - "CD R"
   start: "2023-01-01"
 # Netselskabet Elværk
-- gln: "5790000681075"
+- gln: "5790000681358"
   chargeTypeCodes:
-    - "0NCFF"
+    - "5NCFF"
   notes:
     - "Nettarif C Flex"
   start: "StartOfDay"

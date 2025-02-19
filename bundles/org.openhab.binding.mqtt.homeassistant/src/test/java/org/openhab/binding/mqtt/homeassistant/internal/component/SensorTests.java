@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,6 +69,8 @@ public class SensorTests extends AbstractComponentTests {
 
         assertChannel(component, Sensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "sensor1",
                 NumberValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/bridge/state", "{ \"state\": \"online\" }");
         assertThat(haThing.getStatus(), is(ThingStatus.ONLINE));

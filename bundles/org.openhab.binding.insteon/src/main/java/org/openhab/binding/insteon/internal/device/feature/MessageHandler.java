@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1715,6 +1715,20 @@ public abstract class MessageHandler extends BaseFeatureHandler {
         protected State getBitState(boolean is24Hr) {
             ThermostatTimeFormat format = ThermostatTimeFormat.from(is24Hr);
             return new StringType(format.toString());
+        }
+    }
+
+    /**
+     * Thermostat status reporting reply message handler
+     */
+    public static class ThermostatStatusReportingReplyHandler extends MessageHandler {
+        ThermostatStatusReportingReplyHandler(DeviceFeature feature) {
+            super(feature);
+        }
+
+        @Override
+        public void handleMessage(byte cmd1, Msg msg) {
+            logger.debug("{}: thermostat status reporting enabled on {}", nm(), getInsteonDevice().getAddress());
         }
     }
 
