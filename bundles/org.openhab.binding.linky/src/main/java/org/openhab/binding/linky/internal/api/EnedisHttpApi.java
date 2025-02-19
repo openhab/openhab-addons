@@ -173,9 +173,6 @@ public class EnedisHttpApi {
                     } catch (JsonSyntaxException e) {
                         logger.debug("Invalid JSON response not matching {}: {}", clazz.getName(), data);
                         throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
-                    } catch (Exception e) {
-                        logger.error("Error {}: {}", clazz.getName(), data, e);
-                        throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
                     }
                 }
             } catch (LinkyException ex) {

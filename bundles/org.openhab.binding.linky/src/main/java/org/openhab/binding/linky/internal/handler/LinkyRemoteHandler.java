@@ -405,10 +405,24 @@ public class LinkyRemoteHandler extends BaseThingHandler {
      * Request new data and updates channels
      */
     private synchronized void updateData() {
+        // If one of the cache is expired, force also a metaData refresh to prevent 500 error from Enedis servers !
+        logger.info("updateData() called");
+        logger.info("Cache state {} {} {}", dailyConsumption.isPresent(), dailyConsumptionMaxPower.isPresent(),
+                loadCurveConsumption.isPresent());
+        if (dailyConsumption.isPresent() || dailyConsumptionMaxPower.isPresent() || loadCurveConsumption.isPresent()) {
+            logger.info("invalidate metaData cache to force refresh");
+            metaData.invalidate();
+        }
+
+        logger.info("updateMetaData() called");
         updateMetaData();
+        logger.info("updateEnergyData() called");
         updateEnergyData();
+        logger.info("updatePowerData() called");
         updatePowerData();
+        logger.info("updateTempoData() called");
         updateTempoTimeSeries();
+        logger.info("updateLoadCurveData() called");
         updateLoadCurveData();
     }
 
@@ -882,6 +896,8 @@ public class LinkyRemoteHandler extends BaseThingHandler {
             if (meterReading.baseValue.length == 0) {
                 throw new LinkyException("Invalid meterReading data: no day period");
             }
+        } else {
+            throw new LinkyException("Invalid meterReading == null");
         }
     }
 
