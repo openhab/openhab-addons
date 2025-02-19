@@ -99,7 +99,7 @@ public class MideaACConfiguration {
      * @return true(discovery needed), false (not needed)
      */
     public boolean isDiscoveryNeeded() {
-        return ("0".equalsIgnoreCase(deviceId) || deviceId.isBlank() || ipPort <= 0 || ipAddress.isBlank()
+        return ("0".equals(deviceId) || deviceId.isBlank() || ipPort <= 0 || ipAddress.isBlank()
                 || !Utils.validateIP(ipAddress) || version <= 1);
     }
 
@@ -110,7 +110,7 @@ public class MideaACConfiguration {
      * @return true (yes they can), false (they cannot)
      */
     public boolean isTokenKeyObtainable() {
-        return (!email.isBlank() && !password.isBlank() && !"".equals(cloud));
+        return (!email.isBlank() && !password.isBlank() && !"".equals(cloud) && !cloud.isBlank());
     }
 
     /**
@@ -119,6 +119,6 @@ public class MideaACConfiguration {
      * @return true (Valid, all items are present) false (key, token and/or provider missing)
      */
     public boolean isV3ConfigValid() {
-        return (!key.isBlank() && !token.isBlank() && !"".equals(cloud));
+        return (!key.isBlank() && !token.isBlank() && !"".equals(cloud) && !cloud.isBlank());
     }
 }

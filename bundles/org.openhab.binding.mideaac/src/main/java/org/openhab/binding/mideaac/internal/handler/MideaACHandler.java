@@ -84,7 +84,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     // Default parameters are the same as in the MideaACConfiguration class
     private ConnectionManager connectionManager = new ConnectionManager("", 6444, 4, "", "", "", "", "", "", 0, false);
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private @Nullable ScheduledFuture<?> scheduledTask = null;
+    private @Nullable ScheduledFuture<?> scheduledTask;
 
     private Callback callbackLambda = (response) -> {
         this.updateChannels(response);
@@ -215,12 +215,12 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
         if (config.version == 3 && !config.isV3ConfigValid()) {
             if (config.isTokenKeyObtainable()) {
-                logger.info("Retrieving Token and/or Key from cloud");
                 CloudProviderDTO cloudProvider = CloudProviderDTO.getCloudProvider(config.cloud);
                 getTokenKeyCloud(cloudProvider);
                 return;
             } else {
-                logger.warn("Configuration invalid for {} and no account info to retrieve from cloud", thing.getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Configuration invalid and no account info to retrieve from cloud");
                 return;
             }
         } else {
@@ -356,6 +356,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * @param cloudProvider Cloud Provider account
      */
     public void getTokenKeyCloud(CloudProviderDTO cloudProvider) {
+        logger.debug("Retrieving Token and/or Key from cloud");
         CloudDTO cloud = getClouds().get(config.email, config.password, cloudProvider);
         if (cloud != null) {
             cloud.setHttpClient(httpClient);
@@ -369,7 +370,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
                 logger.trace("Token: {}", tk.token());
                 logger.trace("Key: {}", tk.key());
-                logger.info("Token and Key obtained from cloud, saving, back to initialize");
+                logger.debug("Token and Key obtained from cloud, saving, back to initialize");
                 initialize();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(

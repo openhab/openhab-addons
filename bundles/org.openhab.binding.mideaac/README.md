@@ -18,7 +18,7 @@ This binding supports one Thing type `ac`.
 
 ## Discovery
 
-Once the Air Conditioner is on the network (WiFi active) the other required parameters can be discovered automatically.
+Once the Air Conditioner is on the network (WiFi active) most required parameters will be discovered automatically.
 An IP broadcast message is sent and every responding unit gets added to the Inbox.
 As an alternative use the python application msmart-ng from <https://github.com/mill1000/midea-msmart> with the msmart-ng discover ipAddress option.
 
@@ -111,10 +111,6 @@ sitemap midea label="Split AC MBR"{
     Selection item=fan_speed label="Midea AC Fan Speed"
     Selection item=operational_mode label="Midea AC Mode"
     Selection item=swing_mode label="Midea AC Louver Swing Mode"
-}
+    }
 }
 ```
-
-## Debugging and Tracing
-
-Switch the log level to TRACE or DEBUG on the UI Settings Page (Add-on Settings)

@@ -62,10 +62,8 @@ public class Utils {
     public static String bytesToBinary(byte[] bytes) {
         String s1 = "";
         for (int j = 0; j < bytes.length; j++) {
-
             s1 = s1.concat(Integer.toBinaryString(bytes[j] & 255 | 256).substring(1));
             s1 = s1.concat(" ");
-
         }
         return s1;
     }
