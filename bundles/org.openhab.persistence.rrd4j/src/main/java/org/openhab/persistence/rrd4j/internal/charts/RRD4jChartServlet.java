@@ -38,6 +38,8 @@ import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.persistence.registry.PersistenceServiceConfiguration;
+import org.openhab.core.persistence.registry.PersistenceServiceConfigurationRegistry;
 import org.openhab.core.ui.chart.ChartProvider;
 import org.openhab.core.ui.items.ItemUIRegistry;
 import org.openhab.persistence.rrd4j.internal.RRD4jPersistenceService;
@@ -106,13 +108,16 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
     private final HttpService httpService;
     private final ItemUIRegistry itemUIRegistry;
     private final TimeZoneProvider timeZoneProvider;
+    private final PersistenceServiceConfigurationRegistry persistenceServiceConfigurationRegistry;
 
     @Activate
     public RRD4jChartServlet(final @Reference HttpService httpService, final @Reference ItemUIRegistry itemUIRegistry,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference TimeZoneProvider timeZoneProvider,
+            final @Reference PersistenceServiceConfigurationRegistry persistenceServiceConfigurationRegistry) {
         this.httpService = httpService;
         this.itemUIRegistry = itemUIRegistry;
         this.timeZoneProvider = timeZoneProvider;
+        this.persistenceServiceConfigurationRegistry = persistenceServiceConfigurationRegistry;
     }
 
     @Activate
@@ -179,10 +184,10 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
      * @param item the item to add a line for
      * @param counter defines the number of the datasource and is used to determine the line color
      */
-    protected void addLine(RrdGraphDef graphDef, Item item, int counter) {
+    protected void addLine(RrdGraphDef graphDef, Item item, @Nullable String alias, int counter) {
         Color color = LINECOLORS[counter % LINECOLORS.length];
         String label = itemUIRegistry.getLabel(item.getName());
-        String rrdName = RRD4jPersistenceService.getDatabasePath(item.getName()).toString();
+        String rrdName = RRD4jPersistenceService.getDatabasePath(alias != null ? alias : item.getName()).toString();
         ConsolFun consolFun;
         if (label != null && label.contains("[") && label.contains("]")) {
             label = label.substring(0, label.indexOf('['));
@@ -251,14 +256,18 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
         graphDef.setFont(FontTag.TITLE, new Font("SansSerif", Font.PLAIN, 15));
         graphDef.setFont(FontTag.DEFAULT, new Font("SansSerif", Font.PLAIN, 11));
 
+        PersistenceServiceConfiguration config = persistenceServiceConfigurationRegistry
+                .get(RRD4jPersistenceService.SERVICE_ID);
+
         int seriesCounter = 0;
 
         // Loop through all the items
         if (items != null) {
             String[] itemNames = items.split(",");
             for (String itemName : itemNames) {
+                String alias = config != null ? config.getAliases().get(itemName) : null;
                 Item item = itemUIRegistry.getItem(itemName);
-                addLine(graphDef, item, seriesCounter++);
+                addLine(graphDef, item, alias, seriesCounter++);
             }
         }
 
@@ -269,7 +278,8 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
                 Item item = itemUIRegistry.getItem(groupName);
                 if (item instanceof GroupItem groupItem) {
                     for (Item member : groupItem.getMembers()) {
-                        addLine(graphDef, member, seriesCounter++);
+                        String alias = config != null ? config.getAliases().get(member.getName()) : null;
+                        addLine(graphDef, member, alias, seriesCounter++);
                     }
                 } else {
                     throw new ItemNotFoundException("Item '" + item.getName() + "' defined in groups is not a group.");

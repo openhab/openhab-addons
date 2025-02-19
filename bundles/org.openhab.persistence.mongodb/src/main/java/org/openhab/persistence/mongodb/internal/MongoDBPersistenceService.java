@@ -247,6 +247,15 @@ public class MongoDBPersistenceService implements ModifiablePersistenceService {
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
+        return query(filter, null);
+    }
+
+    @Override
+    public Iterable<HistoricItem> query(FilterCriteria filter, @Nullable String alias) {
+        String realItemName = filter.getItemName();
+        if (alias != null) {
+            filter.setItemName(alias);
+        }
         MongoCollection<Document> collection = prepareCollection(filter);
         // If collection creation failed, return nothing.
         if (collection == null) {
@@ -259,8 +268,6 @@ public class MongoDBPersistenceService implements ModifiablePersistenceService {
             return Collections.emptyList();
         }
 
-        @Nullable
-        String realItemName = filter.getItemName();
         if (realItemName == null) {
             logger.warn("Item name is missing in filter {}", filter);
             return Collections.emptyList();
@@ -354,7 +361,8 @@ public class MongoDBPersistenceService implements ModifiablePersistenceService {
         }
 
         String realItemName = item.getName();
-        String collectionName = collectionPerItem ? realItemName : this.collection;
+        String name = (alias != null) ? alias : realItemName;
+        String collectionName = collectionPerItem ? name : this.collection;
 
         @Nullable
         MongoCollection<Document> collection = connectToCollection(collectionName);
@@ -364,7 +372,6 @@ public class MongoDBPersistenceService implements ModifiablePersistenceService {
             return;
         }
 
-        String name = (alias != null) ? alias : realItemName;
         Object value = MongoDBTypeConversions.convertValue(state);
 
         Document obj = new Document();
