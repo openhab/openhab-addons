@@ -1,0 +1,25 @@
+#* @vtlvariable name="servletPath" type="java.lang.String" *#
+#* @vtlvariable name="accounts" type="java.util.List<org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler>" *#
+
+<html lang="en-US">
+<head>
+    <title>AmazonEchoControl - Binding overview</title>
+    <link rel="stylesheet" href="$servletPath/static/default.css">
+</head>
+<body>
+<h1>
+    Binding Overview
+</h1>
+<h2>Configured Accounts</h2>
+<table class="table-bordered">
+    #foreach($account in $accounts)
+        <td>
+            <a href="${servletPath}/$account.thing.UID.id">$account.thing.label (<code>$account.thing.UID</code>)</a>
+            <span class="status $account.thing.status">$account.thing.status</span>
+        </td>
+        <td>$account.lastKnownDevices.size() child device(s)</td>
+    #end
+</table>
+
+</body>
+</html>
