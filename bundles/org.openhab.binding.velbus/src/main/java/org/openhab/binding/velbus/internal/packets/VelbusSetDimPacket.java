@@ -40,6 +40,10 @@ public class VelbusSetDimPacket extends VelbusPacket {
         data[3] = mode;
     }
 
+    public void setLastUsedDim() {
+        data[0] = COMMAND_RESTORE_LAST_DIMVALUE;
+    }
+
     @Override
     protected byte[] getDataBytes() {
         return data;
