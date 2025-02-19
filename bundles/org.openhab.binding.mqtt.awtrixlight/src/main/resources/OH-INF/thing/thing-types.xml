@@ -226,7 +226,7 @@
 
 	<channel-type id="effect">
 		<item-type>String</item-type>
-		<label>Background effect</label>
+		<label>Background Effect</label>
 		<description>Effect shown in the background of the app</description>
 		<category>screen</category>
 		<state>
@@ -283,7 +283,7 @@
 
 	<channel-type id="effect-speed" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Background effect speed</label>
+		<label>Background Effect Speed</label>
 		<description>Playback speed of background animations</description>
 		<category>time</category>
 	</channel-type>
@@ -318,8 +318,8 @@
 
 	<channel-type id="top-text" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Show text on top</label>
-		<description>Draws the text on the top of the display</description>
+		<label>Top Text</label>
+		<description>Aligns the text with the top of the display</description>
 		<category>text</category>
 	</channel-type>
 
@@ -356,7 +356,7 @@
 
 	<channel-type id="center" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Center short texts</label>
+		<label>Center Text</label>
 		<description>Short texts will be centered instead of scrolling</description>
 		<category>text</category>
 	</channel-type>
@@ -422,7 +422,7 @@
 
 	<channel-type id="autoscale" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Autoscale graphs</label>
+		<label>Autoscale Graphs</label>
 		<description>Automatically scales graphs to fit onto display</description>
 		<category>qualityofservice</category>
 	</channel-type>
@@ -462,7 +462,7 @@
 
 	<channel-type id="progress-background">
 		<item-type>Color</item-type>
-		<label>Progress Bar Background Color</label>
+		<label>Progress Bar Background</label>
 		<description>Color of progress bar background</description>
 		<category>colorpicker</category>
 	</channel-type>
@@ -476,8 +476,8 @@
 
 	<channel-type id="sound">
 		<item-type>String</item-type>
-		<label>Play melody from MELODIES folder</label>
-		<description>Name of the melody file in the clocks MELODIES folder</description>
+		<label>Play Melody</label>
+		<description>Name of the melody file in the MELODIES folder</description>
 		<category>text</category>
 	</channel-type>
 
