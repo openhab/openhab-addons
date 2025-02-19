@@ -64,7 +64,7 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
     public void initialize() {
         super.initialize();
 
-        pollingJob = scheduler.schedule(this::pollingCode, 1, TimeUnit.SECONDS);
+        pollingJob = scheduler.schedule(this::pollingCode, 3, TimeUnit.SECONDS);
     }
 
     @Override
