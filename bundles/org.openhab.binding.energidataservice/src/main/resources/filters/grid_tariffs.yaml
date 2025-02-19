@@ -48,9 +48,9 @@
 # FLOW Elnet
 - gln: "5790000392551"
   chargeTypeCodes:
-    - "FE2 NT-01"
+    - "FE1 NT-01"
   notes:
-    - "Nettarif C time"
+    - "Nettarif C"
   start: "StartOfDay"
 # Hammel Elforsyning Net
 - gln: "5790001090166"
