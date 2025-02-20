@@ -13,16 +13,16 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
- * @author Marcin Czeczko - Initial Contribution
+ * @author MikeTheTux - Initial contribution
  */
-public enum RestrictedReason {
-    NONE,
-    WEEK_SCHEDULE,
-    PARK_OVERRIDE,
-    SENSOR,
-    DAILY_LIMIT,
-    FOTA,
-    FROST,
-    ALL_WORK_AREAS_COMPLETED,
-    EXTERNAL
+public class Headlight {
+    private HeadlightMode mode;
+
+    public HeadlightMode getHeadlightMode() {
+        return mode;
+    }
+
+    public void setHeadlightMode(HeadlightMode mode) {
+        this.mode = mode;
+    }
 }

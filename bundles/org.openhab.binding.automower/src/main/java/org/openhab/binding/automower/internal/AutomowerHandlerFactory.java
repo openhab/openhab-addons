@@ -27,6 +27,7 @@ import org.openhab.binding.automower.internal.discovery.AutomowerDiscoveryServic
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -55,12 +56,14 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
     private final OAuthFactory oAuthFactory;
     protected final @NonNullByDefault({}) HttpClient httpClient;
     private @Nullable ServiceRegistration<?> automowerDiscoveryServiceRegistration;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
-    public AutomowerHandlerFactory(@Reference OAuthFactory oAuthFactory,
-            @Reference HttpClientFactory httpClientFactory) {
+    public AutomowerHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory httpClientFactory,
+            @Reference TimeZoneProvider timeZoneProvider) {
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -77,7 +80,7 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (AutomowerHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new AutomowerHandler(thing);
+            return new AutomowerHandler(thing, timeZoneProvider);
         }
 
         return null;

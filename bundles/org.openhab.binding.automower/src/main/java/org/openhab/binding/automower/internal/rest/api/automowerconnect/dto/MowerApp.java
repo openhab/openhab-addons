@@ -18,10 +18,12 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 public class MowerApp {
     private Mode mode;
     private Activity activity;
+    private InactiveReason inactiveReason;
     private State state;
-
+    private Long workAreaId;
     private int errorCode;
     private long errorCodeTimestamp;
+    private Boolean isErrorConfirmable;
 
     public Mode getMode() {
         return mode;
@@ -39,12 +41,28 @@ public class MowerApp {
         this.activity = activity;
     }
 
+    public InactiveReason getInactiveReason() {
+        return inactiveReason;
+    }
+
+    public void setInactiveReason(InactiveReason inactiveReason) {
+        this.inactiveReason = inactiveReason;
+    }
+
     public State getState() {
         return state;
     }
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    public Long getWorkAreaId() {
+        return workAreaId;
+    }
+
+    public void setWorkAreaId(Long workAreaId) {
+        this.workAreaId = workAreaId;
     }
 
     public int getErrorCode() {
@@ -61,5 +79,13 @@ public class MowerApp {
 
     public void setErrorCodeTimestamp(long errorCodeTimestamp) {
         this.errorCodeTimestamp = errorCodeTimestamp;
+    }
+
+    public Boolean getIsErrorConfirmable() {
+        return isErrorConfirmable;
+    }
+
+    public void setIsErrorConfirmable(Boolean isErrorConfirmable) {
+        this.isErrorConfirmable = isErrorConfirmable;
     }
 }
