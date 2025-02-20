@@ -18,9 +18,11 @@ This binding supports one Thing type `ac`.
 
 ## Discovery
 
-Once the Air Conditioner is on the network (WiFi active) most required parameters will be discovered automatically.
-An IP broadcast message is sent and every responding unit gets added to the Inbox.
-As an alternative use the python application msmart-ng from <https://github.com/mill1000/midea-msmart> with the msmart-ng discover ipAddress option.
+Once the Air Conditioner is on the network (WiFi active) activating an Inbox scan with this binding will send an IP broadcast message.
+Every responding unit gets added to the Inbox. When adding each thing, the required parameters of ipAddress, ipPort, deviceId, pollingTime,
+timeout, promptTone and version will be populated with either discovered values or the default settings. A V.2 device will be Online.
+A V.3 device will require you to enter the cloud provider, token and key before becoming Online. The token and key can be discovered by entering
+your email and password for your cloud account. The email and password are stored securely, but can be deleted after the token and key are entered.
 
 ## Binding Configuration
 
@@ -49,7 +51,7 @@ Following channels are available:
 
 | Channel                      | Type               | Description                                                                                            | Read only | Advanced |
 |--:---------------------------|--:-----------------|--:-----------------------------------------------------------------------------------------------------|--:--------|--:-------|
-| power                        | Switch             | Turn the AC on and off.                                                                                |           |          |
+| power                        | Switch             | Turn the AC on or off.                                                                                 |           |          |
 | target-temperature           | Number:Temperature | Target temperature.                                                                                    |           |          |
 | operational-mode             | String             | Operational mode: OFF (turns off), AUTO, COOL, DRY, HEAT, FAN ONLY                                     |           |          |
 | fan-speed                    | String             | Fan speed: OFF (turns off), SILENT, LOW, MEDIUM, HIGH, AUTO. Not all modes supported by all units.     |           |          |
@@ -103,14 +105,14 @@ Switch temperature_unit "Fahrenheit or Celsius"                             { ch
 ```java
 sitemap midea label="Split AC MBR"{
     Frame label="AC Unit" {
-    Text item=outdoor_temperature label="Outdoor Temperature [%.1f °F]"
-    Text item=indoor_temperature label="Indoor Temperature [%.1f °F]"
-    Setpoint item=target_temperature label="Target Temperature [%.1f °F]" minValue=63.0 maxValue=78 step=1.0
-    Switch item=power label="Midea AC Power"
-    Switch item=temperature_unit label= "Temp Unit" mappings=[ON="Fahrenheit", OFF="Celsius"]
-    Selection item=fan_speed label="Midea AC Fan Speed"
-    Selection item=operational_mode label="Midea AC Mode"
-    Selection item=swing_mode label="Midea AC Louver Swing Mode"
+        Text item=outdoor_temperature label="Outdoor Temperature [%.1f °F]"
+        Text item=indoor_temperature label="Indoor Temperature [%.1f °F]"
+        Setpoint item=target_temperature label="Target Temperature [%.1f °F]" minValue=63.0 maxValue=78 step=1.0
+        Switch item=power label="Midea AC Power"
+        Switch item=temperature_unit label= "Temp Unit" mappings=[ON="Fahrenheit", OFF="Celsius"]
+        Selection item=fan_speed label="Midea AC Fan Speed"
+        Selection item=operational_mode label="Midea AC Mode"
+        Selection item=swing_mode label="Midea AC Louver Swing Mode"
     }
 }
 ```
