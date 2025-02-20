@@ -50,7 +50,7 @@ public class SonnenJsonDataDTO {
     @SerializedName("EM_OperatingMode")
     String emoperatingMode;
     @SerializedName("OperatingMode")
-    String operatingMode;
+    private int operatingMode;
 
     /**
      * @return the batteryCurrent
@@ -155,9 +155,10 @@ public class SonnenJsonDataDTO {
      */
     public boolean isInAutomaticMode() {
         // 2 for automatic mode
-        if ("2".equals(operatingMode)) {
+        if (operatingMode == 2) {
             return true;
-        } else if ("1".equals(operatingMode)) {
+            // 1 for MANUAL mode
+        } else if (operatingMode == 1) {
             return false;
         }
         // in case of Serialization problem return true, as automatic is the normal state of the battery on most

@@ -49,12 +49,11 @@
 				<description>Authentication Token which can be found under "Software Integration" if you connect locally to your
 					sonnen battery. If empty the old deprecated API will be used.</description>
 			</parameter>
-			<parameter name="chargingPower" type="integer" unit="W" min="0" max="10000">
-				<label>sonnen battery maximum charging power</label>
+			<parameter name="chargingPower" type="integer" unit="W" min="1" max="10000">
+				<label>Maximum Charging Power</label>
 				<description>Maximum charging power in watt which is supported by sonnen battery type. Be cautious to not enter a
 					higher value then supported by the battery. Details can be found on the datasheet of your battery.
-					Valid input is 0
-					- 10000.</description>
+				</description>
 				<advanced>true</advanced>
 				<default>0</default>
 			</parameter>
@@ -179,7 +178,7 @@
 	</channel-type>
 	<channel-type id="batteryChargingFromGrid">
 		<item-type>Switch</item-type>
-		<label>Start/Stop Active Battery Charging from Grid</label>
+		<label>Charging from Grid</label>
 		<description>Starts and stops the active battery charging from Grid. Note: "Write-API" in Software-Integration page of
 			the local web interface from the sonnen battery must be activated and the given token must be entered in
 			authentication token field of the binding.</description>
