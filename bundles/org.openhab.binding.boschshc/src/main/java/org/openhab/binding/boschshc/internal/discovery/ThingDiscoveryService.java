@@ -243,7 +243,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
         discoveryResult.withBridge(thingHandler.getThing().getUID());
 
         if (!roomName.isEmpty()) {
-            discoveryResult.withProperty("Location", roomName);
+            discoveryResult.withProperty(BoschSHCBindingConstants.PROPERTY_LOCATION, roomName);
         }
         thingDiscovered(discoveryResult.build());
 

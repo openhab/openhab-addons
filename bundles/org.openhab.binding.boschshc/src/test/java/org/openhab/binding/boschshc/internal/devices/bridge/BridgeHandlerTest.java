@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -1125,5 +1127,34 @@ class BridgeHandlerTest {
 
         verify(httpClient).createRequest(any(), same(HttpMethod.GET));
         verify(httpClient).sendRequest(any(), same(PublicInformation.class), any(), isNull());
+    }
+
+    @Test
+    void resolveRoomId() throws InterruptedException, TimeoutException, ExecutionException {
+        Request request = mock(Request.class);
+        when(httpClient.createRequest(any(), eq(HttpMethod.GET))).thenReturn(request);
+        ContentResponse contentResponse = mock(ContentResponse.class);
+        when(request.send()).thenReturn(contentResponse);
+        when(contentResponse.getStatus()).thenReturn(200);
+        String roomsJson = """
+                [
+                    {
+                        "@type": "room",
+                        "id": "hz_1",
+                        "iconId": "icon_room_living_room",
+                        "name": "Living Room"
+                    },
+                    {
+                        "@type": "room",
+                        "id": "hz_2",
+                        "iconId": "icon_room_dining_room",
+                        "name": "Dining Room"
+                    }
+                ]
+                """;
+        when(contentResponse.getContentAsString()).thenReturn(roomsJson);
+        assertThat(fixture.resolveRoomId("hz_1"), is("Living Room"));
+        assertThat(fixture.resolveRoomId("hz_2"), is("Dining Room"));
+        assertThat(fixture.resolveRoomId(null), is(nullValue()));
     }
 }
