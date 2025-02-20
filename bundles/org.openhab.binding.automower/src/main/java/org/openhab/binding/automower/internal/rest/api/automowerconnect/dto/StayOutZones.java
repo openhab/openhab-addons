@@ -16,17 +16,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Markus Pfleger - Initial contribution
- * @author Marcin Czeczko - Added support for planner and calendar data
+ * @author MikeTheTux - Initial contribution
  */
-public class Calendar {
-    private List<CalendarTask> tasks = new ArrayList<>();
+public class StayOutZones {
+    private Boolean dirty;
+    private List<StayOutZone> zones = new ArrayList<>();
 
-    public List<CalendarTask> getTasks() {
-        return tasks;
+    public Boolean isDirty() {
+        return dirty;
     }
 
-    public void setTasks(List<CalendarTask> tasks) {
-        this.tasks = tasks;
+    public void setDirty(Boolean dirty) {
+        this.dirty = dirty;
+    }
+
+    public List<StayOutZone> getZones() {
+        return zones;
+    }
+
+    public void setZones(List<StayOutZone> zones) {
+        this.zones = zones;
     }
 }

@@ -13,16 +13,25 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
- * @author Marcin Czeczko - Initial Contribution
+ * @author MikeTheTux - Initial contribution
  */
-public enum RestrictedReason {
-    NONE,
-    WEEK_SCHEDULE,
-    PARK_OVERRIDE,
-    SENSOR,
-    DAILY_LIMIT,
-    FOTA,
-    FROST,
-    ALL_WORK_AREAS_COMPLETED,
-    EXTERNAL
+public class MowerSettings {
+    private String type;
+    private Settings attributes;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Settings getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Settings attributes) {
+        this.attributes = attributes;
+    }
 }

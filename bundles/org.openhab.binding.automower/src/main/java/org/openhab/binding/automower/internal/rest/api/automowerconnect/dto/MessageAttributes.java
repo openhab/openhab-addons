@@ -12,17 +12,16 @@
  */
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * @author Marcin Czeczko - Initial Contribution
+ * @author MikeTheTux - Initial contribution
  */
-public enum RestrictedReason {
-    NONE,
-    WEEK_SCHEDULE,
-    PARK_OVERRIDE,
-    SENSOR,
-    DAILY_LIMIT,
-    FOTA,
-    FROST,
-    ALL_WORK_AREAS_COMPLETED,
-    EXTERNAL
+public class MessageAttributes {
+    List<Message> messages = new ArrayList<>();
+
+    public List<Message> getMessages() {
+        return this.messages;
+    }
 }
