@@ -187,6 +187,11 @@ public class JpaPersistenceService implements QueryablePersistenceService {
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
+        return query(filter, null);
+    }
+
+    @Override
+    public Iterable<HistoricItem> query(FilterCriteria filter, @Nullable String alias) {
         logger.debug("Querying for historic item: {}", filter.getItemName());
 
         if (!initialized) {
@@ -235,7 +240,7 @@ public class JpaPersistenceService implements QueryablePersistenceService {
 
             logger.debug("Creating query...");
             Query query = em.createQuery(queryString);
-            query.setParameter("itemName", item.getName());
+            query.setParameter("itemName", alias != null ? alias : item.getName());
             if (hasBeginDate) {
                 query.setParameter("beginDate", Date.from(filter.getBeginDate().toInstant()));
             }
