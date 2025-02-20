@@ -81,9 +81,11 @@ public class HomeWizardEnergySocketHandlerTest extends HomeWizardHandlerTest {
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
                         HomeWizardBindingConstants.CHANNEL_RING_BRIGHTNESS),
 
-                mockChannel(thing.getUID(), "total_energy_import_t1"),
-                mockChannel(thing.getUID(), "total_energy_export_t1"), mockChannel(thing.getUID(), "active_power"),
-                mockChannel(thing.getUID(), "active_voltage"), mockChannel(thing.getUID(), "active_current"));
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_ENERGY_IMPORT_T1),
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_ENERGY_EXPORT_T1),
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_POWER),
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_VOLTAGE),
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_CURRENT));
 
         when(thing.getChannels()).thenReturn(channelList);
         return thing;
@@ -160,17 +162,25 @@ public class HomeWizardEnergySocketHandlerTest extends HomeWizardHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
-            verify(callback).stateUpdated(new ChannelUID(thing.getUID(), "total_energy_import_t1"),
+            verify(callback).stateUpdated(
+                    new ChannelUID(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_ENERGY_IMPORT_T1),
                     getState(30.511, Units.KILOWATT_HOUR));
-            verify(callback).stateUpdated(new ChannelUID(thing.getUID(), "total_energy_export_t1"),
+            verify(callback).stateUpdated(
+                    new ChannelUID(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_ENERGY_EXPORT_T1),
                     getState(85.951, Units.KILOWATT_HOUR));
-            verify(callback).stateUpdated(new ChannelUID(thing.getUID(), "active_power"),
+            verify(callback).stateUpdated(
+                    new ChannelUID(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_POWER),
                     getState(543.312, Units.WATT));
-            verify(callback).stateUpdated(new ChannelUID(thing.getUID(), "active_voltage"),
+            verify(callback).stateUpdated(
+                    new ChannelUID(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_VOLTAGE),
                     getState(231.539, Units.VOLT));
-            verify(callback).stateUpdated(new ChannelUID(thing.getUID(), "power_switch"), getState(true));
-            verify(callback).stateUpdated(new ChannelUID(thing.getUID(), "power_lock"), getState(false));
-            verify(callback).stateUpdated(new ChannelUID(thing.getUID(), "ring_brightness"), new DecimalType(100.0));
+            verify(callback).stateUpdated(
+                    new ChannelUID(thing.getUID(), HomeWizardBindingConstants.CHANNEL_POWER_SWITCH), getState(true));
+            verify(callback).stateUpdated(new ChannelUID(thing.getUID(), HomeWizardBindingConstants.CHANNEL_POWER_LOCK),
+                    getState(false));
+            verify(callback).stateUpdated(
+                    new ChannelUID(thing.getUID(), HomeWizardBindingConstants.CHANNEL_RING_BRIGHTNESS),
+                    new DecimalType(100.0));
         } finally {
             handler.dispose();
         }

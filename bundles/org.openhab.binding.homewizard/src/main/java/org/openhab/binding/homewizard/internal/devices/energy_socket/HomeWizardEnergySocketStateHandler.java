@@ -58,11 +58,7 @@ public abstract class HomeWizardEnergySocketStateHandler extends HomeWizardEnerg
      * @throws IOException
      */
     public String getStateData() throws Exception {
-        if (config.apiVersion > 1) {
-            return getResponseFrom(apiURL + "v1/state").getContentAsString();
-        } else {
-            return getResponseFrom(apiURL + "v1/state").getContentAsString();
-        }
+        return getResponseFrom(apiURL + "v1/state").getContentAsString();
     }
 
     protected void pollState() {
@@ -76,7 +72,7 @@ public abstract class HomeWizardEnergySocketStateHandler extends HomeWizardEnerg
             return;
         }
 
-        if (stateResult.trim().isEmpty()) {
+        if (stateResult.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device returned empty state");
             return;
         }

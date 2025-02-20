@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.homewizard.internal.devices;
 
-import java.io.IOException;
 import java.security.KeyStore;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.homewizard.internal.HomeWizardConfiguration;
 import org.openhab.core.thing.Thing;
@@ -52,6 +53,15 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
+
+    private static final String BEARER = "Bearer";
+    private static final String API_VERSION_HEADER = "X-Api-Version";
+    private static final String CERTIFICATE_ALIAS = "caCert";
+    private static final String CERTIFICATE_TYPE = "X.509";
+    private static final String PRODUCT_NAME = "productName";
+    private static final String PRODUCT_TYPE = "productType";
+    private static final String FIRMWARE_VERSION = "firmwareVersion";
+    private static final String API_VERSION = "apiVersion";
 
     protected final Logger logger = LoggerFactory.getLogger(HomeWizardDeviceHandler.class);
     protected final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -91,7 +101,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
                 try {
                     keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
                     keyStore.load(null, null);
-                    keyStore.setCertificateEntry("caCert", CertificateFactory.getInstance("X.509")
+                    keyStore.setCertificateEntry(CERTIFICATE_ALIAS, CertificateFactory.getInstance(CERTIFICATE_TYPE)
                             .generateCertificate(classloader.getResourceAsStream(caCertPath)));
                 } catch (Exception ex) {
                 }
@@ -105,6 +115,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         }
 
         if (configure() && processDeviceInformation()) {
+            updateStatus(ThingStatus.UNKNOWN);
             pollingJob = executorService.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshDelay,
                     TimeUnit.SECONDS);
         }
@@ -126,11 +137,10 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             return false;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
-        if (config.apiVersion > 1) {
-            apiURL = String.format("https://%s/api/", config.ipAddress.trim());
-        } else {
+        if (config.apiVersion == 1) {
             apiURL = String.format("http://%s/api/", config.ipAddress.trim());
+        } else {
+            apiURL = String.format("https://%s/api/", config.ipAddress.trim());
         }
 
         try {
@@ -145,9 +155,8 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         return true;
     }
 
-    @SuppressWarnings("null")
     private boolean processDeviceInformation() {
-        final String deviceInformation;
+        String deviceInformation = "";
 
         try {
             deviceInformation = getDeviceInformationData();
@@ -157,30 +166,35 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             return false;
         }
 
-        if (deviceInformation.trim().isEmpty()) {
+        if (deviceInformation.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device returned empty data");
             return false;
         }
 
         var payload = gson.fromJson(deviceInformation, HomeWizardDeviceInformationPayload.class);
 
-        if ("".equals(payload.getProductType())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device returned empty data");
+        if (payload == null) {
             return false;
+        } else {
+
+            if ("".equals(payload.getProductType())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device returned empty data");
+                return false;
+            }
+
+            if (!supportedTypes.contains(payload.getProductType().toLowerCase(Locale.ROOT))) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        "Device is not compatible with this thing type");
+                return false;
+            }
+
+            updateProperty(PRODUCT_NAME, payload.getProductName());
+            updateProperty(PRODUCT_TYPE, payload.getProductType());
+            updateProperty(FIRMWARE_VERSION, payload.getFirmwareVersion());
+            updateProperty(API_VERSION, payload.getApiVersion());
+
+            return true;
         }
-
-        if (!supportedTypes.contains(payload.getProductType())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Device is not compatible with this thing type");
-            return false;
-        }
-
-        updateProperty("productName", payload.getProductName());
-        updateProperty("productType", payload.getProductType());
-        updateProperty("firmwareVersion", payload.getFirmwareVersion());
-        updateProperty("apiVersion", payload.getApiVersion());
-
-        return true;
     }
 
     /**
@@ -196,7 +210,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         try {
             httpClient.stop();
         } catch (Exception ex) {
-
+            logger.debug("Error stopping the http client: " + ex.getMessage());
         }
     }
 
@@ -224,10 +238,10 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         var request = httpClient.newRequest(url);
 
         if (config.apiVersion > 1) {
-            request = request.header("Authorization", "Bearer " + config.bearerToken);
-            request = request.header("X-Api-Version", "" + config.apiVersion);
+            request = request.header(HttpHeader.AUTHORIZATION, BEARER + " " + config.bearerToken);
+            request = request.header(API_VERSION_HEADER, "" + config.apiVersion);
         }
-        return request.send();
+        return request.timeout(20, TimeUnit.SECONDS).send();
     }
 
     /**
@@ -245,14 +259,14 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     /**
      * @return json response from the measurement api
-     * @throws IOException
+     * @throws InterruptedException, TimeoutException, ExecutionException
      */
     public String getMeasurementData() throws InterruptedException, TimeoutException, ExecutionException {
         var url = apiURL;
-        if (config.apiVersion > 1) {
-            url += "measurement";
-        } else {
+        if (config.apiVersion == 1) {
             url += "v1/data";
+        } else {
+            url += "measurement";
         }
 
         return getResponseFrom(url).getContentAsString();

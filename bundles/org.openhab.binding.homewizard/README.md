@@ -17,7 +17,7 @@ On this page enable the local API.
 
 ### Local API v2
 
-This version is still in beta. Currently HWE-P1 and HWE-BAT are supported. 
+This version is still in beta. Currently hwe-p1 and hwe-bat are supported. 
 
 ### Fixed Address
 
@@ -31,11 +31,11 @@ The binding offers Things, providing access to all the supported HomeWizard devi
 
 | Thing         | Device              | Description                                                                                         |
 |---------------|---------------------|-----------------------------------------------------------------------------------------------------|
-| HWE-P1        | P1 Meter            | Reads total and current energy usage and total gas usage (v1 and v2).                               |
-| HWE-SKT       | Energy Socket       | Reads total and current energy usage. Controls power switch, lock and ring brightness (v1).         |
-| HWE-WTR       | Watermeter          | Reads total and current water usage (v1).                                                           |
-| HWE-KWH       | kWh Meter           | Reads total and current energy usage (v1).                                                          |
-| HWE-BAT       | Plug-In Battery     | Reads total and current energy usage and the current charge (v2).                                   |
+| hwe-p1        | P1 Meter            | Reads total and current energy usage and total gas usage (v1 and v2).                               |
+| hwe-skt       | Energy Socket       | Reads total and current energy usage. Controls power switch, lock and ring brightness (v1).         |
+| hwe-wtr       | Watermeter          | Reads total and current water usage (v1).                                                           |
+| hwe-kwh       | kWh Meter           | Reads total and current energy usage (v1).                                                          |
+| hwe-bat       | Plug-In Battery     | Reads total and current energy usage and the current charge (v2).                                   |
 | p1_wifi_meter | Wi-Fi P1 Meter      | [Deprecated] Reads total and current energy usage and total gas usage.                              |
 | energy_socket | Wi-Fi Energy Socket | [Deprecated] Reads total and current energy usage. Controls power switch, lock and ring brightness. |
 | watermeter    | Wi-Fi Watermeter    | [Deprecated] Reads total and current water usage.                                                   |
@@ -64,54 +64,54 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 
 | Channel ID             | Item Type                 | Description                                                                                | Available                         |
 |------------------------|---------------------------|--------------------------------------------------------------------------------------------|-----------------------------------|
-| power                  | Number:Power              | This channel provides the active usage in Watt.                                            | HWE-P1, HWE-SKT, HWE-KWH, HWE-BAT |
-| power_l1               | Number:Power              | This channel provides the active usage for phase 1 in Watt.                                | HWE-P1, HWE-KWH                   |
-| power_l2               | Number:Power              | This channel provides the active usage for phase 2 in Watt.                                | HWE-P1, HWE-KWH                   |
-| power_l3               | Number:Power              | This channel provides the active usage for phase 3 in Watt.                                | HWE-P1, HWE-KWH                   |
-| voltage                | Number:ElectricPotential  | This channel provides the active voltage in Volt.                                          | HWE-SKT                           |
-| voltage_l1             | Number:ElectricPotential  | This channel provides the active usage for phase 1 in Watt.                                | HWE-P1, HWE-KWH, HWE-BAT          |
-| voltage_l2             | Number:ElectricPotential  | This channel provides the active usage for phase 2 in Watt.                                | HWE-P1, HWE-KWH                   |
-| voltage_l3             | Number:ElectricPotential  | This channel provides the active usage for phase 3 in Watt.                                | HWE-P1, HWE-KWH                   |
-| current                | Number:ElectricCurrent    | This channel provides the active current in Ampere.                                        | HWE-SKT, HWE-KWH, HWE-BAT         |
-| current_l1             | Number:ElectricCurrent    | This channel provides the active current for phase 1 in Ampere.                            | HWE-P1, HWE-KWH                   |
-| current_l2             | Number:ElectricCurrent    | This channel provides the active current for phase 2 in Ampere.                            | HWE-P1, HWE-KWH                   |
-| current_l3             | Number:ElectricCurrent    | This channel provides the active current for phase 3 in Ampere.                            | HWE-P1, HWE-KWH                   |
-| energy_import          | Number:Energy             | This channel provides the total energy usage meter reading in kWh.                         | HWE-P1, HWE-SKT, HWE-KWH, HWE-BAT |
-| energy_import_t1       | Number:Energy             | This channel provides the energy usage meter reading for tariff 1 in kWh.                  | HWE-P1                            |
-| energy_import_t2       | Number:Energy             | This channel provides the energy usage meter reading for tariff 2 in kWh.                  | HWE-P1                            |
-| energy_export          | Number:Energy             | This channel provides the total energy feed-in meter reading in kWh.                       | HWE-P1, HWE-SKT, HWE-KWH, HWE-BAT |
-| energy_export_t1       | Number:Energy             | This channel provides the energy feed-in meter reading for tarff 1 in kWh.                 | HWE-P1                            |
-| energy_export_t2       | Number:Energy             | This channel provides the energy feed-in meter reading for tarff 2 in kWh.                 | HWE-P1                            |
-| reactive_power         | Number                    | This channel provides the active reactive power in Volt-Ampere reactive.                   | HWE-P1, HWE-SKT, HWE-KWH          |
-| apparent_power         | Number                    | This channel provides the active apparent power in Volt-Ampere.                            | HWE-P1, HWE-SKT, HWE-KWH          |
-| power_factor           | Number:Dimensionless      | This channel provides the active power factor.                                             | HWE-P1, HWE-SKT, HWE-KWH          |
-| frequency              | Number:Frequency          | This channel provides the active frequency in Hertz.                                       | HWE-P1, HWE-SKT, HWE-KWH, HWE-BAT |
-| total_gas              | Number:Volume             | This channel provides the most recently reported total imported gas in m^3.                | HWE-P1                            |
-| gas_timestamp          | DateTime                  | This channel provides the time stamp of the total_gas measurement.                         | HWE-P1                            |
-| power_failures         | Number                    | This channel provides the number of power failures detected by meter.                      | HWE-P1                            |
-| long_power_failures    | Number                    | This channel provides the number of 'long' power failures detected by meter.               | HWE-P1                            |
-| power_switch           | Switch                    | This channel provides access to the power switch of the Energy Socket.                     | HWE-SKT                           |
-| power_lock             | Switch                    | This channel provides access to the power lock of the Energy Socket.                       | HWE-SKT                           |
-| ring_brightness        | Number:Dimensionless      | This channel provides access to the brightness of the ring of the Energy Socket.           | HWE-SKT                           |
-| total_liter            | Number:Volume             | This channel provides total water usage in cubic meters.                                   | HWE-WTR                           |
-| active_liter           | Number:VolumetricFlowRate | This channel provides the active water usage in liters per minute.                         | HWE-WTR                           |
-| state_of_charge        | Number:Dimensionless      | This channel provides access to the current state of charge in percent.                    | HWE-BAT                           |
-| cycles                 | Number:Dimensionless      | This channel provides access to the number of battery cycles.                              | HWE-BAT                           |
+| power                  | Number:Power              | This channel provides the active usage in Watt.                                            | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
+| power_l1               | Number:Power              | This channel provides the active usage for phase 1 in Watt.                                | hwe-p1, hwe-kwh                   |
+| power_l2               | Number:Power              | This channel provides the active usage for phase 2 in Watt.                                | hwe-p1, hwe-kwh                   |
+| power_l3               | Number:Power              | This channel provides the active usage for phase 3 in Watt.                                | hwe-p1, hwe-kwh                   |
+| voltage                | Number:ElectricPotential  | This channel provides the active voltage in Volt.                                          | hwe-skt                           |
+| voltage_l1             | Number:ElectricPotential  | This channel provides the active usage for phase 1 in Watt.                                | hwe-p1, hwe-kwh, hwe-bat          |
+| voltage_l2             | Number:ElectricPotential  | This channel provides the active usage for phase 2 in Watt.                                | hwe-p1, hwe-kwh                   |
+| voltage_l3             | Number:ElectricPotential  | This channel provides the active usage for phase 3 in Watt.                                | hwe-p1, hwe-kwh                   |
+| current                | Number:ElectricCurrent    | This channel provides the active current in Ampere.                                        | hwe-skt, hwe-kwh, hwe-bat         |
+| current_l1             | Number:ElectricCurrent    | This channel provides the active current for phase 1 in Ampere.                            | hwe-p1, hwe-kwh                   |
+| current_l2             | Number:ElectricCurrent    | This channel provides the active current for phase 2 in Ampere.                            | hwe-p1, hwe-kwh                   |
+| current_l3             | Number:ElectricCurrent    | This channel provides the active current for phase 3 in Ampere.                            | hwe-p1, hwe-kwh                   |
+| energy_import          | Number:Energy             | This channel provides the total energy usage meter reading in kWh.                         | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
+| energy_import_t1       | Number:Energy             | This channel provides the energy usage meter reading for tariff 1 in kWh.                  | hwe-p1                            |
+| energy_import_t2       | Number:Energy             | This channel provides the energy usage meter reading for tariff 2 in kWh.                  | hwe-p1                            |
+| energy_export          | Number:Energy             | This channel provides the total energy feed-in meter reading in kWh.                       | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
+| energy_export_t1       | Number:Energy             | This channel provides the energy feed-in meter reading for tarff 1 in kWh.                 | hwe-p1                            |
+| energy_export_t2       | Number:Energy             | This channel provides the energy feed-in meter reading for tarff 2 in kWh.                 | hwe-p1                            |
+| reactive_power         | Number                    | This channel provides the active reactive power in Volt-Ampere reactive.                   | hwe-p1, hwe-skt, hwe-kwh          |
+| apparent_power         | Number                    | This channel provides the active apparent power in Volt-Ampere.                            | hwe-p1, hwe-skt, hwe-kwh          |
+| power_factor           | Number:Dimensionless      | This channel provides the active power factor.                                             | hwe-p1, hwe-skt, hwe-kwh          |
+| frequency              | Number:Frequency          | This channel provides the active frequency in Hertz.                                       | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
+| total_gas              | Number:Volume             | This channel provides the most recently reported total imported gas in m^3.                | hwe-p1                            |
+| gas_timestamp          | DateTime                  | This channel provides the time stamp of the total_gas measurement.                         | hwe-p1                            |
+| power_failures         | Number                    | This channel provides the number of power failures detected by meter.                      | hwe-p1                            |
+| long_power_failures    | Number                    | This channel provides the number of 'long' power failures detected by meter.               | hwe-p1                            |
+| power_switch           | Switch                    | This channel provides access to the power switch of the Energy Socket.                     | hwe-skt                           |
+| power_lock             | Switch                    | This channel provides access to the power lock of the Energy Socket.                       | hwe-skt                           |
+| ring_brightness        | Number:Dimensionless      | This channel provides access to the brightness of the ring of the Energy Socket.           | hwe-skt                           |
+| total_liter            | Number:Volume             | This channel provides total water usage in cubic meters.                                   | hwe-wtr                           |
+| active_liter           | Number:VolumetricFlowRate | This channel provides the active water usage in liters per minute.                         | hwe-wtr                           |
+| state_of_charge        | Number:Dimensionless      | This channel provides access to the current state of charge in percent.                    | hwe-bat                           |
+| cycles                 | Number:Dimensionless      | This channel provides access to the number of battery cycles.                              | hwe-bat                           |
 
 ## Full Example
 
 ### `homewizard.things` Example
 
 ```java
-Thing homewizard:HWE-P1:my_p1 [ ipAddress="192.178.1.67", refreshDelay=5, apiVersion=1 ]
-Thing homewizard:HWE-SKT:my_socket [ ipAddress="192.178.1.61", refreshDelay=5, apiVersion=1 ]
-Thing homewizard:HWE-WTR:my_water [ ipAddress="192.178.1.27", refreshDelay=15, apiVersion=1 ]
+Thing homewizard:hwe-p1:my_p1 [ ipAddress="192.178.1.67", refreshDelay=5, apiVersion=1 ]
+Thing homewizard:hwe-skt:my_socket [ ipAddress="192.178.1.61", refreshDelay=5, apiVersion=1 ]
+Thing homewizard:hwe-wtr:my_water [ ipAddress="192.178.1.27", refreshDelay=15, apiVersion=1 ]
 ```
 
 ### `homewizard.items` Example
 
 ```java
-Number:Energy Energy_Import_T1 "Imported Energy T1 [%.0f kWh]" {channel="homewizard:HWE-P1:my_meter:energy#energy_import_t1" }
-Number:Power  Active_Power_L1  "Active Power Phase 1 [%.1f W]" {channel="homewizard:HWE-P1:my_meter:energy#power_l1" }
-DateTime      Gas_Update       "Gas Update Time [%1$tH:%1$tM]" {channel="homewizard:HWE-P1:my_meter:energy#gas_timestamp" }
+Number:Energy Energy_Import_T1 "Imported Energy T1 [%.0f kWh]" {channel="homewizard:hwe-p1:my_meter:energy#energy_import_t1" }
+Number:Power  Active_Power_L1  "Active Power Phase 1 [%.1f W]" {channel="homewizard:hwe-p1:my_meter:energy#power_l1" }
+DateTime      Gas_Update       "Gas Update Time [%1$tH:%1$tM]" {channel="homewizard:hwe-p1:my_meter:energy#gas_timestamp" }
 ```

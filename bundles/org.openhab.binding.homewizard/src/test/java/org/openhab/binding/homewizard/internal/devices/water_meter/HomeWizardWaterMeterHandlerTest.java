@@ -79,8 +79,8 @@ public class HomeWizardWaterMeterHandlerTest {
                         HomeWizardBindingConstants.CHANNEL_GROUP_WATER + "#"
                                 + HomeWizardBindingConstants.CHANNEL_TOTAL_LITER),
 
-                mockChannel(thing.getUID(), "total_water"), //
-                mockChannel(thing.getUID(), "current_water"));
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_TOTAL_LITER), //
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_ACTIVE_LITER));
 
         when(thing.getChannels()).thenReturn(channelList);
         return thing;
@@ -149,9 +149,11 @@ public class HomeWizardWaterMeterHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
-            verify(callback).stateUpdated(new ChannelUID(thing.getUID(), "total_water"),
+            verify(callback).stateUpdated(
+                    new ChannelUID(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_ACTIVE_LITER),
                     getState(7.2, Units.LITRE_PER_MINUTE));
-            verify(callback).stateUpdated(new ChannelUID(thing.getUID(), "current_water"),
+            verify(callback).stateUpdated(
+                    new ChannelUID(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_TOTAL_LITER),
                     getState(123.456, SIUnits.CUBIC_METRE));
 
         } finally {

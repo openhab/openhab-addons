@@ -41,7 +41,7 @@ public class HomeWizardEnergySocketHandler extends HomeWizardEnergySocketStateHa
      */
     public HomeWizardEnergySocketHandler(Thing thing) {
         super(thing);
-        supportedTypes.add("HWE-SKT");
+        supportedTypes.add(HomeWizardBindingConstants.HWE_SKT);
     }
 
     /**
@@ -152,9 +152,10 @@ public class HomeWizardEnergySocketHandler extends HomeWizardEnergySocketStateHa
                     HomeWizardBindingConstants.CHANNEL_RING_BRIGHTNESS,
                     new DecimalType(brightnessToPercentage(payload.getBrightness())));
         } else {
-            updateState("power_switch", OnOffType.from(payload.getPowerOn()));
-            updateState("power_lock", OnOffType.from(payload.getSwitchLock()));
-            updateState("ring_brightness", new DecimalType(brightnessToPercentage(payload.getBrightness())));
+            updateState(HomeWizardBindingConstants.CHANNEL_POWER_SWITCH, OnOffType.from(payload.getPowerOn()));
+            updateState(HomeWizardBindingConstants.CHANNEL_POWER_LOCK, OnOffType.from(payload.getSwitchLock()));
+            updateState(HomeWizardBindingConstants.CHANNEL_RING_BRIGHTNESS,
+                    new DecimalType(brightnessToPercentage(payload.getBrightness())));
         }
     }
 }

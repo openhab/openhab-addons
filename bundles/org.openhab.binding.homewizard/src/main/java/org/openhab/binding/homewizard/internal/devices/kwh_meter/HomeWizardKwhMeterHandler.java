@@ -38,10 +38,10 @@ public class HomeWizardKwhMeterHandler extends HomeWizardEnergyMeterHandler {
      */
     public HomeWizardKwhMeterHandler(Thing thing) {
         super(thing);
-        supportedTypes.add("HWE-KWH1");
-        supportedTypes.add("SDM230-wifi");
-        supportedTypes.add("HWE-KWH3");
-        supportedTypes.add("SDM630-wifi");
+        supportedTypes.add(HomeWizardBindingConstants.HWE_KWH1);
+        supportedTypes.add(HomeWizardBindingConstants.SDM230_WIFI);
+        supportedTypes.add(HomeWizardBindingConstants.HWE_KWH3);
+        supportedTypes.add(HomeWizardBindingConstants.SDM630_WIFI);
     }
 
     /**
@@ -49,18 +49,20 @@ public class HomeWizardKwhMeterHandler extends HomeWizardEnergyMeterHandler {
      *
      * @param payload The data obtained form the API call
      */
-    @SuppressWarnings("null")
     @Override
     protected void handleDataPayload(String data) {
         super.handleDataPayload(data);
 
         var payload = gson.fromJson(data, HomeWizardEnergySocketMeasurementPayload.class);
-
-        updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY, HomeWizardBindingConstants.CHANNEL_REACTIVE_POWER,
-                new QuantityType<>(payload.getReactivePower(), Units.VAR));
-        updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY, HomeWizardBindingConstants.CHANNEL_APPARENT_POWER,
-                new QuantityType<>(payload.getApparentPower(), Units.VOLT_AMPERE));
-        updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY, HomeWizardBindingConstants.CHANNEL_POWER_FACTOR,
-                new DecimalType(payload.getPowerFactor()));
+        if (payload != null) {
+            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
+                    HomeWizardBindingConstants.CHANNEL_REACTIVE_POWER,
+                    new QuantityType<>(payload.getReactivePower(), Units.VAR));
+            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
+                    HomeWizardBindingConstants.CHANNEL_APPARENT_POWER,
+                    new QuantityType<>(payload.getApparentPower(), Units.VOLT_AMPERE));
+            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
+                    HomeWizardBindingConstants.CHANNEL_POWER_FACTOR, new DecimalType(payload.getPowerFactor()));
+        }
     }
 }

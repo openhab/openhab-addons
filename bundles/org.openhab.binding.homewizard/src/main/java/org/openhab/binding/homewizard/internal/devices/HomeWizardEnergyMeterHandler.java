@@ -116,29 +116,41 @@ public class HomeWizardEnergyMeterHandler extends HomeWizardDeviceHandler {
                         HomeWizardBindingConstants.CHANNEL_FREQUENCY,
                         new QuantityType<>(payload.getFrequency(), Units.HERTZ));
             } else {
-                updateState("total_energy_import_t1",
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_ENERGY_IMPORT_T1,
                         new QuantityType<>(payload.getEnergyImportT1(), Units.KILOWATT_HOUR));
-                updateState("total_energy_import_t2",
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_ENERGY_IMPORT_T2,
                         new QuantityType<>(payload.getEnergyImportT2(), Units.KILOWATT_HOUR));
-                updateState("total_energy_export_t1",
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_ENERGY_EXPORT_T1,
                         new QuantityType<>(payload.getEnergyExportT1(), Units.KILOWATT_HOUR));
-                updateState("total_energy_export_t2",
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_ENERGY_EXPORT_T2,
                         new QuantityType<>(payload.getEnergyExportT2(), Units.KILOWATT_HOUR));
 
-                updateState("active_power", new QuantityType<>(payload.getPower(), Units.WATT));
-                updateState("active_power_l1", new QuantityType<>(payload.getPowerL1(), Units.WATT));
-                updateState("active_power_l2", new QuantityType<>(payload.getPowerL2(), Units.WATT));
-                updateState("active_power_l3", new QuantityType<>(payload.getPowerL3(), Units.WATT));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_POWER,
+                        new QuantityType<>(payload.getPower(), Units.WATT));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_POWER_L1,
+                        new QuantityType<>(payload.getPowerL1(), Units.WATT));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_POWER_L2,
+                        new QuantityType<>(payload.getPowerL2(), Units.WATT));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_POWER_L3,
+                        new QuantityType<>(payload.getPowerL3(), Units.WATT));
 
-                updateState("active_voltage", new QuantityType<>(payload.getVoltage(), Units.VOLT));
-                updateState("active_voltage_l1", new QuantityType<>(payload.getVoltageL1(), Units.VOLT));
-                updateState("active_voltage_l2", new QuantityType<>(payload.getVoltageL2(), Units.VOLT));
-                updateState("active_voltage_l3", new QuantityType<>(payload.getVoltageL3(), Units.VOLT));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_VOLTAGE,
+                        new QuantityType<>(payload.getVoltage(), Units.VOLT));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_VOLTAGE_L1,
+                        new QuantityType<>(payload.getVoltageL1(), Units.VOLT));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_VOLTAGE_L2,
+                        new QuantityType<>(payload.getVoltageL2(), Units.VOLT));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_VOLTAGE_L3,
+                        new QuantityType<>(payload.getVoltageL3(), Units.VOLT));
 
-                updateState("active_current", new QuantityType<>(payload.getCurrent(), Units.AMPERE));
-                updateState("active_current_l1", new QuantityType<>(payload.getCurrentL1(), Units.AMPERE));
-                updateState("active_current_l2", new QuantityType<>(payload.getCurrentL2(), Units.AMPERE));
-                updateState("active_current_l3", new QuantityType<>(payload.getCurrentL3(), Units.AMPERE));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_CURRENT,
+                        new QuantityType<>(payload.getCurrent(), Units.AMPERE));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_CURRENT_L1,
+                        new QuantityType<>(payload.getCurrentL1(), Units.AMPERE));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_CURRENT_L2,
+                        new QuantityType<>(payload.getCurrentL2(), Units.AMPERE));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_CURRENT_L3,
+                        new QuantityType<>(payload.getCurrentL3(), Units.AMPERE));
             }
 
         }

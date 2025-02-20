@@ -52,16 +52,16 @@ public class HomeWizardPlugInBatteryHandler extends HomeWizardEnergyMeterHandler
      *
      * @param payload The data obtained form the API call
      */
-    @SuppressWarnings("null")
     @Override
     protected void handleDataPayload(String data) {
         super.handleDataPayload(data);
 
         var payload = gson.fromJson(data, HomeWizardPlugInBatteryMeasurementPayload.class);
-
-        updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY, HomeWizardBindingConstants.CHANNEL_STATE_OF_CHARGE,
-                new DecimalType(payload.getStateOfCharge()));
-        updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY, HomeWizardBindingConstants.CHANNEL_CYCLES,
-                new DecimalType(payload.getCycles()));
+        if (payload != null) {
+            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
+                    HomeWizardBindingConstants.CHANNEL_STATE_OF_CHARGE, new DecimalType(payload.getStateOfCharge()));
+            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY, HomeWizardBindingConstants.CHANNEL_CYCLES,
+                    new DecimalType(payload.getCycles()));
+        }
     }
 }

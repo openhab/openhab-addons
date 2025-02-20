@@ -40,7 +40,7 @@ public class HomeWizardWaterMeterHandler extends HomeWizardDeviceHandler {
      */
     public HomeWizardWaterMeterHandler(Thing thing) {
         super(thing);
-        supportedTypes.add("HWE-WTR");
+        supportedTypes.add(HomeWizardBindingConstants.HWE_WTR);
     }
 
     /**
@@ -55,19 +55,23 @@ public class HomeWizardWaterMeterHandler extends HomeWizardDeviceHandler {
      *
      * @param payload The data obtained form the API call
      */
-    @SuppressWarnings("null")
     @Override
     protected void handleDataPayload(String data) {
         var payload = gson.fromJson(data, HomeWizardWaterMeterDataPayload.class);
-
-        if (!thing.getThingTypeUID().equals(HomeWizardBindingConstants.THING_TYPE_WATERMETER)) {
-            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_WATER, HomeWizardBindingConstants.CHANNEL_ACTIVE_LITER,
-                    new QuantityType<>(payload.getActiveLiter(), Units.LITRE_PER_MINUTE));
-            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_WATER, HomeWizardBindingConstants.CHANNEL_TOTAL_LITER,
-                    new QuantityType<>(payload.getTotalLiter(), SIUnits.CUBIC_METRE));
-        } else {
-            updateState("total_water", new QuantityType<>(payload.getActiveLiter(), Units.LITRE_PER_MINUTE));
-            updateState("current_water", new QuantityType<>(payload.getTotalLiter(), SIUnits.CUBIC_METRE));
+        if (payload != null) {
+            if (!thing.getThingTypeUID().equals(HomeWizardBindingConstants.THING_TYPE_WATERMETER)) {
+                updateState(HomeWizardBindingConstants.CHANNEL_GROUP_WATER,
+                        HomeWizardBindingConstants.CHANNEL_ACTIVE_LITER,
+                        new QuantityType<>(payload.getActiveLiter(), Units.LITRE_PER_MINUTE));
+                updateState(HomeWizardBindingConstants.CHANNEL_GROUP_WATER,
+                        HomeWizardBindingConstants.CHANNEL_TOTAL_LITER,
+                        new QuantityType<>(payload.getTotalLiter(), SIUnits.CUBIC_METRE));
+            } else {
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_ACTIVE_LITER,
+                        new QuantityType<>(payload.getActiveLiter(), Units.LITRE_PER_MINUTE));
+                updateState(HomeWizardBindingConstants.LEGACY_CHANNEL_TOTAL_LITER,
+                        new QuantityType<>(payload.getTotalLiter(), SIUnits.CUBIC_METRE));
+            }
         }
     }
 }

@@ -4,13 +4,13 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="HWE-KWH">
-		<label>HomeWizard kWh Meter</label>
+	<thing-type id="hwe-p1">
+		<label>HomeWizard P1 Meter</label>
 		<description>This thing provides the measurement data that is available through the API of a HomeWizard
-			kWh Meter.</description>
+			P1 Meter.</description>
 
 		<channel-groups>
-			<channel-group id="energy" typeId="kwh-energy-group"/>
+			<channel-group id="energy" typeId="p1-energy-group"/>
 		</channel-groups>
 		<properties>
 			<property name="thingTypeVersion">1</property>
@@ -19,7 +19,7 @@
 		<config-description-ref uri="thing-type:homewizard:device"/>
 	</thing-type>
 
-	<channel-group-type id="kwh-energy-group">
+	<channel-group-type id="p1-energy-group">
 		<label>Recent Measurements</label>
 		<channels>
 			<channel id="power" typeId="hw-power"/>
@@ -61,7 +61,6 @@
 				</description>
 			</channel>
 
-			<channel id="current" typeId="hw-current"/>
 			<channel id="current_l1" typeId="hw-current-advanced">
 				<label>Active Current L1</label>
 				<description>
@@ -82,12 +81,70 @@
 			</channel>
 
 			<channel id="energy_import" typeId="hw-energy-import"/>
+			<channel id="energy_import_T1" typeId="hw-energy-import-advanced">
+				<label>Energy Import T1</label>
+				<description>
+					This channel provides the energy usage meter reading for tariff 1 in kWh.
+				</description>
+			</channel>
+			<channel id="energy_import_T2" typeId="hw-energy-import-advanced">
+				<label>Energy Import T2</label>
+				<description>
+					This channel provides the energy usage meter reading for tariff 2 in kWh.
+				</description>
+			</channel>
+
 			<channel id="energy_export" typeId="hw-energy-export"/>
-			<channel id="reactive_power" typeId="hw-reactive-power"/>
-			<channel id="apparent_power" typeId="hw-apparent-power"/>
-			<channel id="frequency" typeId="hw-frequency"/>
+			<channel id="energy_export_T1" typeId="hw-energy-export-advanced">
+				<label>Energy Export T1</label>
+				<description>
+					This channel provides the energy feed-in meter reading for tariff 1 in kWh.
+				</description>
+			</channel>
+			<channel id="energy_export_T2" typeId="hw-energy-export-advanced">
+				<label>Energy Export T2</label>
+				<description>
+					This channel provides the energy feed-in meter reading for tarff 2 in kWh.
+				</description>
+			</channel>
+
+			<channel id="power_failures" typeId="p1-power-failures"/>
+			<channel id="long_power_failures" typeId="p1-power-failures">
+				<label>Long Power Failures</label>
+				<description>
+					This channel provides the number of 'long' power failures detected by meter.
+				</description>
+			</channel>
+
+			<channel id="total_gas" typeId="p1-total-gas"/>
+			<channel id="gas_timestamp" typeId="p1-gas-timestamp"/>
+
 		</channels>
 	</channel-group-type>
+
+	<channel-type id="p1-power-failures">
+		<item-type>Number</item-type>
+		<label>Power Failures</label>
+		<description>This channel provides the number of power failures detected by meter.</description>
+	</channel-type>
+
+	<channel-type id="p1-total-gas">
+		<item-type>Number:Volume</item-type>
+		<label>Total Imported Gas</label>
+		<description>
+			This channel provides the most recently reported total imported gas in m^3. It does not get updated as
+			frequently as the data in the other channels, the gas_timestamp channel provides the time stamp of the most recent
+			update.
+		</description>
+	</channel-type>
+
+	<channel-type id="p1-gas-timestamp">
+		<item-type>DateTime</item-type>
+		<label>Gas Update Time Stamp</label>
+		<description>
+			This channel provides the time stamp of the total_gas measurement.
+		</description>
+	</channel-type>
 
 
 </thing:thing-descriptions>

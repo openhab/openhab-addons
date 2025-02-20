@@ -49,7 +49,7 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
     public HomeWizardP1MeterHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
-        supportedTypes.add("HWE-P1");
+        supportedTypes.add(HomeWizardBindingConstants.HWE_P1);
     }
 
     /**
@@ -64,68 +64,74 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
      *
      * @param payload The data obtained form the API call
      */
-    @SuppressWarnings("null")
     @Override
     protected void handleDataPayload(String data) {
         super.handleDataPayload(data);
 
         var payload = gson.fromJson(data, HomeWizardP1MeterMeasurementPayload.class);
+        if (payload != null) {
+            if (!thing.getThingTypeUID().equals(HomeWizardBindingConstants.THING_TYPE_P1_METER)) {
+                if (!meterModel.equals(payload.getMeterModel())) {
+                    meterModel = payload.getMeterModel();
+                    updateProperty(HomeWizardBindingConstants.PROPERTY_METER_MODEL, meterModel);
+                }
 
-        if (!thing.getThingTypeUID().equals(HomeWizardBindingConstants.THING_TYPE_P1_METER)) {
-            if (!meterModel.equals(payload.getMeterModel())) {
-                meterModel = payload.getMeterModel();
-                updateProperty(HomeWizardBindingConstants.PROPERTY_METER_MODEL, meterModel);
-            }
+                if (meterVersion != payload.getProtocolVersion()) {
+                    meterVersion = payload.getProtocolVersion();
+                    updateProperty(HomeWizardBindingConstants.PROPERTY_METER_VERSION,
+                            String.format("%d", meterVersion));
+                }
 
-            if (meterVersion != payload.getProtocolVersion()) {
-                meterVersion = payload.getProtocolVersion();
-                updateProperty(HomeWizardBindingConstants.PROPERTY_METER_VERSION, String.format("%d", meterVersion));
-            }
-
-            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
-                    HomeWizardBindingConstants.CHANNEL_POWER_FAILURES, new DecimalType(payload.getAnyPowerFailCount()));
-            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
-                    HomeWizardBindingConstants.CHANNEL_LONG_POWER_FAILURES,
-                    new DecimalType(payload.getLongPowerFailCount()));
-
-            ZonedDateTime gasTimestamp;
-            try {
-                gasTimestamp = payload.getGasTimestamp(timeZoneProvider.getTimeZone());
-            } catch (DateTimeException e) {
-                logger.warn("Unable to parse Gas timestamp: {}", e.getMessage());
-                gasTimestamp = null;
-            }
-            if (gasTimestamp != null) {
                 updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
-                        HomeWizardBindingConstants.CHANNEL_GAS_TOTAL,
-                        new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
+                        HomeWizardBindingConstants.CHANNEL_POWER_FAILURES,
+                        new DecimalType(payload.getAnyPowerFailCount()));
                 updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
-                        HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP, new DateTimeType(gasTimestamp));
-            }
-        } else {
-            if (!meterModel.equals(payload.getMeterModel())) {
-                meterModel = payload.getMeterModel();
-                updateProperty("meterModel", meterModel);
-            }
+                        HomeWizardBindingConstants.CHANNEL_LONG_POWER_FAILURES,
+                        new DecimalType(payload.getLongPowerFailCount()));
 
-            if (meterVersion != payload.getProtocolVersion()) {
-                meterVersion = payload.getProtocolVersion();
-                updateProperty("meterVersion", String.format("%d", meterVersion));
-            }
+                ZonedDateTime gasTimestamp;
+                try {
+                    gasTimestamp = payload.getGasTimestamp(timeZoneProvider.getTimeZone());
+                } catch (DateTimeException e) {
+                    logger.warn("Unable to parse Gas timestamp: {}", e.getMessage());
+                    gasTimestamp = null;
+                }
+                if (gasTimestamp != null) {
+                    updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
+                            HomeWizardBindingConstants.CHANNEL_GAS_TOTAL,
+                            new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
+                    updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
+                            HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP, new DateTimeType(gasTimestamp));
+                }
+            } else {
+                if (!meterModel.equals(payload.getMeterModel())) {
+                    meterModel = payload.getMeterModel();
+                    updateProperty(HomeWizardBindingConstants.PROPERTY_METER_MODEL, meterModel);
+                }
 
-            updateState("power_failures", new DecimalType(payload.getAnyPowerFailCount()));
-            updateState("long_power_failures", new DecimalType(payload.getLongPowerFailCount()));
+                if (meterVersion != payload.getProtocolVersion()) {
+                    meterVersion = payload.getProtocolVersion();
+                    updateProperty(HomeWizardBindingConstants.PROPERTY_METER_VERSION,
+                            String.format("%d", meterVersion));
+                }
 
-            ZonedDateTime gasTimestamp;
-            try {
-                gasTimestamp = payload.getGasTimestamp(timeZoneProvider.getTimeZone());
-            } catch (DateTimeException e) {
-                logger.warn("Unable to parse Gas timestamp: {}", e.getMessage());
-                gasTimestamp = null;
-            }
-            if (gasTimestamp != null) {
-                updateState("total_gas", new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
-                updateState("gas_timestamp", new DateTimeType(gasTimestamp));
+                updateState(HomeWizardBindingConstants.CHANNEL_POWER_FAILURES,
+                        new DecimalType(payload.getAnyPowerFailCount()));
+                updateState(HomeWizardBindingConstants.CHANNEL_LONG_POWER_FAILURES,
+                        new DecimalType(payload.getLongPowerFailCount()));
+
+                ZonedDateTime gasTimestamp;
+                try {
+                    gasTimestamp = payload.getGasTimestamp(timeZoneProvider.getTimeZone());
+                } catch (DateTimeException e) {
+                    logger.warn("Unable to parse Gas timestamp: {}", e.getMessage());
+                    gasTimestamp = null;
+                }
+                if (gasTimestamp != null) {
+                    updateState(HomeWizardBindingConstants.CHANNEL_GAS_TOTAL,
+                            new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
+                    updateState(HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP, new DateTimeType(gasTimestamp));
+                }
             }
         }
     }
