@@ -110,7 +110,7 @@ public class MideaACConfiguration {
      * @return true (yes they can), false (they cannot)
      */
     public boolean isTokenKeyObtainable() {
-        return (!email.isBlank() && !password.isBlank() && !"".equals(cloud) && !cloud.isBlank());
+        return (!email.isBlank() && !password.isBlank() && !cloud.isBlank());
     }
 
     /**
@@ -119,6 +119,6 @@ public class MideaACConfiguration {
      * @return true (Valid, all items are present) false (key, token and/or provider missing)
      */
     public boolean isV3ConfigValid() {
-        return (!key.isBlank() && !token.isBlank() && !"".equals(cloud) && !cloud.isBlank());
+        return (!key.isBlank() && !token.isBlank() && !cloud.isBlank());
     }
 }

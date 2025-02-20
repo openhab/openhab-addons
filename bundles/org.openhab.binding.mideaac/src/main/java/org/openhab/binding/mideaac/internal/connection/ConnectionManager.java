@@ -226,7 +226,7 @@ public class ConnectionManager {
                 } else if (Arrays.equals(new String("ERROR").getBytes(), response)) {
                     throw new MideaAuthenticationException("Authentication failed!");
                 } else {
-                    logger.warn("Authentication reponse unexpected data length ({} instead of 72)!", response.length);
+                    logger.debug("Authentication reponse unexpected data length ({} instead of 72)!", response.length);
                     throw new MideaAuthenticationException("Unexpected authentication response length");
                 }
             }
@@ -437,7 +437,7 @@ public class ConnectionManager {
                     sendCommand(command, callback);
                 } else {
                     droppedCommands = droppedCommands + 1;
-                    logger.info("Problem with reading response, skipping {} skipped count since startup {}", command,
+                    logger.debug("Problem with reading response, skipping {} skipped count since startup {}", command,
                             droppedCommands);
                     retry = true;
                     return;
@@ -470,7 +470,6 @@ public class ConnectionManager {
             writer.close();
             inputStream.close();
             socket.close();
-
         } catch (IOException e) {
             logger.warn("IOException closing connection to device at {}: {}", ipAddress, e.getMessage(), e);
         }
