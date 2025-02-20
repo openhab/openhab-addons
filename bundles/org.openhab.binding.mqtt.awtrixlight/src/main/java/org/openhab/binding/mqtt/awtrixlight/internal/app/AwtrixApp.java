@@ -390,8 +390,8 @@ public class AwtrixApp {
         if (params.containsKey(key)) {
             @Nullable
             Object value = params.get(key);
-            if (value instanceof Boolean) {
-                return (Boolean) value;
+            if (value instanceof Boolean boolValue) {
+                return boolValue;
             }
         }
         return defaultValue;
@@ -443,8 +443,7 @@ public class AwtrixApp {
         if (params.containsKey("effectSettings")) {
             @Nullable
             Object value = params.get("effectSettings");
-            if (value instanceof Map) {
-                Map<?, ?> map = (Map<?, ?>) value;
+            if (value instanceof Map map) {
                 if (map.containsKey("speed")) {
                     Object speed = map.get("speed");
                     if (speed != null) {
@@ -472,8 +471,8 @@ public class AwtrixApp {
         if (params.containsKey(key)) {
             @Nullable
             Object value = params.get(key);
-            if (value instanceof String) {
-                return (String) value;
+            if (value instanceof String stringValue) {
+                return stringValue;
             }
         }
         return defaultValue;
@@ -604,8 +603,8 @@ public class AwtrixApp {
     public String getEffectPalette() {
         @Nullable
         Object effectPalette = this.effectSettings.get("palette");
-        if (effectPalette instanceof String) {
-            return (String) effectPalette;
+        if (effectPalette instanceof String stringValue) {
+            return stringValue;
         } else {
             return DEFAULT_EFFECTPALETTE;
         }
@@ -618,8 +617,8 @@ public class AwtrixApp {
     public Boolean getEffectBlend() {
         @Nullable
         Object effectBlend = this.effectSettings.get("blend");
-        if (effectBlend instanceof Boolean) {
-            return (Boolean) effectBlend;
+        if (effectBlend instanceof Boolean boolValue) {
+            return boolValue;
         } else {
             return DEFAULT_EFFECTBLEND;
         }
