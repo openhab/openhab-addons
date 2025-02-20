@@ -186,7 +186,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 }
                 break;
             case CHANNEL_BLINK_TEXT:
-                if (command instanceof QuantityType quantityCommand) {
+                if (command instanceof QuantityType<?> quantityCommand) {
                     QuantityType<?> blinkInS = quantityCommand.toUnit(Units.SECOND);
                     if (blinkInS != null) {
                         int blinkInMs = blinkInS.intValue() * 1000;
@@ -195,7 +195,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 }
                 break;
             case CHANNEL_FADE_TEXT:
-                if (command instanceof QuantityType quantityCommand) {
+                if (command instanceof QuantityType<?> quantityCommand) {
                     QuantityType<?> fadeInS = quantityCommand.toUnit(Units.SECOND);
                     if (fadeInS != null) {
                         int fadeInMs = fadeInS.intValue() * 1000;
