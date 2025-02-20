@@ -110,8 +110,9 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     private static final ProfileType PROFILE_STATE_FILTER = ProfileTypeBuilder
             .newState(STATE_FILTER_UID, "State Filter").build();
 
-    private static final ProfileType PROFILE_TYPE_FLAT_LINE = ProfileTypeBuilder.newState(FLAT_LINE_UID, "Flat Line")
-            .withSupportedItemTypes(CoreItemFactory.SWITCH).build();
+    private static final ProfileType PROFILE_TYPE_FLAT_LINE = ProfileTypeBuilder
+            .newState(FLAT_LINE_UID, "Flat Line (No Input Activity)").withSupportedItemTypes(CoreItemFactory.SWITCH)
+            .build();
 
     private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Set.of(GENERIC_COMMAND_UID,
             GENERIC_TOGGLE_SWITCH_UID, DEBOUNCE_COUNTING_UID, DEBOUNCE_TIME_UID, INVERT_UID, ROUND_UID, THRESHOLD_UID,

@@ -23,6 +23,6 @@ import org.openhab.transform.basicprofiles.internal.profiles.FlatLineProfile;
  */
 @NonNullByDefault
 public class FlatLineProfileConfig {
-    public String timeout = "1 h"; // string of an {@link QuantityType} with a time value
-    public @Nullable String inverted; // (optional) string of a boolean value
+    public String timeout = "1 h"; // string of a {@link QuantityType} with a time value
+    public @Nullable Boolean inverted; // (optional) boolean value
 }

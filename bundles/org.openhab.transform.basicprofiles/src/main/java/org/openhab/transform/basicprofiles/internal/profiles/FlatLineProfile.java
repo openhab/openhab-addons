@@ -31,7 +31,6 @@ import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.openhab.core.thing.profiles.StateProfile;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.openhab.transform.basicprofiles.internal.config.FlatLineProfileConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class FlatLineProfile implements StateProfile {
+public class FlatLineProfile implements StateProfile, AutoCloseable {
 
     private static final Duration DEFAULT_TIMEOUT = Duration.ofHours(1);
 
@@ -52,41 +51,42 @@ public class FlatLineProfile implements StateProfile {
     private final ProfileCallback callback;
     private final ScheduledExecutorService scheduler;
     private final Duration timeout;
-    private final Boolean inverted;
+    private final boolean inverted;
     private final Runnable onTimeout;
 
     private @Nullable ScheduledFuture<?> timeoutTask;
 
     public FlatLineProfile(ProfileCallback callback, ProfileContext context) {
-        long milliSeconds = 0;
         FlatLineProfileConfig config = context.getConfiguration().as(FlatLineProfileConfig.class);
+        long mSec = 0;
         try {
-            QuantityType<?> timeout = QuantityType.valueOf(config.timeout);
-            if (!Units.SECOND.getDimension().equals(timeout.getDimension())) {
+            QuantityType<?> timeQty = QuantityType.valueOf(config.timeout);
+            if (!Units.SECOND.getDimension().equals(timeQty.getDimension())) {
                 throw new IllegalArgumentException();
             }
-            milliSeconds = timeout.toUnit(MetricPrefix.MILLI(Units.SECOND)) instanceof QuantityType<?> mS
-                    ? mS.longValue()
+            mSec = timeQty.toUnit(MetricPrefix.MILLI(Units.SECOND)) instanceof QuantityType<?> mSecQty
+                    ? mSecQty.longValue()
                     : 0;
-            if (milliSeconds <= 0) {
+            if (mSec <= 0) {
                 throw new IllegalArgumentException();
             }
         } catch (IllegalArgumentException e) {
-            logger.warn("Profile configuration timeout \"{}\" is invalid", config.timeout);
+            logger.warn("Profile configuration timeout value \"{}\" is invalid", config.timeout);
         }
 
         this.callback = callback;
         this.scheduler = context.getExecutorService();
-        this.timeout = Duration.ofMillis(milliSeconds > 0 ? milliSeconds : DEFAULT_TIMEOUT.toMillis());
-        this.inverted = Boolean.valueOf(config.inverted);
+        this.timeout = mSec > 0 ? Duration.ofMillis(mSec) : DEFAULT_TIMEOUT;
+        this.inverted = config.inverted != null ? config.inverted : false;
+
         this.onTimeout = () -> {
-            this.callback.sendUpdate(OnOffType.from(!inverted));
+            State itemState = OnOffType.from(!inverted);
+            logger.debug("timeout:{} => itemState:{}", timeout, itemState);
+            this.callback.sendUpdate(itemState);
         };
 
-        createTimeoutTask();
-
-        this.callback.sendUpdate(UnDefType.UNDEF);
-        logger.debug("Created profile with timeout:{}, inverted:{}", timeout, inverted);
+        rescheduleTimeoutTask();
+        logger.debug("Created(timeout:{}, inverted:{})", timeout, inverted);
     }
 
     @Override
@@ -95,32 +95,50 @@ public class FlatLineProfile implements StateProfile {
     }
 
     @Override
-    public void onStateUpdateFromItem(State state) {
+    public void onStateUpdateFromItem(State itemState) {
         // do nothing
     }
 
     @Override
-    public void onCommandFromItem(Command command) {
+    public void onCommandFromItem(Command itemCommand) {
         // do nothing
     }
 
     @Override
-    public void onCommandFromHandler(Command command) {
-        callback.sendCommand(OnOffType.from(inverted));
-        createTimeoutTask();
+    public void onCommandFromHandler(Command handlerCommand) {
+        Command itemCommand = OnOffType.from(inverted);
+        logger.debug("handlerCommand:{} => itemCommand:{}", handlerCommand, itemCommand);
+        callback.sendCommand(itemCommand);
+        rescheduleTimeoutTask();
     }
 
     @Override
-    public void onStateUpdateFromHandler(State state) {
-        callback.sendUpdate(OnOffType.from(inverted));
-        createTimeoutTask();
+    public void onStateUpdateFromHandler(State handlerState) {
+        State itemState = OnOffType.from(inverted);
+        logger.debug("handlerState:{} => itemState:{}", handlerState, itemState);
+        callback.sendUpdate(itemState);
+        rescheduleTimeoutTask();
     }
 
-    private synchronized void createTimeoutTask() {
-        ScheduledFuture<?> priorTask = timeoutTask;
-        if (priorTask != null) {
-            priorTask.cancel(false);
+    @Override
+    public void close() throws Exception {
+        synchronized (this) {
+            ScheduledFuture<?> priorTask = timeoutTask;
+            timeoutTask = null;
+            if (priorTask != null) {
+                priorTask.cancel(false);
+            }
         }
-        timeoutTask = scheduler.schedule(onTimeout, timeout.toMillis(), TimeUnit.MILLISECONDS);
+    }
+
+    private void rescheduleTimeoutTask() {
+        synchronized (this) {
+            ScheduledFuture<?> priorTask = timeoutTask;
+            if (priorTask != null) {
+                priorTask.cancel(false);
+            }
+            long mSec = timeout.toMillis();
+            timeoutTask = scheduler.scheduleWithFixedDelay(onTimeout, mSec, mSec, TimeUnit.MILLISECONDS);
+        }
     }
 }

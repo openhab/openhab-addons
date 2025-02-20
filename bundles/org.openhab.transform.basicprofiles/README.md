@@ -347,3 +347,15 @@ The purpose is to indicate an alarm condition if the binding is no longer provid
 | ----------------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `timeout`               | text | The time out after which the profile will set the state of the item if the binding provides no updates. The value is in `QuantityType` format e.g. `1 h`, `60 s`, `2 d`  |
 | `inverted`              | text | Optional string indicating if item shall be set to `ON` or `OFF` after the timeout expires. Where `false` => `ON` resp. `true` => `OFF`. The default value is `false`.   |
+
+### Flat Line Profile Example
+
+```java
+Switch myChannelFlatLineStatus {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:flat-line", timeout="60 min" ]
+}
+
+Switch myChannelFlatLineStatus {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:flat-line", timeout="1 d", inverted=true ]
+}
+```

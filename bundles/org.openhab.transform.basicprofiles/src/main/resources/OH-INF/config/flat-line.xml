@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:basic-profiles:flat-line">
+		<parameter name="timeout" type="text">
+			<label>Timeout</label>
+			<description>Time with no input channel activity until the linked item is switched. Default is "1 h".</description>
+			<default>1 h</default>
+		</parameter>
+		<parameter name="inverted" type="boolean" required="false">
+			<label>Inverted</label>
+			<description>Selects if the linked item will be switched ON or OFF after the timeout expires.</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

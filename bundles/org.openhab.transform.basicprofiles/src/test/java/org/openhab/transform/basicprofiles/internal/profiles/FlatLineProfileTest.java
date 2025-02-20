@@ -33,7 +33,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  * Unit test for {@link FlatLineProfile}.
@@ -78,14 +77,16 @@ class FlatLineProfileTest {
     public void testFlatLineProfile(String timeout, String inverted, long expectedMilliSeconds, State expectedState) {
         FlatLineProfile profile = initFlatLineProfile(timeout, inverted);
 
-        verify(mockCallback, times(1)).sendUpdate(UnDefType.UNDEF);
-        verify(mockScheduler, times(1)).schedule(any(Runnable.class), eq(expectedMilliSeconds),
-                eq(TimeUnit.MILLISECONDS));
+        verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
+                eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
 
         reset(mockCallback);
+        reset(mockScheduler);
 
         profile.onStateUpdateFromHandler(DecimalType.ZERO);
 
         verify(mockCallback, times(1)).sendUpdate(expectedState);
+        verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
+                eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
     }
 }
