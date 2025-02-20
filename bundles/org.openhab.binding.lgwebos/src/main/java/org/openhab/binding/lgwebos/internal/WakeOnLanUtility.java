@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -23,6 +25,7 @@ import java.util.Enumeration;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -170,7 +173,16 @@ public class WakeOnLanUtility {
 
     private static boolean checkIfLinuxCommandExists(String cmd) {
         try {
-            return 0 == Runtime.getRuntime().exec(String.format("which %s", cmd)).waitFor();
+            Process process = new ProcessBuilder("which", cmd).redirectErrorStream(true).start();
+
+            if (LOGGER.isDebugEnabled()) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String output = reader.lines().collect(Collectors.joining("\n"));
+                    LOGGER.debug("Command 'which {}' returned {}", cmd, output);
+                }
+            }
+
+            return process.waitFor() == 0;
         } catch (InterruptedException | IOException e) {
             LOGGER.debug("Error trying to check if command {} exists: {}", cmd, e.getMessage());
         }

@@ -40,6 +40,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -62,6 +63,7 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
     private @Mock @NonNullByDefault({}) MqttBrokerConnection connection;
     private @Mock @NonNullByDefault({}) ComponentDiscovered discovered;
     private @Mock @NonNullByDefault({}) ChannelStateUpdateListener channelStateUpdateListener;
+    private @Mock @NonNullByDefault({}) HomeAssistantChannelLinkageChecker linkageChecker;
     private @Mock @NonNullByDefault({}) AvailabilityTracker availabilityTracker;
 
     @BeforeEach
@@ -84,8 +86,9 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         Jinjava jinjava = new Jinjava();
         UnitProvider unitProvider = mock(UnitProvider.class);
 
-        DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING,
-                scheduler, channelStateUpdateListener, availabilityTracker, gson, jinjava, unitProvider));
+        DiscoverComponents discover = spy(
+                new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING, scheduler,
+                        channelStateUpdateListener, linkageChecker, availabilityTracker, gson, jinjava, unitProvider));
 
         HandlerConfiguration config = new HandlerConfiguration("homeassistant", List.of("switch/object"));
 

@@ -333,7 +333,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         if (oldValue != null && !oldValue.equals(value)) {
             logger.debug(
                     "Discarding value {} for item {} with timestamp {} because a new value ({}) arrived with the same timestamp.",
-                    oldValue, name, now, value);
+                    oldValue, item.getName(), now, value);
         }
     }
 
@@ -411,6 +411,11 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
+        return query(filter, null);
+    }
+
+    @Override
+    public Iterable<HistoricItem> query(FilterCriteria filter, @Nullable String alias) {
         ZonedDateTime filterBeginDate = filter.getBeginDate();
         ZonedDateTime filterEndDate = filter.getEndDate();
         if (filterBeginDate != null && filterEndDate != null && filterBeginDate.isAfter(filterEndDate)) {
@@ -424,9 +429,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
         logger.trace("Querying rrd4j database for item '{}'", itemName);
 
+        String localAlias = alias != null ? alias : itemName;
         RrdDb db = null;
         try {
-            db = getDB(itemName, false);
+            db = getDB(localAlias, false);
         } catch (Exception e) {
             logger.warn("Failed to open rrd4j database '{}' for querying ({})", itemName, e.toString());
             return List.of();

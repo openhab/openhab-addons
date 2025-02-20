@@ -181,7 +181,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                 updateState(PET_CHANNEL_DATE_OF_BIRTH, pet.dateOfBirth == null ? UnDefType.UNDEF
                         : new DateTimeType(pet.dateOfBirth.atStartOfDay(ZoneId.systemDefault())));
                 updateState(PET_CHANNEL_WEIGHT,
-                        pet.weight == null ? UnDefType.UNDEF : new QuantityType<>(pet.weight, SIUnits.KILOGRAM));
+                        pet.weight == null ? UnDefType.UNDEF : new QuantityType<>(pet.weight, SIUnits.GRAM));
                 if (pet.tagId != null) {
                     SurePetcareTag tag = petcareAPI.getTag(pet.tagId.toString());
                     if (tag != null) {

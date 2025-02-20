@@ -10,6 +10,37 @@
 				<label>Fixed Heating Target Return Temperature</label>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<!-- remove renamed channels -->
+			<remove-channel id="channel232"/>
+			<remove-channel id="channel233"/>
+			<remove-channel id="channel237"/>
+			<remove-channel id="channel238"/>
+			<remove-channel id="channel239"/>
+			<remove-channel id="channel240"/>
+			<remove-channel id="channel241"/>
+			<remove-channel id="channel242"/>
+			<remove-channel id="channel243"/>
+			<remove-channel id="channel252"/>
+			<remove-channel id="channel258"/>
+			<remove-channel id="channel259"/>
+			<remove-channel id="channel260"/>
+
+			<!-- add renamed channels -->
+			<add-channel id="temperatureVapourisation"/>
+			<add-channel id="temperatureLiquefaction"/>
+			<add-channel id="frequencyCompressorMin"/>
+			<add-channel id="frequencyCompressorMax"/>
+			<add-channel id="temperatureVBOTarget"/>
+			<add-channel id="temperatureVBO"/>
+			<add-channel id="controlSignalHeatingCirculationPump"/>
+			<add-channel id="temperatureHeatingCirculationPumpTarget"/>
+			<add-channel id="temperatureHeatingCirculationPump"/>
+			<add-channel id="temperatureHotGasMax"/>
+			<add-channel id="controlSignalHeatingCirculationPump"/>
+			<add-channel id="outputControlSignalCooling"/>
+			<add-channel id="timeCoolingRelease"/>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

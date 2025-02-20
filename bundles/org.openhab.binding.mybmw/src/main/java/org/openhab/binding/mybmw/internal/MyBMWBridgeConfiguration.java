@@ -20,6 +20,7 @@ import org.openhab.binding.mybmw.internal.utils.Constants;
  *
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - renamed and added hcaptchastring
+ * @author Mark Herwege - added authorisation servlet
  */
 @NonNullByDefault
 public class MyBMWBridgeConfiguration {
@@ -48,6 +49,16 @@ public class MyBMWBridgeConfiguration {
      * the hCaptcha string
      */
     private String hcaptchatoken = Constants.EMPTY;
+
+    /**
+     * the callback IP address for the authorisation servlet
+     */
+    private String callbackIP = Constants.EMPTY;
+
+    /**
+     * the callback port for the authorisation servlet
+     */
+    private int callbackPort = 8090;
 
     public String getRegion() {
         return region;
@@ -81,17 +92,34 @@ public class MyBMWBridgeConfiguration {
         this.language = language;
     }
 
-    public String getHcaptchatoken() {
+    public String getHCaptchaToken() {
         return hcaptchatoken;
     }
 
-    public void setHcaptchatoken(String hcaptchatoken) {
+    public void setHCaptchaToken(String hcaptchatoken) {
         this.hcaptchatoken = hcaptchatoken;
+    }
+
+    public String getCallbackIP() {
+        return Constants.EMPTY.equals(callbackIP) ? "" : callbackIP;
+    }
+
+    public void setCallbackIP(String callbackIP) {
+        this.callbackIP = callbackIP;
+    }
+
+    public int getCallbackPort() {
+        return callbackPort;
+    }
+
+    public void setCallbackPort(int callbackPort) {
+        this.callbackPort = callbackPort;
     }
 
     @Override
     public String toString() {
         return "MyBMWBridgeConfiguration [region=" + region + ", userName=" + userName + ", password=" + password
-                + ", language=" + language + ", hcaptchatoken=" + hcaptchatoken + "]";
+                + ", language=" + language + ", hcaptchatoken=" + hcaptchatoken + ", callbackAddress=" + callbackIP
+                + ":" + callbackPort + "]";
     }
 }

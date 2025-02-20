@@ -44,9 +44,11 @@ public class LinkDBReader implements PortListener {
     private @Nullable ScheduledFuture<?> job;
     private ByteArrayOutputStream stream = new ByteArrayOutputStream();
     private boolean done = true;
+    private boolean standardMode = true;
     private long lastMsgReceived;
     private int location;
     private int lastMSB;
+    private int recordCount;
 
     public LinkDBReader(InsteonModem modem, ScheduledExecutorService scheduler) {
         this.modem = modem;
@@ -66,8 +68,14 @@ public class LinkDBReader implements PortListener {
 
         job = scheduler.scheduleWithFixedDelay(() -> {
             if (System.currentTimeMillis() - lastMsgReceived > DatabaseManager.MESSAGE_TIMEOUT) {
-                logger.debug("link database reader timed out for {}, aborting", device.getAddress());
-                done();
+                if (standardMode && recordCount == 0 && device.isAwake()) {
+                    logger.debug("all link database request timed out for {}, trying peek method instead",
+                            device.getAddress());
+                    getPeekRecords();
+                } else {
+                    logger.debug("link database reader timed out for {}, aborting", device.getAddress());
+                    done();
+                }
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);
     }
@@ -75,6 +83,8 @@ public class LinkDBReader implements PortListener {
     private void getAllRecords() {
         lastMsgReceived = System.currentTimeMillis();
         done = false;
+        standardMode = true;
+        recordCount = 0;
 
         modem.getPort().registerListener(this);
 
@@ -111,6 +121,8 @@ public class LinkDBReader implements PortListener {
     }
 
     private void getPeekRecords() {
+        standardMode = false;
+        lastMsgReceived = System.currentTimeMillis();
         location = device.getLinkDB().getFirstRecordLocation();
         lastMSB = -1;
         getNextPeekRecord();
@@ -216,7 +228,7 @@ public class LinkDBReader implements PortListener {
             return;
         }
 
-        logger.trace("got link db record #{} for {}", device.getLinkDB().size(), device.getAddress());
+        logger.trace("got link db record #{} for {}", ++recordCount, device.getAddress());
 
         if (record.isLast()) {
             logger.trace("got last link db record for {}", device.getAddress());

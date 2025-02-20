@@ -330,8 +330,6 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
         updateStatus();
     }
 
-    public abstract void updateStatus();
-
     public void updateProperties(Device device) {
         Map<String, String> properties = editProperties();
 
@@ -372,9 +370,8 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
     }
 
     protected void cancelJob(@Nullable ScheduledFuture<?> job, boolean interrupt) {
-        if (job != null) {
+        if (job != null && !job.isCancelled()) {
             job.cancel(interrupt);
-            job = null;
         }
     }
 }

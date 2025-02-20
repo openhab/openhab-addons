@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="udp">
+		<label>Sbus UDP Bridge</label>
+		<description>Endpoint for Sbus UDP slaves</description>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>IP Address or Hostname</label>
+				<description>Network address of the device</description>
+				<default>localhost</default>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>Port of the slave</description>
+				<default>6000</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

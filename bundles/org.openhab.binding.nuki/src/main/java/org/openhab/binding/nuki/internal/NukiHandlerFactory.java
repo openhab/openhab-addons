@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nuki.internal;
 
+import java.util.UUID;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -106,7 +108,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private @Nullable String createCallbackUrl(String id) {
+    private @Nullable String createCallbackUrl(@Nullable String id) {
         final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
             logger.warn("No network interface could be found to get callback address");
@@ -118,7 +120,8 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("Cannot find port of the http service.");
             return null;
         }
-        String callbackUrl = NukiLinkBuilder.callbackUri(ipAddress, port, id).toString();
+        String callbackUrl = NukiLinkBuilder
+                .callbackUri(ipAddress, port, id != null ? id : UUID.randomUUID().toString()).toString();
         logger.trace("callbackUrl[{}]", callbackUrl);
         return callbackUrl;
     }
