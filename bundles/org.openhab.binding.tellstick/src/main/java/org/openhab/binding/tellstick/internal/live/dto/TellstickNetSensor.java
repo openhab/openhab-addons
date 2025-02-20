@@ -10,11 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tellstick.internal.live.xml;
+package org.openhab.binding.tellstick.internal.live.dto;
+
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tellstick.device.iface.Device;
@@ -26,29 +30,29 @@ import org.tellstick.enums.DeviceType;
  * @author Jarle Hjortland - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class TellstickNetDevice implements Device {
+@XmlRootElement(name = "sensor")
+public class TellstickNetSensor implements Device {
     @XmlAttribute(name = "id")
     int deviceId;
+    @XmlAttribute()
     private String protocol;
-    private String model;
     @XmlAttribute()
     private String name;
     @XmlAttribute()
     @XmlJavaTypeAdapter(value = NumberToBooleanMapper.class)
     private Boolean online;
-    @XmlAttribute
-    private int state;
-    @XmlAttribute
-    private String statevalue;
-    @XmlAttribute
-    private int methods;
-
+    @XmlElement(name = "data")
+    private List<DataTypeValue> data;
+    @XmlAttribute()
+    private Long lastUpdated;
     private boolean updated;
+    @XmlAttribute()
+    private Long battery;
 
-    public TellstickNetDevice() {
+    public TellstickNetSensor() {
     }
 
-    public TellstickNetDevice(int id) {
+    public TellstickNetSensor(int id) {
         this.deviceId = id;
     }
 
@@ -68,13 +72,8 @@ public class TellstickNetDevice implements Device {
     }
 
     @Override
-    public String getModel() {
-        return model;
-    }
-
-    @Override
     public DeviceType getDeviceType() {
-        return DeviceType.DEVICE;
+        return DeviceType.SENSOR;
     }
 
     @Override
@@ -90,10 +89,6 @@ public class TellstickNetDevice implements Device {
         this.protocol = protocol;
     }
 
-    public void setModel(String model) {
-        this.model = model;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -107,28 +102,25 @@ public class TellstickNetDevice implements Device {
         this.online = online;
     }
 
-    public void setUpdated(boolean b) {
-        this.updated = b;
+    public List<DataTypeValue> getData() {
+        return data;
     }
 
-    public boolean isUpdated() {
-        return updated;
+    public void setData(List<DataTypeValue> data) {
+        this.data = data;
     }
 
-    public int getState() {
-        return state;
+    @Override
+    public String getModel() {
+        return null;
     }
 
-    public void setState(int state) {
-        this.state = state;
+    public Long getLastUpdated() {
+        return lastUpdated;
     }
 
-    public String getStatevalue() {
-        return statevalue;
-    }
-
-    public void setStatevalue(String statevalue) {
-        this.statevalue = statevalue;
+    public void setLastUpdated(Long lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     @Override
@@ -150,21 +142,45 @@ public class TellstickNetDevice implements Device {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        TellstickNetDevice other = (TellstickNetDevice) obj;
+        TellstickNetSensor other = (TellstickNetSensor) obj;
         return deviceId == other.deviceId;
     }
 
-    public int getMethods() {
-        return methods;
+    public void setUpdated(boolean b) {
+        this.updated = b;
     }
 
-    public void setMethods(int methods) {
-        this.methods = methods;
+    public boolean isUpdated() {
+        return updated;
+    }
+
+    public boolean isSensorOfType(LiveDataType type) {
+        boolean res = false;
+        if (data != null) {
+            for (DataTypeValue val : data) {
+                if (val.getName() == type) {
+                    res = true;
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+
+    public Long getBattery() {
+        return battery;
+    }
+
+    public void setBattery(Long battery) {
+        this.battery = battery;
     }
 
     @Override
     public String toString() {
-        return "TellstickNetDevice [deviceId=" + deviceId + ", name=" + name + ", online=" + online + ", state=" + state
-                + ", statevalue=" + statevalue + ", updated=" + updated + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("TellstickNetSensor [deviceId=").append(deviceId).append(", protocol=").append(protocol)
+                .append(", name=").append(name).append(", online=").append(online).append(", data=").append(data)
+                .append(", lastUpdated=").append(lastUpdated).append(", updated=").append(updated).append("]");
+        return builder.toString();
     }
 }

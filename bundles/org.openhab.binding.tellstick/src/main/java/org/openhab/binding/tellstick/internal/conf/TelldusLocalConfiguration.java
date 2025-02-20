@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.tellstick.internal.conf;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration class for Tellstick bridge used to connect to the
  * Telldus local API.
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@NonNullByDefault
 public class TelldusLocalConfiguration {
-    public String ipAddress;
-    public String accessToken;
-    public long refreshInterval;
+    public String ipAddress = "";
+    public String accessToken = "";
+    public long refreshInterval = 60000;
 }

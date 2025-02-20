@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tellstick.internal.conf.TellstickBridgeConfiguration;
 import org.openhab.binding.tellstick.internal.handler.DeviceStatusListener;
 import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
@@ -54,6 +56,7 @@ import org.tellstick.enums.DataType;
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public class TelldusCoreBridgeHandler extends BaseBridgeHandler
         implements DeviceChangeListener, SensorListener, TelldusBridgeHandler {
 
@@ -62,10 +65,10 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     private Logger logger = LoggerFactory.getLogger(TelldusCoreBridgeHandler.class);
-    private TelldusDeviceController deviceController = null;
+    private @Nullable TelldusDeviceController deviceController;
     private List<TellstickDevice> deviceList = new Vector<>();
     private List<TellstickSensor> sensorList = new Vector<>();
-    private TellstickEventHandler eventHandler;
+    private @Nullable TellstickEventHandler eventHandler;
     private static boolean initialized = false;
     private Set<DeviceStatusListener> deviceStatusListeners = ConcurrentHashMap.newKeySet();
 
@@ -82,13 +85,16 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         logger.debug("Telldus Core Handler disposed.");
+        TelldusDeviceController deviceController = this.deviceController;
         if (deviceController != null) {
             deviceController.dispose();
-            deviceController = null;
+            this.deviceController = null;
         }
+
+        TellstickEventHandler eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.remove();
-            eventHandler = null;
+            this.eventHandler = null;
         }
         clearDeviceList();
         initialized = false;
@@ -96,7 +102,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
         super.dispose();
     }
 
-    private String init(String libraryPath) {
+    private @Nullable String init(@Nullable String libraryPath) {
         if (!initialized) {
             if (libraryPath != null) {
                 logger.info("Loading {} from {}", JNA.nativeLibrary, libraryPath);
@@ -131,7 +137,10 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     private void setupDeviceController(TellstickBridgeConfiguration configuration) {
         deviceController = new TelldusCoreDeviceController(configuration.resendInterval,
                 "OH-binding-" + getThing().getUID() + "-worker");
-        eventHandler.addListener((TelldusCoreDeviceController) deviceController);
+        TellstickEventHandler eventHandler = this.eventHandler;
+        if (eventHandler != null) {
+            eventHandler.addListener((TelldusCoreDeviceController) deviceController);
+        }
     }
 
     @Override
@@ -168,8 +177,9 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     private synchronized void setupListeners() {
-        eventHandler = new TellstickEventHandler(deviceList);
+        TellstickEventHandler eventHandler = this.eventHandler = new TellstickEventHandler(deviceList);
         eventHandler.addListener(this);
+        this.eventHandler = eventHandler;
     }
 
     public void onConnectionLost() {
@@ -183,7 +193,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public boolean registerDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
+    public boolean registerDeviceStatusListener(@Nullable DeviceStatusListener deviceStatusListener) {
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
@@ -200,7 +210,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
         sensorList.clear();
     }
 
-    private Device getDevice(String id, List<TellstickDevice> devices) {
+    private @Nullable Device getDevice(String id, List<TellstickDevice> devices) {
         for (Device device : devices) {
             if (device.getId() == Integer.valueOf(id)) {
                 return device;
@@ -210,12 +220,12 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public Device getDevice(String serialNumber) {
+    public @Nullable Device getDevice(String serialNumber) {
         return getDevice(serialNumber, deviceList);
     }
 
     @Override
-    public void onRequest(TellstickSensorEvent newEvent) {
+    public void onRequest(@NonNullByDefault({}) TellstickSensorEvent newEvent) {
         String uuid = TellstickSensor.createUUId(newEvent.getSensorId(), newEvent.getModel(), newEvent.getProtocol());
         Device device = getSensor(uuid);
         logger.debug("Sensor Event for {} event {}", device, newEvent);
@@ -248,7 +258,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void onRequest(TellstickDeviceEvent newEvent) {
+    public void onRequest(@NonNullByDefault({}) TellstickDeviceEvent newEvent) {
         if (newEvent.getChangeType() == ChangeType.ADDED) {
             for (DeviceStatusListener listener : deviceStatusListeners) {
                 listener.onDeviceAdded(getThing(), newEvent.getDevice());
@@ -265,7 +275,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public Device getSensor(String deviceUUId) {
+    public @Nullable Device getSensor(String deviceUUId) {
         for (Device device : sensorList) {
             if (device.getUUId().equals(deviceUUId)) {
                 return device;
@@ -275,7 +285,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public TelldusDeviceController getController() {
+    public @Nullable TelldusDeviceController getController() {
         return this.deviceController;
     }
 }
