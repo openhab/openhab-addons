@@ -1,0 +1,1347 @@
+{
+  "Info": {
+    "productType": "REF",
+    "country": "WW",
+    "modelType": "BF",
+    "model": "T20_B PJT THOR (Larder)(PP/C1) 유럽",
+    "modelName": "2REB1GLTL1__2",
+    "networkType": "WIFI",
+    "version": "1.02"
+  },
+  "Module": {
+    "WPM": {
+      "GRM_CEN01_Main": "201",
+      "GRM_CEN02_UserSaving": "202",
+      "GRM_CEN04_RefViewer": "202",
+      "GRM_CEN05_ImgViewer": "202",
+      "GRM_FOD01_Main": "201",
+      "GRM_FOD02_EditFoodInfo": "201",
+      "GRM_FOD03_EditFoodIcon": "201",
+      "GRM_FOD04_AddFood": "201",
+      "GRM_ENM01_Main": "201",
+      "GRM_ENM02_DoorOpenings": "201",
+      "GRM_ENM03_PowerConsume": "201",
+      "GRM_ENM04_SetSaving": "202",
+      "GRM_ECO01_Main": "202",
+      "GRM_ECO02_Active": "202",
+      "GRM_ECO03_SavingRatio": "202",
+      "GRM_ECO04_SavingDetail": "202",
+      "GRM_ECO05_ViewTip": "202",
+      "GCM_SDS01_SdsMain": "201",
+      "GRM_FOT01_Main": "201",
+      "GRM_SET01_Main": "201",
+      "GRM_SET02_PushList": "201",
+      "GRM_SMC01_Main": "202",
+      "GRM_SMC02_SafeStore": "201",
+      "GRM_SMC03_ActiveCooling": "201",
+      "GRM_SMC04_SmartFreshStorage": "201",
+      "GRM_SMC05_ActiveIcePlus": "201",
+      "GRM_PHO01_Main": "201",
+      "GRM_SHO01_Main": "201",
+      "GRM_SBS01_Main": "201",
+      "GRM_SBS02_Local": "201",
+      "GRM_SET04_WeatherLocation": "201"
+    },
+    "Menu": [
+      "GRM_SMC01_Main",
+      "GCM_SDS01_SdsMain",
+      "GRM_SET01_Main"
+    ]
+  },
+  "Config": {
+    "targetRoot": "refState",
+    "ignoreValue": {
+      "key": "IGNORE",
+      "index": -99
+    },
+    "replaceStateValue": "@RE_STATE_REPLACE_FILTER_W",
+    "wifiDiagnosis": "true",
+    "hasInsideView": false,
+    "fota": "true",
+    "hasdoor": "Y",
+    "blackBox": "N",
+    "supportFoodManager": true,
+    "ecoFriendlyDefaultIndex": {
+      "fridgeTemp": {
+        "tempUnit_C": 1,
+        "tempUnit_F": 1
+      },
+      "freezerTemp": {
+        "tempUnit_C": 1,
+        "tempUnit_F": 1
+      },
+      "convertibleTemp": {
+        "tempUnit_C": 1,
+        "tempUnit_F": 1
+      },
+      "expressMode": 0,
+      "expressFridge": 0
+    },
+    "sabbathDefaultSchedule": {
+      "type": "location",
+      "startDay": "FRI",
+      "endDay": "SAT",
+      "startTime": 0,
+      "endTime": 0,
+      "weekRepeatYn": "Y"
+    },
+    "sabbathDayListMap": {
+      "FRI": "@RE_TERM_DAY_FRI_W",
+      "SAT": "@RE_TERM_DAY_SAT_W"
+    },
+    "smartCareVersion": "V2",
+    "smartCare": {
+      "useSmartStorage": false,
+      "useSmartFreshStorage": true,
+      "useActiveIcePlus": false,
+      "useActiveSavingsV2": true
+    },
+    "sideMenuInfo": {
+      "GRM_FOD01_Main": {
+        "title": "@RE_FOOD_MANAGEMENT_W",
+        "image": "image/ref_sidemenu_btn_foodmanager.png"
+      },
+      "GRM_ENM01_Main": {
+        "title": "@RE_ENM_TITLE_W",
+        "image": "image/ref_sidemenu_btn_energymonitoring.png"
+      },
+      "GCM_SDS01_SdsMain": {
+        "title": "@CP_NAME_SMART_DIAGNOSIS_W",
+        "image": "image/ref_sidemenu_btn_smart_diagnosis.png"
+      },
+      "GRM_SET01_Main": {
+        "title": "@CP_SETTING_W",
+        "image": "image/ref_sidemenu_btn_setting.png"
+      },
+      "GRM_ECO01_Main": {
+        "title": "@RE_ENM_TITLE_W",
+        "image": "wpm/GRM/image/ref_sidemenu_btn_energymonitoring.png"
+      },
+      "GRM_SMC01_Main": {
+        "title": "@RE_SMARTCARE_RUN_V2_W",
+        "image": "wpm/GRM/image/ref_sidemenu_btn_smartcare.png"
+      },
+      "GRM_SHO01_Main": {
+        "title": "@RE_GROCERY_LIST_W",
+        "image": "wpm/GRM/image/ref_sidemenu_btn_shopping.png"
+      }
+    },
+    "visibleItems": [{
+      "feature": "fridgeTemp",
+      "imageUrl": "",
+      "monTitle": "@RE_TERM_FRIDGE_W",
+      "controlTitle": "@RE_TERM_FRIDGE_W",
+      "controlDisabledOption": [{
+        "optionValue": "@CP_OFF_EN_W",
+        "replaceOptionValue": "IGNORE"
+      }
+      ]
+    }, {
+      "feature": "expressFridge",
+      "imageUrl": "wpm/GRM/image/ref_home_ic_coldstorage.png",
+      "monTitle": "@RE_TERM_EXPRESS_FRIDGE_W",
+      "controlTitle": "@RE_TERM_EXPRESS_FRIDGE_W",
+      "templateType": "typeSwitch.html"
+    }, {
+      "feature": "ecoFriendly",
+      "imageUrl": "image/icon_fridge_eco.png",
+      "monTitle": "@RE_TERM_ECO_FRIENDLY_W",
+      "controlTitle": "@RE_TERM_ECO_FRIENDLY_W",
+      "templateType": "typeSwitch.html"
+    }, {
+      "feature": "smartCareV2",
+      "imageUrl": "wpm/GRM/image/ref_home_ic_smartcare.png",
+      "monTitle": "@RE_SMARTCARE_RUN_V2_W",
+      "controlTitle": "@RE_SMARTCARE_RUN_V2_W",
+      "templateType": "NONE"
+    }
+    ]
+  },
+  "MonitoringValue": {
+    "monStatus": {
+      "_comment": "Monitoring Status _ Not Shown Item",
+      "dataType": "enum",
+      "default": "NORMAL",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1,
+          2
+        ],
+        "controlIndex": [
+          0,
+          1,
+          2
+        ]
+      },
+      "valueMapping": {
+        "FAIL": {
+          "index": 0,
+          "label": "",
+          "_comment": "Fail"
+        },
+        "NOT_WORK": {
+          "index": 1,
+          "label": "",
+          "_comment": "Not working"
+        },
+        "NORMAL": {
+          "index": 2,
+          "label": "",
+          "_comment": "Normal"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "fridgeTemp": {
+      "_comment": "Fridge Target Temperature",
+      "dataType": "range",
+      "default": 1,
+      "visibleItem": {
+        "monitoringIndex": [],
+        "controlIndex": []
+      },
+      "targetKey": {
+        "tempUnit": {
+          "CELSIUS": "fridgeTemp_C",
+          "FAHRENHEIT": "fridgeTemp_F"
+        }
+      },
+      "valueMapping": {
+        "min": 0,
+        "max": 255,
+        "step": 1
+      }
+    },
+    "freezerTemp": {
+      "_comment": "Freezer Target Temperature",
+      "dataType": "range",
+      "default": 1,
+      "visibleItem": {
+        "monitoringIndex": [],
+        "controlIndex": []
+      },
+      "targetKey": {
+        "tempUnit": {
+          "CELSIUS": "freezerTemp_C",
+          "FAHRENHEIT": "freezerTemp_F"
+        }
+      },
+      "valueMapping": {
+        "min": 0,
+        "max": 255,
+        "step": 1
+      }
+    },
+    "convertibleTemp": {
+      "_comment": "Convertible Target Temperature",
+      "dataType": "range",
+      "default": 1,
+      "visibleItem": {
+        "monitoringIndex": [],
+        "controlIndex": []
+      },
+      "targetKey": {
+        "tempUnit": {
+          "CELSIUS": "convertibleTemp_C",
+          "FAHRENHEIT": "convertibleTemp_F"
+        }
+      },
+      "valueMapping": {
+        "min": 0,
+        "max": 255,
+        "step": 1
+      }
+    },
+    "expressMode": {
+      "_comment": "Express Fridge, ExpressFreeze, Rapid Freeze",
+      "dataType": "enum",
+      "default": "OFF",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1
+        ],
+        "controlIndex": [
+          0,
+          1
+        ]
+      },
+      "valueMapping": {
+        "OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W",
+          "_comment": "Express Mode OFF"
+        },
+        "EXPRESS_ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W",
+          "_comment": "Express Fridge or Express Freeze ON"
+        },
+        "RAPID_ON": {
+          "index": 2,
+          "label": "@RE_MAIN_SPEED_FREEZE_TERM_W",
+          "_comment": "Rapid Freeze ON"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "tempUnit": {
+      "_comment": "Temperature Unit",
+      "dataType": "enum",
+      "default": "FAHRENHEIT",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "CELSIUS": {
+          "index": 0,
+          "label": "˚C",
+          "_comment": "Celsius Unit"
+        },
+        "FAHRENHEIT": {
+          "index": 1,
+          "label": "˚F",
+          "_comment": "Fahrenheit Unit"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "freshAirFilter": {
+      "_comment": "Fresh Air Filter Status",
+      "dataType": "enum",
+      "default": "OFF",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "OFF": {
+          "index": 0,
+          "label": "@CP_TERM_OFF_KO_W",
+          "_comment": "Fresh Air Filter OFF"
+        },
+        "AUTO": {
+          "index": 1,
+          "label": "@RE_STATE_FRESH_AIR_FILTER_MODE_AUTO_W",
+          "_comment": "Fresh Air Filter AUTO"
+        },
+        "POWER": {
+          "index": 2,
+          "label": "@RE_STATE_FRESH_AIR_FILTER_MODE_POWER_W",
+          "_comment": "Fresh Air Filter POWER"
+        },
+        "REPLACE": {
+          "index": 3,
+          "label": "@RE_STATE_REPLACE_FILTER_W",
+          "_comment": "Fresh Air Filter REPLACE"
+        },
+        "SMART_STORAGE_POWER": {
+          "index": 4,
+          "label": "",
+          "_comment": "Fresh Air Filter Smart Storage POWER"
+        },
+        "SMART_STORAGE_OFF": {
+          "index": 5,
+          "label": "",
+          "_comment": "Fresh Air Filter Smart Storage OFF"
+        },
+        "SMART_STORAGE_ON": {
+          "index": 6,
+          "label": "",
+          "_comment": "Fresh Air Filter Smart Storage ON"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "waterFilter": {
+      "_comment": "Water Filter Status",
+      "dataType": "enum",
+      "default": "0_MONTH",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "0_MONTH": {
+          "index": 0,
+          "label": "@RE_TERM_OK_W",
+          "_comment": "Water Filter 0 Month Passed"
+        },
+        "1_MONTH": {
+          "index": 1,
+          "label": "@RE_TERM_OK_W",
+          "_comment": "Water Filter 1 Month Passed"
+        },
+        "2_MONTH": {
+          "index": 2,
+          "label": "@RE_TERM_OK_W",
+          "_comment": "Water Filter 2 Month Passed"
+        },
+        "3_MONTH": {
+          "index": 3,
+          "label": "@RE_TERM_OK_W",
+          "_comment": "Water Filter 3 Month Passed"
+        },
+        "4_MONTH": {
+          "index": 4,
+          "label": "@RE_TERM_OK_W",
+          "_comment": "Water Filter 4 Month Passed"
+        },
+        "5_MONTH": {
+          "index": 5,
+          "label": "@RE_TERM_OK_W",
+          "_comment": "Water Filter 5 Month Passed"
+        },
+        "6_MONTH": {
+          "index": 6,
+          "label": "@RE_STATE_REPLACE_FILTER_W",
+          "_comment": "Water Filter 6 Month Passed"
+        },
+        "7_MONTH": {
+          "index": 7,
+          "label": "@RE_STATE_REPLACE_FILTER_W",
+          "_comment": "Water Filter 7 Month Passed"
+        },
+        "8_MONTH": {
+          "index": 8,
+          "label": "@RE_STATE_REPLACE_FILTER_W",
+          "_comment": "Water Filter 8 Month Passed"
+        },
+        "9_MONTH": {
+          "index": 9,
+          "label": "@RE_STATE_REPLACE_FILTER_W",
+          "_comment": "Water Filter 9 Month Passed"
+        },
+        "10_MONTH": {
+          "index": 10,
+          "label": "@RE_STATE_REPLACE_FILTER_W",
+          "_comment": "Water Filter 10 Month Passed"
+        },
+        "11_MONTH": {
+          "index": 11,
+          "label": "@RE_STATE_REPLACE_FILTER_W",
+          "_comment": "Water Filter 11 Month Passed"
+        },
+        "12_MONTH": {
+          "index": 12,
+          "label": "@RE_STATE_REPLACE_FILTER_W",
+          "_comment": "Water Filter 12 Month Passed"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "displayLock": {
+      "_comment": "Display Lock Status(unlock, lock)",
+      "dataType": "enum",
+      "default": "UNLOCK",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "UNLOCK": {
+          "index": 0,
+          "label": "",
+          "_comment": "Display Panel Unlocked"
+        },
+        "LOCK": {
+          "index": 1,
+          "label": "",
+          "_comment": "Display Panel Locked"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "sabbathMode": {
+      "_comment": "Sabbath Mode State (ON, OFF)",
+      "dataType": "enum",
+      "default": "OFF",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W",
+          "_comment": "Sabbath Mode OFF"
+        },
+        "ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W",
+          "_comment": "Sabbath Mode ON"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "atLeastOneDoorOpen": {
+      "_comment": "Door Open State(Close or Open) global",
+      "dataType": "enum",
+      "default": "CLOSE",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "CLOSE": {
+          "index": 0,
+          "label": "",
+          "_comment": "Door Closed"
+        },
+        "OPEN": {
+          "index": 1,
+          "label": "",
+          "_comment": "Door Open"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "smartSavingMode": {
+      "_comment": "Smart Saving Setting Status",
+      "dataType": "enum",
+      "default": "OFF",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          3,
+          4
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W",
+          "_comment": "Smart Saving OFF"
+        },
+        "NIGHT_ON": {
+          "index": 1,
+          "label": "@RE_SMARTSAVING_MODE_NIGHT_W",
+          "_comment": "Smart Saving Night Mode ON"
+        },
+        "CUSTOM_ON": {
+          "index": 2,
+          "label": "@RE_SMARTSAVING_MODE_CUSTOM_W",
+          "_comment": "Smart Saving Custom Mode ON"
+        },
+        "SMARTGRID_DR_ON": {
+          "index": 3,
+          "label": "@RE_TERM_DEMAND_RESPONSE_FUNCTIONALITY_W",
+          "_comment": "Smart Grid Demand Response Mode ON"
+        },
+        "SMARTGRID_DD_ON": {
+          "index": 4,
+          "label": "@RE_TERM_DELAY_DEFROST_CAPABILITY_W",
+          "_comment": "Smart Grid Delay Defrost Mode ON"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "smartSavingRun": {
+      "_comment": "Smart Saving Running Status",
+      "dataType": "enum",
+      "default": "STOP",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "STOP": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W",
+          "_comment": "Smart Saving Stop (Smart Grid)"
+        },
+        "RUN": {
+          "index": 1,
+          "label": "@CP_ON_EN_W",
+          "_comment": "Smart Saving Running (Smart Grid)"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "activeSaving": {
+      "_comment": "Active Saving Status",
+      "dataType": "enum",
+      "default": "OFF",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W",
+          "_comment": "Active Saving OFF"
+        },
+        "ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W",
+          "_comment": "Active Saving ON"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "ecoFriendly": {
+      "_comment": "Eco Friendly Status",
+      "dataType": "enum",
+      "default": "OFF",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1
+        ],
+        "controlIndex": [
+          0,
+          1
+        ]
+      },
+      "valueMapping": {
+        "OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W",
+          "_comment": "Eco Friendly OFF"
+        },
+        "ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W",
+          "_comment": "Eco Friendly ON"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "fridgeTemp_C": {
+      "dataType": "enum",
+      "default": "1",
+      "_comment": "Temperature Unit :℉ or ℃ ",
+      "visibleItem": {
+        "monitoringIndex": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "controlIndex": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "valueMapping": {
+        "1": {
+          "index": 1,
+          "label": "7",
+          "_comment": ""
+        },
+        "2": {
+          "index": 2,
+          "label": "6",
+          "_comment": ""
+        },
+        "3": {
+          "index": 3,
+          "label": "5",
+          "_comment": ""
+        },
+        "4": {
+          "index": 4,
+          "label": "4",
+          "_comment": ""
+        },
+        "5": {
+          "index": 5,
+          "label": "3",
+          "_comment": ""
+        },
+        "6": {
+          "index": 6,
+          "label": "2",
+          "_comment": ""
+        },
+        "7": {
+          "index": 7,
+          "label": "1",
+          "_comment": ""
+        },
+        "255": {
+          "index": 255,
+          "label": "IGNORE",
+          "_comment": ""
+        }
+      }
+    },
+    "fridgeTemp_F": {
+      "dataType": "enum",
+      "default": "1",
+      "_comment": "Temperature Unit :℉ or ℃ ",
+      "visibleItem": {
+        "monitoringIndex": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "1": {
+          "index": 1,
+          "label": "46",
+          "_comment": ""
+        },
+        "2": {
+          "index": 2,
+          "label": "45",
+          "_comment": ""
+        },
+        "3": {
+          "index": 3,
+          "label": "44",
+          "_comment": ""
+        },
+        "4": {
+          "index": 4,
+          "label": "43",
+          "_comment": ""
+        },
+        "5": {
+          "index": 5,
+          "label": "42",
+          "_comment": ""
+        },
+        "6": {
+          "index": 6,
+          "label": "41",
+          "_comment": ""
+        },
+        "7": {
+          "index": 7,
+          "label": "40",
+          "_comment": ""
+        },
+        "8": {
+          "index": 8,
+          "label": "39",
+          "_comment": ""
+        },
+        "9": {
+          "index": 9,
+          "label": "38",
+          "_comment": ""
+        },
+        "10": {
+          "index": 10,
+          "label": "37",
+          "_comment": ""
+        },
+        "11": {
+          "index": 11,
+          "label": "36",
+          "_comment": ""
+        },
+        "12": {
+          "index": 12,
+          "label": "35",
+          "_comment": ""
+        },
+        "13": {
+          "index": 13,
+          "label": "34",
+          "_comment": ""
+        },
+        "14": {
+          "index": 14,
+          "label": "33",
+          "_comment": ""
+        },
+        "255": {
+          "index": 255,
+          "label": "IGNORE",
+          "_comment": ""
+        }
+      }
+    },
+    "freezerTemp_C": {
+      "dataType": "enum",
+      "default": "1",
+      "_comment": "Temperature Unit :℉ or ℃ ",
+      "visibleItem": {
+        "monitoringIndex": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "controlIndex": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "valueMapping": {
+        "1": {
+          "index": 1,
+          "label": "-15",
+          "_comment": ""
+        },
+        "2": {
+          "index": 2,
+          "label": "-16",
+          "_comment": ""
+        },
+        "3": {
+          "index": 3,
+          "label": "-17",
+          "_comment": ""
+        },
+        "4": {
+          "index": 4,
+          "label": "-18",
+          "_comment": ""
+        },
+        "5": {
+          "index": 5,
+          "label": "-19",
+          "_comment": ""
+        },
+        "6": {
+          "index": 6,
+          "label": "-20",
+          "_comment": ""
+        },
+        "7": {
+          "index": 7,
+          "label": "-21",
+          "_comment": ""
+        },
+        "8": {
+          "index": 8,
+          "label": "-22",
+          "_comment": ""
+        },
+        "9": {
+          "index": 9,
+          "label": "-23",
+          "_comment": ""
+        },
+        "255": {
+          "index": 255,
+          "label": "IGNORE",
+          "_comment": ""
+        }
+      }
+    },
+    "freezerTemp_F": {
+      "dataType": "enum",
+      "default": "1",
+      "_comment": "Temperature Unit :℉ or ℃ ",
+      "visibleItem": {
+        "monitoringIndex": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "0": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W",
+          "_comment": ""
+        },
+        "1": {
+          "index": 1,
+          "label": "7",
+          "_comment": ""
+        },
+        "2": {
+          "index": 2,
+          "label": "6",
+          "_comment": ""
+        },
+        "3": {
+          "index": 3,
+          "label": "5",
+          "_comment": ""
+        },
+        "4": {
+          "index": 4,
+          "label": "4",
+          "_comment": ""
+        },
+        "5": {
+          "index": 5,
+          "label": "3",
+          "_comment": ""
+        },
+        "6": {
+          "index": 6,
+          "label": "2",
+          "_comment": ""
+        },
+        "7": {
+          "index": 7,
+          "label": "1",
+          "_comment": ""
+        },
+        "8": {
+          "index": 8,
+          "label": "0",
+          "_comment": ""
+        },
+        "9": {
+          "index": 9,
+          "label": "-1",
+          "_comment": ""
+        },
+        "10": {
+          "index": 10,
+          "label": "-2",
+          "_comment": ""
+        },
+        "11": {
+          "index": 11,
+          "label": "-3",
+          "_comment": ""
+        },
+        "12": {
+          "index": 12,
+          "label": "-7",
+          "_comment": ""
+        },
+        "13": {
+          "index": 13,
+          "label": "-12",
+          "_comment": ""
+        },
+        "14": {
+          "index": 14,
+          "label": "-15",
+          "_comment": ""
+        },
+        "15": {
+          "index": 15,
+          "label": "-17",
+          "_comment": ""
+        },
+        "255": {
+          "index": 255,
+          "label": "IGNORE",
+          "_comment": ""
+        }
+      }
+    },
+    "convertibleTemp_C": {
+      "dataType": "enum",
+      "default": "1",
+      "_comment": "Temperature Unit :℉ or ℃ ",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          7,
+          9,
+          11,
+          12,
+          13
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "0": {
+          "index": 0,
+          "label": "-13",
+          "_comment": ""
+        },
+        "1": {
+          "index": 1,
+          "label": "-13",
+          "_comment": ""
+        },
+        "2": {
+          "index": 2,
+          "label": "-14",
+          "_comment": ""
+        },
+        "3": {
+          "index": 3,
+          "label": "-15",
+          "_comment": ""
+        },
+        "5": {
+          "index": 5,
+          "label": "-16",
+          "_comment": ""
+        },
+        "7": {
+          "index": 7,
+          "label": "-17",
+          "_comment": ""
+        },
+        "9": {
+          "index": 9,
+          "label": "-18",
+          "_comment": ""
+        },
+        "11": {
+          "index": 11,
+          "label": "-19",
+          "_comment": ""
+        },
+        "12": {
+          "index": 12,
+          "label": "-20",
+          "_comment": ""
+        },
+        "13": {
+          "index": 13,
+          "label": "-21",
+          "_comment": ""
+        },
+        "255": {
+          "index": 255,
+          "label": "IGNORE",
+          "_comment": ""
+        }
+      }
+    },
+    "convertibleTemp_F": {
+      "dataType": "enum",
+      "default": "1",
+      "_comment": "Temperature Unit :℉ or ℃ ",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "controlIndex": []
+      },
+      "valueMapping": {
+        "0": {
+          "index": 0,
+          "label": "8",
+          "_comment": ""
+        },
+        "1": {
+          "index": 1,
+          "label": "8",
+          "_comment": ""
+        },
+        "2": {
+          "index": 2,
+          "label": "6",
+          "_comment": ""
+        },
+        "3": {
+          "index": 3,
+          "label": "5",
+          "_comment": ""
+        },
+        "4": {
+          "index": 4,
+          "label": "4",
+          "_comment": ""
+        },
+        "5": {
+          "index": 5,
+          "label": "3",
+          "_comment": ""
+        },
+        "6": {
+          "index": 6,
+          "label": "2",
+          "_comment": ""
+        },
+        "7": {
+          "index": 7,
+          "label": "1",
+          "_comment": ""
+        },
+        "8": {
+          "index": 8,
+          "label": "0",
+          "_comment": ""
+        },
+        "9": {
+          "index": 9,
+          "label": "-1",
+          "_comment": ""
+        },
+        "10": {
+          "index": 10,
+          "label": "-2",
+          "_comment": ""
+        },
+        "11": {
+          "index": 11,
+          "label": "-3",
+          "_comment": ""
+        },
+        "12": {
+          "index": 12,
+          "label": "-4",
+          "_comment": ""
+        },
+        "13": {
+          "index": 13,
+          "label": "-6",
+          "_comment": ""
+        },
+        "255": {
+          "index": 255,
+          "label": "IGNORE",
+          "_comment": ""
+        }
+      }
+    },
+    "smartSavingModeCustomOpt": {
+      "dataType": "string"
+    },
+    "smartCareV2": {
+      "_comment": "Smart CareV2 State (ON, OFF)",
+      "dataType": "enum",
+      "default": "OFF",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1
+        ],
+        "controlIndex": [
+          0,
+          1
+        ]
+      },
+      "valueMapping": {
+        "OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W",
+          "_comment": "Smart CareV2 OFF"
+        },
+        "ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W",
+          "_comment": "Smart CareV2 ON"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    },
+    "expressFridge": {
+      "_comment": "Express Fridge Status",
+      "dataType": "enum",
+      "default": "OFF",
+      "visibleItem": {
+        "monitoringIndex": [
+          0,
+          1
+        ],
+        "controlIndex": [
+          0,
+          1
+        ]
+      },
+      "valueMapping": {
+        "OFF": {
+          "index": 0,
+          "label": "@CP_OFF_EN_W",
+          "_comment": "Express Fridge OFF"
+        },
+        "ON": {
+          "index": 1,
+          "label": "@CP_ON_EN_W",
+          "_comment": "Express Fridge ON"
+        },
+        "IGNORE": {
+          "index": 255,
+          "label": "",
+          "_comment": "Please ignore me"
+        }
+      }
+    }
+  },
+  "ControlWifi": {
+    "basicCtrl": {
+      "command": "Set",
+      "data": {
+        "refState": {
+          "fridgeTemp": "{{fridgeTemp}}",
+          "fridgeDoorOpen": "{{fridgeDoorOpen}}",
+          "freezerTemp": "{{freezerTemp}}",
+          "freezerDoorOpen": "{{freezerDoorOpen}}",
+          "convertibleTemp": "{{convertibleTemp}}",
+          "convertibleDoorOpen": "{{convertibleDoorOpen}}",
+          "didDoorOpen": "{{didDoorOpen}}",
+          "smartSavingMode": "{{smartSavingMode}}",
+          "smartSavingRun": "{{smartSavingRun}}",
+          "activeSaving": "{{activeSaving}}",
+          "ecoFriendly": "{{ecoFriendly}}",
+          "expressMode": "{{expressMode}}",
+          "tempUnit": "{{tempUnit}}",
+          "freshAirFilter": "{{freshAirFilter}}",
+          "waterFilter": "{{waterFilter}}",
+          "displayLock": "{{displayLock}}",
+          "sabbathMode": "{{sabbathMode}}",
+          "atLeastOneDoorOpen": "{{atLeastOneDoorOpen}}",
+          "expressFridge": "{{expressFridge}}"
+        }
+      }
+    },
+    "getActiveSavingScheduleCtrl": {
+      "command": "Get",
+      "data": {}
+    },
+    "getSmartFreshStorageScheduleCtrl": {
+      "command": "Get",
+      "data": {}
+    },
+    "getActiveIcePlusScheduleCtrl": {
+      "command": "Get",
+      "data": {}
+    }
+  },
+  "Push": [{
+    "category": "PUSH_REF_STATE",
+    "label": "@RE_SETTING_PUSH_PRODUCT_STATE_W",
+    "groupCode": "10101"
+  }
+  ],
+  "SmartMode": {}
+}
