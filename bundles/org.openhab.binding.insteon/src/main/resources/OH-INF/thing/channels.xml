@@ -1028,4 +1028,211 @@
 		</event>
 	</channel-type>
 
+	<channel-type id="x10-event1" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 1</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event2" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 2</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event3" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 3</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event4" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 4</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event5" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 5</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event6" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 6</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event7" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 7</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event8" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 8</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event9" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 9</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event10" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 10</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event11" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 11</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event12" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 12</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event13" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 13</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event14" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 14</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event15" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 15</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="x10-event16" advanced="true">
+		<kind>trigger</kind>
+		<label>X10 Event 16</label>
+		<event>
+			<options>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BRIGHT"/>
+				<option value="DIM"/>
+			</options>
+		</event>
+	</channel-type>
 </thing:thing-descriptions>
