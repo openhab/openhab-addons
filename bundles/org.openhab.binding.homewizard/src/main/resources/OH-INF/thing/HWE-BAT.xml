@@ -7,8 +7,7 @@
 	<thing-type id="HWE-BAT">
 		<label>HomeWizard Plug-In Battery</label>
 		<description>This thing provides the measurement data that is available through the API of a HomeWizard
-			Plug-In
-			Battery.</description>
+			Plug-In Battery.</description>
 
 		<channel-groups>
 			<channel-group id="energy" typeId="bat-energy-group"/>
