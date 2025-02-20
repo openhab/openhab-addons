@@ -168,7 +168,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 connectionManager.sendCommand(CommandHelper.handleOffTimer(command, lastresponse), callbackLambda);
             }
         } catch (MideaConnectionException | MideaAuthenticationException e) {
-            logger.warn("Unable to proces command: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -187,9 +187,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         config = getConfigAs(MideaACConfiguration.class);
 
         if (!config.isValid()) {
-            logger.warn("Configuration invalid for {}", thing.getUID());
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Configuration not valid");
             if (config.isDiscoveryNeeded()) {
-                logger.warn("Discovery needed, discovering....{}", thing.getUID());
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                         "Configuration missing, discovery needed. Discovering...");
                 MideaACDiscoveryService discoveryService = new MideaACDiscoveryService();
@@ -198,13 +197,12 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                     discoveryService.discoverThing(config.ipAddress, this);
                     return;
                 } catch (Exception e) {
-                    logger.error("Discovery failure for {}: {}", thing.getUID(), e.getMessage());
+                    logger.debug("Discovery failure for {}: {}", thing.getUID(), e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Discovery failure. Check configuration.");
                     return;
                 }
             } else {
-                logger.debug("MideaACHandler config of {} is invalid. Check configuration", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Invalid MideaAC config. Check configuration.");
                 return;
@@ -375,7 +373,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                         "Can't retrieve Token and Key from Cloud; email, password and/or cloud parameter error"));
-                logger.warn("Can't retrieve Token and Key from Cloud; email, password and/or cloud parameter error");
             }
         }
     }
