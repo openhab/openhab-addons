@@ -210,7 +210,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         try {
             httpClient.stop();
         } catch (Exception ex) {
-            logger.debug("Error stopping the http client: " + ex.getMessage());
+            logger.debug("Error stopping the http client: {}", ex.getMessage());
         }
     }
 

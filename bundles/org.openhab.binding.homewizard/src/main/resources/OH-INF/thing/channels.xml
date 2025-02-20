@@ -127,7 +127,7 @@
 	</channel-type>
 
 	<channel-type id="hw-frequency" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="Hz">Number:Frequency</item-type>
 		<label>Frequency</label>
 		<description>
 			This channel provides the active frequency in Hertz.
