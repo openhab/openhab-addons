@@ -21,14 +21,6 @@
 			<update-channel id="state" groupIds="status">
 				<type>automower:stateType</type>
 			</update-channel>
-			<!-- optional channels
-				<add-channel id="work-area-id" groupIds="status">
-				<type>automower:workAreaIdType</type>
-				</add-channel>
-				<add-channel id="work-area" groupIds="status">
-				<type>automower:workAreaType</type>
-				</add-channel>
-			-->
 			<update-channel id="last-update" groupIds="status">
 				<type>automower:lastUpdateType</type>
 			</update-channel>
@@ -50,14 +42,6 @@
 			<update-channel id="error-timestamp" groupIds="status">
 				<type>automower:errorTimestampType</type>
 			</update-channel>
-			<!-- optional channel
-				<add-channel id="error-confirmable" groupIds="status">
-				<type>automower:errorConfirmableType</type>
-				</add-channel>
-			-->
-			<remove-channel id="planner-next-start"/>
-			<remove-channel id="planner-override-action"/>
-
 			<update-channel id="next-start" groupIds="status">
 				<type>automower:nextStartType</type>
 			</update-channel>
@@ -71,15 +55,13 @@
 				<type>automower:externalReasonType</type>
 			</add-channel>
 
+			<remove-channel id="planner-next-start"/>
+			<remove-channel id="planner-override-action"/>
+
 			<!-- Settings -->
 			<add-channel id="cutting-height" groupIds="settings">
 				<type>automower:settingCuttingHeightType</type>
 			</add-channel>
-			<!-- optional channel
-				<add-channel id="headlight-mode" groupIds="settings">
-				<type>automower:settingHeadlightModeType</type>
-				</add-channel>
-			-->
 
 			<!-- Statistics -->
 			<add-channel id="cutting-blade-usage-time" groupIds="statistics">
@@ -121,42 +103,6 @@
 
 			<!-- Calendar Tasks -->
 			<remove-channel id="calendar-tasks"/>
-
-			<!-- optional channels
-				<add-channel id="<xx>-start" groupIds="calendartasks">
-				<type>automower:calendarTasksStartType</type>
-				</add-channel>
-				<add-channel id="<xx>-duration" groupIds="calendartasks">
-				<type>automower:calendarTasksDurationType</type>
-				</add-channel>
-				<add-channel id="<xx>-monday" groupIds="calendartasks">
-				<type>automower:calendarTasksMondayType</type>
-				</add-channel>
-				<add-channel id="<xx>-tuesday" groupIds="calendartasks">
-				<type>automower:calendarTasksTuesdayType</type>
-				</add-channel>
-				<add-channel id="<xx>-wednesday" groupIds="calendartasks">
-				<type>automower:calendarTasksWednesdayType</type>
-				</add-channel>
-				<add-channel id="<xx>-thursday" groupIds="calendartasks">
-				<type>automower:calendarTasksThursdayType</type>
-				</add-channel>
-				<add-channel id="<xx>-friday" groupIds="calendartasks">
-				<type>automower:calendarTasksFridayType</type>
-				</add-channel>
-				<add-channel id="<xx>-saturday" groupIds="calendartasks">
-				<type>automower:calendarTasksSaturdayType</type>
-				</add-channel>
-				<add-channel id="<xx>-sunday" groupIds="calendartasks">
-				<type>automower:calendarTasksSundayType</type>
-				</add-channel>
-				<add-channel id="<xx>-workAreaId" groupIds="calendartasks">
-				<type>automower:calendarTasksWorkAreaIdType</type>
-				</add-channel>
-				<add-channel id="<xx>-workArea" groupIds="calendartasks">
-				<type>automower:workareaNameType</type>
-				</add-channel>
-			-->
 
 			<!-- Positions -->
 			<remove-channel id="last-position"/>
@@ -210,59 +156,6 @@
 			<remove-channel id="position48"/>
 			<remove-channel id="position49"/>
 			<remove-channel id="position50"/>
-
-			<!-- optional channels
-				<add-channel id="last" groupIds="positions">
-				<type>automower:lastPositionType</type>
-				</add-channel>
-				<add-channel id="<xx>" groupIds="positions">
-				<type>automower:positionType</type>
-				</add-channel>
-			-->
-
-			<!-- Stayout Zones -->
-
-			<!-- optional channels
-				<add-channel id="dirty" groupIds="stayoutzones">
-				<type>automower:zoneDirtyType</type>
-				</add-channel>
-				<add-channel id="<xx>-id" groupIds="stayoutzones">
-				<type>automower:zoneIdType</type>
-				</add-channel>
-				<add-channel id="<xx>-name" groupIds="stayoutzones">
-				<type>automower:zoneNameType</type>
-				</add-channel>
-				<add-channel id="<xx>-enabled" groupIds="stayoutzones">
-				<type>automower:zoneEnabledType</type>
-				</add-channel>
-			-->
-
-			<!-- Work Areas -->
-			<!-- optional channels
-				<add-channel id="<xx>-id" groupIds="workarea">
-				<type>automower:workareaIdType</type>
-				</add-channel>
-				<add-channel id="<xx>-name" groupIds="workarea">
-				<type>automower:workareaNameType</type>
-				</add-channel>
-				<add-channel id="<xx>-cutting-height" groupIds="workarea">
-				<type>automower:workareaCuttingHeightType</type>
-				</add-channel>
-				<add-channel id="<xx>-enabled" groupIds="workarea">
-				<type>automower:workareaEnabledType</type>
-				</add-channel>
-				<add-channel id="<xx>-progress" groupIds="workarea">
-				<type>automower:workareaProgressType</type>
-				</add-channel>
-				<add-channel id="<xx>-last-time-completed" groupIds="workarea">
-				<type>automower:workareaLastTimeCompletedType</type>
-				</add-channel>
-			-->
-
-			<!-- Messages -->
-			<!-- dynamic channels
-				...
-			-->
 
 			<!-- Commands -->
 			<update-channel id="start" groupIds="commands">

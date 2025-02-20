@@ -124,8 +124,7 @@ public class AutomowerHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
-            logger.debug("Refreshing channel '{}'", channelUID);
-            // refreshChannels(channelUID); // causes >100 channel updates during setup
+            // not implemented as it would causes >100 channel updates in a row during setup (performance)
         } else {
             String groupId = channelUID.getGroupId();
             String channelId = channelUID.getIdWithoutGroup();
@@ -806,7 +805,6 @@ public class AutomowerHandler extends BaseThingHandler {
             }
 
             if (capabilities.hasPosition()) {
-                // if (mower.getAttributes().getLastPosition() != null) {
                 createChannel(CHANNEL_POSITION_LAST, CHANNEL_TYPE_POSITION_LAST, "Location");
                 for (int i = 0; i < 50; i++) {
                     createIndexedChannel(GROUP_POSITION, i + 1, CHANNEL_POSITION, CHANNEL_TYPE_POSITION, "Location");
@@ -1055,7 +1053,6 @@ public class AutomowerHandler extends BaseThingHandler {
                     new QuantityType<>(mower.getAttributes().getStatistics().getUpTime(), Units.SECOND));
 
             if (capabilities.hasPosition()) {
-                // if (mower.getAttributes().getLastPosition() != null) {
                 updateState(CHANNEL_POSITION_LAST,
                         new PointType(new DecimalType(mower.getAttributes().getLastPosition().getLatitude()),
                                 new DecimalType(mower.getAttributes().getLastPosition().getLongitude())));

@@ -73,7 +73,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.GET);
 
         ContentResponse response = executeRequest(appKey, token, request);
-        // logger.trace("getMower: {}", response.getContentAsString());
+        logger.trace("getMower: {}", response.getContentAsString());
         return parseResponse(response, MowerResult.class);
     }
 
@@ -83,7 +83,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.GET);
 
         ContentResponse response = executeRequest(appKey, token, request);
-        // logger.trace("getMowerMessages: {}", response.getContentAsString());
+        logger.trace("getMowerMessages: {}", response.getContentAsString());
         return parseResponse(response, MowerMessagesResult.class);
     }
 
