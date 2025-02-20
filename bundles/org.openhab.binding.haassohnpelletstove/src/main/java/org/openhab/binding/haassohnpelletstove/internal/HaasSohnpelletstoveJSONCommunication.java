@@ -103,14 +103,13 @@ public class HaasSohnpelletstoveJSONCommunication {
             logger.debug("Execute POST request with content to {} with header: {}", urlStr, httpHeader.toString());
             ovenData = gson.fromJson(response, HaasSohnpelletstoveJsonDataDTO.class);
             logger.debug("OvenData = {}", response);
-        } catch (IOException | JsonSyntaxException e) {
-            if (e instanceof JsonSyntaxException) {
-                logger.debug("Error in establishing connection: {}", e.getMessage());
-                error = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
-            } else {
-                logger.debug("Error processiong POST request {}", urlStr);
-                error = "Cannot execute command on Stove. Please verify connection or PIN";
-            }
+        } catch (IOException e) {
+            logger.debug("Error processiong POST request {}", urlStr);
+            error = "Cannot execute command on Stove. Please verify connection or PIN";
+
+        } catch (JsonSyntaxException e) {
+            logger.debug("Error in establishing connection: {}", e.getMessage());
+            error = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
         }
         return error;
     }

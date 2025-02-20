@@ -112,9 +112,9 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing haassohnpelletstove handler for thing {}", getThing().getUID());
         config = getConfigAs(HaasSohnpelletstoveConfiguration.class);
-        if (config.refreshRate < 0 || config.refreshRate > 1000) {
+        if (config.refreshRate < 1 || config.refreshRate > 1000) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Parameter 'refresh Rate' msut be in the range 0-1000!");
+                    "Parameter 'refresh Rate' must be in the range 1-1000!");
             return;
         }
         if (config.hostIP.isBlank()) {
@@ -125,12 +125,6 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
         if (config.hostPIN.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Parameter 'hostPin' must be configured!");
-            return;
-        }
-
-        if (config.refreshRate < 1 || config.refreshRate > 1000000) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Parameter 'reconnectRate' must be greater then 0 less then 1 000 000.");
             return;
         }
 
@@ -165,7 +159,6 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
             }
             if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
                 updateStatus(ThingStatus.ONLINE);
-
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
