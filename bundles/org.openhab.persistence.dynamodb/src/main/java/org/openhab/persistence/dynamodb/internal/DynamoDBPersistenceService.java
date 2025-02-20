@@ -350,6 +350,11 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
+        return query(filter, null);
+    }
+
+    @Override
+    public Iterable<HistoricItem> query(FilterCriteria filter, @Nullable String alias) {
         logIfManyQueuedTasks();
         Instant start = Instant.now();
         String filterDescription = filterToString(filter);
@@ -419,7 +424,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                     item.getClass().getSimpleName(), dtoClass.getSimpleName(), tableName);
 
             QueryEnhancedRequest queryExpression = DynamoDBQueryUtils.createQueryExpression(dtoClass,
-                    localTableNameResolver.getTableSchema(), item, filter, unitProvider);
+                    localTableNameResolver.getTableSchema(), item, alias, filter, unitProvider);
 
             CompletableFuture<List<DynamoDBItem<?>>> itemsFuture = new CompletableFuture<>();
             final SdkPublisher<? extends DynamoDBItem<?>> itemPublisher = table.query(queryExpression).items();

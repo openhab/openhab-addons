@@ -17,7 +17,10 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,6 +33,8 @@ import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.PersistenceServiceRegistry;
+import org.openhab.core.persistence.registry.PersistenceServiceConfiguration;
+import org.openhab.core.persistence.registry.PersistenceServiceConfigurationRegistry;
 import org.openhab.persistence.rrd4j.internal.RRD4jPersistenceService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -51,13 +56,16 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
             false);
 
     private final PersistenceServiceRegistry persistenceServiceRegistry;
+    private final PersistenceServiceConfigurationRegistry persistenceServiceConfigurationRegistry;
     private final ItemRegistry itemRegistry;
 
     @Activate
     public RRD4jCommandExtension(final @Reference PersistenceServiceRegistry persistenceServiceRegistry,
-            final @Reference ItemRegistry itemRegistry) {
+            final @Reference ItemRegistry itemRegistry,
+            final @Reference PersistenceServiceConfigurationRegistry persistenceServiceConfigurationRegistry) {
         super(RRD4jPersistenceService.SERVICE_ID, "Interact with the RRD4j persistence service.");
         this.persistenceServiceRegistry = persistenceServiceRegistry;
+        this.persistenceServiceConfigurationRegistry = persistenceServiceConfigurationRegistry;
         this.itemRegistry = itemRegistry;
     }
 
@@ -104,6 +112,11 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
             Collections.sort(filenames, Comparator.naturalOrder());
         }
 
+        PersistenceServiceConfiguration config = persistenceServiceConfigurationRegistry
+                .get(RRD4jPersistenceService.SERVICE_ID);
+        Stream<Entry<String, String>> aliases = config != null ? config.getAliases().entrySet().stream()
+                : Stream.empty();
+
         console.println((checkOnly ? "Checking" : "Cleaning") + " RRD files...");
         int nb = 0;
         for (String filename : filenames) {
@@ -114,7 +127,10 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
             } else {
                 boolean itemFound;
                 try {
-                    itemRegistry.getItem(name);
+                    // Map alias back to item
+                    String item = Objects.requireNonNull(
+                            aliases.filter(e -> name.equals(e.getValue())).findAny().map(e -> e.getKey()).orElse(name));
+                    itemRegistry.getItem(item);
                     itemFound = true;
                 } catch (ItemNotFoundException e) {
                     itemFound = false;
