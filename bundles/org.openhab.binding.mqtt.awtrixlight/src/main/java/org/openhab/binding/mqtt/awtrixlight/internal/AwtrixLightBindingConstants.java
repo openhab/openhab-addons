@@ -160,7 +160,6 @@ public class AwtrixLightBindingConstants {
     public static final String CHANNEL_PROGRESSBC = "progress-background";
     public static final String CHANNEL_PUSH_ICON = "push-icon";
     public static final String CHANNEL_RAINBOW = "rainbow";
-    public static final String CHANNEL_REPEAT = "repeat";
     public static final String CHANNEL_RESET = "reset";
     public static final String CHANNEL_SCROLLSPEED = "scroll-speed";
     public static final String CHANNEL_TEXT = "text";

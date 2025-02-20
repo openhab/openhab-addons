@@ -236,6 +236,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         }
         ThingHandler handler = localBridge.getHandler();
         if (handler instanceof AbstractBrokerHandler abh) {
+            @Nullable
             final MqttBrokerConnection connection;
             try {
                 connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
