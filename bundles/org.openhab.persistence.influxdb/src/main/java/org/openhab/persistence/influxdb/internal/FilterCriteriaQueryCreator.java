@@ -13,6 +13,7 @@
 package org.openhab.persistence.influxdb.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.persistence.FilterCriteria;
 
 /**
@@ -24,12 +25,13 @@ import org.openhab.core.persistence.FilterCriteria;
 public interface FilterCriteriaQueryCreator {
     /**
      * Create query from {@link FilterCriteria}
-     * 
+     *
      * @param criteria Criteria to create query from
      * @param retentionPolicy Name of the retentionPolicy/bucket to use in query
+     * @param alias
      * @return Created query as a String
      */
-    String createQuery(FilterCriteria criteria, String retentionPolicy);
+    String createQuery(FilterCriteria criteria, String retentionPolicy, @Nullable String alias);
 
     default String getOperationSymbol(FilterCriteria.Operator operator, InfluxDBVersion version) {
         return switch (operator) {

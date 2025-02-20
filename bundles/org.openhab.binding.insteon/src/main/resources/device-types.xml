@@ -1,6 +1,6 @@
 <xml>
 
-	<!-- Base features for all device types except Network Bridge and X10 -->
+	<!-- Base features for all device types except specific Network Bridge and X10 -->
 
 	<base-features>
 		<feature name="insteonEngine">InsteonEngine</feature>
@@ -676,6 +676,25 @@
 			<feature name="monitorMode" bit="6">IMConfigFlags</feature>
 			<feature name="programLock" bit="7">IMConfigFlags</feature>
 		</feature-group>
+	</device-type>
+
+	<device-type name="NetworkBridge_X10">
+		<feature name="x10Event1" group="1">X10BridgeEvent</feature>
+		<feature name="x10Event2" group="2">X10BridgeEvent</feature>
+		<feature name="x10Event3" group="3">X10BridgeEvent</feature>
+		<feature name="x10Event4" group="4">X10BridgeEvent</feature>
+		<feature name="x10Event5" group="5">X10BridgeEvent</feature>
+		<feature name="x10Event6" group="6">X10BridgeEvent</feature>
+		<feature name="x10Event7" group="7">X10BridgeEvent</feature>
+		<feature name="x10Event8" group="8">X10BridgeEvent</feature>
+		<feature name="x10Event9" group="9">X10BridgeEvent</feature>
+		<feature name="x10Event10" group="10">X10BridgeEvent</feature>
+		<feature name="x10Event11" group="11">X10BridgeEvent</feature>
+		<feature name="x10Event12" group="12">X10BridgeEvent</feature>
+		<feature name="x10Event13" group="13">X10BridgeEvent</feature>
+		<feature name="x10Event14" group="14">X10BridgeEvent</feature>
+		<feature name="x10Event15" group="15">X10BridgeEvent</feature>
+		<feature name="x10Event16" group="16">X10BridgeEvent</feature>
 	</device-type>
 
 	<!-- Irrigation Control -->
