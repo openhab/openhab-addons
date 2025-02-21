@@ -140,7 +140,7 @@
 	</channel-type>
 
 	<channel-type id="brightness">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Display Brightness</label>
 		<description>Screen brightness in percent</description>
 		<category>screen</category>
@@ -152,11 +152,11 @@
 	</channel-type>
 
 	<channel-type id="rssi">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>WiFi Signal</label>
 		<description>RSSI value of WiFi signal</description>
 		<category>qualityofservice</category>
-		<state readOnly="true" pattern="%.0f"></state>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="indicator">
@@ -222,6 +222,7 @@
 		<label>Duration</label>
 		<description>How long the app should be displayed</description>
 		<category>time</category>
+		<state pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="effect">
@@ -282,10 +283,11 @@
 	</channel-type>
 
 	<channel-type id="effect-speed" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Background Effect Speed</label>
 		<description>Playback speed of background animations</description>
 		<category>time</category>
+		<state step="1" pattern="%.0f" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="text">
@@ -296,7 +298,7 @@
 	</channel-type>
 
 	<channel-type id="text-case" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Text Case</label>
 		<description>Change case of displayed text. Default uses the global preset.</description>
 		<category>text</category>
@@ -310,10 +312,11 @@
 	</channel-type>
 
 	<channel-type id="text-offset" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Text Offset</label>
 		<description>Offset on x-axis in pixel for displayed text</description>
 		<category>text</category>
+		<state step="1" pattern="%d px" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="top-text" advanced="true">
@@ -446,7 +449,7 @@
 	</channel-type>
 
 	<channel-type id="progress">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Progress Bar</label>
 		<description>Show progress bar with specified percentage</description>
 		<category>qualityofservice</category>
@@ -468,7 +471,7 @@
 	</channel-type>
 
 	<channel-type id="scroll-speed">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Scroll Speed</label>
 		<description>Speed of text scrolling as percentage of default speed</description>
 		<state pattern="%.0f %unit%"></state>

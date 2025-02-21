@@ -602,7 +602,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
                 case FIELD_BRIDGE_WIFI_SIGNAL:
                     if (value instanceof Number numberVal) {
                         updateState(new ChannelUID(channelPrefix + CHANNEL_RSSI),
-                                new QuantityType<>(numberVal, Units.ONE));
+                                new QuantityType<>(numberVal, Units.DECIBEL_MILLIWATTS));
                     }
                     break;
                 case FIELD_BRIDGE_MESSAGES:
