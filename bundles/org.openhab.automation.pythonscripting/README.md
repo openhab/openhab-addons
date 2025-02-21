@@ -192,7 +192,7 @@ class Test:
         self.logger.info("Rule was triggered")
 ```
 
-## Decorator 
+## Decorators
 
 ### decorator @rule
 
