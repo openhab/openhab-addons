@@ -105,10 +105,26 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 - You can enable a profiler to analyze runtime with argument "profile=1"
 - Every run is logging total runtime and trigger reasons
 
+```python
+from openhab import rule
+from openhab.triggers import GenericCronTrigger
+
+@rule( triggers = [ GenericCronTrigger("*/5 * * * * ?") ] )
+class Test:
+    def execute(self, module, input):
+        self.logger.info("Rule 3 was triggered")
+```
+
 ```
 2025-01-09 09:35:11.002 [INFO ] [tomation.pythonscripting.demo1.Test2] - Rule executed in    0.1 ms [Item: Item1]
 2025-01-09 09:35:15.472 [INFO ] [tomation.pythonscripting.demo1.Test1] - Rule executed in    0.1 ms [Other: TimerEvent]
 ```
+
+**'execute'** callback **'input'** parameter
+
+Depending on which trigger type is used, corresponding [event objects](https://www.openhab.org/javadoc/latest/org/openhab/core/items/events/itemevent) are passed via the "input" parameter
+
+The type of the event can also be queried via [AbstractEvent.getTopic](https://www.openhab.org/javadoc/latest/org/openhab/core/events/abstractevent)
 
 ### decorator @when
 
@@ -346,12 +362,6 @@ Channel is a wrapper around [openHAB Channel](https://www.openhab.org/javadoc/la
 This is a helper class which makes it possible to use a python 'set' as an argument for java class method calls
 
 ## Others
-
-### 'execute' callback 'input' parameter
-
-Depending on which trigger type is used, corresponding [event objects](https://www.openhab.org/javadoc/latest/org/openhab/core/items/events/itemevent) are passed via the "input" parameter
-
-The type of the event can also be queried via [AbstractEvent.getTopic](https://www.openhab.org/javadoc/latest/org/openhab/core/events/abstractevent)
 
 ### python <=> java conversion
 
