@@ -14,6 +14,7 @@ package org.openhab.binding.mideaac.internal.handler;
 
 import static org.openhab.binding.mideaac.internal.MideaACBindingConstants.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -133,6 +134,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } catch (MideaConnectionException | MideaException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             return;
         }
@@ -168,6 +171,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 connectionManager.sendCommand(CommandHelper.handleOffTimer(command, lastresponse), callbackLambda);
             }
         } catch (MideaConnectionException | MideaAuthenticationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (MideaException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -262,6 +267,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         } catch (MideaConnectionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (MideaException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
