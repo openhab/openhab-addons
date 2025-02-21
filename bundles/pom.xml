@@ -25,6 +25,7 @@
     <module>org.openhab.automation.jythonscripting</module>
     <module>org.openhab.automation.pidcontroller</module>
     <module>org.openhab.automation.pwm</module>
+    <module>org.openhab.automation.pythonscripting</module>
     <!-- io -->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
