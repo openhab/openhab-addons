@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HexFormat;
 
@@ -111,7 +112,8 @@ public class ConnectionManager {
      * The device is considered connected. V2 devices will proceed to send the poll or the
      * set command. V3 devices will proceed to authenticate
      */
-    public synchronized void connect() throws MideaConnectionException, MideaAuthenticationException {
+    public synchronized void connect()
+            throws MideaConnectionException, MideaAuthenticationException, SocketTimeoutException, IOException {
         logger.trace("Connecting to {}:{}", ipAddress, ipPort);
 
         int maxTries = 3;
@@ -125,7 +127,7 @@ public class ConnectionManager {
                 socket.setSoTimeout(timeout * 1000);
                 socket.connect(new InetSocketAddress(ipAddress, ipPort), timeout * 1000);
                 break;
-            } catch (IOException e) {
+            } catch (SocketTimeoutException e) {
                 retryCount++;
                 if (retryCount < maxTries) {
                     try {
@@ -133,9 +135,13 @@ public class ConnectionManager {
                     } catch (InterruptedException ex) {
                         logger.debug("An interupted error (socket retry) has occured {}", ex.getMessage());
                     }
-                    logger.debug("Socket retry count {}, IOException connecting to {}: {}", retryCount, ipAddress,
+                    logger.debug("Socket retry count {}, Socket timeout connecting to {}: {}", retryCount, ipAddress,
                             e.getMessage());
                 }
+            } catch (IOException e) {
+                logger.debug("Socket retry count {}, IOException connecting to {}: {}", retryCount, ipAddress,
+                        e.getMessage());
+                break;
             }
         }
         if (retryCount == maxTries) {
@@ -165,6 +171,7 @@ public class ConnectionManager {
         }
 
         if (!deviceIsConnected) {
+            // Info logger on first connection after being disconnected
             logger.info("Connected to IP {}", ipAddress);
         }
         logger.debug("Connected to IP {}", ipAddress);
@@ -184,7 +191,7 @@ public class ConnectionManager {
         logger.trace("Token: {}", token);
         logger.trace("Cloud {}", cloud);
 
-        if (!token.isBlank() && !key.isBlank() && !"".equals(cloud)) {
+        if (!token.isBlank() && !key.isBlank() && !cloud.isBlank()) {
             logger.debug("Device at IP: {} authenticating", ipAddress);
             doV3Handshake();
         } else {
@@ -245,12 +252,12 @@ public class ConnectionManager {
      * @throws MideaException
      */
     public void getStatus(Callback callback)
-            throws MideaConnectionException, MideaAuthenticationException, MideaException {
+            throws MideaConnectionException, MideaAuthenticationException, MideaException, IOException {
         CommandBase requestStatusCommand = new CommandBase();
         sendCommand(requestStatusCommand, callback);
     }
 
-    private void ensureConnected() throws MideaConnectionException, MideaAuthenticationException {
+    private void ensureConnected() throws MideaConnectionException, MideaAuthenticationException, IOException {
         disconnect();
         connect();
     }
@@ -269,7 +276,7 @@ public class ConnectionManager {
      * @throws MideaConnectionException
      */
     public synchronized void sendCommand(CommandBase command, @Nullable Callback callback)
-            throws MideaConnectionException, MideaAuthenticationException {
+            throws MideaConnectionException, MideaAuthenticationException, MideaException, IOException {
         ensureConnected();
 
         if (command instanceof CommandSet) {
@@ -388,7 +395,8 @@ public class ConnectionManager {
                                     callback.updateChannels(lastResponse);
                                 }
                             } catch (Exception ex) {
-                                logger.warn("Processing response exception: {}", ex.getMessage());
+                                logger.debug("Processing response exception: {}", ex.getMessage());
+                                throw new MideaException(ex);
                             }
                         }
                     }
@@ -425,7 +433,8 @@ public class ConnectionManager {
                                 callback.updateChannels(lastResponse);
                             }
                         } catch (Exception ex) {
-                            logger.warn("Processing response exception: {}", ex.getMessage());
+                            logger.debug("Processing response exception: {}", ex.getMessage());
+                            throw new MideaException(ex);
                         }
                     }
                 }
