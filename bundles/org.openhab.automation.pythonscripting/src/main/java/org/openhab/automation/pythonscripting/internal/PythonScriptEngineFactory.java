@@ -69,7 +69,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
     public static final Path PYTHON_LIB_PATH = PYTHON_DEFAULT_PATH.resolve("lib");
     public static final Path PYTHON_OPENHAB_LIB_PATH = PYTHON_LIB_PATH.resolve("openhab");
-    public static final Path PYTHON_WRAPPER_LIB_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("wrapper.py");
+    public static final Path PYTHON_WRAPPER_LIB_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__wrapper__.py");
 
     private static final String CFG_HELPER_ENABLED = "helperEnabled";
     private static final String CFG_CACHING_ENABLED = "cachingEnabled";
@@ -143,8 +143,8 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     private void initOpenhabLib() {
         Path versionFilePath = PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
 
-        List<String> resourceFiles = Arrays.asList("__init__.py", "actions.py", "helper.py", "jsr223.py", "services.py",
-                "triggers.py", "wrapper.py");
+        List<String> resourceFiles = Arrays.asList("__init__.py", "__wrapper__.py", "actions.py", "helper.py",
+                "jsr223.py", "services.py", "triggers.py");
 
         if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
             if (Files.exists(versionFilePath)) {
