@@ -7,6 +7,23 @@ Also included is [openhab-python](https://github.com/HolgerHees/openhab-python),
 
 [[toc]]
 
+### Creating Python Scripts
+
+When this add-on is installed, you can select Python3 as a scripting language when creating a script action within the rule editor of the UI.
+
+Alternatively, you can create scripts in the `automation/python` configuration directory. If you create an empty file called `test.py`, you will see a log line with information similar to:
+
+```text
+    ... [INFO ] [ort.loader.AbstractScriptFileWatcher]] - (Re-)Loading script '/openhab/conf/automation/python/test.py'
+```
+
+To enable debug logging, use the [console logging]({{base}}/administration/logging.html) commands to
+enable debug logging for the automation functionality:
+
+```text
+log:set DEBUG org.openhab.automation.pythonscripting
+```
+
 ### Examples 
 
 Simple rule
