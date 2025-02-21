@@ -85,7 +85,7 @@ class FlatLineProfileTest {
 
         profile.onStateUpdateFromHandler(DecimalType.ZERO);
 
-        verify(mockCallback, times(1)).sendUpdate(expectedState);
+        verify(mockCallback, times(2)).sendUpdate(expectedState);
         verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
                 eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
 
