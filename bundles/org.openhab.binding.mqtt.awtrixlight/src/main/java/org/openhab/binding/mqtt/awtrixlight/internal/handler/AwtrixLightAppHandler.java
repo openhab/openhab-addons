@@ -189,8 +189,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 if (command instanceof QuantityType<?> quantityCommand) {
                     QuantityType<?> blinkInS = quantityCommand.toUnit(Units.SECOND);
                     if (blinkInS != null) {
-                        int blinkInMs = blinkInS.intValue() * 1000;
-                        this.app.setBlinkText(blinkInMs);
+                        this.app.setBlinkText(blinkInS.doubleValue() * 1000);
                     }
                 }
                 break;
@@ -198,8 +197,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 if (command instanceof QuantityType<?> quantityCommand) {
                     QuantityType<?> fadeInS = quantityCommand.toUnit(Units.SECOND);
                     if (fadeInS != null) {
-                        int fadeInMs = fadeInS.intValue() * 1000;
-                        this.app.setFadeText(fadeInMs);
+                        this.app.setFadeText(fadeInS.doubleValue() * 1000);
                     }
                 }
                 break;
@@ -571,13 +569,11 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         updateState(new ChannelUID(channelPrefix + CHANNEL_CENTER),
                 this.app.getCenter() ? OnOffType.ON : OnOffType.OFF);
 
-        int blinkTextInSeconds = Math.round(this.app.getBlinkText() / 1000);
         updateState(new ChannelUID(channelPrefix + CHANNEL_BLINK_TEXT),
-                new QuantityType<>(blinkTextInSeconds, Units.SECOND));
+                new QuantityType<>(this.app.getBlinkText() / 1000, Units.SECOND));
 
-        int fadeTextInSeconds = Math.round(this.app.getFadeText() / 1000);
         updateState(new ChannelUID(channelPrefix + CHANNEL_FADE_TEXT),
-                new QuantityType<>(fadeTextInSeconds, Units.SECOND));
+                new QuantityType<>(this.app.getFadeText() / 1000, Units.SECOND));
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_RAINBOW),
                 this.app.getRainbow() ? OnOffType.ON : OnOffType.OFF);

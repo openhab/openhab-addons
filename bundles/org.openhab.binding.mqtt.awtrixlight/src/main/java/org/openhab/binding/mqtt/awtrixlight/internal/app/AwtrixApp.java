@@ -37,8 +37,8 @@ public class AwtrixApp {
     public static final boolean DEFAULT_CENTER = true;
     public static final int[] DEFAULT_COLOR = { 255, 255, 255 };
     public static final int[][] DEFAULT_GRADIENT = {};
-    public static final int DEFAULT_BLINKTEXT = 0;
-    public static final int DEFAULT_FADETEXT = 0;
+    public static final double DEFAULT_BLINKTEXT = 0;
+    public static final double DEFAULT_FADETEXT = 0;
     public static final int[] DEFAULT_BACKGROUND = { 0, 0, 0 };
     public static final boolean DEFAULT_RAINBOW = false;
     public static final String DEFAULT_ICON = "None";
@@ -66,8 +66,8 @@ public class AwtrixApp {
     private boolean center = DEFAULT_CENTER;
     private int[] color = DEFAULT_COLOR;
     private int[][] gradient = DEFAULT_GRADIENT;
-    private int blinkText = DEFAULT_BLINKTEXT;
-    private int fadeText = DEFAULT_FADETEXT;
+    private double blinkText = DEFAULT_BLINKTEXT;
+    private double fadeText = DEFAULT_FADETEXT;
     private int[] background = DEFAULT_BACKGROUND;
     private boolean rainbow = DEFAULT_RAINBOW;
     private String icon = DEFAULT_ICON;
@@ -190,19 +190,19 @@ public class AwtrixApp {
         this.gradient = gradient;
     }
 
-    public int getBlinkText() {
+    public double getBlinkText() {
         return this.blinkText;
     }
 
-    public void setBlinkText(int blinkText) {
+    public void setBlinkText(double blinkText) {
         this.blinkText = blinkText;
     }
 
-    public int getFadeText() {
+    public double getFadeText() {
         return this.fadeText;
     }
 
-    public void setFadeText(int fadeText) {
+    public void setFadeText(double fadeText) {
         this.fadeText = fadeText;
     }
 
@@ -401,8 +401,19 @@ public class AwtrixApp {
         if (params.containsKey(key)) {
             @Nullable
             Object value = params.get(key);
-            if (value instanceof Integer intValue) {
-                return intValue;
+            if (value instanceof Number numberValue) {
+                return numberValue.intValue();
+            }
+        }
+        return defaultValue;
+    }
+
+    private double getNumberValue(Map<String, Object> params, String key, double defaultValue) {
+        if (params.containsKey(key)) {
+            @Nullable
+            Object value = params.get(key);
+            if (value instanceof Number numberValue) {
+                return numberValue.doubleValue();
             }
         }
         return defaultValue;
