@@ -24,6 +24,59 @@ enable debug logging for the automation functionality:
 log:set DEBUG org.openhab.automation.pythonscripting
 ```
 
+## Scripting Basics
+
+Lets start with a simple script
+
+```python
+from openhab import rule
+from openhab.triggers import GenericCronTrigger
+
+@rule( triggers = [ GenericCronTrigger("*/5 * * * * ?") ] )
+class Test:
+    def execute(self, module, input):
+        self.logger.info("Rule was triggered")
+```
+
+or another one, using the [scope module](#module-scope)
+
+```python
+from openhab import rule
+from openhab.triggers import ItemCommandTrigger
+
+import scope
+
+@rule( triggers = [ ItemCommandTrigger("Item1", scope.ON) ] )
+class Test:
+    def execute(self, module, input):
+        self.logger.info("Rule was triggered")
+```
+
+## `PY3` Transformation
+
+openHAB provides several [data transformation services](https://www.openhab.org/addons/#transform) as well as the script transformations, that are available from the framework and need no additional installation.
+It allows transforming values using any of the available scripting languages, which means Python Scripting is supported as well.
+See the [transformation docs](https://openhab.org/docs/configuration/transformations.html#script-transformation) for more general information on the usage of script transformations.
+
+Use Python Scripting as script transformation by:
+
+1. Creating a script in the `$OPENHAB_CONF/transform` folder with the `.py` extension.
+   The script should take one argument `input` and return a value that supports `toString()` or `null`:
+
+   ```python
+   def calc(input):
+       # Do some data transformation here, e.g.
+       return "String has" + data.length + "characters";
+   calc(input)
+   ```
+
+2. Using `PY3(<scriptname>.py):%s` as Item state transformation.
+3. Passing parameters is also possible by using a URL like syntax: `PY3(<scriptname>.py?arg=value)`.
+   Parameters are injected into the script and can be referenced like variables.
+
+Simple transformations can aso be given as an inline script: `PY3(|...)`, e.g. `PY3(|"String has " + input.length + "characters")`.
+It should start with the `|` character, quotes within the script may need to be escaped with a backslash `\` when used with another quoted string as in text configurations.
+
 ## Examples 
 
 ### Simple rule
@@ -88,6 +141,63 @@ logger.info( historicItem.getState().toString() );
 
 historicItem = Registry.getItem("Item2").getPersistence("jdbc").persistedState( datetime.now().astimezone() )
 logger.info( historicItem.getState().toString() );
+```
+
+### Using scope
+
+Simple usage of jsr223 scope objects
+
+```python
+from openhab import Registry
+
+from scope import ON
+
+Registry.getItem("Item1").sendCommand(ON)
+```
+
+or for advanced users, importing openhab core api's
+
+```python
+from org.openhab.core import OpenHAB
+
+print(OpenHAB.getVersion())
+```
+
+### Logging
+
+There are 3 ways of logging.
+
+1. using normal print statements. In this case they are redirected to the default openhab logfile and marked with log level INFO or ERROR
+
+```python
+import sys
+
+print("log message")
+
+print("error message", file=sys.stderr)
+
+```
+
+2. using the logging module. Here you get a logging object, already initialized with the prefix "org.openhab.core.automation.pythonscripting"
+
+```python
+from openhab import logging
+
+logging.info("info message")
+
+logging.error("error message")
+```
+
+3. using the rule based logging module. Here you get a logging object, already initialized with the prefix "org.openhab.core.automation.pythonscripting.<RuleClassName>"
+
+```python
+from openhab import rule
+from openhab.triggers import GenericCronTrigger
+
+@rule( triggers = [ GenericCronTrigger("*/5 * * * * ?") ] )
+class Test:
+    def execute(self, module, input):
+        self.logger.info("Rule was triggered")
 ```
 
 ## Decorator 
