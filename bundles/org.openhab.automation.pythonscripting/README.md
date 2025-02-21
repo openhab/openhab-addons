@@ -155,14 +155,6 @@ from scope import ON
 Registry.getItem("Item1").sendCommand(ON)
 ```
 
-or for advanced users, importing openhab core api's
-
-```python
-from org.openhab.core import OpenHAB
-
-print(OpenHAB.getVersion())
-```
-
 ### Logging
 
 There are 3 ways of logging.
