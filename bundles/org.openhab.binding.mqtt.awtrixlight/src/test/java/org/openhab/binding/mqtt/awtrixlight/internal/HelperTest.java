@@ -142,12 +142,35 @@ public class HelperTest {
     }
 
     @Test
+    public void copyAppViaParams() {
+        AwtrixApp app = getTestApp();
+        Map<String, Object> appParams = app.getAppParams();
+
+        AwtrixApp app2 = new AwtrixApp();
+        app2.updateFields(appParams);
+
+        assertEquals(app.getAppConfig(), app2.getAppConfig());
+        assertEquals(app.toString(), app2.toString());
+    }
+
+    @Test
     public void copyAppViaJsonWithGradient() {
         AwtrixApp app = getTestAppWithGradient();
         String json = app.getAppConfig();
         AwtrixApp app2 = Helper.decodeAppJson(json);
 
         assertEquals(json, app2.getAppConfig());
+    }
+
+    @Test
+    public void copyAppViaParamsWithGradient() {
+        AwtrixApp app = getTestAppWithGradient();
+        Map<String, Object> appParams = app.getAppParams();
+
+        AwtrixApp app2 = new AwtrixApp();
+        app2.updateFields(appParams);
+
+        assertEquals(app.getAppConfig(), app2.getAppConfig());
     }
 
     @Test
@@ -162,6 +185,22 @@ public class HelperTest {
 
         // But the generated json should still be the same
         assertEquals(json, app2.getAppConfig());
+    }
+
+    @Test
+    public void copyAppViaParamsWithIncompatibleOptions() {
+        AwtrixApp app = getTestAppWithIncompatibleOptions();
+        Map<String, Object> appParams = app.getAppParams();
+
+        AwtrixApp app2 = new AwtrixApp();
+        app2.updateFields(appParams);
+
+        // Incompatible options are not copied to the new app
+        assertNotEquals(app.getRainbow(), app2.getRainbow());
+        assertEquals(app.getFadeText(), app2.getFadeText());
+
+        // But the generated json should still be the same
+        assertEquals(app.getAppConfig(), app2.getAppConfig());
     }
 
     @Test

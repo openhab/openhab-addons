@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.mqtt.awtrixlight.internal.app;
 
-import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -98,37 +96,37 @@ public class AwtrixApp {
     }
 
     public void updateFields(Map<String, Object> params) {
-        this.text = getStringValue(params, CHANNEL_TEXT, DEFAULT_TEXT);
-        this.textCase = getNumberValue(params, CHANNEL_TEXTCASE, DEFAULT_TEXTCASE);
-        this.topText = getBoolValue(params, CHANNEL_TOP_TEXT, DEFAULT_TOPTEXT);
-        this.textOffset = getNumberValue(params, CHANNEL_TEXT_OFFSET, DEFAULT_TEXTOFFSET);
-        this.center = getBoolValue(params, CHANNEL_CENTER, DEFAULT_CENTER);
-        this.color = getNumberArrayValue(params, CHANNEL_COLOR, DEFAULT_COLOR);
+        this.text = getStringValue(params, "text", DEFAULT_TEXT);
+        this.textCase = getNumberValue(params, "textCase", DEFAULT_TEXTCASE);
+        this.topText = getBoolValue(params, "topText", DEFAULT_TOPTEXT);
+        this.textOffset = getNumberValue(params, "textOffset", DEFAULT_TEXTOFFSET);
+        this.center = getBoolValue(params, "center", DEFAULT_CENTER);
+        this.color = getNumberArrayValue(params, "color", DEFAULT_COLOR);
         this.gradient = getGradientValue(params, DEFAULT_GRADIENT);
-        this.blinkText = getNumberValue(params, CHANNEL_BLINK_TEXT, DEFAULT_BLINKTEXT);
-        this.fadeText = getNumberValue(params, CHANNEL_FADE_TEXT, DEFAULT_FADETEXT);
-        this.background = getNumberArrayValue(params, CHANNEL_BACKGROUND, DEFAULT_BACKGROUND);
-        this.rainbow = getBoolValue(params, CHANNEL_RAINBOW, DEFAULT_RAINBOW);
-        this.icon = getStringValue(params, CHANNEL_ICON, DEFAULT_ICON);
-        this.pushIcon = getNumberValue(params, CHANNEL_PUSH_ICON, DEFAULT_PUSHICON);
-        this.duration = getNumberValue(params, CHANNEL_DURATION, DEFAULT_DURATION);
-        this.line = getNumberArrayValue(params, CHANNEL_LINE, DEFAULT_LINE);
-        this.lifetime = getNumberValue(params, CHANNEL_LIFETIME, DEFAULT_LIFETIME);
-        this.lifetimeMode = getNumberValue(params, CHANNEL_LIFETIME_MODE, DEFAULT_LIFETIME_MODE);
-        this.bar = getNumberArrayValue(params, CHANNEL_BAR, DEFAULT_BAR);
-        this.autoscale = getBoolValue(params, CHANNEL_AUTOSCALE, DEFAULT_AUTOSCALE);
-        this.overlay = getStringValue(params, CHANNEL_OVERLAY, DEFAULT_OVERLAY);
-        this.progress = getNumberValue(params, CHANNEL_PROGRESS, DEFAULT_PROGRESS);
-        this.progressC = getNumberArrayValue(params, CHANNEL_PROGRESSC, DEFAULT_PROGRESSC);
-        this.progressBC = getNumberArrayValue(params, CHANNEL_PROGRESSBC, DEFAULT_PROGRESSBC);
-        this.scrollSpeed = getNumberValue(params, CHANNEL_SCROLLSPEED, DEFAULT_SCROLLSPEED);
-        this.effect = getStringValue(params, CHANNEL_EFFECT, DEFAULT_EFFECT);
+        this.blinkText = getNumberValue(params, "blinkText", DEFAULT_BLINKTEXT);
+        this.fadeText = getNumberValue(params, "fadeText", DEFAULT_FADETEXT);
+        this.background = getNumberArrayValue(params, "background", DEFAULT_BACKGROUND);
+        this.rainbow = getBoolValue(params, "rainbow", DEFAULT_RAINBOW);
+        this.icon = getStringValue(params, "icon", DEFAULT_ICON);
+        this.pushIcon = getNumberValue(params, "pushIcon", DEFAULT_PUSHICON);
+        this.duration = getNumberValue(params, "duration", DEFAULT_DURATION);
+        this.line = getNumberArrayValue(params, "line", DEFAULT_LINE);
+        this.lifetime = getNumberValue(params, "lifetime", DEFAULT_LIFETIME);
+        this.lifetimeMode = getNumberValue(params, "lifetimeMode", DEFAULT_LIFETIME_MODE);
+        this.bar = getNumberArrayValue(params, "bar", DEFAULT_BAR);
+        this.autoscale = getBoolValue(params, "autoscale", DEFAULT_AUTOSCALE);
+        this.overlay = getStringValue(params, "overlay", DEFAULT_OVERLAY);
+        this.progress = getNumberValue(params, "progress", DEFAULT_PROGRESS);
+        this.progressC = getNumberArrayValue(params, "progressC", DEFAULT_PROGRESSC);
+        this.progressBC = getNumberArrayValue(params, "progressBC", DEFAULT_PROGRESSBC);
+        this.scrollSpeed = getNumberValue(params, "scrollSpeed", DEFAULT_SCROLLSPEED);
+        this.effect = getStringValue(params, "effect", DEFAULT_EFFECT);
 
-        Map<String, Object> effectSettings = new HashMap<String, Object>();
-        effectSettings.put("speed", getNumberValue(params, CHANNEL_EFFECT_SPEED, DEFAULT_EFFECTSPEED));
-        effectSettings.put("palette", getStringValue(params, CHANNEL_EFFECT_PALETTE, DEFAULT_EFFECTPALETTE));
-        effectSettings.put("blend", getBoolValue(params, CHANNEL_EFFECT_BLEND, DEFAULT_EFFECTBLEND));
-        this.effectSettings = effectSettings;
+        Map<String, Object> defaultEffectSettings = new HashMap<String, Object>();
+        defaultEffectSettings.put("speed", DEFAULT_EFFECTSPEED);
+        defaultEffectSettings.put("palette", DEFAULT_EFFECTPALETTE);
+        defaultEffectSettings.put("blend", DEFAULT_EFFECTBLEND);
+        this.effectSettings = getEffectSettingsValues(params, defaultEffectSettings);
     }
 
     public String getAppConfig() {
@@ -422,20 +420,51 @@ public class AwtrixApp {
     }
 
     private int[][] getGradientValue(Map<String, Object> params, int[][] defaultValue) {
-        if (params.containsKey(CHANNEL_GRADIENT_COLOR)) {
+        if (params.containsKey("gradient")) {
             @Nullable
-            Object gradientParam = params.get(CHANNEL_GRADIENT_COLOR);
+            Object gradientParam = params.get("gradient");
+            // Check if we got a complete gradient with two colors
+            if (gradientParam instanceof int[][] gradient) {
+                return gradient;
+            }
+            // Check if we got a single color for the gradient
             if (gradientParam instanceof int[] gradient) {
                 @Nullable
-                Object colorParam = params.get(CHANNEL_COLOR);
+                Object colorParam = params.get("color");
                 if (colorParam instanceof int[] color) {
                     return new int[][] { color, gradient };
-                } else {
-                    return new int[][] { DEFAULT_COLOR, gradient };
                 }
             }
         }
         return defaultValue;
+    }
+
+    private Map<String, Object> getEffectSettingsValues(Map<String, Object> params, Map<String, Object> defaultValues) {
+        if (params.containsKey("effectSettings")) {
+            @Nullable
+            Object value = params.get("effectSettings");
+            if (value instanceof Map map) {
+                if (map.containsKey("speed")) {
+                    Object speed = map.get("speed");
+                    if (speed != null) {
+                        defaultValues.put("speed", speed);
+                    }
+                }
+                if (map.containsKey("palette")) {
+                    Object palette = map.get("palette");
+                    if (palette != null) {
+                        defaultValues.put("palette", palette);
+                    }
+                }
+                if (map.containsKey("blend")) {
+                    Object blend = map.get("blend");
+                    if (blend != null) {
+                        defaultValues.put("blend", blend);
+                    }
+                }
+            }
+        }
+        return defaultValues;
     }
 
     private String getStringValue(Map<String, Object> params, String key, String defaultValue) {
