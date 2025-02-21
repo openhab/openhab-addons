@@ -53,6 +53,7 @@ public class FlatLineProfile implements StateProfile, AutoCloseable {
     private final Duration timeout;
     private final boolean inverted;
     private final Runnable onTimeout;
+    private boolean closed;
 
     private @Nullable ScheduledFuture<?> timeoutTask;
 
@@ -122,21 +123,20 @@ public class FlatLineProfile implements StateProfile, AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        synchronized (this) {
-            ScheduledFuture<?> priorTask = timeoutTask;
-            timeoutTask = null;
-            if (priorTask != null) {
-                priorTask.cancel(false);
-            }
+        cancelTimeoutTask();
+        closed = true;
+    }
+
+    private void cancelTimeoutTask() {
+        ScheduledFuture<?> priorTask = timeoutTask;
+        if (priorTask != null) {
+            priorTask.cancel(false);
         }
     }
 
-    private void rescheduleTimeoutTask() {
-        synchronized (this) {
-            ScheduledFuture<?> priorTask = timeoutTask;
-            if (priorTask != null) {
-                priorTask.cancel(false);
-            }
+    private synchronized void rescheduleTimeoutTask() {
+        cancelTimeoutTask();
+        if (!closed) {
             long mSec = timeout.toMillis();
             timeoutTask = scheduler.scheduleWithFixedDelay(onTimeout, mSec, mSec, TimeUnit.MILLISECONDS);
         }

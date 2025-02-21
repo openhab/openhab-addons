@@ -53,6 +53,7 @@ import org.openhab.transform.basicprofiles.internal.profiles.TimeRangeCommandPro
 import org.osgi.framework.Bundle;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -129,6 +130,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     private final Bundle bundle;
     private final ItemRegistry itemRegistry;
     private final TimeZoneProvider timeZoneProvider;
+    private final Set<AutoCloseable> closeables = ConcurrentHashMap.newKeySet();
 
     @Activate
     public BasicProfilesFactory(final @Reference ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService,
@@ -143,28 +145,48 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     @Override
     public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback,
             ProfileContext context) {
+        Profile retVal;
         if (GENERIC_COMMAND_UID.equals(profileTypeUID)) {
-            return new GenericCommandTriggerProfile(callback, context);
+            retVal = new GenericCommandTriggerProfile(callback, context);
         } else if (GENERIC_TOGGLE_SWITCH_UID.equals(profileTypeUID)) {
-            return new GenericToggleSwitchTriggerProfile(callback, context);
+            retVal = new GenericToggleSwitchTriggerProfile(callback, context);
         } else if (DEBOUNCE_COUNTING_UID.equals(profileTypeUID)) {
-            return new DebounceCountingStateProfile(callback, context);
+            retVal = new DebounceCountingStateProfile(callback, context);
         } else if (DEBOUNCE_TIME_UID.equals(profileTypeUID)) {
-            return new DebounceTimeStateProfile(callback, context);
+            retVal = new DebounceTimeStateProfile(callback, context);
         } else if (INVERT_UID.equals(profileTypeUID)) {
-            return new InvertStateProfile(callback);
+            retVal = new InvertStateProfile(callback);
         } else if (ROUND_UID.equals(profileTypeUID)) {
-            return new RoundStateProfile(callback, context);
+            retVal = new RoundStateProfile(callback, context);
         } else if (THRESHOLD_UID.equals(profileTypeUID)) {
-            return new ThresholdStateProfile(callback, context);
+            retVal = new ThresholdStateProfile(callback, context);
         } else if (TIME_RANGE_COMMAND_UID.equals(profileTypeUID)) {
-            return new TimeRangeCommandProfile(callback, context, timeZoneProvider);
+            retVal = new TimeRangeCommandProfile(callback, context, timeZoneProvider);
         } else if (STATE_FILTER_UID.equals(profileTypeUID)) {
-            return new StateFilterProfile(callback, context, itemRegistry);
+            retVal = new StateFilterProfile(callback, context, itemRegistry);
         } else if (FLAT_LINE_UID.equals(profileTypeUID)) {
-            return new FlatLineProfile(callback, context);
+            retVal = new FlatLineProfile(callback, context);
+        } else {
+            retVal = null;
         }
-        return null;
+        if (retVal instanceof AutoCloseable closeable) {
+            closeables.add(closeable);
+        }
+        return retVal;
+    }
+
+    /**
+     * Note: I wonder if the OH Core {@link ProfileFactory} instances should do this too?
+     */
+    @Deactivate
+    public void deactivate() {
+        for (AutoCloseable closeable : closeables) {
+            try {
+                closeable.close();
+            } catch (Exception e) {
+            }
+        }
+        closeables.clear();
     }
 
     @Override

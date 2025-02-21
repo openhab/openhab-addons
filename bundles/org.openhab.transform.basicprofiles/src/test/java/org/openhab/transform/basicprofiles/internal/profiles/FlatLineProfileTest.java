@@ -12,6 +12,7 @@
  */
 package org.openhab.transform.basicprofiles.internal.profiles;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -80,13 +81,22 @@ class FlatLineProfileTest {
         verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
                 eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
 
-        reset(mockCallback);
         reset(mockScheduler);
 
         profile.onStateUpdateFromHandler(DecimalType.ZERO);
 
         verify(mockCallback, times(1)).sendUpdate(expectedState);
         verify(mockScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
+                eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
+
+        reset(mockCallback);
+        reset(mockScheduler);
+
+        assertDoesNotThrow(() -> profile.close());
+        profile.onStateUpdateFromHandler(DecimalType.ZERO);
+
+        verify(mockCallback, times(1)).sendUpdate(expectedState);
+        verify(mockScheduler, never()).scheduleWithFixedDelay(any(Runnable.class), eq(expectedMilliSeconds),
                 eq(expectedMilliSeconds), eq(TimeUnit.MILLISECONDS));
     }
 }
