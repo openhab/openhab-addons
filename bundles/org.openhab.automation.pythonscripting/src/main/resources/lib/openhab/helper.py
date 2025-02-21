@@ -1,84 +1,81 @@
 import java
-#from polyglot import register_interop_type
-from inspect import isfunction
-
-import os
-import sys
-import traceback
-
-from openhab.jsr223 import scope
-from openhab.services import get_service
-
-# **** REGISTER LOGGING AND EXCEPTION HOOK AS SOON AS POSSIBLE ****
-Java_LogFactory = java.type("org.slf4j.LoggerFactory")
-LOG_PREFIX = "org.openhab.core.automation.pythonscripting"
-NAME_PREFIX = ""
-if '__file__' in scope:
-    file_package = os.path.basename(scope['__file__'])[:-3]
-    LOG_PREFIX = "{}.{}".format(LOG_PREFIX, file_package)
-    NAME_PREFIX = "{}".format(file_package)
-logger = Java_LogFactory.getLogger( LOG_PREFIX )
-
-#def scriptUnloaded():
-#    logger.info("unload")
-
-def excepthook(exctype, excvalue, tb):
-    filename = tb.tb_frame.f_code.co_filename
-    name = tb.tb_frame.f_code.co_name
-    line_no = tb.tb_lineno
-    logger.error("Traceback (most recent call last):")
-    logger.error("  File \"{}\", line {}, in {}".format(filename, line_no, name))
-    logger.error("{}, {}".format(exctype.__name__, excvalue))
-    #logger.error("{}, {} in file \"{}\", line {}, in {}".format(exctype.__name__, excvalue, filename, line_no, name))
-sys.excepthook = excepthook
-# *****************************************************************
 
 import time
 import threading
 import profile, pstats, io
 from datetime import datetime, timedelta
 
-Java_MetadataKey = java.type("org.openhab.core.items.MetadataKey")
-Java_Metadata = java.type("org.openhab.core.items.Metadata")
+import os
+import traceback
+from inspect import isfunction
 
-Java_ChannelUID = java.type("org.openhab.core.thing.ChannelUID")
-Java_ThingUID = java.type("org.openhab.core.thing.ThingUID")
-Java_SimpleRule = java.type("org.openhab.core.automation.module.script.rulesupport.shared.simple.SimpleRule")
+import scope
 
-Java_PersistenceExtensions = java.type("org.openhab.core.persistence.extensions.PersistenceExtensions")
-Java_Semantics = java.type("org.openhab.core.model.script.actions.Semantics")
+from scope import RuleSupport#, RuleSimple
 
-Java_Item = java.type("org.openhab.core.items.Item")
-Java_GroupItem = java.type("org.openhab.core.items.GroupItem")
-Java_State = java.type("org.openhab.core.types.State")
-Java_HistoricItem = java.type("org.openhab.core.persistence.HistoricItem")
-Java_DateTimeType = java.type("org.openhab.core.library.types.DateTimeType")
+from openhab.jsr223 import TopCallStackFrame
+from openhab.services import getService
+
+from org.openhab.core.items import MetadataKey as Java_MetadataKey, Metadata as Java_Metadata
+
+from org.openhab.core.thing import ChannelUID as Java_ChannelUID, ThingUID as Java_ThingUID
+from org.openhab.core.automation.module.script.rulesupport.shared.simple import SimpleRule as Java_SimpleRule
+from org.openhab.core.persistence.extensions import PersistenceExtensions as Java_PersistenceExtensions
+from org.openhab.core.model.script.actions import Semantics as Java_Semantics
+
+from org.openhab.core.items import Item as Java_Item, GroupItem as Java_GroupItem
+from org.openhab.core.types import State as Java_State, PrimitiveType as Java_PrimitiveType, UnDefType as Java_UnDefType
+from org.openhab.core.library.types import DecimalType as Java_DecimalType, UpDownType as Java_UpDownType, PercentType as Java_PercentType, DateTimeType as Java_DateTimeType
+
+from org.openhab.core.persistence import HistoricItem as Java_HistoricItem
+
+#Java_MetadataKey = java.type("org.openhab.core.items.MetadataKey")
+#Java_Metadata = java.type("org.openhab.core.items.Metadata")
+
+#Java_ChannelUID = java.type("org.openhab.core.thing.ChannelUID")
+#Java_ThingUID = java.type("org.openhab.core.thing.ThingUID")
+#Java_SimpleRule = java.type("org.openhab.core.automation.module.script.rulesupport.shared.simple.SimpleRule")
+
+#Java_PersistenceExtensions = java.type("org.openhab.core.persistence.extensions.PersistenceExtensions")
+#Java_Semantics = java.type("org.openhab.core.model.script.actions.Semantics")
+
+#Java_Item = java.type("org.openhab.core.items.Item")
+#Java_GroupItem = java.type("org.openhab.core.items.GroupItem")
+#Java_State = java.type("org.openhab.core.types.State")
+#Java_HistoricItem = java.type("org.openhab.core.persistence.HistoricItem")
+#Java_DateTimeType = java.type("org.openhab.core.library.types.DateTimeType")
 Java_ZonedDateTime = java.type("java.time.ZonedDateTime")
 Java_Iterable = java.type("java.lang.Iterable")
 
-Java_DecimalType = java.type("org.openhab.core.library.types.DecimalType")
-Java_UpDownType = java.type("org.openhab.core.library.types.UpDownType")
-Java_PercentType = java.type("org.openhab.core.library.types.PercentType")
-Java_PrimitiveType = java.type("org.openhab.core.types.PrimitiveType")
-Java_UnDefType = java.type("org.openhab.core.types.UnDefType")
+#Java_DecimalType = java.type("org.openhab.core.library.types.DecimalType")
+#Java_UpDownType = java.type("org.openhab.core.library.types.UpDownType")
+#Java_PercentType = java.type("org.openhab.core.library.types.PercentType")
+#Java_PrimitiveType = java.type("org.openhab.core.types.PrimitiveType")
+#Java_UnDefType = java.type("org.openhab.core.types.UnDefType")
 
+METADATA_REGISTRY = getService("org.openhab.core.items.MetadataRegistry")
 
+ITEM_REGISTRY     = scope.itemRegistry
+STATE_REGISTRY    = scope.items
+THING_REGISTRY    = scope.things
 
-METADATA_REGISTRY = get_service("org.openhab.core.items.MetadataRegistry")
+EVENT_BUS         = scope.events
 
-ITEM_REGISTRY     = scope.get("itemRegistry")
-STATE_REGISTRY    = scope.get("items")
-THING_REGISTRY    = scope.get("things")
+#scriptExtension   = scope.scriptExtension
 
-EVENT_BUS         = scope.get("events")
+AUTOMATION_MANAGER = RuleSupport.automationManager
+LIFECYCLE_TRACKER = scope.lifecycleTracker
 
-scriptExtension   = scope.get("scriptExtension")
-
-scriptExtension.importPreset("RuleSupport")
-scriptExtension.importPreset("RuleSimple")
-
-AUTOMATION_MANAGER = scope.get("automationManager")
-LIFECYCLE_TRACKER = scope.get("lifecycleTracker")
+# **** LOGGING ****
+Java_LogFactory = java.type("org.slf4j.LoggerFactory")
+LOG_PREFIX = "org.openhab.core.automation.pythonscripting"
+NAME_PREFIX = ""
+if '__file__' in TopCallStackFrame:
+    file_package = os.path.basename(TopCallStackFrame['__file__'])[:-3]
+    LOG_PREFIX = "{}.{}".format(LOG_PREFIX, file_package)
+    NAME_PREFIX = "{}".format(file_package)
+logger = Java_LogFactory.getLogger( LOG_PREFIX )
+# *****************************************************************
 
 class NotInitialisedException(Exception):
     pass
@@ -158,7 +155,8 @@ class rule():
 
             actionConfiguration = rule.getActions().get(0).getConfiguration()
             actionConfiguration.put('type', 'application/x-python3')
-            actionConfiguration.put('script', f"# text based rule in file: {scope['__file__']}")
+            if '__file__' in TopCallStackFrame:
+                actionConfiguration.put('script', f"# text based rule in file: {TopCallStackFrame['__file__']}")
 
             clazz_or_function.logger.info("Rule '{}' initialised".format(name))
 

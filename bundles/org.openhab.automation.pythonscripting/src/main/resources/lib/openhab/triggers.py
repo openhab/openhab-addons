@@ -1,18 +1,14 @@
-from openhab import Registry, logger
-
 import java
 
 import uuid
 import re
 
-Java_ConditionBuilder = java.type("org.openhab.core.automation.util.ConditionBuilder")
-Java_TriggerBuilder = java.type("org.openhab.core.automation.util.TriggerBuilder")
-Java_Configuration = java.type("org.openhab.core.config.core.Configuration")
+from org.openhab.core.automation.util import ConditionBuilder as Java_ConditionBuilder, TriggerBuilder as Java_TriggerBuilder
+from org.openhab.core.config.core import Configuration as Java_Configuration
+from org.openhab.core.types import Command as Java_Command, State as Java_State
 
-Java_Command = java.type("org.openhab.core.types.Command")
-Java_State = java.type("org.openhab.core.types.State")
 
-def validate_uid(uid):
+def validateUID(uid):
     if uid is None:
         uid = uuid.uuid1().hex
     else:
@@ -35,7 +31,7 @@ class BaseTrigger():
 
 class ItemStateChangeTrigger(BaseTrigger):
     def __init__(self, item_name, state=None, previous_state=None, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {"itemName": item_name}
         if state is not None:
             configuration["state"] = str(state) if java.instanceof(state, Java_State) else state
@@ -50,7 +46,7 @@ class ItemStateChangeTrigger(BaseTrigger):
 
 class ItemStateUpdateTrigger(BaseTrigger):
     def __init__(self, item_name, state=None, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {"itemName": item_name}
         if state is not None:
             configuration["state"] = str(state) if java.instanceof(state, Java_State) else state
@@ -62,7 +58,7 @@ class ItemStateUpdateTrigger(BaseTrigger):
 
 class ItemCommandTrigger(BaseTrigger):
     def __init__(self, item_name, command=None, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {"itemName": item_name}
         if command is not None:
             configuration["command"] = str(command) if java.instanceof(command, Java_Command) else command
@@ -75,7 +71,7 @@ class ItemCommandTrigger(BaseTrigger):
 
 class GroupStateChangeTrigger(BaseTrigger):
     def __init__(self, group_name, state=None, previous_state=None, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {"groupName": group_name}
         if state is not None:
             configuration["state"] = str(state) if java.instanceof(state, Java_State) else state
@@ -91,7 +87,7 @@ class GroupStateChangeTrigger(BaseTrigger):
 
 class GroupStateUpdateTrigger(BaseTrigger):
     def __init__(self, group_name, state=None, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {"groupName": group_name}
         if state is not None:
             configuration["state"] = str(state) if java.instanceof(state, Java_State) else state
@@ -103,7 +99,7 @@ class GroupStateUpdateTrigger(BaseTrigger):
 
 class GroupCommandTrigger(BaseTrigger):
     def __init__(self, group_name, command=None, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {"groupName": group_name}
         if command is not None:
             configuration["command"] = command
@@ -115,7 +111,7 @@ class GroupCommandTrigger(BaseTrigger):
 
 class ThingStatusUpdateTrigger(BaseTrigger):
     def __init__(self, thing_uid, status=None, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {"thingUID": thing_uid}
         if status is not None:
             configuration["status"] = status
@@ -127,7 +123,7 @@ class ThingStatusUpdateTrigger(BaseTrigger):
 
 class ThingStatusChangeTrigger(BaseTrigger):
     def __init__(self, thing_uid, status=None, previous_status=None, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {"thingUID": thing_uid}
         if status is not None:
             configuration["status"] = status
@@ -141,7 +137,7 @@ class ThingStatusChangeTrigger(BaseTrigger):
 
 class ChannelEventTrigger(BaseTrigger):
     def __init__(self, channel_uid, event=None, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {"channelUID": channel_uid}
         if event is not None:
             configuration["event"] = event
@@ -153,7 +149,7 @@ class ChannelEventTrigger(BaseTrigger):
 
 class SystemStartlevelTrigger(BaseTrigger):
     def __init__(self, startlevel, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {"startlevel": startlevel}
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.SystemStartlevelTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
@@ -170,7 +166,7 @@ class SystemStartlevelTrigger(BaseTrigger):
 
 class GenericCronTrigger(BaseTrigger):
     def __init__(self, cron_expression, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {'cronExpression': cron_expression}
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("timer.GenericCronTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
@@ -197,7 +193,7 @@ class GenericCronTrigger(BaseTrigger):
 
 class TimeOfDayTrigger(BaseTrigger):
     def __init__(self, time, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {"time": time}
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("timer.TimeOfDayTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
@@ -207,7 +203,7 @@ class TimeOfDayTrigger(BaseTrigger):
 
 class DateTimeTrigger(BaseTrigger):
     def __init__(self, item_name, time_only = False, offset = 0, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {"itemName": item_name, "timeOnly": time_only, "offset": offset}
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("timer.DateTimeTrigger").withConfiguration(Java_Configuration(configuration)).build()
 
@@ -225,7 +221,7 @@ class DateTimeTrigger(BaseTrigger):
 
 class PWMTrigger(BaseTrigger):
     def __init__(self, dutycycle_item, interval, min_duty_cycle, max_duty_cycle, dead_man_switch, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         configuration = {
             "dutycycleItem": dutycycle_item,
             "interval": interval,
@@ -237,7 +233,7 @@ class PWMTrigger(BaseTrigger):
 
 class GenericEventTrigger(BaseTrigger):
     def __init__(self, event_source, event_types, event_topic="*/*", trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GenericEventTrigger").withConfiguration(Java_Configuration({
             "eventTopic": event_topic,
             "eventSource": event_source,
@@ -246,7 +242,7 @@ class GenericEventTrigger(BaseTrigger):
 
 class ItemEventTrigger(BaseTrigger):
     def __init__(self, event_types, item_name=None, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GenericEventTrigger").withConfiguration(Java_Configuration({
             "eventTopic": "*/items/*",
             "eventSource": "/items/{}".format(item_name if item_name else ""),
@@ -266,7 +262,7 @@ class ItemEventTrigger(BaseTrigger):
 
 class ThingEventTrigger(BaseTrigger):
     def __init__(self, event_types, thing_uid=None, trigger_name=None):
-        trigger_name = validate_uid(trigger_name)
+        trigger_name = validateUID(trigger_name)
         self.raw_trigger = Java_TriggerBuilder.create().withId(trigger_name).withTypeUID("core.GenericEventTrigger").withConfiguration(Java_Configuration({
             "eventTopic": "*/things/*",
             "eventSource": "/things/{}".format(thing_uid if thing_uid else ""),
@@ -343,7 +339,7 @@ class BaseCondition():
 
 class ItemStateCondition(BaseCondition):
     def __init__(self, item_name, operator, state, condition_name=None):
-        condition_name = validate_uid(condition_name)
+        condition_name = validateUID(condition_name)
         configuration = {
             "itemName": item_name,
             "operator": operator,
@@ -368,7 +364,7 @@ class ItemStateCondition(BaseCondition):
 
 class EphemerisCondition(BaseCondition):
     def __init__(self, dayset, offset=0, condition_name=None):
-        condition_name = validate_uid(condition_name)
+        condition_name = validateUID(condition_name)
         configuration = {
             "offset": offset
         }
@@ -433,7 +429,7 @@ class EphemerisCondition(BaseCondition):
 
 class TimeOfDayCondition(BaseCondition):
     def __init__(self, start_time, end_time, condition_name=None):
-        condition_name = validate_uid(condition_name)
+        condition_name = validateUID(condition_name)
         configuration = {
             "startTime": start_time,
             "endTime": end_time
@@ -452,7 +448,7 @@ class TimeOfDayCondition(BaseCondition):
 
 class IntervalCondition(BaseCondition):
     def __init__(self, min_interval, condition_name=None):
-        condition_name = validate_uid(condition_name)
+        condition_name = validateUID(condition_name)
         configuration = {
             "minInterval": min_interval,
         }

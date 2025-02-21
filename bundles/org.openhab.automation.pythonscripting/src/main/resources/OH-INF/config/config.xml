@@ -4,14 +4,27 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="automation:pythonscripting">
-		<parameter name="helperEnabled" type="boolean" required="true">
-			<label>Use openHAB Python helper modules</label>
+		<parameter name="scopeEnabled" type="boolean" required="true">
+			<label>Use scope and import wrapper</label>
 			<description><![CDATA[
-            Deploy and update openHAB Python helper modules like rule, logger, Registry, Timer etc...<br>
-            If disabled, the openHAB Python helper module can be installed manually by copying it to /conf/automation/python/lib/openhab"
-            ]]></description>
+			This enables a scope module and and import wrapper.<br>
+			An scope module is an encapsulated module containing all openhab jsr223 objects and can be imported with 'import scope'<br>
+			Additionally you can run an import like 'from org.openhab.core import OpenHAB'
+			]]></description>
 			<options>
-				<option value="true">Install helper modules automatically and keep it updated</option>
+				<option value="true">Use scope and import wrapper (preferred)</option>
+				<option value="false">Disable scope and import wrapper</option>
+			</options>
+			<default>true</default>
+		</parameter>
+		<parameter name="helperEnabled" type="boolean" required="true">
+			<label>Install openHAB Python helper modules (requires enabled input wrapper)</label>
+			<description><![CDATA[
+			Deploy and update openHAB Python helper modules like rule, logger, Registry, Timer etc...<br>
+			If disabled, the openHAB Python helper module can be installed manually by copying it to /conf/automation/python/lib/openhab"
+			]]></description>
+			<options>
+				<option value="true">Install helper modules and keep it updated (preferred)</option>
 				<option value="false">Do not install helper modules</option>
 			</options>
 			<default>true</default>
@@ -19,17 +32,17 @@
 		<parameter name="cachingEnabled" type="boolean" required="true">
 			<label>Cache compiled openHAB Python helper modules (.pyc files)</label>
 			<description><![CDATA[
-            Cache the openHAB python modules for improved startup performance.<br>
-            Disable this option will result in a slower startup performance, because scripts have to be recompiled every.
-            ]]></description>
+			Cache the openHAB python modules for improved startup performance.<br>
+			Disable this option will result in a slower startup performance, because scripts have to be recompiled every.
+			]]></description>
 			<options>
-				<option value="true">Cache compiled modules</option>
+				<option value="true">Cache compiled modules (preferred)</option>
 				<option value="false">Do not cache compiled modules</option>
 			</options>
 			<default>true</default>
 		</parameter>
 		<parameter name="jythonEmulation" type="boolean" required="true">
-			<label>Enable Jython emulation in GraalPy</label>
+			<label>Enable Jython emulation</label>
 			<description><![CDATA[
 			This enables Jython emulation in GraalPy. It is strongly recommended to update code to GraalPy and Python 3 as the emulation can have performance degradation.
 			For tips and instructions, please refer to <a href="https://www.graalvm.org/latest/reference-manual/python/Modern-Python-on-JVM">Jython Migration Guide</a>.

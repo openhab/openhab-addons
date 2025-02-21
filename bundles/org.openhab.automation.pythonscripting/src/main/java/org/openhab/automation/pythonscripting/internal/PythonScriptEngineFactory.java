@@ -69,13 +69,16 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
     public static final Path PYTHON_LIB_PATH = PYTHON_DEFAULT_PATH.resolve("lib");
     public static final Path PYTHON_OPENHAB_LIB_PATH = PYTHON_LIB_PATH.resolve("openhab");
+    public static final Path PYTHON_WRAPPER_LIB_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("wrapper.py");
 
     private static final String CFG_HELPER_ENABLED = "helperEnabled";
     private static final String CFG_CACHING_ENABLED = "cachingEnabled";
+    private static final String CFG_SCOPE_ENABLED = "scopeEnabled";
     private static final String CFG_JYTHON_EMULATION = "jythonEmulation";
 
     private boolean helperEnabled = false;
     private boolean cachingEnabled = false;
+    private boolean scopeEnabled = false;
     private boolean jythonEmulation = false;
 
     public static final String SCRIPT_TYPE = "application/x-python3";
@@ -121,7 +124,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
         }
         // return new PythonScriptEngine(pythonDependencyTracker, cachingEnabled, jythonEmulation);
         return new DebuggingPythonScriptEngine<>(
-                new PythonScriptEngine(pythonDependencyTracker, cachingEnabled, jythonEmulation));
+                new PythonScriptEngine(pythonDependencyTracker, cachingEnabled, this.scopeEnabled, jythonEmulation));
     }
 
     @Override
@@ -133,6 +136,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     protected void modified(Map<String, ?> config) {
         this.helperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_HELPER_ENABLED), Boolean.class, true);
         this.cachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_CACHING_ENABLED), Boolean.class, true);
+        this.scopeEnabled = ConfigParser.valueAsOrElse(config.get(CFG_SCOPE_ENABLED), Boolean.class, true);
         this.jythonEmulation = ConfigParser.valueAsOrElse(config.get(CFG_JYTHON_EMULATION), Boolean.class, false);
     }
 
@@ -140,7 +144,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
         Path versionFilePath = PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
 
         List<String> resourceFiles = Arrays.asList("__init__.py", "actions.py", "helper.py", "jsr223.py", "services.py",
-                "triggers.py");
+                "triggers.py", "wrapper.py");
 
         if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
             if (Files.exists(versionFilePath)) {

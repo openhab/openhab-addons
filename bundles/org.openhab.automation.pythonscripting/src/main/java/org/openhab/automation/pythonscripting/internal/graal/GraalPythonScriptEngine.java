@@ -134,7 +134,7 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
         return factory.getPolyglotEngine();
     }
 
-    private Context getPolyglotContext() {
+    public Context getPolyglotContext() {
         return getOrCreateGraalPythonBindings(context).getContext();
     }
 

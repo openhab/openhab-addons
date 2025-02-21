@@ -64,14 +64,13 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
     }
 
     private void initGlobal() {
-        // GraalPythonScriptEngine.evalInternal(context, "globals()").as(STRING_MAP);
         this.global = new HashMap<String, Object>();
 
         requireContext();
 
-        context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember("engine", scriptEngine);
+        context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember("__engine__", scriptEngine);
         if (scriptContext != null) {
-            context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember("context", scriptContext);
+            context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember("__context__", scriptContext);
         }
     }
 

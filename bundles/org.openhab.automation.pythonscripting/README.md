@@ -14,6 +14,7 @@ Simple rule
 from openhab import rule, Registry
 from openhab.triggers import GenericCronTrigger, ItemStateUpdateTrigger, ItemCommandTrigger, EphemerisCondition, when, onlyif
 
+import scope
 
 @rule()
 @when("Time cron */5 * * * * ?")
@@ -25,7 +26,7 @@ def test1(module, input):
 @when("Item Item1 received update")
 @onlyif("Today is a holiday")
 def test2(module, input):
-    Registry.getItem("Item2").sendCommand(ON)
+    Registry.getItem("Item2").sendCommand(scope.ON)
 
 @rule( 
     triggers = [ GenericCronTrigger("*/5 * * * * ?") ]
@@ -37,7 +38,7 @@ class Test3:
 @rule(
     triggers = [
         ItemStateUpdateTrigger("Item1"),
-        ItemCommandTrigger("Item1", ON)
+        ItemCommandTrigger("Item1", scope.ON)
     ],
     conditions = [
         EphemerisCondition("notholiday")
@@ -45,7 +46,7 @@ class Test3:
 )
 class Test4:
     def execute(self, module, input):
-        if Registry.getItem("Item2").postUpdateIfDifferent(OFF):
+        if Registry.getItem("Item2").postUpdateIfDifferent(scope.OFF):
             self.logger.info("Item2 was updated")
 ```
  
@@ -151,6 +152,48 @@ the decorator will register the decorated class as a rule. It will wrap and exte
 Depending on which trigger type is used, corresponding [event objects](https://www.openhab.org/javadoc/latest/org/openhab/core/items/events/itemevent) are passed via the "input" parameter
 
 The type of the event can also be queried via [AbstractEvent.getTopic](https://www.openhab.org/javadoc/latest/org/openhab/core/events/abstractevent)
+
+## module scope
+
+The scope module encapsulates all [default jsr223 objects/presents](https://www.openhab.org/docs/configuration/jsr223.html#default-preset-importpreset-not-required) into a new object. You can use it like below
+
+```python
+from scope import * # this makes all jsr223 objects available
+
+print(ON)
+```
+
+```python
+from scope import ON, OFF # this imports specific jsr223 objects
+
+print(ON)
+```
+
+```python
+import scope # this imports just the module
+
+print(scope.ON)
+```
+
+You can also import additional [jsr223 presents](https://www.openhab.org/docs/configuration/jsr223.html#rulesimple-preset) like
+
+```python
+from scope import RuleSimple
+from scope import RuleSupport
+from scope import RuleFactories
+from scope import ScriptAction
+from scope import cache
+from scope import osgi
+```
+
+Additionally you can import all java classes from 'org.openhab' package like
+
+
+```python
+from org.openhab.core import OpenHAB
+
+print(str(OpenHAB.getVersion()))
+```
 
 ## module openhab
 
