@@ -21,6 +21,7 @@ import java.util.Random;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jose4j.base64url.Base64;
+import org.openhab.core.util.HexUtils;
 
 import com.google.gson.JsonObject;
 
@@ -33,24 +34,16 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class Utils {
-    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
-    private static final char[] HEX_ARRAY_LOWERCASE = "0123456789abcdef".toCharArray();
     static byte[] empty = new byte[0];
 
     /**
      * Converts byte array to upper case hex string
      * 
      * @param bytes bytes to convert
-     * @return string of hex chars
+     * @return string of upper case hex chars
      */
     public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-        }
-        return new String(hexChars);
+        return HexUtils.bytesToHex(bytes);
     }
 
     /**
@@ -72,16 +65,10 @@ public class Utils {
      * Converts byte array to lower case hex string
      * 
      * @param bytes bytes to convert
-     * @return string of hex chars
+     * @return string of lower case hex chars
      */
     public static String bytesToHexLowercase(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = HEX_ARRAY_LOWERCASE[v >>> 4];
-            hexChars[j * 2 + 1] = HEX_ARRAY_LOWERCASE[v & 0x0F];
-        }
-        return new String(hexChars);
+        return HexUtils.bytesToHex(bytes).toLowerCase();
     }
 
     /**
@@ -99,16 +86,11 @@ public class Utils {
     /**
      * Converts hex string to a byte array
      * 
-     * @param s string to convert to byte array
-     * @return byte array
+     * @param string string to convert to byte array
+     * @return byte [] array
      */
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
+    public static byte[] hexStringToByteArray(String string) {
+        return HexUtils.hexToBytes(string);
     }
 
     /**
@@ -155,7 +137,7 @@ public class Utils {
     }
 
     /**
-     * Create String of the v3 Token
+     * Create String of the V.3 Token
      * 
      * @param nbytes number of bytes
      * @return String
