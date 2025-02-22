@@ -55,7 +55,7 @@ public class UpnpRenderingControlConfiguration {
             if (volume) {
                 long maxVolumeValue = rcService.getStateVariable("Volume").getTypeDetails().getAllowedValueRange()
                         .getMaximum();
-                if (maxVolumeValue >= 0) {
+                if (maxVolumeValue > 0) {
                     maxvolume = maxVolumeValue;
                 }
             }
