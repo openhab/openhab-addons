@@ -434,6 +434,8 @@ public class OnvifConnection {
             logger.warn(
                     "Camera at {} could not auto detect the ONVIF event method the camera supports, try setting the configuration away from auto to remove this message by forcing an option.",
                     ipAddress);
+        } else {
+            onvifEventServiceType = ipCameraHandler.cameraConfig.getOnvifEventServiceType();
         }
     }
 
