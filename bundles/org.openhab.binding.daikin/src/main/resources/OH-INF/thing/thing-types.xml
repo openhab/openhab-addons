@@ -95,6 +95,10 @@
 		<description>Power for the AC unit</description>
 		<category>Switch</category>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="acunit-settemp">
@@ -104,6 +108,10 @@
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" step="0.5"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="acunit-indoortemp">
@@ -112,6 +120,10 @@
 		<description>The indoor temperature</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="acunit-outdoortemp">
@@ -144,6 +156,9 @@
 			</options>
 		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="acunit-homekitmode">
@@ -177,6 +192,10 @@
 			</options>
 		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Control</tag>
+			<tag>Wind</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="acunit-fandir">
@@ -472,6 +491,10 @@
 		<label>Fan</label>
 		<description>Current fan speed setting of the AC unit</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Control</tag>
+			<tag>Wind</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone1">
@@ -479,6 +502,10 @@
 		<label>Zone 1</label>
 		<description>Zone 1 for the AC unit</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Wind</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone2">
@@ -486,6 +513,10 @@
 		<label>Zone 2</label>
 		<description>Zone 2 for the AC unit</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Wind</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone3">
@@ -493,6 +524,10 @@
 		<label>Zone 3</label>
 		<description>Zone 3 for the AC unit</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Wind</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone4">
@@ -500,6 +535,10 @@
 		<label>Zone 4</label>
 		<description>Zone 4 for the AC unit</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Wind</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone5">
@@ -507,6 +546,10 @@
 		<label>Zone 5</label>
 		<description>Zone 5 for the AC unit</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Wind</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone6">
@@ -514,6 +557,10 @@
 		<label>Zone 6</label>
 		<description>Zone 6 for the AC unit</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Wind</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone7">
@@ -521,6 +568,10 @@
 		<label>Zone 7</label>
 		<description>Zone 7 for the AC unit</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Wind</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone8">
@@ -528,6 +579,10 @@
 		<label>Zone 8</label>
 		<description>Zone 8 for the AC unit</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Wind</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>
