@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -330,8 +330,6 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
         updateStatus();
     }
 
-    public abstract void updateStatus();
-
     public void updateProperties(Device device) {
         Map<String, String> properties = editProperties();
 
@@ -372,9 +370,8 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
     }
 
     protected void cancelJob(@Nullable ScheduledFuture<?> job, boolean interrupt) {
-        if (job != null) {
+        if (job != null && !job.isCancelled()) {
             job.cancel(interrupt);
-            job = null;
         }
     }
 }

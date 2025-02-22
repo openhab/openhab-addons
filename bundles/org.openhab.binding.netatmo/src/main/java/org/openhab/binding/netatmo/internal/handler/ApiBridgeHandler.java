@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -103,6 +102,7 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class ApiBridgeHandler extends BaseBridgeHandler {
     private static final int TIMEOUT_S = 20;
+    private static final int API_LIMIT_INTERVAL_S = 3600;
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
     private final AuthenticationApi connectApi = new AuthenticationApi(this);
@@ -128,7 +128,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.deserializer = deserializer;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
-
         requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
     }
 
@@ -138,15 +137,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
         ApiHandlerConfiguration configuration = getConfiguration();
 
-        if (configuration.clientId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    ConfigurationLevel.EMPTY_CLIENT_ID.message);
-            return;
-        }
-
-        if (configuration.clientSecret.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    ConfigurationLevel.EMPTY_CLIENT_SECRET.message);
+        ConfigurationLevel confLevel = configuration.check();
+        if (!ConfigurationLevel.COMPLETED.equals(confLevel)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, confLevel.message);
             return;
         }
 
@@ -170,15 +163,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         logger.debug("Connected to Netatmo API.");
 
         ApiHandlerConfiguration configuration = getConfiguration();
-        if (!configuration.webHookUrl.isBlank()) {
-            SecurityApi securityApi = getRestManager(SecurityApi.class);
-            if (securityApi != null) {
-                webHookServlet.ifPresent(servlet -> servlet.dispose());
-                WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
-                        configuration.webHookUrl, configuration.webHookPostfix);
-                servlet.startListening();
-                this.webHookServlet = Optional.of(servlet);
-            }
+        if (!configuration.webHookUrl.isBlank()
+                && getRestManager(SecurityApi.class) instanceof SecurityApi securityApi) {
+            webHookServlet.ifPresent(servlet -> servlet.dispose());
+            WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
+                    configuration.webHookUrl, configuration.webHookPostfix);
+            servlet.startListening();
+            this.webHookServlet = Optional.of(servlet);
         }
 
         updateStatus(ThingStatus.ONLINE);
@@ -197,8 +188,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 accessTokenResponse = oAuthClientService.getAccessTokenResponseByAuthorizationCode(code, redirectUri);
 
                 // Dispose grant servlet upon completion of authorization flow.
-                grantServlet.ifPresent(servlet -> servlet.dispose());
-                grantServlet = Optional.empty();
+                freeGrantServlet();
             } else {
                 accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             }
@@ -207,8 +197,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             startAuthorizationFlow();
             return false;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            prepareReconnection(code, redirectUri);
+            prepareReconnection(getConfiguration().reconnectInterval, e.getMessage(), code, redirectUri);
             return false;
         }
 
@@ -227,7 +216,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         servlet.startListening();
         grantServlet = Optional.of(servlet);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                ConfigurationLevel.REFRESH_TOKEN_NEEDED.message.formatted(servlet.getPath()));
+                "@text/conf-error-grant-needed [ \"http(s)://<YOUROPENHAB>:<YOURPORT>%s\" ]"
+                        .formatted(servlet.getPath()));
         connectApi.dispose();
     }
 
@@ -235,16 +225,25 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         return getConfigAs(ApiHandlerConfiguration.class);
     }
 
-    private void prepareReconnection(@Nullable String code, @Nullable String redirectUri) {
+    private void prepareReconnection(int delay, @Nullable String message, @Nullable String code,
+            @Nullable String redirectUri) {
+        if (!ThingStatus.OFFLINE.equals(thing.getStatus())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        }
         connectApi.dispose();
         freeConnectJob();
-        connectJob = Optional.of(scheduler.schedule(() -> openConnection(code, redirectUri),
-                getConfiguration().reconnectInterval, TimeUnit.SECONDS));
+        connectJob = Optional.of(scheduler.schedule(() -> openConnection(code, redirectUri), delay, TimeUnit.SECONDS));
+        logger.debug("Reconnection scheduled in {} seconds", delay);
     }
 
     private void freeConnectJob() {
         connectJob.ifPresent(j -> j.cancel(true));
         connectJob = Optional.empty();
+    }
+
+    private void freeGrantServlet() {
+        grantServlet.ifPresent(servlet -> servlet.dispose());
+        grantServlet = Optional.empty();
     }
 
     @Override
@@ -254,8 +253,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         webHookServlet.ifPresent(servlet -> servlet.dispose());
         webHookServlet = Optional.empty();
 
-        grantServlet.ifPresent(servlet -> servlet.dispose());
-        grantServlet = Optional.empty();
+        freeGrantServlet();
 
         connectApi.dispose();
         freeConnectJob();
@@ -280,13 +278,12 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public <T extends RestManager> @Nullable T getRestManager(Class<T> clazz) {
         if (!managers.containsKey(clazz)) {
             try {
-                Constructor<T> constructor = clazz.getConstructor(getClass());
-                T instance = constructor.newInstance(this);
+                T instance = clazz.getConstructor(getClass()).newInstance(this);
                 Set<Scope> expected = instance.getRequiredScopes();
                 if (connectApi.matchesScopes(expected)) {
                     managers.put(clazz, instance);
                 } else {
-                    logger.info("Unable to instantiate {}, expected scope {} is not active", clazz, expected);
+                    logger.warn("Unable to instantiate {}, expected scope {} is not active", clazz, expected);
                 }
             } catch (SecurityException | ReflectiveOperationException e) {
                 logger.warn("Error invoking RestManager constructor for class {}: {}", clazz, e.getMessage());
@@ -303,7 +300,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
 
             if (!authenticate(null, null)) {
-                prepareReconnection(null, null);
+                prepareReconnection(getConfiguration().reconnectInterval, "@text/status-bridge-offline", null, null);
                 throw new NetatmoException("Not authenticated");
             }
             connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
@@ -345,29 +342,30 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 exception = new NetatmoException(deserializer.deserialize(ApiError.class, responseBody));
             } catch (NetatmoException e) {
-                exception = new NetatmoException("Error deserializing error: %s".formatted(statusCode.getMessage()));
+                if (statusCode == Code.TOO_MANY_REQUESTS) {
+                    exception = new NetatmoException(statusCode.getMessage());
+                } else {
+                    exception = new NetatmoException(
+                            "Error deserializing error: %s".formatted(statusCode.getMessage()));
+                }
+            }
+            if (statusCode == Code.TOO_MANY_REQUESTS
+                    || exception.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
+                prepareReconnection(API_LIMIT_INTERVAL_S,
+                        "@text/maximum-usage-reached [ \"%d\" ]".formatted(API_LIMIT_INTERVAL_S), null, null);
             }
             throw exception;
-        } catch (NetatmoException e) {
-            if (e.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/maximum-usage-reached");
-                prepareReconnection(null, null);
-            } else if (e.getStatusCode() == ServiceError.INVALID_TOKEN_MISSING) {
-                startAuthorizationFlow();
-            }
-            throw e;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            throw new NetatmoException("Request interrupted");
+            throw new NetatmoException(e, "Request interrupted");
         } catch (TimeoutException | ExecutionException e) {
             if (retryCount > 0) {
-                logger.debug("Request timedout, retry counter: {}", retryCount);
+                logger.debug("Request error, retry counter: {}", retryCount);
                 return executeUri(uri, method, clazz, payload, contentType, retryCount - 1);
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/request-time-out");
-            prepareReconnection(null, null);
-            throw new NetatmoException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
+            prepareReconnection(getConfiguration().reconnectInterval, "@text/request-time-out", null, e.getMessage());
+            throw new NetatmoException("%s: \"%s\"".formatted(e.getClass().getName(), e.getMessage()));
         }
     }
 

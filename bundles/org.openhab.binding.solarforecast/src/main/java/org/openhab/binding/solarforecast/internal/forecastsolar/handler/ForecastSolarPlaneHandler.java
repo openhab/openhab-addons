@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -148,8 +147,8 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                     if (responseStatus == 200) {
                         try {
                             ForecastSolarObject localForecast = new ForecastSolarObject(thing.getUID().getAsString(),
-                                    cr.getContentAsString(), Instant.now(Utils.getClock())
-                                            .plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
+                                    cr.getContentAsString(),
+                                    Utils.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
                             updateStatus(ThingStatus.ONLINE);
                             updateState(CHANNEL_JSON, StringType.valueOf(cr.getContentAsString()));
                             setForecast(localForecast);

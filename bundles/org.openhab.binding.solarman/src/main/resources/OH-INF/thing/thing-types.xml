@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="logger" extensible="true">
+	<thing-type id="logger" extensible="string,number,datetime">
 		<label>Solarman Logger</label>
 		<description>This thing allows communication with Solarman (IGEN-Tech) v5 based solar inverter data loggers over the
 			local network. Compatible with inverters from manufacturers such as Deye, Sofar, Solis, ZCS Azzurro, and KStar.</description>

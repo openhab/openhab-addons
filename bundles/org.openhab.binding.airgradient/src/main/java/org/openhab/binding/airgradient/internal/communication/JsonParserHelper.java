@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,16 +50,7 @@ public class JsonParserHelper {
         }
 
         if (measures != null) {
-            List<@Nullable Measure> nullableMeasuresWithoutNulls = measures.stream().filter(Objects::nonNull).toList();
-            List<Measure> measuresWithoutNulls = new ArrayList<>(nullableMeasuresWithoutNulls.size());
-            for (@Nullable
-            Measure m : nullableMeasuresWithoutNulls) {
-                if (m != null) {
-                    measuresWithoutNulls.add(m);
-                }
-            }
-
-            return measuresWithoutNulls;
+            return measures.stream().filter(Objects::nonNull).toList();
         }
 
         return Collections.emptyList();

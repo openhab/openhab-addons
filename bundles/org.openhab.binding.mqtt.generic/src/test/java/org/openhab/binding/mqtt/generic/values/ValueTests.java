@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -227,6 +227,12 @@ public class ValueTests {
         command = v.parseCommand(new DecimalType(20));
         assertThat(command, is(new QuantityType<>(20, Units.PERCENT)));
         assertThat(v.getMQTTpublishValue(command, null), is("20"));
+    }
+
+    @Test
+    public void numberDimension() {
+        NumberValue v = new NumberValue(null, null, new BigDecimal(10), Units.MIRED);
+        assertThat(v.getItemType(), is("Number:Temperature"));
     }
 
     @Test

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,6 +107,7 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
     }
 
     @Test
+    @Disabled("https://github.com/openhab/openhab-addons/issues/12474")
     public void assertThatThingHandlesREFRESHCommand()
             throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = RefreshType.REFRESH;

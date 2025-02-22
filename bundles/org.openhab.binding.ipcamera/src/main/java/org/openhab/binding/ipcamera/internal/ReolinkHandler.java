@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -553,14 +553,17 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                     + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 0}}}]");
                 } else if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 1,\"channel\": "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 2}}}]");
+                            "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"LightingSchedule\": "
+                                    + "{\"EndHour\": 23,\"EndMin\": 59,\"StartHour\": 0,\"StartMin\": 0},"
+                                    + "\"state\": 1,\"channel\": " + ipCameraHandler.cameraConfig.getNvrChannel()
+                                    + ",\"mode\": 3}}}]");
                 } else if (command instanceof PercentType percentCommand) {
                     int value = percentCommand.toBigDecimal().intValue();
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 1,\"channel\": "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 2,\"bright\": " + value
-                                    + "}}}]");
+                            "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"LightingSchedule\": "
+                                    + "{\"EndHour\": 23,\"EndMin\": 59,\"StartHour\": 0,\"StartMin\": 0},"
+                                    + "\"state\": 1,\"channel\": " + ipCameraHandler.cameraConfig.getNvrChannel()
+                                    + ",\"mode\": 3,\"bright\": " + value + "}}}]");
                 }
                 break;
             case CHANNEL_AUTO_TRACKING:

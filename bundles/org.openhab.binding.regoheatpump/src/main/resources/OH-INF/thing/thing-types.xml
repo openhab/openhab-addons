@@ -320,7 +320,7 @@
 	<channel-type id="lastErrorType">
 		<item-type>String</item-type>
 		<label>Last Error Type</label>
-		<description>Information about the alarm type that occured last</description>
+		<description>Information about the alarm type that occurred last</description>
 		<category>Error</category>
 		<state readOnly="true" pattern="%s">
 			<options>

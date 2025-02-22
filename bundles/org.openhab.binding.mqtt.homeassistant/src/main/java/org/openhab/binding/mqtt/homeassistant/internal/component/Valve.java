@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -110,8 +110,8 @@ public class Valve extends AbstractComponent<Valve.ChannelConfiguration> impleme
     private final ChannelStateUpdateListener channelStateUpdateListener;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Valve(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Valve(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
         this.channelStateUpdateListener = componentConfiguration.getUpdateListener();
 
         AutoUpdatePolicy autoUpdatePolicy = null;

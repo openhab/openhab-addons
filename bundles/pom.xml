@@ -48,6 +48,7 @@
     <module>org.openhab.binding.adorne</module>
     <module>org.openhab.binding.ahawastecollection</module>
     <module>org.openhab.binding.airgradient</module>
+    <module>org.openhab.binding.airparif</module>
     <module>org.openhab.binding.airq</module>
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
@@ -215,7 +216,6 @@
     <module>org.openhab.binding.jablotron</module>
     <module>org.openhab.binding.jeelink</module>
     <module>org.openhab.binding.jellyfin</module>
-    <module>org.openhab.binding.juicenet</module>
     <module>org.openhab.binding.kaleidescape</module>
     <module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.km200</module>
@@ -364,6 +364,7 @@
     <module>org.openhab.binding.salus</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
+    <module>org.openhab.binding.sbus</module>
     <module>org.openhab.binding.semsportal</module>
     <module>org.openhab.binding.senechome</module>
     <module>org.openhab.binding.seneye</module>
@@ -650,7 +651,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.6.1</version>
+        <version>3.8.1</version>
         <executions>
           <execution>
             <id>embed-dependencies</id>

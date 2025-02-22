@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,21 +73,23 @@ public class FanTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("fan"));
 
-        assertChannel(component, Fan.SWITCH_CHANNEL_ID_DEPRECATED, "zigbee2mqtt/fan/state", "zigbee2mqtt/fan/set/state",
+        assertChannel(component, Fan.SWITCH_CHANNEL_ID, "zigbee2mqtt/fan/state", "zigbee2mqtt/fan/set/state",
                 "On/Off State", OnOffValue.class, null);
 
-        publishMessage("zigbee2mqtt/fan/state", "ON_");
-        assertState(component, Fan.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.ON);
-        publishMessage("zigbee2mqtt/fan/state", "ON_");
-        assertState(component, Fan.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.ON);
-        publishMessage("zigbee2mqtt/fan/state", "OFF_");
-        assertState(component, Fan.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.OFF);
-        publishMessage("zigbee2mqtt/fan/state", "ON_");
-        assertState(component, Fan.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.ON);
+        linkAllChannels(component);
 
-        component.getChannel(Fan.SWITCH_CHANNEL_ID_DEPRECATED).getState().publishValue(OnOffType.OFF);
+        publishMessage("zigbee2mqtt/fan/state", "ON_");
+        assertState(component, Fan.SWITCH_CHANNEL_ID, OnOffType.ON);
+        publishMessage("zigbee2mqtt/fan/state", "ON_");
+        assertState(component, Fan.SWITCH_CHANNEL_ID, OnOffType.ON);
+        publishMessage("zigbee2mqtt/fan/state", "OFF_");
+        assertState(component, Fan.SWITCH_CHANNEL_ID, OnOffType.OFF);
+        publishMessage("zigbee2mqtt/fan/state", "ON_");
+        assertState(component, Fan.SWITCH_CHANNEL_ID, OnOffType.ON);
+
+        component.getChannel(Fan.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/fan/set/state", "OFF_");
-        component.getChannel(Fan.SWITCH_CHANNEL_ID_DEPRECATED).getState().publishValue(OnOffType.ON);
+        component.getChannel(Fan.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.ON);
         assertPublished("zigbee2mqtt/fan/set/state", "ON_");
     }
 
@@ -129,6 +131,8 @@ public class FanTests extends AbstractComponentTests {
 
         assertChannel(component, Fan.SPEED_CHANNEL_ID, "zigbee2mqtt/fan", "zigbee2mqtt/fan/set/fan_mode", "Speed",
                 PercentageValue.class, null);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/fan", "{ \"fan_state\": \"OFF\", \"fan_mode\": \"high\"}");
         assertState(component, Fan.SPEED_CHANNEL_ID, PercentType.ZERO);
@@ -187,7 +191,7 @@ public class FanTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("fan"));
 
-        assertChannel(component, Fan.SWITCH_CHANNEL_ID_DEPRECATED, "", "zigbee2mqtt/fan/set/state", "On/Off State",
+        assertChannel(component, Fan.SWITCH_CHANNEL_ID, "", "zigbee2mqtt/fan/set/state", "On/Off State",
                 OnOffValue.class, AutoUpdatePolicy.RECOMMEND);
     }
 
@@ -225,7 +229,7 @@ public class FanTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("fan"));
 
-        assertChannel(component, Fan.SWITCH_CHANNEL_ID_DEPRECATED, "zigbee2mqtt/fan/state", "zigbee2mqtt/fan/set/state",
+        assertChannel(component, Fan.SWITCH_CHANNEL_ID, "zigbee2mqtt/fan/state", "zigbee2mqtt/fan/set/state",
                 "On/Off State", OnOffValue.class, AutoUpdatePolicy.RECOMMEND);
     }
 
@@ -296,7 +300,9 @@ public class FanTests extends AbstractComponentTests {
 
         assertThat(component.channels.size(), is(1));
 
-        component.getChannel(Fan.SWITCH_CHANNEL_ID_DEPRECATED).getState().publishValue(OnOffType.OFF);
+        linkAllChannels(component);
+
+        component.getChannel(Fan.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/fan/set/state", "set to OFF_");
     }
 
@@ -359,6 +365,8 @@ public class FanTests extends AbstractComponentTests {
                 "Direction", TextValue.class);
         assertChannel(component, Fan.PRESET_MODE_CHANNEL_ID, "bedroom_fan/preset/preset_mode_state",
                 "bedroom_fan/preset/preset_mode", "Preset Mode", TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("bedroom_fan/on/state", "true");
         assertState(component, Fan.SPEED_CHANNEL_ID, PercentType.HUNDRED);
