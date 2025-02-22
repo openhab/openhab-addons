@@ -1111,12 +1111,11 @@ public class UpnpRendererHandler extends UpnpHandler {
             UpnpRenderingControlConfiguration config = renderingControlConfiguration;
 
             long volume = Long.valueOf(value);
-            volume = volume * 100 / config.maxvolume;
-
             if (volume < 0) {
                 logger.warn("UPnP device {} received invalid volume value {}", thing.getLabel(), value);
                 return;
             }
+            volume = volume * 100 / config.maxvolume;
 
             String upnpChannel = variable.replace("Volume", "volume").replace("Master", "");
             updateState(upnpChannel, new PercentType((int) volume));
