@@ -305,6 +305,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.setChannelState(CHANNEL_WHITE_LED, OnOffType.ON);
                     }
                     break;
+                case "/api.cgi?cmd=AudioAlarmPlay":
                 case "/cgi-bin/api.cgi?cmd=Snap":
                     break;
                 case "/api.cgi?cmd=GetAiCfg":
@@ -322,7 +323,8 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     }
                     break;
                 default:
-                    if (!cutDownURL.startsWith("/cgi-bin/api.cgi?cmd=Set")) {// ignore responses from all Setxx commands
+                    if (!cutDownURL.startsWith("/cgi-bin/api.cgi?cmd=Set")
+                            || !cutDownURL.startsWith("/api.cgi?cmd=Set")) {// ignore responses from all Setxx commands
                         ipCameraHandler.logger.warn(
                                 "URL {} is not handled currently by the binding, please report this message",
                                 cutDownURL);
