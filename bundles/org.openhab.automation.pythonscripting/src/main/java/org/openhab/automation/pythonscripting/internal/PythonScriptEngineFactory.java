@@ -75,14 +75,19 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     public static final Path PYTHON_WRAPPER_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__wrapper__.py");
     private static final Path PYTHON_INIT_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
 
+    private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
     private static final String CFG_HELPER_ENABLED = "helperEnabled";
-    private static final String CFG_CACHING_ENABLED = "cachingEnabled";
     private static final String CFG_SCOPE_ENABLED = "scopeEnabled";
+    private static final String CFG_CACHING_ENABLED = "cachingEnabled";
     private static final String CFG_JYTHON_EMULATION = "jythonEmulation";
 
+    public static final int INJECTION_DISABLED = 0;
+    public static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 1;
+    public static final int INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS = 2;
+    private int injectionEnabled = 0;
     private boolean helperEnabled = false;
-    private boolean cachingEnabled = false;
     private boolean scopeEnabled = false;
+    private boolean cachingEnabled = false;
     private boolean jythonEmulation = false;
 
     public static final String SCRIPT_TYPE = "application/x-python3";
@@ -127,8 +132,8 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
             return null;
         }
         // return new PythonScriptEngine(pythonDependencyTracker, cachingEnabled, jythonEmulation);
-        return new DebuggingPythonScriptEngine<>(
-                new PythonScriptEngine(pythonDependencyTracker, cachingEnabled, this.scopeEnabled, jythonEmulation));
+        return new DebuggingPythonScriptEngine<>(new PythonScriptEngine(pythonDependencyTracker, injectionEnabled,
+                scopeEnabled, cachingEnabled, jythonEmulation));
     }
 
     @Override
@@ -138,9 +143,11 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
     @Modified
     protected void modified(Map<String, ?> config) {
-        this.helperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_HELPER_ENABLED), Boolean.class, true);
-        this.cachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_CACHING_ENABLED), Boolean.class, true);
         this.scopeEnabled = ConfigParser.valueAsOrElse(config.get(CFG_SCOPE_ENABLED), Boolean.class, true);
+        this.helperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_HELPER_ENABLED), Boolean.class, true);
+        this.injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Integer.class,
+                INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS);
+        this.cachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_CACHING_ENABLED), Boolean.class, true);
         this.jythonEmulation = ConfigParser.valueAsOrElse(config.get(CFG_JYTHON_EMULATION), Boolean.class, false);
     }
 

@@ -143,6 +143,7 @@ public class PythonScriptEngine
     private final ScriptExtensionModuleProvider scriptExtensionModuleProvider;
     private final LifecycleTracker lifecycleTracker;
 
+    private int injectionEnabled = PythonScriptEngineFactory.INJECTION_DISABLED;
     private boolean scopeEnabled = false;
 
     private boolean initialized = false;
@@ -155,14 +156,16 @@ public class PythonScriptEngine
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
      *
      * @param pythonDependencyTracker
-     *
+     * @param injectionEnabled
+     * @param scopeEnabled
+     * @param cachingEnabled
      * @param jythonEmulation
-     * @param jythonEmulation2
      */
-    public PythonScriptEngine(PythonDependencyTracker pythonDependencyTracker, boolean cachingEnabled,
-            boolean scopeEnabled, boolean jythonEmulation) {
+    public PythonScriptEngine(PythonDependencyTracker pythonDependencyTracker, int injectionEnabled,
+            boolean scopeEnabled, boolean cachingEnabled, boolean jythonEmulation) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
 
+        this.injectionEnabled = injectionEnabled;
         this.scopeEnabled = scopeEnabled;
 
         scriptOutputStream = new LogOutputStream(logger, Level.INFO);
@@ -245,6 +248,11 @@ public class PythonScriptEngine
         lock.lock();
         logger.debug("Lock acquired before invocation.");
 
+        // must be initialized every time, because of dynamic used attributes like ruleUID
+        Logger scriptLogger = initScriptLogger(delegate);
+        scriptOutputStream.setLogger(scriptLogger);
+        scriptErrorStream.setLogger(scriptLogger);
+
         if (initialized) {
             return;
         }
@@ -285,17 +293,23 @@ public class PythonScriptEngine
             delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(ScriptExtensionModuleProvider.IMPORT_PROXY_NAME,
                     wrapImportFn);
             try {
-                String content = new String(Files.readAllBytes(PythonScriptEngineFactory.PYTHON_WRAPPER_FILE_PATH));
-                delegate.getPolyglotContext().eval(Source.newBuilder(GraalPythonScriptEngine.LANGUAGE_ID, content,
-                        PythonScriptEngineFactory.PYTHON_WRAPPER_FILE_PATH.toString()).build());
+                String wrapperContent = new String(
+                        Files.readAllBytes(PythonScriptEngineFactory.PYTHON_WRAPPER_FILE_PATH));
+                delegate.getPolyglotContext().eval(Source.newBuilder(GraalPythonScriptEngine.LANGUAGE_ID,
+                        wrapperContent, PythonScriptEngineFactory.PYTHON_WRAPPER_FILE_PATH.toString()).build());
+
+                if (injectionEnabled != PythonScriptEngineFactory.INJECTION_DISABLED
+                        && (ctx.getAttribute("javax.script.filename") == null
+                                || injectionEnabled == PythonScriptEngineFactory.INJECTION_ENABLED_FOR_ALL_SCRIPTS)) {
+                    String injectionContent = "import scope\nfrom openhab import Registry, logger";
+                    delegate.getPolyglotContext().eval(Source
+                            .newBuilder(GraalPythonScriptEngine.LANGUAGE_ID, injectionContent, "<generated>").build());
+                }
 
             } catch (IOException e) {
                 throw new IllegalArgumentException("Failed to generate import wrapper", e);
             }
         }
-        Logger scriptLogger = initScriptLogger(delegate);
-        scriptOutputStream.setLogger(scriptLogger);
-        scriptErrorStream.setLogger(scriptLogger);
 
         initialized = true;
     }

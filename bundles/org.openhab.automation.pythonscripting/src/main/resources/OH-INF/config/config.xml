@@ -18,7 +18,7 @@
 			<default>true</default>
 		</parameter>
 		<parameter name="helperEnabled" type="boolean" required="true">
-			<label>Install openHAB Python helper modules (requires enabled input wrapper)</label>
+			<label>Install openHAB Python helper modules (requires scope module)</label>
 			<description><![CDATA[
 			Deploy and update openHAB Python helper modules like rule, logger, Registry, Timer etc...<br>
 			If disabled, the openHAB Python helper module can be installed manually by copying it to /conf/automation/python/lib/openhab"
@@ -26,6 +26,19 @@
 			<options>
 				<option value="true">Install helper modules and keep it updated (preferred)</option>
 				<option value="false">Do not install helper modules</option>
+			</options>
+			<default>true</default>
+		</parameter>
+		<parameter name="injectionEnabled" type="integer" required="true" min="0" max="2">
+			<label>Inject scope and helper objects into UI based rules (requires helper modules)</label>
+			<description><![CDATA[
+			This injects the scope module and core helper Registry and logger into UI based rules.
+			]]></description>
+			<default>2</default>
+			<options>
+				<option value="2">Injection enabled only for UI and Transformation scripts (preferred)</option>
+				<option value="1">Injection enabled for all scripts</option>
+				<option value="0">Disable helper injection</option>
 			</options>
 			<default>true</default>
 		</parameter>
