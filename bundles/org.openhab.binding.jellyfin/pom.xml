@@ -9,108 +9,43 @@
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
     <version>5.0.0-SNAPSHOT</version>
   </parent>
+
   <properties>
-    <bnd.importpackage>
-      !android.*,!com.android.*,!kotlin.internal.jdk7,!kotlin.internal.jdk8,!kotlin.reflect.*,!okhttp3.*,!okio.*
-    </bnd.importpackage>
-    <jellyfin.sdk>1.4.7</jellyfin.sdk>
+    <openapi-generator.version>7.10.0</openapi-generator.version>
   </properties>
+
   <artifactId>org.openhab.binding.jellyfin</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Jellyfin Binding</name>
-  <dependencies>
-    <dependency>
-      <groupId>org.jellyfin.sdk</groupId>
-      <artifactId>jellyfin-core-jvm</artifactId>
-      <version>${jellyfin.sdk}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jellyfin.sdk</groupId>
-      <artifactId>jellyfin-api-jvm</artifactId>
-      <version>${jellyfin.sdk}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jellyfin.sdk</groupId>
-      <artifactId>jellyfin-model-jvm</artifactId>
-      <version>${jellyfin.sdk}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-client-core-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-client-cio-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-http-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-http-cio-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-network-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-utils-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-io-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-network-tls-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlin</groupId>
-      <artifactId>kotlin-stdlib</artifactId>
-      <version>${kotlin.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlinx</groupId>
-      <artifactId>kotlinx-coroutines-core-jvm</artifactId>
-      <version>1.8.0</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlinx</groupId>
-      <artifactId>kotlinx-serialization-core-jvm</artifactId>
-      <version>1.6.3</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlinx</groupId>
-      <artifactId>kotlinx-serialization-json-jvm</artifactId>
-      <version>1.6.3</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.github.microutils</groupId>
-      <artifactId>kotlin-logging-jvm</artifactId>
-      <version>3.0.5</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
+
+<!--
+***
+* 🐛 [\#18596 - [BUG] [JAVA] ClassCastException...](https://github.com/OpenAPITools/openapi-generator/issues/18596)
+*
+* ➡️ Integration into maven would depend on solving this issue first.
+***
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>${openapi-generator.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/resources/jellyfin-openapi-10.10.3.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <configOptions>
+                <sourceFolder>src/gen/java/main</sourceFolder>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+-->
 </project>
