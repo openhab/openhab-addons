@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -52,8 +52,8 @@
     <dependency>
       <groupId>org.jacoco</groupId>
       <artifactId>org.jacoco.agent</artifactId>
-      <classifier>runtime</classifier>
       <version>0.8.12</version>
+      <classifier>runtime</classifier>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -74,8 +74,7 @@ Require-Capability:
       cardinality:=multiple
 SPI-Provider: tuwien.auto.calimero.serial.spi.SerialCom
 SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[tuwien.auto.calimero.serial.spi.SerialCom])
-            ]]>
-            </bnd>
+            ]]></bnd>
           </configuration>
         </plugin>
       </plugins>
@@ -109,17 +108,17 @@ SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[tuwien.auto.calimero.
           </execution>
           <execution>
             <id>default-restore-instrumented-classes</id>
-            <phase>test</phase>
             <goals>
               <goal>restore-instrumented-classes</goal>
             </goals>
+            <phase>test</phase>
           </execution>
           <execution>
             <id>default-report</id>
-            <phase>test</phase>
             <goals>
               <goal>report</goal>
             </goals>
+            <phase>test</phase>
           </execution>
           <execution>
             <id>default-check</id>
