@@ -194,7 +194,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
 			<tag>Control</tag>
-			<tag>Wind</tag>
+			<tag>Level</tag>
 		</tags>
 	</channel-type>
 
@@ -493,7 +493,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
 			<tag>Control</tag>
-			<tag>Wind</tag>
+			<tag>Level</tag>
 		</tags>
 	</channel-type>
 
