@@ -303,7 +303,7 @@
 		<vendor>Insteon</vendor>
 		<device-type>DimmableLightingControl_SwitchLinc</device-type>
 	</product>
-	<product devCat="0x01" subCat="0x1E">
+	<product devCat="0x01" subCat="0x1E" firstRecord="0x00FF">
 		<description>ICON Dimmer Switch</description>
 		<model>2876DB</model>
 		<vendor>Insteon</vendor>
@@ -689,13 +689,13 @@
 		<vendor>Insteon</vendor>
 		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
 	</product>
-	<product devCat="0x02" subCat="0x16">
+	<product devCat="0x02" subCat="0x16" firstRecord="0x00FF">
 		<description>ICON On/Off Switch</description>
 		<model>2876SB</model>
 		<vendor>Insteon</vendor>
 		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
 	</product>
-	<product devCat="0x02" subCat="0x17">
+	<product devCat="0x02" subCat="0x17" firstRecord="0x00FF">
 		<description>ICON Appliance Module</description>
 		<model>2856S3B</model>
 		<vendor>Insteon</vendor>
