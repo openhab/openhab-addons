@@ -100,7 +100,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
         modified(config);
 
         if (this.helperEnabled) {
-            initOpenhabLib();
+            initHelperLib();
         }
     }
 
@@ -144,7 +144,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
         this.jythonEmulation = ConfigParser.valueAsOrElse(config.get(CFG_JYTHON_EMULATION), Boolean.class, false);
     }
 
-    private void initOpenhabLib() {
+    private void initHelperLib() {
         try {
             String ressourceLibPath = PYTHON_OPENHAB_LIB_PATH.toString()
                     .substring(PYTHON_DEFAULT_PATH.toString().length()) + "/";
