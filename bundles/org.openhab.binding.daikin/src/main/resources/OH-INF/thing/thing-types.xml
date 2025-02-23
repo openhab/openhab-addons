@@ -158,6 +158,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
 			<tag>Control</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 
