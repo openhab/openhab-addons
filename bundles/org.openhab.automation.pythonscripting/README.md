@@ -52,6 +52,11 @@ class Test:
         self.logger.info("Rule was triggered")
 ```
 
+::: tip Note
+By default, the scope, Registry and logger is automatically imported for UI based rules
+:::
+ 
+
 ## `PY3` Transformation
 
 openHAB provides several [data transformation services](https://www.openhab.org/addons/#transform) as well as the script transformations, that are available from the framework and need no additional installation.
@@ -76,6 +81,10 @@ Use Python Scripting as script transformation by:
 
 Simple transformations can aso be given as an inline script: `PY3(|...)`, e.g. `PY3(|"String has " + input.length + "characters")`.
 It should start with the `|` character, quotes within the script may need to be escaped with a backslash `\` when used with another quoted string as in text configurations.
+
+::: tip Note
+By default, the scope, Registry and logger is automatically imported for `PY3` Transformation scripts
+:::
 
 ## Examples 
 
