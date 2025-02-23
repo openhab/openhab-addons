@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tellstick.internal.TellstickBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -34,6 +35,7 @@ import org.tellstick.device.TellstickController;
  * @author Jarle Hjortland - Initial contribution
  *
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.tellstick")
 public class TellstickBridgeDiscovery extends AbstractDiscoveryService {
 

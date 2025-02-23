@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tellstick.internal.live.xml;
+package org.openhab.binding.tellstick.internal.live.dto;
 
 /**
  * This enum is used to describe the value types in the Live API from telldus.

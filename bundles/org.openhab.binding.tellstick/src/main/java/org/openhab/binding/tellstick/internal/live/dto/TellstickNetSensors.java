@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tellstick.internal.live.xml;
+package org.openhab.binding.tellstick.internal.live.dto;
+
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,15 +22,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Jarle Hjortland - Initial contribution
  */
-@XmlRootElement(name = "device")
-public class TelldusLiveResponse {
-    @XmlElement
-    public String status;
-    @XmlElement
-    public String error;
+@XmlRootElement(name = "sensors")
+public class TellstickNetSensors {
 
-    @Override
-    public String toString() {
-        return "TelldusLiveResponse [status=" + status + ", error=" + error + "]";
+    List<TellstickNetSensor> sensors;
+
+    @XmlElement(name = "sensor")
+    public List<TellstickNetSensor> getSensors() {
+        return sensors;
+    }
+
+    public void setSensors(List<TellstickNetSensor> devices) {
+        this.sensors = devices;
     }
 }

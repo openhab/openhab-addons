@@ -37,11 +37,12 @@ import org.asynchttpclient.Response;
 import org.asynchttpclient.oauth.ConsumerKey;
 import org.asynchttpclient.oauth.OAuthSignatureCalculator;
 import org.asynchttpclient.oauth.RequestToken;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tellstick.internal.TelldusBindingException;
 import org.openhab.binding.tellstick.internal.handler.TelldusDeviceController;
-import org.openhab.binding.tellstick.internal.live.xml.TelldusLiveResponse;
-import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice;
+import org.openhab.binding.tellstick.internal.live.dto.TelldusLiveResponse;
+import org.openhab.binding.tellstick.internal.live.dto.TellstickNetDevice;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -65,12 +66,13 @@ import org.tellstick.device.iface.SwitchableDevice;
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public class TelldusLiveDeviceController implements DeviceChangeListener, SensorListener, TelldusDeviceController {
     private final Logger logger = LoggerFactory.getLogger(TelldusLiveDeviceController.class);
     private long lastSend = 0;
     public static final long DEFAULT_INTERVAL_BETWEEN_SEND = 250;
     private static final int REQUEST_TIMEOUT_MS = 15000;
-    private AsyncHttpClient client;
+    private @Nullable AsyncHttpClient client;
     static final String HTTP_API_TELLDUS_COM_XML = "http://pa-api.telldus.com/xml/";
     static final String HTTP_TELLDUS_CLIENTS = HTTP_API_TELLDUS_COM_XML + "clients/list";
     static final String HTTP_TELLDUS_DEVICES = HTTP_API_TELLDUS_COM_XML + "devices/list?supportedMethods=19";
@@ -93,10 +95,13 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
 
     @Override
     public void dispose() {
-        try {
-            client.close();
-        } catch (Exception e) {
-            logger.debug("Failed to close client", e);
+        AsyncHttpClient client = this.client;
+        if (client != null) {
+            try {
+                client.close();
+            } catch (Exception e) {
+                logger.debug("Failed to close client", e);
+            }
         }
     }
 
@@ -104,9 +109,9 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
         ConsumerKey consumer = new ConsumerKey(publicKey, privateKey);
         RequestToken user = new RequestToken(token, tokenSecret);
         OAuthSignatureCalculator calc = new OAuthSignatureCalculator(consumer, user);
-        this.client = new DefaultAsyncHttpClient(createAsyncHttpClientConfig());
+        AsyncHttpClient client = this.client = new DefaultAsyncHttpClient(createAsyncHttpClientConfig());
+        client.setSignatureCalculator(calc);
         try {
-            this.client.setSignatureCalculator(calc);
             Response response = client.prepareGet(HTTP_TELLDUS_CLIENTS).execute().get();
             logger.debug("Response {} statusText {}", response.getResponseBody(), response.getStatusText());
         } catch (InterruptedException | ExecutionException e) {
@@ -217,7 +222,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     }
 
     @Override
-    public State calcState(Device dev) {
+    public @Nullable State calcState(Device dev) {
         TellstickNetDevice device = (TellstickNetDevice) dev;
         State st = null;
         if (device.getOnline()) {
@@ -274,12 +279,12 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     }
 
     @Override
-    public void onRequest(TellstickSensorEvent newDevices) {
+    public void onRequest(@NonNullByDefault({}) TellstickSensorEvent newDevices) {
         setLastSend(newDevices.getTimestamp());
     }
 
     @Override
-    public void onRequest(TellstickDeviceEvent newDevices) {
+    public void onRequest(@NonNullByDefault({}) TellstickDeviceEvent newDevices) {
         setLastSend(newDevices.getTimestamp());
     }
 
