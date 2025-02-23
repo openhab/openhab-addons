@@ -143,7 +143,7 @@ This binding has its own IconProvider and makes available the following list of 
 | oh:airparif:olive      |   Yes   | ![](doc/images/olive.svg) |
 | oh:airparif:plane      |   Yes   | ![](doc/images/plane.svg) |
 | oh:airparif:plantain   |   Yes   | ![](doc/images/plantain.svg) |
-| oh:airparif:pollen     |   Yes   | ![](doc/images/pollen.svg) |
+| oh:airparif:pollen     |   Yes   | x |
 | oh:airparif:poplar     |   Yes   | ![](doc/images/poplar.svg) |
 | oh:airparif:ragweed    |   Yes   | ![](doc/images/ragweed.svg) |
 | oh:airparif:rumex      |   Yes   | ![](doc/images/rumex.svg) |
