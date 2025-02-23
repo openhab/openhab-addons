@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -24,7 +24,8 @@
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-core</artifactId>
       <version>${micrometer.version}</version>
-      <scope>provided</scope><!-- is already included in the openhab.core.io.monitor dependency -->
+      <scope>provided</scope>
+      <!-- is already included in the openhab.core.io.monitor dependency -->
     </dependency>
     <dependency>
       <groupId>org.hdrhistogram</groupId>
@@ -39,8 +40,8 @@
       <scope>compile</scope>
       <exclusions>
         <exclusion>
-          <artifactId>HdrHistogram</artifactId>
           <groupId>org.hdrhistogram</groupId>
+          <artifactId>HdrHistogram</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -81,8 +82,8 @@
       <scope>compile</scope>
       <exclusions>
         <exclusion>
-          <artifactId>slf4j-api</artifactId>
           <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

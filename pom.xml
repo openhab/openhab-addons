@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -80,7 +80,7 @@
     <kotlin.version>1.9.23</kotlin.version>
     <sat.version>0.17.0</sat.version>
     <slf4j.version>2.0.12</slf4j.version>
-    <spotless.version>2.43.0</spotless.version>
+    <spotless.version>2.44.3</spotless.version>
     <!-- Eclipse Java formatter version 4.26+ does not check test files -->
     <spotless.eclipse.version>4.25</spotless.eclipse.version>
     <spotless.eclipse.wtp.version>4.21.0</spotless.eclipse.wtp.version>
@@ -115,8 +115,7 @@ Import-Package: \\
 -fixupmessages: \\
   'Unused Import-Package instructions';is:=ignore,\\
   'Unused Export-Package instructions';is:=ignore,\\
-  ${bnd.fixupmessages}]]>
-    </oh.bndDefaults>
+  ${bnd.fixupmessages}]]></oh.bndDefaults>
   </properties>
 
   <dependencyManagement>
@@ -414,10 +413,8 @@ Import-Package: \\
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.5.2</version>
           <configuration>
-            <argLine>
-              --add-opens java.base/java.lang=ALL-UNNAMED
-              --add-opens java.base/java.util=ALL-UNNAMED
-            </argLine>
+            <argLine>--add-opens java.base/java.lang=ALL-UNNAMED
+              --add-opens java.base/java.util=ALL-UNNAMED</argLine>
             <systemPropertyVariables>
               <junit.jupiter.execution.timeout.default>15 m</junit.jupiter.execution.timeout.default>
               <openhab.conf>${project.build.directory}/openhab/conf</openhab.conf>
@@ -524,6 +521,15 @@ Import-Package: \\
               </importOrder>
               <endWithNewline/>
             </java>
+            <pom>
+              <sortPom>
+                <expandEmptyElements>false</expandEmptyElements>
+                <indentAttribute>schemaLocation</indentAttribute>
+                <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
+                <sortDependencyExclusions/>
+                <sortDependencyManagement/>
+              </sortPom>
+            </pom>
             <formats>
               <format>
                 <!-- *.xml -->
@@ -558,21 +564,6 @@ Import-Package: \\
                   <type>XML</type>
                   <files>
                     <file>openhab_wst_feature_file.prefs</file>
-                  </files>
-                  <version>${spotless.eclipse.wtp.version}</version>
-                </eclipseWtp>
-                <trimTrailingWhitespace/>
-                <endWithNewline/>
-              </format>
-              <format>
-                <!-- pom.xml -->
-                <includes>
-                  <include>pom.xml</include>
-                </includes>
-                <eclipseWtp>
-                  <type>XML</type>
-                  <files>
-                    <file>openhab_wst_pom_file.prefs</file>
                   </files>
                   <version>${spotless.eclipse.wtp.version}</version>
                 </eclipseWtp>
