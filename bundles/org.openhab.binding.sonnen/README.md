@@ -65,3 +65,4 @@ Switch FlowConsumptionBattery { channel="sonnen:sonnenbattery:myBattery:flowCons
 The binding was successfully tested with the following sonnen battery:
 
 - sonnnen eco 8.0 SW Version: 1.6.10.1221979
+- sonnnen eco 9.43 SW Version: 1.15.6.3277222
