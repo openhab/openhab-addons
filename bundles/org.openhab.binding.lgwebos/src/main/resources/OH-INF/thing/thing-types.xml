@@ -39,6 +39,7 @@
 		<description>Current Channel</description>
 		<tags>
 			<tag>Control</tag>
+			<tag>Channel</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="toastType">
@@ -57,6 +58,7 @@
 		<description>Start application and monitor running applications.</description>
 		<tags>
 			<tag>Control</tag>
+			<tag>Application</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="rcButtonType">
