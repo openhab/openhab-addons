@@ -94,11 +94,11 @@
 		<label>Power</label>
 		<description>Power for the AC unit</description>
 		<category>Switch</category>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Power</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="acunit-settemp">
@@ -106,12 +106,12 @@
 		<label>Set Point</label>
 		<description>The set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" step="0.5"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
+		<state pattern="%.1f %unit%" step="0.5"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="acunit-indoortemp">
@@ -119,11 +119,11 @@
 		<label>Indoor Temperature</label>
 		<description>The indoor temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
 	<channel-type id="acunit-outdoortemp">
@@ -146,6 +146,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Current mode of the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">auto</option>
@@ -156,10 +160,6 @@
 			</options>
 		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
-		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="acunit-homekitmode">
@@ -181,6 +181,10 @@
 		<item-type>String</item-type>
 		<label>Fan</label>
 		<description>Current fan speed setting of the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">auto</option>
@@ -193,10 +197,6 @@
 			</options>
 		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
-		<tags>
-			<tag>Control</tag>
-			<tag>Level</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="acunit-fandir">
@@ -491,99 +491,99 @@
 		<item-type>String</item-type>
 		<label>Fan</label>
 		<description>Current fan speed setting of the AC unit</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
 			<tag>Control</tag>
 			<tag>Level</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone1">
 		<item-type>Switch</item-type>
 		<label>Zone 1</label>
 		<description>Zone 1 for the AC unit</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Wind</tag>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone2">
 		<item-type>Switch</item-type>
 		<label>Zone 2</label>
 		<description>Zone 2 for the AC unit</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Wind</tag>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone3">
 		<item-type>Switch</item-type>
 		<label>Zone 3</label>
 		<description>Zone 3 for the AC unit</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Wind</tag>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone4">
 		<item-type>Switch</item-type>
 		<label>Zone 4</label>
 		<description>Zone 4 for the AC unit</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Wind</tag>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone5">
 		<item-type>Switch</item-type>
 		<label>Zone 5</label>
 		<description>Zone 5 for the AC unit</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Wind</tag>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone6">
 		<item-type>Switch</item-type>
 		<label>Zone 6</label>
 		<description>Zone 6 for the AC unit</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Wind</tag>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone7">
 		<item-type>Switch</item-type>
 		<label>Zone 7</label>
 		<description>Zone 7 for the AC unit</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Wind</tag>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-zone8">
 		<item-type>Switch</item-type>
 		<label>Zone 8</label>
 		<description>Zone 8 for the AC unit</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Wind</tag>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>
