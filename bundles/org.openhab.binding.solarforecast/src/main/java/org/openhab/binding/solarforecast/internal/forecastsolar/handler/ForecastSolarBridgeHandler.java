@@ -135,9 +135,9 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         if (planes.isEmpty()) {
             return;
         }
-        if (calmDownEnd.isAfter(Instant.now(Utils.getClock()))) {
+        if (calmDownEnd.isAfter(Utils.now())) {
             // wait until calm down time is expired
-            long minutes = Duration.between(Instant.now(Utils.getClock()), calmDownEnd).toMinutes();
+            long minutes = Duration.between(Utils.now(), calmDownEnd).toMinutes();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/solarforecast.site.status.calmdown [\"" + minutes + "\"]");
             return;
@@ -246,6 +246,6 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     }
 
     public void calmDown() {
-        calmDownEnd = Instant.now(Utils.getClock()).plus(CALM_DOWN_TIME_MINUTES, ChronoUnit.MINUTES);
+        calmDownEnd = Utils.now().plus(CALM_DOWN_TIME_MINUTES, ChronoUnit.MINUTES);
     }
 }

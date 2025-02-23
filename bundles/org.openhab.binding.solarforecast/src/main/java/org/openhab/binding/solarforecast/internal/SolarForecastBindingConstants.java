@@ -22,11 +22,13 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Constant for count channel
+ *
  */
 @NonNullByDefault
 public class SolarForecastBindingConstants {
 
-    private static final String BINDING_ID = "solarforecast";
+    public static final String BINDING_ID = "solarforecast";
 
     // Things
     public static final ThingTypeUID FORECAST_SOLAR_SITE = new ThingTypeUID(BINDING_ID, "fs-site");
@@ -40,6 +42,7 @@ public class SolarForecastBindingConstants {
     public static final String GROUP_AVERAGE = "average";
     public static final String GROUP_OPTIMISTIC = "optimistic";
     public static final String GROUP_PESSIMISTIC = "pessimistic";
+    public static final String GROUP_UPDATE = "update";
     public static final String GROUP_RAW = "raw";
 
     // Channels
@@ -50,6 +53,8 @@ public class SolarForecastBindingConstants {
     public static final String CHANNEL_ENERGY_REMAIN = "energy-remain";
     public static final String CHANNEL_ENERGY_TODAY = "energy-today";
     public static final String CHANNEL_JSON = "json";
+    public static final String CHANNEL_API_COUNT = "api-count";
+    public static final String CHANNEL_LATEST_UPDATE = "latest-update";
 
     // Other
     public static final int REFRESH_ACTUAL_INTERVAL = 1;

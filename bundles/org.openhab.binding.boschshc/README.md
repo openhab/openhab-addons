@@ -121,7 +121,7 @@ Detects open windows and doors.
 
 Detects open windows and doors and features an additional button.
 
-**Thing Type ID**: `window-contact`
+**Thing Type ID**: `window-contact-2`
 
 | Channel Type ID | Item Type | Writable | Description                  |
 | ----------------| --------- | :------: | ---------------------------- |
@@ -130,6 +130,23 @@ Detects open windows and doors and features an additional button.
 | low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 | bypass          | Switch    | &#9744;  | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined. |
 | signal-strength | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+
+### Door/Window Contact II Plus
+
+Detects open windows and doors, provides a configurable button and a vibration sensor.
+
+**Thing Type ID**: `window-contact-2-plus`
+
+| Channel Type ID              | Item Type | Writable | Description                                                                                                                                                                                                                 |
+| -----------------------------| --------- | :------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| contact                      | Contact   | &#9744;  | Contact state of the device.                                                                                                                                                                                                |
+| battery-level                | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery                  | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| bypass                       | Switch    | &#9744;  | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined.                                                                                    |
+| signal-strength              | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
+| vibration-sensor-enabled     | Switch    | &#9745;  | Channel to enable or disable the vibration sensor.                                                                                                                                                                          |
+| vibration-sensor-sensitivity | String    | &#9745;  | The sensitivity of the vibration sensor. Possible values are `VERY_HIGH`, `HIGH`, `MEDIUM`, `LOW` and `VERY_LOW`.                                                                                                           |
+| vibration-sensor-state       | String    | &#9744;  | Indicates whether vibrations were detected by the sensor. Possible values are `NO_VIBRATION`, `VIBRATION_DETECTED` and `UNKNOWN`.                                                                                           |
 
 ### Light Control II
 

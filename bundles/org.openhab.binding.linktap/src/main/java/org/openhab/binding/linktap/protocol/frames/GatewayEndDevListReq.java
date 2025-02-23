@@ -29,7 +29,7 @@ import com.google.gson.annotations.SerializedName;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-public class GatewayEndDevListReq extends TLGatewayFrame {
+public class GatewayEndDevListReq extends GatewayDeviceResponse {
 
     protected static final Pattern FULL_DEVICE_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{20}");
 

@@ -44,19 +44,21 @@ public class DynamoDBQueryUtils {
      * @param dtoClass dto class
      * @param expectedTableSchema table schema to query against
      * @param item item corresponding to filter
+     * @param alias corresponding to item
      * @param filter filter for the query
      * @return DynamoDBQueryExpression corresponding to the given FilterCriteria
      * @param unitProvider the unit provider for number with dimension
      * @throws IllegalArgumentException when schema is not fully resolved
      */
     public static QueryEnhancedRequest createQueryExpression(Class<? extends DynamoDBItem<?>> dtoClass,
-            ExpectedTableSchema expectedTableSchema, Item item, FilterCriteria filter, UnitProvider unitProvider) {
+            ExpectedTableSchema expectedTableSchema, Item item, @Nullable String alias, FilterCriteria filter,
+            UnitProvider unitProvider) {
         if (!expectedTableSchema.isFullyResolved()) {
             throw new IllegalArgumentException("Schema not resolved");
         }
         QueryEnhancedRequest.Builder queryBuilder = QueryEnhancedRequest.builder()
                 .scanIndexForward(filter.getOrdering() == Ordering.ASCENDING);
-        String itemName = filter.getItemName();
+        String itemName = alias != null ? alias : filter.getItemName();
         if (itemName == null) {
             throw new IllegalArgumentException("Item name not set");
         }

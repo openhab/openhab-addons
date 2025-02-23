@@ -14,7 +14,7 @@ package org.openhab.binding.tellstick.internal.local.dto;
 
 import java.util.List;
 
-import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
+import org.openhab.binding.tellstick.internal.live.dto.LiveDataType;
 import org.tellstick.device.iface.Device;
 import org.tellstick.enums.DeviceType;
 
