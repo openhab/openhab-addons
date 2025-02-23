@@ -10,29 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tellstick.internal.live.xml;
+package org.openhab.binding.tellstick.internal.live.dto;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Class used to deserialize XML from Telldus Live.
  *
  * @author Jarle Hjortland - Initial contribution
  */
-@XmlRootElement(name = "sensors")
-public class TellstickNetSensors {
-
-    List<TellstickNetSensor> sensors;
-
-    @XmlElement(name = "sensor")
-    public List<TellstickNetSensor> getSensors() {
-        return sensors;
+public class NameToDataType extends XmlAdapter<String, LiveDataType> {
+    @Override
+    public LiveDataType unmarshal(String v) throws Exception {
+        return LiveDataType.fromName(v);
     }
 
-    public void setSensors(List<TellstickNetSensor> devices) {
-        this.sensors = devices;
+    @Override
+    public String marshal(LiveDataType v) throws Exception {
+        return v.toString();
     }
 }

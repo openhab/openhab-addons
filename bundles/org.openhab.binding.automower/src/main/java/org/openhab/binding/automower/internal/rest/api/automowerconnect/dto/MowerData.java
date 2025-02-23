@@ -13,6 +13,7 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Markus Pfleger - Initial contribution
@@ -20,11 +21,16 @@ import java.util.ArrayList;
 public class MowerData {
     private System system;
     private Battery battery;
+    private Capabilities capabilities;
     private MowerApp mower;
     private Calendar calendar;
     private Planner planner;
     private Metadata metadata;
-    private ArrayList<Position> positions = new ArrayList<>();
+    private List<Position> positions = new ArrayList<>();
+    private Settings settings;
+    private Statistics statistics;
+    private StayOutZones stayOutZones;
+    private List<WorkArea> workAreas = new ArrayList<>();
 
     public System getSystem() {
         return system;
@@ -40,6 +46,14 @@ public class MowerData {
 
     public void setBattery(Battery battery) {
         this.battery = battery;
+    }
+
+    public Capabilities getCapabilities() {
+        return capabilities;
+    }
+
+    public void setCapabilities(Capabilities capabilities) {
+        this.capabilities = capabilities;
     }
 
     public MowerApp getMower() {
@@ -78,11 +92,43 @@ public class MowerData {
         this.positions.add(position);
     }
 
-    public ArrayList<Position> getPositions() {
+    public List<Position> getPositions() {
         return this.positions;
     }
 
     public Position getLastPosition() {
         return !this.positions.isEmpty() ? this.positions.get(0) : null;
+    }
+
+    public Settings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(Settings settings) {
+        this.settings = settings;
+    }
+
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
+    public void setStatistics(Statistics statistics) {
+        this.statistics = statistics;
+    }
+
+    public StayOutZones getStayOutZones() {
+        return stayOutZones;
+    }
+
+    public void setStayOutZones(StayOutZones stayOutZones) {
+        this.stayOutZones = stayOutZones;
+    }
+
+    public List<WorkArea> getWorkAreas() {
+        return workAreas;
+    }
+
+    public void setWorkAreas(List<WorkArea> workAreas) {
+        this.workAreas = workAreas;
     }
 }
