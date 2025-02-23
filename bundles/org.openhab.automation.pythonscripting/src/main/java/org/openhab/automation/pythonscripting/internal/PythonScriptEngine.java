@@ -285,9 +285,9 @@ public class PythonScriptEngine
             delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(ScriptExtensionModuleProvider.IMPORT_PROXY_NAME,
                     wrapImportFn);
             try {
-                String content = new String(Files.readAllBytes(PythonScriptEngineFactory.PYTHON_WRAPPER_LIB_PATH));
+                String content = new String(Files.readAllBytes(PythonScriptEngineFactory.PYTHON_WRAPPER_FILE_PATH));
                 delegate.getPolyglotContext().eval(Source.newBuilder(GraalPythonScriptEngine.LANGUAGE_ID, content,
-                        PythonScriptEngineFactory.PYTHON_WRAPPER_LIB_PATH.toString()).build());
+                        PythonScriptEngineFactory.PYTHON_WRAPPER_FILE_PATH.toString()).build());
 
             } catch (IOException e) {
                 throw new IllegalArgumentException("Failed to generate import wrapper", e);

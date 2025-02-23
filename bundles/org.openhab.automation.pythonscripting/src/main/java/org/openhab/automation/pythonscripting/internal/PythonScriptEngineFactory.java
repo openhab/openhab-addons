@@ -14,25 +14,25 @@ package org.openhab.automation.pythonscripting.internal;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.module.ModuleDescriptor.Version;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
 
@@ -45,6 +45,7 @@ import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.core.ConfigurableService;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -68,8 +69,11 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
     public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
     public static final Path PYTHON_LIB_PATH = PYTHON_DEFAULT_PATH.resolve("lib");
-    public static final Path PYTHON_OPENHAB_LIB_PATH = PYTHON_LIB_PATH.resolve("openhab");
-    public static final Path PYTHON_WRAPPER_LIB_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__wrapper__.py");
+
+    private static final Path PYTHON_OPENHAB_LIB_PATH = PYTHON_LIB_PATH.resolve("openhab");
+
+    public static final Path PYTHON_WRAPPER_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__wrapper__.py");
+    private static final Path PYTHON_INIT_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
 
     private static final String CFG_HELPER_ENABLED = "helperEnabled";
     private static final String CFG_CACHING_ENABLED = "cachingEnabled";
@@ -141,86 +145,77 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     }
 
     private void initOpenhabLib() {
-        Path versionFilePath = PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
+        try {
+            String ressourceLibPath = PYTHON_OPENHAB_LIB_PATH.toString()
+                    .substring(PYTHON_DEFAULT_PATH.toString().length()) + "/";
 
-        List<String> resourceFiles = Arrays.asList("__init__.py", "__wrapper__.py", "actions.py", "helper.py",
-                "jsr223.py", "services.py", "triggers.py");
+            Enumeration<URL> resourceFiles = FrameworkUtil.getBundle(PythonScriptEngineFactory.class)
+                    .findEntries(ressourceLibPath, "*.py", true);
 
-        if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
-            if (Files.exists(versionFilePath)) {
+            if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)
+                    && Files.list(PYTHON_OPENHAB_LIB_PATH).count() > 0) {
                 Pattern pattern = Pattern.compile("__version__\\s*=\\s*\"([0-9]+\\.[0-9]+\\.[0-9]+)\"",
                         Pattern.CASE_INSENSITIVE);
 
                 Version includedVersion = null;
-                try {
-                    String _includedVersion = getResourceFileAsString("/lib/openhab/__init__.py");
-                    Matcher includedMatcher = pattern.matcher(_includedVersion);
-                    if (includedMatcher.find()) {
-                        includedVersion = Version.parse(includedMatcher.group(1));
+                try (InputStream is = PythonScriptEngineFactory.class.getClassLoader()
+                        .getResourceAsStream(ressourceLibPath + PYTHON_INIT_FILE_PATH.getFileName().toString())) {
+                    try (InputStreamReader isr = new InputStreamReader(is);
+                            BufferedReader reader = new BufferedReader(isr)) {
+                        String _includedVersion = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+                        Matcher includedMatcher = pattern.matcher(_includedVersion);
+                        if (includedMatcher.find()) {
+                            includedVersion = Version.parse(includedMatcher.group(1));
+                        }
                     }
-
-                } catch (IOException e) {
                 }
 
                 Version currentVersion = null;
-                try {
-                    String _currentVersion = Files.readString(versionFilePath, StandardCharsets.UTF_8);
-                    Matcher currentMatcher = pattern.matcher(_currentVersion);
-                    if (currentMatcher.find()) {
-                        currentVersion = Version.parse(currentMatcher.group(1));
-                    }
-                } catch (IOException e) {
+                String _currentVersion = Files.readString(PYTHON_INIT_FILE_PATH, StandardCharsets.UTF_8);
+                Matcher currentMatcher = pattern.matcher(_currentVersion);
+                if (currentMatcher.find()) {
+                    currentVersion = Version.parse(currentMatcher.group(1));
                 }
 
                 if (currentVersion == null) {
-                    logger.warn("Custom lib detected. Skip installing helper libs.");
+                    logger.warn("Unable to detect installed helper lib version. Skip installing helper libs.");
                     return;
                 } else if (includedVersion == null) {
-                    logger.error("Unable to detect helper lib version. Skip installing helper libs.");
+                    logger.error("Unable to detect provided helper lib version. Skip installing helper libs.");
                     return;
                 } else if (currentVersion.compareTo(includedVersion) >= 0) {
                     logger.info("Newest helper lib version is deployed.");
                     return;
                 }
-            } else {
-                logger.warn("Custom lib detected. Skip installing helper libs.");
-                return;
             }
-        }
 
-        logger.info("Deploy helper libs into {}.", PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH.toString());
+            logger.info("Deploy helper libs into {}.", PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH.toString());
 
-        try {
             if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
-                Files.walkFileTree(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, @Nullable BasicFileAttributes attrs)
-                            throws IOException {
-                        Files.delete(file);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    public FileVisitResult postVisitDirectory(Path dir, @Nullable IOException exc) throws IOException {
-                        Files.delete(dir);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
+                try (Stream<Path> paths = Files.walk(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
+                    paths.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+                }
             }
 
             Files.createDirectories(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH,
                     PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x")));
 
-            for (String resourceFile : resourceFiles) {
-                InputStream is = PythonScriptEngineFactory.class.getClassLoader()
-                        .getResourceAsStream("/lib/openhab/" + resourceFile);
-                Path target = PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH.resolve(resourceFile);
-                Files.copy(is, target);
-                Files.setPosixFilePermissions(target, PosixFilePermissions.fromString("rw-r--r--"));
+            while (resourceFiles.hasMoreElements()) {
+                URL resourceFile = resourceFiles.nextElement();
+                String resourcePath = resourceFile.getPath();
+
+                try (InputStream is = PythonScriptEngineFactory.class.getClassLoader()
+                        .getResourceAsStream(resourcePath)) {
+
+                    Path target = PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH
+                            .resolve(resourcePath.substring(resourcePath.lastIndexOf('/') + 1));
+
+                    Files.copy(is, target);
+                    Files.setPosixFilePermissions(target, PosixFilePermissions.fromString("rw-r--r--"));
+                }
             }
-        } catch (IOException e) {
-            logger.warn("Unable to deploy helper lib.", e);
-            return;
+        } catch (Exception e) {
+            logger.error("Exception during helper lib initialisation", e);
         }
     }
 
@@ -232,16 +227,5 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
             }
         }
         return directoryToBeDeleted.delete();
-    }
-
-    private @Nullable String getResourceFileAsString(String fileName) throws IOException {
-        try (InputStream is = PythonScriptEngineFactory.class.getClassLoader().getResourceAsStream(fileName)) {
-            if (is == null) {
-                return null;
-            }
-            try (InputStreamReader isr = new InputStreamReader(is); BufferedReader reader = new BufferedReader(isr)) {
-                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-            }
-        }
     }
 }
