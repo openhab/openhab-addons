@@ -30,6 +30,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.mideaac.internal.MideaACConfiguration;
+import org.openhab.binding.mideaac.internal.cloud.Cloud;
+import org.openhab.binding.mideaac.internal.cloud.CloudProvider;
+import org.openhab.binding.mideaac.internal.cloud.Clouds;
 import org.openhab.binding.mideaac.internal.connection.CommandHelper;
 import org.openhab.binding.mideaac.internal.connection.ConnectionManager;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaAuthenticationException;
@@ -37,9 +40,6 @@ import org.openhab.binding.mideaac.internal.connection.exception.MideaConnection
 import org.openhab.binding.mideaac.internal.connection.exception.MideaException;
 import org.openhab.binding.mideaac.internal.discovery.DiscoveryHandler;
 import org.openhab.binding.mideaac.internal.discovery.MideaACDiscoveryService;
-import org.openhab.binding.mideaac.internal.dto.CloudDTO;
-import org.openhab.binding.mideaac.internal.dto.CloudProviderDTO;
-import org.openhab.binding.mideaac.internal.dto.CloudsDTO;
 import org.openhab.binding.mideaac.internal.security.TokenKey;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -75,7 +75,7 @@ import org.slf4j.LoggerFactory;
 public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MideaACHandler.class);
-    private final CloudsDTO clouds;
+    private final Clouds clouds;
     private final boolean imperialUnits;
     private boolean isPollRunning = false;
     private final HttpClient httpClient;
@@ -97,9 +97,9 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * @param thing Thing
      * @param unitProvider OH core unit provider
      * @param httpClient http Client
-     * @param clouds CloudsDTO
+     * @param clouds Clouds
      */
-    public MideaACHandler(Thing thing, UnitProvider unitProvider, HttpClient httpClient, CloudsDTO clouds) {
+    public MideaACHandler(Thing thing, UnitProvider unitProvider, HttpClient httpClient, Clouds clouds) {
         super(thing);
         this.thing = thing;
         this.imperialUnits = unitProvider.getMeasurementSystem() instanceof ImperialUnits;
@@ -112,7 +112,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * 
      * @return clouds
      */
-    public CloudsDTO getClouds() {
+    public Clouds getClouds() {
         return clouds;
     }
 
@@ -218,7 +218,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
         if (config.version == 3 && !config.isV3ConfigValid()) {
             if (config.isTokenKeyObtainable()) {
-                CloudProviderDTO cloudProvider = CloudProviderDTO.getCloudProvider(config.cloud);
+                CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
                 getTokenKeyCloud(cloudProvider);
                 return;
             } else {
@@ -360,9 +360,9 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * 
      * @param cloudProvider Cloud Provider account
      */
-    public void getTokenKeyCloud(CloudProviderDTO cloudProvider) {
+    public void getTokenKeyCloud(CloudProvider cloudProvider) {
         logger.debug("Retrieving Token and/or Key from cloud");
-        CloudDTO cloud = getClouds().get(config.email, config.password, cloudProvider);
+        Cloud cloud = getClouds().get(config.email, config.password, cloudProvider);
         if (cloud != null) {
             cloud.setHttpClient(httpClient);
             if (cloud.login()) {

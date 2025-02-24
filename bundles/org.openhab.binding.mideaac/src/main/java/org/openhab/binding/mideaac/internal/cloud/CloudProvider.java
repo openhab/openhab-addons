@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mideaac.internal.dto;
+package org.openhab.binding.mideaac.internal.cloud;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Bob Eckhoff - JavaDoc and conversion to record
  */
 @NonNullByDefault
-public record CloudProviderDTO(String name, String appkey, String appid, String apiurl, String signkey, String proxied,
+public record CloudProvider(String name, String appkey, String appid, String apiurl, String signkey, String proxied,
         String iotkey, String hmackey) {
 
     /**
@@ -42,19 +42,19 @@ public record CloudProviderDTO(String name, String appkey, String appid, String 
      * @param name Cloud provider
      * @return Cloud provider information (appkey, appid, apiurl,signkey, proxied, iotkey, hmackey)
      */
-    public static CloudProviderDTO getCloudProvider(String name) {
+    public static CloudProvider getCloudProvider(String name) {
         switch (name) {
             case "NetHome Plus":
-                return new CloudProviderDTO("NetHome Plus", "3742e9e5842d4ad59c2db887e12449f9", "1017",
+                return new CloudProvider("NetHome Plus", "3742e9e5842d4ad59c2db887e12449f9", "1017",
                         "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
             case "Midea Air":
-                return new CloudProviderDTO("Midea Air", "ff0cf6f5f0c3471de36341cab3f7a9af", "1117",
+                return new CloudProvider("Midea Air", "ff0cf6f5f0c3471de36341cab3f7a9af", "1117",
                         "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
             case "MSmartHome":
-                return new CloudProviderDTO("MSmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
+                return new CloudProvider("MSmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
                         "https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S",
                         "meicloud", "PROD_VnoClJI9aikS8dyy", "v5");
         }
-        return new CloudProviderDTO("", "", "", "", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
+        return new CloudProvider("", "", "", "", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
     }
 }
