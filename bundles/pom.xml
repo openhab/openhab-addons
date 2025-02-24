@@ -116,6 +116,7 @@
     <module>org.openhab.binding.dali</module>
     <module>org.openhab.binding.danfossairunit</module>
     <module>org.openhab.binding.dbquery</module>
+    <module>org.openhab.binding.ddwrt</module>
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.deutschebahn</module>
@@ -522,13 +523,11 @@
     <module>org.openhab.voice.watsonstt</module>
     <module>org.openhab.voice.whisperstt</module>
   </modules>
-
   <properties>
     <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
     <dep.noembedding/>
     <markdownlint.skip>false</markdownlint.skip>
   </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.lastnpe.eea</groupId>
@@ -584,7 +583,7 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
+  
   <build>
     <pluginManagement>
       <plugins>
