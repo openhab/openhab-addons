@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mideaac.internal.dto;
+package org.openhab.binding.mideaac.internal.cloud;
 
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -39,15 +40,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link CloudDTO} class connects to the Cloud Provider
+ * The {@link Cloud} class connects to the Cloud Provider
  * with user supplied information to retrieve the Security
  * Token and Key.
  *
  * @author Jacek Dobrowolski - Initial contribution
  * @author Bob Eckhoff - JavaDoc
  */
-public class CloudDTO {
-    private final Logger logger = LoggerFactory.getLogger(CloudDTO.class);
+@NonNullByDefault
+public class Cloud {
+    private final Logger logger = LoggerFactory.getLogger(Cloud.class);
 
     private static final int CLIENT_TYPE = 1; // Android
     private static final int FORMAT = 2; // JSON
@@ -60,7 +62,7 @@ public class CloudDTO {
     }
 
     /**
-     * Token rquested date
+     * Token requested date
      * 
      * @return tokenRequestedAt
      */
@@ -88,7 +90,7 @@ public class CloudDTO {
         this.httpClient = httpClient;
     }
 
-    private String errMsg;
+    private String errMsg = "";
 
     /**
      * Gets error message
@@ -102,12 +104,12 @@ public class CloudDTO {
     private @Nullable String accessToken = "";
 
     private String loginAccount;
-    private String password;
-    private CloudProviderDTO cloudProvider;
+    private String password = "";
+    private CloudProvider cloudProvider;
     private Security security;
 
     private @Nullable String loginId;
-    private String sessionId;
+    private String sessionId = "";
 
     /**
      * Parameters for Cloud Provider
@@ -116,18 +118,22 @@ public class CloudDTO {
      * @param password password
      * @param cloudProvider Cloud Provider
      */
-    public CloudDTO(String email, String password, CloudProviderDTO cloudProvider) {
+    public Cloud(String email, String password, CloudProvider cloudProvider) {
         this.loginAccount = email;
         this.password = password;
         this.cloudProvider = cloudProvider;
         this.security = new Security(cloudProvider);
+        this.httpClient = new HttpClient();
         logger.debug("Cloud provider: {}", cloudProvider.name());
     }
 
     /**
      * Set up the initial data payload with the global variable set
+     * This first message is to confirm the email is in the cloud provider's
+     * memory. The return is msg "ok", "errorCode":"0", and a loginId to be used
+     * in the next message.
      */
-    private JsonObject apiRequest(String endpoint, JsonObject args, JsonObject data) {
+    private @Nullable JsonObject apiRequest(String endpoint, @Nullable JsonObject args, @Nullable JsonObject data) {
         if (data == null) {
             data = new JsonObject();
             data.addProperty("appId", cloudProvider.appid());
@@ -197,6 +203,7 @@ public class CloudDTO {
         }
 
         // POST the endpoint with the payload
+        @Nullable
         ContentResponse cr = null;
         try {
             cr = request.send();
@@ -247,6 +254,7 @@ public class CloudDTO {
 
     /**
      * Performs a user login with the credentials supplied to the constructor
+     * in the first message
      * 
      * @return true or false
      */
@@ -264,6 +272,7 @@ public class CloudDTO {
         logger.trace("Using loginId: {}", loginId);
         logger.trace("Using password: {}", password);
 
+        // This is for the MSmartHome. It uses proxied
         if (!Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
             JsonObject newData = new JsonObject();
 
@@ -283,6 +292,7 @@ public class CloudDTO {
             iotData.addProperty("stamp", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
             newData.add("iotData", iotData);
 
+            @Nullable
             JsonObject response = apiRequest("/mj/user/login", null, newData);
 
             if (response == null) {
@@ -290,6 +300,8 @@ public class CloudDTO {
             }
 
             accessToken = response.getAsJsonObject("mdata").get("accessToken").getAsString();
+
+            // This for NetHomePlus and MideaAir apps
         } else {
             String passwordEncrypted = security.encryptPassword(loginId, password);
 
@@ -311,7 +323,8 @@ public class CloudDTO {
     }
 
     /**
-     * Get tokenlist with udpid
+     * Get token and key with udpid
+     * Unique Device Product ID
      * 
      * @param udpid udp id
      * @return token and key
@@ -324,7 +337,7 @@ public class CloudDTO {
         JsonObject response = apiRequest("/v1/iot/secure/getToken", args, null);
 
         if (response == null) {
-            return null;
+            return new TokenKey("", "");
         }
 
         JsonArray tokenlist = response.getAsJsonArray("tokenlist");

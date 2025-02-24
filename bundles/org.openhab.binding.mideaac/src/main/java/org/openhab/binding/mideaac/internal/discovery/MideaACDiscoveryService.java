@@ -30,7 +30,7 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mideaac.internal.Utils;
-import org.openhab.binding.mideaac.internal.dto.CloudProviderDTO;
+import org.openhab.binding.mideaac.internal.cloud.CloudProvider;
 import org.openhab.binding.mideaac.internal.handler.CommandBase;
 import org.openhab.binding.mideaac.internal.security.Security;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -74,7 +74,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      */
     public MideaACDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, discoveryTimeoutSeconds, false);
-        this.security = new Security(CloudProviderDTO.getCloudProvider(""));
+        this.security = new Security(CloudProvider.getCloudProvider(""));
     }
 
     @Override

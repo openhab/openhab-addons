@@ -36,7 +36,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mideaac.internal.Utils;
-import org.openhab.binding.mideaac.internal.dto.CloudProviderDTO;
+import org.openhab.binding.mideaac.internal.cloud.CloudProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,14 +56,14 @@ public class Security {
     private Logger logger = LoggerFactory.getLogger(Security.class);
     private IvParameterSpec iv = new IvParameterSpec(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
 
-    CloudProviderDTO cloudProvider;
+    CloudProvider cloudProvider;
 
     /**
      * Set Cloud Provider
      * 
      * @param cloudProvider Name of Cloud provider
      */
-    public Security(CloudProviderDTO cloudProvider) {
+    public Security(CloudProvider cloudProvider) {
         this.cloudProvider = cloudProvider;
     }
 
