@@ -189,11 +189,10 @@ public class PythonScriptEngine
                             @Override
                             public void checkAccess(Path path, Set<? extends AccessMode> modes,
                                     LinkOption... linkOptions) throws IOException {
-
-                                if (path.startsWith(PythonScriptEngineFactory.PYTHON_LIB_PATH)) {
+                                if (path.toRealPath().startsWith(PythonScriptEngineFactory.PYTHON_LIB_PATH)) {
                                     Consumer<String> localScriptDependencyListener = scriptDependencyListener;
                                     if (localScriptDependencyListener != null) {
-                                        localScriptDependencyListener.accept(path.toString());
+                                        localScriptDependencyListener.accept(path.toRealPath().toString());
                                     }
                                 }
 
