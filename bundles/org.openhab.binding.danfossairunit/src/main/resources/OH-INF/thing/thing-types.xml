@@ -19,7 +19,7 @@
 
 		<properties>
 			<property name="vendor">Danfoss</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<representation-property>serialNumber</representation-property>
@@ -58,39 +58,32 @@
 		<channels>
 			<channel id="current_time" typeId="currentTime"/>
 			<channel id="mode" typeId="mode"/>
-			<channel id="manual_fan_step" typeId="manualFanStep"/>
+			<channel id="manual_fan_step" typeId="manual-fan-step"/>
 			<channel id="supply_fan_speed" typeId="supplyFanSpeed"/>
 			<channel id="extract_fan_speed" typeId="extractFanSpeed"/>
 			<channel id="supply_fan_step" typeId="supplyFanStep"/>
 			<channel id="extract_fan_step" typeId="extractFanStep"/>
-			<channel id="boost" typeId="switch">
-				<label>Boost</label>
-				<description>Enables fan boost</description>
-			</channel>
-			<channel id="night_cooling" typeId="switch">
-				<label>Night Cooling</label>
-				<description>Enables night cooling</description>
-			</channel>
+			<channel id="boost" typeId="boost"/>
+			<channel id="night_cooling" typeId="night-cooling"/>
 		</channels>
 	</channel-group-type>
+
 	<channel-group-type id="temps">
 		<label>Temperatures</label>
 		<category>Temperature</category>
 		<channels>
-			<channel id="room_temp" typeId="temperature">
+			<channel id="room_temp" typeId="system.indoor-temperature">
 				<label>Room Temperature</label>
 				<description>Temperature of the air in the room of the Air Dial</description>
 			</channel>
-			<channel id="room_temp_calculated" typeId="temperature">
-				<label>Calculated Room Temperature</label>
-				<description>Calculated Room Temperature</description>
-			</channel>
+			<channel id="room_temp_calculated" typeId="calculated-temperature"/>
 			<channel id="outdoor_temp" typeId="system.outdoor-temperature">
 				<label>Outdoor Temperature</label>
 				<description>Temperature of the air outside</description>
 			</channel>
 		</channels>
 	</channel-group-type>
+
 	<channel-group-type id="humidity">
 		<label>Humidity</label>
 		<channels>
@@ -100,30 +93,28 @@
 			</channel>
 		</channels>
 	</channel-group-type>
+
 	<channel-group-type id="recuperator">
 		<label>Recuperator</label>
 		<description>Heat exchaning device in the Air Unit</description>
 		<channels>
-			<channel id="bypass" typeId="switch">
-				<label>Bypass</label>
-				<description>Disables the heat exchange. Useful in summer when room temperature is above target and outside
-					temperature is below target.</description>
-			</channel>
+			<channel id="bypass" typeId="bypass"/>
 			<channel id="defrost" typeId="defrost"/>
-			<channel id="supply_temp" typeId="temperature">
+			<channel id="supply_temp" typeId="system.indoor-temperature">
 				<label>Supply Air Temperature</label>
 				<description>Temperature of air which is passed to the rooms</description>
 			</channel>
-			<channel id="extract_temp" typeId="temperature">
+			<channel id="extract_temp" typeId="system.indoor-temperature">
 				<label>Extract Air Temperature</label>
 				<description>Temperature of the air as extracted from the rooms</description>
 			</channel>
-			<channel id="exhaust_temp" typeId="temperature">
+			<channel id="exhaust_temp" typeId="system.outdoor-temperature">
 				<label>Exhaust Air Temperature</label>
 				<description>Temperature of the air when pushed outside</description>
 			</channel>
 		</channels>
 	</channel-group-type>
+
 	<channel-group-type id="service">
 		<label>Service</label>
 		<channels>
@@ -131,10 +122,7 @@
 				<label>Battery Life</label>
 				<description>Remaining Air Dial Battery Level</description>
 			</channel>
-			<channel id="filter_life" typeId="percentage">
-				<label>Remaining Filter Life</label>
-				<description>Remaining life of filter until exchange is necessary</description>
-			</channel>
+			<channel id="filter_life" typeId="filter-life"/>
 			<channel id="filter_period" typeId="filterPeriod"/>
 		</channels>
 	</channel-group-type>
@@ -147,10 +135,15 @@
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
+
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Operation mode of the air unit: Off, Demand, Manual, Program</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="DEMAND">Demand</option>
@@ -160,13 +153,19 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="manualFanStep">
+
+	<channel-type id="manual-fan-step">
 		<item-type>Dimmer</item-type>
 		<label>Manual Fan Step</label>
 		<description>Controls 10-step setting of the fan when operation mode is manual</description>
 		<category>Fan</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
 		<state step="10" min="0" max="100"/>
 	</channel-type>
+
 	<channel-type id="supplyFanSpeed">
 		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Supply Fan Speed</label>
@@ -174,6 +173,7 @@
 		<category>Fan</category>
 		<state pattern="%.0f rpm" readOnly="true" min="0"/>
 	</channel-type>
+
 	<channel-type id="extractFanSpeed">
 		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Extract Fan Speed</label>
@@ -181,6 +181,7 @@
 		<category>Fan</category>
 		<state pattern="%.0f rpm" readOnly="true" min="0"/>
 	</channel-type>
+
 	<channel-type id="supplyFanStep">
 		<item-type>Dimmer</item-type>
 		<label>Supply Fan Step</label>
@@ -188,6 +189,7 @@
 		<category>Fan</category>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
+
 	<channel-type id="extractFanStep">
 		<item-type>Dimmer</item-type>
 		<label>Extract Fan Step</label>
@@ -195,26 +197,44 @@
 		<category>Fan</category>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
+
 	<channel-type id="filterPeriod" advanced="true">
 		<item-type>Number</item-type>
 		<label>Filter Period</label>
 		<description>Number of months between filter replacements</description>
 		<state pattern="%d" min="3" max="12"/>
 	</channel-type>
-	<channel-type id="percentage">
+
+	<channel-type id="filter-life">
 		<item-type>Number</item-type>
-		<label>Percentage</label>
-		<description>Read only percentage</description>
+		<label>Remaining Filter Life</label>
+		<description>Remaining life of filter until exchange is necessary</description>
 		<state pattern="%.0f %%" readOnly="true" min="0" max="100"/>
 	</channel-type>
-	<channel-type id="switch">
+
+	<channel-type id="boost">
 		<item-type>Switch</item-type>
-		<label>Something that can be turned on or off</label>
+		<label>Boost</label>
+		<description>Enables fan boost</description>
 	</channel-type>
-	<channel-type id="temperature">
+
+	<channel-type id="night-cooling">
+		<item-type>Switch</item-type>
+		<label>Night Cooling</label>
+		<description>Enables night cooling</description>
+	</channel-type>
+
+	<channel-type id="bypass">
+		<item-type>Switch</item-type>
+		<label>Bypass</label>
+		<description>Disables the heat exchange. Useful in summer when room temperature is above target and outside
+			temperature is below target</description>
+	</channel-type>
+
+	<channel-type id="calculated-temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Current temperature</description>
+		<label>Calculated Room Temperature</label>
+		<description>Calculated Room Temperature</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
