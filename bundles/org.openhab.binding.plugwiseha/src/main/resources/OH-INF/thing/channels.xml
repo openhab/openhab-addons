@@ -16,18 +16,6 @@
 		<state min="0.0" max="35.0" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Zone Temperature</label>
-		<description>Gets the temperature of this zone</description>
-		<category>heating</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
 	<channel-type id="offsetTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Thermostat Temperature Offset</label>
@@ -64,28 +52,11 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Switch the Plugwise Smart plug ON or OFF</description>
-		<category>switch</category>
-	</channel-type>
-
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
 		<label>Lock</label>
 		<description>Locks the switch state of the Plugwise Smart plug</description>
 		<category>switch</category>
-	</channel-type>
-
-	<channel-type id="powerUsage">
-		<item-type>Number:Power</item-type>
-		<label>Power Usage</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="chState">

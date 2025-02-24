@@ -65,12 +65,16 @@
 
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
-			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
 			<channel id="presetScene" typeId="presetScene"/>
 			<channel id="preHeat" typeId="preHeat"/>
 			<channel id="coolingAllowed" typeId="coolingAllowed"/>
 			<channel id="regulationControl" typeId="regulationControl"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
@@ -88,12 +92,12 @@
 
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
-			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
 			<channel id="valvePosition" typeId="valvePosition"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>id</representation-property>
@@ -111,10 +115,14 @@
 		<description>A Plugwise Home Automation smart plug switch connected to a central heating pump</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="lock" typeId="lock"/>
-			<channel id="powerUsage" typeId="powerUsage"/>
+			<channel id="powerUsage" typeId="system.electric-power"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
@@ -132,9 +140,13 @@
 
 		<channels>
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
-			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
 			<channel id="offsetTemperature" typeId="offsetTemperature"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
