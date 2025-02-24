@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.lgthinq.lgservices.errors;
 
-import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
-
 import java.io.Serial;
+
+import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
 
 /**
  * The LGThinqAccessException exception class that occurs when the LG API deny access to some service.
@@ -25,6 +25,7 @@ import java.io.Serial;
 public class LGThinqAccessException extends LGThinqApiException {
     @Serial
     private static final long serialVersionUID = 1L;
+
     public LGThinqAccessException(String message, Throwable cause) {
         super(message, cause);
     }
