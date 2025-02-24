@@ -26,10 +26,10 @@ import java.util.HexFormat;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mideaac.internal.Utils;
+import org.openhab.binding.mideaac.internal.cloud.CloudProvider;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaAuthenticationException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaConnectionException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaException;
-import org.openhab.binding.mideaac.internal.dto.CloudProviderDTO;
 import org.openhab.binding.mideaac.internal.handler.Callback;
 import org.openhab.binding.mideaac.internal.handler.CommandBase;
 import org.openhab.binding.mideaac.internal.handler.CommandSet;
@@ -63,7 +63,7 @@ public class ConnectionManager {
     private final String cloud;
     private final String deviceId;
     private Response lastResponse;
-    private CloudProviderDTO cloudProvider;
+    private CloudProvider cloudProvider;
     private Security security;
     private final int version;
     private final boolean promptTone;
@@ -89,7 +89,7 @@ public class ConnectionManager {
         this.promptTone = promptTone;
         this.lastResponse = new Response(HexFormat.of().parseHex("C00042667F7F003C0000046066000000000000000000F9ECDB"),
                 version, "query", (byte) 0xc0);
-        this.cloudProvider = CloudProviderDTO.getCloudProvider(cloud);
+        this.cloudProvider = CloudProvider.getCloudProvider(cloud);
         this.security = new Security(cloudProvider);
     }
 
@@ -118,6 +118,15 @@ public class ConnectionManager {
 
         int maxTries = 3;
         int retryCount = 0;
+
+        // If retrying command add delay to avoid connection rejection
+        if (!retry) {
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException ex) {
+                logger.debug("An interupted error (retry command delay) has occured {}", ex.getMessage());
+            }
+        }
 
         // Open socket
         // Retry addresses most common wifi connection problems- wait 5 seconds and try again
@@ -505,7 +514,7 @@ public class ConnectionManager {
             }
         } catch (IOException e) {
             String message = e.getMessage();
-            logger.debug(" Byte read exception {}", message);
+            logger.debug("Byte read exception {}", message);
         }
         return null;
     }
