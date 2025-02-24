@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.automation.pythonscripting.internal.scriptengine;
+package org.openhab.automation.pythonscripting.internal.scriptengine.helper;
 
 import java.io.OutputStream;
 
