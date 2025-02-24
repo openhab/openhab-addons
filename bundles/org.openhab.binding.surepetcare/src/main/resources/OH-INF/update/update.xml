@@ -14,6 +14,17 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="surepetcare:waterDevice">
+		<instruction-set targetVersion="1">
+			<update-channel id="deviceRSSI">
+				<type>surepetcare:rssiDeviceType</type>
+			</update-channel>
+			<update-channel id="hubRSSI">
+				<type>surepetcare:rssiHubType</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
 	<thing-type uid="surepetcare:flapDevice">
 		<instruction-set targetVersion="1">
 			<update-channel id="deviceRSSI">
