@@ -73,10 +73,10 @@
           <executions>
             <execution>
               <id>unpack-tss</id>
-              <phase>generate-sources</phase>
               <goals>
                 <goal>unpack</goal>
               </goals>
+              <phase>generate-sources</phase>
               <configuration>
                 <echo>"Unpacking TSS.Java"</echo>
                 <artifactItems>
@@ -84,9 +84,7 @@
                     <groupId>com.microsoft.azure</groupId>
                     <artifactId>TSS.Java</artifactId>
                     <version>1.0.0</version>
-                    <outputDirectory>
-                      ${project.build.directory}/classes
-                    </outputDirectory>
+                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
                   </artifactItem>
                 </artifactItems>
               </configuration>
@@ -102,17 +100,17 @@
             <execution>
               <!-- Remove classes from the root package and re jar -->
               <id>fix-tss</id>
-              <phase>process-sources</phase>
               <goals>
                 <goal>run</goal>
               </goals>
+              <phase>process-sources</phase>
               <configuration>
                 <target>
                   <echo>"Fixing TSS.Java for OSGI"</echo>
                   <delete>
                     <fileset dir="${project.build.directory}/classes" includes="*"/>
                   </delete>
-                  <delete includeemptydirs="true" failonerror="false">
+                  <delete failonerror="false" includeemptydirs="true">
                     <fileset dir="${project.build.directory}/classes/samples"/>
                   </delete>
                 </target>
@@ -120,7 +118,6 @@
             </execution>
           </executions>
         </plugin>
-
 
         <plugin>
           <groupId>biz.aQute.bnd</groupId>
