@@ -165,7 +165,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     @Override
     public CompiledScript compile(String s) throws ScriptException {
         try {
-            return (CompiledScript) afterInvocation(super.compile(beforeInvocation(s)));
+            return wrapCompiledScript((CompiledScript) afterInvocation(super.compile(beforeInvocation(s))));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -176,11 +176,25 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     @Override
     public CompiledScript compile(Reader reader) throws ScriptException {
         try {
-            return (CompiledScript) afterInvocation(super.compile(beforeInvocation(reader)));
+            return wrapCompiledScript((CompiledScript) afterInvocation(super.compile(beforeInvocation(reader))));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
             throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
         }
+    }
+
+    private CompiledScript wrapCompiledScript(CompiledScript script) throws ScriptException {
+        return new CompiledScript() {
+            @Override
+            public ScriptEngine getEngine() {
+                return InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable.this;
+            }
+
+            @Override
+            public Object eval(ScriptContext context) throws ScriptException {
+                return script.eval(context);
+            }
+        };
     }
 }
