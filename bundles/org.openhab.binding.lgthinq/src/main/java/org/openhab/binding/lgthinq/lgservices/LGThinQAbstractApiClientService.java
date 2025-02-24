@@ -13,7 +13,6 @@
 package org.openhab.binding.lgthinq.lgservices;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.BASE_CAP_CONFIG_DATA_FILE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_SECURITY_KEY;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_SVC_CODE;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V1_MON_DATA_PATH;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V1_START_MON_PATH;
@@ -22,7 +21,6 @@ import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_APP_OS;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_APP_TYPE;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_APP_VER;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_CLIENT_ID;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_DEVICE_CONFIG_PATH;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_LS_PATH;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_SVC_PHASE;
@@ -31,8 +29,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -92,6 +94,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     protected final Class<C> capabilityClass;
     protected final Class<S> snapshotClass;
     protected final HttpClient httpClient;
+    private String clientId = "";
 
     protected LGThinQAbstractApiClientService(Class<C> capabilityClass, Class<S> snapshotClass, HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -100,13 +103,39 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         this.snapshotClass = snapshotClass;
     }
 
-    static Map<String, String> getCommonHeaders(String language, String country, String accessToken,
-            String userNumber) {
+    // Método para gerar o ClientID
+    private String getClientId(String userNumber) {
+        // Retorna o ID já gerado, se existir
+        if (!clientId.isEmpty()) {
+            return clientId;
+        }
+
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            String data = userNumber + Instant.now().toString();
+            byte[] hash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
+            clientId = bytesToHex(hash);
+            return clientId;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 algorithm not found", e);
+        }
+    }
+
+    private String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : bytes) {
+            hexString.append(String.format("%02x", b));
+        }
+        return hexString.toString();
+    }
+
+    Map<String, String> getCommonHeaders(String language, String country, String accessToken, String userNumber) {
         Map<String, String> headers = new HashMap<>();
         headers.put("Accept", "application/json");
         headers.put("Content-type", "application/json;charset=UTF-8");
         headers.put("x-api-key", LG_API_V2_API_KEY);
-        headers.put("x-client-id", LG_API_V2_CLIENT_ID);
+        headers.put("x-app-version", "LG ThinQ/5.0.28271");
+        headers.put("x-client-id", getClientId(userNumber));
         headers.put("x-country-code", country);
         headers.put("x-language-code", language);
         headers.put("x-message-id", UUID.randomUUID().toString());
@@ -116,7 +145,13 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         headers.put("x-thinq-app-os", LG_API_V2_APP_OS);
         headers.put("x-thinq-app-type", LG_API_V2_APP_TYPE);
         headers.put("x-thinq-app-ver", LG_API_V2_APP_VER);
-        headers.put("x-thinq-security-key", LG_API_SECURITY_KEY);
+        // headers.put("x-thinq-security-key", LG_API_SECURITY_KEY);
+        headers.put("x-thinq-app-logintype", "LGE");
+        headers.put("x-origin", "app-native");
+        // headers.put("x-model-name", "Xiaomi/Mi 9T Pro");
+        // headers.put("x-os-version", "AOS/11");
+        headers.put("x-device-type", "601");
+
         if (!accessToken.isBlank())
             headers.put("x-emp-token", accessToken);
         if (!userNumber.isBlank())
@@ -198,8 +233,9 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 LGThinQAbstractApiClientService.logger.warn(
                         "Error calling device settings from LG Server API. HTTP Status: {}. The reason is: {}",
                         resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse()));
-                throw new LGThinqAccessException(String.format("Error calling device settings from LG Server API. HTTP Status: %d. The reason is: %s",
-                resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse())));
+                throw new LGThinqAccessException(String.format(
+                        "Error calling device settings from LG Server API. HTTP Status: %d. The reason is: %s",
+                        resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse())));
             }
             try {
                 respMap = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {

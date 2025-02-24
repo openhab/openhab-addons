@@ -131,11 +131,16 @@ public class LGThinqDiscoveryService extends AbstractThingHandlerDiscoveryServic
         thingDiscovered(discoveryResult);
     }
 
+    private String normalizeThingUID(String uid) {
+        // Substitui apenas os símbolos por "-"
+        return uid.replaceAll("[^a-zA-Z0-9]", "-");
+    }
+
     private ThingUID getThingUID(LGDevice device) throws LGThinqException {
         ThingTypeUID thingTypeUID = getThingTypeUID(device);
         return new ThingUID(thingTypeUID,
                 Objects.requireNonNull(bridgeHandlerUID, "bridgeHandleUid should never be null here"),
-                device.getDeviceId());
+                normalizeThingUID(device.getDeviceId()));
     }
 
     private ThingTypeUID getThingTypeUID(LGDevice device) throws LGThinqException {

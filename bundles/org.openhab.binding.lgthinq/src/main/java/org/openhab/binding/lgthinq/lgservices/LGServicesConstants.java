@@ -38,7 +38,7 @@ public class LGServicesConstants {
     public static final String LG_API_APP_LEVEL = "PRD";
     public static final String LG_API_APP_OS = "ANDROID";
     public static final String LG_API_APP_TYPE = "NUTS";
-    public static final String LG_API_APP_VER = "3.5.1200";
+    public static final String LG_API_APP_VER = "5.0.2800";
     // the client id is a SHA512 hash of the phone MFR,MODEL,SERIAL,
     // and the build id of the thinq app it can also just be a random
     // string, we use the same client id used for oauth
@@ -54,18 +54,16 @@ public class LGServicesConstants {
     public static final String LG_API_PLATFORM_TYPE_V1 = "thinq1";
     public static final String LG_API_PLATFORM_TYPE_V2 = "thinq2";
     public static final String LG_API_PRE_LOGIN_PATH = "/preLogin";
-    public static final String LG_API_SECURITY_KEY = "nuts_securitykey";
     public static final String LG_API_SVC_CODE = "SVC202";
     public static final String LG_API_SVC_PHASE = "OP";
     public static final String LG_API_V1_MON_DATA_PATH = "rti/rtiResult";
     public static final String LG_API_V1_START_MON_PATH = "rti/rtiMon";
     public static final String LG_API_V2_API_KEY = "VGhpblEyLjAgU0VSVklDRQ==";
     public static final String LG_API_V2_APP_LEVEL = "PRD";
-    public static final String LG_API_V2_APP_OS = "LINUX";
+    public static final String LG_API_V2_APP_OS = "ANDROID";
     public static final String LG_API_V2_APP_TYPE = "NUTS";
-    public static final String LG_API_V2_APP_VER = "3.0.1700";
+    public static final String LG_API_V2_APP_VER = "5.0.2800";
     public static final String LG_API_V2_AUTH_PATH = "/oauth/1.0/oauth2/token";
-    public static final String LG_API_V2_CLIENT_ID = "65260af7e8e6547b51fdccf930097c51eb9885a508d3fddfa9ee6cdec22ae1bd";
     public static final String LG_API_V2_CTRL_DEVICE_CONFIG_PATH = "service/devices/%s/%s";
     public static final String LG_API_V2_DEVICE_CONFIG_PATH = "service/devices/";
     public static final String LG_API_V2_EMP_SESS_PATH = "/emp/oauth2/token/empsession";
