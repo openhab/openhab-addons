@@ -17,7 +17,6 @@ import static org.openhab.core.automation.module.script.ScriptTransformationServ
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.AccessMode;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -27,7 +26,6 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -39,7 +37,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.script.ScriptContext;
@@ -57,6 +54,8 @@ import org.openhab.automation.pythonscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.pythonscripting.internal.fs.watch.PythonDependencyTracker;
 import org.openhab.automation.pythonscripting.internal.graal.GraalPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
+import org.openhab.automation.pythonscripting.internal.scriptengine.LifecycleTracker;
+import org.openhab.automation.pythonscripting.internal.scriptengine.LogOutputStream;
 import org.openhab.automation.pythonscripting.internal.wrapper.ScriptExtensionModuleProvider;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
@@ -347,12 +346,12 @@ public class PythonScriptEngine
         if (e instanceof ScriptException) {
             // PolyglotException will always be wrapped into ScriptException and they will be visualized in
             // org.openhab.core.automation.module.script.internal.ScriptEngineManagerImpl
-            if (scriptErrorStream.logger.isDebugEnabled()) {
-                scriptErrorStream.logger.debug("Failed to execute script (PolyglotException): {}",
+            if (scriptErrorStream.getLogger().isDebugEnabled()) {
+                scriptErrorStream.getLogger().debug("Failed to execute script (PolyglotException): {}",
                         stringifyThrowable(e.getCause()));
             }
         } else if (e.getCause() instanceof IllegalArgumentException) {
-            scriptErrorStream.logger.error("Failed to execute script (IllegalArgumentException): {}",
+            scriptErrorStream.getLogger().error("Failed to execute script (IllegalArgumentException): {}",
                     stringifyThrowable(e.getCause()));
         }
 
@@ -431,8 +430,30 @@ public class PythonScriptEngine
         return lock.newCondition();
     }
 
+    /**
+     * Initializes the logger.
+     * This cannot be done on script engine creation because the context variables are not yet initialized.
+     * Therefore, the logger needs to be initialized on the first use after script engine creation.
+     */
     private void setScriptLogger() {
-        Logger scriptLogger = initScriptLogger();
+        ScriptContext ctx = getScriptContext();
+        Object fileName = ctx.getAttribute("javax.script.filename");
+        Object ruleUID = ctx.getAttribute("ruleUID");
+        Object ohEngineIdentifier = ctx.getAttribute("oh.engine-identifier");
+
+        String identifier = "stack";
+        if (fileName != null) {
+            identifier = fileName.toString().replaceAll("^.*[/\\\\]", "");
+        } else if (ruleUID != null) {
+            identifier = ruleUID.toString();
+        } else if (ohEngineIdentifier != null) {
+            if (ohEngineIdentifier.toString().startsWith(OPENHAB_TRANSFORMATION_SCRIPT)) {
+                identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT, "transformation.");
+            }
+        }
+
+        Logger scriptLogger = LoggerFactory.getLogger("org.openhab.automation.pythonscripting." + identifier);
+
         scriptOutputStream.setLogger(scriptLogger);
         scriptErrorStream.setLogger(scriptLogger);
     }
@@ -454,31 +475,6 @@ public class PythonScriptEngine
         return (message != null) ? message + System.lineSeparator() + stackTrace : stackTrace;
     }
 
-    /**
-     * Initializes the logger.
-     * This cannot be done on script engine creation because the context variables are not yet initialized.
-     * Therefore, the logger needs to be initialized on the first use after script engine creation.
-     */
-    private Logger initScriptLogger() {
-        ScriptContext ctx = getScriptContext();
-        Object fileName = ctx.getAttribute("javax.script.filename");
-        Object ruleUID = ctx.getAttribute("ruleUID");
-        Object ohEngineIdentifier = ctx.getAttribute("oh.engine-identifier");
-
-        String identifier = "stack";
-        if (fileName != null) {
-            identifier = fileName.toString().replaceAll("^.*[/\\\\]", "");
-        } else if (ruleUID != null) {
-            identifier = ruleUID.toString();
-        } else if (ohEngineIdentifier != null) {
-            if (ohEngineIdentifier.toString().startsWith(OPENHAB_TRANSFORMATION_SCRIPT)) {
-                identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT, "transformation.");
-            }
-        }
-
-        return LoggerFactory.getLogger("org.openhab.automation.pythonscripting." + identifier);
-    }
-
     private static Set<String> transformGraalWrapperSet(Value value) {
         // Value raw_value = value.invokeMember("getWrappedSetValues");
         Set<String> set = new HashSet<String>();
@@ -487,101 +483,5 @@ public class PythonScriptEngine
             set.add(element.asString());
         }
         return set;
-    }
-
-    private static class LogOutputStream extends OutputStream {
-        private static final int DEFAULT_BUFFER_LENGTH = 2048;
-        private static final String LINE_SEPERATOR = System.getProperty("line.separator");
-        private static final int LINE_SEPERATOR_SIZE = LINE_SEPERATOR.length();
-
-        private Logger logger;
-        private Level level;
-
-        private int bufLength;
-        private byte[] buf;
-        private int count;
-
-        public LogOutputStream(Logger logger, Level level) {
-            this.logger = logger;
-            this.level = level;
-
-            bufLength = DEFAULT_BUFFER_LENGTH;
-            buf = new byte[DEFAULT_BUFFER_LENGTH];
-            count = 0;
-        }
-
-        public void setLogger(Logger logger) {
-            this.logger = logger;
-        }
-
-        @Override
-        public void write(int b) {
-            // don't log nulls
-            if (b == 0) {
-                return;
-            }
-
-            if (count == bufLength) {
-                growBuffer();
-            }
-
-            buf[count] = (byte) b;
-            count++;
-        }
-
-        @Override
-        public void flush() {
-            if (count == 0) {
-                return;
-            }
-
-            // don't print out blank lines;
-            if (count == LINE_SEPERATOR_SIZE) {
-                if (((char) buf[0]) == LINE_SEPERATOR.charAt(0)
-                        && ((count == 1) || ((count == 2) && ((char) buf[1]) == LINE_SEPERATOR.charAt(1)))) {
-                    reset();
-                    return;
-                }
-            } else if (count > LINE_SEPERATOR_SIZE) {
-                // remove linebreaks at the end
-                if (((char) buf[count - 1]) == LINE_SEPERATOR.charAt(LINE_SEPERATOR_SIZE - 1)
-                        && ((LINE_SEPERATOR_SIZE == 1) || ((LINE_SEPERATOR_SIZE == 2)
-                                && ((char) buf[count - 1]) == LINE_SEPERATOR.charAt(LINE_SEPERATOR_SIZE - 2)))) {
-                    count -= LINE_SEPERATOR_SIZE;
-                }
-            }
-
-            final byte[] line = new byte[count];
-            System.arraycopy(buf, 0, line, 0, count);
-            logger.atLevel(level).log(new String(line));
-            reset();
-        }
-
-        private void growBuffer() {
-            final int newBufLength = bufLength + DEFAULT_BUFFER_LENGTH;
-            final byte[] newBuf = new byte[newBufLength];
-            System.arraycopy(buf, 0, newBuf, 0, bufLength);
-            buf = newBuf;
-            bufLength = newBufLength;
-        }
-
-        private void reset() {
-            // don't shrink buffer. assuming that if it grew that it will likely grow similarly again
-            count = 0;
-        }
-    }
-
-    public static class LifecycleTracker {
-        List<Function<Object[], Object>> disposables = new ArrayList<>();
-
-        public void addDisposeHook(Function<Object[], Object> disposable) {
-            disposables.add(disposable);
-        }
-
-        void dispose() {
-            for (Function<Object[], Object> disposable : disposables) {
-                disposable.apply(null);
-            }
-        }
     }
 }
