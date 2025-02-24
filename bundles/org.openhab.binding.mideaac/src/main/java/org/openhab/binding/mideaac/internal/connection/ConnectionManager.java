@@ -182,8 +182,9 @@ public class ConnectionManager {
         if (!deviceIsConnected) {
             // Info logger on first connection after being disconnected
             logger.info("Connected to IP {}", ipAddress);
+        } else {
+            logger.debug("Connected to IP {}", ipAddress);
         }
-        logger.debug("Connected to IP {}", ipAddress);
         deviceIsConnected = true;
     }
 
