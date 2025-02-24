@@ -37,6 +37,16 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
         super(delegate);
     }
 
+    protected String beforeInvocation(String source) {
+        beforeInvocation();
+        return source;
+    }
+
+    protected Reader beforeInvocation(Reader reader) {
+        beforeInvocation();
+        return reader;
+    }
+
     protected void beforeInvocation() {
     }
 
@@ -51,8 +61,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     @Override
     public Object eval(String s, ScriptContext scriptContext) throws ScriptException {
         try {
-            beforeInvocation();
-            return afterInvocation(super.eval(s, scriptContext));
+            return afterInvocation(super.eval(beforeInvocation(s), scriptContext));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -63,8 +72,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     @Override
     public Object eval(Reader reader, ScriptContext scriptContext) throws ScriptException {
         try {
-            beforeInvocation();
-            return afterInvocation(super.eval(reader, scriptContext));
+            return afterInvocation(super.eval(beforeInvocation(reader), scriptContext));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -75,8 +83,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     @Override
     public Object eval(String s) throws ScriptException {
         try {
-            beforeInvocation();
-            return afterInvocation(super.eval(s));
+            return afterInvocation(super.eval(beforeInvocation(s)));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -87,8 +94,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     @Override
     public Object eval(Reader reader) throws ScriptException {
         try {
-            beforeInvocation();
-            return afterInvocation(super.eval(reader));
+            return afterInvocation(super.eval(beforeInvocation(reader)));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -99,8 +105,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     @Override
     public Object eval(String s, Bindings bindings) throws ScriptException {
         try {
-            beforeInvocation();
-            return afterInvocation(super.eval(s, bindings));
+            return afterInvocation(super.eval(beforeInvocation(s), bindings));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -111,8 +116,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     @Override
     public Object eval(Reader reader, Bindings bindings) throws ScriptException {
         try {
-            beforeInvocation();
-            return afterInvocation(super.eval(reader, bindings));
+            return afterInvocation(super.eval(beforeInvocation(reader), bindings));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -161,8 +165,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     @Override
     public CompiledScript compile(String s) throws ScriptException {
         try {
-            beforeInvocation();
-            return (CompiledScript) afterInvocation(super.compile(s));
+            return (CompiledScript) afterInvocation(super.compile(beforeInvocation(s)));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
@@ -173,8 +176,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilab
     @Override
     public CompiledScript compile(Reader reader) throws ScriptException {
         try {
-            beforeInvocation();
-            return (CompiledScript) afterInvocation(super.compile(reader));
+            return (CompiledScript) afterInvocation(super.compile(beforeInvocation(reader)));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {

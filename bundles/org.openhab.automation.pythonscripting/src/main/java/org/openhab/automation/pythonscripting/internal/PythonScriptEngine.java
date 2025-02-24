@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -39,9 +40,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
@@ -89,6 +91,10 @@ public class PythonScriptEngine
     private static final String PYTHON_CACHEDIR_PATH = Paths
             .get(OpenHAB.getUserDataFolder(), "cache", PythonScriptEngine.class.getPackageName(), "cachedir")
             .toString();
+
+    private static final int STACK_TRACE_LENGTH = 5;
+
+    public static final String LOGGER_INIT_NAME = "__logger_init__";
 
     /** Shared Polyglot {@link Engine} across all instances of {@link PythonScriptEngine} */
     private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
@@ -243,15 +249,9 @@ public class PythonScriptEngine
 
     @Override
     protected void beforeInvocation() {
-        super.beforeInvocation();
 
         lock.lock();
         logger.debug("Lock acquired before invocation.");
-
-        // must be initialized every time, because of dynamic used attributes like ruleUID
-        Logger scriptLogger = initScriptLogger(delegate);
-        scriptOutputStream.setLogger(scriptLogger);
-        scriptErrorStream.setLogger(scriptLogger);
 
         if (initialized) {
             return;
@@ -259,10 +259,7 @@ public class PythonScriptEngine
 
         logger.debug("Initializing GraalPython script engine...");
 
-        ScriptContext ctx = delegate.getContext();
-        if (ctx == null) {
-            throw new IllegalStateException("Failed to retrieve script context");
-        }
+        ScriptContext ctx = getScriptContext();
 
         // these are added post-construction, so we need to fetch them late
         String engineIdentifier = (String) ctx.getAttribute(CONTEXT_KEY_ENGINE_IDENTIFIER);
@@ -298,6 +295,7 @@ public class PythonScriptEngine
                 delegate.getPolyglotContext().eval(Source.newBuilder(GraalPythonScriptEngine.LANGUAGE_ID,
                         wrapperContent, PythonScriptEngineFactory.PYTHON_WRAPPER_FILE_PATH.toString()).build());
 
+                // inject scope, Registry and logger
                 if (injectionEnabled != PythonScriptEngineFactory.INJECTION_DISABLED
                         && (ctx.getAttribute("javax.script.filename") == null
                                 || injectionEnabled == PythonScriptEngineFactory.INJECTION_ENABLED_FOR_ALL_SCRIPTS)) {
@@ -311,7 +309,28 @@ public class PythonScriptEngine
             }
         }
 
+        // logger initialization, for non file based scripts, has to be delayed, because ruleUID is not available yet
+        if (ctx.getAttribute("javax.script.filename") == null) {
+            Runnable wrapperLoggerFn = () -> setScriptLogger();
+            delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(LOGGER_INIT_NAME, wrapperLoggerFn);
+        } else {
+            setScriptLogger();
+        }
+
         initialized = true;
+    }
+
+    @Override
+    protected String beforeInvocation(String source) {
+        String _source = super.beforeInvocation(source);
+
+        // Happens for Transform and UI based rules (eval and compile)
+        // and has to be evaluate every time, because of changing and late injected ruleUID
+        if (delegate.getBindings(ScriptContext.ENGINE_SCOPE).get(LOGGER_INIT_NAME) != null) {
+            return LOGGER_INIT_NAME + "()\n" + _source;
+        }
+
+        return _source;
     }
 
     @Override
@@ -323,20 +342,35 @@ public class PythonScriptEngine
 
     @Override
     protected Exception afterThrowsInvocation(Exception e) {
+        // OPS4J Pax Logging holds a reference to the exception, which causes the OpenhabGraalJSScriptEngine to not be
+        // removed from heap by garbage collection and causing a memory leak.
+        // Therefore, don't pass the exceptions itself to the logger, but only their message!
+        if (e instanceof ScriptException) {
+            // PolyglotException will always be wrapped into ScriptException and they will be visualized in
+            // org.openhab.core.automation.module.script.internal.ScriptEngineManagerImpl
+            if (scriptErrorStream.logger.isDebugEnabled()) {
+                scriptErrorStream.logger.debug("Failed to execute script (PolyglotException): {}",
+                        stringifyThrowable(e.getCause()));
+            }
+        } else if (e.getCause() instanceof IllegalArgumentException) {
+            scriptErrorStream.logger.error("Failed to execute script (IllegalArgumentException): {}",
+                    stringifyThrowable(e.getCause()));
+        }
+
         lock.unlock();
+
         return super.afterThrowsInvocation(e);
     }
 
     @Override
     // collect JSR223 (scope) variables separately, because they are delivered via 'import scope'
     public void put(String key, Object value) {
-        if (key.equals("javax.script.filename") || key.equals("ruleUID")) {
+        if (key.equals("javax.script.filename")) {
             // super.put("__file__", value);
             super.put(key, value);
         } else {
-            // use a custom lifecycleTracker to handle dispose hook before polyglot context is closed {@link
-            // #close()}
-            // original openHAB {@link LifecycleScriptExtensionProvider}
+            // use a custom lifecycleTracker to handle dispose hook before polyglot context is closed
+            // original lifecycleTracker is handling it when polyglot context is already closed
             if (key.equals("lifecycleTracker")) {
                 value = lifecycleTracker;
             }
@@ -361,12 +395,24 @@ public class PythonScriptEngine
 
     @Override
     public boolean tryLock() {
-        return lock.tryLock();
+        boolean acquired = lock.tryLock();
+        if (acquired) {
+            logger.debug("Lock acquired.");
+        } else {
+            logger.debug("Lock not acquired.");
+        }
+        return acquired;
     }
 
     @Override
     public boolean tryLock(long l, TimeUnit timeUnit) throws InterruptedException {
-        return lock.tryLock(l, timeUnit);
+        boolean acquired = lock.tryLock(l, timeUnit);
+        if (acquired) {
+            logger.debug("Lock acquired.");
+        } else {
+            logger.debug("Lock not acquired.");
+        }
+        return acquired;
     }
 
     @Override
@@ -386,14 +432,27 @@ public class PythonScriptEngine
         return lock.newCondition();
     }
 
-    private static Set<String> transformGraalWrapperSet(Value value) {
-        // Value raw_value = value.invokeMember("getWrappedSetValues");
-        Set<String> set = new HashSet<String>();
-        for (int i = 0; i < value.getArraySize(); ++i) {
-            Value element = value.getArrayElement(i);
-            set.add(element.asString());
+    private void setScriptLogger() {
+        Logger scriptLogger = initScriptLogger();
+        scriptOutputStream.setLogger(scriptLogger);
+        scriptErrorStream.setLogger(scriptLogger);
+    }
+
+    private ScriptContext getScriptContext() {
+        ScriptContext ctx = delegate.getContext();
+        if (ctx == null) {
+            throw new IllegalStateException("Failed to retrieve script context");
         }
-        return set;
+        return ctx;
+    }
+
+    private String stringifyThrowable(Throwable throwable) {
+        String message = throwable.getMessage();
+        StackTraceElement[] stackTraceElements = throwable.getStackTrace();
+        String stackTrace = Arrays.stream(stackTraceElements).limit(STACK_TRACE_LENGTH)
+                .map(t -> "        at " + t.toString()).collect(Collectors.joining(System.lineSeparator()))
+                + System.lineSeparator() + "        ... " + stackTraceElements.length + " more";
+        return (message != null) ? message + System.lineSeparator() + stackTrace : stackTrace;
     }
 
     /**
@@ -401,8 +460,8 @@ public class PythonScriptEngine
      * This cannot be done on script engine creation because the context variables are not yet initialized.
      * Therefore, the logger needs to be initialized on the first use after script engine creation.
      */
-    public static Logger initScriptLogger(ScriptEngine scriptEngine) {
-        ScriptContext ctx = scriptEngine.getContext();
+    private Logger initScriptLogger() {
+        ScriptContext ctx = getScriptContext();
         Object fileName = ctx.getAttribute("javax.script.filename");
         Object ruleUID = ctx.getAttribute("ruleUID");
         Object ohEngineIdentifier = ctx.getAttribute("oh.engine-identifier");
@@ -419,6 +478,16 @@ public class PythonScriptEngine
         }
 
         return LoggerFactory.getLogger("org.openhab.automation.pythonscripting." + identifier);
+    }
+
+    private static Set<String> transformGraalWrapperSet(Value value) {
+        // Value raw_value = value.invokeMember("getWrappedSetValues");
+        Set<String> set = new HashSet<String>();
+        for (int i = 0; i < value.getArraySize(); ++i) {
+            Value element = value.getArrayElement(i);
+            set.add(element.asString());
+        }
+        return set;
     }
 
     private static class LogOutputStream extends OutputStream {

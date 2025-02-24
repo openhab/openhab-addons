@@ -131,9 +131,8 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
         if (!scriptTypes.contains(scriptType)) {
             return null;
         }
-        // return new PythonScriptEngine(pythonDependencyTracker, cachingEnabled, jythonEmulation);
-        return new DebuggingPythonScriptEngine<>(new PythonScriptEngine(pythonDependencyTracker, injectionEnabled,
-                scopeEnabled, cachingEnabled, jythonEmulation));
+        return new PythonScriptEngine(pythonDependencyTracker, injectionEnabled, scopeEnabled, cachingEnabled,
+                jythonEmulation);
     }
 
     @Override
