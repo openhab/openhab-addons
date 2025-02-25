@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bambulab.internal;
 
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
 import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
@@ -168,18 +169,18 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
     private void updatePrinterChannels(PrinterState state) {
         // PrintDetails
         var details = state.printDetails();
-        updateState(Channel.NOZZLE_TEMPERATURE_CHANNEL, new DecimalType(details.nozzleTemperature()));
-        updateState(Channel.NOZZLE_TARGET_TEMPERATURE_CHANNEL, new DecimalType(details.nozzleTargetTemperature()));
-        updateState(Channel.BED_TEMPERATURE_CHANNEL, new DecimalType(details.nozzleTargetTemperature()));
-        updateState(Channel.BED_TARGET_TEMPERATURE_CHANNEL, new DecimalType(details.bedTargetTemperature()));
-        updateState(Channel.CHAMBER_TEMPERATURE_CHANNEL, new DecimalType(details.chamberTemperature()));
-        updateState(Channel.MC_PRINT_STAGE_CHANNEL, new StringType(details.mcPrintStage()));
-        updateState(Channel.MC_PERCENT_CHANNEL, new PercentType(details.mcPercent() * 100));
-        updateState(Channel.MC_REMAINING_TIME_CHANNEL, new DecimalType(details.mcRemainingTime()));
-        updateState(Channel.WIFI_SIGNAL_CHANNEL, parseWifiChannel(details.wifiSignal()));
-        updateState(Channel.COMMAND_CHANNEL, new StringType(details.command()));
-        updateState(Channel.MESSAGE_CHANNEL, new DecimalType(details.message()));
-        updateState(Channel.SEQUENCE_ID_CHANNEL, new StringType(details.sequenceId()));
+        updateState(NOZZLE_TEMPERATURE_CHANNEL, new DecimalType(details.nozzleTemperature()));
+        updateState(NOZZLE_TARGET_TEMPERATURE_CHANNEL, new DecimalType(details.nozzleTargetTemperature()));
+        updateState(BED_TEMPERATURE_CHANNEL, new DecimalType(details.nozzleTargetTemperature()));
+        updateState(BED_TARGET_TEMPERATURE_CHANNEL, new DecimalType(details.bedTargetTemperature()));
+        updateState(CHAMBER_TEMPERATURE_CHANNEL, new DecimalType(details.chamberTemperature()));
+        updateState(MC_PRINT_STAGE_CHANNEL, new StringType(details.mcPrintStage()));
+        updateState(MC_PERCENT_CHANNEL, new PercentType(details.mcPercent() * 100));
+        updateState(MC_REMAINING_TIME_CHANNEL, new DecimalType(details.mcRemainingTime()));
+        updateState(WIFI_SIGNAL_CHANNEL, parseWifiChannel(details.wifiSignal()));
+        updateState(COMMAND_CHANNEL, new StringType(details.command()));
+        updateState(MESSAGE_CHANNEL, new DecimalType(details.message()));
+        updateState(SEQUENCE_ID_CHANNEL, new StringType(details.sequenceId()));
 
         // UpgradeState
         // var upgradeState = details.upgradeState();
