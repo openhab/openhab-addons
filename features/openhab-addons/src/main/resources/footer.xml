@@ -29,6 +29,7 @@
 		<bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jdk8/${jackson.version}</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/com.hubspot.immutables.immutables-exceptions/1.9</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt/${project.version}</bundle>
+		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.awtrixlight/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.espmilighthub/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.fpp/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.generic/${project.version}</bundle>

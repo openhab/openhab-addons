@@ -276,6 +276,7 @@
     <module>org.openhab.binding.monopriceaudio</module>
     <module>org.openhab.binding.mpd</module>
     <module>org.openhab.binding.mqtt</module>
+    <module>org.openhab.binding.mqtt.awtrixlight</module>
     <module>org.openhab.binding.mqtt.espmilighthub</module>
     <module>org.openhab.binding.mqtt.fpp</module>
     <module>org.openhab.binding.mqtt.generic</module>
