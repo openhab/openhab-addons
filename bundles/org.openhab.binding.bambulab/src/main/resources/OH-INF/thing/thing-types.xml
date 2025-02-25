@@ -9,118 +9,118 @@
 		<description>Represents a Bambu Lab 3D printer connected via MQTT</description>
 
 		<channels>
-			<channel id="nozzleTemperature" typeId="temperature">
+			<channel id="nozzleTemperature" typeId="temperature-channel">
 				<label>Nozzle Temperature</label>
 				<description>Current temperature of the nozzle.</description>
 			</channel>
-			<channel id="nozzleTargetTemperature" typeId="temperature">
+			<channel id="nozzleTargetTemperature" typeId="temperature-channel">
 				<label>Nozzle Target Temperature</label>
 				<description>Target temperature of the nozzle.</description>
 			</channel>
-			<channel id="bedTemperature" typeId="temperature">
+			<channel id="bedTemperature" typeId="temperature-channel">
 				<label>Bed Temperature</label>
 				<description>Current temperature of the heated bed.</description>
 			</channel>
-			<channel id="bedTargetTemperature" typeId="temperature">
+			<channel id="bedTargetTemperature" typeId="temperature-channel">
 				<label>Bed Target Temperature</label>
 				<description>Target temperature of the heated bed.</description>
 			</channel>
-			<channel id="chamberTemperature" typeId="temperature">
+			<channel id="chamberTemperature" typeId="temperature-channel">
 				<label>Chamber Temperature</label>
 				<description>Current temperature inside the printer chamber.</description>
 			</channel>
-			<channel id="mcPrintStage" typeId="string">
+			<channel id="mcPrintStage" typeId="string-channel">
 				<label>Print Stage</label>
 				<description>Current stage of the print process.</description>
 			</channel>
-			<channel id="mcPercent" typeId="temperature">
+			<channel id="mcPercent" typeId="percent-channel">
 				<label>Print Progress</label>
 				<description>Percentage of the print completed.</description>
 			</channel>
-			<channel id="mcRemainingTime" typeId="temperature">
+			<channel id="mcRemainingTime" typeId="number-channel">
 				<label>Remaining Print Time</label>
 				<description>Estimated time remaining for the print in seconds.</description>
 			</channel>
-			<channel id="wifiSignal" typeId="string">
+			<channel id="wifiSignal" typeId="wifi-channel">
 				<label>WiFi Signal Strength</label>
 				<description>Current WiFi signal strength.</description>
 			</channel>
-			<channel id="command" typeId="string">
+			<channel id="command" typeId="string-channel">
 				<label>Printer Command</label>
 				<description>Current command being executed by the printer.</description>
 			</channel>
-			<channel id="message" typeId="temperature">
+			<channel id="message" typeId="number-channel">
 				<label>Message Code</label>
 				<description>Message code from the printer.</description>
 			</channel>
-			<channel id="sequenceId" typeId="string">
+			<channel id="sequenceId" typeId="string-channel">
 				<label>Sequence ID</label>
 				<description>Unique sequence identifier for commands.</description>
 			</channel>
-			<channel id="upgradeState" typeId="string">
-				<label>Upgrade State</label>
-				<description>Current state of the printer firmware upgrade.</description>
-			</channel>
-			<channel id="ipcam" typeId="string">
-				<label>IP Camera</label>
-				<description>IP camera details of the printer.</description>
-			</channel>
-			<channel id="xcam" typeId="string">
-				<label>XCam</label>
-				<description>XCam details of the printer.</description>
-			</channel>
-			<channel id="upload" typeId="string">
-				<label>Upload</label>
-				<description>Upload status details.</description>
-			</channel>
-			<channel id="net" typeId="string">
-				<label>Network</label>
-				<description>Network configuration and info.</description>
-			</channel>
-			<channel id="ipcamDev" typeId="string">
-				<label>IP Camera Device</label>
-				<description>IP camera device associated with the printer.</description>
-			</channel>
-			<channel id="buildplateMarkerDetector" typeId="boolean">
-				<label>Buildplate Marker Detector</label>
-				<description>Indicates if the buildplate marker detection is enabled.</description>
-			</channel>
-			<channel id="uploadStatus" typeId="string">
-				<label>Upload Status</label>
-				<description>Current file upload status.</description>
-			</channel>
-			<channel id="uploadProgress" typeId="number">
-				<label>Upload Progress</label>
-				<description>File upload progress percentage.</description>
-			</channel>
-			<channel id="uploadMessage" typeId="string">
-				<label>Upload Message</label>
-				<description>Message related to the upload status.</description>
-			</channel>
-			<channel id="netConf" typeId="number">
-				<label>Network Configuration</label>
-				<description>Configuration settings of the printer network.</description>
-			</channel>
-			<channel id="ipcamRecord" typeId="string">
-				<label>IP Camera Record</label>
-				<description>Current recording status of the IP camera.</description>
-			</channel>
-			<channel id="timelapse" typeId="string">
-				<label>Timelapse</label>
-				<description>Status of the timelapse recording.</description>
-			</channel>
-			<channel id="resolution" typeId="string">
-				<label>Camera Resolution</label>
-				<description>Resolution of the IP camera.</description>
-			</channel>
-			<channel id="tutkServer" typeId="string">
-				<label>Tutk Server</label>
-				<description>Tutk server details for IP camera.</description>
-			</channel>
-			<channel id="modeBits" typeId="number">
-				<label>Mode Bits</label>
-				<description>Mode bits setting of the IP camera.</description>
-			</channel>
+<!--			<channel id="upgradeState" typeId="string-channel">-->
+<!--				<label>Upgrade State</label>-->
+<!--				<description>Current state of the printer firmware upgrade.</description>-->
+<!--			</channel>-->
+<!--			<channel id="ipcam" typeId="string-channel">-->
+<!--				<label>IP Camera</label>-->
+<!--				<description>IP camera details of the printer.</description>-->
+<!--			</channel>-->
+<!--			<channel id="xcam" typeId="string-channel">-->
+<!--				<label>XCam</label>-->
+<!--				<description>XCam details of the printer.</description>-->
+<!--			</channel>-->
+<!--			<channel id="upload" typeId="string-channel">-->
+<!--				<label>Upload</label>-->
+<!--				<description>Upload status details.</description>-->
+<!--			</channel>-->
+<!--			<channel id="net" typeId="string-channel">-->
+<!--				<label>Network</label>-->
+<!--				<description>Network configuration and info.</description>-->
+<!--			</channel>-->
+<!--			<channel id="ipcamDev" typeId="string-channel">-->
+<!--				<label>IP Camera Device</label>-->
+<!--				<description>IP camera device associated with the printer.</description>-->
+<!--			</channel>-->
+<!--			<channel id="buildplateMarkerDetector" typeId="boolean">-->
+<!--				<label>Buildplate Marker Detector</label>-->
+<!--				<description>Indicates if the buildplate marker detection is enabled.</description>-->
+<!--			</channel>-->
+<!--			<channel id="uploadStatus" typeId="string-channel">-->
+<!--				<label>Upload Status</label>-->
+<!--				<description>Current file upload status.</description>-->
+<!--			</channel>-->
+<!--			<channel id="uploadProgress" typeId="number">-->
+<!--				<label>Upload Progress</label>-->
+<!--				<description>File upload progress percentage.</description>-->
+<!--			</channel>-->
+<!--			<channel id="uploadMessage" typeId="string-channel">-->
+<!--				<label>Upload Message</label>-->
+<!--				<description>Message related to the upload status.</description>-->
+<!--			</channel>-->
+<!--			<channel id="netConf" typeId="number">-->
+<!--				<label>Network Configuration</label>-->
+<!--				<description>Configuration settings of the printer network.</description>-->
+<!--			</channel>-->
+<!--			<channel id="ipcamRecord" typeId="string-channel">-->
+<!--				<label>IP Camera Record</label>-->
+<!--				<description>Current recording status of the IP camera.</description>-->
+<!--			</channel>-->
+<!--			<channel id="timelapse" typeId="string-channel">-->
+<!--				<label>Timelapse</label>-->
+<!--				<description>Status of the timelapse recording.</description>-->
+<!--			</channel>-->
+<!--			<channel id="resolution" typeId="string-channel">-->
+<!--				<label>Camera Resolution</label>-->
+<!--				<description>Resolution of the IP camera.</description>-->
+<!--			</channel>-->
+<!--			<channel id="tutkServer" typeId="string-channel">-->
+<!--				<label>Tutk Server</label>-->
+<!--				<description>Tutk server details for IP camera.</description>-->
+<!--			</channel>-->
+<!--			<channel id="modeBits" typeId="number">-->
+<!--				<label>Mode Bits</label>-->
+<!--				<description>Mode bits setting of the IP camera.</description>-->
+<!--			</channel>-->
 		</channels>
 
 		<representation-property>serial</representation-property>

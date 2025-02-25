@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bambulab"
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="string-channel">
+		<item-type>String</item-type>
+		<label>String Channel</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="wifi-channel">
+		<item-type>Number:Power</item-type>
+		<label>WiFi Signal Strength</label>
+		<description>Current WiFi signal strength.</description>
+		<category>time</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="number-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Number Channel</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="percent-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Percent Channel</label>
+		<state readOnly="true" min="0" max="100" pattern="%.2f %%"/>
+	</channel-type>
+</thing:thing-descriptions>

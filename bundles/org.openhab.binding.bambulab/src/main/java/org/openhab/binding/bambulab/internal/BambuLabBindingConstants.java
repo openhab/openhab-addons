@@ -24,12 +24,14 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class BambuLabBindingConstants {
 
-    private static final String BINDING_ID = "bambulab";
+    public static final String BINDING_ID = "bambulab";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID PRINTER_THING_TYPE = new ThingTypeUID(BINDING_ID, "printer");
 
+    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     public interface Channel {
+        // PrintDetails
         public static final String NOZZLE_TEMPERATURE_CHANNEL = "nozzleTemperature";
         public static final String NOZZLE_TARGET_TEMPERATURE_CHANNEL = "nozzleTargetTemperature";
         public static final String BED_TEMPERATURE_CHANNEL = "bedTemperature";
@@ -42,6 +44,7 @@ public class BambuLabBindingConstants {
         public static final String COMMAND_CHANNEL = "command";
         public static final String MESSAGE_CHANNEL = "message";
         public static final String SEQUENCE_ID_CHANNEL = "sequenceId";
+
         public static final String UPGRADE_STATE_CHANNEL = "upgradeState";
         public static final String IPCAM_CHANNEL = "ipcam";
         public static final String XCAM_CHANNEL = "xcam";

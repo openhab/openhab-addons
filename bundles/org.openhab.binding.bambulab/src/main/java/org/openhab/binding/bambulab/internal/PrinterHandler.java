@@ -14,12 +14,18 @@ package org.openhab.binding.bambulab.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.grzeslowski.jbambuapi.PrinterClient;
@@ -28,9 +34,12 @@ import pl.grzeslowski.jbambuapi.PrinterWatcher;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.regex.Pattern;
 
+import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.types.UnDefType.*;
 import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
 import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
 
@@ -42,6 +51,7 @@ import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
  */
 @NonNullByDefault
 public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.PrinterStateSubscriber {
+    private static final Pattern DBM_PATTERN = Pattern.compile("^(-?\\d+)dBm$");
     private Logger logger = LoggerFactory.getLogger(PrinterHandler.class);
 
     private @Nullable PrinterClient client;
@@ -111,12 +121,20 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
                 client.subscribe(printerWatcher);
                 printerWatcher.subscribe(this);
                 // send request to update all channels
-                client.getChannel().sendCommand(defaultPushingCommand());
+                refreshChannels();
                 updateStatus(ONLINE);
             } catch (Exception e) {
                 updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
             }
         });
+    }
+
+    void refreshChannels() {
+        var localClient = client;
+        if(localClient == null) {
+            return;
+        }
+        localClient.getChannel().sendCommand(defaultPushingCommand());
     }
 
     @Override
@@ -147,12 +165,44 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
     }
 
     private void updatePrinterChannels(PrinterState state) {
-        // todo
+        // PrintDetails
+        var details = state.printDetails();
+        updateState(Channel.NOZZLE_TEMPERATURE_CHANNEL, new DecimalType(details.nozzleTemperature()));
+        updateState(Channel.NOZZLE_TARGET_TEMPERATURE_CHANNEL, new DecimalType(details.nozzleTargetTemperature()));
+        updateState(Channel.BED_TEMPERATURE_CHANNEL, new DecimalType(details.nozzleTargetTemperature()));
+        updateState(Channel.BED_TARGET_TEMPERATURE_CHANNEL, new DecimalType(details.bedTargetTemperature()));
+        updateState(Channel.CHAMBER_TEMPERATURE_CHANNEL, new DecimalType(details.chamberTemperature()));
+        updateState(Channel.MC_PRINT_STAGE_CHANNEL, new StringType(details.mcPrintStage()));
+        updateState(Channel.MC_PERCENT_CHANNEL, new PercentType(details.mcPercent() * 100));
+        updateState(Channel.MC_REMAINING_TIME_CHANNEL, new DecimalType(details.mcRemainingTime()));
+        updateState(Channel.WIFI_SIGNAL_CHANNEL, parseWifiChannel(details.wifiSignal()));
+        updateState(Channel.COMMAND_CHANNEL, new StringType(details.command()));
+        updateState(Channel.MESSAGE_CHANNEL, new DecimalType(details.message()));
+        updateState(Channel.SEQUENCE_ID_CHANNEL, new StringType(details.sequenceId()));
+
+        // UpgradeState
+//        var upgradeState = details.upgradeState();
+//        updateState(Channel., new DecimalType(upgradeState.));
+
+    }
+
+    private State parseWifiChannel(@Nullable String wifi) {
+        if (wifi == null) {
+            return NULL;
+        }
+
+        var matcher = DBM_PATTERN.matcher(wifi);
+        if (!matcher.matches()) {
+            return UNDEF;
+        }
+
+        var value = Integer.parseInt(matcher.group(1));
+        return new QuantityType<>(value, DECIBEL_MILLIWATTS);
     }
 
     public void sendCommand(PrinterClient.Channel.Command command) {
         var localClient = client;
-        if(localClient == null) {
+        if (localClient == null) {
             logger.warn("Client not connected. Cannot send command {}", command);
             return;
         }
