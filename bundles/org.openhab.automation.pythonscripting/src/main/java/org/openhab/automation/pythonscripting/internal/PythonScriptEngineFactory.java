@@ -60,8 +60,8 @@ import org.slf4j.LoggerFactory;
  * @author Holger Hees - initial contribution
  * @author Jeff James - initial contribution
  */
-@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.pythonscripting", property = Constants.SERVICE_PID
-        + "=org.openhab.pythonscripting")
+@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.pythonscripting", property = Constants.SERVICE_PID
+        + "=org.openhab.automation.pythonscripting")
 @ConfigurableService(category = "automation", label = "Python Scripting", description_uri = "automation:pythonscripting")
 @NonNullByDefault
 public class PythonScriptEngineFactory implements ScriptEngineFactory {
@@ -152,11 +152,11 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
     private void initHelperLib() {
         try {
-            String ressourceLibPath = PYTHON_OPENHAB_LIB_PATH.toString()
+            String resourceLibPath = PYTHON_OPENHAB_LIB_PATH.toString()
                     .substring(PYTHON_DEFAULT_PATH.toString().length()) + "/";
 
             Enumeration<URL> resourceFiles = FrameworkUtil.getBundle(PythonScriptEngineFactory.class)
-                    .findEntries(ressourceLibPath, "*.py", true);
+                    .findEntries(resourceLibPath, "*.py", true);
 
             if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)
                     && Files.list(PYTHON_OPENHAB_LIB_PATH).count() > 0) {
@@ -165,11 +165,11 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
                 Version includedVersion = null;
                 try (InputStream is = PythonScriptEngineFactory.class.getClassLoader()
-                        .getResourceAsStream(ressourceLibPath + PYTHON_INIT_FILE_PATH.getFileName().toString())) {
+                        .getResourceAsStream(resourceLibPath + PYTHON_INIT_FILE_PATH.getFileName().toString())) {
                     try (InputStreamReader isr = new InputStreamReader(is);
                             BufferedReader reader = new BufferedReader(isr)) {
-                        String _includedVersion = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-                        Matcher includedMatcher = pattern.matcher(_includedVersion);
+                        String fileContent = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+                        Matcher includedMatcher = pattern.matcher(fileContent);
                         if (includedMatcher.find()) {
                             includedVersion = Version.parse(includedMatcher.group(1));
                         }
@@ -177,8 +177,8 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
                 }
 
                 Version currentVersion = null;
-                String _currentVersion = Files.readString(PYTHON_INIT_FILE_PATH, StandardCharsets.UTF_8);
-                Matcher currentMatcher = pattern.matcher(_currentVersion);
+                String fileContent = Files.readString(PYTHON_INIT_FILE_PATH, StandardCharsets.UTF_8);
+                Matcher currentMatcher = pattern.matcher(fileContent);
                 if (currentMatcher.find()) {
                     currentVersion = Version.parse(currentMatcher.group(1));
                 }
@@ -212,7 +212,6 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
 
                 try (InputStream is = PythonScriptEngineFactory.class.getClassLoader()
                         .getResourceAsStream(resourcePath)) {
-
                     Path target = PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH
                             .resolve(resourcePath.substring(resourcePath.lastIndexOf('/') + 1));
 

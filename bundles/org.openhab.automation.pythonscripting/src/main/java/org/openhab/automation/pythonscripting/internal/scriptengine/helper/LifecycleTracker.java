@@ -14,23 +14,25 @@ package org.openhab.automation.pythonscripting.internal.scriptengine.helper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * LifecycleTracker implementation
  *
  * @author Holger Hees - Initial contribution
  */
+@NonNullByDefault
 public class LifecycleTracker {
-    List<Function<Object[], Object>> disposables = new ArrayList<>();
+    List<Runnable> disposables = new ArrayList<>();
 
-    public void addDisposeHook(Function<Object[], Object> disposable) {
+    public void addDisposeHook(Runnable disposable) {
         disposables.add(disposable);
     }
 
     public void dispose() {
-        for (Function<Object[], Object> disposable : disposables) {
-            disposable.apply(null);
+        for (Runnable disposable : disposables) {
+            disposable.run();
         }
     }
 }

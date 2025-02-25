@@ -8,6 +8,6 @@
 	<description>This adds a Python script engine.</description>
 	<connection>none</connection>
 
-	<service-id>org.openhab.pythonscripting</service-id>
+	<service-id>org.openhab.automation.pythonscripting</service-id>
 	<config-description-ref uri="automation:pythonscripting"/>
 </addon:addon>

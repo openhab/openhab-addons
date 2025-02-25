@@ -53,38 +53,39 @@ public class ScriptExtensionModuleProvider {
         return (name, fromlist) -> {
             Map<String, Object> symbols = new HashMap<String, Object>();
             if (name.startsWith(OENHAB_MODULE_PREFIX)) {
-                List<String> class_list = new ArrayList<String>();
-                if (fromlist.size() > 0 && fromlist.contains("*")) {
+                List<String> classList = new ArrayList<String>();
+                if (!fromlist.isEmpty() && fromlist.contains("*")) {
                     logger.error("Wildcard support of java packages not supported");
                 } else {
-                    if (fromlist.size() == 0) {
-                        class_list.add(name);
+                    if (fromlist.isEmpty()) {
+                        classList.add(name);
                     } else {
-                        for (String _from : fromlist) {
-                            class_list.add(name + "." + _from);
+                        for (String from : fromlist) {
+                            classList.add(name + "." + from);
                         }
                     }
                 }
-                symbols.put("class_list", class_list);
+                symbols.put("class_list", classList);
             } else if (name.startsWith(SCOPE_MODULE_PREFIX)) {
                 String[] segments = name.split("\\.");
                 if (name.equals(SCOPE_MODULE_PREFIX)) {
-                    Map<String, Object> _symbols = new HashMap<String, Object>(this.globals); // scriptExtensionAccessor.findDefaultPresets(engineIdentifier);
+                    Map<String, Object> possibleSymbols = new HashMap<String, Object>(this.globals);
 
-                    if (fromlist.size() == 0 || fromlist.contains("*")) {
-                        symbols = _symbols;
+                    if (fromlist.isEmpty() || fromlist.contains("*")) {
+                        symbols = possibleSymbols;
                     } else {
-                        symbols = _symbols.entrySet().stream().filter(x -> fromlist.contains(x.getKey()))
+                        symbols = possibleSymbols.entrySet().stream().filter(x -> fromlist.contains(x.getKey()))
                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-                        List<String> _fromlist = fromlist.stream().filter(x -> !_symbols.containsKey(x)).toList();
+                        List<String> filteredFromlist = fromlist.stream().filter(x -> !possibleSymbols.containsKey(x))
+                                .toList();
 
-                        if (_fromlist.size() > 0) {
-                            for (String _from : _fromlist) {
-                                Map<String, Object> _from_symbols = scriptExtensionAccessor.findPreset(_from,
+                        if (!filteredFromlist.isEmpty()) {
+                            for (String from : filteredFromlist) {
+                                Map<String, Object> fromSymbols = scriptExtensionAccessor.findPreset(from,
                                         engineIdentifier);
-                                if (_from_symbols.size() > 0) {
-                                    symbols.put(_from, _from_symbols);
+                                if (!fromSymbols.isEmpty()) {
+                                    symbols.put(from, fromSymbols);
                                 }
                             }
                         }
@@ -100,23 +101,4 @@ public class ScriptExtensionModuleProvider {
     public void put(String key, Object value) {
         this.globals.put(key, value);
     }
-
-    // private Value toValue(Context ctx, Map<String, Object> map) {
-    // try {
-    // ctx.eval(Source.newBuilder( // convert to Map to Python Object
-    // GraalPythonScriptEngine.LANGUAGE_ID, //
-    // "import polyglot\n" //
-    // + "@polyglot.export_value\n" //
-    // + "def convert(map):\n" //
-    // + " obj = {}\n" //
-    // + " for prop in map.keySet():\n" //
-    // + " obj[prop] = map[prop]\n" //
-    // + " return obj\n" //
-    // + "",
-    // "<generated>").build());
-    // return ctx.getPolyglotBindings().getMember("convert").execute(map);
-    // } catch (IOException e) {
-    // throw new IllegalArgumentException("Failed to generate exports", e);
-    // }
-    // }
 }

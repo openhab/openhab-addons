@@ -14,6 +14,8 @@ package org.openhab.automation.pythonscripting.internal.graal;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -80,11 +82,10 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
 
         Context.Builder contextConfigToUse = contextConfig;
         if (contextConfigToUse == null) {
-            contextConfigToUse = Context.newBuilder(LANGUAGE_ID) // TODO: ID
+            contextConfigToUse = Context.newBuilder(LANGUAGE_ID) //
                     .allowExperimentalOptions(true) //
                     .allowAllAccess(true) //
                     .allowHostAccess(HostAccess.ALL) //
-                    // TODO .allowIO(IOAccess.newBuilder().allowHostSocketAccess(true).fileSystem(null).build()) //
                     // allow creating python threads
                     .allowCreateThread(true) //
                     // allow running Python native extensions
@@ -115,13 +116,13 @@ public final class GraalPythonScriptEngine extends AbstractScriptEngine
      */
     @Override
     public void close() {
-        logger.info("GraalPythonScriptEngine closed");
+        logger.debug("GraalPythonScriptEngine closed");
 
-        // Break circular reference. Not sure if this is really needed.
         Bindings bindings = this.getBindings(ScriptContext.ENGINE_SCOPE);
-        if (bindings instanceof GraalPythonBindings) {
-            ((GraalPythonBindings) bindings).updateEngineScriptContext(null);
-            // ((GraalPythonBindings) bindings).close();
+        if (bindings instanceof GraalPythonBindings pythonBingings) {
+            // Break circular reference. Not sure if this is really needed.
+            pythonBingings.updateEngineScriptContext(null);
+            pythonBingings.close();
         }
 
         getPolyglotContext().close();

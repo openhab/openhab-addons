@@ -33,10 +33,6 @@ public abstract class DelegatingScriptEngineWithInvocableAndCompilableAndAutoclo
         implements ScriptEngine, Invocable, Compilable, AutoCloseable {
     protected T delegate;
 
-    public DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable(T delegate) {
-        this.delegate = delegate;
-    }
-
     @Override
     public Object eval(String s, ScriptContext scriptContext) throws ScriptException {
         return delegate.eval(s, scriptContext);

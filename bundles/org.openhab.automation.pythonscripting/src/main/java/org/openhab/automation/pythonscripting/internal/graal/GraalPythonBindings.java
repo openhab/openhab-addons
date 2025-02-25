@@ -15,14 +15,13 @@ package org.openhab.automation.pythonscripting.internal.graal;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import javax.validation.constraints.NotNull;
 
 import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.TypeLiteral;
 import org.graalvm.polyglot.Value;
 
 /***
@@ -30,9 +29,6 @@ import org.graalvm.polyglot.Value;
  * @author Jeff James - Initial contribution
  */
 final class GraalPythonBindings extends AbstractMap<String, Object> implements javax.script.Bindings, AutoCloseable {
-    private static final TypeLiteral<Map<String, Object>> STRING_MAP = new TypeLiteral<Map<String, Object>>() {
-    };
-
     private Context context;
     private Map<String, Object> global;
 
@@ -75,8 +71,7 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
     }
 
     @Override
-    public Object put(String key, Object v) {
-        checkKey(key);
+    public Object put(@NotNull String key, Object v) {
         requireContext();
 
         context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember(key, v);
@@ -94,21 +89,13 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
     }
 
     @Override
-    public Object get(Object key) {
-        checkKey((String) key);
+    public Object get(@NotNull Object key) {
         requireContext();
         return global.get(key);
     }
 
-    private static void checkKey(String key) {
-        Objects.requireNonNull(key, "key can not be null");
-        if (key.isEmpty()) {
-            throw new IllegalArgumentException("key can not be empty");
-        }
-    }
-
     @Override
-    public Object remove(Object key) {
+    public Object remove(@NotNull Object key) {
         requireContext();
         Object prev = get(key);
         context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).removeMember((String) key);

@@ -46,7 +46,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.PolyglotAccess;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.io.IOAccess;
@@ -76,7 +75,7 @@ public class PythonScriptEngine
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngine.class);
 
     private static final String PYTHON_OPTION_EXECUTABLE = "python.Executable";
-    // private static final String PYTHON_OPTION_PYTHONHOME = "python.PythonHome";
+    private static final String PYTHON_OPTION_PYTHONHOME = "python.PythonHome";
     private static final String PYTHON_OPTION_PYTHONPATH = "python.PythonPath";
     private static final String PYTHON_OPTION_INPUTFILEPATH = "python.InputFilePath";
     private static final String PYTHON_OPTION_EMULATEJYTHON = "python.EmulateJython";
@@ -125,10 +124,6 @@ public class PythonScriptEngine
             .targetTypeMapping(Value.class, Item.class, v -> v.hasMember("raw_item"),
                     v -> v.getMember("raw_item").as(Item.class), HostAccess.TargetMappingPrecedence.LOW)
 
-            // Translate python quantity to org.openhab.core.library.types.QuantityType
-            // .targetTypeMapping(Value.class, QuantityType.class, v -> v.hasMember("rawQtyType"),
-            // v -> v.getMember("rawQtyType").as(QuantityType.class), HostAccess.TargetMappingPrecedence.LOW)
-
             // Translate python GraalWrapperSet to java.util.Set
             .targetTypeMapping(Value.class, Set.class, v -> v.hasMember("isSetType"),
                     PythonScriptEngine::transformGraalWrapperSet, HostAccess.TargetMappingPrecedence.LOW)
@@ -144,7 +139,6 @@ public class PythonScriptEngine
 
     // these fields start as null because they are populated on first use
     private @Nullable Consumer<String> scriptDependencyListener;
-    private String engineIdentifier; // this field is very helpful for debugging, please do not remove it
     private final ScriptExtensionModuleProvider scriptExtensionModuleProvider;
     private final LifecycleTracker lifecycleTracker;
 
@@ -168,8 +162,6 @@ public class PythonScriptEngine
      */
     public PythonScriptEngine(PythonDependencyTracker pythonDependencyTracker, int injectionEnabled,
             boolean scopeEnabled, boolean cachingEnabled, boolean jythonEmulation) {
-        super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
-
         this.injectionEnabled = injectionEnabled;
         this.scopeEnabled = scopeEnabled;
 
@@ -199,17 +191,19 @@ public class PythonScriptEngine
                             }
                         }).build()) //
                 .allowHostAccess(HOST_ACCESS) //
-                // .allowHostClassLoading(true) //
+                // usage of .allowAllAccess(true) includes
+                // - allowCreateThread(true)
+                // - allowCreateProcess(true)
+                // - allowHostClassLoading(true)
+                // - allowHostClassLookup(true)
+                // - allowPolyglotAccess(PolyglotAccess.ALL)
+                // - allowIO(true)
+                // - allowEnvironmentAccess(EnvironmentAccess.INHERIT)
                 .allowAllAccess(true) //
                 // allow class lookup like "org.slf4j.LoggerFactory" from inline scripts
                 .hostClassLoader(getClass().getClassLoader()) //
-                // allow creating python threads
-                .allowCreateThread(true)
-                // .allowCreateProcess(true) //
                 // allow running Python native extensions
                 .allowNativeAccess(true) //
-                // allow exporting Python values to polyglot bindings and accessing Java from Python
-                .allowPolyglotAccess(PolyglotAccess.ALL)
                 // allow experimental options
                 .allowExperimentalOptions(true) //
                 // choose the backend for the POSIX module
@@ -221,7 +215,7 @@ public class PythonScriptEngine
                 .option(PYTHON_OPTION_EXECUTABLE,
                         PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.resolve("bin").resolve("python").toString())
                 // Set the python home to be read from the embedded resources
-                // .option(PYTHON_OPTION_PYTHONHOME, PYTHON_DEFAULT_PATH.toString()) //
+                .option(PYTHON_OPTION_PYTHONHOME, PythonScriptEngineFactory.PYTHON_DEFAULT_PATH.toString()) //
                 // Set python path to point to sources stored in
                 .option(PYTHON_OPTION_PYTHONPATH,
                         PythonScriptEngineFactory.PYTHON_LIB_PATH.toString() + File.pathSeparator
@@ -247,7 +241,6 @@ public class PythonScriptEngine
 
     @Override
     protected void beforeInvocation() {
-
         lock.lock();
         logger.debug("Lock acquired before invocation.");
 
@@ -264,7 +257,6 @@ public class PythonScriptEngine
         if (engineIdentifier == null) {
             throw new IllegalStateException("Failed to retrieve engine identifier from engine bindings");
         }
-        this.engineIdentifier = engineIdentifier;
 
         ScriptExtensionAccessor scriptExtensionAccessor = (ScriptExtensionAccessor) ctx
                 .getAttribute(CONTEXT_KEY_EXTENSION_ACCESSOR);
@@ -301,7 +293,6 @@ public class PythonScriptEngine
                     delegate.getPolyglotContext().eval(Source
                             .newBuilder(GraalPythonScriptEngine.LANGUAGE_ID, injectionContent, "<generated>").build());
                 }
-
             } catch (IOException e) {
                 throw new IllegalArgumentException("Failed to generate import wrapper", e);
             }
@@ -320,15 +311,15 @@ public class PythonScriptEngine
 
     @Override
     protected String beforeInvocation(String source) {
-        String _source = super.beforeInvocation(source);
+        source = super.beforeInvocation(source);
 
         // Happens for Transform and UI based rules (eval and compile)
         // and has to be evaluate every time, because of changing and late injected ruleUID
         if (delegate.getBindings(ScriptContext.ENGINE_SCOPE).get(LOGGER_INIT_NAME) != null) {
-            return LOGGER_INIT_NAME + "()\n" + _source;
+            return LOGGER_INIT_NAME + "()\n" + source;
         }
 
-        return _source;
+        return source;
     }
 
     @Override
@@ -363,13 +354,13 @@ public class PythonScriptEngine
     @Override
     // collect JSR223 (scope) variables separately, because they are delivered via 'import scope'
     public void put(String key, Object value) {
-        if (key.equals("javax.script.filename")) {
+        if ("javax.script.filename".equals(key)) {
             // super.put("__file__", value);
             super.put(key, value);
         } else {
             // use a custom lifecycleTracker to handle dispose hook before polyglot context is closed
             // original lifecycleTracker is handling it when polyglot context is already closed
-            if (key.equals("lifecycleTracker")) {
+            if ("lifecycleTracker".equals(key)) {
                 value = lifecycleTracker;
             }
             if (scopeEnabled) {
@@ -476,7 +467,6 @@ public class PythonScriptEngine
     }
 
     private static Set<String> transformGraalWrapperSet(Value value) {
-        // Value raw_value = value.invokeMember("getWrappedSetValues");
         Set<String> set = new HashSet<String>();
         for (int i = 0; i < value.getArraySize(); ++i) {
             Value element = value.getArrayElement(i);

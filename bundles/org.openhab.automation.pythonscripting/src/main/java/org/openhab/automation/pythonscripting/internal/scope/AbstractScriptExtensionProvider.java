@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.module.script.ScriptExtensionProvider;
 import org.osgi.framework.BundleContext;
@@ -31,6 +32,7 @@ import org.osgi.service.component.annotations.Activate;
  *
  * @author Holger Hees - Initial contribution (Reused from jsscripting)
  */
+@NonNullByDefault
 public abstract class AbstractScriptExtensionProvider implements ScriptExtensionProvider {
     private Map<String, Function<String, Object>> types = new HashMap<>();
     private Map<String, Map<String, Object>> idToTypes = new ConcurrentHashMap<>();
@@ -76,7 +78,10 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
         if (getPresetName().equals(preset)) {
             Map<String, Object> results = new HashMap<>(types.size());
             for (String type : types.keySet()) {
-                results.put(type, get(scriptIdentifier, type));
+                Object value = get(scriptIdentifier, type);
+                if (value != null) {
+                    results.put(type, value);
+                }
             }
             return results;
         }

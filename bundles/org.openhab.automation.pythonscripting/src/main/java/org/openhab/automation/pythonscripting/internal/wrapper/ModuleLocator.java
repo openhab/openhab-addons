@@ -15,11 +15,14 @@ package org.openhab.automation.pythonscripting.internal.wrapper;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Locates modules from a module name
  *
  * @author Holger Hees - Initial contribution
  */
+@NonNullByDefault
 public interface ModuleLocator {
     Map<String, Object> locateModule(String name, List<String> fromlist);
 }

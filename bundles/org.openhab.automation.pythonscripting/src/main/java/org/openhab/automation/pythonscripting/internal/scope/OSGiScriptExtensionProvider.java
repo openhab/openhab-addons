@@ -12,6 +12,7 @@
  */
 package org.openhab.automation.pythonscripting.internal.scope;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.automation.module.script.ScriptExtensionProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Component;
@@ -21,6 +22,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Holger Hees - Initial contribution (Reused from jsscripting)
  */
+@NonNullByDefault
 @Component(immediate = true, service = ScriptExtensionProvider.class)
 public class OSGiScriptExtensionProvider extends AbstractScriptExtensionProvider {
 

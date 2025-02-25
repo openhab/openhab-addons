@@ -14,6 +14,7 @@ package org.openhab.automation.pythonscripting.internal.scriptengine.helper;
 
 import java.io.OutputStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.event.Level;
 
@@ -22,10 +23,11 @@ import org.slf4j.event.Level;
  *
  * @author Holger Hees - Initial contribution
  */
+@NonNullByDefault
 public class LogOutputStream extends OutputStream {
     private static final int DEFAULT_BUFFER_LENGTH = 2048;
-    private static final String LINE_SEPERATOR = System.getProperty("line.separator");
-    private static final int LINE_SEPERATOR_SIZE = LINE_SEPERATOR.length();
+    private static final String LINE_SEPARATOR = System.lineSeparator();
+    private static final int LINE_SEPARATOR_SIZE = LINE_SEPARATOR.length();
 
     private Logger logger;
     private Level level;
@@ -73,18 +75,18 @@ public class LogOutputStream extends OutputStream {
         }
 
         // don't print out blank lines;
-        if (count == LINE_SEPERATOR_SIZE) {
-            if (((char) buf[0]) == LINE_SEPERATOR.charAt(0)
-                    && ((count == 1) || ((count == 2) && ((char) buf[1]) == LINE_SEPERATOR.charAt(1)))) {
+        if (count == LINE_SEPARATOR_SIZE) {
+            if (((char) buf[0]) == LINE_SEPARATOR.charAt(0)
+                    && ((count == 1) || ((count == 2) && ((char) buf[1]) == LINE_SEPARATOR.charAt(1)))) {
                 reset();
                 return;
             }
-        } else if (count > LINE_SEPERATOR_SIZE) {
+        } else if (count > LINE_SEPARATOR_SIZE) {
             // remove linebreaks at the end
-            if (((char) buf[count - 1]) == LINE_SEPERATOR.charAt(LINE_SEPERATOR_SIZE - 1)
-                    && ((LINE_SEPERATOR_SIZE == 1) || ((LINE_SEPERATOR_SIZE == 2)
-                            && ((char) buf[count - 1]) == LINE_SEPERATOR.charAt(LINE_SEPERATOR_SIZE - 2)))) {
-                count -= LINE_SEPERATOR_SIZE;
+            if (((char) buf[count - 1]) == LINE_SEPARATOR.charAt(LINE_SEPARATOR_SIZE - 1)
+                    && ((LINE_SEPARATOR_SIZE == 1) || ((LINE_SEPARATOR_SIZE == 2)
+                            && ((char) buf[count - 1]) == LINE_SEPARATOR.charAt(LINE_SEPARATOR_SIZE - 2)))) {
+                count -= LINE_SEPARATOR_SIZE;
             }
         }
 
