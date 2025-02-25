@@ -198,3 +198,54 @@ This Channel Group is reports useful information data for the device:
 
 OBS: some versions of this device can not support all the channels, depending on the model's capabilities.
 
+## Full Example
+
+Example of how to configure a thing.
+
+demo.thing
+
+```java
+Bridge lgthinq:bridge:MyLGThinqBridge [ username="user@registered.com", password="cleartext-password", language="en", country="US", poolingIntervalSec=600] {
+   Thing air-conditioner-401 myAC [ model_url_info="ac_model_url", device_id="device_id", platform_type="thinq2", modelId="model_id", device_alias="MyAC" ]
+}
+```
+Until now, there is no way to easily obtain the values of model_url_info, device_id, platform_type and modelId. So, if you really need 
+to configure the LGThinq thing textually, I suggest you to first add it with the UI discovery process through the LG Thinq Bridge, then after, copy
+these properties from the thing created and complete the textual configuration.
+
+Here are some examples on how to map the channels to items.
+
+demo.items:
+```java
+Switch               ACPower        "Power"                   <switch>  { channel="lgthinq:air-conditioner-401:myAC:dashboard#power" }
+Number               ACOpMode       "Operation Mode"          <text>    { channel="lgthinq:air-conditioner-401:myAC:dashboard#op-mode" }
+Number:Temperature   ACTargetTemp   "Target Temperature"      <text>    { channel="lgthinq:air-conditioner-401:myAC:dashboard#target-temperature" }
+Number:Temperature   ACCurrTemp     "Temperature"             <text>    { channel="lgthinq:air-conditioner-401:myAC:dashboard#current-temperature" }
+Number               ACFanSpeed     "Fan Speed"               <text>    { channel="lgthinq:air-conditioner-401:myAC:dashboard#fan-speed" }
+Switch               ACCoolJet      "CoolJet"                 <switch>  { channel="lgthinq:air-conditioner-401:myAC:dashboard#cool-jet" }
+Switch               ACAutoDry      "Auto Dry"                <switch>  { channel="lgthinq:air-conditioner-401:myAC:dashboard#auto-dry" }
+Switch               ACEnSaving     "Energy Saving"           <switch>  { channel="lgthinq:air-conditioner-401:myAC:dashboard#emergy-saving" }
+Number               ACFanVDir      "Vertical Direction"      <text>    { channel="lgthinq:air-conditioner-401:myAC:dashboard#fan-step-up-down" }
+```
+
+## Sitemap Configuration
+
+demo.sitemap
+All the channels already have StateDescription for the selection Channels. So, unless you want to rename theirs into demo.items,
+you can simply define as Selection that the default description of the values will be displayed
+```perl
+sitemap demo label="Air Conditioner"
+{
+    Frame label="Dashboard" {
+        Switch    item=ACPower
+        Selection item=ACOpMode
+        Selection item=ACTargetTemp
+        Text      item=ACCurrTemp
+        Selection item=ACFanSpeed
+        Switch    item=ACCoolJet
+        Switch    item=ACAutoDry
+        Switch    item=ACEnSaving
+        Selection item=ACFanSpeed
+    }
+}
+```
