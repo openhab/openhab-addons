@@ -98,7 +98,6 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     @Deactivate
     public void cleanup() {
         logger.debug("Unloading PythonScriptEngineFactory");
-        this.pythonDependencyTracker.deactivate();
     }
 
     @Modified
@@ -203,15 +202,5 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
         } catch (Exception e) {
             logger.error("Exception during helper lib initialisation", e);
         }
-    }
-
-    boolean deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
-        }
-        return directoryToBeDeleted.delete();
     }
 }
