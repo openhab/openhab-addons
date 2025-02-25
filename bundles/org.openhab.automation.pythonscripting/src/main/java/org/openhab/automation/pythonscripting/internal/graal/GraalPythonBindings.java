@@ -19,7 +19,6 @@ import java.util.Set;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.validation.constraints.NotNull;
 
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
@@ -71,7 +70,7 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
     }
 
     @Override
-    public Object put(@NotNull String key, Object v) {
+    public Object put(String key, Object v) {
         requireContext();
 
         context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).putMember(key, v);
@@ -89,13 +88,13 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
     }
 
     @Override
-    public Object get(@NotNull Object key) {
+    public Object get(Object key) {
         requireContext();
         return global.get(key);
     }
 
     @Override
-    public Object remove(@NotNull Object key) {
+    public Object remove(Object key) {
         requireContext();
         Object prev = get(key);
         context.getBindings(GraalPythonScriptEngine.LANGUAGE_ID).removeMember((String) key);
