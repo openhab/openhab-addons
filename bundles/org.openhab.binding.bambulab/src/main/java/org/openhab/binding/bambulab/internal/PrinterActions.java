@@ -1,5 +1,14 @@
 package org.openhab.binding.bambulab.internal;
 
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Integer.parseInt;
+import static java.util.Arrays.copyOfRange;
+import static java.util.Objects.requireNonNull;
+import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.BINDING_ID;
+import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedMode.FLASHING;
+
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.annotation.ActionInput;
@@ -7,6 +16,7 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+
 import pl.grzeslowski.jbambuapi.PrinterClient.Channel.AmsControlCommand;
 import pl.grzeslowski.jbambuapi.PrinterClient.Channel.AmsFilamentSettingCommand;
 import pl.grzeslowski.jbambuapi.PrinterClient.Channel.AmsUserSettingCommand;
@@ -25,16 +35,6 @@ import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PrintSpeedCommand;
 import pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand;
 import pl.grzeslowski.jbambuapi.PrinterClient.Channel.SystemCommand;
 import pl.grzeslowski.jbambuapi.PrinterClient.Channel.XCamControlCommand;
-
-import java.util.Arrays;
-
-import static java.lang.Boolean.parseBoolean;
-import static java.lang.Integer.parseInt;
-import static java.util.Arrays.copyOfRange;
-import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.BINDING_ID;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.LedControlCommand.LedMode.FLASHING;
-
 
 /**
  * @author Martin Grzeslowski - Initial contribution
@@ -55,7 +55,8 @@ public class PrinterActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.sendCommand.label", description = "@text/action.sendCommand.description")
-    public void sendCommand(@ActionInput(name = "time", label = "@text/action.sendCommand.commandLabel", description = "@text/action.sendCommand.commandDescription") String stringCommand) {
+    public void sendCommand(
+            @ActionInput(name = "time", label = "@text/action.sendCommand.commandLabel", description = "@text/action.sendCommand.commandDescription") String stringCommand) {
         var localHandler = handler;
         if (localHandler == null) {
             return;
@@ -153,12 +154,14 @@ public class PrinterActions implements ThingActions {
 
     private AmsUserSettingCommand parseAmsUserSettingCommand(String[] commandLine) {
         requireLength(commandLine, 3);
-        return new AmsUserSettingCommand(parseInt(commandLine[0]), parseBoolean(commandLine[1]), parseBoolean(commandLine[2]));
+        return new AmsUserSettingCommand(parseInt(commandLine[0]), parseBoolean(commandLine[1]),
+                parseBoolean(commandLine[2]));
     }
 
     private AmsFilamentSettingCommand parseAmsFilamentSettingCommand(String[] commandLine) {
         requireLength(commandLine, 7);
-        return new AmsFilamentSettingCommand(parseInt(commandLine[0]), parseInt(commandLine[1]), commandLine[2], commandLine[3], parseInt(commandLine[4]), parseInt(commandLine[5]), commandLine[6]);
+        return new AmsFilamentSettingCommand(parseInt(commandLine[0]), parseInt(commandLine[1]), commandLine[2],
+                commandLine[3], parseInt(commandLine[4]), parseInt(commandLine[5]), commandLine[6]);
     }
 
     private AmsControlCommand parseAmsControlCommand(String[] commandLine) {
@@ -180,9 +183,7 @@ public class PrinterActions implements ThingActions {
         if (commandLine.length < 2) {
             throw new IllegalArgumentException("Command line length does not match!");
         }
-        var lines = Arrays.stream(commandLine)
-                .skip(1)
-                .toList();
+        var lines = Arrays.stream(commandLine).skip(1).toList();
         return new GCodeLineCommand(lines, commandLine[0]);
     }
 
@@ -192,7 +193,8 @@ public class PrinterActions implements ThingActions {
         }
         var ledNode = LedNode.valueOf(commandLine[0]);
         var ledMode = LedMode.valueOf(commandLine[1]);
-        @Nullable Integer ledOnTime = null, ledOffTime = null, loopTimes = null, intervalTime = null;
+        @Nullable
+        Integer ledOnTime = null, ledOffTime = null, loopTimes = null, intervalTime = null;
         if (ledMode == FLASHING) {
             requireLength(commandLine, 6);
             ledOnTime = parseInt(commandLine[2]);
@@ -220,13 +222,13 @@ public class PrinterActions implements ThingActions {
 
     private XCamControlCommand parseXCamControlCommand(String[] commandLine) {
         requireLength(commandLine, 3);
-        return new XCamControlCommand(XCamControlCommand.Module.valueOf(commandLine[0]), parseBoolean(commandLine[1]), parseBoolean(commandLine[2]));
+        return new XCamControlCommand(XCamControlCommand.Module.valueOf(commandLine[0]), parseBoolean(commandLine[1]),
+                parseBoolean(commandLine[2]));
     }
 
     public static void sendCommand(@Nullable ThingActions actions, String stringCommand) {
         ((PrinterActions) requireNonNull(actions)).sendCommand(stringCommand);
     }
-
 
     @RuleAction(label = "@text/action.refreshChannels.label", description = "@text/action.refreshChannels.description")
     public void refreshChannels() {

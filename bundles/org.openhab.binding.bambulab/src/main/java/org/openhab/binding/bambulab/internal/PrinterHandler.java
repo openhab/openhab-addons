@@ -12,6 +12,17 @@
  */
 package org.openhab.binding.bambulab.internal;
 
+import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
+import static org.openhab.core.thing.ThingStatus.*;
+import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.types.UnDefType.*;
+import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
+import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel;
@@ -28,20 +39,10 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import pl.grzeslowski.jbambuapi.PrinterClient;
 import pl.grzeslowski.jbambuapi.PrinterState;
 import pl.grzeslowski.jbambuapi.PrinterWatcher;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.regex.Pattern;
-
-import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
-import static org.openhab.core.thing.ThingStatus.*;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static org.openhab.core.types.UnDefType.*;
-import static pl.grzeslowski.jbambuapi.PrinterClient.Channel.PushingCommand.defaultPushingCommand;
-import static pl.grzeslowski.jbambuapi.PrinterClientConfig.requiredFields;
 
 /**
  * The {@link PrinterHandler} is responsible for handling commands, which are
@@ -131,7 +132,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
 
     void refreshChannels() {
         var localClient = client;
-        if(localClient == null) {
+        if (localClient == null) {
             return;
         }
         localClient.getChannel().sendCommand(defaultPushingCommand());
@@ -181,9 +182,8 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
         updateState(Channel.SEQUENCE_ID_CHANNEL, new StringType(details.sequenceId()));
 
         // UpgradeState
-//        var upgradeState = details.upgradeState();
-//        updateState(Channel., new DecimalType(upgradeState.));
-
+        // var upgradeState = details.upgradeState();
+        // updateState(Channel., new DecimalType(upgradeState.));
     }
 
     private State parseWifiChannel(@Nullable String wifi) {
