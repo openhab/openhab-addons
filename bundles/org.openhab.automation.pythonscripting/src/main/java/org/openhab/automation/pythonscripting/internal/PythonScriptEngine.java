@@ -142,8 +142,7 @@ public class PythonScriptEngine
     private final ScriptExtensionModuleProvider scriptExtensionModuleProvider;
     private final LifecycleTracker lifecycleTracker;
 
-    private int injectionEnabled = PythonScriptEngineFactory.INJECTION_DISABLED;
-    private boolean scopeEnabled = false;
+    private PythonScriptEngineConfiguration pythonScriptEngineConfiguration;
 
     private boolean initialized = false;
 
@@ -160,10 +159,9 @@ public class PythonScriptEngine
      * @param cachingEnabled
      * @param jythonEmulation
      */
-    public PythonScriptEngine(PythonDependencyTracker pythonDependencyTracker, int injectionEnabled,
-            boolean scopeEnabled, boolean cachingEnabled, boolean jythonEmulation) {
-        this.injectionEnabled = injectionEnabled;
-        this.scopeEnabled = scopeEnabled;
+    public PythonScriptEngine(PythonDependencyTracker pythonDependencyTracker,
+            PythonScriptEngineConfiguration pythonScriptEngineConfiguration) {
+        this.pythonScriptEngineConfiguration = pythonScriptEngineConfiguration;
 
         scriptOutputStream = new LogOutputStream(logger, Level.INFO);
         scriptErrorStream = new LogOutputStream(logger, Level.ERROR);
@@ -180,13 +178,14 @@ public class PythonScriptEngine
                             @Override
                             public void checkAccess(Path path, Set<? extends AccessMode> modes,
                                     LinkOption... linkOptions) throws IOException {
-                                if (path.startsWith(PythonScriptEngineFactory.PYTHON_LIB_PATH)) {
-                                    Consumer<String> localScriptDependencyListener = scriptDependencyListener;
-                                    if (localScriptDependencyListener != null) {
-                                        localScriptDependencyListener.accept(path.toRealPath().toString());
+                                if (pythonScriptEngineConfiguration.isDependencyTrackingEnabled()) {
+                                    if (path.startsWith(PythonScriptEngineFactory.PYTHON_LIB_PATH)) {
+                                        Consumer<String> localScriptDependencyListener = scriptDependencyListener;
+                                        if (localScriptDependencyListener != null) {
+                                            localScriptDependencyListener.accept(path.toString());
+                                        }
                                     }
                                 }
-
                                 super.checkAccess(path, modes, linkOptions);
                             }
                         }).build()) //
@@ -225,9 +224,10 @@ public class PythonScriptEngine
                 // make sure the TopLevelExceptionHandler calls the excepthook to print Python exceptions
                 .option(PYTHON_OPTION_ALWAYSRUNEXCEPTHOOK, Boolean.toString(true)) //
                 // emulate jython behavior (will slowdown the engine)
-                .option(PYTHON_OPTION_EMULATEJYTHON, String.valueOf(jythonEmulation));
+                .option(PYTHON_OPTION_EMULATEJYTHON,
+                        String.valueOf(pythonScriptEngineConfiguration.isJythonEmulation()));
 
-        if (cachingEnabled) {
+        if (pythonScriptEngineConfiguration.isCachingEnabled()) {
             contextConfig.option(PYTHON_OPTION_DONTWRITEBYTECODEFLAG, Boolean.toString(false)) //
                     .option(PYTHON_OPTION_CACHEDIR, PYTHON_CACHEDIR_PATH);
         } else {
@@ -272,7 +272,7 @@ public class PythonScriptEngine
         }
         this.scriptDependencyListener = scriptDependencyListener;
 
-        if (scopeEnabled) {
+        if (pythonScriptEngineConfiguration.isScopeEnabled()) {
             // Wrap the "import" function to also allow loading modules from the ScriptExtensionModuleProvider
             BiFunction<String, List<String>, Object> wrapImportFn = (name, fromlist) -> scriptExtensionModuleProvider
                     .locatorFor(delegate.getPolyglotContext(), engineIdentifier, scriptExtensionAccessor)
@@ -286,9 +286,9 @@ public class PythonScriptEngine
                         wrapperContent, PythonScriptEngineFactory.PYTHON_WRAPPER_FILE_PATH.toString()).build());
 
                 // inject scope, Registry and logger
-                if (injectionEnabled != PythonScriptEngineFactory.INJECTION_DISABLED
-                        && (ctx.getAttribute("javax.script.filename") == null
-                                || injectionEnabled == PythonScriptEngineFactory.INJECTION_ENABLED_FOR_ALL_SCRIPTS)) {
+                if (!pythonScriptEngineConfiguration.isInjection(PythonScriptEngineConfiguration.INJECTION_DISABLED)
+                        && (ctx.getAttribute("javax.script.filename") == null || pythonScriptEngineConfiguration
+                                .isInjection(PythonScriptEngineConfiguration.INJECTION_ENABLED_FOR_ALL_SCRIPTS))) {
                     String injectionContent = "import scope\nfrom openhab import Registry, logger";
                     delegate.getPolyglotContext().eval(Source
                             .newBuilder(GraalPythonScriptEngine.LANGUAGE_ID, injectionContent, "<generated>").build());
@@ -363,7 +363,7 @@ public class PythonScriptEngine
             if ("lifecycleTracker".equals(key)) {
                 value = lifecycleTracker;
             }
-            if (scopeEnabled) {
+            if (pythonScriptEngineConfiguration.isScopeEnabled()) {
                 scriptExtensionModuleProvider.put(key, value);
             } else {
                 super.put(key, value);

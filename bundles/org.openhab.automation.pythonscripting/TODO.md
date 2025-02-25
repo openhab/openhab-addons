@@ -3,6 +3,7 @@ TODO
 - fix eclipse build
 - fix dependency watcher for libs as symlinks
   - is currently not possible, because core openhab filewatcher is not able to handle it 
+  - also the "multi lib path" implementation from jruby dows not work, because the core watcher allowes only path objects inside the base path "/openhab/conf/"
 - extend SimpleRule => instead of wrapping in helper class (needs upcoming graalpy 24.2.0 release => register_interop_type) => expected March 18, 2025
   - not high prio. maybe not needed
 
