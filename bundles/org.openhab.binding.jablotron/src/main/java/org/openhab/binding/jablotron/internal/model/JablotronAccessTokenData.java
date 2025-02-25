@@ -17,24 +17,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link JablotronGetEventHistoryResponse} class defines the response for the
- * getEventHistory operation
+ * The {@link JablotronAccessTokenData} class defines the data object for access token
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class JablotronGetEventHistoryResponse {
+public class JablotronAccessTokenData {
+    @SerializedName("access-token")
+    private String accessToken = "";
 
-    @SerializedName("http-code")
-    int httpCode = -1;
+    @SerializedName("access-token-expiration")
+    private String accessTokenExpiration = "";
 
-    JablotronHistoryData data = new JablotronHistoryData();
-
-    public int getHttpCode() {
-        return httpCode;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public JablotronHistoryData getData() {
-        return data;
+    public String getAccessTokenExpiration() {
+        return accessTokenExpiration;
     }
 }
