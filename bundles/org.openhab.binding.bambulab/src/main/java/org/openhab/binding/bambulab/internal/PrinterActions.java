@@ -72,49 +72,49 @@ public class PrinterActions implements ThingActions {
         }
         var commandName = split[0];
         var tail = tail(split);
-        if (commandName.equals(InfoCommand.class.getName())) {
+        if (commandName.equals(InfoCommand.class.getSimpleName())) {
             return parseInfoCommand(tail);
         }
-        if (commandName.equals(PushingCommand.class.getName())) {
+        if (commandName.equals(PushingCommand.class.getSimpleName())) {
             return parsePushingCommand(tail);
         }
-        if (commandName.equals(PrintCommand.class.getName())) {
+        if (commandName.equals(PrintCommand.class.getSimpleName())) {
             return parsePrintCommand(tail);
         }
-        if (commandName.equals(ChangeFilamentCommand.class.getName())) {
+        if (commandName.equals(ChangeFilamentCommand.class.getSimpleName())) {
             return parseChangeFilamentCommand(tail);
         }
-        if (commandName.equals(AmsUserSettingCommand.class.getName())) {
+        if (commandName.equals(AmsUserSettingCommand.class.getSimpleName())) {
             return parseAmsUserSettingCommand(tail);
         }
-        if (commandName.equals(AmsFilamentSettingCommand.class.getName())) {
+        if (commandName.equals(AmsFilamentSettingCommand.class.getSimpleName())) {
             return parseAmsFilamentSettingCommand(tail);
         }
-        if (commandName.equals(AmsControlCommand.class.getName())) {
+        if (commandName.equals(AmsControlCommand.class.getSimpleName())) {
             return parseAmsControlCommand(tail);
         }
-        if (commandName.equals(PrintSpeedCommand.class.getName())) {
+        if (commandName.equals(PrintSpeedCommand.class.getSimpleName())) {
             return parsePrintSpeedCommand(tail);
         }
-        if (commandName.equals(GCodeFileCommand.class.getName())) {
+        if (commandName.equals(GCodeFileCommand.class.getSimpleName())) {
             return parseGCodeFileCommand(tail);
         }
-        if (commandName.equals(GCodeLineCommand.class.getName())) {
+        if (commandName.equals(GCodeLineCommand.class.getSimpleName())) {
             return parseGCodeLineCommand(tail);
         }
-        if (commandName.equals(LedControlCommand.class.getName())) {
+        if (commandName.equals(LedControlCommand.class.getSimpleName())) {
             return parseLedControlCommand(tail);
         }
-        if (commandName.equals(SystemCommand.class.getName())) {
+        if (commandName.equals(SystemCommand.class.getSimpleName())) {
             return parseSystemCommand(tail);
         }
-        if (commandName.equals(IpCamRecordCommand.class.getName())) {
+        if (commandName.equals(IpCamRecordCommand.class.getSimpleName())) {
             return parseIpCamRecordCommand(tail);
         }
-        if (commandName.equals(IpCamTimelapsCommand.class.getName())) {
+        if (commandName.equals(IpCamTimelapsCommand.class.getSimpleName())) {
             return parseIpCamTimelapsCommand(tail);
         }
-        if (commandName.equals(XCamControlCommand.class.getName())) {
+        if (commandName.equals(XCamControlCommand.class.getSimpleName())) {
             return parseXCamControlCommand(tail);
         }
 
