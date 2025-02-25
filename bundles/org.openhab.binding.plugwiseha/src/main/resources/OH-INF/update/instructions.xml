@@ -32,7 +32,7 @@
 
 		<instruction-set targetVersion="1">
 			<update-channel id="temperature">
-				<type>system.indoor-temperature</type>
+				<type>system:indoor-temperature</type>
 				<label>Zone Temperature</label>
 				<description>Gets the temperature of this zone</description>
 			</update-channel>
@@ -50,7 +50,7 @@
 
 		<instruction-set targetVersion="2">
 			<update-channel id="temperature">
-				<type>system.indoor-temperature</type>
+				<type>system:indoor-temperature</type>
 				<label>Zone Temperature</label>
 				<description>Gets the temperature of this zone</description>
 			</update-channel>
@@ -61,12 +61,12 @@
 
 		<instruction-set targetVersion="1">
 			<update-channel id="power">
-				<type>system.power</type>
+				<type>system:power</type>
 				<label>Power</label>
 				<description>Switch the pump ON or OFF</description>
 			</update-channel>
-            <update-channel id="powerUsage">
-				<type>system.electric-power</type>
+			<update-channel id="powerUsage">
+				<type>system:electric-power</type>
 				<label>Power Usage</label>
 			</update-channel>
 		</instruction-set>
@@ -77,7 +77,7 @@
 
 		<instruction-set targetVersion="1">
 			<update-channel id="temperature">
-				<type>system.indoor-temperature</type>
+				<type>system:indoor-temperature</type>
 				<label>Zone Temperature</label>
 				<description>Gets the temperature of this zone</description>
 			</update-channel>
