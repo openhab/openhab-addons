@@ -13,6 +13,7 @@
 package org.openhab.binding.bambulab.internal;
 
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel.*;
+import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.DECIBEL_MILLIWATTS;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
@@ -26,7 +27,6 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Channel;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -169,11 +169,11 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
     private void updatePrinterChannels(PrinterState state) {
         // PrintDetails
         var details = state.printDetails();
-        updateState(NOZZLE_TEMPERATURE_CHANNEL, new DecimalType(details.nozzleTemperature()));
-        updateState(NOZZLE_TARGET_TEMPERATURE_CHANNEL, new DecimalType(details.nozzleTargetTemperature()));
-        updateState(BED_TEMPERATURE_CHANNEL, new DecimalType(details.nozzleTargetTemperature()));
-        updateState(BED_TARGET_TEMPERATURE_CHANNEL, new DecimalType(details.bedTargetTemperature()));
-        updateState(CHAMBER_TEMPERATURE_CHANNEL, new DecimalType(details.chamberTemperature()));
+        updateState(NOZZLE_TEMPERATURE_CHANNEL, new QuantityType<>(details.nozzleTemperature(), CELSIUS));
+        updateState(NOZZLE_TARGET_TEMPERATURE_CHANNEL, new QuantityType<>(details.nozzleTargetTemperature(), CELSIUS));
+        updateState(BED_TEMPERATURE_CHANNEL, new QuantityType<>(details.nozzleTargetTemperature(), CELSIUS));
+        updateState(BED_TARGET_TEMPERATURE_CHANNEL, new QuantityType<>(details.bedTargetTemperature(), CELSIUS));
+        updateState(CHAMBER_TEMPERATURE_CHANNEL, new QuantityType<>(details.chamberTemperature(), CELSIUS));
         updateState(MC_PRINT_STAGE_CHANNEL, new StringType(details.mcPrintStage()));
         updateState(MC_PERCENT_CHANNEL, new PercentType(details.mcPercent() * 100));
         updateState(MC_REMAINING_TIME_CHANNEL, new DecimalType(details.mcRemainingTime()));
