@@ -14,7 +14,6 @@ package org.openhab.binding.modbus.lambda.internal;
 
 import static org.openhab.binding.modbus.lambda.internal.LambdaBindingConstants.*;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,14 +48,6 @@ public class LambdaHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GENERAL, THING_TYPE_HEAT_PUMP,
             THING_TYPE_BOILER, THING_TYPE_BUFFER, THING_TYPE_HEATING_CIRCUIT);
 
-    private static final Map<ThingTypeUID, ThingHandlerCreator> HANDLER_CREATORS = Map.of(
-            THING_TYPE_GENERAL, GeneralHandler::new,
-            THING_TYPE_HEAT_PUMP, HeatpumpHandler::new,
-            THING_TYPE_BOILER, BoilerHandler::new,
-            THING_TYPE_BUFFER, BufferHandler::new,
-            THING_TYPE_HEATING_CIRCUIT, HeatingCircuitHandler::new
-    );
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -65,14 +56,18 @@ public class LambdaHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        logger.debug("LambdaHandlerFactory thingTypeUID: {}", thingTypeUID);
-        
-        ThingHandlerCreator creator = HANDLER_CREATORS.get(thingTypeUID);
-        return creator != null ? creator.create(thing) : null;
-    }
-
-    @FunctionalInterface
-    private interface ThingHandlerCreator {
-        ThingHandler create(Thing thing);
+        logger.debug("LamdaHandlerFactory thingTypeUID: {}", thingTypeUID);
+        if (THING_TYPE_HEAT_PUMP.equals(thingTypeUID)) {
+            return new HeatpumpHandler(thing);
+        } else if (THING_TYPE_GENERAL.equals(thingTypeUID)) {
+            return new GeneralHandler(thing);
+        } else if (THING_TYPE_BUFFER.equals(thingTypeUID)) {
+            return new BufferHandler(thing);
+        } else if (THING_TYPE_BOILER.equals(thingTypeUID)) {
+            return new BoilerHandler(thing);
+        } else if (THING_TYPE_HEATING_CIRCUIT.equals(thingTypeUID)) {
+            return new HeatingCircuitHandler(thing);
+        }
+        return null;
     }
 }
