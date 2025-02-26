@@ -113,6 +113,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
             client = new PrinterClient(
                     requiredFields(uri, config.username, config.serial, config.accessCode.toCharArray()));
         } catch (Exception e) {
+            logger.debug("Cannot create MQTT client", e);
             updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
             return;
         }
@@ -126,6 +127,7 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
                 refreshChannels();
                 updateStatus(ONLINE);
             } catch (Exception e) {
+                logger.debug("Cannot connect to MQTT client", e);
                 updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
             }
         });
