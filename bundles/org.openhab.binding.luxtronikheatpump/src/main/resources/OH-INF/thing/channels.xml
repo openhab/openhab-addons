@@ -1584,6 +1584,12 @@
 		<state pattern="%.1f rpm" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="inputUtilityLock2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Utility Lock 2"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="temperatureSafetyLimitFloorHeating" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Safety Temp. Limiter Floor Heating</label>
