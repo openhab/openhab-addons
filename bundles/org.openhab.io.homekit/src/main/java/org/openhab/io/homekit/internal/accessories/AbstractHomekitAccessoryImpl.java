@@ -242,19 +242,20 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         services.add(service);
 
         var serviceClass = service.getClass();
-        rawCharacteristics.values().forEach(characteristic -> {
-            // belongs on the accessory information service
-            if (characteristic.getClass() == NameCharacteristic.class) {
-                return;
-            }
-            try {
-                // if the service supports adding this characteristic as optional, add it!
-                serviceClass.getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
-                        characteristic);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                // the service doesn't support this optional characteristic; ignore it
-            }
-        });
+        rawCharacteristics.values().stream().sorted((lhs, rhs) -> lhs.getType().compareTo(rhs.getType()))
+                .forEach(characteristic -> {
+                    // belongs on the accessory information service
+                    if (characteristic.getClass() == NameCharacteristic.class) {
+                        return;
+                    }
+                    try {
+                        // if the service supports adding this characteristic as optional, add it!
+                        serviceClass.getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
+                                characteristic);
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                        // the service doesn't support this optional characteristic; ignore it
+                    }
+                });
     }
 
     protected HomekitAccessoryUpdater getUpdater() {
@@ -565,33 +566,32 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         serviceBuilder.add("type", service.getType());
         var characteristics = Json.createArrayBuilder();
 
-        service.getCharacteristics().stream().sorted((l, r) -> l.getClass().getName().compareTo(r.getClass().getName()))
-                .forEach(c -> {
-                    try {
-                        var cJson = c.toJson(0).get();
-                        var cBuilder = Json.createObjectBuilder();
-                        // Need to copy over everything except the current value, which we instead
-                        // reach in and get the default value
-                        cJson.forEach((k, v) -> {
-                            if ("value".equals(k)) {
-                                Object defaultValue = ((BaseCharacteristic) c).getDefault();
-                                if (defaultValue instanceof Boolean) {
-                                    cBuilder.add("value", (boolean) defaultValue);
-                                } else if (defaultValue instanceof Integer) {
-                                    cBuilder.add("value", (int) defaultValue);
-                                } else if (defaultValue instanceof Double) {
-                                    cBuilder.add("value", (double) defaultValue);
-                                } else {
-                                    cBuilder.add("value", defaultValue.toString());
-                                }
-                            } else {
-                                cBuilder.add(k, v);
-                            }
-                        });
-                        characteristics.add(cBuilder.build());
-                    } catch (InterruptedException | ExecutionException e) {
+        service.getCharacteristics().forEach(c -> {
+            try {
+                var cJson = c.toJson(0).get();
+                var cBuilder = Json.createObjectBuilder();
+                // Need to copy over everything except the current value, which we instead
+                // reach in and get the default value
+                cJson.forEach((k, v) -> {
+                    if ("value".equals(k)) {
+                        Object defaultValue = ((BaseCharacteristic) c).getDefault();
+                        if (defaultValue instanceof Boolean) {
+                            cBuilder.add("value", (boolean) defaultValue);
+                        } else if (defaultValue instanceof Integer) {
+                            cBuilder.add("value", (int) defaultValue);
+                        } else if (defaultValue instanceof Double) {
+                            cBuilder.add("value", (double) defaultValue);
+                        } else {
+                            cBuilder.add("value", defaultValue.toString());
+                        }
+                    } else {
+                        cBuilder.add(k, v);
                     }
                 });
+                characteristics.add(cBuilder.build());
+            } catch (InterruptedException | ExecutionException e) {
+            }
+        });
         serviceBuilder.add("c", characteristics);
 
         if (!service.getLinkedServices().isEmpty()) {
