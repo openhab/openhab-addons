@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:mqtt:awtrix-clock">
+		<parameter name="basetopic" type="text" required="true">
+			<label>Base Topic</label>
+			<description>Base topic as configured in the Awtrix Light device.</description>
+			<default>awtrix</default>
+		</parameter>
+		<parameter name="appLockTimeout" type="integer" required="true">
+			<label>App Selection Timeout</label>
+			<description>Timeout in seconds until selected apps return control and the app rotation continues.</description>
+			<default>10</default>
+		</parameter>
+		<parameter name="discoverDefaultApps" type="boolean" required="true">
+			<label>Discover Built-in Apps</label>
+			<description>Currently changing settings for the built-in default apps is not implemented. It is therefore
+				recommended to ignore them during app discovery.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="lowBatteryThreshold" type="decimal" required="true">
+			<label>Low Battery Threshold</label>
+			<description>Threshold for issuing a low battery warning.</description>
+			<default>25</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:mqtt:awtrix-app">
+		<parameter name="appname" type="text" required="true">
+			<label>App Name</label>
+			<description>Name of the app</description>
+		</parameter>
+		<parameter name="useButtons" type="boolean" required="true">
+			<label>Button Controlled</label>
+			<description><![CDATA[
+				Activate if the app can be controlled by the user.
+				The select button locks on current app and the app will emit subsequent button events until the appLockTimeout of the bridge is reached. Every button press before the timeout will reset timeout.
+				]]>
+			</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
