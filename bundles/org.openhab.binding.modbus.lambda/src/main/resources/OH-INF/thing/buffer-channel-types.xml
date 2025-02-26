@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="buffer-error-number-type">
+		<item-type>Number</item-type>
+		<label>buffer Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="buffer-operating-state-type">
+		<item-type>Number</item-type>
+		<label>buffer Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">STBY</option>
+				<option value="1">HEATING</option>
+				<option value="2">COOLING</option>
+				<option value="3">SUMMER</option>
+				<option value="4">FROST</option>
+				<option value="5">HOLIDAY</option>
+				<option value="6">PRIO-STOP</option>
+				<option value="7">ERROR</option>
+				<option value="8">OFF</option>
+				<option value="9">STBY-FROST</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="buffer-actual-high-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Buffer Actual High Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="buffer-actual-low-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Buffer Actual Low Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="buffer-maximum-buffer-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Buffer Maximum Buffer Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+
+</thing:thing-descriptions>
