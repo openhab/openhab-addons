@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="heat-pump">
+		<label>Heat Pump</label>
+		<channels>
+			<channel id="heat-pump-error-state" typeId="heat-pump-error-state"/>
+			<channel id="heat-pump-error-number" typeId="heat-pump-error-number"/>
+			<channel id="heat-pump-state" typeId="heat-pump-state"/>
+			<channel id="heat-pump-operating-state" typeId="heat-pump-operating-state"/>
+			<channel id="heat-pump-t-flow" typeId="heat-pump-t-flow"/>
+			<channel id="heat-pump-t-return" typeId="heat-pump-t-return"/>
+			<channel id="heat-pump-vol-sink" typeId="heat-pump-vol-sink"/>
+			<channel id="heat-pump-t-eqin" typeId="heat-pump-t-eqin"/>
+			<channel id="heat-pump-t-eqout" typeId="heat-pump-t-eqout"/>
+			<channel id="heat-pump-vol-source" typeId="heat-pump-vol-source"/>
+			<channel id="heat-pump-compressor-rating" typeId="heat-pump-compressor-rating"/>
+			<channel id="heat-pump-qp-heating" typeId="heat-pump-qp-heating"/>
+			<channel id="heat-pump-fi-power-consumption" typeId="heat-pump-fi-power-consumption"/>
+			<channel id="heat-pump-cop" typeId="heat-pump-cop"/>
+			<channel id="heatpump-request-password" typeId="heatpump-request-password-channel"/>
+			<channel id="heatpump-request-type" typeId="heatpump-request-type-channel"/>
+			<channel id="heat-pump-request-t-flow" typeId="heat-pump-request-t-flow"/>
+			<channel id="heat-pump-request-t-return" typeId="heat-pump-request-t-return"/>
+			<channel id="heat-pump-request-heat-sink" typeId="heat-pump-request-heat-sink"/>
+			<channel id="heatpump-relais-state" typeId="heatpump-relais-state-channel"/>
+			<channel id="heat-pump-vdae" typeId="heat-pump-vdae"/>
+			<channel id="heat-pump-vdaq" typeId="heat-pump-vdaq"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>
