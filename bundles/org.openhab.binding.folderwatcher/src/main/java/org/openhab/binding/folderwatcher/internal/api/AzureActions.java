@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -80,7 +82,7 @@ public class AzureActions {
 
     public List<String> listBlob(String prefix, Map<String, String> headers, Map<String, String> params)
             throws Exception {
-
+        List<String> returnList = new ArrayList<>();
         params.put("restype", "container");
         params.put("comp", "list");
         params.put("maxresults", "1000");
@@ -117,12 +119,16 @@ public class AzureActions {
 
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        // This returns extra character before <xml. Need to find out why
         String sResponse = contentResponse.getContentAsString();
-        InputSource is = new InputSource(new StringReader(sResponse.substring(sResponse.indexOf("<"))));
+        Pattern pattern = Pattern.compile("<\\?xml.*", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(sResponse);
+        if (!matcher.find()) {
+            return returnList;
+        }
+        sResponse = matcher.group();
+        InputSource is = new InputSource(new StringReader(sResponse));
         Document doc = docBuilder.parse(is);
         NodeList nameNodesList = doc.getElementsByTagName("Blob");
-        List<String> returnList = new ArrayList<>();
 
         if (nameNodesList.getLength() == 0) {
             return returnList;

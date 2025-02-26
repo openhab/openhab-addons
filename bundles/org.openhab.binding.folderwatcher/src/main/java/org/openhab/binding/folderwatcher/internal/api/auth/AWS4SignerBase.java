@@ -32,7 +32,6 @@ import org.openhab.binding.folderwatcher.internal.api.util.HttpUtilException;
 public abstract class AWS4SignerBase extends SignerBase {
 
     public static final String SCHEME = "AWS4";
-    // public static final String ALGORITHM = "HMAC-SHA256";
     public static final String TERMINATOR = "aws4_request";
     public static final String ISO8601_BASIC_FORMAT = "yyyyMMdd'T'HHmmss'Z'";
     public static final String DATESTRING_FORMAT = "yyyyMMdd";
@@ -46,9 +45,7 @@ public abstract class AWS4SignerBase extends SignerBase {
     protected final SimpleDateFormat dateStampFormat;
 
     public AWS4SignerBase(URL endpointUrl, String httpMethod, String serviceName, String regionName) {
-
         super(PAIR_SEPARATOR, VALEU_SEPARATOR);
-
         this.endpointUrl = endpointUrl;
         this.httpMethod = httpMethod;
         this.serviceName = serviceName;

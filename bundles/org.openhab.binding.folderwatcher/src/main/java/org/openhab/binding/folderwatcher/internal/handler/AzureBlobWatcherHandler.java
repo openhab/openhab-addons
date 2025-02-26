@@ -15,7 +15,6 @@ package org.openhab.binding.folderwatcher.internal.handler;
 import static org.openhab.binding.folderwatcher.internal.FolderWatcherBindingConstants.CHANNEL_NEWFILE;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -78,29 +77,31 @@ public class AzureBlobWatcherHandler extends BaseThingHandler {
             azure = new AzureActions(httpClientFactory, config.azureAccountName, config.azureContainerName,
                     config.azureAccessKey);
         }
-
-        try {
-            previousBlobListing = WatcherCommon.initStorage(currentBlobListingFile,
-                    config.azureAccountName + "-" + config.azureContainerName);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            logger.debug("Can't write file {}: {}", currentBlobListingFile, e.getMessage());
+        updateStatus(ThingStatus.UNKNOWN);
+        if (config.pollIntervalAzure > 0) {
+            executionJob = scheduler.scheduleWithFixedDelay(this::refreshAzureBlobInformation, 0,
+                    config.pollIntervalAzure, TimeUnit.SECONDS);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Polling interval must be greater then 0 seconds");
             return;
-        }
-
-        if (refreshAzureBlobInformation()) {
-            if (config.pollIntervalAzure > 0) {
-                executionJob = scheduler.scheduleWithFixedDelay(this::refreshAzureBlobInformation,
-                        config.pollIntervalAzure, config.pollIntervalAzure, TimeUnit.SECONDS);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Polling interval must be greater then 0 seconds");
-                return;
-            }
         }
     }
 
     private boolean refreshAzureBlobInformation() {
+        if (previousBlobListing.size() == 0) {
+            try {
+                previousBlobListing = WatcherCommon.initStorage(currentBlobListingFile,
+                        config.azureAccountName + "-" + config.azureContainerName);
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Local storage initialization error: " + e.getMessage());
+                logger.debug("Can't write file {}: {}", currentBlobListingFile, e.getMessage());
+                executionJob.cancel(false);
+                return false;
+            }
+        }
+
         List<String> currentBlobListing = new ArrayList<>();
         try {
             currentBlobListing = azure.listContainer(config.contanerPath);
