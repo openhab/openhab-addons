@@ -169,29 +169,55 @@ public class PrinterHandler extends BaseThingHandler implements PrinterWatcher.P
     private void updatePrinterChannels(PrinterState state) {
         // PrintDetails
         var details = state.printDetails();
-        updateState(NOZZLE_TEMPERATURE_CHANNEL, new QuantityType<>(details.nozzleTemperature(), CELSIUS));
-        updateState(NOZZLE_TARGET_TEMPERATURE_CHANNEL, new QuantityType<>(details.nozzleTargetTemperature(), CELSIUS));
-        updateState(BED_TEMPERATURE_CHANNEL, new QuantityType<>(details.nozzleTargetTemperature(), CELSIUS));
-        updateState(BED_TARGET_TEMPERATURE_CHANNEL, new QuantityType<>(details.bedTargetTemperature(), CELSIUS));
-        updateState(CHAMBER_TEMPERATURE_CHANNEL, new QuantityType<>(details.chamberTemperature(), CELSIUS));
-        updateState(MC_PRINT_STAGE_CHANNEL, new StringType(details.mcPrintStage()));
-        updateState(MC_PERCENT_CHANNEL, new PercentType(details.mcPercent() * 100));
-        updateState(MC_REMAINING_TIME_CHANNEL, new DecimalType(details.mcRemainingTime()));
-        updateState(WIFI_SIGNAL_CHANNEL, parseWifiChannel(details.wifiSignal()));
-        updateState(COMMAND_CHANNEL, new StringType(details.command()));
-        updateState(MESSAGE_CHANNEL, new DecimalType(details.message()));
-        updateState(SEQUENCE_ID_CHANNEL, new StringType(details.sequenceId()));
+        updateCelsiusState(NOZZLE_TEMPERATURE_CHANNEL, details.nozzleTemperature());
+        updateCelsiusState(NOZZLE_TARGET_TEMPERATURE_CHANNEL, details.nozzleTargetTemperature());
+        updateCelsiusState(BED_TEMPERATURE_CHANNEL, details.nozzleTargetTemperature());
+        updateCelsiusState(BED_TARGET_TEMPERATURE_CHANNEL, details.bedTargetTemperature());
+        updateCelsiusState(CHAMBER_TEMPERATURE_CHANNEL, details.chamberTemperature());
+        updateStringState(MC_PRINT_STAGE_CHANNEL, details.mcPrintStage());
+        updatePercentState(MC_PERCENT_CHANNEL, details.mcPercent());
+        updateDecimalState(MC_REMAINING_TIME_CHANNEL, details.mcRemainingTime());
+        if (details.wifiSignal() != null) {
+            updateState(WIFI_SIGNAL_CHANNEL, parseWifiChannel(details.wifiSignal()));
+        }
+        updateStringState(COMMAND_CHANNEL, details.command());
+        updateDecimalState(MESSAGE_CHANNEL, details.message());
+        updateStringState(SEQUENCE_ID_CHANNEL, details.sequenceId());
 
         // UpgradeState
         // var upgradeState = details.upgradeState();
         // updateState(Channel., new DecimalType(upgradeState.));
     }
 
-    private State parseWifiChannel(@Nullable String wifi) {
-        if (wifi == null) {
-            return NULL;
+    private void updateCelsiusState(String channelId, @Nullable Double temperature) {
+        if (temperature == null) {
+            return;
         }
+        updateState(channelId, new QuantityType<>(temperature, CELSIUS));
+    }
 
+    private void updateStringState(String channelId, @Nullable String string) {
+        if (string == null) {
+            return;
+        }
+        updateState(channelId, new StringType(string));
+    }
+
+    private void updateDecimalState(String channelId, @Nullable Number number) {
+        if (number == null) {
+            return;
+        }
+        updateState(channelId, new DecimalType(number));
+    }
+
+    private void updatePercentState(String channelId, @Nullable Integer integer) {
+        if (integer == null) {
+            return;
+        }
+        updateState(channelId, new PercentType(integer));
+    }
+
+    private State parseWifiChannel(String wifi) {
         var matcher = DBM_PATTERN.matcher(wifi);
         if (!matcher.matches()) {
             return UNDEF;
