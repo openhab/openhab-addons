@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="boiler-type">
+		<label>Boiler</label>
+		<channels>
+			<channel id="boiler-error-number" typeId="boiler-error-number"/>
+			<channel id="boiler-operating-state" typeId="boiler-operating-state"/>
+			<channel id="boiler-actual-high-temperature" typeId="boiler-actual-high-temperature"/>
+			<channel id="boiler-actual-low-temperature" typeId="boiler-actual-low-temperature"/>
+			<channel id="boiler-maximum-boiler-temperature" typeId="boiler-maximum-boiler-temperature"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
