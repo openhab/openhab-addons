@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="motion-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Motion Sensor</label>
+		<description>Sensor detecting motion events</description>
+
+		<channels>
+			<channel id="motion" typeId="system.motion">
+				<label>Detection Flag</label>
+				<description>Flag if detection happened</description>
+			</channel>
+			<channel id="active-duration" typeId="duration">
+				<label>Active Duration</label>
+				<description>Keep connected devices active for this duration</description>
+			</channel>
+			<channel id="battery-level" typeId="system.battery-level">
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
+			</channel>
+			<channel id="schedule" typeId="sensor-schedule">
+				<label>Activity Schedule</label>
+				<description>Schedule when the sensor shall be active</description>
+			</channel>
+			<channel id="schedule-start" typeId="schedule-start-time">
+				<label>Activity Schedule Start</label>
+				<description>Start time of sensor activity</description>
+			</channel>
+			<channel id="schedule-end" typeId="schedule-end-time">
+				<label>Activity Schedule End</label>
+				<description>End time of sensor activity</description>
+			</channel>
+			<channel id="light-preset" typeId="light-preset">
+				<label>Light Preset</label>
+				<description>Light presets for different times of the day</description>
+			</channel>
+			<channel id="custom-name" typeId="custom-name"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+</thing:thing-descriptions>
