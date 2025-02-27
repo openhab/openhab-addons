@@ -66,8 +66,7 @@ import com.google.gson.reflect.TypeToken;
  * The {@link LinkyLocalHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API
+ * @author Laurent Arnal - Add support for direct linky connection using D2L dongle
  */
 
 @NonNullByDefault
@@ -84,6 +83,8 @@ public class LinkyLocalHandler extends BaseThingHandler {
 
     private String appKey = "";
     private String ivKey = "";
+    private String prmId = "";
+    private long idd2l = -1;
 
     private double cosphi = Double.NaN;
 
@@ -111,6 +112,8 @@ public class LinkyLocalHandler extends BaseThingHandler {
 
         appKey = (String) thingConfig.get("appKey");
         ivKey = (String) thingConfig.get("ivKey");
+        idd2l = Long.parseLong((String) thingConfig.get("id"));
+        prmId = (String) thingConfig.get("prmId");
         saveConfiguration(thingConfig);
 
         // reread config to update timezone field
@@ -155,15 +158,19 @@ public class LinkyLocalHandler extends BaseThingHandler {
         super.updateStatus(status, statusDetail, description);
     }
 
-    public void handleRead(ByteBuffer byteBuffer) {
+    public boolean handleRead(ByteBuffer byteBuffer) {
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         // int version = byteBuffer.get(0);
         int length = byteBuffer.getShort(2);
-        // long idd2l = byteBuffer.getLong(4);
+        long idd2l = byteBuffer.getLong(4);
+
+        if (idd2l != this.idd2l) {
+            return false;
+        }
 
         if (byteBuffer.position() < length) {
             // We have incomplete data, wait next read on buffer
-            return;
+            return false;
         }
 
         try {
@@ -195,12 +202,12 @@ public class LinkyLocalHandler extends BaseThingHandler {
 
             Bridge bridge = getBridge();
             if (bridge == null) {
-                return;
+                return false;
             }
 
             BridgeLinkyHandler bridgeHandler = (BridgeLinkyHandler) bridge.getHandler();
             if (bridgeHandler == null) {
-                return;
+                return false;
             }
             Gson gson = bridgeHandler.getGson();
 
@@ -227,6 +234,8 @@ public class LinkyLocalHandler extends BaseThingHandler {
         } catch (Exception ex) {
             logger.debug("ex: {}", ex.toString(), ex);
         }
+
+        return true;
     }
 
     protected void handlePayload(Map<String, String> payLoad) {
