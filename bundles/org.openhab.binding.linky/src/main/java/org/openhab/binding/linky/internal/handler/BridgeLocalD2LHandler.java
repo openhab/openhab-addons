@@ -14,6 +14,8 @@ package org.openhab.binding.linky.internal.handler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -127,9 +129,12 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
 
                     if (selectionKey.isAcceptable()) {
                         SocketChannel client = socket.accept();
+                        logger.info("Accept: {} {}", client.getLocalAddress(), client.getRemoteAddress());
 
                         if (client != null) {
                             client.configureBlocking(false);
+                            client.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
+                            client.setOption(StandardSocketOptions.TCP_NODELAY, false);
                             client.register(selectionKey.selector(), SelectionKey.OP_READ, ByteBuffer.allocate(20000));
                         }
                     }
@@ -142,22 +147,33 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
                      */
 
                     else if (selectionKey.isReadable()) {
-                        SocketChannel client = (SocketChannel) selectionKey.channel();
-                        ByteBuffer buf = (ByteBuffer) selectionKey.attachment();
-                        long bytesRead = client.read(buf);
+                        try {
+                            SocketChannel client = (SocketChannel) selectionKey.channel();
+                            ByteBuffer buf = (ByteBuffer) selectionKey.attachment();
+                            long bytesRead = client.read(buf);
 
-                        if (bytesRead == -1) {
-                            client.close();
-                        } else if (bytesRead > 0) {
-                            handleRead(buf);
-                            selectionKey.interestOps(SelectionKey.OP_READ);
+                            if (bytesRead == -1) {
+                                logger.trace("Close on bytesRead==-1 {} {}", client.getLocalAddress(),
+                                        client.getRemoteAddress());
+                                client.close();
+                            } else if (bytesRead > 0) {
+                                boolean res = handleRead(buf);
+                                selectionKey.interestOps(SelectionKey.OP_READ);
+                                if (res) {
+                                    logger.trace("Close on res=true {} {}", client.getLocalAddress(),
+                                            client.getRemoteAddress());
+                                    client.close();
+                                }
+                            }
+
+                            // do something with your data
+
+                            // send ACK
+                            // ByteBuffer sendAck = ByteBuffer.wrap(ackByte);
+                            // client.write(sendAck);
+                        } catch (SocketException ex) {
+                            logger.debug("Error during reading socket, retry ", ex);
                         }
-
-                        // do something with your data
-
-                        // send ACK
-                        // ByteBuffer sendAck = ByteBuffer.wrap(ackByte);
-                        // mllpClient.write(sendAck);
 
                     } else if (selectionKey.isWritable()) {
                         logger.debug("Writable");
@@ -195,15 +211,20 @@ public class BridgeLocalD2LHandler extends BridgeLinkyHandler {
         logger.debug("end pooling socket");
     }
 
-    public void handleRead(ByteBuffer byteBuffer) {
+    public boolean handleRead(ByteBuffer byteBuffer) {
+        boolean res = false;
 
         List<Thing> lThing = getThing().getThings();
         for (Thing th : lThing) {
             LinkyLocalHandler handler = (LinkyLocalHandler) th.getHandler();
             if (handler != null) {
-                handler.handleRead(byteBuffer);
+                if (handler.handleRead(byteBuffer)) {
+                    res = true;
+                }
             }
         }
+
+        return res;
     }
 
     public String getAccountUrl() {
