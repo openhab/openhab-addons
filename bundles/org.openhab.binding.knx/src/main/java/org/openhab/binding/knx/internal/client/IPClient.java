@@ -137,9 +137,9 @@ public class IPClient extends AbstractKNXClient {
         // Calimero service mode, ROUTING for both classic and secure routing
         int serviceMode = CustomKNXNetworkLinkIP.ROUTING;
         if (ipConnectionType == IpConnectionType.TUNNEL) {
-            serviceMode = CustomKNXNetworkLinkIP.TUNNELING;
+            serviceMode = CustomKNXNetworkLinkIP.TunnelingV1;
         } else if (ipConnectionType == IpConnectionType.SECURE_TUNNEL) {
-            serviceMode = CustomKNXNetworkLinkIP.TUNNELINGV2;
+            serviceMode = CustomKNXNetworkLinkIP.TunnelingV2;
         }
 
         // creating the connection here as a workaround for
