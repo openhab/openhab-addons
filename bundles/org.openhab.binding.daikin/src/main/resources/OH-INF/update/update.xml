@@ -4,6 +4,27 @@
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
 	<thing-type uid="daikin:ac_unit">
+		<instruction-set targetVersion="2">
+			<update-channel id="power">
+				<type>daikin:acunit-power</type>
+			</update-channel>
+			<update-channel id="settemp">
+				<type>daikin:acunit-settemp</type>
+			</update-channel>
+			<update-channel id="indoortemp">
+				<type>system:indoor-temperature</type>
+			</update-channel>
+			<update-channel id="outdoortemp">
+				<type>system:outdoor-temperature</type>
+			</update-channel>
+			<update-channel id="mode">
+				<type>daikin:acunit-mode</type>
+			</update-channel>
+			<update-channel id="fanspeed">
+				<type>daikin:acunit-fan</type>
+			</update-channel>
+		</instruction-set>
+
 		<instruction-set targetVersion="1">
 			<add-channel id="demandcontrolmode">
 				<type>daikin:acunit-demandcontrolmode</type>
@@ -14,6 +35,53 @@
 			<add-channel id="demandcontrolschedule">
 				<type>daikin:acunit-demandcontrolschedule</type>
 			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="daikin:airbase_ac_unit">
+		<instruction-set targetVersion="1">
+			<update-channel id="power">
+				<type>daikin:acunit-power</type>
+			</update-channel>
+			<update-channel id="settemp">
+				<type>daikin:acunit-settemp</type>
+			</update-channel>
+			<update-channel id="indoortemp">
+				<type>system:indoor-temperature</type>
+			</update-channel>
+			<update-channel id="outdoortemp">
+				<type>system:outdoor-temperature</type>
+			</update-channel>
+			<update-channel id="mode">
+				<type>daikin:acunit-mode</type>
+			</update-channel>
+			<update-channel id="airbasefanspeed">
+				<type>daikin:airbase-acunit-fan</type>
+			</update-channel>
+			<update-channel id="zone1">
+				<type>daikin:airbase-acunit-zone1</type>
+			</update-channel>
+			<update-channel id="zone2">
+				<type>daikin:airbase-acunit-zone2</type>
+			</update-channel>
+			<update-channel id="zone3">
+				<type>daikin:airbase-acunit-zone3</type>
+			</update-channel>
+			<update-channel id="zone4">
+				<type>daikin:airbase-acunit-zone4</type>
+			</update-channel>
+			<update-channel id="zone5">
+				<type>daikin:airbase-acunit-zone5</type>
+			</update-channel>
+			<update-channel id="zone6">
+				<type>daikin:airbase-acunit-zone6</type>
+			</update-channel>
+			<update-channel id="zone7">
+				<type>daikin:airbase-acunit-zone7</type>
+			</update-channel>
+			<update-channel id="zone8">
+				<type>daikin:airbase-acunit-zone8</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 
