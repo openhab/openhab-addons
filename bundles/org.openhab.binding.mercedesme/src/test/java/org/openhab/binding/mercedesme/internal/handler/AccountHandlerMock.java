@@ -92,8 +92,7 @@ public class AccountHandlerMock extends AccountHandler {
         super.ws.onConnect(mock(Session.class));
     }
 
-    @Override
-    public void refresh() {
+    public void refreshToken() {
         authService.get().getToken();
     }
 }
