@@ -1424,45 +1424,54 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     // TODO use the semantic tag constants from OH core
     private void updateSemanticEquipmentTag() {
+        // TODO SemanticTag semanticEquipmentTag = null;
         String semanticEquipmentTag = null;
 
         // sensor equipment
         if (supportedChannelIdSet.contains(CHANNEL_2_LIGHT_LEVEL) //
                 || supportedChannelIdSet.contains(CHANNEL_2_MOTION)
                 || supportedChannelIdSet.contains(CHANNEL_2_TEMPERATURE)) {
+            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.SENSOR
             semanticEquipmentTag = "Sensor";
         } else
 
         // security equipment
         if (supportedChannelIdSet.contains(CHANNEL_2_SECURITY_CONTACT)) {
+            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.ALARM_SYSTEM
             semanticEquipmentTag = "Security";
         } else
 
         // button equipment
         if (supportedChannelIdSet.contains(CHANNEL_2_BUTTON_LAST_EVENT)) {
+            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.WALL_SWITCH
             semanticEquipmentTag = "Button";
         } else
 
         // rotary dial equipment
         if (supportedChannelIdSet.contains(CHANNEL_2_ROTARY_STEPS)) {
+            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.TBD **
             semanticEquipmentTag = "RotaryDial";
         } else
 
         // rooms and zones are a super-set of light bulb equipment
         if (thisResource.getType() != ResourceType.DEVICE) {
+            // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.LIGHTBULB
             semanticEquipmentTag = "LightBulb";
         } else
 
         // everything else is individual light equipment
         if (thisResource.getProductData() instanceof ProductData productData) {
             if (STRIPLIGHT_ARCHETYPES.contains(productData.getProductArchetype())) {
+                // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.LIGHT_STRIPE
                 semanticEquipmentTag = "LightStrip";
             } else {
+                // TODO semanticEquipmentTag = o.o.c.semantics.model.DefaultSemanticTags.Equipment.LIGHTBULB
                 semanticEquipmentTag = "LightBulb";
             }
         }
 
         logger.debug("{} -> updateSemanticEquipmentTag({})", resourceId, semanticEquipmentTag);
+        // TODO updateThing(editThing().withSemanticEquipmentTag(semanticEquipmentTag.getName()).build());
         updateThing(editThing().withSemanticEquipmentTag(semanticEquipmentTag).build());
     }
 }
