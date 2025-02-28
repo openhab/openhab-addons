@@ -121,7 +121,7 @@
 		<description>A Plugwise Home Automation smart plug switch connected to a central heating pump</description>
 
 		<channels>
-			<channel id="power" typeId="system:power">
+			<channel id="power" typeId="system.power">
 				<label>Power</label>
 				<description>Switch the Plugwise Smart plug ON or OFF</description>
 			</channel>
